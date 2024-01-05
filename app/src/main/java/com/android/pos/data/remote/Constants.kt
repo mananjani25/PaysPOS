@@ -1,6 +1,9 @@
 package com.android.pos.data.remote
 
 import android.content.Context
+import android.util.Log
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.android.pos.data.model.PrinterListModel
 import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
 import com.android.pos.data.model.responseModel.PrinterResponse
@@ -13,6 +16,8 @@ import com.sunmi.externalprinterlibrary2.printer.CloudPrinterBuilder
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
+import java.util.concurrent.ExecutionException
+
 
 object Constants {
 
@@ -73,6 +78,7 @@ object Constants {
     //SharedPref Keys
     const val AUTH_TOKEN = "authToken"
     const val CHECK_QUEUE_CANCEL = "check_queue_cancel"
+    const val WORKER_QUEUE_IN_PROGRESS="worker_queue_in_progress"
     const val TERMINAL_ID = "terminalId"
     const val TERMINAL_NAME = "terminalName"
     const val SYNC_TIME_STAMP = "SyncTimeStamp"
@@ -102,6 +108,7 @@ object Constants {
     const val EMPLOYEE_ROLE = "employee_role"
     const val EMPLOYEE_ROLE_ID = "employee_role_id"
     const val CURRENT_EMPLOYEE_ROLE = "current_employee_role"
+    const val QUEUE_SYNC_TIME_STAMP = "queue_sync_time_stamp"
     const val UPDATE = "UPDATE"
     const val DELETE = "DELETE"
     const val PRINT_PAID = "PrintPaid"
@@ -211,8 +218,8 @@ object Constants {
     const val DELETE_QUEUE_ORDER_PHASE3 = "printer_queues/destroy_v2?order_id="
     const val UPDATE_PRITNER_QUEUE_TRACK = "update_printer_queue_track"
 
-    // const val PRINTER_QUEUE_CONNECTION_URL_SNACKPOS = "wss://snackhq.com/cable"
-    const val PRINTER_QUEUE_CONNECTION_URL_SNACKPOS = "wss://hugepos.com/cable"
+     const val PRINTER_QUEUE_CONNECTION_URL_SNACKPOS = "wss://snackhq.com/cable"
+    //const val PRINTER_QUEUE_CONNECTION_URL_SNACKPOS = "wss://hugepos.com/cable"
 
     const val INCREASE_ONGOING_ORDER_COUNTER = "locations/increase_ongoing_order_counter"
     const val DECREASE_ONGOING_ORDER_COUNTER = "locations/decrease_ongoing_order_counter"
@@ -812,6 +819,29 @@ object Constants {
 
     fun createCloudPrinterWithName(name: String, ipAddress: String, portNo: Int): CloudPrinter {
         return CloudPrinterBuilder.buildPrinter(name, ipAddress, portNo)
+    }
+
+    fun checkUploadWorker(str:String,context: Context):Boolean{
+        var instance = WorkManager.getInstance(context)
+
+        val statuses = instance.getWorkInfosByTag(str)
+        return try {
+            var running = false
+            val workInfoList = statuses.get()
+            for (workInfo in workInfoList) {
+                val state = workInfo.state
+
+                Log.e("ConstantsExt","checkState:  ${state}")
+                running = (state == WorkInfo.State.RUNNING) or (state == WorkInfo.State.ENQUEUED)
+            }
+            running
+        } catch (e: ExecutionException) {
+            e.printStackTrace()
+            false
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+            false
+        }
     }
 
 }

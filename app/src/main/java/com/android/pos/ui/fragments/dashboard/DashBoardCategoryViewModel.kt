@@ -62,6 +62,7 @@ import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.PAX_SERIAL_NO
 import com.android.pos.data.remote.Constants.PAX_TERMINAL_ID
+import com.android.pos.data.remote.Constants.QUEUE_SYNC_TIME_STAMP
 import com.android.pos.data.remote.Constants.REPORT_END_TIME
 import com.android.pos.data.remote.Constants.REPORT_START_TIME
 import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
@@ -3671,7 +3672,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             orderType = prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
             if (!orderType.equals(Constants.PHONE_ORDER, ignoreCase = true)
             ) {
-                deliveryType=""
+                deliveryType = ""
             }
             orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
             isMaual = isManualSales
@@ -4627,11 +4628,11 @@ class DashBoardCategoryViewModel @Inject constructor(
         var modifierPrice = 0.0
         val price = (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
-        Log.e("ItemModSize","CheckModSize: ${item.modifiers.size}")
+        Log.e("ItemModSize", "CheckModSize: ${item.modifiers.size}")
         item.modifiers.forEach {
             Log.e("ItemMod", "itemQuantity:  ${it.itemQuantity} andMODQU  ${it.modifier_quantity}")
             var modQty = it.modifier_quantity * item.itemQuantity
-            Log.e("ItemModQty","modQty:  ${modQty}")
+            Log.e("ItemModQty", "modQty:  ${modQty}")
             modifierPrice += (it.price * modQty)
         }
 
@@ -4657,7 +4658,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
         }
-        Log.e(TAG,"checkTotalRet ${totaltaxtemp}")
+        Log.e(TAG, "checkTotalRet ${totaltaxtemp}")
         return totaltaxtemp
     }
 
@@ -4734,10 +4735,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                         if (type == ADD || type == UPDATE) {
                             if (found <= cartModel.taxlistDynamic?.size!! - 1) {
-                                Log.e("CheckPassing","checkSubT: ${cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice}")
-                                Log.e("CheckPassing","checkTaxBifur:  ${getTotalTaxBirfurcation(
-                                    item, itemtype, type
-                                )}")
+                                Log.e(
+                                    "CheckPassing",
+                                    "checkSubT: ${cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice}"
+                                )
+                                Log.e(
+                                    "CheckPassing", "checkTaxBifur:  ${
+                                        getTotalTaxBirfurcation(
+                                            item, itemtype, type
+                                        )
+                                    }"
+                                )
                                 cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice =
                                     cartModel.taxlistDynamic!![found].totalTaxTypePrice.plus(
                                         getTotalTaxBirfurcation(
@@ -4887,10 +4895,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                         if (type == ADD || type == UPDATE) {
                             if (found <= cartModel.taxlistDynamic?.size!! - 1) {
-                                Log.e("CheckPassing","method: ${getTotalTaxBirfurcationNew(
-                                    item, itemtype, type
-                                )}")
-                                Log.e("CheckPassing","amount: ${cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice}")
+                                Log.e(
+                                    "CheckPassing", "method: ${
+                                        getTotalTaxBirfurcationNew(
+                                            item, itemtype, type
+                                        )
+                                    }"
+                                )
+                                Log.e(
+                                    "CheckPassing",
+                                    "amount: ${cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice}"
+                                )
                                 cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice =
                                     cartModel.taxlistDynamic!![found].totalTaxTypePrice.plus(
                                         getTotalTaxBirfurcationNew(
@@ -4953,7 +4968,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         itemtype.subTotalAmount = itemtype.subTotalAmount?.plus(totalPrice)
                     }
 
-                    Log.e("CheckItem","item: ${Gson().toJson(item)}")
+                    Log.e("CheckItem", "item: ${Gson().toJson(item)}")
                     var ttaxPrice = getTotalTaxBirfurcationNew(item, itemtype, type)
                     Log.e("checkTotalTax", "TaxPrice 2: ${ttaxPrice}")
                     itemtype.totalTaxTypePrice = ttaxPrice
@@ -4976,7 +4991,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             if (tax.isActive && !tax.isDeleted) {
 
 
-                Log.e("TodayCheck","itemQuan ${item.itemQuantity}  quantity: ${item.quantity}")
+                Log.e("TodayCheck", "itemQuan ${item.itemQuantity}  quantity: ${item.quantity}")
                 var modifierPrice = 0.0
                 val price =
                     (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
@@ -6537,6 +6552,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             _tableStatus.value = response?.let { Event(it.message) }
                         }
 
+                        Log.e("CheckBValue", "checkBValue: ${b}")
                         if (!b) syncSettingModule()
 
                     }
@@ -6570,7 +6586,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             when (resource.status) {
                 Status.SUCCESS -> {
-                    Log.d("BINGE", "syncSettingModule: START")
+                    Log.e("TOMIN", "SUCCESS")
+                    Log.e("BINGE", "syncSettingModule: START")
                     resource.data.let { venueDetailsResponse ->
                         if (venueDetailsResponse?.status == 200) {
 
@@ -6591,6 +6608,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 }
 
+                                prefProvider.setValueboolean(
+                                    IS_PRINTER_QUEUE_ENABLE,
+                                    it.settingData.data.isPrinterQueueEnable
+                                )
+
                                 if (it.settingData.data.isMasterTeminal) {
 
                                     prefProvider.setValueboolean(
@@ -6606,9 +6628,30 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     )
                                 }
 
+
                                 val intent = Intent()
                                 intent.action = Constants.MASTER_TEMINAL_CHANGED
                                 MainApplication.getInstance()?.baseContext?.sendBroadcast(intent)
+                                prefProvider.setValue(
+                                    QUEUE_SYNC_TIME_STAMP,
+                                    System.currentTimeMillis().toString()
+                                )
+
+
+                                /*  val intent = Intent()
+                                  intent.action = Constants.MASTER_TEMINAL_CHANGED
+                                  MainApplication.getInstance()?.baseContext?.sendBroadcast(intent)
+                                  prefProvider.setValue(
+                                      QUEUE_SYNC_TIME_STAMP,
+                                      System.currentTimeMillis().toString()
+                                  )
+*/
+
+
+
+
+
+
 
 
                                 try {
@@ -6670,10 +6713,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         BUSINESS_ADDRESS, it.settingData.data.address
                                     )
                                 }
-                                prefProvider.setValueboolean(
-                                    IS_PRINTER_QUEUE_ENABLE,
-                                    it.settingData.data.isPrinterQueueEnable
-                                )
+
 
                                 prefProvider.setValueboolean(
                                     CUSTOMER_SIGN_REQUIRED_ON_CD,
@@ -6902,11 +6942,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
 
                 Status.ERROR -> {
+                    Log.e("TOMIN", "ERROR")
                     _snackbarText.value = Event(resource.message)
                     _showProgress.value = Event(false)
                 }
 
                 Status.LOADING -> {
+                    Log.e("TOMIN", "LOADING")
                     _showProgress.value = Event(true)
                 }
             }
@@ -7305,14 +7347,17 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     fun updateActiveOrderFlagClear() {
+        try {
 
-        prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER, false)
-        prefProvider.setValueInt(Constants.IS_UPDATE_ORDER_ID, -1)
-        prefProvider.setValueInt(Constants.IS_UPDATE_ORDER_PAYMENT_ID, -1)
-        prefProvider.setValue(Constants.IS_UPDATE_ORDER_PAY_OFFLINE_ID, "")
-        prefProvider.setValue(Constants.IS_UPDATE_ORDER_OFFLINE_ID, "")
-        prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false)
-        prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+            prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER, false)
+            prefProvider.setValueInt(Constants.IS_UPDATE_ORDER_ID, -1)
+            prefProvider.setValueInt(Constants.IS_UPDATE_ORDER_PAYMENT_ID, -1)
+            prefProvider.setValue(Constants.IS_UPDATE_ORDER_PAY_OFFLINE_ID, "")
+            prefProvider.setValue(Constants.IS_UPDATE_ORDER_OFFLINE_ID, "")
+            prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false)
+            prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+        } catch (e: java.lang.Exception) {
+        }
 
     }
 

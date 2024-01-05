@@ -187,6 +187,12 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
         binding = FragmentPrinterBinding.inflate(inflater, container, false)
+        try {
+            SunmiPrinterManager.getInstance()
+                .searchCloudPrinter(requireContext(), SearchMethod.LAN, this)
+        } catch (e: SearchException) {
+            e.printStackTrace()
+        }
         binding.lifecycleOwner = this
         binding.maskLayout?.visible()
         updatePrinter = this
@@ -311,12 +317,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         updatePrinter = this
         //hideLoaderAfterDelay()
 
-        try {
-            SunmiPrinterManager.getInstance()
-                .searchCloudPrinter(requireContext(), SearchMethod.LAN, this)
-        } catch (e: SearchException) {
-            e.printStackTrace()
-        }
+
         kitchenAdapter = PrinterListAdapter()
         customerAdapter = PrinterListAdapter()
         availableNetworkAdapter = PrinterListAdapter()

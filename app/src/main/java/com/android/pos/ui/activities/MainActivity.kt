@@ -3,11 +3,18 @@ package com.android.pos.ui.activities
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.*
 import android.content.pm.PackageManager
+import android.media.RingtoneManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.StrictMode
 import android.provider.MediaStore
 import android.provider.Settings
@@ -18,6 +25,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.GravityCompat
@@ -33,16 +41,23 @@ import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import com.android.pos.MainApplication
 import com.android.pos.R
+import com.android.pos.data.model.GuestAttrQueue
+import com.android.pos.data.model.PrinterJSONElementData
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.TmpPrinterModel
+import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.LOCATION_ID
+import com.android.pos.data.remote.Constants.PRINTER_QUEUE_BACKGROUND
+import com.android.pos.data.remote.Constants.SYNC_SETTING_TIME_STAMP
 import com.android.pos.data.remote.Constants.UNIQUE_ID
+import com.android.pos.data.remote.Constants.checkUploadWorker
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.databinding.ParentActivityBinding
 import com.android.pos.di.ApiModule.BASE_URL
@@ -71,12 +86,21 @@ import com.epson.eposprint.Builder
 import com.felhr.usbserial.BuildConfig.APPLICATION_ID
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.hosopy.actioncable.ActionCable
 import com.hosopy.actioncable.Channel
 import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
+import com.sunmi.externalprinterlibrary2.ConnectCallback
+import com.sunmi.externalprinterlibrary2.ResultCallback
+import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
+import com.sunmi.externalprinterlibrary2.printer.CloudPrinterBuilder
+import com.sunmi.externalprinterlibrary2.style.AlignStyle
+import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
+import com.sunmi.externalprinterlibrary2.style.UnderlineStyle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -90,7 +114,22 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
-    StatusChangeListener, UpdatePrinters {
+    StatusChangeListener, UpdatePrinters, ResultCallback {
+    private var isLocalMasterFlag: Boolean = false
+    var currentPrinterIndex = 0
+    var currentOrderIndex = 0
+    private var currentCloudPrinter: CloudPrinter? = null
+    private var localCallConnect: Boolean = false
+    private var previousPrinterAddress = ""
+    private var previousPrinterName = ""
+    private var disconnectSize0: Boolean = false
+    private var globalPrinterQueue: JsonElement? = null
+    var listOfPrintersData: ArrayList<PrinterJSONElementData> = arrayListOf()
+    var isQueueRunning: Boolean = false
+    private var isPrinterRunning: Boolean = false
+    private var reConnectCount: Int = 0
+    private var printerBGRunning: Boolean = false
+    private var isCancelWork: Boolean = true
     private var printerList: List<PrinterResponse.Data.KitchenReceiptPrinters> = arrayListOf()
     private val dashboardViewModel: DashBoardCategoryViewModel by viewModels()
     private val passcodeViewModel: PasscodeViewModel by viewModels()
@@ -132,7 +171,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     var currentIndex: Int = 0
 
 
-    companion object{
+    companion object {
         var updatePrinter: UpdatePrinters? = null
     }
 
@@ -188,11 +227,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         override fun onReceive(p0: Context?, p1: Intent?) {
 
             try {
-                if (prefProvider?.getValue(Constants.AUTH_TOKEN,"")?.isNotEmpty() == true) {
-                    dashBoardCategoryViewModel.syncInventoryModule(true)
+                if (prefProvider?.getValue(Constants.AUTH_TOKEN, "")?.isNotEmpty() == true) {
+                    dashBoardCategoryViewModel.syncInventoryModule(false)
                 }
-            }catch (e:Exception){
-                Log.d("syncReceiver","dashBoardCategoryViewModel create exception")
+            } catch (e: Exception) {
+                Log.d("syncReceiver", "dashBoardCategoryViewModel create exception")
 
             }
         }
@@ -204,26 +243,153 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         override fun onReceive(p0: Context?, p1: Intent?) {
 
             Log.e(
-                "checkMAsterTeminal",
-                "check  ${prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false)}"
+                TAG,
+                "checkPrinterQueueWorker:  ${
+                    checkUploadWorker(
+                        PRINTER_QUEUE_BACKGROUND,
+                        this@MainActivity
+                    )
+                }"
             )
-            if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false) == true && prefProvider?.getValueboolean(Constants.IS_PRINTER_QUEUE_STARTS,false) == false && prefProvider?.getValueboolean(
-                    IS_PRINTER_QUEUE_ENABLE,false) == true) {
-                prefProvider?.setValueboolean(Constants.IS_PRINTER_QUEUE_STARTS,true)
-                prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL,false)
+
+
+            if (prefProvider?.getValueboolean(
+                    IS_MASTER_TERMINAL,
+                    false
+                ) == true && prefProvider?.getValueboolean(
+                    Constants.IS_PRINTER_QUEUE_STARTS,
+                    false
+                ) == false && prefProvider?.getValueboolean(
+                    IS_PRINTER_QUEUE_ENABLE, false
+                ) == true
+            ) {
+                prefProvider?.setValueboolean(Constants.IS_PRINTER_QUEUE_STARTS, true)
+                prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL, false)
                 getKitOne()
 
-            } else if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false) == false){
+            } else if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false) == false) {
                 WorkManager.getInstance(this@MainActivity).cancelAllWork()
                 val data = Data.Builder()
                     //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
                     // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
                     .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
                     .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
-                    .put(IS_PRINTER_QUEUE_ENABLE,prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE,false))
-                    .put("is_cancel_work",true)
+                    .put(
+                        IS_PRINTER_QUEUE_ENABLE,
+                        prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)
+                    )
+                    .put("is_cancel_work", true)
                     .build()
-                prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL,true)
+                prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL, true)
+                val uploadWorkRequest =
+                    OneTimeWorkRequest.Builder(
+                        UploadWorker2::class.java
+                    ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
+                        .setInputData(data)
+                        .build()
+
+
+                val workManager = WorkManager.getInstance(this@MainActivity)
+
+                try {
+
+                    /* workManager.enqueueUniqueWork(
+                         Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.KEEP,
+                         uploadWorkRequest
+                     )*/
+
+                } catch (e: java.lang.Exception) {
+                    LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
+                    e.printStackTrace()
+                }
+            } else {
+                if (prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false) == true) {
+                    val data = Data.Builder()
+                        //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
+                        // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
+                        .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
+                        .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
+                        .put(
+                            IS_PRINTER_QUEUE_ENABLE,
+                            prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)
+                        )
+                        .put("is_cancel_work", false)
+                        .build()
+                    prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL, false)
+                    val uploadWorkRequest =
+                        OneTimeWorkRequest.Builder(
+                            UploadWorker2::class.java
+                        ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
+                            .setInputData(data)
+                            .build()
+
+
+                    val workManager = WorkManager.getInstance(this@MainActivity)
+
+                    try {
+
+                        /*  workManager.enqueueUniqueWork(
+                              Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE,
+                              uploadWorkRequest
+                          )
+  */
+                    } catch (e: java.lang.Exception) {
+                        LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
+                        e.printStackTrace()
+                    }
+                } else if (prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false) == false) {
+                    WorkManager.getInstance(this@MainActivity).cancelAllWork()
+                    val data = Data.Builder()
+                        //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
+                        // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
+                        .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
+                        .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
+                        .put(
+                            IS_PRINTER_QUEUE_ENABLE,
+                            prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)
+                        )
+                        .put("is_cancel_work", true)
+                        .build()
+                    prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL, true)
+                    val uploadWorkRequest =
+                        OneTimeWorkRequest.Builder(
+                            UploadWorker2::class.java
+                        ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
+                            .setInputData(data)
+                            .build()
+
+
+                    val workManager = WorkManager.getInstance(this@MainActivity)
+
+                    try {
+
+                        /*    workManager.enqueueUniqueWork(
+                                Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.KEEP,
+                                uploadWorkRequest
+                            )
+    */
+                    } catch (e: java.lang.Exception) {
+                        LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
+                        e.printStackTrace()
+                    }
+
+                }
+            }
+
+
+            if (prefProvider?.getValue(SYNC_SETTING_TIME_STAMP, "")?.isEmpty() == true) {
+                val data = Data.Builder()
+                    //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
+                    // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
+                    .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
+                    .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
+                    .put(
+                        IS_PRINTER_QUEUE_ENABLE,
+                        prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)
+                    )
+                    .put("is_cancel_work", false)
+                    .build()
+                prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL, false)
                 val uploadWorkRequest =
                     OneTimeWorkRequest.Builder(
                         UploadWorker2::class.java
@@ -237,7 +403,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 try {
 
                     workManager.enqueueUniqueWork(
-                        Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.KEEP,
+                        Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE,
                         uploadWorkRequest
                     )
 
@@ -245,7 +411,48 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
                     e.printStackTrace()
                 }
+
+
             }
+            Log.e(
+                TAG,
+                "checkQUeue: ${
+                    prefProvider?.getValueboolean(
+                        IS_PRINTER_QUEUE_ENABLE,
+                        false
+                    )
+                }  checkMAsterRermi: ${
+                    prefProvider?.getValueboolean(
+                        IS_MASTER_TERMINAL, false
+                    )
+                }  consumer: ${consumer}"
+            )
+
+            if (prefProvider?.getValueboolean(
+                    IS_PRINTER_QUEUE_ENABLE,
+                    false
+                ) == true && prefProvider?.getValueboolean(
+                    IS_MASTER_TERMINAL, false
+                ) == true && consumer == null && isLocalMasterFlag == false
+            ) {
+                isLocalMasterFlag = true
+
+                Log.e(TAG, "YesIN ACtionConnect")
+                connectActionCable()
+
+            } else if ((prefProvider?.getValueboolean(
+                    IS_PRINTER_QUEUE_ENABLE,
+                    false
+                ) == false || prefProvider?.getValueboolean(
+                    IS_MASTER_TERMINAL, false
+                ) == false) && consumer != null
+            ) {
+
+                consumer?.disconnect()
+
+
+            }
+
         }
 
     }
@@ -253,9 +460,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private var syncFloorPlan = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
             Log.e("SyncFloorPlan", "onReceiveSync")
-            if (findNavController(R.id.navHostFrag).currentDestination?.id == R.id.dineInFragment){
+            if (findNavController(R.id.navHostFrag).currentDestination?.id == R.id.dineInFragment) {
 
-                navController?.popBackStack(R.id.dineInFragment,true)
+                navController?.popBackStack(R.id.dineInFragment, true)
                 navController?.navigate(R.id.dineInFragment)
 
             }
@@ -267,7 +474,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         override fun onReceive(p0: Context?, p1: Intent?) {
 
             LogUtil.logEN("onReceive", "" + p1?.action)
-            if (prefProvider?.getValue(Constants.AUTH_TOKEN,"")?.isNotEmpty() == true) {
+            if (prefProvider?.getValue(Constants.AUTH_TOKEN, "")?.isNotEmpty() == true) {
                 dashBoardCategoryViewModel.syncSettingModule()
             }
 
@@ -782,39 +989,53 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             Constants.KITCHEN_PRINTER_LIST_PREF,
             Gson().toJson(it.data).toString()
         )*/
-            Log.e(TAG,"CheckHere DAta:")
-            val data = Data.Builder()
-                //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
-                // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
-                .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
-                .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
-                .put(IS_PRINTER_QUEUE_ENABLE,prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE,false))
-                .put("is_cancel_work",false)
+
+        Log.e(
+            TAG,
+            "checkPrinterQueueWorker:  ${
+                checkUploadWorker(
+                    Constants.PRINTER_QUEUE_BACKGROUND,
+                    this@MainActivity
+                )
+            }"
+        )
+        Log.e(TAG, "CheckHere DAta:")
+        val data = Data.Builder()
+            //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
+            // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
+            .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
+            .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
+            .put(
+                IS_PRINTER_QUEUE_ENABLE,
+                prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)
+            )
+            .put("is_cancel_work", false)
+            .build()
+
+        prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL, false)
+
+        val uploadWorkRequest =
+            OneTimeWorkRequest.Builder(
+                UploadWorker2::class.java
+            ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
+                .setInputData(data)
                 .build()
 
-            prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL,false)
 
-            val uploadWorkRequest =
-                OneTimeWorkRequest.Builder(
-                    UploadWorker2::class.java
-                ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
-                    .setInputData(data)
-                    .build()
+        val workManager = WorkManager.getInstance(this)
+
+        try {
 
 
-            val workManager = WorkManager.getInstance(this)
-
-            try {
-
-                workManager.enqueueUniqueWork(
-                    Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE,
-                    uploadWorkRequest
-                )
-
-            } catch (e: java.lang.Exception) {
-                LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
-                e.printStackTrace()
-            }
+            /* workManager.enqueueUniqueWork(
+                 Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE,
+                 uploadWorkRequest
+             )
+ */
+        } catch (e: java.lang.Exception) {
+            LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
+            e.printStackTrace()
+        }
 
 
     }
@@ -876,9 +1097,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     override fun onDestroy() {
         super.onDestroy()
-        if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false) == true && prefProvider?.getValueboolean(
-                Constants.IS_PRINTER_QUEUE_ENABLE,false) == true
-        ){
+
+        if (prefProvider?.getValueboolean(
+                IS_MASTER_TERMINAL,
+                false
+            ) == true && prefProvider?.getValueboolean(
+                Constants.IS_PRINTER_QUEUE_ENABLE, false
+            ) == true
+        ) {
 
             disconnectSocket()
 
@@ -905,9 +1131,15 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     override fun onStop() {
         super.onStop()
-        Log.e(TAG,"checkActivityStop:")
-
-
+        try {
+            if (consumer != null) {
+                consumer?.disconnect()
+                consumer = null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        Log.e(TAG, "checkActivityStop:")
 
 
     }
@@ -916,6 +1148,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         updatePrinter = this
+        Log.e(TAG, "currentTimeInMilis:   ${System.currentTimeMillis()}")
         /*try {
             val field: Field = CursorWindow::class.java.getDeclaredField("sCursorWindowSize")
             field.setAccessible(true)
@@ -928,6 +1161,17 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
         //demoPrinterQueue()
         getKitOne()
+
+        if (prefProvider?.getValueboolean(
+                IS_PRINTER_QUEUE_ENABLE,
+                false
+            ) == true && prefProvider?.getValueboolean(
+                IS_MASTER_TERMINAL, false
+            ) == true && consumer == null
+        ) {
+
+            connectActionCable()
+        }
 
 
         // connectionActionCable()
@@ -942,7 +1186,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         var requestURL =
             prefProvider?.getValue(Constants.BASE_URL_NEW, "") + Constants.CREATE_QUEUE_PRINTER
         val uri = URI("wss://hugepos.com/cable")
-        consumer = ActionCable.createConsumer(uri)
+        //consumer = ActionCable.createConsumer(uri)
         getPrinterQueueData()
 
         getKitchenPrinters()
@@ -953,7 +1197,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             broadCastReceiverPrinterQueueSuccess,
             IntentFilter(Constants.PRITNER_QUEUE_DATA_DELETE)
         )
-        registerReceiver(broadcastReceiver, IntentFilter(Constants.SEND_CLOCKOUT_NOTIFICATION))
+        registerReceiver(
+            broadcastReceiver,
+            IntentFilter(Constants.SEND_CLOCKOUT_NOTIFICATION)
+        )
+
         registerReceiver(
             broadcastReceiveronlineOrder,
             IntentFilter(Constants.ONLINE_ORDER_GET_NOTIFICATION)
@@ -1014,6 +1262,18 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             } else {
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
+            }
+
+            if (destination.id == R.id.login) {
+                Log.e(TAG, "YESIT IS LOGIN")
+                if (consumer != null) {
+                    try {
+                        consumer?.disconnect()
+                    } catch (e: Exception) {
+                        consumer = null
+                    }
+
+                }
             }
         }
         binding.navView.setupWithNavController(navController!!)
@@ -1111,6 +1371,1121 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
 
         observeShowProgress()
+
+    }
+
+    private fun reConnectPrinterQueue() {
+        Log.e(
+            TAG,
+            "checkAll Data: ${
+                prefProvider?.getValueboolean(
+                    IS_MASTER_TERMINAL,
+                    false
+                )
+            }  printerQueue:  ${
+                prefProvider?.getValueboolean(
+                    IS_PRINTER_QUEUE_ENABLE, false
+                )
+            }"
+        )
+
+        reConnectCount = 0
+        if (prefProvider?.getValueboolean(
+                IS_MASTER_TERMINAL,
+                false
+            ) == true && prefProvider?.getValueboolean(
+                IS_PRINTER_QUEUE_ENABLE, false
+            ) == true
+        ) {
+            Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                connectActionCable()
+
+            }, 2000)
+
+
+        }
+    }
+
+    fun connectActionCable() {
+
+        ThreadPoolManager.instance.executeTask(Runnable {
+            var requestURL =
+                prefProvider?.getValue(
+                    Constants.BASE_URL_NEW,
+                    ""
+                ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
+            Log.e(TAG, "checkrequestURL  ${requestURL}")
+
+            val uri = URI(Constants.PRINTER_QUEUE_CONNECTION_URL_SNACKPOS)
+
+            consumer = ActionCable.createConsumer(uri)
+
+            // 2. Create subscription
+            val appearanceChannel = Channel("PrinterQueueV4Channel")
+            appearanceChannel.addParam("id", prefProvider?.getValueInt(LOCATION_ID, 0))
+            // appearanceChannel.addParam("id",prefProvider.getValueInt(LOCATION_ID,0))
+            subscription = consumer?.subscriptions?.create(appearanceChannel)
+
+            if (subscription != null) {
+                subscription?.onConnected {
+                    isLocalMasterFlag = false
+
+                    prefProvider?.setValueboolean(Constants.WORKER_QUEUE_IN_PROGRESS, true)
+
+                    Log.e(TAG, "onActionConnected")
+                    val params = JsonObject()
+                    params.addProperty("id", prefProvider?.getValueInt(LOCATION_ID, 0))
+                    params.addProperty("url", requestURL)
+                    Log.e(
+                        TAG,
+                        "checkID 8: ${
+                            prefProvider?.getValueInt(
+                                LOCATION_ID,
+                                0
+                            )
+                        }  checkURL 8:  ${
+                            prefProvider?.getValue(
+                                Constants.BASE_URL_NEW,
+                                ""
+                            ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
+                        }"
+                    )
+                    subscription?.perform("received", params)
+
+                }?.onRejected {
+                    isLocalMasterFlag = false
+
+                    prefProvider?.setValueboolean(Constants.WORKER_QUEUE_IN_PROGRESS, false)
+                    Log.e(TAG, "onRejected ")
+                    Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                        if (isInternetAvailable()) {
+                            consumer?.connect()
+                        } else {
+                            sendNotification("Please check your Network Connectivity.")
+                        }
+                    }, 10000)
+
+                }?.onReceived {
+                    Log.e(TAG, "onActionReceived:  ${Gson().toJson(it)}")
+                    Log.e(
+                        TAG,
+                        "onActionReceived checkCancelWeok:  ${isCancelWork}"
+                    )
+
+                    this@MainActivity.getSharedPreferences(
+                        this@MainActivity.resources.getString(R.string.app_name),
+                        Context.MODE_PRIVATE
+                    ).edit().putBoolean(Constants.WORKER_QUEUE_IN_PROGRESS, true)
+
+
+
+                    if (this@MainActivity.getSharedPreferences(
+                            this@MainActivity.resources.getString(R.string.app_name),
+                            Context.MODE_PRIVATE
+                        ).getBoolean(Constants.CHECK_QUEUE_CANCEL, false) == true
+                    ) {
+                        Log.e(TAG, "checkCancelWork")
+                        consumer?.disconnect()
+                    } else {
+
+                        Log.e("listOfPrintersData", "onReceived")
+                        if (it != null && isQueueRunning == false) {
+                            isQueueRunning = true
+                            listOfPrintersData.clear()
+                            currentOrderIndex = 0
+                            currentPrinterIndex = 0
+                            listOfPrintersData = arrayListOf()
+
+                            if (it.asJsonObject.has("printer_queue")) {
+                                isPrinterRunning = true
+                                globalPrinterQueue = it.asJsonObject.get("printer_queue")
+
+                                getQueueDataResponse(it.asJsonObject.get("printer_queue"))
+
+
+                            } else {
+
+
+                                Log.e(TAG, "callActionCalledRun 3")
+
+
+                                currentOrderIndex = 0
+                                currentPrinterIndex = 0
+
+
+                                val params = JsonObject()
+                                params.addProperty(
+                                    "id",
+                                    prefProvider?.getValueInt(LOCATION_ID, 0)
+                                )
+                                params.addProperty("url", requestURL)
+                                Log.e(
+                                    TAG,
+                                    "checkID: ${
+                                        prefProvider?.getValueInt(
+                                            LOCATION_ID,
+                                            0
+                                        )
+                                    }  checkURL:  ${requestURL}"
+                                )
+
+                                if (reConnectCount >= 1) {
+                                    consumer?.disconnect()
+
+                                    reConnectPrinterQueue()
+
+                                } else {
+
+                                    reConnectCount += 1
+                                    subscription?.perform("received", params)
+                                }
+
+                                isQueueRunning = false
+
+
+                                /*val intent = Intent()
+                        intent.putExtra(Constants.DATA, "")
+                        intent.action = PRINTER_QUEUE_DATA_RECEIVED
+                        mContext.sendBroadcast(intent)*/
+
+
+                            }
+
+                        }
+                    }
+
+
+                }?.onDisconnected {
+                    isLocalMasterFlag = false
+
+                    this@MainActivity.getSharedPreferences(
+                        this@MainActivity.resources.getString(R.string.app_name),
+                        Context.MODE_PRIVATE
+                    ).edit().putBoolean(Constants.WORKER_QUEUE_IN_PROGRESS, false)
+                    Log.e(TAG, "onDisconnected")
+                    localCallConnect = false
+
+                    if (subscription != null) {
+                        try {
+                            consumer?.subscriptions?.remove(subscription)
+                            consumer = null
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+
+
+                    consumer = null
+
+
+                    /*    if (isInternetAvailable()) {
+
+
+                            if (this@MainActivity.getSharedPreferences(
+                                    this@MainActivity.resources.getString(R.string.app_name),
+                                    Context.MODE_PRIVATE
+                                ).getBoolean(Constants.CHECK_QUEUE_CANCEL, false) == false
+                            ) {
+                                //consumer?.connect()
+                            } else {
+                                consumer?.subscriptions?.remove(subscription)
+                                consumer = null
+                            }
+                        } else {
+                            sendNotification("Please check your Network Connectivity.")
+                        }
+    */
+
+                    /* if (isFromParent == true){
+                         isFromParent = false
+                     }*/
+
+
+                }?.onFailed {
+
+                    isLocalMasterFlag = false
+                    localCallConnect = false
+                    this@MainActivity.getSharedPreferences(
+                        this@MainActivity.resources.getString(R.string.app_name),
+                        Context.MODE_PRIVATE
+                    ).edit().putBoolean(Constants.WORKER_QUEUE_IN_PROGRESS, false)
+                    Log.e(TAG, "onFailed")
+
+                    if (isInternetAvailable()) {
+                        consumer?.connect()
+                    } else {
+                        sendNotification("Please check your Network Connectivity.")
+                    }
+
+
+                }
+
+            }
+
+
+            // 3. Establish connection
+            if (localCallConnect == false) {
+                localCallConnect = true
+                Log.e(TAG, "consumerConnect  ${consumer}")
+                this@MainActivity.getSharedPreferences(
+                    this@MainActivity.resources.getString(R.string.app_name),
+                    Context.MODE_PRIVATE
+                ).edit().putBoolean(Constants.WORKER_QUEUE_IN_PROGRESS, true)
+
+                isQueueRunning = false
+                isPrinterRunning = false
+                consumer?.connect()
+            }
+
+        })
+    }
+
+    private fun sendReceiptToPrintSunmi(cloudPrinter: CloudPrinter) {
+        Log.d("checkCommitResultF", "sendReceiptToPrintSunmi 5")
+
+        var obj =
+            listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.get(currentOrderIndex)
+
+        cloudPrinter.lineFeed(1)
+        cloudPrinter.setUnderlineMode(UnderlineStyle.EMPTY)
+        cloudPrinter.setBoldMode(true)
+        cloudPrinter.setAlignment(AlignStyle.CENTER)
+        cloudPrinter.setCharacterSize(2, 2)
+        cloudPrinter.printText("Order ID:" + obj.orderID)
+
+        cloudPrinter.lineFeed(1)
+
+        cloudPrinter.setAlignment(AlignStyle.CENTER)
+        cloudPrinter.printText(obj.orderType)
+
+
+        if (obj.deliveryType.isNotEmpty()) {
+            cloudPrinter.lineFeed(1)
+            cloudPrinter.setAlignment(AlignStyle.CENTER)
+            cloudPrinter.printText(obj.deliveryType)
+        }
+
+
+        cloudPrinter.lineFeed(1)
+        cloudPrinter.setBoldMode(false)
+        cloudPrinter.setCharacterSize(1, 1)
+        cloudPrinter.setAlignment(AlignStyle.LEFT)
+        cloudPrinter.printText("Employee:" + obj.employeeName)
+
+        cloudPrinter.setCharacterSize(1, 1)
+
+        cloudPrinter.setAlignment(AlignStyle.LEFT)
+        cloudPrinter.printText(obj.dateAndTime)
+
+
+        cloudPrinter.let { addDoubleDotLineForSunmiQueue(it) }
+
+        if (obj.orderType.equals(
+                Constants.DINE_IN,
+                true
+            ) || obj.orderType.equals(Constants.DINE_IN_SPACE, true)
+        ) {
+
+            Log.e(TAG, "checkInside DINEIN")
+            cloudPrinter.let { printGuestByItemForSunmiQueue(obj.guestAttributes, it) }
+
+
+        } else {
+            Log.e(TAG, "checkInside TAKEOUT")
+            for (i in 0 until obj.orderItems.size) {
+
+                cloudPrinter.setBoldMode(false)
+                cloudPrinter.setCharacterSize(2, 2)
+                cloudPrinter.setAlignment(AlignStyle.LEFT)
+
+                if (obj.orderItems[i].timestamp.isNotEmpty()) {
+                    var msg = "(" + obj.orderItems[i].timestamp + ")"
+                    cloudPrinter.printText("" + obj.orderItems[i].quantity + " " + obj.orderItems[i].itemName + "  " + msg)
+
+                } else {
+
+                    cloudPrinter.printText("" + obj.orderItems[i].quantity + " " + obj.orderItems[i].itemName)
+                }
+
+                if (obj.orderItems[i].orderItemModifiers.isNotEmpty()) {
+                    obj.orderItems[i].orderItemModifiers.forEach { mod ->
+
+
+                        cloudPrinter.printText(
+                            /*"  " + if (mod.modifierQuantity == 1) {
+                                "   "
+                            } else {
+                                "" + mod.modifierQuantity + "x "
+                            }*/ "   " + mod.modifierQuantity.toString() + "x " + mod.name
+                        )
+
+
+                    }
+
+
+                }
+                if (obj.orderItems.get(i).note != null && obj.orderItems.get(i).note.isNotEmpty()) {
+                    cloudPrinter.printText("  Note:" + obj.orderItems.get(i).note)
+                }
+
+            }
+        }
+
+        if (obj.orderNote.isNotEmpty()) {
+
+            cloudPrinter?.lineFeed(1)
+            cloudPrinter?.setCharacterSize(2, 1)
+            cloudPrinter?.setBoldMode(true)
+            cloudPrinter?.printText("Order Note:-" + obj.orderNote)
+        }
+
+        Log.e(TAG, "customerName:  ${obj.customerName}")
+        if (obj.orderType != Constants.DINE_IN && obj.orderType != Constants.DINE_IN_SPACE && obj.customerName != null && obj.customerName.isNotEmpty()) {
+            cloudPrinter.let { addDoubleDotLineForSunmiQueue(it) }
+            cloudPrinter.lineFeed(1)
+            cloudPrinter.printText("Customer Details:")
+            cloudPrinter.setBoldMode(false)
+            cloudPrinter.setCharacterSize(1, 1)
+            cloudPrinter.setAlignment(AlignStyle.LEFT)
+            cloudPrinter.printText(obj.customerName)
+            if (obj.customerPhoneNo.isNotEmpty()) {
+                cloudPrinter.printText(obj.customerPhoneNo)
+            }
+            if (obj.customerAddress.isNotEmpty()) {
+                cloudPrinter.printText(obj.customerAddress)
+            }
+
+
+        }
+
+
+        cloudPrinter.lineFeed(3)
+        cloudPrinter.cutPaper(true)
+        Log.d("checkCommitResultFo", "sendReceiptToPrintSunmi cutPaper")
+
+        var flagIsComplete: Boolean = false
+
+        if (checkConnect(cloudPrinter)) {
+            Log.e(
+                "checkCommitResultFo",
+                "checkCommitResultForCloud flagIsComplete 1 = $flagIsComplete"
+            )
+            cloudPrinter.commitTransBuffer(object : ResultCallback {
+                override fun onComplete() {
+                    //isQueueRunning = false
+                    if (flagIsComplete == false) {
+                        flagIsComplete = true
+
+
+                        val params = JsonObject()
+
+                        var deleteUrl = ""
+                        try {
+                            if (listOfPrintersData.get(
+                                    currentPrinterIndex
+                                ).printerQueueModelList.isNotEmpty()
+                            ) {
+
+                                deleteUrl = prefProvider?.getValue(
+                                    Constants.BASE_URL_NEW,
+                                    ""
+                                ) + Constants.DELETE_QUEUE_ORDER_PHASE3 + listOfPrintersData.get(
+                                    currentPrinterIndex
+                                ).printerQueueModelList.get(currentOrderIndex).id
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+
+                        Log.e(TAG, "DeleteUrl ${deleteUrl}")
+                        Log.e(
+                            TAG,
+                            "checkDeleteSunmi  ${listOfPrintersData.get(currentPrinterIndex).printerName}"
+                        )
+                        params.addProperty("url", deleteUrl)
+                        params.addProperty(
+                            "name",
+                            listOfPrintersData.get(currentPrinterIndex).printerName
+                        )
+                        subscription?.perform("delete_order", params)
+
+
+                        // delay(400)
+                        checkForNextOrder()
+
+
+                    }
+
+                }
+
+                override fun onFailed(p0: CloudPrinterStatus?) {
+
+                    if (p0?.name.equals("RUNNING", true) == false) {
+                        //isQueueRunning = false
+                        if (p0?.name.equals("OUT_PAPER", true)) {
+
+                            sendNotification("Please fill the Paper in ${cloudPrinter.cloudPrinterInfo?.name}")
+                        } else if (p0?.name.equals("COVER", true)) {
+                            sendNotification("Please close the cover of ${cloudPrinter.cloudPrinterInfo?.name}")
+
+                        } else if (p0?.name.equals("UNKNOWN", true)) {
+                            sendNotification(
+                                "Printer - ${
+                                    cloudPrinter.cloudPrinterInfo?.name
+                                } is Offline."
+                            )
+
+                        }
+
+                        checkForNextOrder()
+                    }
+                }
+
+            })
+
+        } else {
+            checkForNextOrder()
+        }
+
+
+    }
+
+    private fun getQueueDataResponse(model: JsonElement) {
+
+        if (model.asJsonObject.has("data")) {
+            var dataList: JsonArray = model.asJsonObject.get("data").asJsonArray
+            Log.e("listOfPrintersData", "data available}")
+
+            if (dataList.size() != 0) {
+                isQueueRunning = true
+                var isDataAvailable = true
+                dataList.forEach {
+                    var listofPrinterOrders: ArrayList<PrinterQueueModel> = arrayListOf()
+
+                    if (it.asJsonObject.has("orders")) {
+                        disconnectSize0 = false
+
+                        var ordersArray = it.asJsonObject.get("orders").asJsonArray
+
+                        /*   for (i in dataList) {
+                               var orders = i.asJsonObject.get("orders").asJsonArray
+                               isDataAvailable = orders.size() != 0
+                           }
+
+                           isCount -= 1
+                           if (isCount == 0){
+                               isDataAvailable = false
+                               disconnectSize0 = true
+                               Log.e(TAG,"onDisconnectSIZE = $isCount")
+                               consumer?.disconnect()
+                               isCount = 5
+                             //  return
+                           }*/
+
+                        ordersArray.forEach {
+                            var modelOrder = PrinterQueueModel()
+
+                            modelOrder.id = it.asJsonObject.get("id").asInt
+                            modelOrder.orderType =
+                                it.asJsonObject.get("order_type").asString
+
+                            try {
+                                if (it.asJsonObject.has("delivery_type")) {
+                                    if (it.asJsonObject.get("order_type").asString == Constants.PHONE_ORDER_)
+                                        modelOrder.deliveryType =
+                                            it.asJsonObject.get("delivery_type").asString
+                                }
+                            } catch (e: Exception) {
+                                Log.d("KeyNotFound", "Exception")
+                            }
+
+                            modelOrder.dateAndTime =
+                                it.asJsonObject.get("date_and_time").asString
+                            modelOrder.employeeName =
+                                it.asJsonObject.get("employee_name").asString
+                            modelOrder.orderNote = it.asJsonObject.get("order_note").asString
+
+                            if (it.asJsonObject.get("order_type").asString.equals(
+                                    Constants.DINE_IN,
+                                    true
+                                ) || it.asJsonObject.get("order_type").asString.equals(
+                                    Constants.DINE_IN_SPACE,
+                                    true
+                                )
+                            ) {
+
+                                if (it.asJsonObject.has("guest_attributes")) {
+                                    var guestAttributes: ArrayList<GuestAttrQueue> =
+                                        arrayListOf()
+                                    var guestAtr =
+                                        it.asJsonObject.get("guest_attributes").asJsonArray
+
+
+
+                                    guestAtr.forEach { it5 ->
+                                        if (it5.asJsonObject.has("order_items")) {
+
+                                            var orderItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
+                                                arrayListOf()
+
+                                            var itemsArray =
+                                                it5.asJsonObject.get("order_items").asJsonArray
+
+                                            if (itemsArray.size() != 0) {
+
+                                                var listOfMod: ArrayList<CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers> =
+                                                    arrayListOf()
+                                                itemsArray.forEach { it9 ->
+                                                    if (it9.asJsonObject.has("modifiers")) {
+
+                                                        var iteMod =
+                                                            it9.asJsonObject.get("modifiers").asJsonArray
+
+
+                                                        iteMod.forEach {
+                                                            listOfMod.add(
+                                                                CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers(
+                                                                    id = it.asJsonObject.get("id").asInt,
+                                                                    orderItemId = it.asJsonObject.get(
+                                                                        "order_item_id"
+                                                                    ).asInt,
+                                                                    name = it.asJsonObject.get("name").asString,
+                                                                    quantity = it.asJsonObject.get(
+                                                                        "quantity"
+                                                                    ).asInt,
+                                                                    modifierSetId = 0,
+                                                                    isModifier = true,
+                                                                    modifierQuantity = it.asJsonObject.get(
+                                                                        "modifier_quantity"
+                                                                    ).asInt,
+                                                                    createdAt = "",
+                                                                    updatedAt = "",
+                                                                    totalPrice = 0.0,
+                                                                    orderId = 0,
+                                                                    price = 0.0
+                                                                )
+                                                            )
+
+                                                        }
+
+
+                                                    }
+
+
+                                                    orderItems.add(
+                                                        CreateOrderResponse.Data.Order.OrderItem(
+                                                            categoryId = it9.asJsonObject.get("category_id").asInt,
+                                                            completedInKitchen = false,
+                                                            discountType = "",
+                                                            discountAmount = 0.0,
+                                                            discountId = 0,
+                                                            employeeId = 0,
+                                                            float = 0.0,
+                                                            id = it9.asJsonObject.get("order_item_id").asInt,
+                                                            isPrinted = false,
+                                                            isPaid = false,
+                                                            itemId = it9.asJsonObject.get("item_id").asInt,
+                                                            orderId = it.asJsonObject.get("id").asInt,
+                                                            itemName = it9.asJsonObject.get("name").asString,
+                                                            totalPrice = 0.0,
+                                                            timestamp = if (it9.asJsonObject.has(
+                                                                    "message"
+                                                                )
+                                                            ) {
+                                                                it9.asJsonObject.get("message").asString
+                                                            } else {
+                                                                ""
+                                                            },
+                                                            quantity = it9.asJsonObject.get("quantity").asInt,
+                                                            price = 0.0,
+                                                            orderItemModifiers = listOfMod,
+                                                            note = it9.asJsonObject.get("item_note").asString
+
+
+                                                        )
+                                                    )
+
+
+                                                }
+
+                                                guestAttributes.add(
+                                                    GuestAttrQueue(
+                                                        id = 0,
+                                                        name = it5.asJsonObject.get("name").asString,
+                                                        listOfItems = orderItems
+
+
+                                                    )
+                                                )
+                                            }
+
+                                        }
+
+
+                                    }
+
+                                    modelOrder.guestAttributes = guestAttributes
+                                    modelOrder.orderID =
+                                        it.asJsonObject.get("id").asInt.toString()
+                                }
+
+
+                                listofPrinterOrders.add(modelOrder)
+
+                            } else {
+                                var orderItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
+                                    arrayListOf()
+
+                                if (it.asJsonObject.has("order_items")) {
+                                    var orderItemsArray =
+                                        it.asJsonObject.get("order_items").asJsonArray
+
+                                    orderItemsArray.forEach { it1 ->
+                                        var listOfMod: ArrayList<CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers> =
+                                            arrayListOf()
+
+                                        if (it1.asJsonObject.has("modifiers")) {
+                                            var modList =
+                                                it1.asJsonObject.get("modifiers").asJsonArray
+                                            if (modList.size() != 0) {
+                                                modList.forEach {
+                                                    listOfMod.add(
+                                                        CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers(
+                                                            id = it.asJsonObject.get("id").asInt,
+                                                            orderItemId = it.asJsonObject.get("order_item_id").asInt,
+                                                            name = it.asJsonObject.get("name").asString,
+                                                            quantity = it.asJsonObject.get("quantity").asInt,
+                                                            modifierSetId = 0,
+                                                            isModifier = true,
+                                                            modifierQuantity = it.asJsonObject.get(
+                                                                "modifier_quantity"
+                                                            ).asInt,
+                                                            createdAt = "",
+                                                            updatedAt = "",
+                                                            totalPrice = 0.0,
+                                                            orderId = 0,
+                                                            price = 0.0
+                                                        )
+                                                    )
+
+                                                }
+
+                                            }
+
+
+                                        }
+
+                                        orderItems.add(
+                                            CreateOrderResponse.Data.Order.OrderItem(
+                                                categoryId = it1.asJsonObject.get("category_id").asInt,
+                                                completedInKitchen = false,
+                                                discountType = "",
+                                                discountAmount = 0.0,
+                                                discountId = 0,
+                                                employeeId = 0,
+                                                float = 0.0,
+                                                id = it1.asJsonObject.get("order_item_id").asInt,
+                                                isPrinted = false,
+                                                isPaid = false,
+                                                itemId = it1.asJsonObject.get("item_id").asInt,
+                                                orderId = it.asJsonObject.get("id").asInt,
+                                                itemName = it1.asJsonObject.get("name").asString,
+                                                totalPrice = 0.0,
+                                                timestamp = it1.asJsonObject.get("message").asString,
+                                                quantity = it1.asJsonObject.get("quantity").asInt,
+                                                price = 0.0,
+                                                orderItemModifiers = listOfMod,
+                                                note = it1.asJsonObject.get("item_note").asString
+
+
+                                            )
+                                        )
+                                    }
+
+                                    modelOrder.orderItems = orderItems
+                                    modelOrder.orderID = it.asJsonObject.get("id").asInt.toString()
+
+
+                                }
+                                if (it.asJsonObject.has("customer_details")) {
+
+                                    if (it.asJsonObject.get("customer_details").isJsonObject) {
+                                        var objCustomer =
+                                            it.asJsonObject.get("customer_details").asJsonObject
+                                        modelOrder.customerName =
+                                            objCustomer.get("first_name").asString + " " + objCustomer.get(
+                                                "last_name"
+                                            ).asString
+                                        modelOrder.customerPhoneNo =
+                                            objCustomer.get("mobile_number").asString
+                                        modelOrder.customerAddress =
+                                            objCustomer.get("address").asString
+
+                                    }
+
+                                }
+
+                                listofPrinterOrders.add(modelOrder)
+                            }
+
+                        }
+
+                    }
+
+                    listOfPrintersData.add(
+                        PrinterJSONElementData(
+                            printerName = it.asJsonObject.get("printer_name").asString,
+                            macAddress = it.asJsonObject.get("mac_address").asString,
+                            ipAddress = it.asJsonObject.get("ip_address").asString,
+                            modelName = it.asJsonObject.get("modal_name").asString,
+                            printerQueueModelList = listofPrinterOrders,
+                            portNo = it.asJsonObject.get("port_no").asInt
+
+                        )
+                    )
+                    Log.e("listOfPrintersData", "listOfPrintersData ${listOfPrintersData.size}")
+                }
+                var isDataGot = false
+
+                for (i in 0 until listOfPrintersData.size) {
+
+                    if (listOfPrintersData.get(i).printerQueueModelList.isNotEmpty()) {
+                        currentPrinterIndex = i
+                        currentOrderIndex = 0
+                        isDataGot = true
+                        break
+                    }
+                }
+                if (isDataGot) {
+
+                    if (listOfPrintersData.get(0).printerName.contains("CloudPrint_", true)) {
+                        Log.e("checkCommitResult", "checkCommitResultForCloud 88")
+                        sendDataToPrintToSunmi()
+
+                    } else {
+                        //call action cable here
+
+
+                        currentOrderIndex = 0
+                        currentPrinterIndex = 0
+                        Log.e(TAG, "callActionCalledRun 4")
+
+
+                        val params = JsonObject()
+                        params.addProperty("id", prefProvider?.getValueInt(LOCATION_ID, 0))
+                        params.addProperty(
+                            "url",
+                            prefProvider?.getValue(
+                                Constants.BASE_URL_NEW,
+                                ""
+                            ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
+                        )
+                        Log.e(
+                            TAG,
+                            "checkID 2: ${
+                                prefProvider?.getValueInt(
+                                    LOCATION_ID,
+                                    0
+                                )
+                            }  checkURL 2:  ${
+                                prefProvider?.getValue(
+                                    Constants.BASE_URL_NEW,
+                                    ""
+                                ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
+                            }"
+                        )
+
+                        if (reConnectCount >= 1) {
+                            consumer?.disconnect()
+                            reConnectPrinterQueue()
+
+                        } else {
+                            reConnectCount += 1
+                            subscription?.perform("received", params)
+                        }
+
+
+                        isQueueRunning = false
+
+
+                    }
+
+                } else {
+                    //call action cable again here
+
+
+                    Log.e(TAG, "callActionCalledRun 5")
+
+                    currentOrderIndex = 0
+                    currentPrinterIndex = 0
+
+
+                    val params = JsonObject()
+                    params.addProperty("id", prefProvider?.getValueInt(LOCATION_ID, 0))
+                    params.addProperty(
+                        "url",
+                        prefProvider?.getValue(
+                            Constants.BASE_URL_NEW,
+                            ""
+                        ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
+                    )
+                    Log.e(
+                        TAG,
+                        "checkID 3: ${
+                            prefProvider?.getValueInt(
+                                LOCATION_ID,
+                                0
+                            )
+                        }  checkURL 3:  ${
+                            prefProvider?.getValue(
+                                Constants.BASE_URL_NEW,
+                                ""
+                            ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
+                        }"
+                    )
+                    if (reConnectCount >= 1) {
+                        consumer?.disconnect()
+
+                        reConnectPrinterQueue()
+
+                    } else {
+                        reConnectCount += 1
+
+                        subscription?.perform("received", params)
+                    }
+
+                    isQueueRunning = false
+                }
+
+
+            } else {
+
+
+                Log.e(TAG, "callActionCalledRun 6")
+
+                currentOrderIndex = 0
+                currentPrinterIndex = 0
+
+                val params = JsonObject()
+                params.addProperty("id", prefProvider?.getValueInt(LOCATION_ID, 0))
+                params.addProperty(
+                    "url",
+                    prefProvider?.getValue(
+                        Constants.BASE_URL_NEW,
+                        ""
+                    ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
+                )
+
+                if (reConnectCount >= 1) {
+                    consumer?.disconnect()
+
+                    reConnectPrinterQueue()
+
+                } else {
+                    reConnectCount += 1
+                    subscription?.perform("received", params)
+                }
+
+                isQueueRunning = false
+
+            }
+
+        } else {
+
+            Log.e(TAG, "callActionCalledRun 6")
+
+            currentOrderIndex = 0
+            currentPrinterIndex = 0
+
+            val params = JsonObject()
+            params.addProperty("id", prefProvider?.getValueInt(LOCATION_ID, 0))
+            params.addProperty(
+                "url",
+                prefProvider?.getValue(
+                    Constants.BASE_URL_NEW,
+                    ""
+                ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
+            )
+            if (reConnectCount >= 1) {
+                consumer?.disconnect()
+                reConnectPrinterQueue()
+
+            } else {
+                reConnectCount += 1
+                subscription?.perform("received", params)
+            }
+
+            isQueueRunning = false
+
+        }
+
+
+    }
+
+    private fun sendDataToPrintToSunmi() {
+        Log.e("checkCommitResultF", "checkCommitResultForCloud flagIsComplete 2 ")
+
+        var cloudPrinter: CloudPrinter = CloudPrinterBuilder.buildPrinter(
+            listOfPrintersData.get(currentPrinterIndex).printerName,
+            listOfPrintersData.get(currentPrinterIndex).ipAddress,
+            listOfPrintersData.get(currentPrinterIndex).portNo
+        )
+
+        var checkPassOrder = false
+        cloudPrinter.connect(this@MainActivity, object : ConnectCallback {
+            override fun onConnect() {
+                Log.e("checkCommitResultFor", "checkCommitResultForCloud  33 cloudPrinter.")
+                Log.e(
+                    "checkCommitResultFo",
+                    "checkCommitResultForCloud  name = original ${cloudPrinter.cloudPrinterInfo.name}"
+                )
+
+                Log.e(
+                    "checkCommitResultFo",
+                    "checkCommitResultForCloud  address =  ${cloudPrinter.cloudPrinterInfo.address}"
+                )
+                Log.e(
+                    "checkCommitResultFo",
+                    "checkCommitResultForCloud  mac =  ${cloudPrinter.cloudPrinterInfo.mac}"
+                )
+                Log.e(TAG, "onConnected 11")
+                currentCloudPrinter = cloudPrinter
+                sendReceiptToPrintSunmi(cloudPrinter)
+
+                if (previousPrinterAddress == cloudPrinter.cloudPrinterInfo.address && previousPrinterName == cloudPrinter.cloudPrinterInfo.name) {
+                    Log.e("checkCommitResultFo", "duplicate order")
+
+                } else {
+
+
+                }
+
+                previousPrinterAddress = cloudPrinter.cloudPrinterInfo.address
+                previousPrinterName = cloudPrinter.cloudPrinterInfo.name
+
+
+            }
+
+            override fun onFailed(p0: String?) {
+                Log.e(TAG, "connectionFailed 11  ${p0}")
+                if (checkPassOrder == false) {
+                    checkPassOrder = true
+                    sendNotification("Printer - ${cloudPrinter.cloudPrinterInfo.name}  " + p0)
+                    checkForNextOrder(true)
+                }
+            }
+
+            override fun onDisConnect() {
+                Log.e(TAG, "disconnected 11")
+                if (checkPassOrder == false) {
+                    checkPassOrder = true
+                    checkForNextOrder(true)
+                }
+
+            }
+
+        })
+
+
+    }
+
+    private fun checkForNextOrder(isCurrentPrinterFailed: Boolean = false) {
+
+        if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty() && listOfPrintersData.get(
+                currentPrinterIndex
+            ).printerQueueModelList.size - 1 > currentOrderIndex
+            && isCurrentPrinterFailed == false
+        ) {
+            currentOrderIndex += 1
+            Log.e("checkCommitResultFo", "checkCommitResultForCloud 89")
+            sendDataToPrintToSunmi()
+
+        } else {
+            Log.e(
+                TAG,
+                "checkELseLAs currentPrinterIn: ${currentPrinterIndex} currentOrderIn:  ${currentOrderIndex}"
+            )
+            if (listOfPrintersData.size - 1 > currentPrinterIndex) {
+                var isBreakIn = false
+                for (i in currentPrinterIndex + 1 until listOfPrintersData.size) {
+                    if (listOfPrintersData.get(i).printerQueueModelList.isNotEmpty()) {
+                        isBreakIn = true
+                        currentPrinterIndex = i
+                        currentOrderIndex = 0
+                    }
+
+                }
+
+                if (isBreakIn) {
+                    Log.e("checkCommitResultFo", "checkCommitResultForCloud 90")
+                    sendDataToPrintToSunmi()
+                } else {
+                    //call action cable here
+
+
+                    Log.e(TAG, "callActionCalledRun 1")
+
+                    currentOrderIndex = 0
+                    currentPrinterIndex = 0
+
+
+                    val params = JsonObject()
+                    params.addProperty("id", prefProvider?.getValueInt(LOCATION_ID, 0))
+                    params.addProperty(
+                        "url",
+                        prefProvider?.getValue(
+                            Constants.BASE_URL_NEW,
+                            ""
+                        ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
+                    )
+
+                    if (reConnectCount >= 1) {
+                        consumer?.disconnect()
+                        reConnectPrinterQueue()
+
+                    } else {
+                        reConnectCount += 1
+                        subscription?.perform("received", params)
+                    }
+
+                    isQueueRunning = false
+
+                }
+
+            } else {
+
+                //call action cable here
+
+
+                Log.e(TAG, "callActionCalledRun 2")
+
+                currentOrderIndex = 0
+                currentPrinterIndex = 0
+
+
+                val params = JsonObject()
+                params.addProperty("id", prefProvider?.getValueInt(LOCATION_ID, 0))
+                params.addProperty(
+                    "url",
+                    prefProvider?.getValue(
+                        Constants.BASE_URL_NEW,
+                        ""
+                    ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
+                )
+                if (reConnectCount >= 1) {
+                    consumer?.disconnect()
+                    reConnectPrinterQueue()
+
+                } else {
+                    reConnectCount += 1
+                    subscription?.perform("received", params)
+                }
+
+                isQueueRunning = false
+
+
+            }
+        }
 
     }
 
@@ -1335,61 +2710,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     }
 
-    private fun connectionActionCable() {
-        val uri = URI("wss://hugepos.com/cable")
-        consumer = ActionCable.createConsumer(uri)
-
-        val appearanceChannel = Channel("KitchenChannel")
-        subscription = consumer?.subscriptions?.create(appearanceChannel)
-
-        if (subscription != null) {
-            subscription?.onConnected {
-
-                Log.e(TAG, "onActionConnected")
-                val params = JsonObject()
-                params.addProperty("id", prefProvider?.getValueInt(LOCATION_ID, 0))
-                params.addProperty("url", BASE_URL + Constants.CREATE_QUEUE_PRINTER)
-                subscription?.perform("received", params)
-
-
-            }?.onRejected {
-                Log.e(TAG, "onActiononRejected")
-
-            }?.onReceived {
-                Log.e(TAG, "onActiononReceived  " + Gson().toJson(it))
-
-
-            }?.onDisconnected {
-                Log.e(TAG, "onActiononDisconnected")
-
-            }?.onFailed {
-                Log.e(TAG, "onActiononFailed")
-                //subscription = consumer?.subscriptions?.create(appearanceChannel)
-                try {
-
-                    /*subscription = consumer?.subscriptions?.create(appearanceChannel)
-                    val params = JsonObject()
-                    params.addProperty("id", locationId)
-                    subscription?.perform("received", params)*/
-                    consumer?.connect()
-
-                } catch (e: java.lang.Exception) {
-                    e.printStackTrace()
-                }
-
-            }
-        } else {
-            Log.e(TAG, "SubscriptionNull")
-        }
-
-        if (consumer != null) {
-            consumer?.connect()
-        } else {
-            Log.e(TAG, "ConsumerNull")
-        }
-
-    }
-
 
     @SuppressLint("HardwareIds")
     fun getDeviceId(): String {
@@ -1457,6 +2777,17 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     override fun onResume() {
         super.onResume()
+        if (prefProvider?.getValueboolean(
+                IS_PRINTER_QUEUE_ENABLE,
+                false
+            ) == true && prefProvider?.getValueboolean(
+                IS_MASTER_TERMINAL, false
+            ) == true && consumer == null
+        ) {
+
+            connectActionCable()
+        }
+
         updatePrinter = this
         if (this::presentation.isInitialized) {
             presentation.show()
@@ -1469,8 +2800,16 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     override fun onPause() {
         super.onPause()
+        try {
+            if (consumer != null) {
+                consumer?.disconnect()
+                consumer = null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
-       // disconnectSocket()
+        // disconnectSocket()
 
 
         if (this::presentation.isInitialized) {
@@ -1741,6 +3080,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     }
 
+    override fun onComplete() {
+
+    }
+
+    override fun onFailed(p0: CloudPrinterStatus?) {
+
+    }
+
 }
 
 
@@ -1757,7 +3104,6 @@ private fun isPrintable(status: PrinterStatusInfo?): Boolean {
     }
     return true
 }
-
 
 
 private fun makeErrorMessage(status: PrinterStatusInfo): String? {
@@ -1804,5 +3150,79 @@ private fun makeErrorMessage(status: PrinterStatusInfo): String? {
     return msg
 }
 
+private fun isInternetAvailable(): Boolean {
+    var result: Boolean
+    val connectivityManager =
+        MainApplication.getInstance()
+            ?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+    connectivityManager.let {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            it.getNetworkCapabilities(connectivityManager.activeNetwork)?.apply {
+                result = when {
+                    hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                    hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                    hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                    else -> false
+                }
+                return result
+            }
+        } else {
+            connectivityManager.activeNetworkInfo.also {
+                return it != null && it.isConnected
+            }
+        }
+    }
+    return false
+}
+
+private fun sendNotification(messageBody: String) {
+    Log.d("sendNotification", "message = $messageBody")
+
+
+    val channelId =
+        MainApplication.getInstance()?.getString(R.string.default_notification_channel_id)
+    val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+    val notificationBuilder = NotificationCompat.Builder(
+        MainApplication.getInstance()?.applicationContext!!,
+        channelId.toString()
+    )
+        .setSmallIcon(R.drawable.ic_baseline_notifications_24)
+        .setContentTitle(MainApplication.getInstance()?.getString(R.string.app_name))
+        .setContentText(messageBody)
+        .setAutoCancel(true)
+        .setSound(defaultSoundUri)
+
+    val notificationManager =
+        MainApplication.getInstance()
+            ?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+    // Since android Oreo notification channel is needed.
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val channel = NotificationChannel(
+            channelId,
+            "Channel human readable title",
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+        notificationManager.createNotificationChannel(channel)
+    }
+
+    notificationManager.notify(
+        System.currentTimeMillis().toInt()/* ID of notification */,
+        notificationBuilder.build()
+    )
+}
+
+private fun checkConnect(cloudPrinter: CloudPrinter): Boolean {
+    if (cloudPrinter == null) {
+        sendNotification("Please connect the cloud printer first!")
+        return false
+    }
+    if (!cloudPrinter.isConnected()) {
+        sendNotification("Please connect the ${cloudPrinter.cloudPrinterInfo.name} printer first!")
+        return false
+    }
+    return true
+}
 
 
