@@ -6591,6 +6591,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     resource.data.let { venueDetailsResponse ->
                         if (venueDetailsResponse?.status == 200) {
 
+                            posRepository.deleteKitchenPrinters()
                             resource.data?.let { it ->
                                 if (it.settingData.data.teamRoles.isNotEmpty()) {
                                     posRepository.addTeamRoleFromDb(it.settingData.data.teamRoles)
@@ -6609,11 +6610,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
 
 
-                                if (prefProvider.getValue(SYNC_SETTING_TIME_STAMP,"").isEmpty()){
-                                    prefProvider.setValueboolean(Constants.IS_FIRST_TIME_LOGIN,true)
-                                }
-                                else{
-                                    prefProvider.setValueboolean(Constants.IS_FIRST_TIME_LOGIN,false)
+                                if (prefProvider.getValue(SYNC_SETTING_TIME_STAMP, "").isEmpty()) {
+                                    prefProvider.setValueboolean(
+                                        Constants.IS_FIRST_TIME_LOGIN,
+                                        true
+                                    )
+                                } else {
+                                    prefProvider.setValueboolean(
+                                        Constants.IS_FIRST_TIME_LOGIN,
+                                        false
+                                    )
                                 }
 
                                 prefProvider.setValueboolean(
@@ -6807,14 +6813,22 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.addWastageReasonInDb(it.settingData.data.wastageReasons)
 //                                posRepository.deleteCustomerPrinters()
 //                                posRepository.deleteKitchenPrinters()
-                                posRepository.addKitchenPrinter(it.settingData.data.printers.kitchenPrinterList)
+                                if (it.settingData.data.printers.kitchenPrinterList.isEmpty()) {
+                                        posRepository.deleteKitchenPrinters()
+                                } else {
+                                    posRepository.addKitchenPrinter(it.settingData.data.printers.kitchenPrinterList)
 
+                                }
                                 val custList = it.settingData.data.printers.customerPrinterList
                                 custList.forEach {
                                     it.name = it.name.ifEmpty { "" }
                                     it.modalName = it.modalName.ifEmpty { "" }
                                 }
-                                posRepository.addCustomerPrinter(custList)
+                                if (it.settingData.data.printers.customerPrinterList.isEmpty()) {
+                                    posRepository.deleteCustomerPrinters()
+                                } else {
+                                    posRepository.addCustomerPrinter(custList)
+                                }
                                 it.settingData.data.customerReceipt?.let { it1 ->
                                     posRepository.addCustomerReceiptSettings(
                                         it1

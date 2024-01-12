@@ -152,6 +152,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private var subscription: Subscription? = null
     private var consumer: Consumer? = null
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
+    private var queueOrderList: HashMap<String, ArrayList<String>> = hashMapOf()
     var mPrinter: Printer? = null
     var arrayItems: ArrayList<PrinterQueueModel> = arrayListOf()
     var isKitchenFlag: Boolean = false
@@ -292,10 +293,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
                 try {
 
-                    /* workManager.enqueueUniqueWork(
-                         Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.KEEP,
-                         uploadWorkRequest
-                     )*/
+                    workManager.enqueueUniqueWork(
+                        Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.KEEP,
+                        uploadWorkRequest
+                    )
 
                 } catch (e: java.lang.Exception) {
                     LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
@@ -327,11 +328,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
                     try {
 
-                        /*  workManager.enqueueUniqueWork(
-                              Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE,
-                              uploadWorkRequest
-                          )
-  */
+                        workManager.enqueueUniqueWork(
+                            Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE,
+                            uploadWorkRequest
+                        )
+
                     } catch (e: java.lang.Exception) {
                         LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
                         e.printStackTrace()
@@ -362,11 +363,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
                     try {
 
-                        /*    workManager.enqueueUniqueWork(
-                                Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.KEEP,
-                                uploadWorkRequest
-                            )
-    */
+                        workManager.enqueueUniqueWork(
+                            Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.KEEP,
+                            uploadWorkRequest
+                        )
+
                     } catch (e: java.lang.Exception) {
                         LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
                         e.printStackTrace()
@@ -376,7 +377,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             }
 
 
-            if (prefProvider?.getValueboolean(Constants.IS_FIRST_TIME_LOGIN,false) == true) {
+            if (prefProvider?.getValueboolean(Constants.IS_FIRST_TIME_LOGIN, false) == true) {
                 val data = Data.Builder()
                     //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
                     // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
@@ -1026,11 +1027,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         try {
 
 
-            /* workManager.enqueueUniqueWork(
-                 Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE,
-                 uploadWorkRequest
-             )
- */
+            workManager.enqueueUniqueWork(
+                Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE,
+                uploadWorkRequest
+            )
+
         } catch (e: java.lang.Exception) {
             LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
             e.printStackTrace()
@@ -1147,6 +1148,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         updatePrinter = this
+        queueOrderList = hashMapOf()
         Log.e(TAG, "currentTimeInMilis:   ${System.currentTimeMillis()}")
         /*try {
             val field: Field = CursorWindow::class.java.getDeclaredField("sCursorWindowSize")
@@ -1160,6 +1162,19 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
         //demoPrinterQueue()
         getKitOne()
+        Log.e(
+            TAG,
+            "checkPrinterQueue ${
+                prefProvider?.getValueboolean(
+                    IS_PRINTER_QUEUE_ENABLE,
+                    false
+                )
+            }  checkMaster: ${
+                prefProvider?.getValueboolean(
+                    IS_MASTER_TERMINAL, false
+                )
+            }"
+        )
 
         if (prefProvider?.getValueboolean(
                 IS_PRINTER_QUEUE_ENABLE,
@@ -1450,12 +1465,20 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                             ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                         }"
                     )
-                    subscription?.perform("received", params)
+                    if (navController?.currentDestination?.id == R.id.login || prefProvider?.getValue(
+                            Constants.SYNC_SETTING_TIME_STAMP,""
+                        )?.isEmpty() == true
+                    ){
+                        consumer?.disconnect()
+                    }
+                    else {
+                        subscription?.perform("received", params)
+                    }
 
                 }?.onRejected {
 //                    isLocalMasterFlag = false
-                    currentOrderIndex=0
-                    currentPrinterIndex=0
+                    currentOrderIndex = 0
+                    currentPrinterIndex = 0
 
                     prefProvider?.setValueboolean(Constants.WORKER_QUEUE_IN_PROGRESS, false)
                     Log.e(TAG, "onRejected ")
@@ -1474,7 +1497,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         "onActionReceived checkCancelWeok:  ${isCancelWork}"
                     )
 
-                    isLocalMasterFlag=false
+                    isLocalMasterFlag = false
 
                     this@MainActivity.getSharedPreferences(
                         this@MainActivity.resources.getString(R.string.app_name),
@@ -1533,7 +1556,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                                     }  checkURL:  ${requestURL}"
                                 )
 
-                                if (reConnectCount < 0) {
+                                if (reConnectCount >= 1) {
                                     consumer?.disconnect()
 
                                     reConnectPrinterQueue()
@@ -1562,8 +1585,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 }?.onDisconnected {
 //                    isLocalMasterFlag = false
 
-                    currentOrderIndex=0
-                    currentPrinterIndex=0
+                    currentOrderIndex = 0
+                    currentPrinterIndex = 0
 
                     this@MainActivity.getSharedPreferences(
                         this@MainActivity.resources.getString(R.string.app_name),
@@ -1612,8 +1635,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 //                    isLocalMasterFlag = false
                     localCallConnect = false
-                    currentOrderIndex=0
-                    currentPrinterIndex=0
+                    currentOrderIndex = 0
+                    currentPrinterIndex = 0
 
                     this@MainActivity.getSharedPreferences(
                         this@MainActivity.resources.getString(R.string.app_name),
@@ -1655,6 +1678,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
         var obj =
             listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.get(currentOrderIndex)
+
 
         cloudPrinter.lineFeed(1)
         cloudPrinter.setUnderlineMode(UnderlineStyle.EMPTY)
@@ -1778,87 +1802,173 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         if (checkConnect(cloudPrinter)) {
             Log.e(
                 "checkCommitResultFo",
-                "checkCommitResultForCloud flagIsComplete 1 = $flagIsComplete"
-            )
-            cloudPrinter.commitTransBuffer(object : ResultCallback {
-                override fun onComplete() {
-                    //isQueueRunning = false
-                    Log.e(
-                        "onComplete()",
-                        "currentOrderIndex = $currentOrderIndex :: currentPrinterIndex=$currentPrinterIndex"
-                    )
-                    if (flagIsComplete == false) {
-                        flagIsComplete = true
-
-
-                        val params = JsonObject()
-
-                        var deleteUrl = ""
-                        try {
-                            if (listOfPrintersData.get(
-                                    currentPrinterIndex
-                                ).printerQueueModelList.isNotEmpty()
-                            ) {
-
-                                deleteUrl = prefProvider?.getValue(
-                                    Constants.BASE_URL_NEW,
-                                    ""
-                                ) + Constants.DELETE_QUEUE_ORDER_PHASE3 + listOfPrintersData.get(
-                                    currentPrinterIndex
-                                ).printerQueueModelList.get(currentOrderIndex).id
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-
-                        Log.e(TAG, "DeleteUrl ${deleteUrl}")
-                        Log.e(
-                            TAG,
-                            "checkDeleteSunmi  ${listOfPrintersData.get(currentPrinterIndex).printerName}"
-                        )
-                        params.addProperty("url", deleteUrl)
-                        params.addProperty(
-                            "name",
-                            listOfPrintersData.get(currentPrinterIndex).printerName
-                        )
-                        subscription?.perform("delete_order", params)
-
-
-                        // delay(400)
-                        checkForNextOrder()
-
-
-                    }
-
-                }
-
-                override fun onFailed(p0: CloudPrinterStatus?) {
-
-                    if (p0?.name.equals("RUNNING", true) == false) {
-                        //isQueueRunning = false
-                        if (p0?.name.equals("OUT_PAPER", true)) {
-
-                            sendNotification("Please fill the Paper in ${cloudPrinter.cloudPrinterInfo?.name}")
-                        } else if (p0?.name.equals("COVER", true)) {
-                            sendNotification("Please close the cover of ${cloudPrinter.cloudPrinterInfo?.name}")
-
-                        } else if (p0?.name.equals("UNKNOWN", true)) {
-                            sendNotification(
-                                "Printer - ${
-                                    cloudPrinter.cloudPrinterInfo?.name
-                                } is Offline."
+                "checkCommitResultForCloud flagIsComplete 1 = $flagIsComplete " +
+                        "checkOrderNot  ${
+                            checkOrderIsProceedOrNot(
+                                obj.orderID,
+                                cloudPrinter?.cloudPrinterInfo?.mac ?: ""
                             )
+                        }"
+            )
+
+
+
+            if (obj.isOrderUpdated == false && checkOrderIsProceedOrNot(obj.orderID, cloudPrinter.cloudPrinterInfo.name ?: "")) {
+
+                flagIsComplete = true
+
+
+                val params = JsonObject()
+
+                var deleteUrl = ""
+                try {
+                    if (listOfPrintersData.get(
+                            currentPrinterIndex
+                        ).printerQueueModelList.isNotEmpty()
+                    ) {
+
+                        deleteUrl = prefProvider?.getValue(
+                            Constants.BASE_URL_NEW,
+                            ""
+                        ) + Constants.DELETE_QUEUE_ORDER_PHASE3 + listOfPrintersData.get(
+                            currentPrinterIndex
+                        ).printerQueueModelList.get(currentOrderIndex).id
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+                Log.e(TAG, "DeleteUrl ${deleteUrl}")
+                Log.e(
+                    TAG,
+                    "checkDeleteSunmi  ${listOfPrintersData.get(currentPrinterIndex).printerName}"
+                )
+                params.addProperty("url", deleteUrl)
+                params.addProperty(
+                    "name",
+                    listOfPrintersData.get(currentPrinterIndex).printerName
+                )
+                subscription?.perform("delete_order", params)
+
+
+                // delay(400)
+                checkForNextOrder()
+            } else {
+                cloudPrinter.commitTransBuffer(object : ResultCallback {
+                    override fun onComplete() {
+
+                        if (queueOrderList.containsKey(cloudPrinter.cloudPrinterInfo.name)) {
+                            var list = queueOrderList.get(cloudPrinter.cloudPrinterInfo.name)
+                                ?: arrayListOf()
+                            list.add(obj.orderID)
+                            cloudPrinter.cloudPrinterInfo.name?.let {
+                                queueOrderList.set(it, list)
+                            }
+
+                        } else {
+                            var list: ArrayList<String> = arrayListOf()
+                            list.add(obj.orderID)
+
+                            cloudPrinter.cloudPrinterInfo?.name?.let {
+                                queueOrderList.put(
+                                    it,
+                                    list
+                                )
+                            }
+
+                        }
+                        //isQueueRunning = false
+                        Log.e(
+                            "onComplete()",
+                            "currentOrderIndex = $currentOrderIndex :: currentPrinterIndex=$currentPrinterIndex"
+                        )
+                        if (flagIsComplete == false) {
+                            flagIsComplete = true
+
+
+                            val params = JsonObject()
+
+                            var deleteUrl = ""
+                            try {
+                                if (listOfPrintersData.get(
+                                        currentPrinterIndex
+                                    ).printerQueueModelList.isNotEmpty()
+                                ) {
+
+                                    deleteUrl = prefProvider?.getValue(
+                                        Constants.BASE_URL_NEW,
+                                        ""
+                                    ) + Constants.DELETE_QUEUE_ORDER_PHASE3 + listOfPrintersData.get(
+                                        currentPrinterIndex
+                                    ).printerQueueModelList.get(currentOrderIndex).id
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+
+                            Log.e(TAG, "DeleteUrl ${deleteUrl}")
+                            Log.e(
+                                TAG,
+                                "checkDeleteSunmi  ${listOfPrintersData.get(currentPrinterIndex).printerName}"
+                            )
+                            params.addProperty("url", deleteUrl)
+                            params.addProperty(
+                                "name",
+                                listOfPrintersData.get(currentPrinterIndex).printerName
+                            )
+                            subscription?.perform("delete_order", params)
+
+
+                            // delay(400)
+                            checkForNextOrder()
+
 
                         }
 
-                        checkForNextOrder()
                     }
-                }
 
-            })
+                    override fun onFailed(p0: CloudPrinterStatus?) {
+
+                        if (p0?.name.equals("RUNNING", true) == false) {
+                            //isQueueRunning = false
+                            if (p0?.name.equals("OUT_PAPER", true)) {
+
+                                sendNotification("Please fill the Paper in ${cloudPrinter.cloudPrinterInfo?.name}")
+                            } else if (p0?.name.equals("COVER", true)) {
+                                sendNotification("Please close the cover of ${cloudPrinter.cloudPrinterInfo?.name}")
+
+                            } else if (p0?.name.equals("UNKNOWN", true)) {
+                                sendNotification(
+                                    "Printer - ${
+                                        cloudPrinter.cloudPrinterInfo?.name
+                                    } is Offline."
+                                )
+
+                            }
+
+                            checkForNextOrder()
+                        }
+                    }
+
+                })
+            }
 
         } else {
             checkForNextOrder()
+        }
+
+
+    }
+
+    private fun checkOrderIsProceedOrNot(orderID: String, macAddress: String): Boolean {
+        var list = queueOrderList.get(macAddress) ?: arrayListOf()
+
+        if (list.isEmpty()) {
+            return false
+        } else if (list.contains(orderID)) {
+            return true
+        } else {
+            return false
         }
 
 
@@ -1918,6 +2028,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                             modelOrder.employeeName =
                                 it.asJsonObject.get("employee_name").asString
                             modelOrder.orderNote = it.asJsonObject.get("order_note").asString
+                            modelOrder.isOrderUpdated = it.asJsonObject.get("is_updated").asBoolean
+
 
                             if (it.asJsonObject.get("order_type").asString.equals(
                                     Constants.DINE_IN,
@@ -2209,7 +2321,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                             }"
                         )
 
-                        if (reConnectCount < 0) {
+                        if (reConnectCount >= 1) {
                             consumer?.disconnect()
                             reConnectPrinterQueue()
 
@@ -2257,7 +2369,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                             ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                         }"
                     )
-                    if (reConnectCount < 0) {
+                    if (reConnectCount >= 1) {
                         consumer?.disconnect()
 
                         reConnectPrinterQueue()
@@ -2290,7 +2402,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                 )
 
-                if (reConnectCount< 0) {
+                if (reConnectCount >= 1) {
                     consumer?.disconnect()
 
                     reConnectPrinterQueue()
@@ -2320,7 +2432,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     ""
                 ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
             )
-            if (reConnectCount < 0) {
+            if (reConnectCount >= 1) {
                 consumer?.disconnect()
                 reConnectPrinterQueue()
 
@@ -2453,7 +2565,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                     )
 
-                    if (reConnectCount < 0) {
+                    if (reConnectCount >= 1) {
                         consumer?.disconnect()
                         reConnectPrinterQueue()
 
@@ -2486,7 +2598,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         ""
                     ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                 )
-                if (reConnectCount < 0) {
+                if (reConnectCount >= 1) {
                     consumer?.disconnect()
                     reConnectPrinterQueue()
 

@@ -1271,7 +1271,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
             }?.onRejected {
                 Log.e(TAG2, "onRejected")
                 if (isInternetAvailable()) {
-                    consumer2?.connect()
+                    consumer2?.disconnect()
                 } else {
                     sendNotification("Please check your Network Connectivity.")
                 }
@@ -1288,7 +1288,8 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 Log.e(TAG2, "onDisconnected")
                 try {
                     if (isInternetAvailable()) {
-                        consumer2?.connect()
+                        consumer2 = null
+                        connectActionCableSYNCSETTINGS()
                     } else {
                         sendNotification("Please check your Network Connectivity.")
                     }
@@ -1300,7 +1301,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 if (isInternetAvailable()) {
                     try {
 
-                        consumer2?.connect()
+                        consumer2?.disconnect()
 
                     } catch (e: Exception) {
                         e.printStackTrace()
