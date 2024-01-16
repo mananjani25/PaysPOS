@@ -153,6 +153,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private var consumer: Consumer? = null
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     private var queueOrderList: HashMap<String, ArrayList<String>> = hashMapOf()
+    private var queueInProgressList: HashMap<String, ArrayList<String>> = hashMapOf()
     var mPrinter: Printer? = null
     var arrayItems: ArrayList<PrinterQueueModel> = arrayListOf()
     var isKitchenFlag: Boolean = false
@@ -1466,12 +1467,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         }"
                     )
                     if (navController?.currentDestination?.id == R.id.login || prefProvider?.getValue(
-                            Constants.SYNC_SETTING_TIME_STAMP,""
+                            Constants.SYNC_SETTING_TIME_STAMP, ""
                         )?.isEmpty() == true
-                    ){
+                    ) {
+                        Log.e(TAG, "IN_CONNECTION_CONDITION")
                         consumer?.disconnect()
-                    }
-                    else {
+                    } else {
                         subscription?.perform("received", params)
                     }
 
@@ -1813,7 +1814,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
 
-            if (obj.isOrderUpdated == false && checkOrderIsProceedOrNot(obj.orderID, cloudPrinter.cloudPrinterInfo.name ?: "")) {
+            if (obj.isOrderUpdated == false && checkOrderIsProceedOrNot(
+                    obj.orderID,
+                    cloudPrinter.cloudPrinterInfo.name ?: ""
+                )
+            ) {
 
                 flagIsComplete = true
 
@@ -1879,7 +1884,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         }
                         //isQueueRunning = false
                         Log.e(
-                            "onComplete()",
+                            "onComplete2nd()",
                             "currentOrderIndex = $currentOrderIndex :: currentPrinterIndex=$currentPrinterIndex"
                         )
                         if (flagIsComplete == false) {
@@ -1983,13 +1988,13 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             if (dataList.size() != 0) {
                 isQueueRunning = true
                 var isDataAvailable = true
-                dataList.forEach {
+                dataList.forEach { it1 ->
                     var listofPrinterOrders: ArrayList<PrinterQueueModel> = arrayListOf()
 
-                    if (it.asJsonObject.has("orders")) {
+                    if (it1.asJsonObject.has("orders")) {
                         disconnectSize0 = false
 
-                        var ordersArray = it.asJsonObject.get("orders").asJsonArray
+                        var ordersArray = it1.asJsonObject.get("orders").asJsonArray
 
                         /*   for (i in dataList) {
                                var orders = i.asJsonObject.get("orders").asJsonArray
@@ -2007,265 +2012,304 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                            }*/
 
                         ordersArray.forEach {
-                            var modelOrder = PrinterQueueModel()
+                            Log.e(TAG,"checkOrderInPRogress:  ${checkOrderIsInProgressOrNot(
+                                it1.asJsonObject.get("printer_name").asString,
+                                it.asJsonObject.get("id").asInt.toString()
+                            )}")
 
-                            modelOrder.id = it.asJsonObject.get("id").asInt
-                            modelOrder.orderType =
-                                it.asJsonObject.get("order_type").asString
-
-                            try {
-                                if (it.asJsonObject.has("delivery_type")) {
-                                    if (it.asJsonObject.get("order_type").asString == Constants.PHONE_ORDER_)
-                                        modelOrder.deliveryType =
-                                            it.asJsonObject.get("delivery_type").asString
-                                }
-                            } catch (e: Exception) {
-                                Log.d("KeyNotFound", "Exception")
-                            }
-
-                            modelOrder.dateAndTime =
-                                it.asJsonObject.get("date_and_time").asString
-                            modelOrder.employeeName =
-                                it.asJsonObject.get("employee_name").asString
-                            modelOrder.orderNote = it.asJsonObject.get("order_note").asString
-                            modelOrder.isOrderUpdated = it.asJsonObject.get("is_updated").asBoolean
-
-
-                            if (it.asJsonObject.get("order_type").asString.equals(
-                                    Constants.DINE_IN,
-                                    true
-                                ) || it.asJsonObject.get("order_type").asString.equals(
-                                    Constants.DINE_IN_SPACE,
-                                    true
+                            if (!checkOrderIsInProgressOrNot(
+                                    it1.asJsonObject.get("printer_name").asString,
+                                    it.asJsonObject.get("id").asInt.toString()
                                 )
                             ) {
+                                if (queueInProgressList.containsKey(it1.asJsonObject.get("printer_name").asString)) {
+                                    var list =
+                                        queueInProgressList.get(it1.asJsonObject.get("printer_name").asString)
+                                            ?: arrayListOf()
+                                    list.add(it.asJsonObject.get("id").asInt.toString())
 
-                                if (it.asJsonObject.has("guest_attributes")) {
-                                    var guestAttributes: ArrayList<GuestAttrQueue> =
-                                        arrayListOf()
-                                    var guestAtr =
-                                        it.asJsonObject.get("guest_attributes").asJsonArray
+                                    queueInProgressList.set(
+                                        it1.asJsonObject.get("printer_name").asString,
+                                        list
+                                    )
+
+
+                                } else {
+                                    var list: ArrayList<String> = arrayListOf()
+                                    list.add(it.asJsonObject.get("id").asInt.toString())
+
+
+                                    queueInProgressList.put(
+                                        it1.asJsonObject.get("printer_name").asString,
+                                        list
+                                    )
+
+
+                                }
+
+
+                                var modelOrder = PrinterQueueModel()
+
+                                modelOrder.id = it.asJsonObject.get("id").asInt
+                                modelOrder.orderType =
+                                    it.asJsonObject.get("order_type").asString
+
+                                try {
+                                    if (it.asJsonObject.has("delivery_type")) {
+                                        if (it.asJsonObject.get("order_type").asString == Constants.PHONE_ORDER_)
+                                            modelOrder.deliveryType =
+                                                it.asJsonObject.get("delivery_type").asString
+                                    }
+                                } catch (e: Exception) {
+                                    Log.d("KeyNotFound", "Exception")
+                                }
+
+                                modelOrder.dateAndTime =
+                                    it.asJsonObject.get("date_and_time").asString
+                                modelOrder.employeeName =
+                                    it.asJsonObject.get("employee_name").asString
+                                modelOrder.orderNote = it.asJsonObject.get("order_note").asString
+                                modelOrder.isOrderUpdated =
+                                    it.asJsonObject.get("is_updated").asBoolean
+
+
+                                if (it.asJsonObject.get("order_type").asString.equals(
+                                        Constants.DINE_IN,
+                                        true
+                                    ) || it.asJsonObject.get("order_type").asString.equals(
+                                        Constants.DINE_IN_SPACE,
+                                        true
+                                    )
+                                ) {
+
+                                    if (it.asJsonObject.has("guest_attributes")) {
+                                        var guestAttributes: ArrayList<GuestAttrQueue> =
+                                            arrayListOf()
+                                        var guestAtr =
+                                            it.asJsonObject.get("guest_attributes").asJsonArray
 
 
 
-                                    guestAtr.forEach { it5 ->
-                                        if (it5.asJsonObject.has("order_items")) {
+                                        guestAtr.forEach { it5 ->
+                                            if (it5.asJsonObject.has("order_items")) {
 
-                                            var orderItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
-                                                arrayListOf()
-
-                                            var itemsArray =
-                                                it5.asJsonObject.get("order_items").asJsonArray
-
-                                            if (itemsArray.size() != 0) {
-
-                                                var listOfMod: ArrayList<CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers> =
+                                                var orderItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
                                                     arrayListOf()
-                                                itemsArray.forEach { it9 ->
-                                                    if (it9.asJsonObject.has("modifiers")) {
 
-                                                        var iteMod =
-                                                            it9.asJsonObject.get("modifiers").asJsonArray
+                                                var itemsArray =
+                                                    it5.asJsonObject.get("order_items").asJsonArray
+
+                                                if (itemsArray.size() != 0) {
+
+                                                    var listOfMod: ArrayList<CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers> =
+                                                        arrayListOf()
+                                                    itemsArray.forEach { it9 ->
+                                                        if (it9.asJsonObject.has("modifiers")) {
+
+                                                            var iteMod =
+                                                                it9.asJsonObject.get("modifiers").asJsonArray
 
 
-                                                        iteMod.forEach {
-                                                            listOfMod.add(
-                                                                CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers(
-                                                                    id = it.asJsonObject.get("id").asInt,
-                                                                    orderItemId = it.asJsonObject.get(
-                                                                        "order_item_id"
-                                                                    ).asInt,
-                                                                    name = it.asJsonObject.get("name").asString,
-                                                                    quantity = it.asJsonObject.get(
-                                                                        "quantity"
-                                                                    ).asInt,
-                                                                    modifierSetId = 0,
-                                                                    isModifier = true,
-                                                                    modifierQuantity = it.asJsonObject.get(
-                                                                        "modifier_quantity"
-                                                                    ).asInt,
-                                                                    createdAt = "",
-                                                                    updatedAt = "",
-                                                                    totalPrice = 0.0,
-                                                                    orderId = 0,
-                                                                    price = 0.0
+                                                            iteMod.forEach {
+                                                                listOfMod.add(
+                                                                    CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers(
+                                                                        id = it.asJsonObject.get("id").asInt,
+                                                                        orderItemId = it.asJsonObject.get(
+                                                                            "order_item_id"
+                                                                        ).asInt,
+                                                                        name = it.asJsonObject.get("name").asString,
+                                                                        quantity = it.asJsonObject.get(
+                                                                            "quantity"
+                                                                        ).asInt,
+                                                                        modifierSetId = 0,
+                                                                        isModifier = true,
+                                                                        modifierQuantity = it.asJsonObject.get(
+                                                                            "modifier_quantity"
+                                                                        ).asInt,
+                                                                        createdAt = "",
+                                                                        updatedAt = "",
+                                                                        totalPrice = 0.0,
+                                                                        orderId = 0,
+                                                                        price = 0.0
+                                                                    )
                                                                 )
-                                                            )
+
+                                                            }
+
 
                                                         }
 
 
+                                                        orderItems.add(
+                                                            CreateOrderResponse.Data.Order.OrderItem(
+                                                                categoryId = it9.asJsonObject.get("category_id").asInt,
+                                                                completedInKitchen = false,
+                                                                discountType = "",
+                                                                discountAmount = 0.0,
+                                                                discountId = 0,
+                                                                employeeId = 0,
+                                                                float = 0.0,
+                                                                id = it9.asJsonObject.get("order_item_id").asInt,
+                                                                isPrinted = false,
+                                                                isPaid = false,
+                                                                itemId = it9.asJsonObject.get("item_id").asInt,
+                                                                orderId = it.asJsonObject.get("id").asInt,
+                                                                itemName = it9.asJsonObject.get("name").asString,
+                                                                totalPrice = 0.0,
+                                                                timestamp = if (it9.asJsonObject.has(
+                                                                        "message"
+                                                                    )
+                                                                ) {
+                                                                    it9.asJsonObject.get("message").asString
+                                                                } else {
+                                                                    ""
+                                                                },
+                                                                quantity = it9.asJsonObject.get("quantity").asInt,
+                                                                price = 0.0,
+                                                                orderItemModifiers = listOfMod,
+                                                                note = it9.asJsonObject.get("item_note").asString
+
+
+                                                            )
+                                                        )
+
+
                                                     }
 
-
-                                                    orderItems.add(
-                                                        CreateOrderResponse.Data.Order.OrderItem(
-                                                            categoryId = it9.asJsonObject.get("category_id").asInt,
-                                                            completedInKitchen = false,
-                                                            discountType = "",
-                                                            discountAmount = 0.0,
-                                                            discountId = 0,
-                                                            employeeId = 0,
-                                                            float = 0.0,
-                                                            id = it9.asJsonObject.get("order_item_id").asInt,
-                                                            isPrinted = false,
-                                                            isPaid = false,
-                                                            itemId = it9.asJsonObject.get("item_id").asInt,
-                                                            orderId = it.asJsonObject.get("id").asInt,
-                                                            itemName = it9.asJsonObject.get("name").asString,
-                                                            totalPrice = 0.0,
-                                                            timestamp = if (it9.asJsonObject.has(
-                                                                    "message"
-                                                                )
-                                                            ) {
-                                                                it9.asJsonObject.get("message").asString
-                                                            } else {
-                                                                ""
-                                                            },
-                                                            quantity = it9.asJsonObject.get("quantity").asInt,
-                                                            price = 0.0,
-                                                            orderItemModifiers = listOfMod,
-                                                            note = it9.asJsonObject.get("item_note").asString
+                                                    guestAttributes.add(
+                                                        GuestAttrQueue(
+                                                            id = 0,
+                                                            name = it5.asJsonObject.get("name").asString,
+                                                            listOfItems = orderItems
 
 
                                                         )
                                                     )
+                                                }
 
+                                            }
+
+
+                                        }
+
+                                        modelOrder.guestAttributes = guestAttributes
+                                        modelOrder.orderID =
+                                            it.asJsonObject.get("id").asInt.toString()
+                                    }
+
+
+                                    listofPrinterOrders.add(modelOrder)
+
+                                } else {
+                                    var orderItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
+                                        arrayListOf()
+
+                                    if (it.asJsonObject.has("order_items")) {
+                                        var orderItemsArray =
+                                            it.asJsonObject.get("order_items").asJsonArray
+
+                                        orderItemsArray.forEach { it1 ->
+                                            var listOfMod: ArrayList<CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers> =
+                                                arrayListOf()
+
+                                            if (it1.asJsonObject.has("modifiers")) {
+                                                var modList =
+                                                    it1.asJsonObject.get("modifiers").asJsonArray
+                                                if (modList.size() != 0) {
+                                                    modList.forEach {
+                                                        listOfMod.add(
+                                                            CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers(
+                                                                id = it.asJsonObject.get("id").asInt,
+                                                                orderItemId = it.asJsonObject.get("order_item_id").asInt,
+                                                                name = it.asJsonObject.get("name").asString,
+                                                                quantity = it.asJsonObject.get("quantity").asInt,
+                                                                modifierSetId = 0,
+                                                                isModifier = true,
+                                                                modifierQuantity = it.asJsonObject.get(
+                                                                    "modifier_quantity"
+                                                                ).asInt,
+                                                                createdAt = "",
+                                                                updatedAt = "",
+                                                                totalPrice = 0.0,
+                                                                orderId = 0,
+                                                                price = 0.0
+                                                            )
+                                                        )
+
+                                                    }
 
                                                 }
 
-                                                guestAttributes.add(
-                                                    GuestAttrQueue(
-                                                        id = 0,
-                                                        name = it5.asJsonObject.get("name").asString,
-                                                        listOfItems = orderItems
+
+                                            }
+
+                                            orderItems.add(
+                                                CreateOrderResponse.Data.Order.OrderItem(
+                                                    categoryId = it1.asJsonObject.get("category_id").asInt,
+                                                    completedInKitchen = false,
+                                                    discountType = "",
+                                                    discountAmount = 0.0,
+                                                    discountId = 0,
+                                                    employeeId = 0,
+                                                    float = 0.0,
+                                                    id = it1.asJsonObject.get("order_item_id").asInt,
+                                                    isPrinted = false,
+                                                    isPaid = false,
+                                                    itemId = it1.asJsonObject.get("item_id").asInt,
+                                                    orderId = it.asJsonObject.get("id").asInt,
+                                                    itemName = it1.asJsonObject.get("name").asString,
+                                                    totalPrice = 0.0,
+                                                    timestamp = it1.asJsonObject.get("message").asString,
+                                                    quantity = it1.asJsonObject.get("quantity").asInt,
+                                                    price = 0.0,
+                                                    orderItemModifiers = listOfMod,
+                                                    note = it1.asJsonObject.get("item_note").asString
 
 
-                                                    )
                                                 )
-                                            }
-
-                                        }
-
-
-                                    }
-
-                                    modelOrder.guestAttributes = guestAttributes
-                                    modelOrder.orderID =
-                                        it.asJsonObject.get("id").asInt.toString()
-                                }
-
-
-                                listofPrinterOrders.add(modelOrder)
-
-                            } else {
-                                var orderItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
-                                    arrayListOf()
-
-                                if (it.asJsonObject.has("order_items")) {
-                                    var orderItemsArray =
-                                        it.asJsonObject.get("order_items").asJsonArray
-
-                                    orderItemsArray.forEach { it1 ->
-                                        var listOfMod: ArrayList<CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers> =
-                                            arrayListOf()
-
-                                        if (it1.asJsonObject.has("modifiers")) {
-                                            var modList =
-                                                it1.asJsonObject.get("modifiers").asJsonArray
-                                            if (modList.size() != 0) {
-                                                modList.forEach {
-                                                    listOfMod.add(
-                                                        CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers(
-                                                            id = it.asJsonObject.get("id").asInt,
-                                                            orderItemId = it.asJsonObject.get("order_item_id").asInt,
-                                                            name = it.asJsonObject.get("name").asString,
-                                                            quantity = it.asJsonObject.get("quantity").asInt,
-                                                            modifierSetId = 0,
-                                                            isModifier = true,
-                                                            modifierQuantity = it.asJsonObject.get(
-                                                                "modifier_quantity"
-                                                            ).asInt,
-                                                            createdAt = "",
-                                                            updatedAt = "",
-                                                            totalPrice = 0.0,
-                                                            orderId = 0,
-                                                            price = 0.0
-                                                        )
-                                                    )
-
-                                                }
-
-                                            }
-
-
-                                        }
-
-                                        orderItems.add(
-                                            CreateOrderResponse.Data.Order.OrderItem(
-                                                categoryId = it1.asJsonObject.get("category_id").asInt,
-                                                completedInKitchen = false,
-                                                discountType = "",
-                                                discountAmount = 0.0,
-                                                discountId = 0,
-                                                employeeId = 0,
-                                                float = 0.0,
-                                                id = it1.asJsonObject.get("order_item_id").asInt,
-                                                isPrinted = false,
-                                                isPaid = false,
-                                                itemId = it1.asJsonObject.get("item_id").asInt,
-                                                orderId = it.asJsonObject.get("id").asInt,
-                                                itemName = it1.asJsonObject.get("name").asString,
-                                                totalPrice = 0.0,
-                                                timestamp = it1.asJsonObject.get("message").asString,
-                                                quantity = it1.asJsonObject.get("quantity").asInt,
-                                                price = 0.0,
-                                                orderItemModifiers = listOfMod,
-                                                note = it1.asJsonObject.get("item_note").asString
-
-
                                             )
-                                        )
-                                    }
+                                        }
 
-                                    modelOrder.orderItems = orderItems
-                                    modelOrder.orderID = it.asJsonObject.get("id").asInt.toString()
+                                        modelOrder.orderItems = orderItems
+                                        modelOrder.orderID =
+                                            it.asJsonObject.get("id").asInt.toString()
 
-
-                                }
-                                if (it.asJsonObject.has("customer_details")) {
-
-                                    if (it.asJsonObject.get("customer_details").isJsonObject) {
-                                        var objCustomer =
-                                            it.asJsonObject.get("customer_details").asJsonObject
-                                        modelOrder.customerName =
-                                            objCustomer.get("first_name").asString + " " + objCustomer.get(
-                                                "last_name"
-                                            ).asString
-                                        modelOrder.customerPhoneNo =
-                                            objCustomer.get("mobile_number").asString
-                                        modelOrder.customerAddress =
-                                            objCustomer.get("address").asString
 
                                     }
+                                    if (it.asJsonObject.has("customer_details")) {
 
+                                        if (it.asJsonObject.get("customer_details").isJsonObject) {
+                                            var objCustomer =
+                                                it.asJsonObject.get("customer_details").asJsonObject
+                                            modelOrder.customerName =
+                                                objCustomer.get("first_name").asString + " " + objCustomer.get(
+                                                    "last_name"
+                                                ).asString
+                                            modelOrder.customerPhoneNo =
+                                                objCustomer.get("mobile_number").asString
+                                            modelOrder.customerAddress =
+                                                objCustomer.get("address").asString
+
+                                        }
+
+                                    }
+
+                                    listofPrinterOrders.add(modelOrder)
                                 }
 
-                                listofPrinterOrders.add(modelOrder)
                             }
-
                         }
 
                     }
 
                     listOfPrintersData.add(
                         PrinterJSONElementData(
-                            printerName = it.asJsonObject.get("printer_name").asString,
-                            macAddress = it.asJsonObject.get("mac_address").asString,
-                            ipAddress = it.asJsonObject.get("ip_address").asString,
-                            modelName = it.asJsonObject.get("modal_name").asString,
+                            printerName = it1.asJsonObject.get("printer_name").asString,
+                            macAddress = it1.asJsonObject.get("mac_address").asString,
+                            ipAddress = it1.asJsonObject.get("ip_address").asString,
+                            modelName = it1.asJsonObject.get("modal_name").asString,
                             printerQueueModelList = listofPrinterOrders,
-                            portNo = it.asJsonObject.get("port_no").asInt
+                            portNo = it1.asJsonObject.get("port_no").asInt
 
                         )
                     )
@@ -2448,6 +2492,20 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     }
 
+    private fun checkOrderIsInProgressOrNot(printerName: String, orderId: String): Boolean {
+        var listOfInProg = queueInProgressList.get(printerName) ?: arrayListOf()
+        if (listOfInProg.isEmpty()) {
+            return false
+
+        } else if (listOfInProg.contains(orderId)) {
+            return true
+        } else {
+            return false
+        }
+
+
+    }
+
     private fun sendDataToPrintToSunmi() {
         Log.e("checkCommitResultF", "checkCommitResultForCloud flagIsComplete 2 ")
 
@@ -2534,10 +2592,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             if (listOfPrintersData.size - 1 > currentPrinterIndex) {
                 var isBreakIn = false
                 for (i in currentPrinterIndex + 1 until listOfPrintersData.size) {
+                    Log.e(TAG,"checkNextIValue  ${i}")
                     if (listOfPrintersData.get(i).printerQueueModelList.isNotEmpty()) {
                         isBreakIn = true
                         currentPrinterIndex = i
                         currentOrderIndex = 0
+                        break
                     }
 
                 }
