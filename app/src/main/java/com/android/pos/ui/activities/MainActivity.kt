@@ -173,6 +173,17 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
     companion object {
+        var obj: MainActivity? = null
+        fun getInstance(): MainActivity {
+            if (obj == null) {
+                obj = MainActivity()
+                return obj as MainActivity
+            } else {
+                return obj as MainActivity
+            }
+
+        }
+
         var updatePrinter: UpdatePrinters? = null
     }
 
@@ -574,6 +585,18 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             } else {
                 LogUtil.logE(TAG, "getPrinterNull")
             }
+        }
+    }
+
+    private fun masterTerminalObserver() {
+        dashBoardCategoryViewModel.masterTeminalLiveData.observe(this) {
+            it.getContentIfNotHandled()?.let {
+                if (it){
+                    sendBroadCast()
+                }
+            }
+
+
         }
     }
 
@@ -1163,6 +1186,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
         //demoPrinterQueue()
         getKitOne()
+        masterTerminalObserver()
         Log.e(
             TAG,
             "checkPrinterQueue ${
@@ -1466,9 +1490,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                             ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                         }"
                     )
-                    if (navController?.currentDestination?.id == R.id.login || prefProvider?.getValue(
-                            Constants.SYNC_SETTING_TIME_STAMP, ""
-                        )?.isEmpty() == true
+                    if (navController?.currentDestination?.id == R.id.login
                     ) {
                         Log.e(TAG, "IN_CONNECTION_CONDITION")
                         consumer?.disconnect()
@@ -2012,10 +2034,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                            }*/
 
                         ordersArray.forEach {
-                            Log.e(TAG,"checkOrderInPRogress:  ${checkOrderIsInProgressOrNot(
-                                it1.asJsonObject.get("printer_name").asString,
-                                it.asJsonObject.get("id").asInt.toString()
-                            )}")
+                            Log.e(
+                                TAG, "checkOrderInPRogress:  ${
+                                    checkOrderIsInProgressOrNot(
+                                        it1.asJsonObject.get("printer_name").asString,
+                                        it.asJsonObject.get("id").asInt.toString()
+                                    )
+                                }"
+                            )
 
                             if (!checkOrderIsInProgressOrNot(
                                     it1.asJsonObject.get("printer_name").asString,
@@ -2592,7 +2618,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             if (listOfPrintersData.size - 1 > currentPrinterIndex) {
                 var isBreakIn = false
                 for (i in currentPrinterIndex + 1 until listOfPrintersData.size) {
-                    Log.e(TAG,"checkNextIValue  ${i}")
+                    Log.e(TAG, "checkNextIValue  ${i}")
                     if (listOfPrintersData.get(i).printerQueueModelList.isNotEmpty()) {
                         isBreakIn = true
                         currentPrinterIndex = i
@@ -3271,6 +3297,221 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     }
 
     override fun onFailed(p0: CloudPrinterStatus?) {
+
+    }
+
+    fun sendBroadCast() {
+
+        Log.e(
+            TAG,
+            "checkPrinterQueueWorker:  ${
+                checkUploadWorker(
+                    PRINTER_QUEUE_BACKGROUND,
+                    this@MainActivity
+                )
+            }"
+        )
+
+
+        if (prefProvider?.getValueboolean(
+                IS_MASTER_TERMINAL,
+                false
+            ) == true && prefProvider?.getValueboolean(
+                Constants.IS_PRINTER_QUEUE_STARTS,
+                false
+            ) == false && prefProvider?.getValueboolean(
+                IS_PRINTER_QUEUE_ENABLE, false
+            ) == true
+        ) {
+            prefProvider?.setValueboolean(Constants.IS_PRINTER_QUEUE_STARTS, true)
+            prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL, false)
+            getKitOne()
+
+        } else if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL, false) == false) {
+            WorkManager.getInstance(this@MainActivity).cancelAllWork()
+            val data = Data.Builder()
+                //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
+                // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
+                .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
+                .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
+                .put(
+                    IS_PRINTER_QUEUE_ENABLE,
+                    prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)
+                )
+                .put("is_cancel_work", true)
+                .build()
+            prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL, true)
+            val uploadWorkRequest =
+                OneTimeWorkRequest.Builder(
+                    UploadWorker2::class.java
+                ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
+                    .setInputData(data)
+                    .build()
+
+
+            val workManager = WorkManager.getInstance(this@MainActivity)
+
+            try {
+
+                workManager.enqueueUniqueWork(
+                    Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.KEEP,
+                    uploadWorkRequest
+                )
+
+            } catch (e: java.lang.Exception) {
+                LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
+                e.printStackTrace()
+            }
+        } else {
+            if (prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false) == true) {
+                val data = Data.Builder()
+                    //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
+                    // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
+                    .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
+                    .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
+                    .put(
+                        IS_PRINTER_QUEUE_ENABLE,
+                        prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)
+                    )
+                    .put("is_cancel_work", false)
+                    .build()
+                prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL, false)
+                val uploadWorkRequest =
+                    OneTimeWorkRequest.Builder(
+                        UploadWorker2::class.java
+                    ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
+                        .setInputData(data)
+                        .build()
+
+
+                val workManager = WorkManager.getInstance(this@MainActivity)
+
+                try {
+
+                    workManager.enqueueUniqueWork(
+                        Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE,
+                        uploadWorkRequest
+                    )
+
+                } catch (e: java.lang.Exception) {
+                    LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
+                    e.printStackTrace()
+                }
+            } else if (prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false) == false) {
+                WorkManager.getInstance(this@MainActivity).cancelAllWork()
+                val data = Data.Builder()
+                    //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
+                    // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
+                    .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
+                    .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
+                    .put(
+                        IS_PRINTER_QUEUE_ENABLE,
+                        prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)
+                    )
+                    .put("is_cancel_work", true)
+                    .build()
+                prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL, true)
+                val uploadWorkRequest =
+                    OneTimeWorkRequest.Builder(
+                        UploadWorker2::class.java
+                    ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
+                        .setInputData(data)
+                        .build()
+
+
+                val workManager = WorkManager.getInstance(this@MainActivity)
+
+                try {
+
+                    workManager.enqueueUniqueWork(
+                        Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.KEEP,
+                        uploadWorkRequest
+                    )
+
+                } catch (e: java.lang.Exception) {
+                    LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
+                    e.printStackTrace()
+                }
+
+            }
+        }
+
+
+        if (prefProvider?.getValueboolean(Constants.IS_FIRST_TIME_LOGIN, false) == true) {
+            val data = Data.Builder()
+                //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
+                // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
+                .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
+                .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
+                .put(
+                    IS_PRINTER_QUEUE_ENABLE,
+                    prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)
+                )
+                .put("is_cancel_work", false)
+                .build()
+            prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL, false)
+            val uploadWorkRequest =
+                OneTimeWorkRequest.Builder(
+                    UploadWorker2::class.java
+                ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
+                    .setInputData(data)
+                    .build()
+
+
+            val workManager = WorkManager.getInstance(this@MainActivity)
+
+            try {
+
+                workManager.enqueueUniqueWork(
+                    Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.KEEP,
+                    uploadWorkRequest
+                )
+
+            } catch (e: java.lang.Exception) {
+                LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
+                e.printStackTrace()
+            }
+
+
+        }
+        Log.e(
+            TAG,
+            "checkQUeue: ${
+                prefProvider?.getValueboolean(
+                    IS_PRINTER_QUEUE_ENABLE,
+                    false
+                )
+            }  checkMAsterRermi: ${
+                prefProvider?.getValueboolean(
+                    IS_MASTER_TERMINAL, false
+                )
+            }  consumer: ${consumer}"
+        )
+
+        if (prefProvider?.getValueboolean(
+                IS_PRINTER_QUEUE_ENABLE,
+                false
+            ) == true && prefProvider?.getValueboolean(
+                IS_MASTER_TERMINAL, false
+            ) == true && consumer == null && isLocalMasterFlag == false
+        ) {
+            isLocalMasterFlag = true
+
+            Log.e(TAG, "YesIN ACtionConnect")
+            connectActionCable()
+
+        } else if ((prefProvider?.getValueboolean(
+                IS_PRINTER_QUEUE_ENABLE,
+                false
+            ) == false || prefProvider?.getValueboolean(
+                IS_MASTER_TERMINAL, false
+            ) == false) && consumer != null
+        ) {
+
+            consumer?.disconnect()
+
+
+        }
 
     }
 
