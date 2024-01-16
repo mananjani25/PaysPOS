@@ -27,6 +27,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.aidl.ICallback
@@ -124,7 +126,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     StatusChangeEventListener, BatteryStatusChangeEventListener, ICallback,
-    SearchCallback,UpdatePrinters {
+    SearchCallback, UpdatePrinters {
     private var cloudPrinter: CloudPrinter? = null
     private var woyouService: IWoyouService? = null
     private lateinit var binding: FragmentPrinterBinding
@@ -337,7 +339,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         availableNetworkAdapter.setListner(this)
         availableNetworkAdapter.setList(arrayListOf())
 
-        binding.rvAvailablePrinter.layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
+        binding.rvAvailablePrinter.layoutManager =
+            WrapContentLinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
         binding.rvAvailablePrinter.adapter = availableNetworkAdapter
         binding.rvAvailablePrinter.isNestedScrollingEnabled = false
         //   binding.rvAvailablePrinter.isLayoutFrozen = true
@@ -347,7 +350,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 LinearLayoutManager.VERTICAL
             )
         )
-        binding.rvKitchenPrinter.layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
+        binding.rvKitchenPrinter.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvKitchenPrinter.adapter = kitchenAdapter
         binding.rvKitchenPrinter.addItemDecoration(
             DividerItemDecoration(
@@ -355,7 +359,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 LinearLayoutManager.VERTICAL
             )
         )
-        binding.rvCustomerPrinter.layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
+        binding.rvCustomerPrinter.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvCustomerPrinter.adapter = customerAdapter
         binding.rvCustomerPrinter.addItemDecoration(
             DividerItemDecoration(
@@ -549,7 +554,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
     }
 
-    private fun syncPrinterList(saved: Boolean = false,isProgressShow : Boolean = false) {
+    private fun syncPrinterList(saved: Boolean = false, isProgressShow: Boolean = false) {
 
         allPrinterlist.clear()
         addedCustomerPrinters = false
@@ -640,19 +645,25 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                             }
 
 
-                         //   viewModel.deleteAllCustomerPrinters()
+                            //   viewModel.deleteAllCustomerPrinters()
 
                             var temp = ""
                             var newList = arrayListOf<PrinterListModel>()
 
                             customerPrintersList.forEach {
 
-                                if (temp == it.printerName){
+                                if (temp == it.printerName) {
                                     //viewModelObject.deletePrinter(it)
-                                    Log.d("deDupedNodes","Duplicate operaion id = ${it.id} , name = ${it.printerName}")
-                                }else {
-                                    Log.d("deDupedNodes","Unique opera")
-                                    Log.d("deDupedNodes","Unique operaion id = ${it.id} , name = ${it.printerName}")
+                                    Log.d(
+                                        "deDupedNodes",
+                                        "Duplicate operaion id = ${it.id} , name = ${it.printerName}"
+                                    )
+                                } else {
+                                    Log.d("deDupedNodes", "Unique opera")
+                                    Log.d(
+                                        "deDupedNodes",
+                                        "Unique operaion id = ${it.id} , name = ${it.printerName}"
+                                    )
                                     newList.add(it)
                                 }
                                 temp = it.printerName!!
@@ -744,22 +755,29 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         for (i in kitchenData.indices) {
 
 
-                            if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false) && prefProvider.getValueboolean(IS_MASTER_TERMINAL, false)){
-                                if (kitchenData[i].printer_type == Constants.BLUETOOTH){
+                            if (prefProvider.getValueboolean(
+                                    IS_PRINTER_QUEUE_ENABLE,
+                                    false
+                                ) && prefProvider.getValueboolean(IS_MASTER_TERMINAL, false)
+                            ) {
+                                if (kitchenData[i].printer_type == Constants.BLUETOOTH) {
                                     viewModel.deleteKitchenPrinter(kitchenData[i].id)
-                                }else {
-                                   addPrinters(kitchenPrintersList,kitchenData,i)
+                                } else {
+                                    addPrinters(kitchenPrintersList, kitchenData, i)
                                 }
-                            }else {
-                                if (kitchenData[i].printer_type == Constants.WIFI){
+                            } else {
+                                if (kitchenData[i].printer_type == Constants.WIFI) {
                                     viewModel.deleteKitchenPrinter(kitchenData[i].id)
-                                }else {
-                                    addPrinters(kitchenPrintersList,kitchenData,i)
+                                } else {
+                                    addPrinters(kitchenPrintersList, kitchenData, i)
                                 }
                             }
 
                         }
-                        Log.d("kitchenPrintersList","kitchenPrintersList size = ${kitchenPrintersList.size}")
+                        Log.d(
+                            "kitchenPrintersList",
+                            "kitchenPrintersList size = ${kitchenPrintersList.size}"
+                        )
                         kitchenAdapter.setList(kitchenPrintersList)
                         allPrinterlist.addAll(kitchenPrintersList)
                         addedKitchenPrinters = true
@@ -852,7 +870,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                 }
 
-                Log.e(TAG,"checkAdded  ${isAdded}")
+                Log.e(TAG, "checkAdded  ${isAdded}")
                 if (isAdded == false) {
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -3094,8 +3112,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             lifecycleScope.launch {
 
 
-
-
                 Log.e(
                     TAG,
                     "sunmiCheckMasterTeminal  ${
@@ -3216,7 +3232,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     override fun updatePrinters() {
-        Log.d("updatePrinters","updatePrinters()")
+        Log.d("updatePrinters", "updatePrinters()")
         viewModel.updatePrinter()
     }
 
@@ -3224,7 +3240,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         syncPrinterList()
     }
 
-    companion object{
+    companion object {
         var updatePrinter: UpdatePrinters? = null
         lateinit var viewModelObject: PrinterViewModel
 
@@ -3235,14 +3251,29 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         updatePrinter = null
     }
 
-    fun observePrinterStatus(){
-        viewModel.snackbarText.observe(viewLifecycleOwner,{
-            AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), it.getContentIfNotHandled().toString()) { _, _ ->
+    fun observePrinterStatus() {
+        viewModel.snackbarText.observe(viewLifecycleOwner, {
+            AlertUtils.showCustomAlertWithListenerWithOK(
+                requireContext(),
+                it.getContentIfNotHandled().toString()
+            ) { _, _ ->
 
             }
 
 
         })
+    }
+
+    class WrapContentLinearLayoutManager(context: Context, re: Int, reverse: Boolean) :
+        LinearLayoutManager(context, re, reverse) {
+        //... constructor
+        override fun onLayoutChildren(recycler: Recycler, state: RecyclerView.State) {
+            try {
+                super.onLayoutChildren(recycler, state)
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("TAG", "meet a IOOBE in RecyclerView")
+            }
+        }
     }
 
 }

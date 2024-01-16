@@ -196,6 +196,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_50sdp"
+                    android:nestedScrollingEnabled="false"
                     android:layout_marginEnd="@dimen/_50sdp"
                     android:background="@drawable/background_square_border_grey"
                     android:orientation="vertical"
