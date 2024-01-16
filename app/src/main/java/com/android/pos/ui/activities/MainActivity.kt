@@ -1470,7 +1470,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
             // 2. Create subscription
             val appearanceChannel = Channel("PrinterQueueV4Channel")
-            Log.d(TAG,prefProvider?.getValueInt(LOCATION_ID, 0) as String)
+            Log.e(TAG,"locationID: ${prefProvider?.getValueInt(LOCATION_ID, 0)}")
             appearanceChannel.addParam("id", prefProvider?.getValueInt(LOCATION_ID, 0))
             // appearanceChannel.addParam("id",prefProvider.getValueInt(LOCATION_ID,0))
             subscription = consumer?.subscriptions?.create(appearanceChannel)

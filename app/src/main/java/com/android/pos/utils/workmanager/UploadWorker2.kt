@@ -127,7 +127,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
 
             if (isInternetAvailable()) {
-                connectActionCableSYNCSETTINGS()
+              //  connectActionCableSYNCSETTINGS()
             } else {
                 sendNotification("Please check your Network Connectivity.")
             }
@@ -351,7 +351,8 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 Log.e(TAG, "onFailed")
 
                 if (isInternetAvailable()) {
-                    consumer?.connect()
+
+                    //consumer?.connect()
                 } else {
                     sendNotification("Please check your Network Connectivity.")
                 }
@@ -1251,10 +1252,10 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
         options.reconnection = true
 
 
-        if (consumer2!=null){
+        if (consumer2 != null) {
             consumer2?.disconnect()
             connectActionCableSYNCSETTINGS()
-        }else{
+        } else {
             consumer2 = ActionCable.createConsumer(uri, options)
         }
 
