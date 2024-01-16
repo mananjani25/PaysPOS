@@ -188,8 +188,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         binding = FragmentPrinterBinding.inflate(inflater, container, false)
         try {
-            SunmiPrinterManager.getInstance()
-                .searchCloudPrinter(requireContext(), SearchMethod.LAN, this)
+            lifecycleScope.launch {
+                delay(1500)
+                SunmiPrinterManager.getInstance()
+                    .searchCloudPrinter(requireContext(), SearchMethod.LAN, this@Printer)
+            }
         } catch (e: SearchException) {
             e.printStackTrace()
         }
