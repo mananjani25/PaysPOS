@@ -3312,6 +3312,46 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             }"
         )
 
+        Log.e(
+            TAG,
+            "checkQUeue: ${
+                prefProvider?.getValueboolean(
+                    IS_PRINTER_QUEUE_ENABLE,
+                    false
+                )
+            }  checkMAsterRermi: ${
+                prefProvider?.getValueboolean(
+                    IS_MASTER_TERMINAL, false
+                )
+            }  consumer: ${consumer}"
+        )
+
+        if (prefProvider?.getValueboolean(
+                IS_PRINTER_QUEUE_ENABLE,
+                false
+            ) == true && prefProvider?.getValueboolean(
+                IS_MASTER_TERMINAL, false
+            ) == true && consumer == null && isLocalMasterFlag == false
+        ) {
+            isLocalMasterFlag = true
+
+            Log.e(TAG, "YesIN ACtionConnect")
+            connectActionCable()
+
+        } else if ((prefProvider?.getValueboolean(
+                IS_PRINTER_QUEUE_ENABLE,
+                false
+            ) == false || prefProvider?.getValueboolean(
+                IS_MASTER_TERMINAL, false
+            ) == false) && consumer != null
+        ) {
+
+            consumer?.disconnect()
+
+
+        }
+
+
 
         if (prefProvider?.getValueboolean(
                 IS_MASTER_TERMINAL,
@@ -3471,44 +3511,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
                 e.printStackTrace()
             }
-
-
-        }
-        Log.e(
-            TAG,
-            "checkQUeue: ${
-                prefProvider?.getValueboolean(
-                    IS_PRINTER_QUEUE_ENABLE,
-                    false
-                )
-            }  checkMAsterRermi: ${
-                prefProvider?.getValueboolean(
-                    IS_MASTER_TERMINAL, false
-                )
-            }  consumer: ${consumer}"
-        )
-
-        if (prefProvider?.getValueboolean(
-                IS_PRINTER_QUEUE_ENABLE,
-                false
-            ) == true && prefProvider?.getValueboolean(
-                IS_MASTER_TERMINAL, false
-            ) == true && consumer == null && isLocalMasterFlag == false
-        ) {
-            isLocalMasterFlag = true
-
-            Log.e(TAG, "YesIN ACtionConnect")
-            connectActionCable()
-
-        } else if ((prefProvider?.getValueboolean(
-                IS_PRINTER_QUEUE_ENABLE,
-                false
-            ) == false || prefProvider?.getValueboolean(
-                IS_MASTER_TERMINAL, false
-            ) == false) && consumer != null
-        ) {
-
-            consumer?.disconnect()
 
 
         }
