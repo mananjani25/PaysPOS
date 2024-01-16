@@ -188,11 +188,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         binding = FragmentPrinterBinding.inflate(inflater, container, false)
         try {
-            lifecycleScope.launch {
-                delay(1500)
-                SunmiPrinterManager.getInstance()
-                    .searchCloudPrinter(requireContext(), SearchMethod.LAN, this@Printer)
-            }
+            SunmiPrinterManager.getInstance()
+                .searchCloudPrinter(requireContext(), SearchMethod.LAN, this)
         } catch (e: SearchException) {
             e.printStackTrace()
         }
@@ -340,6 +337,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         availableNetworkAdapter.setListner(this)
         availableNetworkAdapter.setList(arrayListOf())
 
+        binding.rvAvailablePrinter.layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
         binding.rvAvailablePrinter.adapter = availableNetworkAdapter
         binding.rvAvailablePrinter.isNestedScrollingEnabled = false
         //   binding.rvAvailablePrinter.isLayoutFrozen = true
@@ -349,6 +347,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 LinearLayoutManager.VERTICAL
             )
         )
+        binding.rvKitchenPrinter.layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
         binding.rvKitchenPrinter.adapter = kitchenAdapter
         binding.rvKitchenPrinter.addItemDecoration(
             DividerItemDecoration(
@@ -356,6 +355,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 LinearLayoutManager.VERTICAL
             )
         )
+        binding.rvCustomerPrinter.layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
         binding.rvCustomerPrinter.adapter = customerAdapter
         binding.rvCustomerPrinter.addItemDecoration(
             DividerItemDecoration(
