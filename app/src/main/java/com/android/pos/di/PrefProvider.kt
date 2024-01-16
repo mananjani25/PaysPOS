@@ -75,9 +75,13 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         defaultValue: Int
     ): Int {
         openPref()
-        val result = sharedPreferences!!.getInt(key, defaultValue)
-        sharedPreferences = null
-        return result
+        try{
+            val result = sharedPreferences!!.getInt(key, defaultValue)
+            sharedPreferences = null
+            return result
+        }catch (e:Exception){
+            return 0
+        }
     }
 
     fun setValue(

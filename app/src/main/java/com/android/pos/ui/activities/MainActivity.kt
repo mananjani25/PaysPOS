@@ -101,6 +101,7 @@ import com.sunmi.externalprinterlibrary2.style.AlignStyle
 import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
 import com.sunmi.externalprinterlibrary2.style.UnderlineStyle
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
@@ -121,6 +122,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private var localCallConnect: Boolean = false
     private var previousPrinterAddress = ""
     private var previousPrinterName = ""
+    private var connectionCounter:Int=0
     private var disconnectSize0: Boolean = false
     private var globalPrinterQueue: JsonElement? = null
     var listOfPrintersData: ArrayList<PrinterJSONElementData> = arrayListOf()
@@ -1209,7 +1211,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             ) == true && consumer == null
         ) {
 
-            connectActionCable()
+//            connectActionCable()
         }
 
 
@@ -1458,10 +1460,17 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
             val uri = URI(Constants.PRINTER_QUEUE_CONNECTION_URL_SNACKPOS)
 
-            consumer = ActionCable.createConsumer(uri)
+            if (consumer!=null){
+                consumer?.disconnect()
+                connectActionCable()
+            }else{
+                consumer = ActionCable.createConsumer(uri)
+            }
+
 
             // 2. Create subscription
             val appearanceChannel = Channel("PrinterQueueV4Channel")
+            Log.d(TAG,prefProvider?.getValueInt(LOCATION_ID, 0) as String)
             appearanceChannel.addParam("id", prefProvider?.getValueInt(LOCATION_ID, 0))
             // appearanceChannel.addParam("id",prefProvider.getValueInt(LOCATION_ID,0))
             subscription = consumer?.subscriptions?.create(appearanceChannel)
@@ -1493,7 +1502,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     if (navController?.currentDestination?.id == R.id.login
                     ) {
                         Log.e(TAG, "IN_CONNECTION_CONDITION")
-                        consumer?.disconnect()
+//                        consumer?.disconnect()
                     } else {
                         subscription?.perform("received", params)
                     }
@@ -1527,16 +1536,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         Context.MODE_PRIVATE
                     ).edit().putBoolean(Constants.WORKER_QUEUE_IN_PROGRESS, true)
 
-
-
-                    if (this@MainActivity.getSharedPreferences(
-                            this@MainActivity.resources.getString(R.string.app_name),
-                            Context.MODE_PRIVATE
-                        ).getBoolean(Constants.CHECK_QUEUE_CANCEL, false) == true
-                    ) {
                         Log.e(TAG, "checkCancelWork")
+                        if (navController?.currentDestination?.id == R.id.login
+                        ) {
+                            Log.e(TAG, "IN_CONNECTION_CONDITION")
                         consumer?.disconnect()
-                    } else {
+                        }
+//                        consumer?.disconnect()
+                    else {
 
                         Log.e("listOfPrintersData", "onReceived")
                         if (it != null && isQueueRunning == false) {
@@ -1579,7 +1586,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                                     }  checkURL:  ${requestURL}"
                                 )
 
-                                if (reConnectCount >= 1) {
+                                if (reConnectCount >= 10) {
                                     consumer?.disconnect()
 
                                     reConnectPrinterQueue()
@@ -1668,7 +1675,15 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     Log.e(TAG, "onFailed")
 
                     if (isInternetAvailable()) {
-                        consumer?.connect()
+                        if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL,false) as Boolean && prefProvider?.getValueboolean(
+                                IS_PRINTER_QUEUE_ENABLE,false) as Boolean) {
+                           /* Handler(Looper.getMainLooper()).postDelayed(object:Runnable{
+                                override fun run() {
+                                    consumer?.connect()
+                                }
+
+                            },5000)*/
+                        }
                     } else {
                         sendNotification("Please check your Network Connectivity.")
                     }
@@ -1680,7 +1695,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
             // 3. Establish connection
-            if (localCallConnect == false) {
+
+           /* if (localCallConnect == false) {*/
                 localCallConnect = true
                 Log.e(TAG, "consumerConnect  ${consumer}")
                 this@MainActivity.getSharedPreferences(
@@ -1690,8 +1706,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
                 isQueueRunning = false
                 isPrinterRunning = false
-                consumer?.connect()
-            }
+            consumer?.connect()
+
+            /*}*/
 
         })
     }
@@ -2391,7 +2408,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                             }"
                         )
 
-                        if (reConnectCount >= 1) {
+                        if (reConnectCount >= 10) {
                             consumer?.disconnect()
                             reConnectPrinterQueue()
 
@@ -2439,7 +2456,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                             ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                         }"
                     )
-                    if (reConnectCount >= 1) {
+                    if (reConnectCount >= 10) {
                         consumer?.disconnect()
 
                         reConnectPrinterQueue()
@@ -2472,7 +2489,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                 )
 
-                if (reConnectCount >= 1) {
+                if (reConnectCount >= 10) {
                     consumer?.disconnect()
 
                     reConnectPrinterQueue()
@@ -2502,7 +2519,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     ""
                 ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
             )
-            if (reConnectCount >= 1) {
+            if (reConnectCount >= 10) {
                 consumer?.disconnect()
                 reConnectPrinterQueue()
 
@@ -2651,7 +2668,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                     )
 
-                    if (reConnectCount >= 1) {
+                    if (reConnectCount >= 10) {
                         consumer?.disconnect()
                         reConnectPrinterQueue()
 
@@ -2684,7 +2701,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         ""
                     ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                 )
-                if (reConnectCount >= 1) {
+                if (reConnectCount >= 10) {
                     consumer?.disconnect()
                     reConnectPrinterQueue()
 
@@ -3331,7 +3348,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 false
             ) == true && prefProvider?.getValueboolean(
                 IS_MASTER_TERMINAL, false
-            ) == true && consumer == null && isLocalMasterFlag == false
+            ) == true /*&& consumer == null && isLocalMasterFlag == false */
         ) {
             isLocalMasterFlag = true
 

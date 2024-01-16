@@ -50,6 +50,7 @@ import com.sunmi.externalprinterlibrary2.printer.CloudPrinterBuilder
 import com.sunmi.externalprinterlibrary2.style.AlignStyle
 import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
 import com.sunmi.externalprinterlibrary2.style.UnderlineStyle
+import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.annotations.NotNull
@@ -1248,7 +1249,15 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
         val uri = URI(Constants.PRINTER_QUEUE_CONNECTION_URL_SNACKPOS)
         val options = Consumer.Options()
         options.reconnection = true
-        consumer2 = ActionCable.createConsumer(uri, options)
+
+
+        if (consumer2!=null){
+            consumer2?.disconnect()
+            connectActionCableSYNCSETTINGS()
+        }else{
+            consumer2 = ActionCable.createConsumer(uri, options)
+        }
+
 
         Log.d("PrinterRefreshWorker", "uri = $uri")
 
@@ -1301,7 +1310,12 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 if (isInternetAvailable()) {
                     try {
 
-                        consumer2?.disconnect()
+                        Handler(Looper.getMainLooper()).postDelayed(object : Runnable {
+                            override fun run() {
+                                consumer2?.connect()
+                            }
+
+                        }, 10000)
 
                     } catch (e: Exception) {
                         e.printStackTrace()

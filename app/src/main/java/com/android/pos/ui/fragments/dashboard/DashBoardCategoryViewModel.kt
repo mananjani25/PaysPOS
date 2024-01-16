@@ -81,6 +81,7 @@ import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
+import com.android.pos.ui.activities.MainActivity
 import com.android.pos.utils.*
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status

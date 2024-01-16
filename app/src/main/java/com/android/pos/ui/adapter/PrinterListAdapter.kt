@@ -124,7 +124,7 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
     }
 
     override fun onBindViewHolder(holder: PrinterListAdapter.MyViewHolder, position: Int) {
-        holder.bind(list?.get(position))
+           holder.bind(list?.get(position))
     }
 
     override fun getItemCount(): Int {
