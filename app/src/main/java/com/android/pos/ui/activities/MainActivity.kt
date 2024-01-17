@@ -1675,8 +1675,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     Log.e(TAG, "onFailed")
 
                     if (isInternetAvailable()) {
-                        if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL,false) as Boolean && prefProvider?.getValueboolean(
-                                IS_PRINTER_QUEUE_ENABLE,false) as Boolean) {
+                        if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL,false) == true && prefProvider?.getValueboolean(
+                                IS_PRINTER_QUEUE_ENABLE,false) == true ) {
                            /* Handler(Looper.getMainLooper()).postDelayed(object:Runnable{
                                 override fun run() {
                                     consumer?.connect()
