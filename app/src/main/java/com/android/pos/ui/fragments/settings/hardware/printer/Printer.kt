@@ -336,6 +336,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         availableNetworkAdapter.setListner(this)
         availableNetworkAdapter.setList(arrayListOf())
 
+        binding.rvAvailablePrinter.itemAnimator = null
         binding.rvAvailablePrinter.adapter = availableNetworkAdapter
         binding.rvAvailablePrinter.isNestedScrollingEnabled = false
         //   binding.rvAvailablePrinter.isLayoutFrozen = true
