@@ -39,7 +39,7 @@ class BusinessDetailsFragment : Fragment() {
     private val viewModel by viewModels<BusniessDetailsViewModel>()
 
     var placesClient: PlacesClient? = null
-    var adapter1: _root_ide_package_.com.pays.pos.ui.fragments.settings.business.AutoCompleteAdapter? = null
+    var adapter1: AutoCompleteAdapter? = null
 
     private var timeZoneName = ArrayList<String>()
     private var timeZoneValue = ArrayList<String>()
@@ -85,7 +85,7 @@ class BusinessDetailsFragment : Fragment() {
         binding.edtStreet.threshold = 1
         binding.edtStreet.onItemClickListener = autocompleteClickListener
         adapter1 = placesClient?.let {
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.business.AutoCompleteAdapter(
+            AutoCompleteAdapter(
                 requireContext(),
                 it
             )

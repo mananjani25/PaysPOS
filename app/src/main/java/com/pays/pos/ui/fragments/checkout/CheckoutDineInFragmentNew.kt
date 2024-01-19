@@ -2260,7 +2260,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         val jsonArray1 = magtekRequestUtils.processData(
             (paymentAmount * 100),
-            _root_ide_package_.com.pays.pos.utils.TLVParser.getHexString(data),
+            TLVParser.getHexString(data),
             Constants.AUTHORIZE
         )
 

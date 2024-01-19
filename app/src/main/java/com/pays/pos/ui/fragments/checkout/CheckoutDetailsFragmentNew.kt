@@ -3603,7 +3603,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         val jsonArray1 = magtekRequestUtils.processData(
             (paymentAmount * 100),
-            _root_ide_package_.com.pays.pos.utils.TLVParser.getHexString(data),
+            TLVParser.getHexString(data),
             Constants.AUTHORIZE
         )
 

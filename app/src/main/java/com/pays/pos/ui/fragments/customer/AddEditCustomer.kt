@@ -67,8 +67,8 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
     private var country = arrayOf("United States", "Canada")
 
     var placesClient: PlacesClient? = null
-    var adapter1: _root_ide_package_.com.pays.pos.ui.fragments.settings.business.AutoCompleteAdapter? = null
-    var adapter2: _root_ide_package_.com.pays.pos.ui.fragments.settings.business.AutoCompleteAdapter? = null
+    var adapter1: AutoCompleteAdapter? = null
+    var adapter2: AutoCompleteAdapter? = null
     var changeField: Boolean = false
 
     @SuppressLint("ClickableViewAccessibility")
@@ -539,7 +539,7 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
         binding.edtStreet.threshold = 1
         binding.edtStreet.onItemClickListener = autocompleteClickListener
         adapter1 = placesClient?.let {
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.business.AutoCompleteAdapter(
+            AutoCompleteAdapter(
                 requireContext(),
                 it
             )
@@ -551,7 +551,7 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
         binding.edtStreetDel.threshold = 1
         binding.edtStreetDel.onItemClickListener = autocompleteClickListener1
         adapter2 = placesClient?.let {
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.business.AutoCompleteAdapter(
+            AutoCompleteAdapter(
                 requireContext(),
                 it
             )

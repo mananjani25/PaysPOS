@@ -367,7 +367,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
         } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+            SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(100)
                 setService(customerReceiptPrinters)
@@ -417,21 +417,21 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
     }
 
     private fun setService(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters) {
-        if (_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().sunmiPrinter == _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.FoundSunmiPrinter) {
+        if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
             LogUtil.logE("SunmiPrintHelper", "FoundSunmiPrinter")
 
-            if (!_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil.isBlueToothPrinter) {
+            if (!BluetoothUtil.isBlueToothPrinter) {
                 createReportFormatEODSunmiInner(customerReceiptPrinters)
             }
 
-        } else if (_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().sunmiPrinter == _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.CheckSunmiPrinter) {
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             Handler(Looper.getMainLooper()).postDelayed(
                 { setService(customerReceiptPrinters) },
                 2000
             )
             LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
-        } else if (_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().sunmiPrinter == _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.LostSunmiPrinter) {
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
 
             LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
         } else {
@@ -2371,7 +2371,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                 prefProvider?.getValue(Constants.BUSINESS_ADDRESS, "").toString(),
                 prefProvider?.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
             )
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
             PrintSunmiUtils.headerText("Employee End of Day Report")
             if (binding.spTerminals.selectedItem.toString().isNotEmpty()) {
@@ -2385,15 +2385,15 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                 )
             }
             PrintSunmiUtils.addHorizontalInner()
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 PrintSunmiUtils.normalText("Print Time:${MethodUtils.formatted()}")
             }
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
             PrintSunmiUtils.normalText("Employee Report:" + eodReportData?.reportTime)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (eodReportData?.orderSalesDetails?.data?.isNotEmpty() == true && eodReportConfiguration?.orderSalesDetails == true) {
 
@@ -2408,13 +2408,13 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     addItemsInOrderSalesDetailsInner(it)
                 }
 
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
             if (eodReportData?.salesSummary?.isNotEmpty() == true && eodReportConfiguration?.salesSummary == true) {
 
                 PrintSunmiUtils.headerText("SALES SUMMARY")
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
 
 
                 eodReportData?.salesSummary?.forEach {
@@ -2427,7 +2427,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                         ).toString()
                     )
                 }
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
 
             }
 
@@ -2450,7 +2450,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                         ).toString()
                     )
                 }
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
             if (eodReportData?.itemWiseSales?.isNotEmpty() == true && eodReportConfiguration?.isItemWiseSales == true){
@@ -2463,7 +2463,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     addItemWiseSalesSunmiInnerPrinter(it)
                 }
 
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
 
             }
 
@@ -2490,7 +2490,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     }
                 }
 
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
             if (eodReportData?.tipDetails?.isNotEmpty() == true && eodReportConfiguration?.tipsDetails == true) {
@@ -2513,7 +2513,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                         }
                     }
                 }
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
 
             }
 
@@ -2533,7 +2533,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                         ).toString()
                     )
                 }
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
             if (eodReportData?.refundAndVoidDetails?.isNotEmpty() == true && eodReportConfiguration?.refundOrVoids == true) {
@@ -2562,7 +2562,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                     }
                 }
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
 
@@ -2582,7 +2582,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                         ).toString()
                     )
                 }
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
             if (eodReportData?.discountDetails?.isNotEmpty() == true && eodReportConfiguration?.discountDetails == true) {
@@ -2600,7 +2600,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                         ).toString()
                     )
                 }
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
             if (eodReportData?.totalCreditPaymentDetails?.isNotEmpty() == true && eodReportConfiguration?.totalCreditPayments == true) {
@@ -2619,7 +2619,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                         ).toString()
                     )
                 }
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
 
             }
             if (eodReportData?.totalCashPayments?.isNotEmpty() == true && eodReportConfiguration?.totalCashPayments == true) {
@@ -2637,7 +2637,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                         ).toString()
                     )
                 }
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
             if (eodReportData?.totalPayments?.isNotEmpty() == true && eodReportConfiguration?.totalPayments == true) {
 
@@ -2654,7 +2654,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                         ).toString()
                     )
                 }
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
             if (eodReportData?.creditCardBreakdown?.isNotEmpty() == true && eodReportConfiguration?.creditCardBreakdown == true) {
@@ -2670,7 +2670,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                     addCreditCardBreakDownDataInner(it)
                 }
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
 
             }
 
@@ -2685,7 +2685,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     }
                 }
 
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
             if (eodReportData?.creditTipAudit?.isNotEmpty() == true && eodReportConfiguration?.creditTipAudit == true) {
 
@@ -2724,7 +2724,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     addCreditTipAuditDataInner(FPArt, SPart, TPArt, LPart)
                 }
 
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
             if (eodReportData?.employeeGuestDetails?.isNotEmpty() == true && eodReportConfiguration?.employeeGuestReport == true) {
 
@@ -2737,7 +2737,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                 }
 
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
             if (eodReportData?.salesPerCategorySummary?.isNotEmpty() == true && eodReportConfiguration?.cashCreditPerSalesCategorySummary == true) {
 
@@ -2748,11 +2748,11 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                         PrintSunmiUtils.normalTextCenter("Cash Sales")
                         PrintSunmiUtils.addHorizontalInner()
-                        _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                        SunmiPrintHelper.getInstance().lineWrap(1)
                         arrayList.forEach {
                             addPaymentDetailsTwoDataInner(it)
                         }
-                        _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                        SunmiPrintHelper.getInstance().lineWrap(1)
 
                         PrintSunmiUtils.addHorizontalInner()
 
@@ -2760,7 +2760,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                         PrintSunmiUtils.normalTextCenter("Credit/Non Cash Sales")
                         PrintSunmiUtils.addHorizontalInner()
-                        _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                        SunmiPrintHelper.getInstance().lineWrap(1)
 
                         arrayList.forEach {
                             addPaymentDetailsTwoDataInner(it)
@@ -2770,7 +2770,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
 
                 }
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
 
             }
 
@@ -2778,7 +2778,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
             if (eodReportData?.clockInClockOut?.isNotEmpty() == true && eodReportConfiguration?.clockInOut == true) {
 
                 PrintSunmiUtils.headerText("CLOCK IN-CLOCK OUT")
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
 
                 eodReportData?.clockInClockOut?.forEach {
                     it.forEach { data ->
@@ -2791,7 +2791,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                             )
                         }
                     }
-                    _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                    SunmiPrintHelper.getInstance().lineWrap(1)
                 }
             }
 
@@ -2806,7 +2806,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                 }
 
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
             if (eodReportData?.otherDetails?.isNotEmpty() == true && eodReportConfiguration?.otherDetails == true) {
 
@@ -2822,12 +2822,12 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
             }
 
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(2)
+            SunmiPrintHelper.getInstance().lineWrap(2)
 
 
 
             PrintSunmiUtils.normalText("EMPLOYEE x " + repeat("_", 36))
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
             PrintSunmiUtils.normalText("CASH RECEIVED BY" + repeat("_", 31))
 

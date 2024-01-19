@@ -381,7 +381,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
     private fun setAdapter() {
 
 
-        object : _root_ide_package_.com.pays.pos.utils.SwipeHelper(activity, binding.rvPrinterQueueList) {
+        object : SwipeHelper(activity, binding.rvPrinterQueueList) {
             override fun instantiateUnderlayButton(
                 viewHolder: RecyclerView.ViewHolder?,
                 underlayButtons: MutableList<UnderlayButton>?

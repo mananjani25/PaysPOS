@@ -48,7 +48,7 @@ class AddNewCustomerForGiftCardFragment : Fragment(), AddressTextChangeListner {
     private var country = arrayOf("United States", "Canada")
 
     private var placesClient: PlacesClient? = null
-    var adapter1: _root_ide_package_.com.pays.pos.ui.fragments.settings.business.AutoCompleteAdapter? = null
+    var adapter1: AutoCompleteAdapter? = null
     private var changeField: Boolean = false
 
     @SuppressLint("ClickableViewAccessibility")
@@ -208,7 +208,7 @@ class AddNewCustomerForGiftCardFragment : Fragment(), AddressTextChangeListner {
         binding.edtStreet.threshold = 1
         binding.edtStreet.onItemClickListener = autocompleteClickListener
         adapter1 = placesClient?.let {
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.business.AutoCompleteAdapter(
+            AutoCompleteAdapter(
                 requireContext(),
                 it
             )

@@ -21,7 +21,7 @@ import java.util.*
  * Adapter for Person items. Sorts them by last name into sections starting with the
  * first letter of the last name.
  */
-class TeamsAdapter : _root_ide_package_.com.pays.pos.utils.sticky_recycler.SectioningAdapter(), Filterable {
+class TeamsAdapter : SectioningAdapter(), Filterable {
     private var isSelectedPos: Int = 0
     private val locale = Locale.getDefault()
     private lateinit var requireActivity: FragmentActivity
@@ -45,7 +45,7 @@ class TeamsAdapter : _root_ide_package_.com.pays.pos.utils.sticky_recycler.Secti
     }
 
     inner class ItemViewHolder internal constructor(itemView: View) :
-        _root_ide_package_.com.pays.pos.utils.sticky_recycler.SectioningAdapter.ItemViewHolder(itemView) {
+        SectioningAdapter.ItemViewHolder(itemView) {
 
 
         var personNameTextView: TextView = itemView.findViewById(R.id.txtName)
@@ -59,7 +59,7 @@ class TeamsAdapter : _root_ide_package_.com.pays.pos.utils.sticky_recycler.Secti
 
     @SuppressLint("ClickableViewAccessibility")
     inner class HeaderViewHolder internal constructor(itemView: View) :
-        _root_ide_package_.com.pays.pos.utils.sticky_recycler.SectioningAdapter.HeaderViewHolder(itemView) {
+        SectioningAdapter.HeaderViewHolder(itemView) {
         var titleTextView: TextView = itemView.findViewById(R.id.txtHeader)
     }
 
@@ -158,7 +158,7 @@ class TeamsAdapter : _root_ide_package_.com.pays.pos.utils.sticky_recycler.Secti
 
     @SuppressLint("SetTextI18n")
     override fun onBindItemViewHolder(
-        viewHolder: _root_ide_package_.com.pays.pos.utils.sticky_recycler.SectioningAdapter.ItemViewHolder,
+        viewHolder: SectioningAdapter.ItemViewHolder,
         sectionIndex: Int,
         itemIndex: Int,
         itemType: Int
@@ -243,7 +243,7 @@ class TeamsAdapter : _root_ide_package_.com.pays.pos.utils.sticky_recycler.Secti
 
     @SuppressLint("SetTextI18n")
     override fun onBindHeaderViewHolder(
-        viewHolder: _root_ide_package_.com.pays.pos.utils.sticky_recycler.SectioningAdapter.HeaderViewHolder,
+        viewHolder: SectioningAdapter.HeaderViewHolder,
         sectionIndex: Int,
         headerType: Int
     ) {

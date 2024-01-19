@@ -334,7 +334,7 @@ class MethodUtils {
             var filePart: MultipartBody.Part? = null
             if (fileUrl?.isNotEmpty() == true) {
                 val file = File(fileUrl)
-                val fileBody = _root_ide_package_.com.pays.pos.utils.ProgressRequestBody(
+                val fileBody = ProgressRequestBody(
                     File(fileUrl),
                     contentType,
                     null

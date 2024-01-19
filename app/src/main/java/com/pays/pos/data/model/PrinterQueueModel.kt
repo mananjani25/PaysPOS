@@ -6,7 +6,7 @@ import androidx.room.TypeConverters
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.pays.pos.data.typeconvert.TCPrinterQueueSuucessModel
 
-@TypeConverters(_root_ide_package_.com.pays.pos.data.typeconvert.TCPrinterQueueSuucessModel::class)
+@TypeConverters(TCPrinterQueueSuucessModel::class)
 @Entity(tableName = "PrinterQueue")
 data class PrinterQueueModel(
     @PrimaryKey

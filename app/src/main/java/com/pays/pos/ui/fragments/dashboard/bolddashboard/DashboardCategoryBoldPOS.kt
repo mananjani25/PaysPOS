@@ -117,13 +117,13 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     ScannerAppEngine.IScannerAppEngineDevEventsDelegate,
-    _root_ide_package_.com.pays.pos.aidl.ICallback, DineInOrderCallBack,
+    ICallback, DineInOrderCallBack,
     SyncDataCallback {
     private var mBluetoothAdapter: BluetoothAdapter? = null
     private val mHandler = Handler(Looper.myLooper()!!)
     private lateinit var presentation: CustomDisplay
     private var dineInList: List<DineInModel>? = null
-    private var woyouService: _root_ide_package_.com.pays.pos.aidl.IWoyouService? = null
+    private var woyouService: IWoyouService? = null
     private var cartList: ArrayList<CartModel> = arrayListOf()
     private val viewModelServiceCharge by viewModels<ServiceChargeListViewModel>()
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
@@ -259,7 +259,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         syncDataCallback = this
         Binding()// putting method in onviewcreated due to UI glitch issue
         checkCashDrawerObserver() // putting method in onviewcreated due to UI glitch issue
-        _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+        SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
         releaseMemory()// putting method in onviewcreated due to UI glitch issue
         prefProvider.setValue(Constants.REDIRECT_FROM, "")
         //prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
@@ -1171,7 +1171,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             }
 
                             try {
-                                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().openCashBox()
+                                SunmiPrintHelper.getInstance().openCashBox()
                             } catch (e: java.lang.Exception) {
                                 e.printStackTrace()
                             }
@@ -1198,12 +1198,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
                             try {
-                                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().sendRawData(aa)
+                                SunmiPrintHelper.getInstance().sendRawData(aa)
                             } catch (e: java.lang.Exception) {
                                 e.printStackTrace()
                             }
                             try {
-                                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().openCashBox()
+                                SunmiPrintHelper.getInstance().openCashBox()
                             } catch (e: java.lang.Exception) {
                                 e.printStackTrace()
                             }
@@ -1291,7 +1291,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(p0: ComponentName?, service: IBinder?) {
             LogUtil.logE(TAG, "onServiceConnected  1")
-            woyouService = _root_ide_package_.com.pays.pos.aidl.IWoyouService.Stub.asInterface(service)
+            woyouService = IWoyouService.Stub.asInterface(service)
 
         }
 
@@ -2119,7 +2119,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+            SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             setService(data, createOrderResponse.data)
 
 
@@ -2642,11 +2642,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         data: CreateOrderResponse.Data
     ) {
-        if (_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().sunmiPrinter == _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.FoundSunmiPrinter) {
+        if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
             LogUtil.logE("SunmiPrintHelper1", "FoundSunmiPrinter")
 
-            if (!_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil.isBlueToothPrinter) {
+            if (!BluetoothUtil.isBlueToothPrinter) {
 
                 LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
@@ -2655,12 +2655,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             }
 
-        } else if (_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().sunmiPrinter == _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.CheckSunmiPrinter) {
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             Handler(Looper.getMainLooper()).postDelayed({
                 setService(kitchenReceiptPrinters, data)
             }, 2000)
             LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
-        } else if (_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().sunmiPrinter == _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.LostSunmiPrinter) {
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
 
             LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
         } else {
@@ -3854,14 +3854,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     ) {
         try {
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().initPrinter()
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(4)
+            SunmiPrintHelper.getInstance().initPrinter()
+            SunmiPrintHelper.getInstance().lineWrap(4)
             if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                 PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.custom_order_id)
             } else {
                 PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
             }
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {
 
@@ -3878,7 +3878,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
             //   PrintSunmiUtils.headerText(receiptModel?.order?.deliveryType.toString())
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
 
             if (kitchenSettingModel.showTeamMember) {
@@ -3978,7 +3978,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
             }
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(2)
+            SunmiPrintHelper.getInstance().lineWrap(2)
 
             PrintSunmiUtils.cutPaperInner()
 
@@ -4415,23 +4415,23 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private fun printByBluTooth(content: String) {
         try {
             if (true) {
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil.sendData(
-                    _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.ESCUtil.boldOn())
+                BluetoothUtil.sendData(
+                    ESCUtil.boldOn())
             } else {
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil.sendData(
-                    _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.ESCUtil.boldOff())
+                BluetoothUtil.sendData(
+                    ESCUtil.boldOff())
             }
             if (true) {
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil.sendData(
-                    _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.ESCUtil.underlineWithOneDotWidthOn())
+                BluetoothUtil.sendData(
+                    ESCUtil.underlineWithOneDotWidthOn())
             } else {
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil.sendData(
-                    _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.ESCUtil.underlineOff())
+                BluetoothUtil.sendData(
+                    ESCUtil.underlineOff())
             }
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil.sendData(content.toByteArray(charset("GB18030")))
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil.sendData(
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.ESCUtil.nextLine(3))
+            BluetoothUtil.sendData(content.toByteArray(charset("GB18030")))
+            BluetoothUtil.sendData(
+                ESCUtil.nextLine(3))
         } catch (e: IOException) {
             e.printStackTrace()
         }

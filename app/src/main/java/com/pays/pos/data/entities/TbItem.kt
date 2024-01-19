@@ -15,7 +15,7 @@ import kotlinx.parcelize.Parcelize
 import java.util.UUID
 
 
-@TypeConverters(_root_ide_package_.com.pays.pos.data.typeconvert.TypeConvertersTax::class, TypeConvertersIds::class, _root_ide_package_.com.pays.pos.data.typeconvert.TCModifier::class)
+@TypeConverters(TypeConvertersTax::class, TypeConvertersIds::class, TCModifier::class)
 @Entity(tableName = "TbItem")
 @Parcelize
 class TbItem : Parcelable {

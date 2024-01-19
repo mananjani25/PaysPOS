@@ -76,7 +76,7 @@ class PhoneOrderFragment : Fragment() {
     private val viewModel by viewModels<LoginViewModel>()
 
     var placesClient: PlacesClient? = null
-    var adapter1: _root_ide_package_.com.pays.pos.ui.fragments.settings.business.AutoCompleteAdapter? = null
+    var adapter1: AutoCompleteAdapter? = null
     var selectedCustomer: TbCustomer? = null
 
 
@@ -191,7 +191,7 @@ class PhoneOrderFragment : Fragment() {
         binding.edtStreet.threshold = 1
         binding.edtStreet.onItemClickListener = autocompleteClickListener
         adapter1 = placesClient?.let {
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.business.AutoCompleteAdapter(
+            AutoCompleteAdapter(
                 requireContext(),
                 it
             )

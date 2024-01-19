@@ -135,7 +135,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
         binding.rvEmployeeList.itemAnimator = null
         val stickyHeaderLayoutManager =
-            _root_ide_package_.com.pays.pos.utils.sticky_recycler.StickyHeaderLayoutManager()
+            StickyHeaderLayoutManager()
         binding.rvEmployeeList.layoutManager = stickyHeaderLayoutManager
         adapter.setCallback(this)
         adapter.setOperationCallback(this)

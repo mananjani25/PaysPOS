@@ -3243,7 +3243,7 @@ fun addOrdersForKitchenTransitionInner(
                     PrintSunmiUtils.normalTextLarge("  Note:" + obj.note)
                 }
 
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
         }
     }
@@ -3274,7 +3274,7 @@ fun addOrdersForKitchenInner(
                     PrintSunmiUtils.normalTextLarge("  Note:" + obj.note)
                 }
 
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
         }
     }

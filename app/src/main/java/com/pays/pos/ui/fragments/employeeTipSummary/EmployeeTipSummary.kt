@@ -393,7 +393,7 @@ class EmployeeTipSummary : Fragment() {
 
         } else if (customerReceiptPrinters.name.startsWith(Constants.SUNMI_INNER_PRINTER, true)) {
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+            SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(100)
                 setService(customerReceiptPrinters)
@@ -692,21 +692,21 @@ class EmployeeTipSummary : Fragment() {
     }
 
     private fun setService(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters) {
-        if (_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().sunmiPrinter == _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.FoundSunmiPrinter) {
+        if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
             LogUtil.logE("SunmiPrintHelper", "FoundSunmiPrinter")
 
-            if (!_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil.isBlueToothPrinter) {
+            if (!BluetoothUtil.isBlueToothPrinter) {
                 createReportFormatETSsunmiInnerPrinter()
             }
 
-        } else if (_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().sunmiPrinter == _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.CheckSunmiPrinter) {
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             Handler(Looper.getMainLooper()).postDelayed(
                 { setService(customerReceiptPrinters) },
                 2000
             )
             LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
-        } else if (_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().sunmiPrinter == _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.LostSunmiPrinter) {
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
 
             LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
         } else {
@@ -734,7 +734,7 @@ class EmployeeTipSummary : Fragment() {
             prefProvider?.getValue(Constants.BUSINESS_ADDRESS, "").toString(),
             prefProvider?.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
         )
-        _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+        SunmiPrintHelper.getInstance().lineWrap(1)
 
         PrintSunmiUtils.headerText("Employee Tips Summary")
         if (prefProvider?.employeeName().toString().isNotEmpty()) {
@@ -742,12 +742,12 @@ class EmployeeTipSummary : Fragment() {
         }
 
         PrintSunmiUtils.addHorizontalInner()
-        _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+        SunmiPrintHelper.getInstance().lineWrap(1)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             PrintSunmiUtils.normalText("Print Time:${MethodUtils.formatted()}")
         }
-        _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+        SunmiPrintHelper.getInstance().lineWrap(1)
 
 
         //Main part start
@@ -759,11 +759,11 @@ class EmployeeTipSummary : Fragment() {
 
         // Main part end
 
-        _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(2)
+        SunmiPrintHelper.getInstance().lineWrap(2)
 
 
         PrintSunmiUtils.normalText("EMPLOYEE x " + com.pays.pos.utils.repeat("_", 36))
-        _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+        SunmiPrintHelper.getInstance().lineWrap(1)
 
         PrintSunmiUtils.normalText("CASH RECEIVED BY" + com.pays.pos.utils.repeat("_", 31))
 

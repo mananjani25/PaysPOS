@@ -26,9 +26,9 @@ data class TbCustomer(
     @SerializedName("same_as_billing_address") var same_as_billing_address: Boolean? = false,
     @SerializedName("final_reward") var final_reward: Int? = 0,
     @SerializedName("company") val company: String? = null,
-    @TypeConverters(_root_ide_package_.com.pays.pos.data.typeconvert.TypeConvertorPhone::class)
+    @TypeConverters(TypeConvertorPhone::class)
     @SerializedName("phones") val phones: List<TbPhones> = listOf(),
-    @TypeConverters(_root_ide_package_.com.pays.pos.data.typeconvert.TypeConvertorAddress::class)
+    @TypeConverters(TypeConvertorAddress::class)
     @SerializedName("addresses") val addresses: List<TbAddress> = listOf(),
     var isSelcted: Boolean = false
 ) : Parcelable {

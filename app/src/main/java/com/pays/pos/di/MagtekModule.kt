@@ -126,7 +126,7 @@ open class MagtekModule @Inject constructor(
 
     private fun OnTransactionResult(data: ByteArray?) {
 
-        LogUtil.logE("[Transaction Result]", _root_ide_package_.com.pays.pos.utils.TLVParser.getHexString(data))
+        LogUtil.logE("[Transaction Result]", TLVParser.getHexString(data))
 
 
         if (data != null) {
@@ -137,9 +137,9 @@ open class MagtekModule @Inject constructor(
                     val batchData = ByteArray(lenBatchData)
                     System.arraycopy(data, 3, batchData, 0, lenBatchData)
                     LogUtil.logE("[Parsed Batch Data]", "")
-                    val parsedTLVList = _root_ide_package_.com.pays.pos.utils.TLVParser.parseEMVData(batchData, false, "")
-                    val cidString = _root_ide_package_.com.pays.pos.utils.TLVParser.getTagValue(parsedTLVList, "9F27")
-                    val cidValue = _root_ide_package_.com.pays.pos.utils.TLVParser.getByteArrayFromHexString(cidString)
+                    val parsedTLVList = TLVParser.parseEMVData(batchData, false, "")
+                    val cidString = TLVParser.getTagValue(parsedTLVList, "9F27")
+                    val cidValue = TLVParser.getByteArrayFromHexString(cidString)
                     var approved = false
                     if (cidValue != null) {
                         if (cidValue.isNotEmpty()) {
@@ -162,7 +162,7 @@ open class MagtekModule @Inject constructor(
 
     private fun OnDisplayMessageRequest(bytes: ByteArray) {
 
-        val message = _root_ide_package_.com.pays.pos.utils.TLVParser.getTextString(bytes, 0)
+        val message = TLVParser.getTextString(bytes, 0)
         LogUtil.logE("[Display Mes Request]", message)
 
 //        if (message == "DECLINED"){
@@ -172,16 +172,16 @@ open class MagtekModule @Inject constructor(
 
     private fun OnTransactionStatus(bytes: ByteArray) {
 
-        LogUtil.logE("[Transaction Status]", _root_ide_package_.com.pays.pos.utils.TLVParser.getHexString(bytes))
+        LogUtil.logE("[Transaction Status]", TLVParser.getHexString(bytes))
 
         when {
-            "0500010000" == _root_ide_package_.com.pays.pos.utils.TLVParser.getHexString(bytes) -> {
+            "0500010000" == TLVParser.getHexString(bytes) -> {
                 listner?.processStart("Request Cancelled", true)
             }
-            "0600910000" == _root_ide_package_.com.pays.pos.utils.TLVParser.getHexString(bytes) -> {
+            "0600910000" == TLVParser.getHexString(bytes) -> {
                 listner?.processStart("Request Cancelled", true)
             }
-            "0200120000" == _root_ide_package_.com.pays.pos.utils.TLVParser.getHexString(bytes) -> {
+            "0200120000" == TLVParser.getHexString(bytes) -> {
                 if (!dataRecv) {
                     listner?.processStart("Card Error", true)
                 } else dataRecv = false
@@ -225,7 +225,7 @@ open class MagtekModule @Inject constructor(
 
         if (m_emvMessageFormatRequestPending) {
             m_emvMessageFormatRequestPending = false
-            val emvMessageFormatResponseByteArray = _root_ide_package_.com.pays.pos.utils.TLVParser.getByteArrayFromHexString(data)
+            val emvMessageFormatResponseByteArray = TLVParser.getByteArrayFromHexString(data)
             if (emvMessageFormatResponseByteArray.size == 3) {
 
                 if (emvMessageFormatResponseByteArray[0].toInt() == 0 && emvMessageFormatResponseByteArray[1].toInt() == 1) {

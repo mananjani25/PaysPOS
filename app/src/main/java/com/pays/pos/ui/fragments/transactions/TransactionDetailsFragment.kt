@@ -1531,7 +1531,7 @@ class TransactionDetailsFragment : Fragment() {
 
         } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+            SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(100)
                 setService()
@@ -1631,7 +1631,7 @@ class TransactionDetailsFragment : Fragment() {
                 }
             }
         } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+            SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(200)
                 setService2(data, type)
@@ -3022,18 +3022,18 @@ class TransactionDetailsFragment : Fragment() {
     ) {
         try {
             // PrintSunmiUtils.fontSizeInner(LARGE)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().initPrinter()
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(4)
+            SunmiPrintHelper.getInstance().initPrinter()
+            SunmiPrintHelper.getInstance().lineWrap(4)
             if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                 PrintSunmiUtils.headerText("OrderID:" + paymentDetailsResponse.data.custom_order_id)
             } else {
                 PrintSunmiUtils.headerText("OrderID:" + paymentDetailsResponse.data.order.id)
             }
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {
                 PrintSunmiUtils.headerText(paymentDetailsResponse.data.order.order_type_name.toString())
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
             if (paymentDetailsResponse.data.order.order_type.equals("Online Order", true) ||
@@ -3041,7 +3041,7 @@ class TransactionDetailsFragment : Fragment() {
                 paymentDetailsResponse.data.order.order_type.equals(PHONE_ORDER, true)
             ) {
                 PrintSunmiUtils.headerText(paymentDetailsResponse.data.order.delivery_type.toString())
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
             if (kitchenSettingModel.showTeamMember) {
@@ -3053,11 +3053,11 @@ class TransactionDetailsFragment : Fragment() {
                     paymentDetailsResponse.data.order.created_at.toString()
                 )
             )
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
 
             PrintSunmiUtils.addHorizontalInner()
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
 //            receiptModel?.order?.orderItems?.let {
 //                addOrdersForKitchenInner(
@@ -3078,7 +3078,7 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.orderNoteInnerLarge(paymentDetailsResponse.data.order.note.toString())
             }
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
             if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                 if (paymentDetailsResponse.data.order.customer != null) {
                     PrintSunmiUtils.customerDetailsInner()
@@ -3130,7 +3130,7 @@ class TransactionDetailsFragment : Fragment() {
                 }
             }
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
             PrintSunmiUtils.cutPaperInner()
 
             //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
@@ -3147,11 +3147,11 @@ class TransactionDetailsFragment : Fragment() {
         type: String
     ) {
 
-        if (_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().sunmiPrinter == _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.FoundSunmiPrinter) {
+        if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
             LogUtil.logE("SunmiPrintHelper1", "FoundSunmiPrinter")
 
-            if (!_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil.isBlueToothPrinter) {
+            if (!BluetoothUtil.isBlueToothPrinter) {
 
                 LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
@@ -3160,12 +3160,12 @@ class TransactionDetailsFragment : Fragment() {
 
             }
 
-        } else if (_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().sunmiPrinter == _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.CheckSunmiPrinter) {
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             Handler(Looper.getMainLooper()).postDelayed({
                 setService2(kitchenReceiptPrinters, type)
             }, 2000)
             LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
-        } else if (_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().sunmiPrinter == _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.LostSunmiPrinter) {
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
 
             LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
         } else {
@@ -3175,19 +3175,19 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun setService(
     ) {
-        if (_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().sunmiPrinter == _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.FoundSunmiPrinter) {
+        if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
             LogUtil.logE("SunmiPrintHelper1", "FoundSunmiPrinter")
-            if (!_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil.isBlueToothPrinter) {
+            if (!BluetoothUtil.isBlueToothPrinter) {
                 LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
                 generateInnerPrintSunmi()
             }
-        } else if (_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().sunmiPrinter == _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.CheckSunmiPrinter) {
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             Handler(Looper.getMainLooper()).postDelayed({
                 setService(
                 )
             }, 2000)
             LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
-        } else if (_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().sunmiPrinter == _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.LostSunmiPrinter) {
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
             LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
         } else {
             LogUtil.logE("SunmiPrintHelper", "ELSE")
@@ -4964,7 +4964,7 @@ class TransactionDetailsFragment : Fragment() {
 
             PrintSunmiUtils.fontSizeInner(customerSettingModel.fonts)
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().initPrinter()
+            SunmiPrintHelper.getInstance().initPrinter()
 
             if (customerSettingModel.showOrderIdTop) {
                 if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
@@ -4973,7 +4973,7 @@ class TransactionDetailsFragment : Fragment() {
                     PrintSunmiUtils.headerText("OrderID:" + paymentDetailsResponse.data.order_id)
                 }
             }
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
 
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
@@ -5006,7 +5006,7 @@ class TransactionDetailsFragment : Fragment() {
             if (paymentDetailsResponse.data.order.venue_website.isNotEmpty() && customerSettingModel.showWebsiteAddress) {
                 PrintSunmiUtils.normalTextCenter(paymentDetailsResponse.data.order.venue_website)
             } else {
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
             if (customerSettingModel.showOrderType) {
@@ -5014,7 +5014,7 @@ class TransactionDetailsFragment : Fragment() {
                 if (!paymentDetailsResponse.data.order.order_type_name.trim()
                         .contains("Phone", true)
                 ) {
-                    _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                    SunmiPrintHelper.getInstance().lineWrap(1)
                 }
             }
 
@@ -5028,7 +5028,7 @@ class TransactionDetailsFragment : Fragment() {
             }
 
             if (paymentDetailsResponse.data.order.order_type_name.trim().contains("Phone", true)) {
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
             if (customerSettingModel.fonts == Constants.LARGE) {
@@ -5135,7 +5135,7 @@ class TransactionDetailsFragment : Fragment() {
                 )
             }
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(2)
+            SunmiPrintHelper.getInstance().lineWrap(2)
 
 
             if (paymentDetailsResponse?.data.order.total_discount != null) {
@@ -5268,7 +5268,7 @@ class TransactionDetailsFragment : Fragment() {
                 }
             }
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
             val totalAmt =
                 MethodUtils.roundOffAmountDouble(paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips)
 
@@ -5290,9 +5290,9 @@ class TransactionDetailsFragment : Fragment() {
                         PrintSunmiUtils.lineChar()
                     ).toString()
                 )
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             } else {
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
             if (paymentDetailsResponse.data.order?.total_tips == 0.0) {
@@ -5300,7 +5300,7 @@ class TransactionDetailsFragment : Fragment() {
 
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         PrintSunmiUtils.boldText("Tips      _____________")
-                        _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                        SunmiPrintHelper.getInstance().lineWrap(1)
                     } else {
                         PrintSunmiUtils.boldText("Tips                              _____________")
                     }
@@ -5310,7 +5310,7 @@ class TransactionDetailsFragment : Fragment() {
 
 
             if (customerSettingModel.showTipSuggestion) {
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
                 PrintSunmiUtils.additionalTipsInner()
                 if (tipsList.isNotEmpty()) {
                     PrintSunmiUtils.addTipListInner(
@@ -5319,7 +5319,7 @@ class TransactionDetailsFragment : Fragment() {
                         customerSettingModel.fonts
                     )
                 }
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
 
@@ -5365,7 +5365,7 @@ class TransactionDetailsFragment : Fragment() {
             }
 
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (customerSettingModel.showCustomerAddress or customerSettingModel.showCustomerPhone or customerSettingModel.showCustomerName) {
 
@@ -5419,7 +5419,7 @@ class TransactionDetailsFragment : Fragment() {
                         }
                     }
 
-                    _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(2)
+                    SunmiPrintHelper.getInstance().lineWrap(2)
 
                 }
             }
@@ -5427,7 +5427,7 @@ class TransactionDetailsFragment : Fragment() {
 
             if (paymentDetailsResponse?.data.order?.note != null && paymentDetailsResponse?.data.order?.note != "" && customerSettingModel.showOrderNote) {
                 PrintSunmiUtils.orderNoteInner(paymentDetailsResponse?.data.order?.note)
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(2)
+                SunmiPrintHelper.getInstance().lineWrap(2)
             }
 
             if (customerSettingModel.fonts == Constants.LARGE) {
@@ -5436,7 +5436,7 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.boldText("Customer Signature           __________________")
             }
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(2)
+            SunmiPrintHelper.getInstance().lineWrap(2)
             if (customerSettingModel.showQrCode) {
 
                 PrintSunmiUtils.qrCodeInner(paymentDetailsResponse?.data.order?.digital_receipt_url.toString())
@@ -5445,7 +5445,7 @@ class TransactionDetailsFragment : Fragment() {
 
             PrintSunmiUtils.cutPaperInner()
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().deInitSunmiPrinterService(requireContext())
+            SunmiPrintHelper.getInstance().deInitSunmiPrinterService(requireContext())
         } catch (e: Exception) {
             e.printStackTrace()
         }

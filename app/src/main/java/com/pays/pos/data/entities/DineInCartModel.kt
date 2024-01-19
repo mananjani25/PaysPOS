@@ -9,7 +9,7 @@ import com.pays.pos.data.typeconvert.TypeConvertersItems
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-@TypeConverters(_root_ide_package_.com.pays.pos.data.typeconvert.TypeConvertersItems::class)
+@TypeConverters(TypeConvertersItems::class)
 @Entity(tableName = "DineInCartModel")
 class DineInCartModel: Parcelable {
 

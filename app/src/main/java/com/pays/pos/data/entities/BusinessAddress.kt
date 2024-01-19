@@ -4,7 +4,7 @@ package com.pays.pos.data.entities
 import androidx.room.TypeConverters
 import com.pays.pos.data.typeconvert.TCBusiness
 import com.google.gson.annotations.SerializedName
-@TypeConverters(_root_ide_package_.com.pays.pos.data.typeconvert.TCBusiness::class)
+@TypeConverters(TCBusiness::class)
 data class  BusinessAddress(
     @SerializedName("id") var bid: Int?=null,
     @SerializedName("address1") var address1: String,

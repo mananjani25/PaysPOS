@@ -114,9 +114,9 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         val layoutParams = LinearLayout.LayoutParams(-1, -1)
         val data2encode = (3.toChar()) + "92"
         val barcode =
-            _root_ide_package_.com.pays.pos.utils.scanner.barcode.GenerateBarcode128B(data2encode)
+            GenerateBarcode128B(data2encode)
         val barCodeView =
-            _root_ide_package_.com.pays.pos.utils.scanner.barcode.BarCodeView(this, barcode)
+            com.pays.pos.utils.scanner.barcode.BarCodeView(this, barcode)
         barCodeView.setBackgroundColor(resources.getColor(R.color.txtColor))
         val display: Display? = windowManager?.defaultDisplay
         val size = Point()

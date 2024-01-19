@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.pays.pos.data.typeconvert.TypeConvertersDBLevelAddon
 
-@TypeConverters(_root_ide_package_.com.pays.pos.data.typeconvert.TypeConvertersDBLevelAddon::class)
+@TypeConverters(TypeConvertersDBLevelAddon::class)
 @Entity(tableName = "TbLevelAddon")
 class TbLevelAddon {
 

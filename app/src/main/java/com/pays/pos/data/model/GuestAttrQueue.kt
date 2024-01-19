@@ -6,7 +6,7 @@ import androidx.room.TypeConverters
 import com.pays.pos.data.entities.TypeConvertersQueueDineIn
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
 
-@TypeConverters(_root_ide_package_.com.pays.pos.data.entities.TypeConvertersQueueDineIn::class)
+@TypeConverters(TypeConvertersQueueDineIn::class)
 @Entity
 data class GuestAttrQueue(
     @PrimaryKey(autoGenerate = true)

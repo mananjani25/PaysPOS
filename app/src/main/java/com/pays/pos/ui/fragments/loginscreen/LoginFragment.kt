@@ -224,7 +224,7 @@ class LoginFragment : Fragment() {
     private fun versionDisplay() {
 
         binding.txtVersion?.text =
-            "Version : " + _root_ide_package_.com.pays.pos.BuildConfig.VERSION_NAME + "(" + _root_ide_package_.com.pays.pos.BuildConfig.VERSION_CODE + ")"
+            "Version : " + BuildConfig.VERSION_NAME + "(" + BuildConfig.VERSION_CODE + ")"
     }
 
 

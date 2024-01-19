@@ -20,8 +20,8 @@ class ManualSaleCartAdapterNew : RecyclerView.Adapter<ManualSaleCartAdapterNew.M
     private lateinit var listnerCall: ManualSaleInterface
     private lateinit var itemlistnerCall: ManualSaleOptionsCustomCallback
     val TAG = "ManualSaleCartAdapter"
-    var  viewBinderHelper : _root_ide_package_.com.pays.pos.utils.swipereveallayout.ViewBinderHelper =
-        _root_ide_package_.com.pays.pos.utils.swipereveallayout.ViewBinderHelper()
+    var  viewBinderHelper : ViewBinderHelper =
+        ViewBinderHelper()
 
     @SuppressLint("ClickableViewAccessibility")
     inner class MyViewHolder(private val binding: ViewItemCartBinding) :

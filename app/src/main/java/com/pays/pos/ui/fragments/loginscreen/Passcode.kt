@@ -125,7 +125,7 @@ class Passcode : Fragment() {
         navigate()
 
         binding.txtVersion?.text =
-            "PAYS v." + _root_ide_package_.com.pays.pos.BuildConfig.VERSION_NAME + "(" + _root_ide_package_.com.pays.pos.BuildConfig.VERSION_CODE + ")"
+            "PAYS v." + BuildConfig.VERSION_NAME + "(" + BuildConfig.VERSION_CODE + ")"
         isLogin = arguments?.getBoolean("isLogin") ?: false
 
 

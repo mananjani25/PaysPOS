@@ -102,10 +102,10 @@ class PrintSunmiUtils {
         }
 
         fun venueWebsiteInner(value: String) {
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().setAlign(1)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance()
+            SunmiPrintHelper.getInstance().setAlign(1)
+            SunmiPrintHelper.getInstance()
                 .printText(value, setFontSizeInner(), false, false, fontName)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
         }
 
@@ -143,9 +143,9 @@ class PrintSunmiUtils {
 
         fun orderIdInner(value: String) {
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().setAlign(0)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().printText(value)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance().printText(value)
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
         }
 
@@ -196,9 +196,9 @@ class PrintSunmiUtils {
         }
 
         fun receiptIDInner(value: String) {
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().setAlign(0)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().printText(value)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance().printText(value)
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
         }
 
@@ -214,9 +214,9 @@ class PrintSunmiUtils {
 
         fun printOrderTypeInner(value: String) {
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().setAlign(1)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().printText(value, 40f, true, false, null)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().setAlign(1)
+            SunmiPrintHelper.getInstance().printText(value, 40f, true, false, null)
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
 
         }
@@ -514,8 +514,8 @@ class PrintSunmiUtils {
         }
 
         fun qrCodeInner(value: String) {
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().setAlign(1)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().printQr(value, 6, 0)
+            SunmiPrintHelper.getInstance().setAlign(1)
+            SunmiPrintHelper.getInstance().printQr(value, 6, 0)
         }
 
         fun cutPaper() {
@@ -533,8 +533,8 @@ class PrintSunmiUtils {
 
         fun cutPaperInner() {
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(5)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().cutpaper()
+            SunmiPrintHelper.getInstance().lineWrap(5)
+            SunmiPrintHelper.getInstance().cutpaper()
         }
 
         fun printTextCenter(value: String) {
@@ -629,101 +629,101 @@ class PrintSunmiUtils {
                 BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
 
             val newBitmap = Bitmap.createScaledBitmap(bitmap!!, 210, 210, true)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().setAlign(1)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().printBitmap(newBitmap)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(2)
+            SunmiPrintHelper.getInstance().setAlign(1)
+            SunmiPrintHelper.getInstance().printBitmap(newBitmap)
+            SunmiPrintHelper.getInstance().lineWrap(2)
         }
 
         fun headerText(value: String) {
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().setAlign(1)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance()
+            SunmiPrintHelper.getInstance().setAlign(1)
+            SunmiPrintHelper.getInstance()
                 .printText(value, setFontSizeHeader(), true, false, fontName)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
         private fun headerTextLeft(value: String) {
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().setAlign(0)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance()
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance()
                 .printText(value, setFontSizeHeader(), true, false, fontName)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
         fun normalText(value: String) {
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance().setAlign(0)
             if (fontSizeInner == LARGE) {
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance()
+                SunmiPrintHelper.getInstance()
                     .printText(value, 36f, false, false, fontName)
             } else
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance()
+                SunmiPrintHelper.getInstance()
                     .printText(value, setFontSizeInner(), false, false, fontName)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
         fun normalTextTest(value: String) {
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance().setAlign(0)
             if (fontSizeInner == LARGE) {
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance()
+                SunmiPrintHelper.getInstance()
                     .printText(value, 36f, false, false, fontName)
             } else
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance()
+                SunmiPrintHelper.getInstance()
                     .printText(value, setFontSizeInner(), false, false, fontName)
             //SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
         fun normalTextDineInItem(value: String) {
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance().setAlign(0)
             if (fontSizeInner == LARGE) {
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance()
+                SunmiPrintHelper.getInstance()
                     .printText(value, 36f, false, false, fontName)
             } else
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance()
+                SunmiPrintHelper.getInstance()
                     .printText(value, setFontSizeInner(), false, false, fontName)
             // SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
         fun normalTextLarge(value: String) {
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().setAlign(0)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance()
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance()
                 .printText(value, 36f, false, false, fontName)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
         fun normalTextCenter(value: String) {
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().setAlign(1)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance()
+            SunmiPrintHelper.getInstance().setAlign(1)
+            SunmiPrintHelper.getInstance()
                 .printText(value, setFontSizeInner(), false, false, fontName)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
         fun normalTextCenterLarge(value: String) {
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().setAlign(1)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance()
+            SunmiPrintHelper.getInstance().setAlign(1)
+            SunmiPrintHelper.getInstance()
                 .printText(value, 36f, false, false, fontName)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
         fun boldText(value: String) {
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().setAlign(0)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance()
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance()
                 .printText(value, setFontSizeInner(), true, false, fontName)
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
 
         fun addHorizontalInner() {
             val st = addHorizontalKitchenLineSunmi(fontSizeInner)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance()
+            SunmiPrintHelper.getInstance()
                 .printText(st, setFontSizeInner(), false, false, fontName)
         }
 
 
         fun additionalTipsInner() {
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().setAlign(0)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance()
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance()
                 .printText("Additional Tips", setFontSizeHeader(), true, false, fontName)
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
             addHorizontalInner()
 
         }

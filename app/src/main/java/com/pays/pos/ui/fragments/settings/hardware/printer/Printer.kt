@@ -124,10 +124,10 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     StatusChangeEventListener, BatteryStatusChangeEventListener,
-    _root_ide_package_.com.pays.pos.aidl.ICallback,
+    ICallback,
     SearchCallback,UpdatePrinters {
     private var cloudPrinter: CloudPrinter? = null
-    private var woyouService: _root_ide_package_.com.pays.pos.aidl.IWoyouService? = null
+    private var woyouService: IWoyouService? = null
     private lateinit var binding: FragmentPrinterBinding
     var mBluetoothAdapter: BluetoothAdapter? = null
     var deviceList: Array<DeviceInfo>? = null
@@ -1668,32 +1668,32 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     private fun sunmiInnerPrinter(ipAddress: String?) {
 
-        _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+        SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
         setService()
 
 
     }
 
     private fun setService() {
-        if (_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().sunmiPrinter == _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.FoundSunmiPrinter) {
+        if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
             LogUtil.logE("SunmiPrintHelper", "FoundSunmiPrinter")
 
-            if (!_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil.isBlueToothPrinter) {
+            if (!BluetoothUtil.isBlueToothPrinter) {
 
                 LogUtil.logE("SunmiPrintHelper", "isBlueToothPrinter")
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().initPrinter()
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().setAlign(1)
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(2)
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance()
+                SunmiPrintHelper.getInstance().initPrinter()
+                SunmiPrintHelper.getInstance().setAlign(1)
+                SunmiPrintHelper.getInstance().lineWrap(2)
+                SunmiPrintHelper.getInstance()
                     .printText("Test Print", 30F, true, false, "test1.ttf")
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
 
 
 
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().setAlign(1)
+                SunmiPrintHelper.getInstance().setAlign(1)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().printText(
+                    SunmiPrintHelper.getInstance().printText(
                         getCurrentTimeFromTimeZone(requireContext(), MethodUtils.formatted()),
                         30F,
                         true,
@@ -1701,7 +1701,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         "test1.ttf"
                     )
                 }
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().lineWrap(2)
+                SunmiPrintHelper.getInstance().lineWrap(2)
                 LogUtil.logE(TAG, "Here Drawer Code")
                 PrintSunmiUtils.cutPaperInner()
                 if (woyouService != null) {
@@ -1738,10 +1738,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 printByBluTooth("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
             }
 
-        } else if (_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().sunmiPrinter == _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.CheckSunmiPrinter) {
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             handler.postDelayed({ setService() }, 2000)
             LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
-        } else if (_root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().sunmiPrinter == _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.LostSunmiPrinter) {
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
 
             LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
         } else {
@@ -1752,7 +1752,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(p0: ComponentName?, service: IBinder?) {
             LogUtil.logE(TAG, "onServiceConnected  1")
-            woyouService = _root_ide_package_.com.pays.pos.aidl.IWoyouService.Stub.asInterface(service)
+            woyouService = IWoyouService.Stub.asInterface(service)
 
         }
 
@@ -1780,23 +1780,23 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     private fun printByBluTooth(content: String) {
         try {
             if (true) {
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil.sendData(
-                    _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.ESCUtil.boldOn())
+                BluetoothUtil.sendData(
+                    ESCUtil.boldOn())
             } else {
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil.sendData(
-                    _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.ESCUtil.boldOff())
+                BluetoothUtil.sendData(
+                    ESCUtil.boldOff())
             }
             if (true) {
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil.sendData(
-                    _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.ESCUtil.underlineWithOneDotWidthOn())
+                BluetoothUtil.sendData(
+                    ESCUtil.underlineWithOneDotWidthOn())
             } else {
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil.sendData(
-                    _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.ESCUtil.underlineOff())
+                BluetoothUtil.sendData(
+                    ESCUtil.underlineOff())
             }
 
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil.sendData(content.toByteArray(charset("GB18030")))
-            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil.sendData(
-                _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.ESCUtil.nextLine(3))
+            BluetoothUtil.sendData(content.toByteArray(charset("GB18030")))
+            BluetoothUtil.sendData(
+                ESCUtil.nextLine(3))
         } catch (e: IOException) {
             e.printStackTrace()
         }

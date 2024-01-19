@@ -58,7 +58,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class ReasonForRefundDialog : DialogFragment(), _root_ide_package_.com.pays.pos.aidl.ICallback {
+class ReasonForRefundDialog : DialogFragment(), ICallback {
 
 
     private var customerList: List<PrinterResponse.Data.CustomerReceiptPrinters> = arrayListOf()
@@ -73,7 +73,7 @@ class ReasonForRefundDialog : DialogFragment(), _root_ide_package_.com.pays.pos.
     private lateinit var refundData: RefundRequestModel
     private val viewModel by viewModels<TransactionDetailsViewModel>()
     private val magtekProViewModel by viewModels<MagtekViewModel>()
-    private var woyouService: _root_ide_package_.com.pays.pos.aidl.IWoyouService? = null
+    private var woyouService: IWoyouService? = null
 
     // PAX variables
     private lateinit var mPaymentRequest: PaymentRequest
@@ -889,7 +889,7 @@ class ReasonForRefundDialog : DialogFragment(), _root_ide_package_.com.pays.pos.
 
                                         try {
                                             sendToTransaction()
-                                            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().openCashBox()
+                                            SunmiPrintHelper.getInstance().openCashBox()
                                         } catch (e: java.lang.Exception) {
                                             e.printStackTrace()
                                             sendToTransaction()
@@ -921,7 +921,7 @@ class ReasonForRefundDialog : DialogFragment(), _root_ide_package_.com.pays.pos.
                                         }
                                         try {
                                             sendToTransaction()
-                                            _root_ide_package_.com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper.getInstance().openCashBox()
+                                            SunmiPrintHelper.getInstance().openCashBox()
                                         } catch (e: java.lang.Exception) {
                                             e.printStackTrace()
                                             sendToTransaction()
@@ -1076,7 +1076,7 @@ class ReasonForRefundDialog : DialogFragment(), _root_ide_package_.com.pays.pos.
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(p0: ComponentName?, service: IBinder?) {
             LogUtil.logE("TAG", "onServiceConnected  1")
-            woyouService = _root_ide_package_.com.pays.pos.aidl.IWoyouService.Stub.asInterface(service)
+            woyouService = IWoyouService.Stub.asInterface(service)
 
         }
 
