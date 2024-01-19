@@ -941,7 +941,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
         var requestURL =
             prefProvider?.getValue(Constants.BASE_URL_NEW, "") + Constants.CREATE_QUEUE_PRINTER
-        val uri = URI("wss://hugepos.com/cable")
+//        val uri = URI("wss://hugepos.com/cable")
+        val uri = URI("wss://pays.app/cable")
         consumer = ActionCable.createConsumer(uri)
         getPrinterQueueData()
 
@@ -1336,7 +1337,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     }
 
     private fun connectionActionCable() {
-        val uri = URI("wss://hugepos.com/cable")
+//        val uri = URI("wss://hugepos.com/cable")
+        val uri = URI("wss://pays.app/cable")
         consumer = ActionCable.createConsumer(uri)
 
         val appearanceChannel = Channel("KitchenChannel")

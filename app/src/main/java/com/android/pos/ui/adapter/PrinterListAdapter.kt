@@ -12,6 +12,7 @@ import com.android.pos.data.remote.Constants.AVAILABLE
 import com.android.pos.data.remote.Constants.WIFI
 import com.android.pos.databinding.ViewPrinterItemBinding
 import com.android.pos.ui.fragments.settings.hardware.printer.Printer.Companion.viewModelObject
+import com.android.pos.utils.TAG
 
 
 class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>() {
@@ -124,6 +125,7 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
     }
 
     override fun onBindViewHolder(holder: PrinterListAdapter.MyViewHolder, position: Int) {
+        Log.e("REC_CRASH",position.toString())
         holder.bind(list?.get(position))
     }
 
@@ -143,10 +145,10 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
 
             if (temp == it.printerName){
                 //viewModelObject.deletePrinter(it)
-                Log.d("deDupedNodes","Duplicate operaion id = ${it.id} , name = ${it.printerName}")
+//                Log.d("deDupedNodes","Duplicate operaion id = ${it.id} , name = ${it.printerName}")
             }else {
                 Log.d("deDupedNodes","Unique opera")
-                Log.d("deDupedNodes","Unique operaion id = ${it.id} , name = ${it.printerName}")
+//                Log.d("deDupedNodes","Unique operaion id = ${it.id} , name = ${it.printerName}")
                 newList.add(it)
             }
             temp = it.printerName!!
