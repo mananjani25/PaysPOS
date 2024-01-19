@@ -190,11 +190,15 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         isFromSearch = requireArguments().getBoolean("isFromSearch")
 
         if (customerModel.birth_date?.isNotEmpty() == true) {
-            val inputFormat = SimpleDateFormat("MM/dd/yyyy")
-            var date = inputFormat.parse(customerModel.birth_date)
-            val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
-            val formattedDate = outputFormat.format(date)
-            binding.txtBirthDate.setText(formattedDate)
+            try {
+                val inputFormat = SimpleDateFormat("MM/dd/yyyy")
+                var date = inputFormat.parse(customerModel.birth_date)
+                val outputFormat = SimpleDateFormat("MM-dd-yyyy")
+                val formattedDate = outputFormat.format(date)
+                binding.txtBirthDate.setText(formattedDate)
+            }catch (e:Exception){
+                binding.txtBirthDate.text = customerModel.birth_date
+            }
         }
         binding.model = customerModel
         // binding.executePendingBindings()
