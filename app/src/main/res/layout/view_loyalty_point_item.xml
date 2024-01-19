@@ -8,11 +8,11 @@
 
         <variable
             name="serviceChargeModel"
-            type="com.android.pos.data.entities.LoyaltyProgramsModel" />
+            type="com.pays.pos.data.entities.LoyaltyProgramsModel" />
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.settings.loyaltypoints.LoyaltyPointViewModel" />
+            type="com.pays.pos.ui.fragments.settings.loyaltypoints.LoyaltyPointViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

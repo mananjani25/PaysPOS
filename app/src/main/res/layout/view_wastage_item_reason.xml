@@ -7,7 +7,7 @@
 
         <variable
             name="wastageItemsReasons"
-            type="com.android.pos.data.model.responseModel.VenueDetailsResponse.Data.WastageReason" />
+            type="com.pays.pos.data.model.responseModel.VenueDetailsResponse.Data.WastageReason" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

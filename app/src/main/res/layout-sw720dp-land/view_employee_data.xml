@@ -7,7 +7,7 @@
 
         <variable
             name="emp"
-            type="com.android.pos.data.model.responseModel.report.Employee" />
+            type="com.pays.pos.data.model.responseModel.report.Employee" />
     </data>
 
     <LinearLayout

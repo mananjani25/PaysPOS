@@ -8,11 +8,11 @@
 
         <variable
             name="taxModel"
-            type="com.android.pos.data.entities.TaxData" />
+            type="com.pays.pos.data.entities.TaxData" />
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.settings.tax.TaxListViewModel" />
+            type="com.pays.pos.ui.fragments.settings.tax.TaxListViewModel" />
 
     </data>
 

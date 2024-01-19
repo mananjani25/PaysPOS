@@ -10,7 +10,7 @@
 
         <variable
             name="viewModel"
-            type="com.android.pos.data.entities.TbItem" />
+            type="com.pays.pos.data.entities.TbItem" />
     </data>
 
 

@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.android.pos.data.model.responseModel.OpenOrderResponse.Data.Order" />
+            type="com.pays.pos.data.model.responseModel.OpenOrderResponse.Data.Order" />
     </data>
 
     <LinearLayout

@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.customer.AddCustomerViewModel" />
+            type="com.pays.pos.ui.fragments.customer.AddCustomerViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

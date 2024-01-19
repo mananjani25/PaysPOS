@@ -8,7 +8,7 @@
 
         <variable
             name="createOptionViewModel"
-            type="com.android.pos.ui.fragments.createoption.CreateOptionViewModel" />
+            type="com.pays.pos.ui.fragments.createoption.CreateOptionViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

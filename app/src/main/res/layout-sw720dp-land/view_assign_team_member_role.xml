@@ -8,7 +8,7 @@
 
         <variable
             name="model"
-            type="com.android.pos.data.entities.Employee" />
+            type="com.pays.pos.data.entities.Employee" />
     </data>
 
     <FrameLayout

@@ -7,7 +7,7 @@
 
         <variable
             name="keyValue"
-            type="com.android.pos.data.model.responseModel.report.KeyValueWithString" />
+            type="com.pays.pos.data.model.responseModel.report.KeyValueWithString" />
     </data>
 
     <LinearLayout

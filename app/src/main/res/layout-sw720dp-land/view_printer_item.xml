@@ -8,7 +8,7 @@
 
         <variable
             name="model"
-            type="com.android.pos.data.model.PrinterListModel" />
+            type="com.pays.pos.data.model.PrinterListModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

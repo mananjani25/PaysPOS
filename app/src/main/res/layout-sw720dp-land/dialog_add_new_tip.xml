@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.settings.tip.CreateTipsViewModel" />
+            type="com.pays.pos.ui.fragments.settings.tip.CreateTipsViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

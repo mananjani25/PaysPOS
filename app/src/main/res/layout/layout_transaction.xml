@@ -9,7 +9,7 @@
 
         <variable
             name="includeLayoutViewModel"
-            type="com.android.pos.ui.fragments.transactions.TransactionViewModel" />
+            type="com.pays.pos.ui.fragments.transactions.TransactionViewModel" />
     </data>
 
     <LinearLayout

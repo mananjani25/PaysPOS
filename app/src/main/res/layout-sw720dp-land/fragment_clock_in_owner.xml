@@ -8,7 +8,7 @@
 
         <variable
             name="clockInViewModel"
-            type="com.android.pos.ui.fragments.loginscreen.ClockInOwnerViewModel" />
+            type="com.pays.pos.ui.fragments.loginscreen.ClockInOwnerViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

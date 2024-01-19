@@ -8,11 +8,11 @@
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionViewModel" />
+            type="com.pays.pos.ui.fragments.settings.teamrole.UserAccessPermissionViewModel" />
 
         <variable
             name="permissionListModel"
-            type="com.android.pos.data.entities.TeamRole" />
+            type="com.pays.pos.data.entities.TeamRole" />
     </data>
 
 

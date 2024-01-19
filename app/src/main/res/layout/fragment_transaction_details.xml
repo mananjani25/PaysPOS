@@ -8,11 +8,11 @@
 
         <variable
             name="orderDetails"
-            type="com.android.pos.data.model.GetPaymentOrderDetailsResponse" />
+            type="com.pays.pos.data.model.GetPaymentOrderDetailsResponse" />
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel" />
+            type="com.pays.pos.ui.fragments.transactions.TransactionDetailsViewModel" />
     </data>
 
     <LinearLayout

@@ -8,11 +8,11 @@
 
         <variable
             name="serviceChargeModel"
-            type="com.android.pos.data.entities.TbServiceCharge" />
+            type="com.pays.pos.data.entities.TbServiceCharge" />
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel" />
+            type="com.pays.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

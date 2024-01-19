@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionViewModel" />
+            type="com.pays.pos.ui.fragments.settings.teamrole.UserAccessPermissionViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

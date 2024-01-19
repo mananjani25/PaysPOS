@@ -8,7 +8,7 @@
 
         <variable
             name="createModifierViewModel"
-            type="com.android.pos.ui.fragments.createmodifier.CreateModifierViewModel" />
+            type="com.pays.pos.ui.fragments.createmodifier.CreateModifierViewModel" />
     </data>
 
     <LinearLayout

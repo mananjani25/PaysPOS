@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.magtek.MagtekViewModel" />
+            type="com.pays.pos.ui.fragments.magtek.MagtekViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

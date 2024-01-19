@@ -7,7 +7,7 @@
 
         <variable
             name="model"
-            type="com.android.pos.data.model.responseModel.PrinterResponse.Data" />
+            type="com.pays.pos.data.model.responseModel.PrinterResponse.Data" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

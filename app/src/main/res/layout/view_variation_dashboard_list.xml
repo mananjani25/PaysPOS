@@ -8,7 +8,7 @@
 
         <variable
             name="variationModel"
-            type="com.android.pos.data.entities.VariationsAttribute" />
+            type="com.pays.pos.data.entities.VariationsAttribute" />
 
 
     </data>

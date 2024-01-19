@@ -8,11 +8,11 @@
 
         <variable
             name="itemSheetModel"
-            type="com.android.pos.data.model.responseModel.GetTransactionListResponse.Data.Payment" />
+            type="com.pays.pos.data.model.responseModel.GetTransactionListResponse.Data.Payment" />
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.transactions.TransactionViewModel" />
+            type="com.pays.pos.ui.fragments.transactions.TransactionViewModel" />
     </data>
 
     <LinearLayout

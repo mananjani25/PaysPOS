@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel" />
+            type="com.pays.pos.ui.fragments.transactions.TransactionDetailsViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

@@ -9,7 +9,7 @@
 
         <variable
             name="model"
-            type="com.android.pos.data.entities.TbCustomer" />
+            type="com.pays.pos.data.entities.TbCustomer" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

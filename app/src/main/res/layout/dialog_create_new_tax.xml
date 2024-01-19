@@ -8,11 +8,11 @@
 
         <variable
             name="createTaxFragment"
-            type="com.android.pos.ui.fragments.settings.tax.CreateTax" />
+            type="com.pays.pos.ui.fragments.settings.tax.CreateTax" />
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.settings.tax.CreateTaxViewModel" />
+            type="com.pays.pos.ui.fragments.settings.tax.CreateTaxViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

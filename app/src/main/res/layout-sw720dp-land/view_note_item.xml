@@ -9,11 +9,11 @@
 
         <variable
             name="noteModel"
-            type="com.android.pos.data.model.responseModel.NoteResponse.Data" />
+            type="com.pays.pos.data.model.responseModel.NoteResponse.Data" />
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.settings.notes.NoteListViewModel" />
+            type="com.pays.pos.ui.fragments.settings.notes.NoteListViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

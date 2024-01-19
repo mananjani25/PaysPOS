@@ -8,7 +8,7 @@
 
         <variable
             name="model"
-            type="com.android.pos.data.entities.Option" />
+            type="com.pays.pos.data.entities.Option" />
     </data>
 
 

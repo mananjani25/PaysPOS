@@ -10,7 +10,7 @@
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.settings.teamrole.TeamMemberSheetViewModel" />
+            type="com.pays.pos.ui.fragments.settings.teamrole.TeamMemberSheetViewModel" />
     </data>
 
     <LinearLayout

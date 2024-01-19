@@ -7,7 +7,7 @@
 
         <variable
             name="model"
-            type="com.android.pos.data.entities.ModifierSet" />
+            type="com.pays.pos.data.entities.ModifierSet" />
     </data>
 
 

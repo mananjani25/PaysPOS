@@ -8,7 +8,7 @@
 
         <variable
             name="cancelOrderReasons"
-            type="com.android.pos.data.model.responseModel.VenueDetailsResponse.Data.CancelOrderReason" />
+            type="com.pays.pos.data.model.responseModel.VenueDetailsResponse.Data.CancelOrderReason" />
     </data>
 
 

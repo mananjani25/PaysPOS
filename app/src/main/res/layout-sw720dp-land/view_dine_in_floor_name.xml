@@ -9,11 +9,11 @@
 
         <variable
             name="dineInModel"
-            type="com.android.pos.data.model.responseModel.GetFloorPlanResponse.Data" />
+            type="com.pays.pos.data.model.responseModel.GetFloorPlanResponse.Data" />
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.dinein.DineInViewModel" />
+            type="com.pays.pos.ui.fragments.dinein.DineInViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

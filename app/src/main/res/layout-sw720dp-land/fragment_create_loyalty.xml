@@ -8,11 +8,11 @@
 
         <variable
             name="createLoyaltyFragment"
-            type="com.android.pos.ui.fragments.settings.loyaltypoints.CreateLoyaltyFragment" />
+            type="com.pays.pos.ui.fragments.settings.loyaltypoints.CreateLoyaltyFragment" />
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.settings.loyaltypoints.LoyaltyPointViewModel" />
+            type="com.pays.pos.ui.fragments.settings.loyaltypoints.LoyaltyPointViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

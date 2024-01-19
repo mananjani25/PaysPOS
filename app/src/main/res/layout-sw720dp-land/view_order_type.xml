@@ -7,7 +7,7 @@
 
         <variable
             name="model"
-            type="com.android.pos.data.entities.TbOrderType" />
+            type="com.pays.pos.data.entities.TbOrderType" />
     </data>
 
     <TextView

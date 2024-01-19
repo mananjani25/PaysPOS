@@ -8,11 +8,11 @@
 
         <variable
             name="createServiceChargeFragment"
-            type="com.android.pos.ui.fragments.settings.servicecharge.CreateServiceCharge" />
+            type="com.pays.pos.ui.fragments.settings.servicecharge.CreateServiceCharge" />
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.settings.servicecharge.CreateServiceChargeViewModel" />
+            type="com.pays.pos.ui.fragments.settings.servicecharge.CreateServiceChargeViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.settings.notes.CreateNoteViewModel" />
+            type="com.pays.pos.ui.fragments.settings.notes.CreateNoteViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

@@ -10,11 +10,11 @@
 
         <variable
             name="tipModel"
-            type="com.android.pos.data.model.responseModel.GetTipReponse.Data" />
+            type="com.pays.pos.data.model.responseModel.GetTipReponse.Data" />
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.settings.tip.TipListViewModel" />
+            type="com.pays.pos.ui.fragments.settings.tip.TipListViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

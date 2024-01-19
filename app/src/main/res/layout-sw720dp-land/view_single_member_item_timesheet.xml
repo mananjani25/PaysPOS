@@ -8,7 +8,7 @@
 
         <variable
             name="itemSheetModel"
-            type="com.android.pos.data.model.responseModel.GetEmployeeTimeSheetDetailsResponse.Data" />
+            type="com.pays.pos.data.model.responseModel.GetEmployeeTimeSheetDetailsResponse.Data" />
 
     </data>
 

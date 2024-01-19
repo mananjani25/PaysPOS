@@ -11,11 +11,11 @@
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.cashlog.CashLogViewModel" />
+            type="com.pays.pos.ui.fragments.cashlog.CashLogViewModel" />
 
         <variable
             name="cashLogModel"
-            type="com.android.pos.data.model.responseModel.CashLogResponse.Data" />
+            type="com.pays.pos.data.model.responseModel.CashLogResponse.Data" />
 
     </data>
 

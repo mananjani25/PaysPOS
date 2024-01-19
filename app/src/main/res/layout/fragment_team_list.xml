@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.loginscreen.MobileNumberViewModel" />
+            type="com.pays.pos.ui.fragments.loginscreen.MobileNumberViewModel" />
     </data>-->
 
 

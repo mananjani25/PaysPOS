@@ -8,11 +8,11 @@
 
         <variable
             name="createDiscountFragment"
-            type="com.android.pos.ui.fragments.settings.discount.CreateDiscount" />
+            type="com.pays.pos.ui.fragments.settings.discount.CreateDiscount" />
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.settings.discount.CreateDiscountViewModel" />
+            type="com.pays.pos.ui.fragments.settings.discount.CreateDiscountViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.android.pos.data.model.responseModel.CashLogResponse.Data.Cashe" />
+            type="com.pays.pos.data.model.responseModel.CashLogResponse.Data.Cashe" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

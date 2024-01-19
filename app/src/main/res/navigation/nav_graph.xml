@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/login"
-        android:name="com.android.pos.ui.fragments.loginscreen.LoginFragment"
+        android:name="com.pays.pos.ui.fragments.loginscreen.LoginFragment"
         android:label="Login"
         tools:layout="@layout/fragment_login">
 
@@ -40,7 +40,7 @@
     </fragment>
     <fragment
         android:id="@+id/clockInOwner"
-        android:name="com.android.pos.ui.fragments.loginscreen.ClockInOwner"
+        android:name="com.pays.pos.ui.fragments.loginscreen.ClockInOwner"
         android:label="ClockInOwner"
         tools:layout="@layout/fragment_clock_in_owner">
 
@@ -61,7 +61,7 @@
     </fragment>
     <fragment
         android:id="@+id/scheduledShifts"
-        android:name="com.android.pos.ui.fragments.loginscreen.ScheduledShifts"
+        android:name="com.pays.pos.ui.fragments.loginscreen.ScheduledShifts"
         android:label="ScheduledShifts"
         tools:layout="@layout/fragment_scheduled_shift">
         <action
@@ -73,7 +73,7 @@
     </fragment>
     <fragment
         android:id="@+id/passcode"
-        android:name="com.android.pos.ui.fragments.loginscreen.Passcode"
+        android:name="com.pays.pos.ui.fragments.loginscreen.Passcode"
         android:label="Passcode"
         tools:layout="@layout/fragment_passcode">
         <action
@@ -105,7 +105,7 @@
     </fragment>
     <fragment
         android:id="@+id/dashboard"
-        android:name="com.android.pos.ui.fragments.dashboard.Dashboard"
+        android:name="com.pays.pos.ui.fragments.dashboard.Dashboard"
         android:label="Dashboard"
         tools:layout="@layout/fragment_dashboard">
         <action
@@ -115,7 +115,7 @@
     </fragment>
     <dialog
         android:id="@+id/pascodeManagerDailog"
-        android:name="com.android.pos.ui.dialog.PasscodeDialogForManagerDialog"
+        android:name="com.pays.pos.ui.dialog.PasscodeDialogForManagerDialog"
         android:label="PasscodeDialogForManangerDialog"
         tools:layout="@layout/passcode_dialog_for_mananger_fragment">
 
@@ -127,7 +127,7 @@
 
     <fragment
         android:id="@+id/onlineOrderFragment"
-        android:name="com.android.pos.ui.fragments.onlineorder.OnlineOrderFragment"
+        android:name="com.pays.pos.ui.fragments.onlineorder.OnlineOrderFragment"
         android:label="onlineOrder">
         <action
             android:id="@+id/action_onlineOrder_to_menuposbold"
@@ -151,7 +151,7 @@
     </fragment>
     <fragment
         android:id="@+id/allOrdersFragment"
-        android:name="com.android.pos.ui.fragments.allorders.AllOrdersFragment"
+        android:name="com.pays.pos.ui.fragments.allorders.AllOrdersFragment"
         android:label="allOrders">
         <action
             android:id="@+id/action_allOrder_to_menuposbold"
@@ -186,7 +186,7 @@
     </fragment>
     <fragment
         android:id="@+id/createItem"
-        android:name="com.android.pos.ui.fragments.createitem.CreateItem"
+        android:name="com.pays.pos.ui.fragments.createitem.CreateItem"
         android:label="CreateItem"
         tools:layout="@layout/create_item">
         <action
@@ -231,7 +231,7 @@
     </fragment>
     <fragment
         android:id="@+id/createCategory"
-        android:name="com.android.pos.ui.fragments.createcategory.CreateCategory"
+        android:name="com.pays.pos.ui.fragments.createcategory.CreateCategory"
         android:label="CreateCategory">
         <action
             android:id="@+id/action_createCategory_to_createIModifierSet"
@@ -246,7 +246,7 @@
     </fragment>
     <fragment
         android:id="@+id/createIModifierSet"
-        android:name="com.android.pos.ui.fragments.createmodifier.CreateModifierSet"
+        android:name="com.pays.pos.ui.fragments.createmodifier.CreateModifierSet"
         android:label="CreateIModifierSet"
         tools:layout="@layout/create_modifier_set">
 
@@ -261,7 +261,7 @@
     </fragment>
     <fragment
         android:id="@+id/dashboardCategory"
-        android:name="com.android.pos.ui.fragments.dashboard.DashboardCategory"
+        android:name="com.pays.pos.ui.fragments.dashboard.DashboardCategory"
         android:label="DashboardCategory">
         <action
             android:id="@+id/action_dashboardCategory_to_createItem"
@@ -270,7 +270,7 @@
     </fragment>
     <fragment
         android:id="@+id/inventory"
-        android:name="com.android.pos.ui.fragments.inventory.Inventory"
+        android:name="com.pays.pos.ui.fragments.inventory.Inventory"
         android:label="Inventory"
         tools:layout="@layout/fragment_inventory">
         <action
@@ -312,7 +312,7 @@
         app:enterAnim="@anim/nav_default_enter_anim" />
     <fragment
         android:id="@+id/teamList"
-        android:name="com.android.pos.ui.fragments.team.TeamList"
+        android:name="com.pays.pos.ui.fragments.team.TeamList"
         android:label="TeamList">
         <action
             android:id="@+id/action_teamList_to_dashboardCategoryNew"
@@ -338,7 +338,7 @@
         app:enterAnim="@anim/nav_default_enter_anim" />
     <fragment
         android:id="@+id/createDiscount"
-        android:name="com.android.pos.ui.fragments.settings.discount.CreateDiscount"
+        android:name="com.pays.pos.ui.fragments.settings.discount.CreateDiscount"
         android:label="CreateDiscount"
         tools:layout="@layout/fragment_create_discount">
         <argument
@@ -348,7 +348,7 @@
     </fragment>
     <fragment
         android:id="@+id/settings"
-        android:name="com.android.pos.ui.fragments.settings.Settings"
+        android:name="com.pays.pos.ui.fragments.settings.Settings"
         android:label="Settings"
         tools:layout="@layout/fragment_settings">
         <action
@@ -419,7 +419,7 @@
         app:enterAnim="@anim/nav_default_enter_anim" />
     <fragment
         android:id="@+id/newTax"
-        android:name="com.android.pos.ui.fragments.settings.tax.CreateTax"
+        android:name="com.pays.pos.ui.fragments.settings.tax.CreateTax"
         android:label="NewTax">
         <argument
             android:name="isEdit"
@@ -434,7 +434,7 @@
     </fragment>
     <fragment
         android:id="@+id/addTip"
-        android:name="com.android.pos.ui.fragments.settings.tip.CreateTip"
+        android:name="com.pays.pos.ui.fragments.settings.tip.CreateTip"
         android:label="AddTip">
         <argument
             android:name="isEdit"
@@ -443,7 +443,7 @@
     </fragment>
     <fragment
         android:id="@+id/createNote"
-        android:name="com.android.pos.ui.fragments.settings.notes.CreateNote"
+        android:name="com.pays.pos.ui.fragments.settings.notes.CreateNote"
         android:label="CreateNote">
         <argument
             android:name="isEdit"
@@ -452,7 +452,7 @@
     </fragment>
     <fragment
         android:id="@+id/addServiceCharge"
-        android:name="com.android.pos.ui.fragments.settings.servicecharge.CreateServiceCharge"
+        android:name="com.pays.pos.ui.fragments.settings.servicecharge.CreateServiceCharge"
         android:label="AddServiceCharge">
         <argument
             android:name="isEdit"
@@ -461,23 +461,23 @@
     </fragment>
     <fragment
         android:id="@+id/createTeamMember"
-        android:name="com.android.pos.ui.fragments.team.CreateTeamMember"
+        android:name="com.pays.pos.ui.fragments.team.CreateTeamMember"
         android:label="CreateTeamMember" />
     <action
         android:id="@+id/action_global_createTeamMember"
         app:destination="@id/createTeamMember" />
     <fragment
         android:id="@+id/customerReceiptSettings"
-        android:name="com.android.pos.ui.fragments.settings.customerreceipt.CustomerReceiptSettings"
+        android:name="com.pays.pos.ui.fragments.settings.customerreceipt.CustomerReceiptSettings"
         android:label="CustomerReceiptSettings" />
     <fragment
         android:id="@+id/kitchenReceiptSettings"
-        android:name="com.android.pos.ui.fragments.settings.kitchenreceipt.KitchenReceiptSettings"
+        android:name="com.pays.pos.ui.fragments.settings.kitchenreceipt.KitchenReceiptSettings"
         android:label="KitchenReceiptSettings" />
 
     <fragment
         android:id="@+id/reports"
-        android:name="com.android.pos.ui.fragments.reports.Reports"
+        android:name="com.pays.pos.ui.fragments.reports.Reports"
         android:label="Reports"
         tools:layout="@layout/fragment_reports">
         <action
@@ -502,7 +502,7 @@
         app:enterAnim="@anim/nav_default_enter_anim" />
     <fragment
         android:id="@+id/createOption"
-        android:name="com.android.pos.ui.fragments.createoption.CreateOptionSet"
+        android:name="com.pays.pos.ui.fragments.createoption.CreateOptionSet"
         android:label="CreateOption">
 
         <argument
@@ -512,7 +512,7 @@
     </fragment>
     <fragment
         android:id="@+id/dashboardCategoryNew"
-        android:name="com.android.pos.ui.fragments.dashboard.DashboardCategoryNew"
+        android:name="com.pays.pos.ui.fragments.dashboard.DashboardCategoryNew"
         android:label="DashboardCategoryNew"
         tools:layout="@layout/fragment_dashboard_category_new">
 
@@ -625,29 +625,29 @@
         app:popUpToInclusive="true" />
     <fragment
         android:id="@+id/modifiers"
-        android:name="com.android.pos.ui.fragments.inventory.Modifiers"
+        android:name="com.pays.pos.ui.fragments.inventory.Modifiers"
         android:label="Modifiers"
         tools:layout="@layout/fragment_modifiers" />
     <fragment
         android:id="@+id/baseFragment"
-        android:name="com.android.pos.ui.fragments.BaseFragment"
+        android:name="com.pays.pos.ui.fragments.BaseFragment"
         android:label="BaseFragment" />
     <fragment
         android:id="@+id/menuPOS"
-        android:name="com.android.pos.ui.fragments.posmenu.MenuPOS"
+        android:name="com.pays.pos.ui.fragments.posmenu.MenuPOS"
         android:label="MenuPOS"
         tools:layout="@layout/menu_pos" />
     <fragment
         android:id="@+id/forgotPasswordFragment"
-        android:name="com.android.pos.ui.fragments.loginscreen.ForgotPasswordFragment"
+        android:name="com.pays.pos.ui.fragments.loginscreen.ForgotPasswordFragment"
         android:label="ForgotPasswordFragment" />
     <dialog
         android:id="@+id/categoriesDialog"
-        android:name="com.android.pos.ui.dialog.CategoriesDialog"
+        android:name="com.pays.pos.ui.dialog.CategoriesDialog"
         android:label="CategoriesDialog" />
     <dialog
         android:id="@+id/itemEditTitleDialog"
-        android:name="com.android.pos.ui.dialog.ItemEditTitleDialog"
+        android:name="com.pays.pos.ui.dialog.ItemEditTitleDialog"
         android:label="ItemEditTitleDialog">
         <argument
             android:name="imgUrl"
@@ -656,7 +656,7 @@
     </dialog>
     <dialog
         android:id="@+id/itemDialog"
-        android:name="com.android.pos.ui.dialog.ItemDialog"
+        android:name="com.pays.pos.ui.dialog.ItemDialog"
         android:label="ItemDialog">
         <argument
             android:name="isEdit"
@@ -665,7 +665,7 @@
     </dialog>
     <dialog
         android:id="@+id/itemPricingDialog"
-        android:name="com.android.pos.ui.dialog.ItemPricingDialog"
+        android:name="com.pays.pos.ui.dialog.ItemPricingDialog"
         android:label="ItemPricingDialog">
         <argument
             android:name="isEdit"
@@ -674,7 +674,7 @@
     </dialog>
     <fragment
         android:id="@+id/customer"
-        android:name="com.android.pos.ui.fragments.customer.Customer"
+        android:name="com.pays.pos.ui.fragments.customer.Customer"
         android:label="Customer"
         tools:layout="@layout/fragment_customer">
         <action
@@ -707,7 +707,7 @@
         app:enterAnim="@anim/nav_default_enter_anim" />
     <fragment
         android:id="@+id/addEditCustomer"
-        android:name="com.android.pos.ui.fragments.customer.AddEditCustomer"
+        android:name="com.pays.pos.ui.fragments.customer.AddEditCustomer"
         android:label="AddEditCustomer"
         tools:layout="@layout/fragment_add_edit_customer">
 
@@ -723,7 +723,7 @@
     </fragment>
     <fragment
         android:id="@+id/teamMemberTimeSheetFragment"
-        android:name="com.android.pos.ui.fragments.settings.teamrole.TeamMemberTimeSheetFragment"
+        android:name="com.pays.pos.ui.fragments.settings.teamrole.TeamMemberTimeSheetFragment"
         android:label="fragment_team_member_time_sheet"
         tools:layout="@layout/fragment_team_member_time_sheet">
         <action
@@ -739,7 +739,7 @@
     </fragment>
     <fragment
         android:id="@+id/singleTeamMemberTimeSheetFragment"
-        android:name="com.android.pos.ui.fragments.settings.teamrole.SingleTeamMemberTimeSheetFragment"
+        android:name="com.pays.pos.ui.fragments.settings.teamrole.SingleTeamMemberTimeSheetFragment"
         android:label="SingleTeamMemberTimeSheetFragment">
         <action
             android:id="@+id/action_singleTeamMemberTimeSheetFragment_to_dashboardCategoryNew"
@@ -751,7 +751,7 @@
     </fragment>
     <fragment
         android:id="@+id/userAccessPermissionListFragment"
-        android:name="com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionListFragment"
+        android:name="com.pays.pos.ui.fragments.settings.teamrole.UserAccessPermissionListFragment"
         android:label="UserAccessPermissionListFragment">
         <action
             android:id="@+id/action_userAccessPermissionListFragment_to_userAccessPermissionFragment"
@@ -764,7 +764,7 @@
     </fragment>
     <fragment
         android:id="@+id/userAccessPermissionFragment"
-        android:name="com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionFragment"
+        android:name="com.pays.pos.ui.fragments.settings.teamrole.UserAccessPermissionFragment"
         android:label="UserAccessPermissionFragment">
 
         <argument
@@ -782,7 +782,7 @@
 
     <fragment
         android:id="@+id/splitFragment"
-        android:name="com.android.pos.ui.fragments.checkout.SplitCustomAmountFragment"
+        android:name="com.pays.pos.ui.fragments.checkout.SplitCustomAmountFragment"
         android:label="SplitCustomAmount">
 
         <action
@@ -791,7 +791,7 @@
     </fragment>
     <fragment
         android:id="@+id/paymentFragment"
-        android:name="com.android.pos.ui.fragments.payment.PaymentFragment"
+        android:name="com.pays.pos.ui.fragments.payment.PaymentFragment"
         android:label="PaymentFragment">
         <argument
             android:name="update"
@@ -820,23 +820,23 @@
     </fragment>
     <dialog
         android:id="@+id/splitAmountFragment"
-        android:name="com.android.pos.ui.dialog.SplitAmountFragment"
+        android:name="com.pays.pos.ui.dialog.SplitAmountFragment"
         android:label="split_amount_fragment" />
     <dialog
         android:id="@+id/customAmountFragment"
-        android:name="com.android.pos.ui.dialog.CustomAmountFragment"
+        android:name="com.pays.pos.ui.dialog.CustomAmountFragment"
         android:label="CustomAmountFragment" />
     <dialog
         android:id="@+id/addNoteDialog"
-        android:name="com.android.pos.ui.dialog.AddNoteDialog"
+        android:name="com.pays.pos.ui.dialog.AddNoteDialog"
         android:label="AddNoteDialog" />
     <dialog
         android:id="@+id/changeOrderTypeDialog"
-        android:name="com.android.pos.ui.dialog.ChangeOrderTypeDialog"
+        android:name="com.pays.pos.ui.dialog.ChangeOrderTypeDialog"
         android:label="ChangeOrderTypeDialog" />
     <dialog
         android:id="@+id/addDiscountDialog"
-        android:name="com.android.pos.ui.dialog.AddDiscountDialog"
+        android:name="com.pays.pos.ui.dialog.AddDiscountDialog"
         android:label="AddDiscountDialog">
         <argument
             android:name="isFromDetails"
@@ -849,7 +849,7 @@
     </dialog>
     <fragment
         android:id="@+id/assignCustomerOrderFragment"
-        android:name="com.android.pos.ui.fragments.orderassign.AssignCustomerOrderFragment"
+        android:name="com.pays.pos.ui.fragments.orderassign.AssignCustomerOrderFragment"
         android:label="assign_customer_order_fragment"
         tools:layout="@layout/assign_customer_order_fragment">
         <action
@@ -865,12 +865,12 @@
     </fragment>
     <fragment
         android:id="@+id/manualSales"
-        android:name="com.android.pos.ui.fragments.manualsales.ManualSales"
+        android:name="com.pays.pos.ui.fragments.manualsales.ManualSales"
         android:label="ManualSales"
         tools:layout="@layout/fragment_manual_sales" />
     <fragment
         android:id="@+id/manualSaleNew"
-        android:name="com.android.pos.ui.fragments.manualsales.ManualSaleNew"
+        android:name="com.pays.pos.ui.fragments.manualsales.ManualSaleNew"
         android:label="ManualSaleNew"
         tools:layout="@layout/fragment_manual_sale_new">
 
@@ -991,7 +991,7 @@
     </fragment>
     <dialog
         android:id="@+id/assignTeamMemberListDialog"
-        android:name="com.android.pos.ui.dialog.AssignRoleTeamMemberListDialog"
+        android:name="com.pays.pos.ui.dialog.AssignRoleTeamMemberListDialog"
         android:label="AssignTeamMemberListDialog" />
 
     <argument
@@ -1000,12 +1000,12 @@
         app:argType="boolean" />
     <dialog
         android:id="@+id/itemRenameDialog"
-        android:name="com.android.pos.ui.dialog.ItemRenameDialog"
+        android:name="com.pays.pos.ui.dialog.ItemRenameDialog"
         android:label="ItemRenameDialog"
         tools:layout="@layout/dialog_rename_item" />
     <fragment
         android:id="@+id/orderCompleteFragment"
-        android:name="com.android.pos.ui.fragments.payment.OrderCompleteFragment"
+        android:name="com.pays.pos.ui.fragments.payment.OrderCompleteFragment"
         android:label="OrderCompleteFragment">
         <argument
             android:name="isDineIn"
@@ -1035,7 +1035,7 @@
     </fragment>
     <fragment
         android:id="@+id/purchaseGiftCard"
-        android:name="com.android.pos.ui.fragments.eGiftCard.PurchaseGiftCardFragment"
+        android:name="com.pays.pos.ui.fragments.eGiftCard.PurchaseGiftCardFragment"
         android:label="@string/lbl_purchase_gift_card">
         <action
             android:id="@+id/action_purchaseGiftCard_to_addCustomerToGiftCard"
@@ -1043,7 +1043,7 @@
     </fragment>
     <fragment
         android:id="@+id/orders"
-        android:name="com.android.pos.ui.fragments.orders.Orders"
+        android:name="com.pays.pos.ui.fragments.orders.Orders"
         android:label="Orders">
         <action
             android:id="@+id/action_orders_to_dashboardCategoryNew"
@@ -1071,7 +1071,7 @@
         app:destination="@id/orders" />
     <fragment
         android:id="@+id/transactionFragment"
-        android:name="com.android.pos.ui.fragments.transactions.TransactionFragment"
+        android:name="com.pays.pos.ui.fragments.transactions.TransactionFragment"
         android:label="TransactionFragment">
         <action
             android:id="@+id/action_transactionFragment_to_transactionDetailsFragment"
@@ -1091,7 +1091,7 @@
         app:destination="@id/transactionFragment" />
     <fragment
         android:id="@+id/openOrderCustomerFragment"
-        android:name="com.android.pos.ui.fragments.openorder.OpenOrderCustomerFragment"
+        android:name="com.pays.pos.ui.fragments.openorder.OpenOrderCustomerFragment"
         android:label="OpenOrderCustomerFragment">
         <action
             android:id="@+id/action_openOrderCustomerFragment_to_assignCustomerOrderFragment"
@@ -1100,7 +1100,7 @@
 
     <fragment
         android:id="@+id/printer"
-        android:name="com.android.pos.ui.fragments.settings.hardware.printer.Printer"
+        android:name="com.pays.pos.ui.fragments.settings.hardware.printer.Printer"
         android:label="Printer"
         tools:layout="@layout/fragment_printer">
         <action
@@ -1119,7 +1119,7 @@
     </fragment>
     <fragment
         android:id="@+id/transactionDetailsFragment"
-        android:name="com.android.pos.ui.fragments.transactions.TransactionDetailsFragment"
+        android:name="com.pays.pos.ui.fragments.transactions.TransactionDetailsFragment"
         android:label="TransactionDetailsFragment">
         <action
             android:id="@+id/action_transactionDetailsFragment_to_issueRefundFragment"
@@ -1145,12 +1145,12 @@
     </fragment>
     <fragment
         android:id="@+id/editPrinter"
-        android:name="com.android.pos.ui.fragments.settings.hardware.EditPrinter"
+        android:name="com.pays.pos.ui.fragments.settings.hardware.EditPrinter"
         android:label="EditPrinter"
         tools:layout="@layout/fragment_edit_printer" />
     <dialog
         android:id="@+id/itemOptionsListDialog"
-        android:name="com.android.pos.ui.dialog.ItemOptionsListDialog"
+        android:name="com.pays.pos.ui.dialog.ItemOptionsListDialog"
         android:label="ItemOptionsListDialog">
         <argument
             android:name="isEdit"
@@ -1160,23 +1160,23 @@
 
     <dialog
         android:id="@+id/reasonForCancleOrderDialog"
-        android:name="com.android.pos.ui.dialog.ReasonForCancelOrderDialog"
+        android:name="com.pays.pos.ui.dialog.ReasonForCancelOrderDialog"
         android:label="ReasonForCancelOrderDialog"></dialog>
 
     <dialog
         android:id="@+id/addItemToWastageDialog"
-        android:name="com.android.pos.ui.dialog.AddItemToWastageDialog"
+        android:name="com.pays.pos.ui.dialog.AddItemToWastageDialog"
         android:label="AddItemToWastageDialog"/>
 
     <dialog
         android:id="@+id/editVariationDialog"
-        android:name="com.android.pos.ui.dialog.EditVariationDialog"
+        android:name="com.pays.pos.ui.dialog.EditVariationDialog"
         android:label="EditVariationDialog">
 
     </dialog>
     <fragment
         android:id="@+id/cashLogFragment"
-        android:name="com.android.pos.ui.fragments.cashlog.CashLogFragment"
+        android:name="com.pays.pos.ui.fragments.cashlog.CashLogFragment"
         android:label="CashLogFragment">
         <action
             android:id="@+id/action_cashLogFragment_to_dashboardCategoryNew"
@@ -1194,23 +1194,23 @@
         app:destination="@id/cashLogFragment" />
     <dialog
         android:id="@+id/customVariationDialog"
-        android:name="com.android.pos.ui.dialog.CustomVariationDialog"
+        android:name="com.pays.pos.ui.dialog.CustomVariationDialog"
         android:label="CustomVariationDialog" />
     <dialog
         android:id="@+id/addTipsDialog"
-        android:name="com.android.pos.ui.dialog.AddTipsDialog"
+        android:name="com.pays.pos.ui.dialog.AddTipsDialog"
         android:label="AddTipsDialog" />
     <dialog
         android:id="@+id/addOnlineTimeDialog"
-        android:name="com.android.pos.ui.dialog.AddOnlineTimeDialog"
+        android:name="com.pays.pos.ui.dialog.AddOnlineTimeDialog"
         android:label="AddOnlineTimeDialog" />
     <dialog
         android:id="@+id/addGuestCountDialog"
-        android:name="com.android.pos.ui.dialog.AddGuestDailog"
+        android:name="com.pays.pos.ui.dialog.AddGuestDailog"
         android:label="AddGuestDailog" />
     <dialog
         android:id="@+id/issueRefundFragment"
-        android:name="com.android.pos.ui.dialog.IssueRefundDialog"
+        android:name="com.pays.pos.ui.dialog.IssueRefundDialog"
         android:label="IssueRefundFragment">
         <action
             android:id="@+id/action_issueRefundFragment_to_reasonForRefundDialog"
@@ -1218,7 +1218,7 @@
     </dialog>
     <dialog
         android:id="@+id/reasonForRefundDialog"
-        android:name="com.android.pos.ui.dialog.ReasonForRefundDialog"
+        android:name="com.pays.pos.ui.dialog.ReasonForRefundDialog"
         android:label="ReasonForRefundDialog">
         <action
             android:id="@+id/action_reasonForRefundDialog_to_transactionDetailsFragment"
@@ -1226,7 +1226,7 @@
     </dialog>
     <dialog
         android:id="@+id/reasonForRefundDialogonline"
-        android:name="com.android.pos.ui.dialog.ReasonForRefundOnlineOrder"
+        android:name="com.pays.pos.ui.dialog.ReasonForRefundOnlineOrder"
         android:label="ReasonForRefundDialogOnline">
         <action
             android:id="@+id/action_reasonForRefundDialogonline_to_onlinedetailfragment"
@@ -1238,7 +1238,7 @@
     </dialog>
     <fragment
         android:id="@+id/dineInFragment"
-        android:name="com.android.pos.ui.fragments.dinein.DineInFragment"
+        android:name="com.pays.pos.ui.fragments.dinein.DineInFragment"
         android:label="DineInFragment">
         <action
             android:id="@+id/action_dineInFragment_to_transactionFragment"
@@ -1286,7 +1286,7 @@
     </fragment>
     <fragment
         android:id="@+id/dineInGuestFragment"
-        android:name="com.android.pos.ui.fragments.dinein.DineInGuestFragment"
+        android:name="com.pays.pos.ui.fragments.dinein.DineInGuestFragment"
         android:label="DineInGuestFragment"
         tools:layout="@layout/fragment_dine_in_guest">
         <action
@@ -1298,7 +1298,7 @@
 
     <dialog
         android:id="@+id/orderTypeDialog"
-        android:name="com.android.pos.ui.dialog.OrderTypeDialog">
+        android:name="com.pays.pos.ui.dialog.OrderTypeDialog">
         <action
             android:id="@+id/action_orderTypeDialog_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryBoldPOS" />
@@ -1318,11 +1318,11 @@
     </dialog>
     <dialog
         android:id="@+id/addVariablePriceDialog"
-        android:name="com.android.pos.ui.dialog.AddVariablePriceDialog"
+        android:name="com.pays.pos.ui.dialog.AddVariablePriceDialog"
         android:label="AddVariablePriceDialog" />
     <fragment
         android:id="@+id/dineInOrderTable"
-        android:name="com.android.pos.ui.fragments.dinein.DineInOrderTable"
+        android:name="com.pays.pos.ui.fragments.dinein.DineInOrderTable"
         android:label="DineInOrderTable"
         tools:layout="@layout/fragment_dine_in_order_table">
         <action
@@ -1359,7 +1359,7 @@
     </fragment>
     <fragment
         android:id="@+id/payByGuestDialog"
-        android:name="com.android.pos.ui.dialog.PayByGuestDialog"
+        android:name="com.pays.pos.ui.dialog.PayByGuestDialog"
         android:label="PayByGuestDialog">
         <argument
             android:name="isTotalPayment"
@@ -1388,16 +1388,16 @@
     </fragment>
     <fragment
         android:id="@+id/reportSummaryFragment"
-        android:name="com.android.pos.ui.fragments.report.ReportSummaryFragment"
+        android:name="com.pays.pos.ui.fragments.report.ReportSummaryFragment"
         android:label="Report Summary"
         tools:layout="@layout/fragment_report_summary" />
     <dialog
         android:id="@+id/taxesDialog"
-        android:name="com.android.pos.ui.dialog.TaxesDialog"
+        android:name="com.pays.pos.ui.dialog.TaxesDialog"
         android:label="Taxes" />
     <fragment
         android:id="@+id/openOrderCustomerFragmentNew"
-        android:name="com.android.pos.ui.fragments.openorder.OpenOrderCustomerFragmentNew"
+        android:name="com.pays.pos.ui.fragments.openorder.OpenOrderCustomerFragmentNew"
         android:label="OpenOrderCustomerFragmentNew">
         <action
             android:id="@+id/action_openOrderCustomerFragmentNew_to_assignCustomerOrderFragment"
@@ -1405,7 +1405,7 @@
     </fragment>
     <fragment
         android:id="@+id/createLoyaltyPointFragment"
-        android:name="com.android.pos.ui.fragments.settings.loyaltypoints.CreateLoyaltyFragment"
+        android:name="com.pays.pos.ui.fragments.settings.loyaltypoints.CreateLoyaltyFragment"
         android:label="CreateLoyaltyFragment">
         <argument
             android:name="isEdit"
@@ -1414,11 +1414,11 @@
     </fragment>
     <fragment
         android:id="@+id/mergeTableDialog"
-        android:name="com.android.pos.ui.fragments.dinein.MergeTableFragment"
+        android:name="com.pays.pos.ui.fragments.dinein.MergeTableFragment"
         android:label="MergeTableDialog" />
     <fragment
         android:id="@+id/printerQueue"
-        android:name="com.android.pos.ui.fragments.settings.hardware.printerqueue.PrinterQueue"
+        android:name="com.pays.pos.ui.fragments.settings.hardware.printerqueue.PrinterQueue"
         android:label="PrinterQueue">
         <action
             android:id="@+id/action_printerQueue_to_dashboardCategoryNew"
@@ -1429,7 +1429,7 @@
 
     <fragment
         android:id="@+id/scannerListFragment"
-        android:name="com.android.pos.ui.fragments.settings.hardware.scangun.ScannerListFragment">
+        android:name="com.pays.pos.ui.fragments.settings.hardware.scangun.ScannerListFragment">
         <action
             android:id="@+id/action_scannerListFragment_to_scannerResetFragment"
             app:destination="@id/scannerResetFragment" />
@@ -1438,10 +1438,10 @@
 
     <fragment
         android:id="@+id/scannerResetFragment"
-        android:name="com.android.pos.ui.fragments.settings.hardware.scangun.ScannerResetFragment" />
+        android:name="com.pays.pos.ui.fragments.settings.hardware.scangun.ScannerResetFragment" />
     <fragment
         android:id="@+id/hardware"
-        android:name="com.android.pos.ui.fragments.settings.hardware.Hardware"
+        android:name="com.pays.pos.ui.fragments.settings.hardware.Hardware"
         tools:layout="@layout/fragment_hardware">
         <action
             android:id="@+id/action_hardware_to_printer"
@@ -1472,11 +1472,11 @@
     </fragment>
     <dialog
         android:id="@+id/printerTypeSelection"
-        android:name="com.android.pos.ui.dialog.PrinterTypeSelection"
+        android:name="com.pays.pos.ui.dialog.PrinterTypeSelection"
         android:label="PrinterTypeSelection" />
     <fragment
         android:id="@+id/reportEODFragment"
-        android:name="com.android.pos.ui.fragments.report.ReportEODFragment"
+        android:name="com.pays.pos.ui.fragments.report.ReportEODFragment"
         android:label="ReportEODFragment">
         <action
             android:id="@+id/action_reportEODFragment_to_sendReceiptFragment"
@@ -1490,11 +1490,11 @@
     </fragment>
     <dialog
         android:id="@+id/sendReceiptFragment"
-        android:name="com.android.pos.ui.dialog.SendReceiptFragment"
+        android:name="com.pays.pos.ui.dialog.SendReceiptFragment"
         android:label="SendReceiptFragment" />
     <dialog
         android:id="@+id/menuFragment"
-        android:name="com.android.pos.ui.fragments.posmenu.MenuFragment"
+        android:name="com.pays.pos.ui.fragments.posmenu.MenuFragment"
         android:label="MenuFragment">
 
         <action
@@ -1563,7 +1563,7 @@
     </dialog>
     <fragment
         android:id="@+id/dummyFragment"
-        android:name="com.android.pos.ui.fragments.DummyFragment"
+        android:name="com.pays.pos.ui.fragments.DummyFragment"
         android:label="DummyFragment"
         tools:layout="@layout/fragment_dummy">
         <action
@@ -1573,7 +1573,7 @@
     </fragment>
     <fragment
         android:id="@+id/dashboardCategoryBoldPOS"
-        android:name="com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS"
+        android:name="com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS"
         android:label="DashboardCategoryBoldPOS">
         <argument
             android:name="update"
@@ -1681,13 +1681,13 @@
 
     <fragment
         android:id="@+id/checkoutDetailsFragment"
-        android:name="com.android.pos.ui.fragments.checkout.CheckoutDetailsFragment"
+        android:name="com.pays.pos.ui.fragments.checkout.CheckoutDetailsFragment"
         android:label="CheckoutDetails">
 
     </fragment>
     <fragment
         android:id="@+id/paymentBoldPosFragment"
-        android:name="com.android.pos.ui.fragments.payment.PaymentBoldPosFragment"
+        android:name="com.pays.pos.ui.fragments.payment.PaymentBoldPosFragment"
         android:label="PaymentBoldPosFragment">
         <action
             android:id="@+id/action_paymentBoldPosFragment_to_orderComplete"
@@ -1724,7 +1724,7 @@
     </fragment>
     <fragment
         android:id="@+id/magtekFragment"
-        android:name="com.android.pos.ui.fragments.magtek.MagtekFragment"
+        android:name="com.pays.pos.ui.fragments.magtek.MagtekFragment"
         android:label="MagtekFragment">
         <action
             android:id="@+id/action_magtekFragment_to_dashboardCategoryBoldPOS"
@@ -1733,7 +1733,7 @@
     </fragment>
     <fragment
         android:id="@+id/magtekProFragment"
-        android:name="com.android.pos.ui.fragments.magtekPro.MagtekProFragment"
+        android:name="com.pays.pos.ui.fragments.magtekPro.MagtekProFragment"
         android:label="MagtekProFragment">
         <action
             android:id="@+id/action_magtekProFragment_to_dashboardCategoryBoldPOS"
@@ -1748,11 +1748,11 @@
     </fragment>
     <dialog
         android:id="@+id/mergeTableDialogOld"
-        android:name="com.android.pos.ui.dialog.MergeTableDialog"
+        android:name="com.pays.pos.ui.dialog.MergeTableDialog"
         android:label="MergeTableDialog" />
     <dialog
         android:id="@+id/cardRederDialog"
-        android:name="com.android.pos.ui.dialog.CardRederDialog"
+        android:name="com.pays.pos.ui.dialog.CardRederDialog"
         android:label="CardRederDialog">
         <action
             android:id="@+id/action_cardRederDialog_to_magtekFragment"
@@ -1763,11 +1763,11 @@
     </dialog>
     <dialog
         android:id="@+id/transferTableDialog"
-        android:name="com.android.pos.ui.dialog.TransferTableDialog"
+        android:name="com.pays.pos.ui.dialog.TransferTableDialog"
         android:label="TransferTableDialog" />
     <fragment
         android:id="@+id/phoneOrderFragment"
-        android:name="com.android.pos.ui.fragments.phoneOrder.PhoneOrderFragment"
+        android:name="com.pays.pos.ui.fragments.phoneOrder.PhoneOrderFragment"
         android:label="PhoneOrderFragment" >
         <action
             android:id="@+id/action_phoneOrderFragment_to_assignCustomerOrderFragment"
@@ -1779,7 +1779,7 @@
     </fragment>
     <fragment
         android:id="@+id/printerQueueList"
-        android:name="com.android.pos.ui.fragments.printerqueue.PrinterQueue"
+        android:name="com.pays.pos.ui.fragments.printerqueue.PrinterQueue"
         android:label="PrinterQueue" >
 
         <action
@@ -1790,7 +1790,7 @@
 
     </fragment>
     <fragment android:id="@+id/addCustomerToGiftCard"
-        android:name="com.android.pos.ui.fragments.eGiftCard.AddCustomerToGiftCardFragment"
+        android:name="com.pays.pos.ui.fragments.eGiftCard.AddCustomerToGiftCardFragment"
         android:label="@string/lbl_add_customer_to_gift_card">
         <action
             android:id="@+id/action_addCustomerToGiftCard_to_addEditCustomer"
@@ -1813,11 +1813,11 @@
     </fragment>
     <fragment
         android:id="@+id/addNewCustomerForGiftCard"
-        android:name="com.android.pos.ui.fragments.eGiftCard.AddNewCustomerForGiftCardFragment"
+        android:name="com.pays.pos.ui.fragments.eGiftCard.AddNewCustomerForGiftCardFragment"
         android:label="@string/lbl_add_customer_to_gift_card"/>
     <fragment
         android:id="@+id/addValueInGiftCard"
-        android:name="com.android.pos.ui.fragments.eGiftCard.AddValueInGiftCardFragment"
+        android:name="com.pays.pos.ui.fragments.eGiftCard.AddValueInGiftCardFragment"
         android:label="@string/lbl_add_value">
         <action
             android:id="@+id/action_addValueInGiftCard_to_paymentBoldPosFragment"
@@ -1825,7 +1825,7 @@
     </fragment>
     <fragment
         android:id="@+id/balanceInquiry"
-        android:name="com.android.pos.ui.fragments.eGiftCard.BalanceInquiryFragment"
+        android:name="com.pays.pos.ui.fragments.eGiftCard.BalanceInquiryFragment"
         android:label="@string/lbl_balance_inquiry"/>
 
 </navigation>

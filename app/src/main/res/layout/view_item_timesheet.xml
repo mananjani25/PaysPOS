@@ -8,11 +8,11 @@
 
         <variable
             name="itemSheetModel"
-            type="com.android.pos.data.model.responseModel.GetEmployeesTimeSheetResponse.Data" />
+            type="com.pays.pos.data.model.responseModel.GetEmployeesTimeSheetResponse.Data" />
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.settings.teamrole.TeamMemberSheetViewModel" />
+            type="com.pays.pos.ui.fragments.settings.teamrole.TeamMemberSheetViewModel" />
     </data>
 
     <LinearLayout

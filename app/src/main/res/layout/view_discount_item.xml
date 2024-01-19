@@ -8,11 +8,11 @@
 
         <variable
             name="discountModel"
-            type="com.android.pos.data.entities.TbDiscount" />
+            type="com.pays.pos.data.entities.TbDiscount" />
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.settings.discount.DiscountListViewModel" />
+            type="com.pays.pos.ui.fragments.settings.discount.DiscountListViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

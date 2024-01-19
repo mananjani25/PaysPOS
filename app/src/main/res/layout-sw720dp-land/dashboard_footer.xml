@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel" />
+            type="com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel" />
     </data>
 
     <RelativeLayout

@@ -8,7 +8,7 @@
 
         <variable
             name="permissionListModel"
-            type="com.android.pos.data.entities.TeamRole" />
+            type="com.pays.pos.data.entities.TeamRole" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

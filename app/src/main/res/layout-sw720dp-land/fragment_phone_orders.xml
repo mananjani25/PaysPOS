@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.orders.ActiveOrderViewModel" />
+            type="com.pays.pos.ui.fragments.orders.ActiveOrderViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

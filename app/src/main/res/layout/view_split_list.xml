@@ -8,7 +8,7 @@
 
         <variable
             name="model"
-            type="com.android.pos.data.model.SplitDetailListModel" />
+            type="com.pays.pos.data.model.SplitDetailListModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

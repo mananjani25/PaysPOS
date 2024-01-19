@@ -8,7 +8,7 @@
 
         <variable
             name="passcodeViewModel"
-            type="com.android.pos.ui.fragments.loginscreen.PasscodeViewModel" />
+            type="com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel" />
     </data>
 
     <RelativeLayout

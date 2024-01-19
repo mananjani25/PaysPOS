@@ -89,7 +89,7 @@
                 android:resource="@xml/filepaths" />
         </provider>
         <activity
-            android:name="com.android.pos.ui.activities.MainActivity"
+            android:name="com.pays.pos.ui.activities.MainActivity"
             android:screenOrientation="landscape"
             android:windowSoftInputMode="stateUnspecified|adjustPan"
             android:windowTranslucentNavigation="true"
@@ -112,13 +112,13 @@
             <intent-filter>
 
                 <!-- Actions to be handled should be registered here -->
-                <action android:name="com.android.pos.connected" />
-                <action android:name="com.android.pos.disconnected" />
-                <action android:name="com.android.pos.available" />
-                <action android:name="com.android.pos.conn.failed" />
-                <action android:name="com.android.pos.barcode.received" />
-                <action android:name="com.android.pos.image.received" />
-                <action android:name="com.android.pos.video.received" />
+                <action android:name="com.pays.pos.connected" />
+                <action android:name="com.pays.pos.disconnected" />
+                <action android:name="com.pays.pos.available" />
+                <action android:name="com.pays.pos.conn.failed" />
+                <action android:name="com.pays.pos.barcode.received" />
+                <action android:name="com.pays.pos.image.received" />
+                <action android:name="com.pays.pos.video.received" />
             </intent-filter>
         </receiver>
 

@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.payment.OrderCompleteViewModel" />
+            type="com.pays.pos.ui.fragments.payment.OrderCompleteViewModel" />
     </data>
 
 

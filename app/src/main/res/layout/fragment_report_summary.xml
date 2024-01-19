@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.report.ReportViewModel" />
+            type="com.pays.pos.ui.fragments.report.ReportViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

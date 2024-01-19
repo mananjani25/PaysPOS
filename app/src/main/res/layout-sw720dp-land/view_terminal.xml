@@ -8,7 +8,7 @@
 
         <variable
             name="terminal"
-            type="com.android.pos.data.model.responseModel.report.Terminal" />
+            type="com.pays.pos.data.model.responseModel.report.Terminal" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

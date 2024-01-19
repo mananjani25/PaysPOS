@@ -9,7 +9,7 @@
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.createitem.CreateItemViewModel" />
+            type="com.pays.pos.ui.fragments.createitem.CreateItemViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

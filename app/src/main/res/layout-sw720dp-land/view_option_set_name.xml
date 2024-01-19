@@ -8,11 +8,11 @@
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.inventory.OptionSetViewModel" />
+            type="com.pays.pos.ui.fragments.inventory.OptionSetViewModel" />
 
         <variable
             name="optionSetListModel"
-            type="com.android.pos.data.entities.OptionSet" />
+            type="com.pays.pos.data.entities.OptionSet" />
 
         <variable
             name="position"

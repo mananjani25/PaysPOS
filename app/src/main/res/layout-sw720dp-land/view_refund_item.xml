@@ -10,11 +10,11 @@
 
         <variable
             name="refundItemListModel"
-            type="com.android.pos.data.model.responseModel.GetOrderDetailsResponse.Data.OrderItem" />
+            type="com.pays.pos.data.model.responseModel.GetOrderDetailsResponse.Data.OrderItem" />
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel" />
+            type="com.pays.pos.ui.fragments.transactions.TransactionDetailsViewModel" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat

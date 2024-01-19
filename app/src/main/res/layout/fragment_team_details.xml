@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.android.pos.ui.fragments.team.CreateTeamMember" />
+            type="com.pays.pos.ui.fragments.team.CreateTeamMember" />
     </data>
 
     <LinearLayout

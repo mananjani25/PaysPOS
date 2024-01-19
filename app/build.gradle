@@ -13,7 +13,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.internetsoft.pos"
+        applicationId "com.pays.pos"
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 52
@@ -63,7 +63,7 @@ android {
         viewBinding = true
         aidl true
     }
-    namespace 'com.android.pos'
+    namespace 'com.pays.pos'
     lint {
         abortOnError false
         checkReleaseBuilds false
