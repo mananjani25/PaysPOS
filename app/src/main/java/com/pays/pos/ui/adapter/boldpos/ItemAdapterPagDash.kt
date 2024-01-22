@@ -148,13 +148,13 @@ class ItemAdapterPagDash(
 
             binding.root.setOnClickListener {
 
-                  if (prefProvider?.getValue(Constants.ORDER_TYPE, "").equals("")) {
+                  /*if (prefProvider?.getValue(Constants.ORDER_TYPE, "").equals("")) {
                       AlertUtils.showCustomAlert(
                           binding.root.context,
                           "Please select order type to add item"
                       )
                       return@setOnClickListener
-                  } else
+                  } else*/
                 if (lastChecked != null) {
                     lastChecked?.isSelected = false
                 }

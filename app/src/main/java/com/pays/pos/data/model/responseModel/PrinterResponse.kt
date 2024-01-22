@@ -20,9 +20,7 @@ data class PrinterResponse(
 
     ) {
 
-        @Entity(tableName = "TbCustomerPrint",indices = [
-            Index( value = ["macAddress","ipAddress"], unique = true)
-        ])
+        @Entity(tableName = "TbCustomerPrint")
         data class CustomerReceiptPrinters(
             @PrimaryKey
             @SerializedName("id") var id: Int,
@@ -54,9 +52,7 @@ data class PrinterResponse(
         )
 
 
-        @Entity(tableName = "TbKitchenPrint",indices = [
-            Index( value = ["macAddress","ipAddress"], unique = true)
-        ])
+        @Entity(tableName = "TbKitchenPrint")
         data class KitchenReceiptPrinters(
             @PrimaryKey
             @SerializedName("id") var id: Int,
