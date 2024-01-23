@@ -645,11 +645,18 @@ class Inventory : Fragment() {
 
                                 setAdapter(mPos)
 
+                                Log.e("MENU ITEM","MENU SUCCESS ${mPos}")
+
                             }
                             Status.ERROR -> {
+
+                                Log.e("MENU ITEM","MENU ERROR ${mPos}")
+
                                 setAdapter(mPos)
                             }
                             Status.LOADING -> {
+                                Log.e("MENU ITEM","MENU LOADING ${mPos}")
+
                                 setAdapter(mPos)
                             }
                         }

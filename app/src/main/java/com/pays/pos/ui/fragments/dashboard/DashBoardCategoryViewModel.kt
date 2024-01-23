@@ -6308,7 +6308,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun syncInventoryModule(b: Boolean) {
         var needToUpdate = false
-        _showProgress.value = Event(true)
+       // _showProgress.value = Event(true)
         _syncDone.value = Event(false)
         viewModelScope.launch {
             val resource = posRepository.syncInventory(
@@ -6899,18 +6899,20 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                     }
                     Log.d("BINGE", "syncSettingModule: END")
+                    autoSyncEnabled.value = true
                 }
 
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message)
                     _showProgress.value = Event(false)
+                    autoSyncEnabled.value = true
                 }
 
                 Status.LOADING -> {
                     _showProgress.value = Event(true)
+                    autoSyncEnabled.value = true
                 }
             }
-
         }
 
     }

@@ -1195,7 +1195,7 @@ class CartFragment(
                     Log.d("BRUNO", "addObserver: CALLED")
                     Log.d("19OCT", "addObserver: CCI 1 = ${Gson().toJson(it)}")
                     viewModel.setCurrentCartItems(it)
-                    CoroutineScope(Dispatchers.Main).launch {
+                 //   CoroutineScope(Dispatchers.Main).launch {
 
                         if (it.isEmpty()) {
                             // Flag is used to update cart if last item from the cart will be deleted
@@ -1220,7 +1220,7 @@ class CartFragment(
                             if (currentTimeMillis >= previousClickTimeMillis + DELAY_MILLIS) {
                                 previousClickTimeMillis = currentTimeMillis
                             } else {
-                             //   return@launch
+                                //return@launch
                             }
                         }
 
@@ -1554,7 +1554,7 @@ class CartFragment(
                             }
                         })
 
-                    }
+                  //  }
                 }
             }
 

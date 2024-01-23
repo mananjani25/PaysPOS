@@ -1077,9 +1077,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
 
         binding.layoutHeader.imgSync.setOnClickListener {
-            viewModel.autoSyncEnabled.value = false
-            prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-            viewModel.syncInventoryModule(false)
+            startFullSync()
         }
         binding.layoutHeader.imgCashdDrawer.setOnClickListener {
             Log.d(TAG, "CASH-DRAWER: STEP 1 ")
@@ -1139,6 +1137,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
 
 
+    }
+
+     fun startFullSync(){
+        viewModel.autoSyncEnabled.value = false
+        prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+        viewModel.syncInventoryModule(false)
     }
 
     // To open cash drawer base on connected customer printer type

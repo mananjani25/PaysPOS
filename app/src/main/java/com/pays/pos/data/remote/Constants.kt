@@ -708,6 +708,7 @@ object Constants {
     const val ONLINE_ORDER_GET_NOTIFICATION = "online_order_get_notification"
     const val ONLINE_ORDER_REFRESH = "online_order_refresh"
     const val SYNC_NOTIFICATION = "sync_notification"
+    const val INVENTORY_SYNC = "inventory_sync"
     const val SYNC_FLOORPLAN = "sync_floorplan"
     const val SYNC_SETTING_NOTIFICATION = "sync_setting_notification"
     const val SYNC_MARKUP = "MarkupSync"

@@ -173,16 +173,19 @@ class HideItemWebSiteListing(val clickedPosition: Int) : Fragment(), ItemCallbac
                         binding.progressCircular.visibility = View.GONE
                         listSize = it.data?.size
                         if (listSize == 0) {
-                            binding.txtNodata?.visible()
                             binding.rvAllItemList.visibility = View.GONE
                             if (it.message != null && it.message.isNotEmpty()) {
                                 binding.txtNodata?.text = it.message
                             } else {
                                 binding.txtNodata?.text = "No data available"
                             }
+
+                            binding.txtNodata.visible()
+                            binding.llNoData?.visible()
                         } else {
                             binding.rvAllItemList.visibility = View.VISIBLE
                             binding.txtNodata?.gone()
+                            binding.llNoData?.gone()
                         }
                         it.data?.let { it1 ->
                             adapter.add(it1)

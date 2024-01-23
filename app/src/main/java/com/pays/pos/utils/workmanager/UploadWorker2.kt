@@ -121,7 +121,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
 
             if (isInternetAvailable()) {
-                connectActionCableSYNCSETTINGS()
+                //connectActionCableSYNCSETTINGS()
             } else {
                 sendNotification("Please check your Network Connectivity.")
             }
