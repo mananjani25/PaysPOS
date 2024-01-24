@@ -1422,7 +1422,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     if (cartList.isEmpty()) {
                         viewModel.createCart(cartList)
 
-                        viewModel.cartFragmentRestarted = true
+                      //  viewModel.cartFragmentRestarted = true
 
                         childFragmentManager.beginTransaction()
                             .replace(binding.frameLayoutCart.id, createCartForLoadCartFragment())
