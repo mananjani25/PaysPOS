@@ -94,6 +94,7 @@ import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.set
@@ -437,8 +438,18 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun addItemToCartItems(tbCartItem: TbCartItem) {
         CoroutineScope(Dispatchers.IO).launch {
+
+
             posRepository.addItemToCart(tbCartItem)
             destroyedCartItemsList.clear()
+
+
+            val currentTimeMillis = System.currentTimeMillis()
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            val formattedTime = dateFormat.format(Date(currentTimeMillis))
+
+            println("Current System Time in milliseconds: $currentTimeMillis")
+            println("Formatted Time: $formattedTime + ${Gson().toJson(tbCartItem)}")
         }
     }
 

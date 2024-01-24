@@ -129,9 +129,9 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         defaultValue: Boolean
     ): Boolean {
         openPref()
-        val result = sharedPreferences!!.getBoolean(key, defaultValue)
+        val result = sharedPreferences?.getBoolean(key, defaultValue)
         sharedPreferences = null
-        return result
+        return result?:defaultValue
     }
 
     fun setValueboolean(

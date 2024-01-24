@@ -300,15 +300,8 @@ class CartFragment(
             binding.orderTypeDisplay.text =
                 getString(R.string.current_order)
         } else {
-            if (viewModel.fromSaveOrderToAllOrders) {
                 binding.rlCartView.visible()
                 binding.rvOrderType.gone()
-                Log.e("Dashboard Tracking", "Dashboard tracking rvOrderVisible TRUE ELSE")
-            } else {
-                binding.rlCartView.visible()
-                binding.rvOrderType.gone()
-                Log.e("Dashboard Tracking", "Dashboard tracking rvOrderVisible FALSE ELSE")
-            }
 
             if (prefProvider.getValue(
                     ORDER_TYPE,
