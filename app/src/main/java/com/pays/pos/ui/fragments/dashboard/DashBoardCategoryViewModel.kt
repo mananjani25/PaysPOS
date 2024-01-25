@@ -187,6 +187,10 @@ class DashBoardCategoryViewModel @Inject constructor(
      */
     val autoSyncEnabled = MutableLiveData<Boolean>()
 
+    // Added to resolve Add Discount issue BIS-3547
+    var discountNeedToUpdate = true
+    var cartFooterNeedToBeUpdated = true
+
     fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
 
     fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()

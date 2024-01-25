@@ -1111,7 +1111,7 @@ class CartFragment(
 
                 viewModel.observeLatestCartModel().observe(viewLifecycleOwner) {
                     var latestCartModel: CartModel? = null
-                    if (it.isNotEmpty()) {
+                    if (it.isNotEmpty() && viewModel.cartFooterNeedToBeUpdated) {
                         latestCartModel = it[0]
                         viewModel.setUpdatedCartModel(latestCartModel)
                         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
@@ -1179,7 +1179,16 @@ class CartFragment(
                         } else {
                             viewModel.cartModel = taxBifurcationCalculationUpdate(it[0])
                             Log.e(TAG,"CheckCartFragTax 12: ${Gson().toJson(it[0].taxlistDynamic)}")
-                            updateCartFooter(viewModel.currentCartItems)
+
+                            // Added to resolve Add Discount issue BIS-3547
+                            if(viewModel.discountNeedToUpdate && viewModel.cartFooterNeedToBeUpdated)
+                                updateCartFooter(viewModel.currentCartItems)
+                            else {
+                                viewModel.apply {
+                                    discountNeedToUpdate = true
+                                    cartFooterNeedToBeUpdated = true
+                                }
+                            }
                         }
                     }
                 }
@@ -1528,7 +1537,15 @@ class CartFragment(
                         }
 
                         runOnUiThread(kotlinx.coroutines.Runnable {
-                            updateCartFooter(it)
+                            // Added to resolve Add Discount issue BIS-3547
+                            if(viewModel.discountNeedToUpdate && viewModel.cartFooterNeedToBeUpdated)
+                                updateCartFooter(it)
+                            else {
+                                viewModel.apply {
+                                    discountNeedToUpdate = true
+                                    cartFooterNeedToBeUpdated = true
+                                }
+                            }
                         })
                     }
 
