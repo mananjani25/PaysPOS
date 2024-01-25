@@ -52,7 +52,10 @@ import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.extensions.visible
 import com.google.gson.Gson
+import com.pays.pos.data.remote.Constants.AMOUNT
+import com.pays.pos.data.remote.Constants.PERCENTAGE
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -103,7 +106,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         getLoyaltyPrograms()
         getServiceCharge()
         getDiscountList()
-        if(arguments != null) {
+        if (arguments != null) {
             selectedHeaderPosition = requireArguments().getInt("selectedHeaderPosition", 0)
         }
         binding.layoutHeader.edtSearch.visibility = View.GONE
@@ -332,7 +335,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             try {
                 prefProvider.setValue(Constants.REDIRECT_FROM, "")
                 viewModel.cartModel = null
-                findNavController().navigateUp()} catch (e: Exception) {
+                findNavController().navigateUp()
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
@@ -368,20 +372,26 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
     private fun getCartList() {
 
-        if (isAdded){
+        if (isAdded) {
 
-            viewModel.observeLatestCartModel().observe(viewLifecycleOwner){
+            viewModel.observeLatestCartModel().observe(viewLifecycleOwner) {
 
-                if(it.isNotEmpty()){
-                    it.forEach {cm ->
-                        if(cm.isMaual){
+                if (it.isNotEmpty()) {
+                    it.forEach { cm ->
+                        if (cm.isMaual) {
                             manualCartModel = cm
                             return@forEach
                         }
                     }
 
-                    Log.d("31OCT23", "addObserver: CartModel Updated = ${Gson().toJson(manualCartModel)}")
-                    Log.d("31OCT23", "addObserver: CartItems Updated = ${Gson().toJson(cartItemsList)}")
+                    Log.d(
+                        "31OCT23",
+                        "addObserver: CartModel Updated = ${Gson().toJson(manualCartModel)}"
+                    )
+                    Log.d(
+                        "31OCT23",
+                        "addObserver: CartItems Updated = ${Gson().toJson(cartItemsList)}"
+                    )
 
                     updateCartFooter()
 
@@ -412,7 +422,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     }
 
     private fun updateCartFooter() {
-        if(cartItemsList?.isNotEmpty() == true){
+        if (cartItemsList?.isNotEmpty() == true) {
             viewModel.itemCalculationNew(
                 manualCartModel,
                 cartItemsList,
@@ -430,7 +440,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             } else {
                 binding.relativeOrderNotes.gone()
             }
-        }else{
+        } else {
             manualSaleCartAdapterNew.clearList()
             reSetTaxBifurcationData()
 
@@ -530,7 +540,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             assignCustomer = customer
             prefProvider.saveCustomerData(customer)
             prefProvider.setValue(CUSTOMER_NAME, customer.first_name + " " + customer.last_name)
-            prefProvider.setValue(Constants.RECEIPT_CUSTOMER_NAME, customer.first_name + " " + customer.last_name)
+            prefProvider.setValue(
+                Constants.RECEIPT_CUSTOMER_NAME,
+                customer.first_name + " " + customer.last_name
+            )
             customer.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
 
             binding.txtAddCustomer.text = customer.first_name + " " + customer.last_name
@@ -566,7 +579,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         refreshItemCalculation()
     }
 
-    private fun <TbCartItem> merge(first: List<TbCartItem>, second: List<TbCartItem>): List<TbCartItem> {
+    private fun <TbCartItem> merge(
+        first: List<TbCartItem>,
+        second: List<TbCartItem>
+    ): List<TbCartItem> {
         return first + second
     }
 
@@ -640,8 +656,18 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     Log.d(TAG, "data list: " + Gson().toJson(mainCartModel.taxlistDynamic))
                     val manualItems = cartItemsList
 
-                    Log.d("WINZO", "#1 - Manual Items List Size = ${manualItems?.size} = ${getItemIds(manualItems!!)} and ")
-                    Log.d("WINZO", "#2 - Main Items List Size = ${mainCartList.size} = ${getItemIds(mainCartList)} and ")
+                    Log.d(
+                        "WINZO",
+                        "#1 - Manual Items List Size = ${manualItems?.size} = ${
+                            getItemIds(manualItems!!)
+                        } and "
+                    )
+                    Log.d(
+                        "WINZO",
+                        "#2 - Main Items List Size = ${mainCartList.size} = ${
+                            getItemIds(mainCartList)
+                        } and "
+                    )
 
 
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
@@ -653,9 +679,19 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     } else {
                         val mainItems = mainCartList
                         val mergeItems = merge(mainItems, manualItems)
-                        Log.d("WINZO", "#3 - Merged Items List Size = ${mergeItems.size} = ${getItemIds(mergeItems)} and ")
+                        Log.d(
+                            "WINZO",
+                            "#3 - Merged Items List Size = ${mergeItems.size} = ${
+                                getItemIds(mergeItems)
+                            } and "
+                        )
                         mainCartList = mergeItems.toCollection(arrayListOf())
-                        Log.d("WINZO", "#4 - Main Items List Again Size = ${mainCartList.size} = ${getItemIds(mainCartList)} and ")
+                        Log.d(
+                            "WINZO",
+                            "#4 - Main Items List Again Size = ${mainCartList.size} = ${
+                                getItemIds(mainCartList)
+                            } and "
+                        )
 
                     }
                     if (manualCartModel?.discountPrice != 0.00)
@@ -710,8 +746,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     }
 
                 }
-            }
-            else {
+            } else {
 
                 if (cartItemsList != null && cartItemsList!!.isNotEmpty()) {
                     cartItemsList?.forEach { it ->
@@ -755,7 +790,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             }
         }
 
-        binding.btnPay.setOnClickListener(object:View.OnClickListener{
+        binding.btnPay.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 if (cartItemsList?.isNotEmpty() == true) {
                     prefProvider.setValue(Constants.REDIRECT_FROM, Constants.MANUAL_SALE)
@@ -774,7 +809,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     prefProvider.setValue(Constants.SERVICE_CHARGE, "")
                     prefProvider.setValue("CART_MODEL1", Gson().toJson(manualCartModel))
                     prefProvider.setValue("CART_MODEL2", Gson().toJson(cartModelsList))
-                    prefProvider.setValueboolean(IS_FROM_ALL_ORDER,false)
+                    prefProvider.setValueboolean(IS_FROM_ALL_ORDER, false)
                     findNavController().navigate(
                         R.id.action_manualSaleCart_to_paymentBoldPosFragment
                     )
@@ -835,125 +870,180 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
             if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isEmpty())
                 popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
-            popupMenu.setOnMenuItemClickListener { menuItem ->
-                when (menuItem.itemId) {
-                    R.id.menu_clear_cart -> {
-                        if (cartItemsList?.isNotEmpty() == true) {
-                            alert(
-                                getString(R.string.app_name),
-                                getString(R.string.delete_items_message)
-                            ) {
-                                positiveButton(getString(R.string.tv_delete)) {
-                                    viewModel.deleteManualSaleItemsFromCartItems()
-                                    manualCartModel?.let { it1 -> viewModel.deleteCartModel(it1) }
-                                    prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
-                                    binding.txtTotalAmount.text = "$0.00"
-                                    binding.txtTotal.text = "$0.00"
-                                    binding.tvDiscount.text = "-$0.00"
-                                    binding.txtSubTotal.text = "$0.00"
-                                    binding.txtTax.text = "$0.00"
-                                    binding.txtServiceCharge.text = "$0.00"
-                                    clearCustomer()
-                                    reSetTaxBifurcationData()
-                                    redirectToCategoryType()
 
-                                }
-                                negativeButton(R.string.tv_cancel) {
+            /*Added by Rahul for solving Discount issue */
+            popupMenu.setOnMenuItemClickListener(object : PopupMenu.OnMenuItemClickListener {
+                override fun onMenuItemClick(menuItem: MenuItem?): Boolean {
+                    when (menuItem?.itemId) {
+                        R.id.menu_clear_cart -> {
+                            if (cartItemsList?.isNotEmpty() == true) {
+                                alert(
+                                    getString(R.string.app_name),
+                                    getString(R.string.delete_items_message)
+                                ) {
+                                    positiveButton(getString(R.string.tv_delete)) {
+                                        viewModel.deleteManualSaleItemsFromCartItems()
+                                        manualCartModel?.let { it1 -> viewModel.deleteCartModel(it1) }
+                                        prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+                                        binding.txtTotalAmount.text = "$0.00"
+                                        binding.txtTotal.text = "$0.00"
+                                        binding.tvDiscount.text = "-$0.00"
+                                        binding.txtSubTotal.text = "$0.00"
+                                        binding.txtTax.text = "$0.00"
+                                        binding.txtServiceCharge.text = "$0.00"
+                                        clearCustomer()
+                                        reSetTaxBifurcationData()
+                                        redirectToCategoryType()
 
-                                }
-                            }
-                            //  hideClearCart()
-                        }
-
-                    }
-
-                    R.id.menu_order_note -> {
-                        findNavController().navigate(
-                            R.id.action_manualSaleNew_to_addNoteDialog,
-                            bundleOf("isOrderNote" to true)
-                        )
-                    }
-
-                    R.id.menu_remove_customer -> {
-
-                        if (cartModelsList?.isNotEmpty() == true && cartModelsList!![0].customer != null) {
-                            cartModelsList!![0].customer = null
-                            viewModel.addCart(cartModelsList!![0])
-                        }
-                        clearCustomer()
-
-                    }
-
-                    R.id.menu_order_discount -> {
-
-                        val bundle = Bundle()
-                        bundle.putBoolean("isOrderDiscount", true)
-                        bundle.putDouble("totalPrice", viewModel.subTotalPrice)
-                        if (cartItemsList?.isNotEmpty() == true) {
-
-                            var totalItemswithQuantity = 0
-
-                            if (prefProvider.getValue(
-                                    ORDER_TYPE,
-                                    TAKEOUT
-                                ) == Constants.DINE_IN
-                            ) {
-                                /*cartModelsList?.get(0)?.dineInList?.forEach {
-                                    it.items.forEach { it1 ->
-                                        totalItemswithQuantity += it1.itemQuantity
                                     }
-                                }*/
-                            } else {
-                                cartItemsList?.forEach {
-                                    totalItemswithQuantity += it.itemQuantity
+                                    negativeButton(R.string.tv_cancel) {
 
+                                    }
                                 }
+                                //  hideClearCart()
                             }
 
-                            var perItemDiscount = 0.0
-                            if (viewModel.cartModel?.discountPrice != 0.0) {
-                                if (totalItemswithQuantity == 0) {
-                                    totalItemswithQuantity = 1
-                                }
-                                perItemDiscount =
-                                    MethodUtils.roundOffAmountDouble(
-                                        (viewModel.cartModel?.discountPrice
-                                            ?: 0.0) / totalItemswithQuantity
-                                    )
-                            }
-
-                            viewModel.cartModel?.let { bundle.putDouble("orderDiscount", it.discountPrice) }
-                            viewModel.cartModel?.discountPrice?.let { it1 ->
-                                bundle.putDouble("orderDiscountPrice",
-                                    it1
-                                )
-                            }
-                            bundle.putString("orderDiscountType", viewModel.cartModel?.discountType)
-                            viewModel.cartModel?.discountSelectdValue?.let { it1 ->
-                                bundle.putDouble("selectedvalue",
-                                    it1
-                                )
-                            }
-                            bundle.putDouble("itemOrderDiscount", perItemDiscount)
-                            bundle.putInt("totalquantity", totalItemswithQuantity)
                         }
-                        bundle.putString("isFrom", "orderDiscountManual")
-                        if (prefProvider.isAdmin() || prefProvider.isManager()) {
-                            if (findNavController().currentDestination?.id != R.id.addDiscountDialog) {
-                                findNavController().navigate(
-                                    R.id.action_manualSaleNew__to_addDiscountDialog,
-                                    bundle
-                                )
-                            }
-                        } else {
+
+                        R.id.menu_order_note -> {
                             findNavController().navigate(
-                                R.id.action_manualSaleNew_to_pascodeManagerDailog, bundle
+                                R.id.action_manualSaleNew_to_addNoteDialog,
+                                bundleOf("isOrderNote" to true)
                             )
                         }
+
+                        R.id.menu_remove_customer -> {
+
+                            if (cartModelsList?.isNotEmpty() == true && cartModelsList!![0].customer != null) {
+                                cartModelsList!![0].customer = null
+                                viewModel.addCart(cartModelsList!![0])
+                            }
+                            clearCustomer()
+
+                        }
+
+                        R.id.menu_order_discount -> {
+
+                            val bundle = Bundle()
+                            bundle.putBoolean("isOrderDiscount", true)
+                            bundle.putDouble("totalPrice", viewModel.subTotalPrice)
+
+                            if (cartItemsList?.isNotEmpty() == true) {
+
+                                var totalItemswithQuantity = 0
+
+                                if (prefProvider.getValue(
+                                        ORDER_TYPE,
+                                        TAKEOUT
+                                    ) == Constants.DINE_IN
+                                ) {
+                                    /*cartModelsList?.get(0)?.dineInList?.forEach {
+                                        it.items.forEach { it1 ->
+                                            totalItemswithQuantity += it1.itemQuantity
+                                        }
+                                    }*/
+                                } else {
+                                    cartItemsList?.forEach {
+                                        totalItemswithQuantity += it.itemQuantity
+
+                                    }
+                                }
+
+                                var job: Deferred<Unit>? =null
+                                if (viewModel.cartModel == null) {
+                                    runBlocking {
+                                        reasignCartModelFromDB()
+                                    }
+                                }
+
+
+
+                                var perItemDiscount = 0.0
+                                if (viewModel.cartModel?.discountPrice != 0.0) {
+                                    if (totalItemswithQuantity == 0) {
+                                        totalItemswithQuantity = 1
+                                    }
+                                    perItemDiscount =
+                                        MethodUtils.roundOffAmountDouble(
+                                            (viewModel.cartModel?.discountPrice
+                                                ?: 0.0) / totalItemswithQuantity
+                                        )
+                                }
+
+                                viewModel.cartModel?.let {
+                                    bundle.putDouble(
+                                        "orderDiscount",
+                                        it.discountPrice
+                                    )
+                                }
+                                viewModel.cartModel?.discountPrice?.let { it1 ->
+                                    bundle.putDouble(
+                                        "orderDiscountPrice",
+                                        it1
+                                    )
+                                }
+                                Log.d("DISCOUNT::", viewModel.cartModel?.discountType.toString())
+                                Log.d(
+                                    "SELECTEDVALUE::",
+                                    viewModel.cartModel?.discountSelectdValue.toString()
+                                )
+                                if (viewModel.cartModel?.discountType == null) {
+                                    viewModel.cartModel?.discountType = AMOUNT
+                                }
+                                Log.d("DISCOUNT::", viewModel.cartModel?.discountType.toString())
+
+                                bundle.putString(
+                                    "orderDiscountType",
+                                    viewModel.cartModel?.discountType
+                                )
+                                viewModel.cartModel?.discountSelectdValue?.let { it1 ->
+                                    bundle.putDouble(
+                                        "selectedvalue",
+                                        it1
+                                    )
+                                }
+                                bundle.putDouble("itemOrderDiscount", perItemDiscount)
+                                bundle.putInt("totalquantity", totalItemswithQuantity)
+                                /*Added by Rahul for solving Discount issue */
+                            } else {
+                                Log.d("orderDiscountPrice", binding.tvDiscount.text.toString())
+                                Log.d("selectedvalue", binding.tvDiscount.text.toString())
+                                bundle.putDouble(
+                                    "orderDiscountPrice",
+                                    binding.tvDiscount.text.toString().toDouble() ?: 0.0
+                                )
+                                bundle.putDouble(
+                                    "selectedvalue",
+                                    binding.tvDiscount.text.toString().toDouble() ?: 0.0
+                                )
+
+                            }
+                            bundle.putString("isFrom", "orderDiscountManual")
+/*Added by Rahul for solving Discount issue */
+                            for (key in bundle.keySet()) {
+                                Log.d("BUNDLE_PRINT_MANUAL", "Key: $key, value: ${bundle.get(key)}")
+                            }
+
+
+                            if (prefProvider.isAdmin() || prefProvider.isManager()) {
+                                if (findNavController().currentDestination?.id != R.id.addDiscountDialog) {
+                                    findNavController().navigate(
+                                        R.id.action_manualSaleNew__to_addDiscountDialog,
+                                        bundle
+                                    )
+                                }
+                            } else {
+                                findNavController().navigate(
+                                    R.id.action_manualSaleNew_to_pascodeManagerDailog, bundle
+                                )
+                            }
+                        }
                     }
+                    return true
                 }
-                true
-            }
+
+            })
+
             popupMenu.show()
             // hideClearCart()
         }
@@ -1288,7 +1378,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 binding.imgDropdown.visible()
             } else {
 
-                var id = manualSaleCartAdapterNew.getItem(manualSaleCartAdapterNew.getList().size - 1).customItemID
+                var id =
+                    manualSaleCartAdapterNew.getItem(manualSaleCartAdapterNew.getList().size - 1).customItemID
                 id++
 
                 tabCartItemModel.customItemID = id
@@ -1360,6 +1451,39 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         setFragmentResultListener("request_key_discount_order") { _: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbDiscount>("data")
             val value = bundle.getDouble("value")
+/*Added by Rahul for solving Discount issue */
+            if (viewModel.cartModel == null) {
+                runBlocking {
+                        reasignCartModelFromDB()
+                }
+            }
+
+
+            if (value == 0.0) {
+                Log.d("FRAGMENT_RESULT", value.toString())
+                binding.txtDiscount.text = ""
+
+
+                viewModel.cartModel?.apply {
+                    discountSelectdValue = 0.0
+                    discountPrice = 0.0
+                    discountType = result?.discountType ?: ""
+                }
+            } else {
+                viewModel.cartModel?.apply {
+                    discountType = result?.discountType ?: ""
+                    discountSelectdValue = value
+                    discountPrice = value
+
+                }
+
+                /*if (result!!.discountType.equals(AMOUNT)){
+                    viewModel.cartModel?.discountPrice=value
+                }else if (result!!.discountType.equals(PERCENTAGE)){
+
+                }*/
+
+            }
             if (result != null /*&& viewModel.totalPrice != 0.0*/) {
 
                 orderDiscount = result.percentage
@@ -1379,6 +1503,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
 
             }
+
         }
         setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
             val note = bundle.getString("note")
@@ -1467,6 +1592,19 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
     }
 
+    /*Added by Rahul for solving Discount issue */
+    private suspend fun reasignCartModelFromDB() {
+        CoroutineScope(Dispatchers.IO).async {
+            viewModel.cartModel = viewModel.getManualSaleFromCart(
+                prefProvider.getValueInt(
+                    Constants.EMPLOYEE_ID,
+                    0
+                )
+            )
+        }.await()
+
+    }
+
 
     private fun onConfig() {
         binding.llKeypad.txtAmount.addTextChangedListener(
@@ -1539,7 +1677,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
     @SuppressLint("SetTextI18n")
     override fun onItemClicked(model: TbItem, position: Int) {
-
 
 
     }
@@ -1928,8 +2065,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         txtSave.setOnClickListener {
 
-            if (edtItemName.text.toString().trim().isEmpty()){
-                AlertUtils.showCustomAlert(requireContext(),"Please enter custom item name")
+            if (edtItemName.text.toString().trim().isEmpty()) {
+                AlertUtils.showCustomAlert(requireContext(), "Please enter custom item name")
                 return@setOnClickListener
             }
             dialog.dismiss()
@@ -2089,13 +2226,15 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         ?.let { putDouble("orderDiscount", it.discountPrice) }
 
                     viewModel.cartModel?.discountPrice?.let { it1 ->
-                        putDouble("orderDiscountPrice",
+                        putDouble(
+                            "orderDiscountPrice",
                             it1
                         )
                     }
                     putString("orderDiscountType", viewModel.cartModel?.discountType)
                     viewModel.cartModel?.discountSelectdValue?.let { it1 ->
-                        putDouble("selectedvalue",
+                        putDouble(
+                            "selectedvalue",
                             it1
                         )
                     }

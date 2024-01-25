@@ -1580,7 +1580,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             }?.onReceived {
                 Log.e(TAG2, "onReceived  MAIN ACTIVITY" + Gson().toJson(it))
 
-                if (locationId==it.asJsonObject.get("location_id").asInt){
+                if (PrefProvider(baseContext).getLocationId()==it.asJsonObject.get("location_id").asInt){
                     Log.e(TAG2, "onReceived  Inside" + Gson().toJson(it))
                     handleUpdatedData(it)
                 }

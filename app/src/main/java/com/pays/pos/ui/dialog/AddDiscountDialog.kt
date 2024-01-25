@@ -31,6 +31,7 @@ import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
 import com.pays.pos.utils.extensions.alert
 import com.google.gson.Gson
+import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
@@ -49,6 +50,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     private var isOrderDiscount: Boolean = false
     private lateinit var binding: DailogAddDiscountBinding
     private val viewModel by activityViewModels<DiscountListViewModel>()
+    private val dashBoardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val TAG = "AddDiscountDialog"
     private lateinit var discountAdapter: DialogDiscountListAdapter
     private var discountModel: TbDiscount? = null
@@ -81,6 +83,10 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             totalOrderPrice = requireArguments().getDouble("totalPrice", 0.0)
             orderDiscountPrice = requireArguments().getDouble("orderDiscountPrice", 0.0)
             orderDiscountType = requireArguments().getString("orderDiscountType").toString()
+           /*Added by Rahul for solving Discount issue */
+            if (orderDiscountType.equals("null")) {
+                orderDiscountType = AMOUNT
+            }
         }
         selectedvalue = requireArguments().getDouble("selectedvalue")
         orderDiscount = requireArguments().getDouble("orderDiscount")
@@ -235,9 +241,11 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
         }
 
-        binding.txtRemoveDiscount.setOnClickListener(object:View.OnClickListener{
+        binding.txtRemoveDiscount.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
-                if (binding.edtAmount.text.toString().trim().isNotEmpty() && binding.edtAmount.text.toString().trim().isNotBlank()) {
+                if (binding.edtAmount.text.toString().trim()
+                        .isNotEmpty() && binding.edtAmount.text.toString().trim().isNotBlank()
+                ) {
                     removeDiscount()
                 } else {
                     AlertUtils.showCustomAlertWithListenerWithOK(
@@ -431,6 +439,9 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         }
 
         binding.txtSave.setOnClickListener {
+            //added to resolve discount issue
+            if(!dashBoardViewModel.discountNeedToUpdate)
+                dashBoardViewModel.cartFooterNeedToBeUpdated = false
 
             if (binding.edtAmount.text.toString().trim()
                     .isNotEmpty() && binding.edtAmount.text.toString().trim().isNotBlank()
@@ -736,8 +747,9 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 }
 
 
-                if (selectedCurrency == AMOUNT) {
-
+                /*Added by Rahul for solving Discount issue */
+                if (selectedCurrency.equals("null") || selectedCurrency == AMOUNT) {
+                    selectedCurrency= AMOUNT
                     var price = 0.0
 
 
