@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Typeface
 import android.opengl.Visibility
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -64,6 +65,8 @@ class InventoryAdapter(
         init {
             binding.root.setOnClickListener {
                 listener.onItemSelect(layoutPosition)
+
+                Log.e("MENU ITEM ","MENU ITEM CLICKED ${list[layoutPosition].title}")
 
                 for (i in 0 until list.size) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

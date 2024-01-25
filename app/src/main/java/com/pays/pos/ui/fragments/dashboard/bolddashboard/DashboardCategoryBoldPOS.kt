@@ -1077,9 +1077,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
 
         binding.layoutHeader.imgSync.setOnClickListener {
-            viewModel.autoSyncEnabled.value = false
-            prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-            viewModel.syncInventoryModule(false)
+            startFullSync()
         }
         binding.layoutHeader.imgCashdDrawer.setOnClickListener {
             Log.d(TAG, "CASH-DRAWER: STEP 1 ")
@@ -1139,6 +1137,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
 
 
+    }
+
+     fun startFullSync(){
+        viewModel.autoSyncEnabled.value = false
+        prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+        viewModel.syncInventoryModule(false)
     }
 
     // To open cash drawer base on connected customer printer type
@@ -1357,7 +1361,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             else -> {
                 Log.e("Cart ITEM", "CART ITEM CLICKED")
                 viewModel.setLatestCartItemPosition(position)
-                //  CoroutineScope(Dispatchers.IO).launch {
+                  CoroutineScope(Dispatchers.IO).launch {
                 val item = TbCartItem().convertToCartItem(tbItem, tbItem)
                 item.timeStamp = System.currentTimeMillis().toString()
                 getInitialTakeOutOrderType()
@@ -1418,7 +1422,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     if (cartList.isEmpty()) {
                         viewModel.createCart(cartList)
 
-                        viewModel.cartFragmentRestarted = true
+                      //  viewModel.cartFragmentRestarted = true
 
                         childFragmentManager.beginTransaction()
                             .replace(binding.frameLayoutCart.id, createCartForLoadCartFragment())
@@ -1509,7 +1513,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
             }
         }
-        //}
+        }
 
     }
 

@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.pays.pos.R
 import com.pays.pos.data.entities.TbItem
 import com.pays.pos.databinding.FragmentItemsBinding
@@ -166,6 +167,8 @@ class HideItemListing(val clickedPosition: Int) : Fragment(), ItemCallback {
 
         viewModel.hideItemsListPos.observe(viewLifecycleOwner) {
 
+            Log.e("MENU ITEM","HIDE ITEM OBSERVE ${Gson().toJson(it)}")
+
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -173,29 +176,40 @@ class HideItemListing(val clickedPosition: Int) : Fragment(), ItemCallback {
                         binding.progressCircular.visibility = View.GONE
                         listSize = it.data?.size
                         if (listSize == 0) {
-                            binding.txtNodata?.visible()
+                            binding.txtNodata.visible()
                             binding.rvAllItemList.visibility = View.GONE
                             if (it.message != null && it.message.isNotEmpty()) {
-                                binding.txtNodata?.text = it.message
+                                binding.txtNodata.text = it.message
                             } else {
-                                binding.txtNodata?.text = "No data available"
+                                binding.txtNodata.text = "No data available"
+                                binding.llNoData?.visible()
                             }
                         } else {
+
+                            setAdapter()
                             binding.rvAllItemList.visibility = View.VISIBLE
-                            binding.txtNodata?.gone()
+                            binding.llNoData?.gone()
+                            binding.txtNodata.gone()
                         }
                         it.data?.let { it1 ->
                             adapter.add(it1)
                             binding.edtSearch.hint = "Search (" + it1.size + ") Items"
+                            adapter.notifyDataSetChanged()
                         }
+
+
+                        Log.e("MENU ITEM","HIDE ITEM SUCCESS")
+
                     }
                     Status.ERROR -> {
                         binding.rvAllItemList.visibility = View.GONE
                         binding.progressCircular.visibility = View.GONE
+                        Log.e("MENU ITEM","HIDE ITEM ERROR")
                     }
                     Status.LOADING -> {
                         binding.rvAllItemList.visibility = View.GONE
                         binding.progressCircular.visibility = View.VISIBLE
+                        Log.e("MENU ITEM","HIDE LOADING")
                     }
                 }
             }

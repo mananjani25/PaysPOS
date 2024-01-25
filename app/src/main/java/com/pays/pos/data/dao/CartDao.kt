@@ -96,6 +96,10 @@ interface CartDao {
     @Query("select * from CartModel where CartModel.orderType = :orderType AND CartModel.isMaual = 1 AND CartModel.employeeID=:employee_Id")
     fun getManualSaleItems(orderType: String, employee_Id: Int): LiveData<List<CartModel>>
 
+    /*Added by Rahul for solving Discount issue */
+    @Query("select * from CartModel where CartModel.isMaual = 1 AND CartModel.employeeID=:employee_Id")
+    fun getManualSaleFromCart(employee_Id: Int): CartModel
+
     @Query("select * from TbCartItem where orderType = :orderType AND isManualSaleItem = 1 AND employeeID=:employee_Id")
     fun getManualSaleCartItems(orderType: String, employee_Id: Int): LiveData<List<TbCartItem>>
 

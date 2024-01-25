@@ -3,11 +3,17 @@ package com.pays.pos.ui.activities
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.*
 import android.content.pm.PackageManager
+import android.media.RingtoneManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.os.StrictMode
 import android.provider.MediaStore
 import android.provider.Settings
@@ -18,6 +24,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.GravityCompat
@@ -71,12 +78,14 @@ import com.epson.eposprint.Builder
 import com.felhr.usbserial.BuildConfig.APPLICATION_ID
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.hosopy.actioncable.ActionCable
 import com.hosopy.actioncable.Channel
 import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
+import com.pays.pos.data.remote.Constants.INVENTORY_SYNC
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -131,9 +140,26 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     lateinit var rolePermission: RolePermission
     var currentIndex: Int = 0
 
+    private var baseUrl = ""
+    private var locationId: Int = 0
+    private var mContext: Context = this
+    private val TAG2 = "SYNCSETTINGS"
 
     companion object{
         var updatePrinter: UpdatePrinters? = null
+
+        private var subscription: Subscription? = null
+        private var subscription2: Subscription? = null
+        private var consumer: Consumer? = null
+        private var consumer2: Consumer? = null
+
+        fun workerDisconnect() {
+            try {
+                consumer?.disconnect()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     @Inject
@@ -1467,6 +1493,236 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         prefProvider?.setValue(UNIQUE_ID, getDeviceId())
 
         navController?.addOnDestinationChangedListener(listner)
+
+        //Connecting Dynamic sync functionality
+
+        if (isInternetAvailable()) {
+            connectActionCableSYNCSETTINGS()
+        } else {
+            sendNotification("Please check your Network Connectivity.")
+        }
+
+//        locationId = inputData.getInt("location_id", 0)
+//        baseUrl = inputData.getString("base_url").toString()
+        locationId = PrefProvider(baseContext).getLocationId()
+        baseUrl = PrefProvider(baseContext).getBaseUrl()
+    }
+
+    //Dynamic SYNC
+
+    private fun sendNotification(messageBody: String) {
+        Log.d("sendNotification", "message = $messageBody")
+
+
+        val channelId = mContext.getString(R.string.default_notification_channel_id)
+        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val notificationBuilder = NotificationCompat.Builder(mContext, channelId)
+            .setSmallIcon(R.drawable.ic_baseline_notifications_24)
+            .setContentTitle(mContext.getString(R.string.app_name))
+            .setContentText(messageBody)
+            .setAutoCancel(true)
+            .setSound(defaultSoundUri)
+
+        val notificationManager =
+            mContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                "Channel human readable title",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        notificationManager.notify(
+            System.currentTimeMillis().toInt()/* ID of notification */,
+            notificationBuilder.build()
+        )
+    }
+
+
+
+    fun connectActionCableSYNCSETTINGS() {
+        // 1. Setup
+        var requestURL =
+            baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
+
+        Log.e("PrinterRefreshWorker", "requestURL = $requestURL")
+
+        val uri = URI(Constants.PRINTER_QUEUE_CONNECTION_URL_SNACKPOS)
+        MainActivity.consumer2 = ActionCable.createConsumer(uri)
+
+        Log.d("PrinterRefreshWorker", "uri = $uri")
+
+        // 2. Create subscription
+        val appearanceChannel = Channel("SyncChannel")
+        appearanceChannel.addParam("id", locationId)
+        // appearanceChannel.addParam("id",prefProvider.getValueInt(LOCATION_ID,0))
+        MainActivity.subscription2 = MainActivity.consumer2?.subscriptions?.create(appearanceChannel)
+
+        if (MainActivity.subscription2 != null) {
+            MainActivity.subscription2?.onConnected {
+                Log.e(TAG2, "onActionConnected")
+                val params = JsonObject()
+                params.addProperty("location_id", locationId)
+                //  params.addProperty("url", requestURL)
+                MainActivity.subscription2?.perform("received", params)
+            }?.onRejected {
+                Log.e(TAG2, "onRejected")
+                if (isInternetAvailable()) {
+                    MainActivity.consumer2?.connect()
+                } else {
+                    sendNotification("Please check your Network Connectivity.")
+                }
+
+            }?.onReceived {
+                Log.e(TAG2, "onReceived  MAIN ACTIVITY" + Gson().toJson(it))
+
+                if (PrefProvider(baseContext).getLocationId()==it.asJsonObject.get("location_id").asInt){
+                    Log.e(TAG2, "onReceived  Inside" + Gson().toJson(it))
+                    handleUpdatedData(it)
+                }
+
+
+            }?.onDisconnected {
+
+
+                Log.e(TAG2, "onDisconnected")
+                if (isInternetAvailable()) {
+                    MainActivity.consumer2?.connect()
+                } else {
+                    sendNotification("Please check your Network Connectivity.")
+                }
+
+            }?.onFailed {
+                Log.e(TAG2, "onFailed")
+                if (isInternetAvailable()) {
+                    MainActivity.consumer2?.connect()
+                } else {
+                    sendNotification("Please check your Network Connectivity.")
+                }
+
+            }
+        }
+
+
+        // 3. Establish connection
+        MainActivity.consumer2?.connect()
+
+
+    }
+
+    private fun handleUpdatedData(it: JsonElement) {
+
+        try {
+            if (it.asJsonObject.has("setting_data")) {
+
+                val setting_data = it.asJsonObject.get("setting_data")
+                Log.e(TAG2, "call setting_data API")
+
+                if (setting_data.toString() == "true") {
+                    Handler(mainLooper).post(object:Runnable{
+                        override fun run() {
+                            dashboardViewModel.autoSyncEnabled.value = false
+                        }
+                    })
+
+                  //  PrefProvider(mContext).setValueInt(Constants.CAT_ID_SELECTED, 0)
+                    dashboardViewModel.syncSettingModule()
+
+                    if (com.pays.pos.ui.fragments.settings.hardware.printer.Printer.updatePrinter == null) {
+
+                        updatePrinter?.updatePrinters()
+
+                        Log.e(TAG2,"Setting DATA TRUE")
+
+
+                    } else {
+                        com.pays.pos.ui.fragments.settings.hardware.printer.Printer.updatePrinter?.updatePrinters()
+                    }
+
+                } else {
+
+                    if (it.asJsonObject.has("message")) {
+
+                        sendNotification(it.asJsonObject.get("message").asString)
+                    }
+                }
+            }
+            if(it.asJsonObject.has(INVENTORY_SYNC)){
+                val inventory_sync_data = it.asJsonObject.get(Constants.INVENTORY_SYNC)
+
+                if (inventory_sync_data.toString() == "true") {
+                    val intent2 = Intent()
+                    intent2.action = Constants.SYNC_NOTIFICATION
+                    mContext.sendBroadcast(intent2)
+
+//                    Handler(mainLooper).post(object:Runnable{
+//                        override fun run() {
+//                            dashboardViewModel.autoSyncEnabled.value = false
+//                        }
+//                    })
+
+                  try {
+                      dashboardViewModel.autoSyncEnabled.value = false
+                  } catch (_:Exception) {}
+
+                    PrefProvider(mContext).setValueInt(Constants.CAT_ID_SELECTED, 0)
+                    dashboardViewModel.syncInventoryModule(false)
+
+//                    DashboardCategoryBoldPOS.syncDataCallback?.syncNotification()
+                }else {
+
+                    if (it.asJsonObject.has("message")) {
+
+                        sendNotification(it.asJsonObject.get("message").asString)
+                    }
+                }
+            }
+
+            if(it.asJsonObject.has(Constants.SYNC_NOTIFICATION)){
+                val sync_data = it.asJsonObject.get(Constants.SYNC_NOTIFICATION)
+
+                if (sync_data.toString() == "true") {
+                    DashboardCategoryBoldPOS.syncDataCallback?.syncNotification()
+                }else {
+
+                    if (it.asJsonObject.has("message")) {
+
+                        sendNotification(it.asJsonObject.get("message").asString)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG2, "Exception ${e.message}")
+        }
+    }
+
+    private fun isInternetAvailable(): Boolean {
+        var result: Boolean
+        val connectivityManager =
+            applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        connectivityManager.let {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                it.getNetworkCapabilities(connectivityManager.activeNetwork)?.apply {
+                    result = when {
+                        hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                        hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                        hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                        else -> false
+                    }
+                    return result
+                }
+            } else {
+                connectivityManager.activeNetworkInfo.also {
+                    return it != null && it.isConnected
+                }
+            }
+        }
+        return false
     }
 
     override fun onPause() {

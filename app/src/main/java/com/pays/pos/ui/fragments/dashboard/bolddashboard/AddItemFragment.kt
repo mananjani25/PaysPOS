@@ -364,6 +364,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
 
                 if (isUpdateItem) {
+                    // Added to resolve Add Discount issue BIS-3547
+                    viewModel.cartFooterNeedToBeUpdated = true
+
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                         item.guestIndexForDineIn = viewModel.dineInHeaderPosition
                         val dineInList = cartModelsList[0].dineInList
@@ -496,6 +499,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
         binding.txtAddDiscount.setOnClickListener {
             var totalItemswithQuantity = 0
+
+            // Added to resolve Add Discount issue BIS-3547
+            viewModel.discountNeedToUpdate = false
 
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 viewModel.cartModel?.dineInList?.forEach {
