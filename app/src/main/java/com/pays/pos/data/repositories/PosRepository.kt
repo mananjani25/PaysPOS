@@ -461,7 +461,7 @@ class PosRepository @Inject constructor(
         appDatabase.teamRoleDao().delete()
     }
 
-    fun orderTypeByName(orderTypeName: String):Int {
+    fun orderTypeByName(orderTypeName: String): Int {
         return appDatabase.orderTypeDao().orderTypeByName(orderTypeName)
     }
 
@@ -788,6 +788,11 @@ class PosRepository @Inject constructor(
         return appDatabase.categoryDao().manualCategoryId
     }
 
+    /*Added by Rahul for solving Discount issue */
+    fun getManualSaleFromCart(employeeId: Int): CartModel {
+        return appDatabase.cartDao().getManualSaleFromCart(employeeId)
+    }
+
     fun addItemCart(cartModel: CartModel) {
         synchronized(this) {
             //  appDatabase.beginTransaction()
@@ -807,8 +812,10 @@ class PosRepository @Inject constructor(
         synchronized(this) {
             appDatabase.cartDao().updateCartModel(cartModel)
             cartModel.taxlistDynamic?.toCollection(arrayListOf())
-                ?.let {Log.e("POSRepo","check Inside Update")
-                    appDatabase.cartDao().updateTaxBif(it) }
+                ?.let {
+                    Log.e("POSRepo", "check Inside Update")
+                    appDatabase.cartDao().updateTaxBif(it)
+                }
         }
     }
 
@@ -1392,7 +1399,7 @@ class PosRepository @Inject constructor(
     }
 
 
-    suspend fun updateOptionsJSON(modId: Int?, modifiersJson:String) {
+    suspend fun updateOptionsJSON(modId: Int?, modifiersJson: String) {
         appDatabase.optionSetDao().updateOptionsJSON(modId!!, modifiersJson)
     }
 }
