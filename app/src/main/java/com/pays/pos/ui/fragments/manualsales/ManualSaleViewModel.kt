@@ -48,7 +48,7 @@ class ManualSaleViewModel @Inject constructor(
     var redeemLoyaltyInfo: RedeemLoyaltyInfo = RedeemLoyaltyInfo()
 
     init {
-        deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID,0))
+        deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0))
     }
 
 
@@ -136,12 +136,12 @@ class ManualSaleViewModel @Inject constructor(
 
                 if (list.isEmpty()) {
                     // delete carts
-                    deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID,0))
+                    deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0))
                 }
             } else {
 
                 if (type == DELETE) {
-                    deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID,0))
+                    deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0))
                 } else {
                     val cartModel = cartList?.get(0)
                     cartModel?.items = listOf(item)
@@ -239,8 +239,9 @@ class ManualSaleViewModel @Inject constructor(
             activeLoyaltyProgram?.let {
                 redeemLoyaltyInfo.loyaltyProgramsModel = activeLoyaltyProgram
 
-                val availablePoints = it.rewardPoint.times((customer.final_reward?.floorDiv(it.rewardPoint)!!))
-                    ?:0
+                val availablePoints =
+                    it.rewardPoint.times((customer.final_reward?.floorDiv(it.rewardPoint)!!))
+                        ?: 0
                 //if customer has more points than required(minimum limit)
                 var availableLoyaltyAmount = 0.0
                 if (it.rewardPoint == 0) {
@@ -250,7 +251,8 @@ class ManualSaleViewModel @Inject constructor(
                     availablePoints * it.amount / it.rewardPoint
                 if (availableLoyaltyAmount > redeemLoyaltyInfo.total) {
                     var pointDouble = (redeemLoyaltyInfo.total * it.rewardPoint) / it.amount
-                    pointDouble = (it.rewardPoint * (pointDouble.div(it.rewardPoint)).toInt()).toDouble()
+                    pointDouble =
+                        (it.rewardPoint * (pointDouble.div(it.rewardPoint)).toInt()).toDouble()
                     redeemLoyaltyInfo.usedLoyaltyPoints = ceil(pointDouble).toInt()
                     redeemLoyaltyInfo.usedLoyaltyAmount = pointDouble * it.amount / it.rewardPoint
                     if (redeemLoyaltyInfo.usedLoyaltyAmount >= redeemLoyaltyInfo.total) {

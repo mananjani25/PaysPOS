@@ -1,8 +1,6 @@
 package com.pays.pos.ui.fragments.dashboard.bolddashboard
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
@@ -19,15 +17,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.gson.Gson
 import com.pays.pos.R
-import com.pays.pos.data.entities.CartModel
-import com.pays.pos.data.entities.CashDiscountModel
-import com.pays.pos.data.entities.TaxData
-import com.pays.pos.data.entities.TbCartItem
-import com.pays.pos.data.entities.TbCustomer
-import com.pays.pos.data.entities.TbItem
-import com.pays.pos.data.entities.TbOrderType
-import com.pays.pos.data.entities.TbServiceCharge
+import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.DineInModel
 import com.pays.pos.data.model.DineInOrderDetailAttributes
 import com.pays.pos.data.model.GuestPaymentCalculationModel
@@ -82,25 +74,13 @@ import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.ProgressUtils
-import com.pays.pos.utils.callback.DineInOrderCallBack
-import com.pays.pos.utils.callback.ItemCallback
-import com.pays.pos.utils.callback.ItemClickListner
-import com.pays.pos.utils.callback.ItemListner
-import com.pays.pos.utils.callback.MyCallback
-import com.pays.pos.utils.extensions.alert
-import com.pays.pos.utils.extensions.disableItemAnimator
-import com.pays.pos.utils.extensions.getColor
-import com.pays.pos.utils.extensions.gone
-import com.pays.pos.utils.extensions.invisible
-import com.pays.pos.utils.extensions.isVisible
-import com.pays.pos.utils.extensions.runOnUiThread
-import com.pays.pos.utils.extensions.setOnSingleClickListener
-import com.pays.pos.utils.extensions.visible
+import com.pays.pos.utils.callback.*
+import com.pays.pos.utils.extensions.*
 import com.pays.pos.utils.getCustomerDisplay
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.toCollection
 import kotlinx.coroutines.flow.toList
@@ -116,7 +96,7 @@ import org.greenrobot.eventbus.ThreadMode
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.*
 import javax.inject.Inject
 
 
@@ -2474,6 +2454,12 @@ class CartFragment(
                                 )
                             }
                             bundle.putString("isFrom", "orderDiscount")
+
+                            /*Added by Rahul for solving Discount issue */
+                            for (key in bundle.keySet()) {
+                                Log.d("BUNDLE_PRINT_CART", "Key: $key, value: ${bundle.get(key)}")
+                            }
+
                             if (prefProvider.isAdmin() || prefProvider.isManager()) {
 
                                 findNavController().navigate(
