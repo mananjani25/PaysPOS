@@ -862,11 +862,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
             val popupMenu = PopupMenu(requireContext(), it)
             popupMenu.menuInflater.inflate(R.menu.manual_sale_menu, popupMenu.menu)
-            if (cartItemsList?.isEmpty() == true) {
+            /*if (cartItemsList?.isEmpty() == true) {
                 popupMenu.menu.findItem(R.id.menu_order_discount).isVisible = false
                 popupMenu.menu.findItem(R.id.menu_order_note).isVisible = false
                 popupMenu.menu.findItem(R.id.menu_clear_cart).isVisible = false
-            }
+            }*/
 
             if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isEmpty())
                 popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
@@ -876,7 +876,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 override fun onMenuItemClick(menuItem: MenuItem?): Boolean {
                     when (menuItem?.itemId) {
                         R.id.menu_clear_cart -> {
-                            if (cartItemsList?.isNotEmpty() == true) {
+//                            if (cartItemsList?.isNotEmpty() == true) {
                                 alert(
                                     getString(R.string.app_name),
                                     getString(R.string.delete_items_message)
@@ -901,7 +901,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                                     }
                                 }
                                 //  hideClearCart()
-                            }
+//                            }
 
                         }
 
