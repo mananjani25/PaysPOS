@@ -95,6 +95,7 @@ import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.set
@@ -186,6 +187,10 @@ class DashBoardCategoryViewModel @Inject constructor(
      * BIS - 3500 issue resolved
      */
     val autoSyncEnabled = MutableLiveData<Boolean>()
+
+    // Added to resolve Add Discount issue BIS-3547
+    var discountNeedToUpdate = true
+    var cartFooterNeedToBeUpdated = true
 
     fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
 
@@ -443,8 +448,18 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun addItemToCartItems(tbCartItem: TbCartItem) {
         CoroutineScope(Dispatchers.IO).launch {
+
+
             posRepository.addItemToCart(tbCartItem)
             destroyedCartItemsList.clear()
+
+
+            val currentTimeMillis = System.currentTimeMillis()
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            val formattedTime = dateFormat.format(Date(currentTimeMillis))
+
+            println("Current System Time in milliseconds: $currentTimeMillis")
+            println("Formatted Time: $formattedTime + ${Gson().toJson(tbCartItem)}")
         }
     }
 
@@ -6335,7 +6350,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun syncInventoryModule(b: Boolean) {
         var needToUpdate = false
-        _showProgress.value = Event(true)
+       // _showProgress.value = Event(true)
         _syncDone.value = Event(false)
         viewModelScope.launch {
             val resource = posRepository.syncInventory(
@@ -6926,18 +6941,20 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                     }
                     Log.d("BINGE", "syncSettingModule: END")
+                    autoSyncEnabled.value = true
                 }
 
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message)
                     _showProgress.value = Event(false)
+                    autoSyncEnabled.value = true
                 }
 
                 Status.LOADING -> {
                     _showProgress.value = Event(true)
+                    autoSyncEnabled.value = true
                 }
             }
-
         }
 
     }
