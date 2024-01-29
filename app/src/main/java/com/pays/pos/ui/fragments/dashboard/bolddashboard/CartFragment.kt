@@ -2383,11 +2383,11 @@ class CartFragment(
             }
 
 
-            if (viewModel.currentCartItems.isEmpty()) {
+            /*if (viewModel.currentCartItems.isEmpty()) {
                 popupMenu.menu.findItem(R.id.menu_discount).isVisible = false
                 popupMenu.menu.findItem(R.id.menu_order_note).isVisible = false
 //                popupMenu.menu.findItem(R.id.menu_clear_cart).isVisible = false
-            }
+            }*/
 
             if (prefProvider.getValueInt(CUSTOMER_ID, -1) == -1) {
                 popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
