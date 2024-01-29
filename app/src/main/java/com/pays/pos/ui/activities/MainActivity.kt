@@ -1,4 +1,4 @@
-package com.android.pos.ui.activities
+package com.pays.pos.ui.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -81,7 +81,6 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonArray
-import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.hosopy.actioncable.ActionCable

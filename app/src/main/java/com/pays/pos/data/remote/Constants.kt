@@ -1,4 +1,4 @@
-package com.android.pos.data.remote
+package com.pays.pos.data.remote
 
 import android.content.Context
 import android.util.Log
@@ -16,6 +16,7 @@ import com.sunmi.externalprinterlibrary2.printer.CloudPrinterBuilder
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
+import java.util.concurrent.ExecutionException
 
 object Constants {
 
