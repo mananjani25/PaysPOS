@@ -3,6 +3,7 @@ package com.pays.pos.utils.workmanager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
 import android.media.RingtoneManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -47,6 +48,7 @@ import com.sunmi.externalprinterlibrary2.printer.CloudPrinterBuilder
 import com.sunmi.externalprinterlibrary2.style.AlignStyle
 import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
 import com.sunmi.externalprinterlibrary2.style.UnderlineStyle
+import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.annotations.NotNull
@@ -58,6 +60,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
     ResultCallback {
 
     private var isFromParent: Boolean = true
+    private var localCallConnect: Boolean = false
     private var previousPrinterAddress = ""
     private var previousPrinterName = ""
     private var disconnectSize0: Boolean = false
@@ -112,26 +115,30 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
         try {
 
-         // This is worked class which is manage all printer queue functionalities
-         // Here we are implemented action cable change so it is used for manager queue
-         // Once we place order and if printer queue is enabled that time we will received data in Order object from action cable response.
+
+            // This is worked class which is manage all printer queue functionalities
+            // Here we are implemented action cable change so it is used for manager queue
+            // Once we place order and if printer queue is enabled that time we will received data in Order object from action cable response.
 
 
-        // Here are have one more channel implemented which is used for sync data. so it is help to update all settings and printers data
+            // Here are have one more channel implemented which is used for sync data. so it is help to update all settings and printers data
 
 
             if (isInternetAvailable()) {
-                //connectActionCableSYNCSETTINGS()
+              //  connectActionCableSYNCSETTINGS()
             } else {
                 sendNotification("Please check your Network Connectivity.")
             }
 
-            locationId = inputData.getInt("location_id", 0)
+            locationId = mContext.getSharedPreferences(
+                mContext.resources.getString(R.string.app_name),
+                Context.MODE_PRIVATE
+            ).getInt(LOCATION_ID, 0)
             baseUrl = inputData.getString("base_url").toString()
             isPrinterQueueEnable = inputData.getBoolean(Constants.IS_PRINTER_QUEUE_ENABLE, false)
             isCancelWork = inputData.getBoolean("is_cancel_work", false)
 
-            Log.d("isPrinterQueueEnable", "isPrinterQueueEnable = $isPrinterQueueEnable")
+            Log.e("isPrinterQueueEnable", "isPrinterQueueEnable = $isPrinterQueueEnable")
 
 
             Log.e(
@@ -143,14 +150,19 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 }"
             )
 
-            if (mContext.getSharedPreferences(
+            /*if (mContext.getSharedPreferences(
                     mContext.resources.getString(R.string.app_name),
                     Context.MODE_PRIVATE
                 ).getBoolean(CHECK_QUEUE_CANCEL, false) == false
             ) {
                 Log.e(TAG, "checkIsdws")
                 if (isInternetAvailable()) {
-                    if (isPrinterQueueEnable) {
+                    Log.e(TAG, "checkConnection  ${isPrinterQueueEnable}")
+                    if (isPrinterQueueEnable &&  mContext.getSharedPreferences(
+                            mContext.resources.getString(R.string.app_name),
+                            Context.MODE_PRIVATE
+                        ).getBoolean(WORKER_QUEUE_IN_PROGRESS, false) == false) {
+
                         connectActionCable()
                     }
                 } else {
@@ -159,9 +171,8 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 }
             } else {
                 Log.e(TAG, "fsfkiwoorm")
-               workerDisconnect()
-            }
-
+                workerDisconnect()
+            }*/
 
 
         } catch (e: Exception) {
@@ -174,6 +185,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
     }
 
     private fun connectActionCable() {
+
         var requestURL =
             baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
         Log.e(TAG, "checkrequestURL  ${requestURL}")
@@ -190,6 +202,12 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
         if (subscription != null) {
             subscription?.onConnected {
+
+                mContext.getSharedPreferences(
+                    mContext.resources.getString(R.string.app_name),
+                    Context.MODE_PRIVATE
+                ).edit().putBoolean(WORKER_QUEUE_IN_PROGRESS, true)
+
                 Log.e(TAG, "onActionConnected")
                 val params = JsonObject()
                 params.addProperty("id", locationId)
@@ -201,6 +219,11 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 subscription?.perform("received", params)
 
             }?.onRejected {
+
+                mContext.getSharedPreferences(
+                    mContext.resources.getString(R.string.app_name),
+                    Context.MODE_PRIVATE
+                ).edit().putBoolean(WORKER_QUEUE_IN_PROGRESS, false)
                 Log.e(TAG, "onRejected ")
                 Handler(Looper.getMainLooper()).postDelayed(Runnable {
                     if (isInternetAvailable()) {
@@ -213,6 +236,13 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
             }?.onReceived {
                 Log.e(TAG, "onActionReceived:  ${Gson().toJson(it)}")
                 Log.e(TAG, "onActionReceived checkCancelWeok:  ${isCancelWork}")
+
+                mContext.getSharedPreferences(
+                    mContext.resources.getString(R.string.app_name),
+                    Context.MODE_PRIVATE
+                ).edit().putBoolean(WORKER_QUEUE_IN_PROGRESS, true)
+
+
 
                 if (mContext.getSharedPreferences(
                         mContext.resources.getString(R.string.app_name),
@@ -245,7 +275,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
                                 currentOrderIndex = 0
                                 currentPrinterIndex = 0
-                                delay(5000)
+                                delay(1500)
 
                                 val params = JsonObject()
                                 params.addProperty("id", locationId)
@@ -271,6 +301,11 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
 
             }?.onDisconnected {
+
+                mContext.getSharedPreferences(
+                    mContext.resources.getString(R.string.app_name),
+                    Context.MODE_PRIVATE
+                ).edit().putBoolean(WORKER_QUEUE_IN_PROGRESS, false)
                 Log.e(TAG, "onDisconnected")
 
                 if (subscription != null) {
@@ -281,23 +316,23 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                     }
                 }
 
-                /*               Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                                   if (isInternetAvailable()) {
+                Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                    if (isInternetAvailable()) {
 
 
-                                       if (mContext.getSharedPreferences(
-                                               mContext.resources.getString(R.string.app_name),
-                                               Context.MODE_PRIVATE
-                                           ).getBoolean(CHECK_QUEUE_CANCEL, false) == false
-                                       ) {
-                                           //consumer?.connect()
-                                       } else {
-                                           consumer?.subscriptions?.remove(subscription)
-                                       }
-                                   } else {
-                                       sendNotification("Please check your Network Connectivity.")
-                                   }
-                               }, 6000)*/
+                        if (mContext.getSharedPreferences(
+                                mContext.resources.getString(R.string.app_name),
+                                Context.MODE_PRIVATE
+                            ).getBoolean(CHECK_QUEUE_CANCEL, false) == false
+                        ) {
+                            //consumer?.connect()
+                        } else {
+                            consumer?.subscriptions?.remove(subscription)
+                        }
+                    } else {
+                        sendNotification("Please check your Network Connectivity.")
+                    }
+                }, 6000)
 
 
                 /* if (isFromParent == true){
@@ -306,14 +341,19 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
 
             }?.onFailed {
+
+                mContext.getSharedPreferences(
+                    mContext.resources.getString(R.string.app_name),
+                    Context.MODE_PRIVATE
+                ).edit().putBoolean(WORKER_QUEUE_IN_PROGRESS, false)
                 Log.e(TAG, "onFailed")
-                Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                    if (isInternetAvailable()) {
-                        consumer?.connect()
-                    } else {
-                        sendNotification("Please check your Network Connectivity.")
-                    }
-                }, 6000)
+
+                if (isInternetAvailable()) {
+
+                    //consumer?.connect()
+                } else {
+                    sendNotification("Please check your Network Connectivity.")
+                }
 
 
             }
@@ -325,8 +365,18 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
         if (mContext.getSharedPreferences(
                 mContext.resources.getString(R.string.app_name),
                 Context.MODE_PRIVATE
-            ).getBoolean(CHECK_QUEUE_CANCEL, false) == false
+            ).getBoolean(CHECK_QUEUE_CANCEL, false) == false && mContext.getSharedPreferences(
+                mContext.resources.getString(R.string.app_name),
+                Context.MODE_PRIVATE
+            ).getBoolean(WORKER_QUEUE_IN_PROGRESS, false) == false && localCallConnect == false
         ) {
+            localCallConnect = true
+            Log.e(TAG, "consumerConnect")
+            mContext.getSharedPreferences(
+                mContext.resources.getString(R.string.app_name),
+                Context.MODE_PRIVATE
+            ).edit().putBoolean(WORKER_QUEUE_IN_PROGRESS, true)
+
             consumer?.connect()
         }
 
@@ -653,7 +703,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                             currentOrderIndex = 0
                             currentPrinterIndex = 0
                             Log.e(TAG, "callActionCalledRun 4")
-                            delay(2000)
+                            delay(1500)
 
                             val params = JsonObject()
                             params.addProperty("id", locationId)
@@ -684,7 +734,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                     currentPrinterIndex = 0
 
                     runBlocking {
-                        delay(2000)
+                        delay(1500)
 
                         val params = JsonObject()
                         params.addProperty("id", locationId)
@@ -707,7 +757,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
                     currentOrderIndex = 0
                     currentPrinterIndex = 0
-                    delay(3000)
+                    delay(1500)
                     val params = JsonObject()
                     params.addProperty("id", locationId)
                     params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
@@ -726,7 +776,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
                 currentOrderIndex = 0
                 currentPrinterIndex = 0
-                delay(3000)
+                delay(1500)
                 val params = JsonObject()
                 params.addProperty("id", locationId)
                 params.addProperty("url", baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3)
@@ -941,7 +991,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                                 "   "
                             } else {
                                 "" + mod.modifierQuantity + "x "
-                            }*/ "   "+mod.modifierQuantity.toString() + "x " + mod.name
+                            }*/ "   " + mod.modifierQuantity.toString() + "x " + mod.name
                         )
 
 
@@ -1021,7 +1071,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                         subscription?.perform("delete_order", params)
 
                         runBlocking {
-                            delay(2000)
+                            //   delay(400)
                             checkForNextOrder()
 
                         }
@@ -1098,7 +1148,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
                         currentOrderIndex = 0
                         currentPrinterIndex = 0
-                        delay(2000)
+                        delay(1500)
 
                         val params = JsonObject()
                         params.addProperty("id", locationId)
@@ -1125,7 +1175,7 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
                     currentOrderIndex = 0
                     currentPrinterIndex = 0
-                    delay(2000)
+                    delay(1500)
 
                     val params = JsonObject()
                     params.addProperty("id", locationId)
@@ -1196,13 +1246,24 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
         Log.e("PrinterRefreshWorker", "requestURL = $requestURL")
 
         val uri = URI(Constants.PRINTER_QUEUE_CONNECTION_URL_SNACKPOS)
-        consumer2 = ActionCable.createConsumer(uri)
+        val options = Consumer.Options()
+        options.reconnection = true
+
+
+        if (consumer2 != null) {
+            consumer2?.disconnect()
+            connectActionCableSYNCSETTINGS()
+        } else {
+            consumer2 = ActionCable.createConsumer(uri, options)
+        }
+
 
         Log.d("PrinterRefreshWorker", "uri = $uri")
 
         // 2. Create subscription
         val appearanceChannel = Channel("SyncChannel")
         appearanceChannel.addParam("id", locationId)
+
         // appearanceChannel.addParam("id",prefProvider.getValueInt(LOCATION_ID,0))
         subscription2 = consumer2?.subscriptions?.create(appearanceChannel)
 
@@ -1210,13 +1271,15 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
             subscription2?.onConnected {
                 Log.e(TAG2, "onActionConnected")
                 val params = JsonObject()
+                Log.e(TAG2, "locationIdSETTINGS:  ${locationId}")
                 params.addProperty("location_id", locationId)
                 //  params.addProperty("url", requestURL)
-                subscription2?.perform("received", params)
+                // subscription2?.perform("received", params)
+                subscription2?.perform("join")
             }?.onRejected {
                 Log.e(TAG2, "onRejected")
                 if (isInternetAvailable()) {
-                    consumer2?.connect()
+                    consumer2?.disconnect()
                 } else {
                     sendNotification("Please check your Network Connectivity.")
                 }
@@ -1231,17 +1294,33 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
 
                 Log.e(TAG2, "onDisconnected")
-                if (isInternetAvailable()) {
-                    consumer2?.connect()
-                } else {
-                    sendNotification("Please check your Network Connectivity.")
+                try {
+                    if (isInternetAvailable()) {
+                        consumer2 = null
+                        connectActionCableSYNCSETTINGS()
+                    } else {
+                        sendNotification("Please check your Network Connectivity.")
+                    }
+                } catch (e: Exception) {
                 }
 
             }?.onFailed {
                 Log.e(TAG2, "onFailed")
                 if (isInternetAvailable()) {
-                    consumer2?.connect()
+                    try {
+
+                        Handler(Looper.getMainLooper()).postDelayed(object : Runnable {
+                            override fun run() {
+                                consumer2?.connect()
+                            }
+
+                        }, 10000)
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 } else {
+
                     sendNotification("Please check your Network Connectivity.")
                 }
 
@@ -1257,19 +1336,20 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
 
     private fun handleUpdatedData(it: JsonElement) {
 
-        try {
+        if (it.asJsonObject.has("location_id") && it.asJsonObject.get("location_id").asInt == locationId) {
+
             if (it.asJsonObject.has("setting_data")) {
 
                 val setting_data = it.asJsonObject.get("setting_data")
                 Log.e(TAG2, "call setting_data API")
 
                 if (setting_data.toString() == "true") {
-                    if (com.pays.pos.ui.fragments.settings.hardware.printer.Printer.updatePrinter == null) {
+                    if (com.android.pos.ui.fragments.settings.hardware.printer.Printer.updatePrinter == null) {
 
                         MainActivity.updatePrinter?.updatePrinters()
 
                     } else {
-                        com.pays.pos.ui.fragments.settings.hardware.printer.Printer.updatePrinter?.updatePrinters()
+                        com.android.pos.ui.fragments.settings.hardware.printer.Printer.updatePrinter?.updatePrinters()
                     }
 
                 } else {
@@ -1280,12 +1360,23 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                     }
                 }
             }
-            if(it.asJsonObject.has(SYNC_NOTIFICATION)){
+            if (it.asJsonObject.has("setting_data") && it.asJsonObject.get("setting_data").asBoolean == true) {
+                Log.e(TAG2, "checkInsideSYNCNo")
+                val intent = Intent()
+                intent.action = SYNC_NOTIFICATION
+                mContext.sendBroadcast(intent)
+                /*val intent = Intent()
+                intent.action = Constants.SYNC_SETTING_NOTIFICATION
+                sendBroadcast(intent)
+                DashboardCategoryBoldPOS.syncDataCallback?.syncNotification()
+*/
+            }
+            if (it.asJsonObject.has(SYNC_NOTIFICATION)) {
                 val sync_data = it.asJsonObject.get(Constants.SYNC_NOTIFICATION)
 
                 if (sync_data.toString() == "true") {
                     DashboardCategoryBoldPOS.syncDataCallback?.syncNotification()
-                }else {
+                } else {
 
                     if (it.asJsonObject.has("message")) {
 
@@ -1293,9 +1384,8 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                     }
                 }
             }
-        } catch (e: Exception) {
-            Log.e(TAG2, "Exception")
         }
+
     }
 
     private fun isInternetAvailable(): Boolean {

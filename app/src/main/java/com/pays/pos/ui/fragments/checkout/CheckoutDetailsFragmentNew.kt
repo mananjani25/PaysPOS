@@ -2856,7 +2856,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             prefProvider.getValue("CART_MODEL2", ""),
             CartModel::class.java
         )
-        if (cartList == null){
+        if (cartList == null) {
             if (cartModel != null) {
                 viewModel.cartModel = cartModel
                 cartList = cartModel
@@ -2868,56 +2868,56 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         if (cartList!!.items == null || cartList!!.items!!.isEmpty()) {
             var items: ArrayList<TbItem>? = ArrayList()
-            for (item in viewModel.currentCartItems){
-                var tbItem=TbItem()
-                tbItem.id=item.id
-                tbItem.itemId=item.itemId
-                tbItem.categoryId=item.categoryId
-                tbItem.categoryName=item.categoryName
-                tbItem.createdAt=item.createdAt
-                tbItem.customItemCount=item.customItemCount
-                tbItem.dineInSort=item.dineInSort
-                tbItem.customItemID=item.customItemCount
-                tbItem.discountId=item.discountId
-                tbItem.discountPrice=item.discountPrice
-                tbItem.discountType=item.discountType
-                tbItem.guestItemId=item.guestItemId
-                tbItem.headerPositionDinein=item.headerPositionDinein
-                tbItem.hide_status=item.hide_status
-                tbItem.isHide=item.isHide
-                tbItem.imageUrl=item.imageUrl
-                tbItem.isChecked=item.isChecked
-                tbItem.isDeleted=item.isDeleted
-                tbItem.isDestroy=item.isDestroy
-                tbItem.isEdited=item.isEdited
-                tbItem.isFired=item.isFired
-                tbItem.isManualSales=item.isManualSales
-                tbItem.isPaid=item.isPaid
-                tbItem.itemOriginalModifiersList=item.itemOriginalModifiersList
-                tbItem.itemQuantity=item.itemQuantity
-                tbItem.modifier_set_ids=item.modifier_set_ids
-                tbItem.modifiers=item.modifiers
-                tbItem.name=item.name
-                tbItem.note=item.note
-                tbItem.manualSaleId=item.manualSaleId
-                tbItem.optionSets=item.optionSets
-                tbItem.website_hide_status=item.website_hide_status
-                tbItem.variationsAttributes=item.variationsAttributes
-                tbItem.updatedAt=item.updatedAt
-                tbItem.timeStamp=item.timeStamp
-                tbItem.thumbImageUrl=item.thumbImageUrl
-                tbItem.taxes=item.taxes
-                tbItem.sort=item.sort
-                tbItem.sku=item.sku
-                tbItem.singleItemPrice=item.singleItemPrice
-                tbItem.shortDescription=item.shortDescription
-                tbItem.reorder=item.reorder
-                tbItem.quantity=item.quantity
-                tbItem.price=item.price
-                tbItem.orderItemId=item.orderItemId
+            for (item in viewModel.currentCartItems) {
+                var tbItem = TbItem()
+                tbItem.id = item.id
+                tbItem.itemId = item.itemId
+                tbItem.categoryId = item.categoryId
+                tbItem.categoryName = item.categoryName
+                tbItem.createdAt = item.createdAt
+                tbItem.customItemCount = item.customItemCount
+                tbItem.dineInSort = item.dineInSort
+                tbItem.customItemID = item.customItemCount
+                tbItem.discountId = item.discountId
+                tbItem.discountPrice = item.discountPrice
+                tbItem.discountType = item.discountType
+                tbItem.guestItemId = item.guestItemId
+                tbItem.headerPositionDinein = item.headerPositionDinein
+                tbItem.hide_status = item.hide_status
+                tbItem.isHide = item.isHide
+                tbItem.imageUrl = item.imageUrl
+                tbItem.isChecked = item.isChecked
+                tbItem.isDeleted = item.isDeleted
+                tbItem.isDestroy = item.isDestroy
+                tbItem.isEdited = item.isEdited
+                tbItem.isFired = item.isFired
+                tbItem.isManualSales = item.isManualSales
+                tbItem.isPaid = item.isPaid
+                tbItem.itemOriginalModifiersList = item.itemOriginalModifiersList
+                tbItem.itemQuantity = item.itemQuantity
+                tbItem.modifier_set_ids = item.modifier_set_ids
+                tbItem.modifiers = item.modifiers
+                tbItem.name = item.name
+                tbItem.note = item.note
+                tbItem.manualSaleId = item.manualSaleId
+                tbItem.optionSets = item.optionSets
+                tbItem.website_hide_status = item.website_hide_status
+                tbItem.variationsAttributes = item.variationsAttributes
+                tbItem.updatedAt = item.updatedAt
+                tbItem.timeStamp = item.timeStamp
+                tbItem.thumbImageUrl = item.thumbImageUrl
+                tbItem.taxes = item.taxes
+                tbItem.sort = item.sort
+                tbItem.sku = item.sku
+                tbItem.singleItemPrice = item.singleItemPrice
+                tbItem.shortDescription = item.shortDescription
+                tbItem.reorder = item.reorder
+                tbItem.quantity = item.quantity
+                tbItem.price = item.price
+                tbItem.orderItemId = item.orderItemId
                 items!!.add(tbItem)
             }
-            cartList!!.items=items
+            cartList!!.items = items
         }
 
         val myRequest = cartList?.let {
@@ -2954,8 +2954,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (myRequest != null) {
             paymentviewModel.totalPayAmount(paymentAmount)
 
-            if (prefProvider.getValue(Constants.GIFT_CARD_TYPE,"").equals("digital",ignoreCase = true)){
-                myRequest.order.orderTypeId=prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
+            if (prefProvider.getValue(Constants.GIFT_CARD_TYPE, "")
+                    .equals("digital", ignoreCase = true)
+            ) {
+                myRequest.order.orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
             }
 
             paymentAttributesRequest(myRequest)
@@ -3113,8 +3115,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             LogUtil.logE("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, ""))
             if (myRequest != null) {
 
-                 prefProvider.setValue("CART_MODEL1", "")
-                 prefProvider.setValue("CART_MODEL2", "")
+                prefProvider.setValue("CART_MODEL1", "")
+                prefProvider.setValue("CART_MODEL2", "")
 
                 if (custom_paymentAmount != 0.0) {
                     paymentviewModel.totalPayAmount(custom_paymentAmount)

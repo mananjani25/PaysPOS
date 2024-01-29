@@ -64,12 +64,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     if (prefProvider.getValue(Constants.AUTH_TOKEN, "").isNotEmpty()) {
                         val intent = Intent()
                         intent.action = SYNC_NOTIFICATION
-                        sendBroadcast(intent)
+                     //   sendBroadcast(intent)
                     }
                 } else if (type == "SettingData") {
                     val intent = Intent()
                     intent.action = SYNC_SETTING_NOTIFICATION
-                    sendBroadcast(intent)
+                   // sendBroadcast(intent)
                 } else if (type == "MarkupSync") {
 
                     prefProvider.setValueboolean(Constants.IS_SYNC_MARKUP, true)

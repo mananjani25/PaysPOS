@@ -1,6 +1,9 @@
-package com.pays.pos.data.remote
+package com.android.pos.data.remote
 
 import android.content.Context
+import android.util.Log
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.pays.pos.data.model.PrinterListModel
 import com.pays.pos.data.model.requestModel.CreatePrinterRequestModel
 import com.pays.pos.data.model.responseModel.PrinterResponse
@@ -73,6 +76,7 @@ object Constants {
     //SharedPref Keys
     const val AUTH_TOKEN = "authToken"
     const val CHECK_QUEUE_CANCEL = "check_queue_cancel"
+    const val WORKER_QUEUE_IN_PROGRESS="worker_queue_in_progress"
     const val TERMINAL_ID = "terminalId"
     const val TERMINAL_NAME = "terminalName"
     const val SYNC_TIME_STAMP = "SyncTimeStamp"
@@ -102,6 +106,7 @@ object Constants {
     const val EMPLOYEE_ROLE = "employee_role"
     const val EMPLOYEE_ROLE_ID = "employee_role_id"
     const val CURRENT_EMPLOYEE_ROLE = "current_employee_role"
+    const val QUEUE_SYNC_TIME_STAMP = "queue_sync_time_stamp"
     const val UPDATE = "UPDATE"
     const val DELETE = "DELETE"
     const val PRINT_PAID = "PrintPaid"
@@ -186,6 +191,7 @@ object Constants {
     const val EMPLOYEES_TIMESHEET_DETAILS = "employees/timesheet_details"
     const val ORDER_ID = "orderID"
     const val PRINT_DATA_DINE_IN = "print_data_dine_in"
+    const val IS_FIRST_TIME_LOGIN = "is_first_time_login"
     const val DINE_IN_SUBTOTAL = "dine_in_subtotal"
     const val DINE_IN_TAX = "dine_in_tax"
     const val DINE_IN_DISCOUNT = "dine_in_discount"
@@ -708,7 +714,6 @@ object Constants {
     const val ONLINE_ORDER_GET_NOTIFICATION = "online_order_get_notification"
     const val ONLINE_ORDER_REFRESH = "online_order_refresh"
     const val SYNC_NOTIFICATION = "sync_notification"
-    const val INVENTORY_SYNC = "inventory_sync"
     const val SYNC_FLOORPLAN = "sync_floorplan"
     const val SYNC_SETTING_NOTIFICATION = "sync_setting_notification"
     const val SYNC_MARKUP = "MarkupSync"
@@ -814,6 +819,29 @@ object Constants {
 
     fun createCloudPrinterWithName(name: String, ipAddress: String, portNo: Int): CloudPrinter {
         return CloudPrinterBuilder.buildPrinter(name, ipAddress, portNo)
+    }
+
+    fun checkUploadWorker(str:String,context: Context):Boolean{
+        var instance = WorkManager.getInstance(context)
+
+        val statuses = instance.getWorkInfosByTag(str)
+        return try {
+            var running = false
+            val workInfoList = statuses.get()
+            for (workInfo in workInfoList) {
+                val state = workInfo.state
+
+                Log.e("ConstantsExt","checkState:  ${state}")
+                running = (state == WorkInfo.State.RUNNING) or (state == WorkInfo.State.ENQUEUED)
+            }
+            running
+        } catch (e: ExecutionException) {
+            e.printStackTrace()
+            false
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+            false
+        }
     }
 
 }

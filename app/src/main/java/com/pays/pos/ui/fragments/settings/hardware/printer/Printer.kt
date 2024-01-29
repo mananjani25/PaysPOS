@@ -27,6 +27,60 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.Recycler
+import com.android.pos.MainApplication
+import com.android.pos.R
+import com.android.pos.aidl.ICallback
+import com.android.pos.aidl.IWoyouService
+import com.android.pos.data.entities.TbOrderType
+import com.android.pos.data.model.PrinterListModel
+import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
+import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
+import com.android.pos.data.model.requestModel.OrderItemsAttribute
+import com.android.pos.data.model.requestModel.OrderRequestModel
+import com.android.pos.data.model.responseModel.PrinterResponse
+import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.AVAILABLE
+import com.android.pos.data.remote.Constants.BLUETOOTH
+import com.android.pos.data.remote.Constants.CUSTOMER
+import com.android.pos.data.remote.Constants.DISCOVERY_INTERVAL
+import com.android.pos.data.remote.Constants.EMPLOYEE_ID
+import com.android.pos.data.remote.Constants.EPSONBRAND
+import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
+import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
+import com.android.pos.data.remote.Constants.KITCHEN
+import com.android.pos.data.remote.Constants.KITCHENANDCUSTOMER
+import com.android.pos.data.remote.Constants.LOCATION_ID
+import com.android.pos.data.remote.Constants.MANUAL_SALE_CATEGORY_ID
+import com.android.pos.data.remote.Constants.MANUAL_SALE_ITEM_ID
+import com.android.pos.data.remote.Constants.PRINTER
+import com.android.pos.data.remote.Constants.TAKEOUT
+import com.android.pos.data.remote.Constants.TERMINAL_ID
+import com.android.pos.data.remote.Constants.WIFI
+import com.android.pos.data.remote.Constants.createCloudPrinterWithName
+import com.android.pos.data.remote.Constants.getCurrentTimeFromTimeZone
+import com.android.pos.databinding.FragmentPrinterBinding
+import com.android.pos.di.PrefProvider
+import com.android.pos.ui.activities.MainActivity
+import com.android.pos.ui.adapter.PrinterListAdapter
+import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
+import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.MethodUtils.Companion.getSaltString
+import com.android.pos.utils.PrintSunmiUtils
+import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.addHorizontalKitchenLine
+import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.runOnUiThread
+import com.android.pos.utils.extensions.setOnSingleClickListener
+import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.padLine
+import com.android.pos.utils.printer.PrinterClass
+import com.android.pos.utils.printer.PrinterClass.SEND_TIMEOUT
+import com.android.pos.utils.printer.PrinterClass.language
+import com.android.pos.utils.statusUtils.Status
 import com.pays.pos.MainApplication
 import com.pays.pos.R
 import com.pays.pos.aidl.ICallback
@@ -123,9 +177,8 @@ import javax.inject.Inject
 //Original New
 @AndroidEntryPoint
 class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
-    StatusChangeEventListener, BatteryStatusChangeEventListener,
-    ICallback,
-    SearchCallback,UpdatePrinters {
+    StatusChangeEventListener, BatteryStatusChangeEventListener, ICallback,
+    SearchCallback, UpdatePrinters {
     private var cloudPrinter: CloudPrinter? = null
     private var woyouService: IWoyouService? = null
     private lateinit var binding: FragmentPrinterBinding
@@ -188,6 +241,12 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
         binding = FragmentPrinterBinding.inflate(inflater, container, false)
+        try {
+            SunmiPrinterManager.getInstance()
+                .searchCloudPrinter(requireContext(), SearchMethod.LAN, this)
+        } catch (e: SearchException) {
+            e.printStackTrace()
+        }
         binding.lifecycleOwner = this
         binding.maskLayout?.visible()
         updatePrinter = this
@@ -347,6 +406,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 LinearLayoutManager.VERTICAL
             )
         )
+        binding.rvKitchenPrinter.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvKitchenPrinter.adapter = kitchenAdapter
         binding.rvKitchenPrinter.addItemDecoration(
             DividerItemDecoration(
@@ -354,6 +415,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 LinearLayoutManager.VERTICAL
             )
         )
+        binding.rvCustomerPrinter.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvCustomerPrinter.adapter = customerAdapter
         binding.rvCustomerPrinter.addItemDecoration(
             DividerItemDecoration(
@@ -441,7 +504,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         binding.header.imgBack.setOnClickListener {
             val navController = findNavController()
             navController.previousBackStackEntry?.savedStateHandle?.set(
-                com.pays.pos.data.remote.Constants.KEY,
+                com.android.pos.data.remote.Constants.KEY,
                 PRINTER
             )
             navController.popBackStack()
@@ -638,19 +701,25 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                             }
 
 
-                         //   viewModel.deleteAllCustomerPrinters()
+                            //   viewModel.deleteAllCustomerPrinters()
 
                             var temp = ""
                             var newList = arrayListOf<PrinterListModel>()
 
                             customerPrintersList.forEach {
 
-                                if (temp == it.printerName){
+                                if (temp == it.printerName) {
                                     //viewModelObject.deletePrinter(it)
-                                    Log.d("deDupedNodes","Duplicate operaion id = ${it.id} , name = ${it.printerName}")
-                                }else {
-                                    Log.d("deDupedNodes","Unique opera")
-                                    Log.d("deDupedNodes","Unique operaion id = ${it.id} , name = ${it.printerName}")
+                                    Log.d(
+                                        "deDupedNodes",
+                                        "Duplicate operaion id = ${it.id} , name = ${it.printerName}"
+                                    )
+                                } else {
+                                    Log.d("deDupedNodes", "Unique opera")
+                                    Log.d(
+                                        "deDupedNodes",
+                                        "Unique operaion id = ${it.id} , name = ${it.printerName}"
+                                    )
                                     newList.add(it)
                                 }
                                 temp = it.printerName!!
@@ -696,7 +765,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                         val navController = findNavController()
                         navController.previousBackStackEntry?.savedStateHandle?.set(
-                            com.pays.pos.data.remote.Constants.KEY,
+                            com.android.pos.data.remote.Constants.KEY,
                             PRINTER
                         )
 
@@ -742,22 +811,29 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         for (i in kitchenData.indices) {
 
 
-                            if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false) && prefProvider.getValueboolean(IS_MASTER_TERMINAL, false)){
-                                if (kitchenData[i].printer_type == Constants.BLUETOOTH){
+                            if (prefProvider.getValueboolean(
+                                    IS_PRINTER_QUEUE_ENABLE,
+                                    false
+                                ) && prefProvider.getValueboolean(IS_MASTER_TERMINAL, false)
+                            ) {
+                                if (kitchenData[i].printer_type == Constants.BLUETOOTH) {
                                     viewModel.deleteKitchenPrinter(kitchenData[i].id)
-                                }else {
-                                   addPrinters(kitchenPrintersList,kitchenData,i)
+                                } else {
+                                    addPrinters(kitchenPrintersList, kitchenData, i)
                                 }
-                            }else {
-                                if (kitchenData[i].printer_type == Constants.WIFI){
+                            } else {
+                                if (kitchenData[i].printer_type == Constants.WIFI) {
                                     viewModel.deleteKitchenPrinter(kitchenData[i].id)
-                                }else {
-                                    addPrinters(kitchenPrintersList,kitchenData,i)
+                                } else {
+                                    addPrinters(kitchenPrintersList, kitchenData, i)
                                 }
                             }
 
                         }
-                        Log.d("kitchenPrintersList","kitchenPrintersList size = ${kitchenPrintersList.size}")
+                        Log.d(
+                            "kitchenPrintersList",
+                            "kitchenPrintersList size = ${kitchenPrintersList.size}"
+                        )
                         kitchenAdapter.setList(kitchenPrintersList)
                         allPrinterlist.addAll(kitchenPrintersList)
                         addedKitchenPrinters = true
@@ -850,7 +926,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                 }
 
-                Log.e(TAG,"checkAdded  ${isAdded}")
+                Log.e(TAG, "checkAdded  ${isAdded}")
                 if (isAdded == false) {
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -1767,8 +1843,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     private fun Binding() {
         val intent = Intent()
-        intent.setPackage("com.pays.pos")
-        intent.action = "com.pays.pos.aidl.IWoyouService"
+        intent.setPackage("com.android.pos")
+        intent.action = "com.android.pos.aidl.IWoyouService"
         MainApplication.getInstance()?.applicationContext?.bindService(
             intent,
             serviceConnection,
@@ -1780,23 +1856,18 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     private fun printByBluTooth(content: String) {
         try {
             if (true) {
-                BluetoothUtil.sendData(
-                    ESCUtil.boldOn())
+                BluetoothUtil.sendData(ESCUtil.boldOn())
             } else {
-                BluetoothUtil.sendData(
-                    ESCUtil.boldOff())
+                BluetoothUtil.sendData(ESCUtil.boldOff())
             }
             if (true) {
-                BluetoothUtil.sendData(
-                    ESCUtil.underlineWithOneDotWidthOn())
+                BluetoothUtil.sendData(ESCUtil.underlineWithOneDotWidthOn())
             } else {
-                BluetoothUtil.sendData(
-                    ESCUtil.underlineOff())
+                BluetoothUtil.sendData(ESCUtil.underlineOff())
             }
 
             BluetoothUtil.sendData(content.toByteArray(charset("GB18030")))
-            BluetoothUtil.sendData(
-                ESCUtil.nextLine(3))
+            BluetoothUtil.sendData(ESCUtil.nextLine(3))
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -3097,8 +3168,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             lifecycleScope.launch {
 
 
-
-
                 Log.e(
                     TAG,
                     "sunmiCheckMasterTeminal  ${
@@ -3238,14 +3307,29 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         updatePrinter = null
     }
 
-    fun observePrinterStatus(){
-        viewModel.snackbarText.observe(viewLifecycleOwner,{
-            AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), it.getContentIfNotHandled().toString()) { _, _ ->
+    fun observePrinterStatus() {
+        viewModel.snackbarText.observe(viewLifecycleOwner, {
+            AlertUtils.showCustomAlertWithListenerWithOK(
+                requireContext(),
+                it.getContentIfNotHandled().toString()
+            ) { _, _ ->
 
             }
 
 
         })
+    }
+
+    class WrapContentLinearLayoutManager(context: Context, re: Int, reverse: Boolean) :
+        LinearLayoutManager(context, re, reverse) {
+        //... constructor
+        override fun onLayoutChildren(recycler: Recycler, state: RecyclerView.State) {
+            try {
+                super.onLayoutChildren(recycler, state)
+            } catch (e: IndexOutOfBoundsException) {
+                Log.e("TAG", "meet a IOOBE in RecyclerView")
+            }
+        }
     }
 
 }

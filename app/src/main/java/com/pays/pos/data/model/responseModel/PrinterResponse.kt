@@ -20,7 +20,9 @@ data class PrinterResponse(
 
     ) {
 
-        @Entity(tableName = "TbCustomerPrint")
+        @Entity(tableName = "TbCustomerPrint",indices = [
+            Index( value = ["macAddress","ipAddress"], unique = true)
+        ])
         data class CustomerReceiptPrinters(
             @PrimaryKey
             @SerializedName("id") var id: Int,
