@@ -29,58 +29,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
-import com.android.pos.MainApplication
-import com.android.pos.R
-import com.android.pos.aidl.ICallback
-import com.android.pos.aidl.IWoyouService
-import com.android.pos.data.entities.TbOrderType
-import com.android.pos.data.model.PrinterListModel
-import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
-import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
-import com.android.pos.data.model.requestModel.OrderItemsAttribute
-import com.android.pos.data.model.requestModel.OrderRequestModel
-import com.android.pos.data.model.responseModel.PrinterResponse
-import com.android.pos.data.remote.Constants
-import com.android.pos.data.remote.Constants.AVAILABLE
-import com.android.pos.data.remote.Constants.BLUETOOTH
-import com.android.pos.data.remote.Constants.CUSTOMER
-import com.android.pos.data.remote.Constants.DISCOVERY_INTERVAL
-import com.android.pos.data.remote.Constants.EMPLOYEE_ID
-import com.android.pos.data.remote.Constants.EPSONBRAND
-import com.android.pos.data.remote.Constants.IS_MASTER_TERMINAL
-import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
-import com.android.pos.data.remote.Constants.KITCHEN
-import com.android.pos.data.remote.Constants.KITCHENANDCUSTOMER
-import com.android.pos.data.remote.Constants.LOCATION_ID
-import com.android.pos.data.remote.Constants.MANUAL_SALE_CATEGORY_ID
-import com.android.pos.data.remote.Constants.MANUAL_SALE_ITEM_ID
-import com.android.pos.data.remote.Constants.PRINTER
-import com.android.pos.data.remote.Constants.TAKEOUT
-import com.android.pos.data.remote.Constants.TERMINAL_ID
-import com.android.pos.data.remote.Constants.WIFI
-import com.android.pos.data.remote.Constants.createCloudPrinterWithName
-import com.android.pos.data.remote.Constants.getCurrentTimeFromTimeZone
-import com.android.pos.databinding.FragmentPrinterBinding
-import com.android.pos.di.PrefProvider
-import com.android.pos.ui.activities.MainActivity
-import com.android.pos.ui.adapter.PrinterListAdapter
-import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.LogUtil
-import com.android.pos.utils.MethodUtils
-import com.android.pos.utils.MethodUtils.Companion.getSaltString
-import com.android.pos.utils.PrintSunmiUtils
-import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.addHorizontalKitchenLine
-import com.android.pos.utils.extensions.alert
-import com.android.pos.utils.extensions.gone
-import com.android.pos.utils.extensions.runOnUiThread
-import com.android.pos.utils.extensions.setOnSingleClickListener
-import com.android.pos.utils.extensions.visible
-import com.android.pos.utils.padLine
-import com.android.pos.utils.printer.PrinterClass
-import com.android.pos.utils.printer.PrinterClass.SEND_TIMEOUT
-import com.android.pos.utils.printer.PrinterClass.language
-import com.android.pos.utils.statusUtils.Status
 import com.pays.pos.MainApplication
 import com.pays.pos.R
 import com.pays.pos.aidl.ICallback
@@ -504,7 +452,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         binding.header.imgBack.setOnClickListener {
             val navController = findNavController()
             navController.previousBackStackEntry?.savedStateHandle?.set(
-                com.android.pos.data.remote.Constants.KEY,
+                Constants.KEY,
                 PRINTER
             )
             navController.popBackStack()
@@ -765,7 +713,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                         val navController = findNavController()
                         navController.previousBackStackEntry?.savedStateHandle?.set(
-                            com.android.pos.data.remote.Constants.KEY,
+                            Constants.KEY,
                             PRINTER
                         )
 

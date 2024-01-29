@@ -1,4 +1,4 @@
-package com.android.pos.ui.fragments.dashboard
+package com.pays.pos.ui.fragments.dashboard
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -86,6 +86,7 @@ import com.pays.pos.utils.statusUtils.Status
 import com.pays.pos.utils.workmanager.ThreadPoolManager
 import com.google.gson.Gson
 import com.pays.pos.data.remote.Constants.AMOUNT
+import com.pays.pos.data.remote.Constants.QUEUE_SYNC_TIME_STAMP
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow

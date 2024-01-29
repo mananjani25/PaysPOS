@@ -41,6 +41,8 @@ import com.hosopy.actioncable.ActionCable
 import com.hosopy.actioncable.Channel
 import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
+import com.pays.pos.data.remote.Constants.LOCATION_ID
+import com.pays.pos.data.remote.Constants.WORKER_QUEUE_IN_PROGRESS
 import com.sunmi.externalprinterlibrary2.ConnectCallback
 import com.sunmi.externalprinterlibrary2.ResultCallback
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
@@ -1344,12 +1346,12 @@ class UploadWorker2(@NotNull context: Context, @NotNull params: WorkerParameters
                 Log.e(TAG2, "call setting_data API")
 
                 if (setting_data.toString() == "true") {
-                    if (com.android.pos.ui.fragments.settings.hardware.printer.Printer.updatePrinter == null) {
+                    if (com.pays.pos.ui.fragments.settings.hardware.printer.Printer.updatePrinter == null) {
 
                         MainActivity.updatePrinter?.updatePrinters()
 
                     } else {
-                        com.android.pos.ui.fragments.settings.hardware.printer.Printer.updatePrinter?.updatePrinters()
+                        com.pays.pos.ui.fragments.settings.hardware.printer.Printer.updatePrinter?.updatePrinters()
                     }
 
                 } else {

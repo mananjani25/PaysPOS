@@ -41,6 +41,7 @@ import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.R
 import com.pays.pos.data.model.PrinterQueueModel
 import com.pays.pos.data.model.TmpPrinterModel
@@ -57,7 +58,6 @@ import com.pays.pos.di.ApiModule.BASE_URL
 import com.pays.pos.di.HostSelectionInterceptor
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
-import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
@@ -87,7 +87,13 @@ import com.hosopy.actioncable.ActionCable
 import com.hosopy.actioncable.Channel
 import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
+import com.pays.pos.MainApplication
+import com.pays.pos.data.model.GuestAttrQueue
+import com.pays.pos.data.model.PrinterJSONElementData
+import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.pays.pos.data.remote.Constants.INVENTORY_SYNC
+import com.pays.pos.data.remote.Constants.PRINTER_QUEUE_BACKGROUND
+import com.pays.pos.data.remote.Constants.checkUploadWorker
 import com.sunmi.externalprinterlibrary2.ConnectCallback
 import com.sunmi.externalprinterlibrary2.ResultCallback
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
