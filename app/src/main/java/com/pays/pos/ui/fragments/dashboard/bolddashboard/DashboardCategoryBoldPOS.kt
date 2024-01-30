@@ -208,18 +208,18 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     private fun addFragmentReplaceObserver() {
-//        viewModel.fragmentNeedToBeUpdated.observe(viewLifecycleOwner) {
-//            if (it) {
-//
-//                viewModel.fragmentNeedToBeUpdated.value = false
-//                Log.e("Fragment Restarted","Restarted")
-//
-//                childFragmentManager.beginTransaction()
-//                    .replace(binding.frameLayoutCart.id, createCartForLoadCartFragment())
-//                    .addToBackStack(null)
-//                    .commit()
-//            }
-//        }
+        viewModel.fragmentNeedToBeUpdated.observe(viewLifecycleOwner) {
+            if (it) {
+
+                viewModel.fragmentNeedToBeUpdated.value = false
+                Log.e("Fragment Restarted","Restarted")
+
+                childFragmentManager.beginTransaction()
+                    .replace(binding.frameLayoutCart.id, createCartForLoadCartFragment())
+                    .addToBackStack(null)
+                    .commit()
+            }
+        }
 
 //        viewModel.doesItemContainsModifiers.observe(viewLifecycleOwner){
 //            if(it){
@@ -1422,12 +1422,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     if (cartList.isEmpty()) {
                         viewModel.createCart(cartList)
 
-                      //  viewModel.cartFragmentRestarted = true
+                        viewModel.cartFragmentRestarted = true
 
-                        childFragmentManager.beginTransaction()
-                            .replace(binding.frameLayoutCart.id, createCartForLoadCartFragment())
-                            .addToBackStack(null)
-                            .commit()
+//                        childFragmentManager.beginTransaction()
+//                            .replace(binding.frameLayoutCart.id, createCartForLoadCartFragment())
+//                            .addToBackStack(null)
+//                            .commit()
 
 //                            loadCartFragment(
 //                                createCartForLoadCartFragment()

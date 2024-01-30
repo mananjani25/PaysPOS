@@ -47,6 +47,7 @@ import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -363,6 +364,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 }
 
 
+
                 if (isUpdateItem) {
                     // Added to resolve Add Discount issue BIS-3547
                     viewModel.cartFooterNeedToBeUpdated = true
@@ -432,20 +434,53 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                         } else {
 
+                            var found = false
+
+                            viewModel.currentCartItems.forEach {
+
+                                Log.e("Tracking Cart","Each Item ${it.name}")
+
+                                if(it.name == item.name)
+                                {
+                                    Log.e("Tracking Cart","SAME ITEM")
+                                    if(viewModel.checkModifierNew(it,item)){
+                                        found = true
+                                        it.itemQuantity += 1
+                                        return@forEach
+                                    }
+                                }
+                            }
+
+                            if(!found)
+                                viewModel.updateCart(viewModel.currentCartItems, item, Constants.UPDATE, false)
+                            else {
+
+                                runBlocking {
+                                    viewModel.deleteCartItems()
+
+                                    viewModel.currentCartItems.forEach {
+
+                                        viewModel.addItemToCartItems(it)
+                                    }
+                                }
+                            }
+
                             LogUtil.logE("NewItem", "ItemSameNot")
                             item.orderItemId = null
-                            viewModel.updateCart(
-                                viewModel.currentCartItems,
-                                item,
-                                Constants.UPDATE,
-                                false,
-                                position = itemPosition
-                            )
+//                            viewModel.updateCart(
+//                                viewModel.currentCartItems,
+//                                item,
+//                                Constants.UPDATE,
+//                                false,
+//                                position = itemPosition
+//                            )
                             viewModel.doesItemContainsModifiers.value = true
                         }
 
 
                     }
+
+
                 } else {
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                         item.guestIndexForDineIn = viewModel.dineInHeaderPosition
@@ -481,7 +516,40 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                         Log.e("cshffasf", "checkElsee")
                         //val tbItem = TbCartItem().convertToCartItem(item, item)
-                        viewModel.updateCart(viewModel.currentCartItems, item, Constants.ADD, false)
+
+                        var found = false
+
+                        viewModel.currentCartItems.forEach {
+
+                            Log.e("Tracking Cart","Each Item ${it.name}")
+
+                            if(it.name == item.name)
+                            {
+                                Log.e("Tracking Cart","SAME ITEM")
+                                if(viewModel.checkModifierNew(it,item)){
+                                    found = true
+                                    it.itemQuantity += 1
+                                    return@forEach
+                                }
+                            }
+                        }
+
+
+                        if(!found)
+                            viewModel.updateCart(viewModel.currentCartItems, item, Constants.ADD, false)
+                        else{
+
+                            runBlocking {
+                                viewModel.deleteCartItems()
+
+                                viewModel.currentCartItems.forEach {
+
+                                    viewModel.addItemToCartItems(it)
+                                }
+                            }
+
+
+                        }
                         viewModel.doesItemContainsModifiers.value = true
                     }
                 }
