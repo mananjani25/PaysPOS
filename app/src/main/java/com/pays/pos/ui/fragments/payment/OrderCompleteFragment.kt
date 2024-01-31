@@ -12588,8 +12588,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             if (receiptModel?.order?.totalTips == 0.0) {
-
-
+                
                 if (customerSettingModel.showTipLineForCash) {
 
                     if (customerSettingModel.fonts == LARGE) {
@@ -12786,7 +12785,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 if (woyouService != null) {
-                    woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
+                   try{
+                       woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
+                   }catch (e:Exception){
+                       e.printStackTrace()
+                   }
                 } else {
                     val aa = ByteArray(5)
 
