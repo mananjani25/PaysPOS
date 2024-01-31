@@ -16,6 +16,7 @@ import com.pays.pos.utils.scanner.helpers.Barcode
 import com.pays.pos.utils.scanner.helpers.Foreground
 import com.pays.pos.utils.scanner.helpers.ScannerAppEngine
 import com.google.firebase.FirebaseApp
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.pax.poslink.CommSetting
 import com.pax.poslink.LogSetting
 import com.pax.poslink.POSLinkAndroid
