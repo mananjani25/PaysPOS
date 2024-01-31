@@ -31,15 +31,15 @@ class MainApplication : Application() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
 
-        Thread.setDefaultUncaughtExceptionHandler { paramThread, paramThrowable ->
-            Log.e(
-                "Error" + Thread.currentThread().stackTrace[2],
-                paramThrowable.localizedMessage
-            )
-
-            if(paramThrowable !is com.google.android.gms.dynamite.DynamiteModule.LoadingException)
-                throw paramThrowable
-        }
+//        Thread.setDefaultUncaughtExceptionHandler { paramThread, paramThrowable ->
+//            Log.e(
+//                "Error" + Thread.currentThread().stackTrace[2],
+//                paramThrowable.localizedMessage
+//            )
+//
+//            if(paramThrowable !is com.google.android.gms.dynamite.DynamiteModule.LoadingException)
+//                throw paramThrowable
+//        }
 
         //bhumit.bhadani@bacancy.com = 10Ce70901@
         //TestFairy.begin(this, "SDK-SrnpgIU9"); // vishal.j.patel+103@bacancy.com/Pos@2022

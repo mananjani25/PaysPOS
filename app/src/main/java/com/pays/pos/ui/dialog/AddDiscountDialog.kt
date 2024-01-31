@@ -130,6 +130,13 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             amountView()
         }
 
+        //Added by Rahul to resolve BIS - 3548
+        if (selectedCurrency.equals(AMOUNT)){
+            amountView()
+        }else{
+            percentageView()
+        }
+
         if (model?.discountType == PERCENTAGE) {
             selectedCurrency = PERCENTAGE
         } else if (model?.discountType == AMOUNT) {

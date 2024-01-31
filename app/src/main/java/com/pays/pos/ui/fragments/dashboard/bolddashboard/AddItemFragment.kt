@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
 import com.pays.pos.R
 import com.pays.pos.data.entities.CartModel
@@ -364,8 +365,30 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 }
 
 
+                var found = false
 
-                if (isUpdateItem) {
+
+                for(it in viewModel.currentCartItems){
+                    if(it.cartItemId!=item.cartItemId)
+                    {
+                        if (it.name == item.name) {
+                            if (viewModel.checkModifierNew(it, item)) {
+                                Log.e(
+                                    "Tracking Cart",
+                                    "SAME ITEM  ${it.cartItemId} && ${item.cartItemId}"
+                                )
+                                found = true
+                                it.itemQuantity += item.itemQuantity
+                                break
+                            }
+                        }
+                    }else {
+                        Log.e("Tracking Cart","FOUND SAME ITEM ${it.cartItemId } && ${item.cartItemId}")
+                    }
+                }
+
+
+                if (found) {
                     // Added to resolve Add Discount issue BIS-3547
                     viewModel.cartFooterNeedToBeUpdated = true
 
@@ -423,50 +446,19 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         if (checkVar()) {
 
                             LogUtil.logE("NewItem", "ItemSame ${Gson().toJson(item)}")
-                            viewModel.updateCart(
-                                viewModel.currentCartItems,
-                                item,
-                                Constants.UPDATE,
-                                false,
-                                position = itemPosition
-                            )
-                            viewModel.doesItemContainsModifiers.value = true
 
-                        } else {
+                           // if(!isUpdateItem)
+                            viewModel.currentCartItems.remove(item)
 
-                            var found = false
+                            runBlocking {
 
-                            viewModel.currentCartItems.forEach {
-
-                                Log.e("Tracking Cart","Each Item ${it.name}")
-
-                                if(it.name == item.name)
-                                {
-                                    Log.e("Tracking Cart","SAME ITEM")
-                                    if(viewModel.checkModifierNew(it,item)){
-                                        found = true
-                                        it.itemQuantity += 1
-                                        return@forEach
-                                    }
-                                }
-                            }
-
-                            if(!found)
-                                viewModel.updateCart(viewModel.currentCartItems, item, Constants.UPDATE, false)
-                            else {
-
-                                runBlocking {
-                                    viewModel.deleteCartItems()
+                                viewModel.deleteCartItems()
 
                                     viewModel.currentCartItems.forEach {
-
                                         viewModel.addItemToCartItems(it)
                                     }
                                 }
-                            }
 
-                            LogUtil.logE("NewItem", "ItemSameNot")
-                            item.orderItemId = null
 //                            viewModel.updateCart(
 //                                viewModel.currentCartItems,
 //                                item,
@@ -475,6 +467,75 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 //                                position = itemPosition
 //                            )
                             viewModel.doesItemContainsModifiers.value = true
+
+                        } else {
+                            LogUtil.logE("NewItem", "ItemSameNot")
+
+                      //   if(!isUpdateItem)
+                        viewModel.currentCartItems.remove(item)
+
+                            runBlocking {
+                                viewModel.deleteCartItems()
+
+                                viewModel.currentCartItems.forEach {
+                                    viewModel.addItemToCartItems(it)
+                                }
+                            }
+
+
+
+//                            item.orderItemId = null
+//                            viewModel.updateCart(
+//                                viewModel.currentCartItems,
+//                                item,
+//                                Constants.UPDATE,
+//                                false,
+//                                position = itemPosition
+//                            )
+                            viewModel.doesItemContainsModifiers.value = true
+
+
+//                            var found = false
+//
+//                            viewModel.currentCartItems.forEach {
+//
+//                                Log.e("Tracking Cart","Each Item ${it.name}")
+//
+//                                if(it.name == item.name)
+//                                {
+//                                    Log.e("Tracking Cart","SAME ITEM")
+//                                    if(viewModel.checkModifierNew(it,item)){
+//                                        found = true
+//                                        it.itemQuantity += 1
+//                                        return@forEach
+//                                    }
+//                                }
+//                            }
+//
+//                            if(!found)
+//                                viewModel.updateCart(viewModel.currentCartItems, item, Constants.UPDATE, false)
+//                            else {
+//
+//                                runBlocking {
+//                                    viewModel.deleteCartItems()
+//
+//                                    viewModel.currentCartItems.forEach {
+//
+//                                        viewModel.addItemToCartItems(it)
+//                                    }
+//                                }
+//                            }
+//
+//                            LogUtil.logE("NewItem", "ItemSameNot")
+//                            item.orderItemId = null
+////                            viewModel.updateCart(
+////                                viewModel.currentCartItems,
+////                                item,
+////                                Constants.UPDATE,
+////                                false,
+////                                position = itemPosition
+////                            )
+//                            viewModel.doesItemContainsModifiers.value = true
                         }
 
 
@@ -511,13 +572,14 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                 dineInList
                             )
                         }
-                    } else {
+                    } else
+                    {
                         item.guestIndexForDineIn = null
 
                         Log.e("cshffasf", "checkElsee")
                         //val tbItem = TbCartItem().convertToCartItem(item, item)
 
-                        var found = false
+                        var newFound = false
 
                         viewModel.currentCartItems.forEach {
 
@@ -527,17 +589,19 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             {
                                 Log.e("Tracking Cart","SAME ITEM")
                                 if(viewModel.checkModifierNew(it,item)){
-                                    found = true
-                                    it.itemQuantity += 1
+                                    it.itemQuantity=item.itemQuantity
+                                    newFound = true
                                     return@forEach
                                 }
                             }
                         }
 
 
-                        if(!found)
+                        if(!newFound)
                             viewModel.updateCart(viewModel.currentCartItems, item, Constants.ADD, false)
                         else{
+
+                            //viewModel.currentCartItems.remove(item)
 
                             runBlocking {
                                 viewModel.deleteCartItems()
@@ -551,6 +615,15 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                         }
                         viewModel.doesItemContainsModifiers.value = true
+
+
+//                        item.guestIndexForDineIn = null
+//
+//                        Log.e("cshffasf", "checkElsee")
+//                        //val tbItem = TbCartItem().convertToCartItem(item, item)
+//                        viewModel.updateCart(viewModel.currentCartItems, item, Constants.ADD, false)
+//                        viewModel.doesItemContainsModifiers.value = true
+
                     }
                 }
 
@@ -655,12 +728,29 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 item.guestIndexForDineIn = null
                 viewModel.updateCart(viewModel.currentCartItems, item, DELETE, item.isManualSales)
                 //viewModel.newCartLogicModifier(cartModelsList, item, DELETE, item.isManualSales)
+
             }
+
+
+            if(viewModel.currentCartItems.size==1) {
+
+                createCart()
+
+                viewModel.fragmentNeedToBeUpdated.value = true
+
+                Log.e("Tracking Cart","IN"+viewModel.currentCartItems.size.toString())
+            }else
+            {
+                Log.e("Tracking Cart",viewModel.currentCartItems.size.toString())
+            }
+
+
             requireActivity().supportFragmentManager.popBackStackImmediate(
                 AddItemFragment.javaClass.getName(),
                 FragmentManager.POP_BACK_STACK_INCLUSIVE
             )
             //  listner.onCancelItemSelected()
+
 
         }
 
@@ -672,6 +762,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             item.note = note.toString()
         }
     }
+
+
 
     fun createCart(): ArrayList<CartModel>? {
         if (cartModelsList.isEmpty()) {
