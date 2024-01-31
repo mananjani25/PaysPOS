@@ -878,6 +878,11 @@ class PosRepository @Inject constructor(
         appDatabase.cartDao().deleteCartItems()//delete cart items from TbCartItem
     }
 
+    suspend fun deleteCartItems() {
+      //  appDatabase.cartDao().delete(employee_id)//delete cart model
+        appDatabase.cartDao().deleteCartItems()//delete cart items from TbCartItem
+    }
+
     suspend fun deleteAllCart() {
         appDatabase.cartDao().delete()
     }
@@ -1352,6 +1357,11 @@ class PosRepository @Inject constructor(
         performGetOperationDatabase { appDatabase.cardReaderDao().cardReaderActiveList() }
 
     suspend fun deleteDineInCart() = appDatabase.cartDao().deleteDineInCart()
+
+    suspend fun updateItemQuantity(id:Int,itemQuantity:Int) {
+
+        appDatabase.cartDao().updateItemQuantity(id,itemQuantity)
+    }
 
     suspend fun timeDetails(terminalId: Int) = apiHelperNew.timeDetails(terminalId)
 
