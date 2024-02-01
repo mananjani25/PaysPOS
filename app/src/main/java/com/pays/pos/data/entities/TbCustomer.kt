@@ -1,6 +1,7 @@
 package com.pays.pos.data.entities
 
 import android.os.Parcelable
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
@@ -14,6 +15,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
+@Keep
 @Entity(tableName = "TbCustomer")
 data class TbCustomer(
     @PrimaryKey

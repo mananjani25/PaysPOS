@@ -1624,6 +1624,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
             if (it.isEmpty()) {
 
+                Log.e("Tracking BLANK CART","BOLDPOS 1627")
                 cartList.clear()
                 cartList = arrayListOf()
 

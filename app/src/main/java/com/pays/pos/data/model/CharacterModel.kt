@@ -1,8 +1,10 @@
 package com.pays.pos.data.model
 
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+@Keep
 @Entity(tableName = "characters")
 data class CharacterModel(
     val created: String = "",

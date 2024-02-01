@@ -2,6 +2,7 @@ package com.pays.pos.data.model.responseModel
 
 
 import android.os.Parcelable
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.pays.pos.data.entities.*
@@ -140,7 +141,8 @@ data class VenueDetailsResponse(
             val kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters>
         )
 
-        @Entity(tableName = "TbCancelOrderReason")
+        @Keep
+@Entity(tableName = "TbCancelOrderReason")
         data class CancelOrderReason(
             @SerializedName("created_at")
             val createdAt: String,
@@ -160,7 +162,8 @@ data class VenueDetailsResponse(
         )
 
         @Parcelize
-        @Entity(tableName = "TbWastageReason")
+        @Keep
+@Entity(tableName = "TbWastageReason")
         data class WastageReason (
             @PrimaryKey
             @SerializedName("id")
@@ -273,7 +276,8 @@ data class VenueDetailsResponse(
             )
         }
 
-        @Entity(tableName = "TbTerminals")
+        @Keep
+@Entity(tableName = "TbTerminals")
         data class Terminal(
             @SerializedName("created_at")
             val createdAt: String,

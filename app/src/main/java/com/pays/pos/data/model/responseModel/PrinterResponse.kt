@@ -1,5 +1,6 @@
 package com.pays.pos.data.model.responseModel
 
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -20,7 +21,8 @@ data class PrinterResponse(
 
     ) {
 
-        @Entity(tableName = "TbCustomerPrint",indices = [
+        @Keep
+@Entity(tableName = "TbCustomerPrint",indices = [
             Index( value = ["macAddress","ipAddress"], unique = true)
         ])
         data class CustomerReceiptPrinters(
@@ -54,7 +56,8 @@ data class PrinterResponse(
         )
 
 
-        @Entity(tableName = "TbKitchenPrint")
+        @Keep
+@Entity(tableName = "TbKitchenPrint")
         data class KitchenReceiptPrinters(
             @PrimaryKey
             @SerializedName("id") var id: Int,

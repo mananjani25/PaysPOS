@@ -1,9 +1,11 @@
 package com.pays.pos.data.entities
 
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 
+@Keep
 @Entity(tableName = "TbModifier")
 class TbModifier {
 
