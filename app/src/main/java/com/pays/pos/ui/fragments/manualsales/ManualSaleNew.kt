@@ -1008,14 +1008,30 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                             } else {
                                 Log.d("orderDiscountPrice", binding.tvDiscount.text.toString())
                                 Log.d("selectedvalue", binding.tvDiscount.text.toString())
-                                bundle.putDouble(
-                                    "orderDiscountPrice",
-                                    binding.tvDiscount.text.toString().toDouble() ?: 0.0
-                                )
-                                bundle.putDouble(
-                                    "selectedvalue",
-                                    binding.tvDiscount.text.toString().toDouble() ?: 0.0
-                                )
+                                try{
+                                    bundle.putDouble(
+                                        "orderDiscountPrice",
+                                        binding.tvDiscount.text.toString().toDouble() ?: 0.0
+                                    )
+                                }catch (e:NumberFormatException){
+                                    bundle.putDouble(
+                                        "orderDiscountPrice",
+                                        0.0
+                                    )
+                                }
+
+                                try{
+                                    bundle.putDouble(
+                                        "selectedvalue",
+                                        binding.tvDiscount.text.toString().toDouble() ?: 0.0
+                                    )
+                                }catch (e:NumberFormatException){
+                                    bundle.putDouble(
+                                        "selectedvalue",
+                                     0.0
+                                    )
+                                }
+
 
                             }
                             bundle.putString("isFrom", "orderDiscountManual")
