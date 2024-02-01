@@ -6097,11 +6097,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     override fun onStop() {
         super.onStop()
+       /* Runtime.getRuntime().gc()
+        System.runFinalization()*/
         prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
         if (!isSpilt) {
             removeCustomer()
-
-
         }
     }
 
