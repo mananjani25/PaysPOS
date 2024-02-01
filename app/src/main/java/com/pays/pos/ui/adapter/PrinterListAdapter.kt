@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import androidx.recyclerview.widget.RecyclerView
 import com.pays.pos.R
 import com.pays.pos.data.model.PrinterListModel
@@ -24,9 +25,9 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: PrinterListModel?) {
 
-            if (model?.printerName !=""){
-                binding.txtPrinterName.text =  model?.printerName
-            }else {
+            if (model?.printerName != "") {
+                binding.txtPrinterName.text = model?.printerName
+            } else {
                 model.printerName = "InnerPrinter"
             }
 
@@ -66,35 +67,42 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
                 }
             }
 
-            binding.swtOrderId.setOnCheckedChangeListener { buttonView, isChecked ->
-                if (buttonView.isPressed) {
-                    if (list[layoutPosition].type != AVAILABLE) {
-                        if(isChecked){
-                            buttonView.isChecked = false
-                            listner.onUpdatePrinterStatus(list[layoutPosition], isChecked)
-                        }else{
-                            buttonView.isChecked = true
-                            listner.onUpdatePrinterStatus(list[layoutPosition], isChecked)
+            binding.swtOrderId.setOnCheckedChangeListener(object :
+                CompoundButton.OnCheckedChangeListener {
+                override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+                   /* buttonView?.let { buttonView ->
+
+                    }*/
+
+                    if (buttonView!!.isPressed) {
+                        if (list[layoutPosition].type != AVAILABLE) {
+                            if (isChecked) {
+                                buttonView!!.isChecked = false
+                                listner.onUpdatePrinterStatus(list[layoutPosition], isChecked)
+                            } else {
+                                buttonView!!.isChecked = true
+                                listner.onUpdatePrinterStatus(list[layoutPosition], isChecked)
+                            }
+                        } else if (isChecked && !(list.get(layoutPosition).isActive)) {
+                            buttonView!!.isChecked = false
+                            listner.onPrinterActive(list.get(layoutPosition), layoutPosition)
+                            /*list.removeAt(layoutPosition)
+                        notifyDataSetChanged()*/
                         }
-                    } else if (isChecked && !(list.get(layoutPosition).isActive)) {
-                        buttonView.isChecked = false
-                        listner.onPrinterActive(list.get(layoutPosition), layoutPosition)
-                        /*list.removeAt(layoutPosition)
-                    notifyDataSetChanged()*/
+
                     }
-
                 }
+            })
 
-            }
 
             binding.imgEdit.setOnClickListener {
-               try {
-                   if (list[layoutPosition].type != AVAILABLE) {
-                       listner.onEditSelected(list[layoutPosition])
-                   }
-               }catch (e:Exception){
-                   Log.d("layoutPosition","Error : ${e.message}")
-               }
+                try {
+                    if (list[layoutPosition].type != AVAILABLE) {
+                        listner.onEditSelected(list[layoutPosition])
+                    }
+                } catch (e: Exception) {
+                    Log.d("layoutPosition", "Error : ${e.message}")
+                }
 
             }
 
@@ -125,7 +133,7 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
     }
 
     override fun onBindViewHolder(holder: PrinterListAdapter.MyViewHolder, position: Int) {
-        Log.e("REC_CRASH",position.toString())
+        Log.e("REC_CRASH", position.toString())
         holder.bind(list?.get(position))
     }
 
@@ -138,16 +146,16 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
     @SuppressLint("NotifyDataSetChanged")
     fun setList(list: ArrayList<PrinterListModel>) {
 
-       var temp = ""
+        var temp = ""
         var newList = arrayListOf<PrinterListModel>()
 
         list.forEach {
 
-            if (temp == it.printerName){
+            if (temp == it.printerName) {
                 //viewModelObject.deletePrinter(it)
 //                Log.d("deDupedNodes","Duplicate operaion id = ${it.id} , name = ${it.printerName}")
-            }else {
-                Log.d("deDupedNodes","Unique opera")
+            } else {
+                Log.d("deDupedNodes", "Unique opera")
 //                Log.d("deDupedNodes","Unique operaion id = ${it.id} , name = ${it.printerName}")
                 newList.add(it)
             }
@@ -162,17 +170,15 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
     }
 
 
-    fun getList():List<PrinterListModel>{
+    fun getList(): List<PrinterListModel> {
         return list
     }
-
-
 
 
     @SuppressLint("NotifyDataSetChanged")
     fun addItem(model: PrinterListModel) {
         list.add(model)
-         notifyItemRangeInserted(0,list.size)
+        notifyItemRangeInserted(0, list.size)
         notifyDataSetChanged()
 
     }
@@ -204,7 +210,7 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
         notifyItemRangeRemoved(pos, list.size)
     }
 
-    fun removeItem(item:PrinterListModel){
+    fun removeItem(item: PrinterListModel) {
         list.remove(item)
         notifyDataSetChanged()
 
