@@ -2,6 +2,7 @@ package com.pays.pos.data.model.responseModel
 
 
 import android.os.Parcelable
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
@@ -19,7 +20,8 @@ data class NoteResponse(
     val type: String
 ) : Parcelable {
     @Parcelize
-    @Entity(tableName = "TbNotes")
+    @Keep
+@Entity(tableName = "TbNotes")
     data class Data(
         @SerializedName("created_at")
         val createdAt: String,

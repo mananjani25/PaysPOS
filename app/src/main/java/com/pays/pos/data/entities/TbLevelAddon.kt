@@ -1,11 +1,13 @@
 package com.pays.pos.data.entities
 
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.pays.pos.data.typeconvert.TypeConvertersDBLevelAddon
 
 @TypeConverters(TypeConvertersDBLevelAddon::class)
+@Keep
 @Entity(tableName = "TbLevelAddon")
 class TbLevelAddon {
 

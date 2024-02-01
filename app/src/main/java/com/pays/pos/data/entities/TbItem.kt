@@ -2,6 +2,7 @@ package com.pays.pos.data.entities
 
 import android.os.Parcelable
 import android.util.Log
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
@@ -16,6 +17,7 @@ import java.util.UUID
 
 
 @TypeConverters(TypeConvertersTax::class, TypeConvertersIds::class, TCModifier::class)
+@Keep
 @Entity(tableName = "TbItem")
 @Parcelize
 class TbItem : Parcelable {

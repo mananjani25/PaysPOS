@@ -1,5 +1,6 @@
 package com.pays.pos.data.model.responseModel
 
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
@@ -14,7 +15,8 @@ data class GetCustomerReceiptSettingsResponse(
     @SerializedName("type")
     val type: String
 ) {
-    @Entity(tableName = "TbCustomerSettings")
+    @Keep
+@Entity(tableName = "TbCustomerSettings")
     data class Data(
         @PrimaryKey
         @SerializedName("id")

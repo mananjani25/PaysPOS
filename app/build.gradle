@@ -16,8 +16,8 @@ android {
         applicationId "com.pays.pos"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 2
-        versionName "1.1"
+        versionCode 3
+        versionName "1.2"
 
 
         sourceSets { main { jniLibs.srcDirs = ['src/main/jniLibs/'] } }
@@ -30,8 +30,18 @@ android {
     }
 
 
+    signingConfigs {
+        release {
+            storeFile file('/home/ab/Documents/snackhq.jks') // Path to your keystore file
+            storePassword 'snackhq'
+            keyAlias 'snackhq'
+            keyPassword 'snackhq'
+        }
+    }
+
     buildTypes {
         release {
+            debuggable true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

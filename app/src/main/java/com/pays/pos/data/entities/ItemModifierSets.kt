@@ -1,8 +1,10 @@
 package com.pays.pos.data.entities
 
+import androidx.annotation.Keep
 import androidx.room.Entity
 import com.google.gson.annotations.SerializedName
 
+@Keep
 @Entity(tableName = "ItemModifierSets", primaryKeys = ["itemId", "modifierSetId"])
 class ItemModifierSets {
 

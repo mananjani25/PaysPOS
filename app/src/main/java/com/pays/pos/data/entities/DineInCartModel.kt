@@ -1,6 +1,7 @@
 package com.pays.pos.data.entities
 
 import android.os.Parcelable
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
@@ -10,6 +11,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @TypeConverters(TypeConvertersItems::class)
+@Keep
 @Entity(tableName = "DineInCartModel")
 class DineInCartModel: Parcelable {
 

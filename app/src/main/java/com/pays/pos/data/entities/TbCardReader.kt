@@ -1,10 +1,12 @@
 package com.pays.pos.data.entities
 
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 
+@Keep
 @Entity(tableName = "TbCardReader")
 data class TbCardReader(
 

@@ -634,6 +634,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 //listner.onCancelItemSelected()
 
 
+                viewModel.fragmentNeedToBeUpdated.value = true
+
             }
         })
 
