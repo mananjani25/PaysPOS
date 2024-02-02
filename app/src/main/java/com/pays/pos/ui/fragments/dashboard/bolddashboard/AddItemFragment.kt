@@ -448,7 +448,16 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             LogUtil.logE("NewItem", "ItemSame ${Gson().toJson(item)}")
 
                            // if(!isUpdateItem)
-                            viewModel.currentCartItems.remove(item)
+
+                            for(it in viewModel.currentCartItems){
+
+                                if(it.cartItemId == item.cartItemId){
+                                    Log.e("Current Cart Item","${it.cartItemId} AND ${item.cartItemId}")
+                                    viewModel.currentCartItems.remove(it)
+                                    break
+                                }
+
+                            }
 
                             runBlocking {
 
@@ -464,7 +473,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 //                                item,
 //                                Constants.UPDATE,
 //                                false,
-//                                position = itemPosition
+//                                position = itemPosition1
 //                            )
                             viewModel.doesItemContainsModifiers.value = true
 
@@ -472,7 +481,17 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             LogUtil.logE("NewItem", "ItemSameNot")
 
                       //   if(!isUpdateItem)
-                        viewModel.currentCartItems.remove(item)
+                    //    viewModel.currentCartItems.remove(item)
+
+                            for(it in viewModel.currentCartItems){
+
+                                if(it.cartItemId == item.cartItemId){
+                                    Log.e("Current Cart Item","${it.cartItemId} AND ${item.cartItemId}")
+                                    viewModel.currentCartItems.remove(it)
+                                    break
+                                }
+
+                            }
 
                             runBlocking {
                                 viewModel.deleteCartItems()
@@ -484,58 +503,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
 
 
-//                            item.orderItemId = null
-//                            viewModel.updateCart(
-//                                viewModel.currentCartItems,
-//                                item,
-//                                Constants.UPDATE,
-//                                false,
-//                                position = itemPosition
-//                            )
+
                             viewModel.doesItemContainsModifiers.value = true
 
-
-//                            var found = false
-//
-//                            viewModel.currentCartItems.forEach {
-//
-//                                Log.e("Tracking Cart","Each Item ${it.name}")
-//
-//                                if(it.name == item.name)
-//                                {
-//                                    Log.e("Tracking Cart","SAME ITEM")
-//                                    if(viewModel.checkModifierNew(it,item)){
-//                                        found = true
-//                                        it.itemQuantity += 1
-//                                        return@forEach
-//                                    }
-//                                }
-//                            }
-//
-//                            if(!found)
-//                                viewModel.updateCart(viewModel.currentCartItems, item, Constants.UPDATE, false)
-//                            else {
-//
-//                                runBlocking {
-//                                    viewModel.deleteCartItems()
-//
-//                                    viewModel.currentCartItems.forEach {
-//
-//                                        viewModel.addItemToCartItems(it)
-//                                    }
-//                                }
-//                            }
-//
-//                            LogUtil.logE("NewItem", "ItemSameNot")
-//                            item.orderItemId = null
-////                            viewModel.updateCart(
-////                                viewModel.currentCartItems,
-////                                item,
-////                                Constants.UPDATE,
-////                                false,
-////                                position = itemPosition
-////                            )
-//                            viewModel.doesItemContainsModifiers.value = true
                         }
 
 
@@ -553,14 +523,6 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(dineInList)}")
                         if (dineInList?.isNotEmpty() == true && dineInList != null) {
                             dineInList[0].selectedPosition = viewModel.dineInHeaderPosition
-                            /*viewModel.newCartLogicModifier(
-                                cartModelsList,
-                                item,
-                                Constants.ADD,
-                                false,
-                                dineInList
-                            )*/
-
                             Log.d(TAG, "448 dineintest currentCartItems: " + viewModel.currentCartItems)
                             Log.d(TAG, "dineintest item: " + item)
                             Log.d(TAG, "dineintest dineInList: " + dineInList)
@@ -615,15 +577,6 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                         }
                         viewModel.doesItemContainsModifiers.value = true
-
-
-//                        item.guestIndexForDineIn = null
-//
-//                        Log.e("cshffasf", "checkElsee")
-//                        //val tbItem = TbCartItem().convertToCartItem(item, item)
-//                        viewModel.updateCart(viewModel.currentCartItems, item, Constants.ADD, false)
-//                        viewModel.doesItemContainsModifiers.value = true
-
                     }
                 }
 
