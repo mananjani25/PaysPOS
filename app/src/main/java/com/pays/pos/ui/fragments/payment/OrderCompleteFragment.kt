@@ -158,6 +158,8 @@ import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -9199,7 +9201,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         //  mPrinter.startMonitor()
 
-                        generateReceiptForU220(mPrinter, data, type)
+                        CoroutineScope(Dispatchers.Main).launch{
+                            delay(200)
+                            generateReceiptForU220(mPrinter, data, type)
+                        }
 
                     } catch (e: java.lang.Exception) {
                         e.printStackTrace()

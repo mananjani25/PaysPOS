@@ -1630,13 +1630,15 @@ class TransactionDetailsFragment : Fragment() {
                     generateKitchenReceiptSunmi(data, type)
                 }
             }
-        } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
+        }
+        else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(200)
                 setService2(data, type)
             }
-        } else {
+        }
+        else {
             if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
 
                 var mPrinter = if (data.name.substring(0, 6).toString().lowercase()
@@ -2628,7 +2630,7 @@ class TransactionDetailsFragment : Fragment() {
             Builder.COLOR_1
         )
 
-        mPrinter.addText("OrderID:" + paymentDetailsResponse.data.order.id)
+        mPrinter.addText("OrderID:" + paymentDetailsResponse.data.custom_order_id)
         mPrinter.addFeedLine(1)
         mPrinter.addFeedUnit(30)
         mPrinter.addFeedLine(1)
