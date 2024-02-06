@@ -6097,11 +6097,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     override fun onStop() {
         super.onStop()
+       /* Runtime.getRuntime().gc()
+        System.runFinalization()*/
         prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
         if (!isSpilt) {
             removeCustomer()
-
-
         }
     }
 
@@ -9304,7 +9304,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             Builder.COLOR_1
         )
 
-        mPrinter.addText("OrderID:" + receiptModel?.order?.id)
+        mPrinter.addText("OrderID:" + receiptModel?.order?.custom_order_id)
         mPrinter.addFeedLine(1)
         mPrinter.addFeedUnit(30)
         mPrinter.addFeedLine(1)
@@ -9409,7 +9409,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             Builder.COLOR_1
         )
 
-        addHorizontalKitchenLineForU220(mPrinter)
+        if (data.modalName.equals("TM-L100",ignoreCase = true)){
+
+            var str: String = ""
+            for (i in 0 until 30) {
+                str += "-"
+            }
+
+            mPrinter.addText(str)
+        }else{
+            addHorizontalKitchenLineForU220(mPrinter)
+        }
 
         receiptModel?.order?.orderItems?.let {
             addOrdersForKitchenU220(
@@ -9469,7 +9479,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.FALSE,
                 Builder.COLOR_1
             )
-            addHorizontalKitchenLineForU220(mPrinter)
+            if (data.modalName.equals("TM-L100",ignoreCase = true)){
+
+                var str: String = ""
+                for (i in 0 until 30) {
+                    str += "-"
+                }
+
+                mPrinter.addText(str)
+            }else{
+                addHorizontalKitchenLineForU220(mPrinter)
+            }
             if (receiptModel?.order?.customer != null) {
 
                 mPrinter.addFeedLine(1)
@@ -9498,8 +9518,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     Builder.FALSE,
                     Builder.COLOR_1
                 )
-                addHorizontalKitchenLineForU220(mPrinter)
+                if (data.modalName.equals("TM-L100",ignoreCase = true)){
 
+                    var str: String = ""
+                    for (i in 0 until 30) {
+                        str += "-"
+                    }
+
+                    mPrinter.addText(str)
+                }else{
+                    addHorizontalKitchenLineForU220(mPrinter)
+                }
                 if (kitchenSettingModel.showCustomerName) {
 
                     mPrinter.addFeedLine(1)
