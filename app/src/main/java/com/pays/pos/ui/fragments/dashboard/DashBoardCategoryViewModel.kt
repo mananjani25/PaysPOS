@@ -6615,7 +6615,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 Status.LOADING -> {
                     Log.e("SyncInventory", "SyncLoading")
-                    _showProgress.value = Event(true)
+                    _showProgress.value = Event(false)
 
                     autoSyncEnabled.value = true
                 }
