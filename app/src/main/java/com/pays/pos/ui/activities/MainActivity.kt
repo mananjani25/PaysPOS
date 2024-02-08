@@ -2,6 +2,7 @@ package com.pays.pos.ui.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.Dialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -13,12 +14,15 @@ import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Debug
 import android.os.Handler
 import android.os.Looper
+import android.os.Process
 import android.os.StrictMode
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
+import android.util.LruCache
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
@@ -28,6 +32,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.util.lruCache
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
@@ -77,6 +82,7 @@ import com.epson.epos2.printer.ReceiveListener
 import com.epson.epos2.printer.StatusChangeListener
 import com.epson.eposprint.Builder
 import com.felhr.usbserial.BuildConfig.APPLICATION_ID
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
 import com.google.gson.JsonElement
@@ -94,6 +100,8 @@ import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.pays.pos.data.remote.Constants.INVENTORY_SYNC
 import com.pays.pos.data.remote.Constants.PRINTER_QUEUE_BACKGROUND
 import com.pays.pos.data.remote.Constants.checkUploadWorker
+import com.pays.pos.utils.extensions.gone
+import com.pays.pos.utils.extensions.visible
 import com.sunmi.externalprinterlibrary2.ConnectCallback
 import com.sunmi.externalprinterlibrary2.ResultCallback
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
@@ -115,7 +123,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
-    StatusChangeListener, UpdatePrinters, ResultCallback {
+    StatusChangeListener, UpdatePrinters, ResultCallback, ComponentCallbacks2 {
     private var isLocalMasterFlag: Boolean = false
     var currentPrinterIndex = 0
     var currentOrderIndex = 0
@@ -254,6 +262,76 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
 
     }
+
+
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+
+
+        when(level){
+            ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE,
+            ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW,
+            ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL -> {
+                System.gc()
+                cacheDir.delete()
+                Log.e("Cache Clear","Cleared cache")
+            }
+
+            ComponentCallbacks2.TRIM_MEMORY_BACKGROUND,
+            ComponentCallbacks2.TRIM_MEMORY_MODERATE,
+            ComponentCallbacks2.TRIM_MEMORY_COMPLETE -> {
+                System.gc()
+               // val lruCache = LruCache(100,10)
+                cacheDir.delete()
+
+                Log.e("Cache Clear","Cleared cache")
+            }
+
+            ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN -> {
+
+            }
+        }
+    }
+    fun addObserver(){
+        dashboardViewModel.orderCompleted.observe(this){
+            if(it){
+
+                val memoryInfo = Debug.MemoryInfo()
+                Debug.getMemoryInfo(memoryInfo)
+
+                val totalUsedMemoryKB = memoryInfo.totalPrivateDirty
+                val totalUsedMemoryMB = totalUsedMemoryKB / 1024.0
+
+
+                if(totalUsedMemoryMB > 600) {
+                    dashboardViewModel.orderCompleted.value = false
+
+                    Handler().postDelayed({
+                        val intent = Intent(applicationContext, MainActivity::class.java)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK    )
+                        startActivity(intent)
+
+                        Process.killProcess(Process.myPid())
+                    }, 0)
+                }
+
+
+//                if(dashboardViewModel.orderCompletedCount.value==1) {
+//                    dashboardViewModel.orderCompleted.value = false
+//
+//                    Handler().postDelayed({
+//                        val intent = Intent(applicationContext, MainActivity::class.java)
+//                        intent.addFlags(Intent.FLAG_RECEIVER_NO_ABORT)
+//                        startActivity(intent)
+//
+//                        // Delay the process kill to allow time for the new activity to start
+//                        Process.killProcess(Process.myPid())
+//                    }, 2000)
+//                }
+            }
+        }
+    }
+
 
     private var syncReceiver = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
@@ -1156,6 +1234,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         updatePrinter = null
         unregisterReceiver(broadcastReceiver)
         unregisterReceiver(broadcastReceiveronlineOrder)
+
+
+        //dashboardViewModel.cartOrderUpdated.value?.let { prefProvider?.setOrderStatusSaveOrUpdate(it) }
+
     }
 
     private lateinit var presentation: CustomDisplay
@@ -1193,6 +1275,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         super.onCreate(savedInstanceState)
         updatePrinter = this
         queueOrderList = hashMapOf()
+
+        addObserver()
+
+
 
 //        throw RuntimeException("Test Crash") // Force a crash
 
@@ -3261,6 +3347,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     }
                 }
             }
+
             if(it.asJsonObject.has("inventory_sync")){
                 val inventory_sync_data = it.asJsonObject.get("inventory_sync")
 

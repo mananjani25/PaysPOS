@@ -587,7 +587,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 //listner.onCancelItemSelected()
 
 
-                viewModel.fragmentNeedToBeUpdated.value = true
+            //   viewModel.fragmentNeedToBeUpdated.value = true
 
             }
         })
@@ -681,7 +681,18 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 }
             } else {
                 item.guestIndexForDineIn = null
-                viewModel.updateCart(viewModel.currentCartItems, item, DELETE, item.isManualSales)
+
+                if(viewModel.currentCartItems.size == 1)
+                {
+                    viewModel.currentCartItems.clear()
+                    viewModel.duplicateCurrentCartItem.clear()
+                    viewModel.deleteCartItems()
+
+                    createCart()
+
+                    viewModel.fragmentNeedToBeUpdated.value = true
+                }
+                else viewModel.updateCart(viewModel.currentCartItems, item, DELETE, item.isManualSales)
                 //viewModel.newCartLogicModifier(cartModelsList, item, DELETE, item.isManualSales)
 
             }
@@ -691,7 +702,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                 createCart()
 
-                viewModel.fragmentNeedToBeUpdated.value = true
+              //  viewModel.fragmentNeedToBeUpdated.value = true
 
                 Log.e("Tracking Cart","IN"+viewModel.currentCartItems.size.toString())
             }else
