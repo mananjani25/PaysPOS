@@ -243,7 +243,7 @@ class ItemAdapterPagDash(
         val s: Spannable = txtCategoryName.text as Spannable
         val start: Int = first.length
         val end: Int = start + next.length
-        s.setSpan(ForegroundColorSpan(Color.RED), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        s.setSpan(ForegroundColorSpan(Color.parseColor("#ff6000")), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         s.setSpan(StyleSpan(Typeface.BOLD), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         s.setSpan(StrikethroughSpan(), 0, start, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
