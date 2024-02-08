@@ -12,18 +12,10 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.IBinder
-import android.os.Looper
+import android.os.*
 import android.util.Base64
 import android.util.Log
-import android.view.Display
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.core.text.trimmedLength
 import androidx.fragment.app.Fragment
@@ -32,6 +24,14 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.epson.epos2.printer.Printer
+import com.epson.eposprint.BatteryStatusChangeEventListener
+import com.epson.eposprint.Builder
+import com.epson.eposprint.Print
+import com.epson.eposprint.StatusChangeEventListener
+import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.pays.pos.MainApplication
 import com.pays.pos.R
 import com.pays.pos.aidl.ICallback
@@ -39,7 +39,6 @@ import com.pays.pos.aidl.IWoyouService
 import com.pays.pos.data.entities.CartModel
 import com.pays.pos.data.entities.RedeemLoyaltyInfo
 import com.pays.pos.data.entities.TbCartItem
-import com.pays.pos.data.entities.TbItem
 import com.pays.pos.data.entities.TbServiceCharge
 import com.pays.pos.data.model.DineInModel
 import com.pays.pos.data.model.GuestDataModel
@@ -47,12 +46,7 @@ import com.pays.pos.data.model.SplitBundleModel
 import com.pays.pos.data.model.SplitDetailListModel
 import com.pays.pos.data.model.requestModel.giftCard.response.GiftCardAddValueResponse
 import com.pays.pos.data.model.requestModel.giftCard.response.SellGiftCardResponseModel
-import com.pays.pos.data.model.responseModel.CreateOrderResponse
-import com.pays.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
-import com.pays.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
-import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
-import com.pays.pos.data.model.responseModel.GetTipReponse
-import com.pays.pos.data.model.responseModel.PrinterResponse
+import com.pays.pos.data.model.responseModel.*
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.BILLING_ADDRESS
 import com.pays.pos.data.remote.Constants.BLUETOOTH
@@ -111,49 +105,15 @@ import com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
 import com.pays.pos.ui.fragments.transactions.TransactionViewModel
-import com.pays.pos.utils.AlertUtils
-import com.pays.pos.utils.LogUtil
-import com.pays.pos.utils.MethodUtils
+import com.pays.pos.utils.*
 import com.pays.pos.utils.MethodUtils.Companion.toDoubleWithPrecision
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
-import com.pays.pos.utils.PrintSunmiUtils
-import com.pays.pos.utils.PrinterDialog
-import com.pays.pos.utils.ProgressUtils
-import com.pays.pos.utils.addBuilderText
-import com.pays.pos.utils.addBuilderTextForU220
-import com.pays.pos.utils.addCustomerTextSize
-import com.pays.pos.utils.addHorizontalHalfCustomerReceiptLine
-import com.pays.pos.utils.addHorizontalKitchenLine
-import com.pays.pos.utils.addHorizontalKitchenLineForU220
-import com.pays.pos.utils.addHorizontalLine
-import com.pays.pos.utils.addOrderItemForDineIn
-import com.pays.pos.utils.addOrderItemForDineInInner
-import com.pays.pos.utils.addOrderItems
-import com.pays.pos.utils.addOrderItemsInner
-import com.pays.pos.utils.addOrdersForKitchen
-import com.pays.pos.utils.addOrdersForKitchenInner
-import com.pays.pos.utils.addOrdersForKitchenU220
-import com.pays.pos.utils.addTipsList
-import com.pays.pos.utils.addTipsListInner
-import com.pays.pos.utils.addWholeTbItemToGuest
-import com.pays.pos.utils.addWholeTbItemToGuestInner
-import com.pays.pos.utils.checkItemsforPrinter
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.liveSnackBar
 import com.pays.pos.utils.extensions.visible
-import com.pays.pos.utils.getCustomerDisplay
-import com.pays.pos.utils.padLine
 import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.printer.PrinterClass.BLUETOOTH_TIMEOUT
 import com.pays.pos.utils.statusUtils.Status
-import com.epson.epos2.printer.Printer
-import com.epson.eposprint.BatteryStatusChangeEventListener
-import com.epson.eposprint.Builder
-import com.epson.eposprint.Print
-import com.epson.eposprint.StatusChangeEventListener
-import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
@@ -9172,10 +9132,27 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
 
+                        if (printerStatusInfo.getPaperTakenSensor() == Printer.REMOVAL_DETECT_PAPER) {
+                            Log.e(
+                                "PrinterEvent",
+                                "REMOVAL_DETECT_PAPER"
+                            )
+                        }
+
+                        if (printerStatusInfo.getPaperTakenSensor() == Printer.REMOVAL_DETECT_UNKNOWN) {
+
+                            Log.e(
+                                "PrinterEvent",
+                                "REMOVAL_DETECT_PAPER"
+                            )
+                        }
+
                         Log.e(
-                            TAG,
-                            "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
+                            "PrinterEvent",
+                            "Printed"
                         )
+
+
                         if (printerStatusInfo.connection == 1) {
                             try {
                                 printer.disconnect()
@@ -9272,6 +9249,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String
     ) {
+
 
         var fontSizeH = 1
         var fontSizeW = 1
@@ -9648,7 +9626,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         try {
             mPrinter.sendData(Printer.PARAM_DEFAULT)
             mPrinter.clearCommandBuffer()
-            mPrinter.endTransaction()
+//            mPrinter.endTransaction()
 
             /*  try {
                   mPrinter.disconnect()
@@ -12622,7 +12600,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             if (receiptModel?.order?.totalTips == 0.0) {
-                
+
                 if (customerSettingModel.showTipLineForCash) {
 
                     if (customerSettingModel.fonts == LARGE) {
