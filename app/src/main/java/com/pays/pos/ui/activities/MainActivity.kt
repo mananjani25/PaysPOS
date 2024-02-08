@@ -1200,6 +1200,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
         updatePrinter = this
         queueOrderList = hashMapOf()
+
+//        throw RuntimeException("Test Crash") // Force a crash
+
         Log.e(TAG, "currentTimeInMilis:   ${System.currentTimeMillis()}")
         /*try {
             val field: Field = CursorWindow::class.java.getDeclaredField("sCursorWindowSize")

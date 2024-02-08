@@ -208,18 +208,18 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     private fun addFragmentReplaceObserver() {
-//        viewModel.fragmentNeedToBeUpdated.observe(viewLifecycleOwner) {
-//            if (it) {
-//
-//                viewModel.fragmentNeedToBeUpdated.value = false
-//                Log.e("Fragment Restarted","Restarted")
-//
-//                childFragmentManager.beginTransaction()
-//                    .replace(binding.frameLayoutCart.id, createCartForLoadCartFragment())
-//                    .addToBackStack(null)
-//                    .commit()
-//            }
-//        }
+        viewModel.fragmentNeedToBeUpdated.observe(viewLifecycleOwner) {
+            if (it) {
+
+                viewModel.fragmentNeedToBeUpdated.value = false
+                Log.e("Fragment Restarted","Restarted")
+
+                childFragmentManager.beginTransaction()
+                    .replace(binding.frameLayoutCart.id, createCartForLoadCartFragment())
+                    .addToBackStack(null)
+                    .commit()
+            }
+        }
 
 //        viewModel.doesItemContainsModifiers.observe(viewLifecycleOwner){
 //            if(it){
@@ -1422,12 +1422,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     if (cartList.isEmpty()) {
                         viewModel.createCart(cartList)
 
-                      //  viewModel.cartFragmentRestarted = true
+                        viewModel.cartFragmentRestarted = true
 
-                        childFragmentManager.beginTransaction()
-                            .replace(binding.frameLayoutCart.id, createCartForLoadCartFragment())
-                            .addToBackStack(null)
-                            .commit()
+//                        childFragmentManager.beginTransaction()
+//                            .replace(binding.frameLayoutCart.id, createCartForLoadCartFragment())
+//                            .addToBackStack(null)
+//                            .commit()
 
 //                            loadCartFragment(
 //                                createCartForLoadCartFragment()
@@ -1624,6 +1624,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
             if (it.isEmpty()) {
 
+                Log.e("Tracking BLANK CART","BOLDPOS 1627")
                 cartList.clear()
                 cartList = arrayListOf()
 
@@ -2120,14 +2121,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 generateKitchenReceiptSunmi(data, type, createOrderResponse.data)
             }
 
-        } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
+        }
+        else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             setService(data, createOrderResponse.data)
 
 
-        } else {
+        }
+        else {
 
             if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
 
@@ -2186,7 +2189,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         printerAdd,
                         Printer.PARAM_DEFAULT
                     )
-                    mPrinter.startMonitor()
+//                    mPrinter.startMonitor()
 
                     generateReceiptForU220(mPrinter, data, type, createOrderResponse.data)
 
@@ -2266,13 +2269,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         receiptModel: CreateOrderResponse.Data
     ) {
         try {
-            val pname = if (data.name.substring(0, 6).toString()
+           /* val pname = if (data.name.substring(0, 6).toString()
                     .lowercase() == "TM-m30".lowercase()
             ) {
                 "TM-m30"
             } else {
                 data.name
-            }
+            }*/
 
             var fontSizeH = 1
             var fontSizeW = 1
@@ -2296,9 +2299,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
 
 
-            if (data.name.substring(0, 4)
+           /* if (data.name.substring(0, 4)
                     .equals("TM-U", true) || data.name.contains("U")
-            ) {
+            ) {*/
 
                 LogUtil.logE(TAG, "kitchenFonts:  ${kitchenSettingModel.fonts}")
                 LogUtil.logE(TAG, "kitfontSize:  ${fontSizeH}")
@@ -2317,7 +2320,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 )
 
                 builder.addText(
-                    "OrderID:" + receiptModel?.order?.id
+                    "OrderID:" + receiptModel?.order?.custom_order_id
                 )
 
                 builder.addFeedUnit(30)
@@ -2601,8 +2604,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                     }
                 }
-            }
-
+            /*}*/
             builder?.addFeedLine(5)
 
             builder?.addCut(Builder.CUT_FEED)

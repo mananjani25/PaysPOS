@@ -1161,8 +1161,23 @@ class CartFragment(
                             Log.e(TAG,"CheckCartFragTax 12: ${Gson().toJson(it[0].taxlistDynamic)}")
 
                             // Added to resolve Add Discount issue BIS-3547
-                            if(viewModel.discountNeedToUpdate && viewModel.cartFooterNeedToBeUpdated)
-                                updateCartFooter(viewModel.currentCartItems)
+                            if (viewModel.discountNeedToUpdate && viewModel.cartFooterNeedToBeUpdated)
+
+                                if (viewModel.currentCartItems.isNotEmpty())
+                                    updateCartFooter(viewModel.currentCartItems)
+                                else {
+                                    viewModel.getAllCartItems(
+                                        prefProvider.getValue(
+                                            Constants.ORDER_TYPE,
+                                            TAKEOUT
+                                        ),
+                                        prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                                    ).asLiveData().value?.let { it1 ->
+                                        updateCartFooter(
+                                            it1.toList()
+                                        )
+                                    }
+                                }
                             else {
                                 viewModel.apply {
                                     discountNeedToUpdate = true
@@ -2488,8 +2503,9 @@ class CartFragment(
         }
 
         binding.tvPayNow.setOnClickListener {
-
-            if (prefProvider.getValue(ORDER_TYPE, "") == OPEN_ORDER) {
+            runBlocking {
+                delay(300)
+                if (prefProvider.getValue(ORDER_TYPE, "") == OPEN_ORDER) {
 
                 prefProvider.setValueboolean(OPEN_ORDER_DIRECT_PAY, true)
             }
@@ -2544,7 +2560,9 @@ class CartFragment(
                 }
             }
 
+            }
         }
+
         binding.tvSave.setOnClickListener {
             try {
                 prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)

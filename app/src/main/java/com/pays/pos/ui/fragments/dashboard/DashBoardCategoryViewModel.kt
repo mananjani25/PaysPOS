@@ -258,7 +258,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         this.tipTransactionAmount = tipAmount1
     }
 
-//    Added by Rahul for solving Discount issue
+    //    Added by Rahul for solving Discount issue
     public suspend fun getManualSaleFromCart(employee_id: Int): CartModel {
         return posRepository.getManualSaleFromCart(employee_id)
     }
@@ -299,7 +299,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     val enableOnlineOrder: LiveData<Event<Boolean>> = _enableOnlineOrder
 
     private val _masterTerminal = MutableLiveData<Event<Boolean>>()
-    val masterTeminalLiveData : LiveData<Event<Boolean>> = _masterTerminal
+    val masterTeminalLiveData: LiveData<Event<Boolean>> = _masterTerminal
 
     private val _checkCashDrawerPermission = MutableLiveData<Boolean>()
     val checkCashDrawerPer: LiveData<Boolean> = _checkCashDrawerPermission
@@ -542,6 +542,12 @@ class DashBoardCategoryViewModel @Inject constructor(
         return cartModel
     }
 
+    fun deleteCartItems() {
+        viewModelScope.launch {
+            posRepository.deleteCartItems()
+        }
+    }
+
     fun deleteCart() {
         try {
             prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
@@ -707,13 +713,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun manualSaleCartLogicNew(cartList: List<TbCartItem>?, item: TbCartItem, type: String) {
         /*Added by Rahul for solving Discount issue */
-        if (item.discountType.isEmpty()){
-            item.discountType= AMOUNT
+        if (item.discountType.isEmpty()) {
+            item.discountType = AMOUNT
         }
         var cartModel = addCartModelNew(item, true)
-/*Added by Rahul for solving Discount issue */
-        if (cartModel?.discountType!!.isEmpty()){
-            cartModel.discountType= AMOUNT
+        /*Added by Rahul for solving Discount issue */
+        if (cartModel?.discountType!!.isEmpty()) {
+            cartModel.discountType = AMOUNT
         }
 
         if (cartList != null && cartList.isEmpty()) {
@@ -827,6 +833,14 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
+
+    //update Item Quantity
+
+    fun updateItemQuantity(id: Int, itemQuantity: Int) {
+        viewModelScope.launch {
+            posRepository.updateItemQuantity(id, itemQuantity)
+        }
+    }
 
     fun addGuestFromDashBoard(cartList: List<CartModel>?) {
         addCart(cartList!![0])
@@ -3633,7 +3647,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         return isSame
     }
 
-    private fun checkVariationNew(tbItem: TbCartItem, item: TbCartItem): Boolean {
+    fun checkVariationNew(tbItem: TbCartItem, item: TbCartItem): Boolean {
 
         var isSame = true
 
@@ -3703,7 +3717,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             orderType = prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
             if (!orderType.equals(Constants.PHONE_ORDER, ignoreCase = true)
             ) {
-                deliveryType=""
+                deliveryType = ""
             }
             orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
             isMaual = isManualSales
@@ -4659,11 +4673,11 @@ class DashBoardCategoryViewModel @Inject constructor(
         var modifierPrice = 0.0
         val price = (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
-        Log.e("ItemModSize","CheckModSize: ${item.modifiers.size}")
+        Log.e("ItemModSize", "CheckModSize: ${item.modifiers.size}")
         item.modifiers.forEach {
             Log.e("ItemMod", "itemQuantity:  ${it.itemQuantity} andMODQU  ${it.modifier_quantity}")
             var modQty = it.modifier_quantity * item.itemQuantity
-            Log.e("ItemModQty","modQty:  ${modQty}")
+            Log.e("ItemModQty", "modQty:  ${modQty}")
             modifierPrice += (it.price * modQty)
         }
 
@@ -4689,7 +4703,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
         }
-        Log.e(TAG,"checkTotalRet ${totaltaxtemp}")
+        Log.e(TAG, "checkTotalRet ${totaltaxtemp}")
         return totaltaxtemp
     }
 
@@ -4766,10 +4780,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                         if (type == ADD || type == UPDATE) {
                             if (found <= cartModel.taxlistDynamic?.size!! - 1) {
-                                Log.e("CheckPassing","checkSubT: ${cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice}")
-                                Log.e("CheckPassing","checkTaxBifur:  ${getTotalTaxBirfurcation(
-                                    item, itemtype, type
-                                )}")
+                                Log.e(
+                                    "CheckPassing",
+                                    "checkSubT: ${cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice}"
+                                )
+                                Log.e(
+                                    "CheckPassing", "checkTaxBifur:  ${
+                                        getTotalTaxBirfurcation(
+                                            item, itemtype, type
+                                        )
+                                    }"
+                                )
                                 cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice =
                                     cartModel.taxlistDynamic!![found].totalTaxTypePrice.plus(
                                         getTotalTaxBirfurcation(
@@ -4919,10 +4940,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                         if (type == ADD || type == UPDATE) {
                             if (found <= cartModel.taxlistDynamic?.size!! - 1) {
-                                Log.e("CheckPassing","method: ${getTotalTaxBirfurcationNew(
-                                    item, itemtype, type
-                                )}")
-                                Log.e("CheckPassing","amount: ${cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice}")
+                                Log.e(
+                                    "CheckPassing", "method: ${
+                                        getTotalTaxBirfurcationNew(
+                                            item, itemtype, type
+                                        )
+                                    }"
+                                )
+                                Log.e(
+                                    "CheckPassing",
+                                    "amount: ${cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice}"
+                                )
                                 cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice =
                                     cartModel.taxlistDynamic!![found].totalTaxTypePrice.plus(
                                         getTotalTaxBirfurcationNew(
@@ -6587,7 +6615,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 Status.LOADING -> {
                     Log.e("SyncInventory", "SyncLoading")
-                    _showProgress.value = Event(true)
+                    _showProgress.value = Event(false)
 
                     autoSyncEnabled.value = true
                 }
@@ -6831,7 +6859,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 //                                posRepository.deleteCustomerPrinters()
 //                                posRepository.deleteKitchenPrinters()
                                 if (it.settingData.data.printers.kitchenPrinterList.isEmpty()) {
-                                        posRepository.deleteKitchenPrinters()
+                                    posRepository.deleteKitchenPrinters()
                                 } else {
                                     posRepository.addKitchenPrinter(it.settingData.data.printers.kitchenPrinterList)
 

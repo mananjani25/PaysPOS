@@ -20,7 +20,8 @@ data class CreateCustomerReponse(
 ) : BaseResponse(), Parcelable {
 
     /*@Parcelize
-    @Entity(tableName = "TbCustomer")
+    @Keep
+@Entity(tableName = "TbCustomer")
     data class Data(
         @PrimaryKey
         @SerializedName("id") val id: Int,

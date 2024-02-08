@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
 import com.pays.pos.R
 import com.pays.pos.data.entities.CartModel
@@ -47,6 +48,7 @@ import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -363,7 +365,30 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 }
 
 
-                if (isUpdateItem) {
+                var found = false
+
+
+                for(it in viewModel.currentCartItems){
+                    if(it.cartItemId!=item.cartItemId)
+                    {
+                        if (it.name == item.name) {
+                            if (viewModel.checkModifierNew(it, item)) {
+                                Log.e(
+                                    "Tracking Cart",
+                                    "SAME ITEM  ${it.cartItemId} && ${item.cartItemId}"
+                                )
+                                found = true
+                                it.itemQuantity += item.itemQuantity
+                                break
+                            }
+                        }
+                    }else {
+                        Log.e("Tracking Cart","FOUND SAME ITEM ${it.cartItemId } && ${item.cartItemId}")
+                    }
+                }
+
+
+                if (found) {
                     // Added to resolve Add Discount issue BIS-3547
                     viewModel.cartFooterNeedToBeUpdated = true
 
@@ -421,31 +446,72 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         if (checkVar()) {
 
                             LogUtil.logE("NewItem", "ItemSame ${Gson().toJson(item)}")
-                            viewModel.updateCart(
-                                viewModel.currentCartItems,
-                                item,
-                                Constants.UPDATE,
-                                false,
-                                position = itemPosition
-                            )
+
+                           // if(!isUpdateItem)
+
+                            for(it in viewModel.currentCartItems){
+
+                                if(it.cartItemId == item.cartItemId){
+                                    Log.e("Current Cart Item","${it.cartItemId} AND ${item.cartItemId}")
+                                    viewModel.currentCartItems.remove(it)
+                                    break
+                                }
+
+                            }
+
+                            runBlocking {
+
+                                viewModel.deleteCartItems()
+
+                                    viewModel.currentCartItems.forEach {
+                                        viewModel.addItemToCartItems(it)
+                                    }
+                                }
+
+//                            viewModel.updateCart(
+//                                viewModel.currentCartItems,
+//                                item,
+//                                Constants.UPDATE,
+//                                false,
+//                                position = itemPosition1
+//                            )
                             viewModel.doesItemContainsModifiers.value = true
 
                         } else {
-
                             LogUtil.logE("NewItem", "ItemSameNot")
-                            item.orderItemId = null
-                            viewModel.updateCart(
-                                viewModel.currentCartItems,
-                                item,
-                                Constants.UPDATE,
-                                false,
-                                position = itemPosition
-                            )
+
+                      //   if(!isUpdateItem)
+                    //    viewModel.currentCartItems.remove(item)
+
+                            for(it in viewModel.currentCartItems){
+
+                                if(it.cartItemId == item.cartItemId){
+                                    Log.e("Current Cart Item","${it.cartItemId} AND ${item.cartItemId}")
+                                    viewModel.currentCartItems.remove(it)
+                                    break
+                                }
+
+                            }
+
+                            runBlocking {
+                                viewModel.deleteCartItems()
+
+                                viewModel.currentCartItems.forEach {
+                                    viewModel.addItemToCartItems(it)
+                                }
+                            }
+
+
+
+
                             viewModel.doesItemContainsModifiers.value = true
+
                         }
 
 
                     }
+
+
                 } else {
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                         item.guestIndexForDineIn = viewModel.dineInHeaderPosition
@@ -457,14 +523,6 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(dineInList)}")
                         if (dineInList?.isNotEmpty() == true && dineInList != null) {
                             dineInList[0].selectedPosition = viewModel.dineInHeaderPosition
-                            /*viewModel.newCartLogicModifier(
-                                cartModelsList,
-                                item,
-                                Constants.ADD,
-                                false,
-                                dineInList
-                            )*/
-
                             Log.d(TAG, "448 dineintest currentCartItems: " + viewModel.currentCartItems)
                             Log.d(TAG, "dineintest item: " + item)
                             Log.d(TAG, "dineintest dineInList: " + dineInList)
@@ -476,12 +534,48 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                 dineInList
                             )
                         }
-                    } else {
+                    } else
+                    {
                         item.guestIndexForDineIn = null
 
                         Log.e("cshffasf", "checkElsee")
                         //val tbItem = TbCartItem().convertToCartItem(item, item)
-                        viewModel.updateCart(viewModel.currentCartItems, item, Constants.ADD, false)
+
+                        var newFound = false
+
+                        viewModel.currentCartItems.forEach {
+
+                            Log.e("Tracking Cart","Each Item ${it.name}")
+
+                            if(it.name == item.name)
+                            {
+                                Log.e("Tracking Cart","SAME ITEM")
+                                if(viewModel.checkModifierNew(it,item)){
+                                    it.itemQuantity=item.itemQuantity
+                                    newFound = true
+                                    return@forEach
+                                }
+                            }
+                        }
+
+
+                        if(!newFound)
+                            viewModel.updateCart(viewModel.currentCartItems, item, Constants.ADD, false)
+                        else{
+
+                            //viewModel.currentCartItems.remove(item)
+
+                            runBlocking {
+                                viewModel.deleteCartItems()
+
+                                viewModel.currentCartItems.forEach {
+
+                                    viewModel.addItemToCartItems(it)
+                                }
+                            }
+
+
+                        }
                         viewModel.doesItemContainsModifiers.value = true
                     }
                 }
@@ -492,6 +586,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 )
                 //listner.onCancelItemSelected()
 
+
+                viewModel.fragmentNeedToBeUpdated.value = true
 
             }
         })
@@ -587,12 +683,29 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 item.guestIndexForDineIn = null
                 viewModel.updateCart(viewModel.currentCartItems, item, DELETE, item.isManualSales)
                 //viewModel.newCartLogicModifier(cartModelsList, item, DELETE, item.isManualSales)
+
             }
+
+
+            if(viewModel.currentCartItems.size==1) {
+
+                createCart()
+
+                viewModel.fragmentNeedToBeUpdated.value = true
+
+                Log.e("Tracking Cart","IN"+viewModel.currentCartItems.size.toString())
+            }else
+            {
+                Log.e("Tracking Cart",viewModel.currentCartItems.size.toString())
+            }
+
+
             requireActivity().supportFragmentManager.popBackStackImmediate(
                 AddItemFragment.javaClass.getName(),
                 FragmentManager.POP_BACK_STACK_INCLUSIVE
             )
             //  listner.onCancelItemSelected()
+
 
         }
 
@@ -604,6 +717,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             item.note = note.toString()
         }
     }
+
+
 
     fun createCart(): ArrayList<CartModel>? {
         if (cartModelsList.isEmpty()) {

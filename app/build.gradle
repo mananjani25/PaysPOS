@@ -16,8 +16,8 @@ android {
         applicationId "com.pays.pos"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 52
-        versionName "3.28"
+        versionCode 2
+        versionName "1.1"
 
 
         sourceSets { main { jniLibs.srcDirs = ['src/main/jniLibs/'] } }
@@ -29,6 +29,15 @@ android {
 
     }
 
+
+    signingConfigs {
+        release {
+            storeFile file('/home/ab/Documents/snackhq.jks') // Path to your keystore file
+            storePassword 'snackhq'
+            keyAlias 'snackhq'
+            keyPassword 'snackhq'
+        }
+    }
 
     buildTypes {
         release {
@@ -89,6 +98,7 @@ dependencies {
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.firebase:firebase-messaging-ktx:23.0.0'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.2.9'
 
 
     //Navigation

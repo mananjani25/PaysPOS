@@ -158,6 +158,8 @@ import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -6097,11 +6099,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     override fun onStop() {
         super.onStop()
+       /* Runtime.getRuntime().gc()
+        System.runFinalization()*/
         prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
         if (!isSpilt) {
             removeCustomer()
-
-
         }
     }
 
@@ -9199,7 +9201,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         //  mPrinter.startMonitor()
 
-                        generateReceiptForU220(mPrinter, data, type)
+                        CoroutineScope(Dispatchers.Main).launch{
+                            delay(200)
+                            generateReceiptForU220(mPrinter, data, type)
+                        }
 
                     } catch (e: java.lang.Exception) {
                         e.printStackTrace()
@@ -9304,7 +9309,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             Builder.COLOR_1
         )
 
-        mPrinter.addText("OrderID:" + receiptModel?.order?.id)
+        mPrinter.addText("OrderID:" + receiptModel?.order?.custom_order_id)
         mPrinter.addFeedLine(1)
         mPrinter.addFeedUnit(30)
         mPrinter.addFeedLine(1)
@@ -9409,7 +9414,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             Builder.COLOR_1
         )
 
-        addHorizontalKitchenLineForU220(mPrinter)
+        if (data.modalName.equals("TM-L100",ignoreCase = true)){
+
+            var str: String = ""
+            for (i in 0 until 30) {
+                str += "-"
+            }
+
+            mPrinter.addText(str)
+        }else{
+            addHorizontalKitchenLineForU220(mPrinter)
+        }
 
         receiptModel?.order?.orderItems?.let {
             addOrdersForKitchenU220(
@@ -9469,7 +9484,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.FALSE,
                 Builder.COLOR_1
             )
-            addHorizontalKitchenLineForU220(mPrinter)
+            if (data.modalName.equals("TM-L100",ignoreCase = true)){
+
+                var str: String = ""
+                for (i in 0 until 30) {
+                    str += "-"
+                }
+
+                mPrinter.addText(str)
+            }else{
+                addHorizontalKitchenLineForU220(mPrinter)
+            }
             if (receiptModel?.order?.customer != null) {
 
                 mPrinter.addFeedLine(1)
@@ -9498,8 +9523,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     Builder.FALSE,
                     Builder.COLOR_1
                 )
-                addHorizontalKitchenLineForU220(mPrinter)
+                if (data.modalName.equals("TM-L100",ignoreCase = true)){
 
+                    var str: String = ""
+                    for (i in 0 until 30) {
+                        str += "-"
+                    }
+
+                    mPrinter.addText(str)
+                }else{
+                    addHorizontalKitchenLineForU220(mPrinter)
+                }
                 if (kitchenSettingModel.showCustomerName) {
 
                     mPrinter.addFeedLine(1)
@@ -12588,8 +12622,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             if (receiptModel?.order?.totalTips == 0.0) {
-
-
+                
                 if (customerSettingModel.showTipLineForCash) {
 
                     if (customerSettingModel.fonts == LARGE) {
@@ -12786,7 +12819,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 if (woyouService != null) {
-                    woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
+                   try{
+                       woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
+                   }catch (e:Exception){
+                       e.printStackTrace()
+                   }
                 } else {
                     val aa = ByteArray(5)
 
