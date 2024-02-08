@@ -41,23 +41,47 @@ import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.epson.epos2.ConnectionListener
+import com.epson.epos2.printer.Printer
+import com.epson.epos2.printer.PrinterStatusInfo
+import com.epson.epos2.printer.ReceiveListener
+import com.epson.epos2.printer.StatusChangeListener
+import com.epson.eposprint.Builder
+import com.felhr.usbserial.BuildConfig.APPLICATION_ID
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.reflect.TypeToken
+import com.hosopy.actioncable.ActionCable
+import com.hosopy.actioncable.Channel
+import com.hosopy.actioncable.Consumer
+import com.hosopy.actioncable.Subscription
+import com.pays.pos.MainApplication
 import com.pays.pos.R
+import com.pays.pos.data.model.GuestAttrQueue
+import com.pays.pos.data.model.PrinterJSONElementData
 import com.pays.pos.data.model.PrinterQueueModel
 import com.pays.pos.data.model.TmpPrinterModel
+import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.pays.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.pays.pos.data.model.responseModel.PrinterResponse
 import com.pays.pos.data.remote.Constants
+import com.pays.pos.data.remote.Constants.INVENTORY_SYNC
 import com.pays.pos.data.remote.Constants.IS_MASTER_TERMINAL
 import com.pays.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.pays.pos.data.remote.Constants.LOCATION_ID
+import com.pays.pos.data.remote.Constants.PRINTER_QUEUE_BACKGROUND
 import com.pays.pos.data.remote.Constants.UNIQUE_ID
+import com.pays.pos.data.remote.Constants.checkUploadWorker
 import com.pays.pos.data.repositories.UserRepository
 import com.pays.pos.databinding.ParentActivityBinding
 import com.pays.pos.di.ApiModule.BASE_URL
 import com.pays.pos.di.HostSelectionInterceptor
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
+import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
@@ -70,30 +94,6 @@ import com.pays.pos.utils.extensions.alert
 import com.pays.pos.utils.statusUtils.Status
 import com.pays.pos.utils.workmanager.ThreadPoolManager
 import com.pays.pos.utils.workmanager.UploadWorker2
-import com.epson.epos2.ConnectionListener
-import com.epson.epos2.printer.Printer
-import com.epson.epos2.printer.PrinterStatusInfo
-import com.epson.epos2.printer.ReceiveListener
-import com.epson.epos2.printer.StatusChangeListener
-import com.epson.eposprint.Builder
-import com.felhr.usbserial.BuildConfig.APPLICATION_ID
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.gson.Gson
-import com.google.gson.JsonElement
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
-import com.google.gson.reflect.TypeToken
-import com.hosopy.actioncable.ActionCable
-import com.hosopy.actioncable.Channel
-import com.hosopy.actioncable.Consumer
-import com.hosopy.actioncable.Subscription
-import com.pays.pos.MainApplication
-import com.pays.pos.data.model.GuestAttrQueue
-import com.pays.pos.data.model.PrinterJSONElementData
-import com.pays.pos.data.model.responseModel.CreateOrderResponse
-import com.pays.pos.data.remote.Constants.INVENTORY_SYNC
-import com.pays.pos.data.remote.Constants.PRINTER_QUEUE_BACKGROUND
-import com.pays.pos.data.remote.Constants.checkUploadWorker
 import com.sunmi.externalprinterlibrary2.ConnectCallback
 import com.sunmi.externalprinterlibrary2.ResultCallback
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
@@ -102,6 +102,7 @@ import com.sunmi.externalprinterlibrary2.style.AlignStyle
 import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
 import com.sunmi.externalprinterlibrary2.style.UnderlineStyle
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -123,7 +124,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private var localCallConnect: Boolean = false
     private var previousPrinterAddress = ""
     private var previousPrinterName = ""
-    private var connectionCounter:Int=0
+    private var connectionCounter: Int = 0
     private var disconnectSize0: Boolean = false
     private var globalPrinterQueue: JsonElement? = null
     var listOfPrintersData: ArrayList<PrinterJSONElementData> = arrayListOf()
@@ -610,8 +611,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     private fun masterTerminalObserver() {
         dashBoardCategoryViewModel.masterTeminalLiveData.observe(this) {
+            Log.e(TAG, "masterTerminalObseOutside ${it}")
             it.getContentIfNotHandled()?.let {
-                if (it){
+                Log.e(TAG, "masterTerminalObserver ${it}")
+                if (it) {
                     sendBroadCast()
                 }
             }
@@ -1191,6 +1194,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.e(TAG, "checkConsumerNullorNot  ${consumer}")
+        if (consumer != null) {
+            consumer = null
+        }
         updatePrinter = this
         queueOrderList = hashMapOf()
         Log.e(TAG, "currentTimeInMilis:   ${System.currentTimeMillis()}")
@@ -1229,7 +1236,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             ) == true && consumer == null
         ) {
 
-//            connectActionCable()
+            connectActionCable()
         }
 
 
@@ -1479,17 +1486,22 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
             val uri = URI(Constants.PRINTER_QUEUE_CONNECTION_URL_SNACKPOS)
 
-            if (consumer!=null){
+            Log.e(TAG, "checkConsumer ${consumer}")
+            if (consumer != null) {
                 consumer?.disconnect()
-                connectActionCable()
-            }else{
+                lifecycleScope.launch(Dispatchers.Main) {
+                    delay(1500)
+                    connectActionCable()
+
+                }
+            } else {
                 consumer = ActionCable.createConsumer(uri)
             }
 
 
             // 2. Create subscription
             val appearanceChannel = Channel("PrinterQueueV4Channel")
-            Log.e(TAG,"locationID: ${prefProvider?.getValueInt(LOCATION_ID, 0)}")
+            Log.e(TAG, "locationID: ${prefProvider?.getValueInt(LOCATION_ID, 0)}")
             appearanceChannel.addParam("id", prefProvider?.getValueInt(LOCATION_ID, 0))
             // appearanceChannel.addParam("id",prefProvider.getValueInt(LOCATION_ID,0))
             subscription = consumer?.subscriptions?.create(appearanceChannel)
@@ -1555,12 +1567,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         Context.MODE_PRIVATE
                     ).edit().putBoolean(Constants.WORKER_QUEUE_IN_PROGRESS, true)
 
-                        Log.e(TAG, "checkCancelWork")
-                        if (navController?.currentDestination?.id == R.id.login
-                        ) {
-                            Log.e(TAG, "IN_CONNECTION_CONDITION")
+                    Log.e(TAG, "checkCancelWork")
+                    if (navController?.currentDestination?.id == R.id.login
+                    ) {
+                        Log.e(TAG, "IN_CONNECTION_CONDITION")
                         consumer?.disconnect()
-                        }
+                    }
 //                        consumer?.disconnect()
                     else {
 
@@ -1694,14 +1706,19 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     Log.e(TAG, "onFailed")
 
                     if (isInternetAvailable()) {
-                        if (prefProvider?.getValueboolean(IS_MASTER_TERMINAL,false) == true && prefProvider?.getValueboolean(
-                                IS_PRINTER_QUEUE_ENABLE,false) == true ) {
-                           /* Handler(Looper.getMainLooper()).postDelayed(object:Runnable{
-                                override fun run() {
-                                    consumer?.connect()
-                                }
+                        if (prefProvider?.getValueboolean(
+                                IS_MASTER_TERMINAL,
+                                false
+                            ) == true && prefProvider?.getValueboolean(
+                                IS_PRINTER_QUEUE_ENABLE, false
+                            ) == true
+                        ) {
+                            /* Handler(Looper.getMainLooper()).postDelayed(object:Runnable{
+                                 override fun run() {
+                                     consumer?.connect()
+                                 }
 
-                            },5000)*/
+                             },5000)*/
                         }
                     } else {
                         sendNotification("Please check your Network Connectivity.")
@@ -1715,16 +1732,16 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
             // 3. Establish connection
 
-           /* if (localCallConnect == false) {*/
-                localCallConnect = true
-                Log.e(TAG, "consumerConnect  ${consumer}")
-                this@MainActivity.getSharedPreferences(
-                    this@MainActivity.resources.getString(R.string.app_name),
-                    Context.MODE_PRIVATE
-                ).edit().putBoolean(Constants.WORKER_QUEUE_IN_PROGRESS, true)
+            /* if (localCallConnect == false) {*/
+            localCallConnect = true
+            Log.e(TAG, "consumerConnect  ${consumer}")
+            this@MainActivity.getSharedPreferences(
+                this@MainActivity.resources.getString(R.string.app_name),
+                Context.MODE_PRIVATE
+            ).edit().putBoolean(Constants.WORKER_QUEUE_IN_PROGRESS, true)
 
-                isQueueRunning = false
-                isPrinterRunning = false
+            isQueueRunning = false
+            isPrinterRunning = false
             consumer?.connect()
 
             /*}*/
@@ -3150,7 +3167,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     }
 
 
-
     fun connectActionCableSYNCSETTINGS() {
         // 1. Setup
         var requestURL =
@@ -3167,7 +3183,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         val appearanceChannel = Channel("SyncChannel")
         appearanceChannel.addParam("id", locationId)
         // appearanceChannel.addParam("id",prefProvider.getValueInt(LOCATION_ID,0))
-        MainActivity.subscription2 = MainActivity.consumer2?.subscriptions?.create(appearanceChannel)
+        MainActivity.subscription2 =
+            MainActivity.consumer2?.subscriptions?.create(appearanceChannel)
 
         if (MainActivity.subscription2 != null) {
             MainActivity.subscription2?.onConnected {
@@ -3187,7 +3204,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             }?.onReceived {
                 Log.e(TAG2, "onReceived  MAIN ACTIVITY" + Gson().toJson(it))
 
-                if (PrefProvider(baseContext).getLocationId()==it.asJsonObject.get("location_id").asInt){
+                if (PrefProvider(baseContext).getLocationId() == it.asJsonObject.get("location_id").asInt) {
                     Log.e(TAG2, "onReceived  Inside" + Gson().toJson(it))
                     handleUpdatedData(it)
                 }
@@ -3230,20 +3247,20 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 Log.e(TAG2, "call setting_data API")
 
                 if (setting_data.toString() == "true") {
-                    Handler(mainLooper).post(object:Runnable{
+                    Handler(mainLooper).post(object : Runnable {
                         override fun run() {
                             dashboardViewModel.autoSyncEnabled.value = false
                         }
                     })
 
-                  //  PrefProvider(mContext).setValueInt(Constants.CAT_ID_SELECTED, 0)
+                    //  PrefProvider(mContext).setValueInt(Constants.CAT_ID_SELECTED, 0)
                     dashboardViewModel.syncSettingModule()
 
                     if (com.pays.pos.ui.fragments.settings.hardware.printer.Printer.updatePrinter == null) {
 
                         updatePrinter?.updatePrinters()
 
-                        Log.e(TAG2,"Setting DATA TRUE")
+                        Log.e(TAG2, "Setting DATA TRUE")
 
 
                     } else {
@@ -3258,7 +3275,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     }
                 }
             }
-            if(it.asJsonObject.has(INVENTORY_SYNC)){
+            if (it.asJsonObject.has(INVENTORY_SYNC)) {
                 val inventory_sync_data = it.asJsonObject.get(Constants.INVENTORY_SYNC)
 
                 if (inventory_sync_data.toString() == "true") {
@@ -3272,15 +3289,16 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 //                        }
 //                    })
 
-                  try {
-                      dashboardViewModel.autoSyncEnabled.value = false
-                  } catch (_:Exception) {}
+                    try {
+                        dashboardViewModel.autoSyncEnabled.value = false
+                    } catch (_: Exception) {
+                    }
 
                     PrefProvider(mContext).setValueInt(Constants.CAT_ID_SELECTED, 0)
                     dashboardViewModel.syncInventoryModule(false)
 
 //                    DashboardCategoryBoldPOS.syncDataCallback?.syncNotification()
-                }else {
+                } else {
 
                     if (it.asJsonObject.has("message")) {
 
@@ -3289,12 +3307,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 }
             }
 
-            if(it.asJsonObject.has(Constants.SYNC_NOTIFICATION)){
+            if (it.asJsonObject.has(Constants.SYNC_NOTIFICATION)) {
                 val sync_data = it.asJsonObject.get(Constants.SYNC_NOTIFICATION)
 
                 if (sync_data.toString() == "true") {
                     DashboardCategoryBoldPOS.syncDataCallback?.syncNotification()
-                }else {
+                } else {
 
                     if (it.asJsonObject.has("message")) {
 
