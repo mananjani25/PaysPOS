@@ -42,6 +42,7 @@ object Constants {
     const val MAX_ITEM_QUANTITY_FOR_MANUAL_SALES = 15
 
     const val SUNMIBRAND = "Sunmi"
+    const val STAR = "Star"
     const val EPSONBRAND = "TM"
 
     const val FILE_PATH = "/storage/emulated/0/Download/"

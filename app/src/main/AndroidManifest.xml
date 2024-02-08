@@ -44,6 +44,8 @@
         android:name="android.permission.BATTERY_STATS"
         tools:ignore="ProtectedPermissions" />
 
+
+
     <application
         android:name=".MainApplication"
         android:allowBackup="false"
