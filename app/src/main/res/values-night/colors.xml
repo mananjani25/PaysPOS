@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#ef6f67</color>
+    <color name="purple_500">#ff6000</color>
     <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#ef6f67</color>
+    <color name="teal_200">#ff6000</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
@@ -14,8 +14,8 @@
     <color name="cool_grey">#8d989e</color>
     <!--<color name="hint_color">#4c000000</color>-->
     <color name="hint_color">#656565</color>
-        <color name="btnColorDark">#ed5950</color>
-    <color name="btnColor">#ef6f67</color>
+    <color name="btnColorDark">#ff6000</color>
+    <color name="btnColor">#ff6000</color>
     <color name="view">#535353</color>
     <color name="boxColor">#9FA2A9</color>
     <color name="txtColor">#FFFFFF</color>
@@ -23,24 +23,24 @@
     <color name="hintColor">#656565</color>
     <color name="searchHintColor">#C4C4C4</color>
     <color name="viewTextColor">#111214</color>
-    <color name="floorplan">#E22417</color>
+    <color name="floorplan">#ff6000</color>
     <color name="gray_border">#F4F4F8</color>
     <color name="gray_rect">#E6E5E8</color>
     <!--<color name="hint_color_">#B6B6B7</color>-->
     <color name="hint_color_">#656565</color>
     <color name="gray_border_1">#F0F0F2</color>
     <color name="gray_color">#A5A5A5</color>
-    <color name="btnColorDark_">#ef6f67</color>
+    <color name="btnColorDark_">#ff6000</color>
     <color name="color">#F8F8F8</color>
     <color name="background">#EFF0F0</color>
     <color name="colorCB">#CBCBCC</color>
     <color name="colorC5">#C5C7CE</color>
-    <color name="colorE9">#E90C0C</color>
+    <color name="colorE9">#ff6000</color>
     <color name="color96">#969AA3</color>
     <color name="colorE2">#E2E2E2</color>
     <color name="color65">#656565</color>
     <color name="dashBackground">#F3F4F6</color>
-    <color name="txt_color_blue">#ef6f67</color>
+    <color name="txt_color_blue">#ff6000</color>
 
     <color name="colorDashBack">#F3F4F6</color>
     <color name="drawerBack">#292E32</color>
@@ -65,7 +65,7 @@
 
     <color name="color25">#999999</color>
 
-    <color name="colorRed">#E30000</color>
+    <color name="colorRed">#ff6000</color>
 
     <color name="dividerColor">#41414117</color>
     <color name="colorC4">#C4C4C4</color>
@@ -75,10 +75,10 @@
     <color name="dividerMenu">#B7B7B7</color>
 
 
-    <color name="colorF2">#F21170</color>
+    <color name="colorF2">#ff6000</color>
     <color name="colorFA">#FA9905</color>
     <color name="color72">#72147E</color>
-    <color name="colorFF">#FF5200</color>
+    <color name="colorFF">#ff6000</color>
     <color name="color23">#23049D</color>
     <color name="colorAA">#AA2EE6</color>
     <color name="colorF7">#FF79CD</color>
@@ -93,19 +93,19 @@
     <color name="colorA9">#A9A9A9</color>
     <color name="color70">#707070</color>
     <color name="colorM9">#FEFEFE</color>
-    <color name="colorR1">#ef6f67</color>
+    <color name="colorR1">#ff6000</color>
     <color name="colorF">#FAFAFA</color>
     <color name="colorM">#F5FCFF</color>
     <color name="colorM1">#F7F7F7</color>
     <color name="colorMB">#E6E8E9</color>
     <color name="colorGreen">#11C754</color>
-    <color name="delete">#FF3C30</color>
+    <color name="delete">#ff6000</color>
     <color name="addNote">#FA9905</color>
-    <color name="addDiscount">#ef6f67</color>
+    <color name="addDiscount">#ff6000</color>
     <color name="colorM5">#FDFDFD</color>
-    <color name="colorE90">#E9090E</color>
+    <color name="colorE90">#ff6000</color>
     <color name="color0A">#0AB833</color>
-    <color name="fire_all">#EE5847</color>
+    <color name="fire_all">#ff6000</color>
     <color name="yellow_edit_order">#FAA81C</color>
     <color name="green_pay_total">#12BC4B</color>
     <color name="bg_color">#1D1D1F</color>
@@ -122,13 +122,13 @@
     <color name="bgEditPrinter">#18181A</color>
     <color name="light_gray">#A9A9A9</color>
     <color name="dark_gray">#8F8F8F</color>
-    <color name="dark_btn_Color">#ed5950</color>
+    <color name="dark_btn_Color">#ff6000</color>
 
     <color name="white_swipe">#FFFFFF</color>
     <color name="swipe_text_color">#FFFFFF</color>
     <color name="swipe_text_color_d">#000000</color>
 
-    <color name="swipe_bg_delete">#E22417</color>
+    <color name="swipe_bg_delete">#ff6000</color>
     <color name="swipe_bg_edit">#23049D</color>
     <color name="swipe_bg_hide">#FA9905</color>
 </resources>
