@@ -3,14 +3,14 @@
     <string name="PREF_BARCODE_SCANNER">BarcodeScannerPrefs</string>
     <string name="tv_pos">PAYS POS</string>
     <string name="tv_Info">Enterprise Cloud Point of Sale</string>
-    <string name="tv_hint_email">Email Address <font color='#E90C0C'>*</font></string>
+    <string name="tv_hint_email">Email Address <font color='#ff6000'>*</font></string>
     <string name="tv_hint_email_">Email Address</string>
-    <string name="tv_hint_password">Password <font color='#E90C0C'>*</font></string>
+    <string name="tv_hint_password">Password <font color='#ff6000'>*</font></string>
     <string name="tv_login">Login</string>
     <string name="tv_info_provider">If you forgot password, please <font color='#00A3E0'>contact</font> your sales provider</string>
     <string name="tv_pos_2021">&#169; PAYS POS 2023</string>
     <string name="save">Save</string>
-    <string name="category_name">Category Name <font color='#E90C0C'>*</font></string>
+    <string name="category_name">Category Name <font color='#ff6000'>*</font></string>
     <string name="assign_item_to_category">Assign Item to category</string>
     <string name="tap_to_edit">Tap to Edit</string>
     <string name="edit_item_title">Update Item Title</string>
@@ -25,12 +25,12 @@
     <string name="loading">Loading…</string>
     <string name="no_internet">Internet is required for the application to work. Please enable the internet and try again.</string>
 
-    <string name="first_name">First Name <font color='#E90C0C'>*</font></string>
+    <string name="first_name">First Name <font color='#ff6000'>*</font></string>
     <string name="first_name_normal">First Name</string>
-    <string name="last_name">Last Name <font color='#E90C0C'>*</font></string>
+    <string name="last_name">Last Name <font color='#ff6000'>*</font></string>
     <string name="last_name_normal">Last Name</string>
     <string name="last_name_">Last Name</string>
-    <string name="phone">Mobile Number <font color='#E90C0C'>*</font></string>
+    <string name="phone">Mobile Number <font color='#ff6000'>*</font></string>
     <string name="_phone">Mobile Number</string>
     <string name="_phone_number">Mobile Number</string>
     <string name="address_empty_validation">Please enter Full Address</string>
@@ -129,10 +129,10 @@
     <string name="tv_primary_job_title">Primary Job Title</string>
     <string name="tv_hourly_rate">Hourly Rate</string>
     <string name="tv_access">Access</string>
-    <string name="tv_permission_set_">Role <font color='#E90C0C'>*</font></string>
-    <string name="tv_permission_set">Permission Set <font color='#E90C0C'>*</font></string>
+    <string name="tv_permission_set_">Role <font color='#ff6000'>*</font></string>
+    <string name="tv_permission_set">Permission Set <font color='#ff6000'>*</font></string>
     <string name="tv_personal_passcode">Passcode</string>
-    <string name="tv_personal_passcode_">Passcode<font color='#E90C0C'>*</font></string>
+    <string name="tv_personal_passcode_">Passcode<font color='#ff6000'>*</font></string>
     <string name="tv_location">Location</string>
     <string name="tv_create_team_member">Add Employee</string>
     <string name="tv_update_team_member">Update Employee</string>
@@ -142,9 +142,9 @@
     <string name="tv_clock_in">Clock In</string>
     <string name="tv_team">Employees</string>
     <string name="tv_continue_to_pos">Continue to POS</string>
-    <string name="name">Name <font color='#E90C0C'>*</font></string>
-    <string name="item_name_1">Item Name <font color='#E90C0C'>*</font></string>
-    <string name="tax_name">Tax Name <font color='#E90C0C'>*</font></string>
+    <string name="name">Name <font color='#ff6000'>*</font></string>
+    <string name="item_name_1">Item Name <font color='#ff6000'>*</font></string>
+    <string name="tax_name">Tax Name <font color='#ff6000'>*</font></string>
     <string name="plus">+</string>
     <string name="options">Options</string>
     <string name="add_options">Add Options</string>
@@ -162,7 +162,7 @@
     <string name="leave_the_price_blank_to_enter_at_the_time_of_sale">Leave the price blank to enter at the time of sale.</string>
     <string name="modifier_sets">Modifier sets</string>
     <string name="description">Description</string>
-    <string name="modifier_set_name">Modifier Set Name <font color='#E90C0C'>*</font></string>
+    <string name="modifier_set_name">Modifier Set Name <font color='#ff6000'>*</font></string>
     <string name="to_set_pre_selected_modifiers_or_update_the_minimum_maximum_number_of_modifiers_that_can_be_applied_visit_your_dashboard_if_you_modify_this_set_in_point_of_sale_it_will_only_apply_the_basic_settings_below">To set pre-selected modifiers or update the minimum/maximum number of modifiers that can be applied, visit your Dashboard. If you modify this set in Point of Sale, it will only apply the basic settings below.</string>
     <string name="modifiers">Modifiers</string>
     <string name="modifier">Modifier</string>
@@ -173,11 +173,11 @@
     <string name="create_item">Create Item</string>
     <string name="add_new_items">+ Add New Item</string>
     <string name="add_new_itemswithoutplus">Add New Item</string>
-    <string name="item_name_withstar">Item Name<font color='#E90C0C'>*</font></string>
+    <string name="item_name_withstar">Item Name<font color='#ff6000'>*</font></string>
     <string name="add_tax_name">Add Tax Name</string>
-    <string name="add_tax_name_">Tax Name<font color='#E90C0C'>*</font></string>
+    <string name="add_tax_name_">Tax Name<font color='#ff6000'>*</font></string>
     <string name="add_tax__percentage">Add Tax Percentage (%)</string>
-    <string name="add_tax__percentage_">Tax Percentage (%)<font color='#E90C0C'>*</font></string>
+    <string name="add_tax__percentage_">Tax Percentage (%)<font color='#ff6000'>*</font></string>
     <string name="add_tax__dollor">Add Tax Dollar ($)</string>
     <string name="search_categories">Search Categories</string>
     <string name="create_category">Create Category</string>
@@ -201,16 +201,16 @@
     <string name="add_service_charge_plus">+ Add Service Charge</string>
     <string name="update_service_charge">Update Service Charge</string>
     <string name="enable_service_charge">Enable Service Charge</string>
-    <string name="service_charge_name">Service Charge Name <font color='#E90C0C'>*</font></string>
+    <string name="service_charge_name">Service Charge Name <font color='#ff6000'>*</font></string>
     <string name="service_charge">Service Charge</string>
-    <string name="percentage">Percentage <font color='#E90C0C'>*</font></string>
-    <string name="percentage_withsymbol">Percentage % <font color='#E90C0C'>*</font></string>
-    <string name="tip_percentage">Tip Percentage <font color='#E90C0C'>*</font></string>
-    <string name="tax_rate">Tax Rate <font color='#E90C0C'>*</font></string>
+    <string name="percentage">Percentage <font color='#ff6000'>*</font></string>
+    <string name="percentage_withsymbol">Percentage % <font color='#ff6000'>*</font></string>
+    <string name="tip_percentage">Tip Percentage <font color='#ff6000'>*</font></string>
+    <string name="tax_rate">Tax Rate <font color='#ff6000'>*</font></string>
     <string name="create_note">Create Note</string>
     <string name="add_new_note">Add New Note</string>
     <string name="update_note">Update Note</string>
-    <string name="note_title">Note Title <font color='#E90C0C'>*</font></string>
+    <string name="note_title">Note Title <font color='#ff6000'>*</font></string>
     <string name="create">Create</string>
     <string name="create_notes">Create Notes</string>
     <string name="create_notes_plus">+ Add New Note</string>
@@ -221,7 +221,7 @@
     <string name="add_new_discount">Add New Discount</string>
     <string name="update_discount">Update Discount</string>
     <string name="discount_name">Discount Name</string>
-    <string name="discount_name_">Discount Name<font color='#E90C0C'>*</font></string>
+    <string name="discount_name_">Discount Name<font color='#ff6000'>*</font></string>
     <string name="apply_discount_after_taxes">Apply discount after taxes</string>
     <string name="leave_the_discount_amount_blank_to_enter_at_the_time_of_sale_n_discount_are_applied_to_the_ticket_before_tax_is_calculated">Leave the discount amount blank to enter at the time of sale.<br />Discount are applied to the ticket before tax is calculated.</string>
     <string name="this_should_only_be_used_for_manufacture_discount_and_instant_rebates_learn_more">This should only be used for manufacture discount and instant rebates.</string>
@@ -229,7 +229,7 @@
     <string name="tv_new_tax_add">Add New Tax</string>
     <string name="tv_update_tax">Update Tax</string>
     <string name="tv_enable_default_tax">Enable Default Tax</string>
-    <string name="item_pricing">Item Pricing <font color='#E90C0C'>*</font></string>
+    <string name="item_pricing">Item Pricing <font color='#ff6000'>*</font></string>
     <string name="tv_apply_tax_to">APPLY TO ITEMS</string>
     <string name="tv_custom_amount">Custom Amount</string>
     <string name="tv_items">Items</string>
@@ -239,7 +239,7 @@
     <string name="tv_add_a_new_tip">Add a New Tip</string>
     <string name="tv_add_a_new_tip_plus">+ Add a New Tip</string>
     <string name="tv_entertainment_tip">Entertainment Tip</string>
-    <string name="tv_tip_name">Tip Name <font color='#E90C0C'>*</font></string>
+    <string name="tv_tip_name">Tip Name <font color='#ff6000'>*</font></string>
     <string name="tv_entertainment">Entertainment</string>
     <string name="tv_create_discount">Create Discount</string>
     <string name="no_shifts_worked_so_far_today">No shifts worked so far today</string>
@@ -260,7 +260,7 @@
     <string name="tv_paid_unpaid">PAID/UNPAID</string>
     <string name="tv_printer_kitchen">PRINTER : KITCHEN</string>
     <string name="tv_kitchen_receipt">Kitchen Receipt</string>
-    <string name="select_category">Select Category <font color='#E90C0C'>*</font></string>
+    <string name="select_category">Select Category <font color='#ff6000'>*</font></string>
     <string name="taxes">Taxes</string>
     <string name="tv_show_order_id_at_the_top">SHOW ORDER ID AT THE TOP</string>
     <string name="tv_order_id">Order ID</string>
@@ -289,7 +289,7 @@
     <string name="tv_website_address">Website Address</string>
     <string name="tv_show_customer_information">SHOW CUSTOMER INFORMATION</string>
     <string name="tv_name">Name</string>
-    <string name="tv_name_mand">Name<font color='#E90C0C'>*</font></string>
+    <string name="tv_name_mand">Name<font color='#ff6000'>*</font></string>
     <string name="tv_phone">Mobile</string>
     <string name="tv_address">Address</string>
     <string name="tv_show_tip_suggestion">SHOW TIP SUGGESTION</string>
@@ -309,7 +309,7 @@
     <string name="tv_sub_total">Sub Total</string>
     <string name="tv_refund_amount">Refund Amount</string>
     <string name="tv_service_charge">Service Charge</string>
-    <string name="tv_service_charge_">Service Charge<font color='#E90C0C'>*</font></string>
+    <string name="tv_service_charge_">Service Charge<font color='#ff6000'>*</font></string>
     <string name="tv_total_discount">Total Discount</string>
     <string name="tv_cash_discount">Cash Discount</string>
     <string name="tv_change_amount">Change Amount</string>
@@ -344,7 +344,7 @@
     <string name="percantage">-100%</string>
     <string name="option_set">Option Set</string>
     <string name="option_set_title">Option set title</string>
-    <string name="display_name">Display Name <font color='#E90C0C'>*</font></string>
+    <string name="display_name">Display Name <font color='#ff6000'>*</font></string>
     <string name="scan_barcode_or_search">Scan barcode or search</string>
     <string name="take_out">Take Out</string>
     <string name="dine_in">Dine In</string>
@@ -371,7 +371,7 @@
     <string name="tv_delete">Delete</string>
     <string name="symbole">$</string>
     <string name="percentage_symbol">%</string>
-    <string name="percentage_symbol_">%<font color='#E90C0C'>*</font></string>
+    <string name="percentage_symbol_">%<font color='#ff6000'>*</font></string>
     <string name="dollar_symbol">$</string>
     <string name="format">%.2f</string>
     <string name="zero">0.00</string>
@@ -441,7 +441,7 @@
     <string name="tv_employee_role_list">Employee Role List</string>
     <string name="tv_assign_permission">Assign Permission</string>
     <string name="tv_assign_role">Assign Role</string>
-    <string name="tv_add_role_name">Add Role Name <font color='#E90C0C'>*</font></string>
+    <string name="tv_add_role_name">Add Role Name <font color='#ff6000'>*</font></string>
     <string name="tv_select_module">Select Module</string>
     <string name="tv_add_all">Add All</string>
     <string name="tv_remove_all">Remove All</string>
@@ -451,7 +451,7 @@
     <string name="tv_role">Role</string>
     <string name="tv_team_member_with_role">Employees with Role</string>
     <string name="tv_permission">Permission</string>
-    <string name="tv_email_star">Email <font color='#E90C0C'>*</font></string>
+    <string name="tv_email_star">Email <font color='#ff6000'>*</font></string>
     <string name="tv_email">Email</string>
     <string name="tv_add_new_role_name">Add Role Name</string>
     <string name="role_name">Role Name</string>
@@ -531,7 +531,7 @@
     <string name="printer_queue">Printer Queue</string>
     <string name="customer_details">Customer Details</string>
     <string name="delivery_address">Delivery Address</string>
-    <string name="delivery_address_">Delivery Address<font color='#E90C0C'>*</font></string>
+    <string name="delivery_address_">Delivery Address<font color='#ff6000'>*</font></string>
     <string name="billing_address">Billing Address</string>
     <string name="shipping_address">Shipping Address</string>
     <string name="search_existing_customer_details">Search existing customer details</string>
@@ -549,7 +549,7 @@
     <string name="zip">Zip</string>
     <string name="clear">Clear</string>
     <string name="street">Street</string>
-    <string name="street_">Street<font color='#E90C0C'>*</font></string>
+    <string name="street_">Street<font color='#ff6000'>*</font></string>
 
     <string name="printer">Printer</string>
     <string name="customer_receipt_printer">Customer receipt Printer</string>
@@ -618,7 +618,7 @@
     <string name="employee_id">Employee ID</string>
     <string name="add_note_cart">Note: </string>
     <string name="tv_variation_name">Variation Name</string>
-    <string name="tv_variation_name_mand">Variation Name<font color='#E90C0C'>*</font></string>
+    <string name="tv_variation_name_mand">Variation Name<font color='#ff6000'>*</font></string>
     <string name="tv_unit">Unit</string>
 
     <string name="tv_unit_variable">Variable</string>
@@ -646,11 +646,11 @@
     <string name="tv_loyalty_amount">Loyalty Amount</string>
     <string name="tv_used_loyalty_points">Used Loyalty Points</string>
     <string name="tv_refunded_amount">Refunded Amount</string>
-    <string name="tv_email_address">Email Address <font color='#E90C0C'>*</font></string>
+    <string name="tv_email_address">Email Address <font color='#ff6000'>*</font></string>
     <string name="tv_email_address_">Email Address</string>
-    <string name="tv_birthday">Birthday <font color='#E90C0C'>*</font></string>
+    <string name="tv_birthday">Birthday <font color='#ff6000'>*</font></string>
     <string name="tv_birthday_">Birthday</string>
-    <string name="tv_option_set">Option Set <font color='#E90C0C'>*</font></string>
+    <string name="tv_option_set">Option Set <font color='#ff6000'>*</font></string>
     <string name="please_select_order_type_to_add_item">Please select order type to add item</string>
     <string name="merge_tables">Merge Tables</string>
     <string name="transfer_tables">Transfer Table</string>
@@ -659,7 +659,7 @@
     <string name="assign_customer">Assign Customer</string>
     <string name="remove_guest">Remove Guest</string>
     <string name="tv_choose_photo">Choose Photo</string>
-    <string name="_201_555_0123">Mobile Number<font color='#E90C0C'>*</font></string>
+    <string name="_201_555_0123">Mobile Number<font color='#ff6000'>*</font></string>
     <string name="mobile_number">Mobile Number</string>
 
     <!--Error Messages-->
@@ -709,12 +709,12 @@
     <string name="pay_type">Amount &amp; Pay Type</string>
     <string name="enroll_to_loyalty">Enroll to Loyalty Program</string>
     <string name="loyalty_name">Loyalty Name</string>
-    <string name="loyalty_name_">Loyalty Name <font color='#E90C0C'>*</font></string>
-    <string name="loyalty_value_">LOYALTY VALUE <font color='#E90C0C'>*</font></string>
+    <string name="loyalty_name_">Loyalty Name <font color='#ff6000'>*</font></string>
+    <string name="loyalty_value_">LOYALTY VALUE <font color='#ff6000'>*</font></string>
     <string name="loyalty_value">LOYALTY VALUE</string>
     <string name="percentage_value">Percentage Value</string>
     <string name="amount_value">Amount Value</string>
-    <string name="loyalty_target_">Loyalty Target<font color='#E90C0C'>*</font></string>
+    <string name="loyalty_target_">Loyalty Target<font color='#ff6000'>*</font></string>
     <string name="loyalty_target">Loyalty Target</string>
     <string name="number_of_points_required_to_get_the_reward">(Number of points required to get the reward)</string>
     <string name="error_loyalty_name_blank">Please enter Loyalty Name</string>
@@ -787,8 +787,8 @@
     <string name="character_digits_without_space_String">"aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789"</string>
     <string name="character_String">"qwertzuiopasdfghjklyxcvbnmQWERTZUIOPASDFGHJKLYXCVBNM "</string>
     <string name="rename">Rename</string>
-    <string name="last_name_teammember">Last Name<font color='#E90C0C'>*</font></string>
-    <string name="email_address_teammember">Email Address<font color='#E90C0C'>*</font></string>
+    <string name="last_name_teammember">Last Name<font color='#ff6000'>*</font></string>
+    <string name="email_address_teammember">Email Address<font color='#ff6000'>*</font></string>
     <string name="search_team_members">Search Employees</string>
     <string name="default_notification_channel_id">POS_ANDROID</string>
     <string name="add_new_customer">Add New Customer</string>
@@ -816,7 +816,7 @@
     <string name="logout">Logout</string>
     <string name="permission_set">Permission Set</string>
     <string name="personal_passcode">Personal Passcode</string>
-    <string name="team_permission">Employees Permission <font color='#E90C0C'>*</font></string>
+    <string name="team_permission">Employees Permission <font color='#ff6000'>*</font></string>
     <string name="current_order">Current Order</string>
     <string name="add_customer2">+ Add Customer</string>
     <string name="card">Card</string>
@@ -834,12 +834,12 @@
     <string name="_xxxx_xxxx">XXXX-XXXX</string>
     <string name="enter_card_number_here">Enter Card Number Here</string>
     <string name="charge">Charge</string>
-    <string name="add_tip_">Add Tip(%)<font color='#E90C0C'>*</font></string>
+    <string name="add_tip_">Add Tip(%)<font color='#ff6000'>*</font></string>
     <string name="primary_table">Primary Table</string>
     <string name="from_table">From Table</string>
     <string name="secondary_table">Secondary Table</string>
     <string name="to_table">To Table</string>
-    <string name="note_title_">Note Title<font color='#E90C0C'>*</font></string>
+    <string name="note_title_">Note Title<font color='#ff6000'>*</font></string>
     <string name="add_order">Add Order</string>
     <string name="hide">Hide</string>
     <string name="add_order_discount">Add Order Discount</string>
@@ -849,12 +849,12 @@
     <string name="enable_service_charge_for_take_out_amp_open_order"><![CDATA[Enable Service Charge for Take Out & Open Order]]></string>
     <string name="enable_service_charge_for_dine_in">Enable Service Charge for Dine In</string>
     <string name="business_website">Business Website</string>
-    <string name="business_address">Business Address<font color='#E90C0C'>*</font></string>
-    <string name="business_name_">Business Name<font color='#E90C0C'>*</font></string>
-    <string name="business_phone_number">Business Phone Number<font color='#E90C0C'>*</font></string>
-    <string name="time_zone">Time Zone<font color='#E90C0C'>*</font></string>
-    <string name="min_guest">Min Guest<font color='#E90C0C'>*</font></string>
-    <string name="max_guest">Max Guest<font color='#E90C0C'>*</font></string>
+    <string name="business_address">Business Address<font color='#ff6000'>*</font></string>
+    <string name="business_name_">Business Name<font color='#ff6000'>*</font></string>
+    <string name="business_phone_number">Business Phone Number<font color='#ff6000'>*</font></string>
+    <string name="time_zone">Time Zone<font color='#ff6000'>*</font></string>
+    <string name="min_guest">Min Guest<font color='#ff6000'>*</font></string>
+    <string name="max_guest">Max Guest<font color='#ff6000'>*</font></string>
     <string name="msg_amount_refund">Please enter amount to Refund</string>
 
     <string name="toast_3">Bluetooth device is unavailable</string>
