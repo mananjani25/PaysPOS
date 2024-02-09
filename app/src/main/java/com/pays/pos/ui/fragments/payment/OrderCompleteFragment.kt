@@ -13,6 +13,7 @@ import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
 import android.os.*
+import android.provider.Settings.Global
 import android.util.Base64
 import android.util.Log
 import android.view.*
@@ -114,10 +115,19 @@ import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.printer.PrinterClass.BLUETOOTH_TIMEOUT
 import com.pays.pos.utils.statusUtils.Status
+import com.starmicronics.stario10.InterfaceType
+import com.starmicronics.stario10.StarConnectionSettings
+import com.starmicronics.stario10.StarPrinter
+import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
+import com.starmicronics.stario10.starxpandcommand.MagnificationParameter
+import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
+import com.starmicronics.stario10.starxpandcommand.StarXpandCommandBuilder
+import com.starmicronics.stario10.starxpandcommand.printer.*
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -195,6 +205,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var paidAmount: Double = 0.0
     private var noCashAdjGlobal: Double = 0.0
     private var pd: Dialog? = null
+
+    /*Star label printer - START*/
+    lateinit var settings: StarConnectionSettings
+    lateinit var printer: StarPrinter
+    /*Star label printer - END*/
 
 
     @Inject
@@ -6060,8 +6075,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     override fun onStop() {
         super.onStop()
-       /* Runtime.getRuntime().gc()
-        System.runFinalization()*/
+        /* Runtime.getRuntime().gc()
+         System.runFinalization()*/
         prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
         if (!isSpilt) {
             removeCustomer()
@@ -9105,6 +9120,197 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 setService2(data, type)
             }
 
+        }
+        else if (data.name.contains("TSP", ignoreCase = true)) {
+            settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
+            printer = StarPrinter(settings, requireContext())
+
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val builder = StarXpandCommandBuilder()
+
+                    var printerBuilder = PrinterBuilder()
+
+                    with(printerBuilder) {
+                        styleInternationalCharacter(InternationalCharacterType.Usa)
+                        styleCharacterSpace(0.0)
+                        styleAlignment(Alignment.Center)
+
+                        add(
+                            PrinterBuilder()
+                                .styleBold(true)
+                                .actionPrintText(
+                                    "OrderId:${receiptModel?.order?.custom_order_id}"
+                                )
+                        )
+
+                        styleAlignment(Alignment.Center)
+
+                        add(
+                            PrinterBuilder()
+                                .styleBold(true)
+                                .actionPrintText(
+                                    if (kitchenSettingModel.showOrderType)
+                                        receiptModel!!.order.orderType
+                                    else ""
+                                )
+                        )
+
+                        actionFeedLine(1)
+
+                        add(
+                            PrinterBuilder()
+                                .actionPrintText(
+                                    "Employee:${receiptModel?.order?.employee?.name}"
+                                )
+                        )
+                        actionFeedLine(1)
+
+                        add(
+                            PrinterBuilder()
+                                .actionPrintText(
+                                    getReceiptFormatDateFromUTCServer(
+                                        requireContext(),
+                                        receiptModel?.order?.createdAt.toString()
+                                    )
+                                )
+                        )
+
+                        actionFeedLine(1)
+
+                        add(
+                            PrinterBuilder()
+                                .styleBold(true)
+                                .actionPrintText(
+                                    "--------------------------------------------"
+                                )
+                        )
+
+                        actionFeedLine(1)
+
+                        add(
+                            PrinterBuilder()
+                                .styleAlignment(Alignment.Left)
+                                .actionPrintText(
+                                    content = addOrdersForStarKitchen(
+                                        receiptModel?.order?.orderItems!!,
+                                        data.printerCategories.toCollection(arrayListOf())
+                                    )
+                                )
+                        )
+
+                        actionFeedLine(1)
+                        if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                        add(
+                            PrinterBuilder()
+                                .styleAlignment(Alignment.Center)
+                                .styleBold(true)
+                                .actionPrintText(
+                                    content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                        "--------------------------------------------\nOrder Note\n "
+                                    } else ""
+                                )
+                        )
+                    }
+                        if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                            add(
+                                PrinterBuilder()
+                                    .styleAlignment(Alignment.Center)
+                                    .actionPrintText(
+                                        content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                            receiptModel?.order?.note.toString()
+                                        } else ""
+                                    )
+                            )
+                        }
+                        actionFeedLine(1)
+                        if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                            add(
+                                PrinterBuilder()
+                                    .styleAlignment(Alignment.Left)
+                                    .styleBold(true)
+                                    .actionPrintText(
+                                        content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                            "Customer Details\n"
+                                        } else ""
+                                    )
+                            )
+                        }
+
+                        if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                            add(
+                                PrinterBuilder()
+                                    .styleAlignment(Alignment.Center)
+                                    .actionPrintText(
+                                        content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                            "--------------------------------------------"
+                                        } else ""
+                                    )
+                            )
+                        }
+                        if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                            add(
+                                PrinterBuilder()
+                                    .styleAlignment(Alignment.Left)
+                                    .actionPrintText(
+                                        content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                            receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName
+                                        } else ""
+                                    )
+                            )
+                        }
+                        if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
+                                0
+                            ) != null
+                        ) {
+                            add(
+                                PrinterBuilder()
+                                    .styleAlignment(Alignment.Left)
+                                    .actionPrintText(
+                                        content = if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
+                                                0
+                                            ) != null
+                                        ) {
+                                            receiptModel?.order?.customer?.phones?.get(
+                                                0
+                                            )?.phoneNumber.toString()
+                                        } else ""
+                                    )
+                            )
+                        }
+                    }
+
+
+                    printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
+
+                    var document = DocumentBuilder()
+                        .addPrinter(printerBuilder)
+                    builder.addDocument(
+                        document
+                    )
+
+                    val commands = builder.getCommands()
+
+                    printer.openAsync().await()
+
+//                val jobSettings = StarSpoolJobSettings(true, 30, "Print from Android")
+
+                    printer.printAsync(commands).await()
+
+                    try {
+                        SunmiPrintHelper.getInstance().openCashBox()
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
+                    }
+
+                    Log.d("Printing", "Success")
+                } catch (e: Exception) {
+                    Log.d("Printing", "Error: ${e}")
+                } finally {
+                    printer.closeAsync().await()
+                }
+            }
+
         } else {
 
             if (isNotPrinted) {
@@ -9179,7 +9385,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         //  mPrinter.startMonitor()
 
-                        CoroutineScope(Dispatchers.Main).launch{
+                        CoroutineScope(Dispatchers.Main).launch {
                             delay(200)
                             generateReceiptForU220(mPrinter, data, type)
                         }
@@ -9393,7 +9599,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             Builder.COLOR_1
         )
 
-        if (data.modalName.equals("TM-L100",ignoreCase = true)){
+        if (data.modalName.equals("TM-L100", ignoreCase = true)) {
 
             var str: String = ""
             for (i in 0 until 30) {
@@ -9401,7 +9607,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
             mPrinter.addText(str)
-        }else{
+        } else {
             addHorizontalKitchenLineForU220(mPrinter)
         }
 
@@ -9463,7 +9669,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.FALSE,
                 Builder.COLOR_1
             )
-            if (data.modalName.equals("TM-L100",ignoreCase = true)){
+            if (data.modalName.equals("TM-L100", ignoreCase = true)) {
 
                 var str: String = ""
                 for (i in 0 until 30) {
@@ -9471,7 +9677,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
                 mPrinter.addText(str)
-            }else{
+            } else {
                 addHorizontalKitchenLineForU220(mPrinter)
             }
             if (receiptModel?.order?.customer != null) {
@@ -9502,7 +9708,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     Builder.FALSE,
                     Builder.COLOR_1
                 )
-                if (data.modalName.equals("TM-L100",ignoreCase = true)){
+                if (data.modalName.equals("TM-L100", ignoreCase = true)) {
 
                     var str: String = ""
                     for (i in 0 until 30) {
@@ -9510,7 +9716,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
 
                     mPrinter.addText(str)
-                }else{
+                } else {
                     addHorizontalKitchenLineForU220(mPrinter)
                 }
                 if (kitchenSettingModel.showCustomerName) {
@@ -12665,13 +12871,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 if (paymentViewModel.extData != null && !paymentViewModel.extData.isNullOrEmpty()) {
 
-                    var applabStartIndex = paymentViewModel.extData.indexOf("<APPLAB>")
-                    var applabEndIndex = paymentViewModel.extData.indexOf("</APPLAB>")
-                    strCardType =
-                        paymentViewModel.extData.substring(
-                            applabStartIndex + "<APPLAB>".length,
-                            applabEndIndex
-                        )
+                    if (paymentViewModel.extData.contains("<APPLAB>")) {
+                        var applabStartIndex = paymentViewModel.extData.indexOf("<APPLAB>")
+                        var applabEndIndex = paymentViewModel.extData.indexOf("</APPLAB>")
+                        strCardType =
+                            paymentViewModel.extData.substring(
+                                applabStartIndex + "<APPLAB>".length,
+                                applabEndIndex
+                            )
+                    } else {
+                        strCardType = "N/A"
+                    }
                 }
 
 
@@ -12799,11 +13009,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 if (woyouService != null) {
-                   try{
-                       woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
-                   }catch (e:Exception){
-                       e.printStackTrace()
-                   }
+                    try {
+                        woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 } else {
                     val aa = ByteArray(5)
 

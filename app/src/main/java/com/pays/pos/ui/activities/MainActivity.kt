@@ -3392,7 +3392,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             if(it.asJsonObject.has("inventory_sync")){
                 val inventory_sync_data = it.asJsonObject.get("inventory_sync")
 
-
                 if (inventory_sync_data.toString() == "true") {
                     val intent2 = Intent()
                     intent2.action = Constants.SYNC_NOTIFICATION
