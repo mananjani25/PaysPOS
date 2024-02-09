@@ -99,6 +99,7 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.collections.set
 import kotlin.math.ceil
 
@@ -135,6 +136,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     var order_note = ""
     var cartModel: CartModel? = null
     var currentCartItems: ArrayList<TbCartItem> = arrayListOf()
+    var duplicateCurrentCartItem : ArrayList<TbCartItem> = arrayListOf()
+
     var latestUpdatedCartItem = 0
     var assignCustomer: TbCustomer? = null
     var orderItemDiscount = 0.0
@@ -168,6 +171,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     var fromAllOrderFragment = false
     var fromAllOrderFragmentUpdate = false
     var fromSaveOrderToAllOrders = false
+
+    //order completed Home button clicked
+    val orderCompleted = MutableLiveData<Boolean>()
+    val orderCompletedCount = MutableLiveData(0)
 
     /**
      * Issue related to BIS-435
