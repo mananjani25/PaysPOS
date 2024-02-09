@@ -9207,7 +9207,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 .styleBold(true)
                                 .actionPrintText(
                                     content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                        "--------------------------------------------\nOrder Note\n "
+                                        "--------------------------------------------\nOrder Note"
                                     } else ""
                                 )
                         )
@@ -9271,9 +9271,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 0
                                             ) != null
                                         ) {
-                                            receiptModel?.order?.customer?.phones?.get(
-                                                0
-                                            )?.phoneNumber.toString()
+                                            MethodUtils.formatPhoneNumber(
+                                                receiptModel?.order?.customer?.phones?.get(
+                                                    0
+                                                )?.phoneNumber.toString()
+                                            )
                                         } else ""
                                     )
                             )
