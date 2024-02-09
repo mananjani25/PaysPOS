@@ -3278,7 +3278,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     }
                 }
             }
-            if (it.asJsonObject.has(INVENTORY_SYNC)) {
+            if (it.asJsonObject.has("INVENTORY_SYNC")) {
                 val inventory_sync_data = it.asJsonObject.get(Constants.INVENTORY_SYNC)
 
                 if (inventory_sync_data.toString() == "true") {

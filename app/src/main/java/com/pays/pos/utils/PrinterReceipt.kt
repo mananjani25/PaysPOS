@@ -126,14 +126,14 @@ fun addPaymentDetailsHeaderEODP(builder: Printer): Printer {
 fun addItemWiseSalesHeader() {
 
     val header = "Item Name" + repeat(" ", 18) + "Quantity" + repeat(" ", 7) + "Amount"
-   PrintSunmiUtils.orderTime(header)
+    PrintSunmiUtils.orderTime(header)
 
 }
 
 fun addItemWiseSalesHeaderSunmiInner() {
 
     val header = "Item Name" + repeat(" ", 18) + "Quantity" + repeat(" ", 7) + "Amount"
-    Log.e("addItemWiseSalesHeader","$header")
+    Log.e("addItemWiseSalesHeader", "$header")
     PrintSunmiUtils.normalText(header)
 
 }
@@ -177,14 +177,14 @@ fun addPaymentDetailsThreeData(builder: Builder, keyValue: java.util.ArrayList<K
         if (it.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
             refund = if (it.value?.isNotEmpty() == true) {
                 it.showData()
-            }else{
+            } else {
                 "$0.00"
             }
         } else {
             title = it.key.toString()
             amount = if (it.value?.isNotEmpty() == true) {
                 it.showData()
-            }else{
+            } else {
                 "$0.00"
             }
         }
@@ -273,7 +273,7 @@ fun addPaymentDetailsThreeData(keyValue: java.util.ArrayList<KeyValue>) {
             title = it.key.toString()
             amount = if (it.value?.isNotEmpty() == true) {
                 it.showData()
-            }else{
+            } else {
                 "$0.00"
             }
         }
@@ -307,8 +307,8 @@ fun addPaymentDetailsThreeDataInner(keyValue: java.util.ArrayList<KeyValue>) {
         } else {
             title = it.key.toString()
             amount = if (it.value?.isNotEmpty() == true) {
-               it.showData()
-            }else{
+                it.showData()
+            } else {
                 "$0.00"
             }
         }
@@ -438,7 +438,7 @@ fun addPaymentDetailsTwoData(builder: Builder, keyValue: KeyValue): Builder {
     builder.addText(
         padLine(
             keyValue.key,
-           keyValue.showData(),
+            keyValue.showData(),
             48
         )
     )
@@ -911,7 +911,7 @@ fun addCreditCardBreakDownData(
         28 - creditCardBreakdown.key.length
     ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
     val lastPart = 48 - pOne.length
-    val amount =creditCardBreakdown.showData()
+    val amount = creditCardBreakdown.showData()
     var spaceLast = 0
     if (lastPart > 1 && amount.length < lastPart) {
         spaceLast = lastPart - amount.length
@@ -1074,7 +1074,7 @@ fun addItemWiseSales(it: EodReportResponse.Data.ItemWiseSalesData) {
 
     itemName = it.itemName
     quantity = it.quantity
-    amount =  MethodUtils.roundOffAmount(it.amount)
+    amount = MethodUtils.roundOffAmount(it.amount)
 
     var fPart = itemName + repeat(" ", 27 - itemName.length) + quantity
     var spaceLastPart = 48 - fPart.length
@@ -1098,7 +1098,7 @@ fun addItemWiseSalesSunmiInnerPrinter(it: EodReportResponse.Data.ItemWiseSalesDa
 
     itemName = it.itemName
     quantity = it.quantity
-    amount =  MethodUtils.roundOffAmount(it.amount)
+    amount = MethodUtils.roundOffAmount(it.amount)
 
     var fPart = itemName + repeat(" ", 27 - itemName.length) + quantity
     var spaceLastPart = 48 - fPart.length
@@ -1108,7 +1108,7 @@ fun addItemWiseSalesSunmiInnerPrinter(it: EodReportResponse.Data.ItemWiseSalesDa
     }
 
     fPart += repeat(" ", spaceLast) + amount
-    Log.e("addItemWiseSalesHeader","$fPart")
+    Log.e("addItemWiseSalesHeader", "$fPart")
     PrintSunmiUtils.normalText(fPart)
 
 }
@@ -1117,15 +1117,15 @@ fun addItemsInEmployeeTipsSummary(data: EmployeeTipSummaryResponse.Data) {
 
     var items = ""
     var emName = data.employee_name
-    if (data.employee_name.length >= 13){
-        emName = data.employee_name.substring(0,11).plus("...")
+    if (data.employee_name.length >= 13) {
+        emName = data.employee_name.substring(0, 11).plus("...")
     }
     items += repeat(" ", 0 - data.employee_name.length) + emName
     items += repeat(" ", 17 - items.length) + MethodUtils.roundOffAmount(data.total_cash_tips)
     items += repeat(" ", 28 - items.length) + MethodUtils.roundOffAmount(data.total_card_tips)
     items += repeat(" ", 39 - items.length) + MethodUtils.roundOffAmount(data.total_tips)
 
-    Log.e("addItemsInEmployeeTip","$items")
+    Log.e("addItemsInEmployeeTip", "$items")
     PrintSunmiUtils.orderTime(items)
 
 }
@@ -1134,15 +1134,15 @@ fun addItemsInEmployeeTipsSummaryInnerPrinter(data: EmployeeTipSummaryResponse.D
 
     var items = ""
     var emName = data.employee_name
-    if (data.employee_name.length >= 13){
-        emName = data.employee_name.substring(0,11).plus("...")
+    if (data.employee_name.length >= 13) {
+        emName = data.employee_name.substring(0, 11).plus("...")
     }
     items += repeat(" ", 0 - data.employee_name.length) + emName
     items += repeat(" ", 17 - items.length) + MethodUtils.roundOffAmount(data.total_cash_tips)
     items += repeat(" ", 28 - items.length) + MethodUtils.roundOffAmount(data.total_card_tips)
     items += repeat(" ", 39 - items.length) + MethodUtils.roundOffAmount(data.total_tips)
 
-    Log.e("addItemsInEmployeeTip","$items")
+    Log.e("addItemsInEmployeeTip", "$items")
     PrintSunmiUtils.normalText(items)
 
 }
@@ -1156,7 +1156,7 @@ fun itemWiseSalesM30Print(it: EodReportResponse.Data.ItemWiseSalesData, builder:
 
     itemName = it.itemName
     quantity = it.quantity
-    amount =  MethodUtils.roundOffAmount(it.amount)
+    amount = MethodUtils.roundOffAmount(it.amount)
 
     var fPart = itemName + repeat(" ", 27 - itemName.length) + quantity
     var spaceLastPart = 48 - fPart.length
@@ -1175,16 +1175,16 @@ fun addItemsInEmployeeTipsSummaryM30(data: EmployeeTipSummaryResponse.Data, buil
 
     var items = ""
     var emName = data.employee_name
-    if (data.employee_name.length >= 13){
-        emName = data.employee_name.substring(0,11).plus("...")
+    if (data.employee_name.length >= 13) {
+        emName = data.employee_name.substring(0, 11).plus("...")
     }
     items += repeat(" ", 0 - data.employee_name.length) + emName
     items += repeat(" ", 17 - items.length) + MethodUtils.roundOffAmount(data.total_cash_tips)
     items += repeat(" ", 28 - items.length) + MethodUtils.roundOffAmount(data.total_card_tips)
     items += repeat(" ", 39 - items.length) + MethodUtils.roundOffAmount(data.total_tips)
 
-    Log.e("addItemsInEmployeeTip","$items")
-  //  PrintSunmiUtils.orderTime(items)
+    Log.e("addItemsInEmployeeTip", "$items")
+    //  PrintSunmiUtils.orderTime(items)
 
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
@@ -1576,17 +1576,20 @@ fun printGuestByItemForQueue(guestAttributes: List<GuestAttrQueue>, printer: Pri
 
     }
 
-    return  printer
+    return printer
 
 
 }
 
-fun printGuestByItemForSunmiQueue(guestAttributes: List<GuestAttrQueue>, printer: CloudPrinter): CloudPrinter {
+fun printGuestByItemForSunmiQueue(
+    guestAttributes: List<GuestAttrQueue>,
+    printer: CloudPrinter
+): CloudPrinter {
 
     guestAttributes.forEach {
         printer.lineFeed(1)
         addDotLineForSunmiQueue(printer)
-        printer.setCharacterSize(2,2)
+        printer.setCharacterSize(2, 2)
         printer.setBoldMode(true)
 
         printer.printText(it.name)
@@ -1596,8 +1599,8 @@ fun printGuestByItemForSunmiQueue(guestAttributes: List<GuestAttrQueue>, printer
         addDotLineForSunmiQueue(printer)
         it.listOfItems.forEach { obj ->
 
-           // printer.lineFeed(1)
-            printer.setCharacterSize(2,2)
+            // printer.lineFeed(1)
+            printer.setCharacterSize(2, 2)
             printer.setBoldMode(false)
 
             if (obj.timestamp.isNotEmpty()) {
@@ -1613,7 +1616,7 @@ fun printGuestByItemForSunmiQueue(guestAttributes: List<GuestAttrQueue>, printer
                 obj.orderItemModifiers.forEach { mod ->
 
                     //printer.lineFeed(1)
-                    printer.setCharacterSize(2,2)
+                    printer.setCharacterSize(2, 2)
 
 
                     printer.printText(
@@ -1635,28 +1638,28 @@ fun printGuestByItemForSunmiQueue(guestAttributes: List<GuestAttrQueue>, printer
 
     }
 
-    return  printer
+    return printer
 
 
 }
 
-fun addDotLineForSunmiQueue(cloudPrinter: CloudPrinter):CloudPrinter{
-    cloudPrinter.setCharacterSize(1,1)
+fun addDotLineForSunmiQueue(cloudPrinter: CloudPrinter): CloudPrinter {
+    cloudPrinter.setCharacterSize(1, 1)
     cloudPrinter.setBoldMode(true)
-    var str:String=""
-    for (i in 0 until 48){
-        str+= "-"
+    var str: String = ""
+    for (i in 0 until 48) {
+        str += "-"
     }
     cloudPrinter.printText(str)
     return cloudPrinter
 }
 
-fun addDoubleDotLineForSunmiQueue(cloudPrinter: CloudPrinter):CloudPrinter{
-    cloudPrinter.setCharacterSize(2,1)
+fun addDoubleDotLineForSunmiQueue(cloudPrinter: CloudPrinter): CloudPrinter {
+    cloudPrinter.setCharacterSize(2, 1)
     cloudPrinter.setBoldMode(true)
-    var str:String=""
-    for (i in 0 until 48){
-        str+= "-"
+    var str: String = ""
+    for (i in 0 until 48) {
+        str += "-"
     }
     cloudPrinter.printText(str)
     return cloudPrinter
@@ -2054,7 +2057,7 @@ fun addOrdersForKitchenDineIn(
     listItemWithGuest: HashMap<String, ArrayList<TbCartItem>> = hashMapOf()
 ): Builder {
 
-    listItemWithGuest.forEach{
+    listItemWithGuest.forEach {
 
         builder.addTextLineSpace(30)
         builder.addFeedUnit(30)
@@ -2775,7 +2778,6 @@ fun checkItemsforTransactionPrinter(
 }
 
 
-
 fun checkItemsforPrinter(
     list: List<CreateOrderResponse.Data.Order.OrderItem>,
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null
@@ -2900,6 +2902,110 @@ fun addOrdersForKitchen(
 
     return builder
 }
+
+
+fun addOrdersForStarKitchen(
+    list: List<CreateOrderResponse.Data.Order.OrderItem>,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null
+): String {
+
+    var items: String = ""
+    if (list.isNullOrEmpty()){
+        return items
+    }
+    for (i in 0 until list.size) {
+        printerCat?.forEach {
+            Log.e("PrinterReceipt", "checkPrinterItemN:   ${list.get(i).itemName}")
+            if (it?.id == list[i].categoryId) {
+                if (it.categoryActive && it.printerEnable) {
+
+                    val obj = list.get(i)
+                    items += obj.quantity.toString() + " " + obj.itemName.uppercase()
+                    items += "\n"
+                    if (obj.orderItemModifiers.isNotEmpty()) {
+                        for (j in 0 until obj.orderItemModifiers.size) {
+                            val modifierObj = obj.orderItemModifiers.get(j)
+                            items += " "
+                            items += " " + if (modifierObj.modifierQuantity == 1) {
+                                " "
+                            } else {
+                                "" + modifierObj.modifierQuantity + "x "
+                            } + modifierObj.name.uppercase()
+
+                            items += "\n"
+                        }
+                    }
+
+                    if (obj.note.isNotEmpty()) {
+//                        builder.addTextLineSpace(30)
+                        items += " "
+                        items += "  Note:${obj.note}"
+                        items += "\n"
+                    }
+
+
+                }
+            }
+        }
+
+
+    }
+
+
+    return items
+}
+
+fun addReprintOrdersForStarKitchen(
+    list: List<OnlineOrderResponseModel.Data.OrderItem>,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null
+): String {
+
+    var items: String = ""
+    if (list.isNullOrEmpty()){
+        return items
+    }
+    for (i in 0 until list.size) {
+        printerCat?.forEach {
+            Log.e("PrinterReceipt", "checkPrinterItemN:   ${list.get(i).itemName}")
+            if (it?.id == list[i].categoryId) {
+                if (it.categoryActive && it.printerEnable) {
+
+                    val obj = list.get(i)
+                    items += obj.quantity.toString() + " " + obj.itemName.uppercase()
+                    items += "\n"
+                    if (obj.orderItemModifiers.isNotEmpty()) {
+                        for (j in 0 until obj.orderItemModifiers.size) {
+                            val modifierObj = obj.orderItemModifiers.get(j)
+                            items += " "
+                            items += " " + if (modifierObj.modifier_quantity == 1) {
+                                " "
+                            } else {
+                                "" + modifierObj.modifier_quantity + "x "
+                            } + modifierObj.name.uppercase()
+
+                            items += "\n"
+                        }
+                    }
+
+                    if (obj.note.isNotEmpty()) {
+//                        builder.addTextLineSpace(30)
+                        items += " "
+                        items += "  Note:${obj.note}"
+                        items += "\n"
+                    }
+
+
+                }
+            }
+        }
+
+
+    }
+
+
+    return items
+}
+
 
 fun addOrdersForKitchenU220(
     builder: Printer,
@@ -3219,6 +3325,7 @@ fun addOrdersForKitchenTransitionU220(
     }
     return builder
 }
+
 fun addOrdersForKitchenTransitionInner(
     list: List<GetOrderDetailsResponse.Data.OrderItem>,
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
@@ -3235,7 +3342,13 @@ fun addOrdersForKitchenTransitionInner(
                 if (obj.orderItemModifiers.isNotEmpty()) {
                     for (j in 0 until obj.orderItemModifiers.size) {
                         val modifierObj = obj.orderItemModifiers.get(j)
-                        PrintSunmiUtils.normalTextLarge(if (modifierObj.modifier_quantity == 1){"     " + modifierObj.name.uppercase()} else{"  "+modifierObj.modifier_quantity+"x " + modifierObj.name.uppercase()})
+                        PrintSunmiUtils.normalTextLarge(
+                            if (modifierObj.modifier_quantity == 1) {
+                                "     " + modifierObj.name.uppercase()
+                            } else {
+                                "  " + modifierObj.modifier_quantity + "x " + modifierObj.name.uppercase()
+                            }
+                        )
 
                     }
                 }
@@ -3266,7 +3379,13 @@ fun addOrdersForKitchenInner(
                 if (obj.orderItemModifiers.isNotEmpty()) {
                     for (j in 0 until obj.orderItemModifiers.size) {
                         val modifierObj = obj.orderItemModifiers.get(j)
-                        PrintSunmiUtils.normalTextLarge(if (modifierObj.modifierQuantity == 1){"     " + modifierObj.name.uppercase()} else{"  "+modifierObj.modifierQuantity+"x " + modifierObj.name.uppercase()})
+                        PrintSunmiUtils.normalTextLarge(
+                            if (modifierObj.modifierQuantity == 1) {
+                                "     " + modifierObj.name.uppercase()
+                            } else {
+                                "  " + modifierObj.modifierQuantity + "x " + modifierObj.name.uppercase()
+                            }
+                        )
 
                     }
                 }
@@ -3341,7 +3460,7 @@ fun addOrderItemOpenOrder(
                         } else {
                             "" + modifierObj.modifier_quantity + "x "
                         } + getItemNameToShow(modifierObj.name),
-                        getModifierItemPriceToShow(modifierObj.price,modifierObj.quantity),
+                        getModifierItemPriceToShow(modifierObj.price, modifierObj.quantity),
                         if (font == Constants.LARGE) {
                             23
                         } else {
@@ -3849,7 +3968,7 @@ fun addWholeTbItemToGuest(
     val price = (subTotal) / guestCount
 
     var priceToShow = ""
-    if(price>0.0){
+    if (price > 0.0) {
         priceToShow = MethodUtils.roundOffAmount(price)
     }
 
@@ -3936,7 +4055,7 @@ fun addWholeTbItemToGuest(
     val price = (subTotal) / guestCount
 
     var priceToShow = ""
-    if(price>0.0){
+    if (price > 0.0) {
         priceToShow = MethodUtils.roundOffAmount(price)
     }
 
@@ -4017,7 +4136,7 @@ fun addWholeTbItemToGuestInner(
     val price = (subTotal) / guestCount
 
     var priceToShow = ""
-    if(price>0.0){
+    if (price > 0.0) {
         priceToShow = MethodUtils.roundOffAmount(price)
     }
 
@@ -4031,7 +4150,7 @@ fun addWholeTbItemToGuestInner(
         ).toString()
     )
 
-    if (obj.modifiers.isNotEmpty()){
+    if (obj.modifiers.isNotEmpty()) {
 
         obj.modifiers.forEach {
             PrintSunmiUtils.normalText(
@@ -4326,7 +4445,7 @@ fun addOrderItems(
                         } else {
                             "   " + modifierObj.modifierQuantity.toString() + "x"
                         } + "  " + getItemNameToShow(modifierObj.name),
-                        getModifierItemPriceToShow(modifierObj.price,modifierObj.quantity),
+                        getModifierItemPriceToShow(modifierObj.price, modifierObj.quantity),
                         if (font == Constants.LARGE) {
                             24
                         } else {
@@ -4387,7 +4506,7 @@ fun addOrderItems(
         val obj = list[i]
 
 
-        Log.e(TAG,"quantity:  ${obj.quantity}")
+        Log.e(TAG, "quantity:  ${obj.quantity}")
         val item = padLineCustomerItem(
             obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
             getItemPriceToShow(totalPrice(obj)),
@@ -4408,7 +4527,7 @@ fun addOrderItems(
                     } else {
                         "   " + modifierObj.modifierQuantity.toString() + "x"
                     } + "  " + getItemNameToShow(modifierObj.name),
-                    getModifierItemPriceToShow(modifierObj.price,modifierObj.quantity),
+                    getModifierItemPriceToShow(modifierObj.price, modifierObj.quantity),
                     if (font == Constants.LARGE) {
                         23
                     } else {
@@ -4462,7 +4581,9 @@ fun addOrderItemsInner(
                         "     "
                     } else {
                         "   " + modifierObj.modifierQuantity.toString() + "x"
-                    }*/"   " + modifierObj.modifierQuantity.toString() + "x" + "  " + getItemNameToShow(modifierObj.name),
+                    }*/"   " + modifierObj.modifierQuantity.toString() + "x" + "  " + getItemNameToShow(
+                        modifierObj.name
+                    ),
                     getModifierItemPriceToShow(modifierObj.price, modifierObj.quantity),
                     if (font == Constants.LARGE) {
                         22
@@ -4639,7 +4760,7 @@ fun addOrderItemsTransaction(
 
         }
 
-        if(obj.note.isNotEmpty()) {
+        if (obj.note.isNotEmpty()) {
             PrintSunmiUtils.orderTime("   Note: " + obj.note)
         }
     }
@@ -4667,17 +4788,18 @@ fun addOrderItemsTransactionInner(
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
 
-             /*   var part1 = if (modifierObj.modifier_quantity == 1) {
-                    "       " + getItemNameToShow(modifierObj.name)
-                } else {
+                /*   var part1 = if (modifierObj.modifier_quantity == 1) {
+                       "       " + getItemNameToShow(modifierObj.name)
+                   } else {
+                       "   " + modifierObj.modifier_quantity.toString() + "x" + "  " + getItemNameToShow(
+                           modifierObj.name
+                       )
+                   }*/
+
+                var part1 =
                     "   " + modifierObj.modifier_quantity.toString() + "x" + "  " + getItemNameToShow(
                         modifierObj.name
                     )
-                }*/
-
-                var part1 = "   " + modifierObj.modifier_quantity.toString() + "x" + "  " + getItemNameToShow(
-                    modifierObj.name
-                )
 
 
                 val modifier = padLineCustomerItem(
@@ -4740,7 +4862,7 @@ fun getModifierItemPriceToShow(modifierPrice: Double, modifierQty: Int): String 
 fun getItemNameToShow(itemName: String): String {
 //    Commented below code to hide 15 char limit for item/modifier names to prevent receipt disruption with big names.
     var updatedItemName = itemName
-    if(updatedItemName.length > 15){
+    if (updatedItemName.length > 15) {
         updatedItemName = updatedItemName.substring(0, 15) + "..."
     }
     return updatedItemName

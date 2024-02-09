@@ -581,7 +581,7 @@ object Constants {
             val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
             val date = inputFormat.parse(mdate)
             val formattedDate = outputFormat.format(date)
-            //  val formattedDateFinalDate = outputFormat.parse(formattedDate)
+            //  val forreceiptModel?.order?.createdAt.toString()mattedDateFinalDate = outputFormat.parse(formattedDate)
             return formattedDate
 
         }
