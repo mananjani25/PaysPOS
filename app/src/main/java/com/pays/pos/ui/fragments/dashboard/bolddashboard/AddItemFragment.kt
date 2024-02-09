@@ -587,7 +587,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 //listner.onCancelItemSelected()
 
 
-                viewModel.fragmentNeedToBeUpdated.value = true
+            //   viewModel.fragmentNeedToBeUpdated.value = true
 
             }
         })
@@ -617,14 +617,24 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 if (totalItemswithQuantity == 0) {
                     totalItemswithQuantity = 1
                 }
-                perItemDiscount =
-                    MethodUtils.roundOffAmountDouble(viewModel.cartModel?.discountPrice!! / totalItemswithQuantity)
+
+                try{
+                    perItemDiscount =
+                        MethodUtils.roundOffAmountDouble(viewModel.cartModel?.discountPrice?.div(
+                            totalItemswithQuantity
+                        ))
+                }catch (_:Exception ){
+
+                    Log.e("Tracking Discount","Exception FOUND DISCOUNT")
+
+                    perItemDiscount = 0.0
+                }
             }
 
             LogUtil.logE(TAG, "totalItemswithQuantity  ${totalItemswithQuantity}")
             LogUtil.logE(TAG, "perItemDiscount  ${perItemDiscount}")
             val bundle = Bundle().apply {
-                putDouble("orderDiscount", viewModel.cartModel?.discountPrice!!)
+                viewModel.cartModel?.discountPrice?.let { it1 -> putDouble("orderDiscount", it1) }
                 putBoolean("isFromDetails", true)
                 putParcelable("model", item)
                 putDouble("itemOrderDiscount", perItemDiscount)
@@ -649,6 +659,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             LogUtil.logE("HeaderPosdineInHea", "${viewModel.dineInHeaderPosition}")
             val bundle = Bundle().apply {
                 putParcelable("item", item)
+
                 putParcelableArrayList("cartList", cartModelsList)
                 putInt("headerPos", viewModel.dineInHeaderPosition)
             }
@@ -681,7 +692,18 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 }
             } else {
                 item.guestIndexForDineIn = null
-                viewModel.updateCart(viewModel.currentCartItems, item, DELETE, item.isManualSales)
+
+                if(viewModel.currentCartItems.size == 1)
+                {
+                    viewModel.currentCartItems.clear()
+                    viewModel.duplicateCurrentCartItem.clear()
+                    viewModel.deleteCartItems()
+
+                    createCart()
+
+                    viewModel.fragmentNeedToBeUpdated.value = true
+                }
+                else viewModel.updateCart(viewModel.currentCartItems, item, DELETE, item.isManualSales)
                 //viewModel.newCartLogicModifier(cartModelsList, item, DELETE, item.isManualSales)
 
             }
@@ -691,7 +713,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                 createCart()
 
-                viewModel.fragmentNeedToBeUpdated.value = true
+              //  viewModel.fragmentNeedToBeUpdated.value = true
 
                 Log.e("Tracking Cart","IN"+viewModel.currentCartItems.size.toString())
             }else

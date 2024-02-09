@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import android.os.Debug
 import android.os.Handler
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
@@ -23,6 +24,9 @@ import com.pax.poslink.POSLinkAndroid
 import com.zebra.scannercontrol.DCSScannerInfo
 import com.zebra.scannercontrol.SDKHandler
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 
 @HiltAndroidApp
@@ -31,6 +35,23 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
+
+
+//        CoroutineScope(Dispatchers.IO).launch {
+//
+//            while (true){
+//            val count = Thread.getAllStackTraces().count()
+//
+//                val memoryInfo = Debug.MemoryInfo()
+//                Debug.getMemoryInfo(memoryInfo)
+//
+//                val totalUsedMemoryKB = memoryInfo.totalPrivateDirty
+//                val totalUsedMemoryMB = totalUsedMemoryKB / 1024.0
+//                Log.e("Pays Thread Tracking","MEMORY = $totalUsedMemoryMB Pays Thread count $count")
+//            }
+//        }
+
+
 
         /*Thread.setDefaultUncaughtExceptionHandler { paramThread, paramThrowable ->
 

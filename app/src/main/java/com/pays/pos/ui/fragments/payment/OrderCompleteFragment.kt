@@ -128,6 +128,11 @@ import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.net.HttpURLConnection
@@ -12639,6 +12644,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     ).toString()
                     PrintSunmiUtils.normalText(str8)
 
+
                 }
             }
 
@@ -13593,9 +13599,64 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     private fun clearObserver() {
+
+        //System.gc()
+       // requireActivity().cacheDir.delete()
+      //  restartActivity()
+
+
+        deleteCache(requireContext())
+
+
+        dashboardViewModel.currentCartItems = arrayListOf()
+        dashboardViewModel.duplicateCurrentCartItem = arrayListOf()
+
+        dashboardViewModel.orderCompletedCount.value = dashboardViewModel.orderCompletedCount.value?.plus(1)
+        dashboardViewModel.orderCompleted.value = true
+
         viewLifecycleOwnerLiveData.removeObservers(viewLifecycleOwner)
         onDestroy()
 
+
+
     }
+
+    fun deleteCache(context: Context) {
+        try {
+            val dir: File = context.cacheDir
+            deleteDir(dir)
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun deleteDir(dir: File?): Boolean {
+        return if (dir != null && dir.isDirectory()) {
+            val children: Array<String> = dir.list()
+            for (i in children.indices) {
+                val success = deleteDir(File(dir, children[i]))
+                if (!success) {
+                    return false
+                }
+            }
+            dir.delete()
+        } else if (dir != null && dir.isFile()) {
+            dir.delete()
+        } else {
+            false
+        }
+    }
+    private fun restartActivity() {
+
+        requireActivity().apply {
+        val intent = intent
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+        finish()
+        overridePendingTransition(0, 0)
+        startActivity(intent)
+        overridePendingTransition(0, 0)
+        }
+    }
+
 
 }
