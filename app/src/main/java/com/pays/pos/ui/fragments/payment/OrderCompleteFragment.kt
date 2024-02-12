@@ -6067,7 +6067,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
         }
     }
-
     override fun onStop() {
         super.onStop()
 //         Runtime.getRuntime().gc()
@@ -6076,6 +6075,27 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             removeCustomer()
         }
 
+        var current: String = prefProvider.getValue("GC_CALLING", "0")
+
+        prefProvider.setValue("GC_CALLING", (current.toInt() + 1).toString())
+        Log.d("Thread TrackingGC_CALLING", current)
+
+        if (((prefProvider.getValue("GC_CALLING", "0").toInt()) % 4) == 0) {
+            Log.d("Thread TrackingGC_CALLING_CALLED", current)
+            System.gc()
+            System.runFinalization()
+        }
+
+        if (((prefProvider.getValue("GC_CALLING", "0").toInt()) % 8) == 0) {
+            Log.d("Thread TrackingGC_CALLING_RESTART", current)
+            prefProvider.setValue("GC_CALLING", "0")
+            restartTheApplication()
+        }
+
+    }
+
+
+    private inline fun restartTheApplication(){
         val packageManager: PackageManager = context!!.packageManager
         val intent: Intent = packageManager.getLaunchIntentForPackage(context!!.packageName)!!
         val componentName = intent.component
@@ -6088,7 +6108,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         context!!.startActivity(mainIntent)
         Runtime.getRuntime().exit(0)
     }
-
     private fun moveToDashboard() {
         prefProvider.setValueboolean(Constants.TIP_ADDED, false)
         if (isSpilt) {
