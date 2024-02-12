@@ -779,7 +779,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
          checkSearch()
          observeServiceChargeUpdate()
          observerSyncItemPriceChange()*/
-        System.gc()
+//        System.gc()
         onClick()
 
         viewModel.showClockOutProgress.observe(viewLifecycleOwner) { event ->
