@@ -103,6 +103,7 @@
             android:windowSoftInputMode="stateUnspecified|adjustPan"
             android:windowTranslucentNavigation="true"
             android:windowTranslucentStatus="true"
+            android:theme="@style/noAnimTheme"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

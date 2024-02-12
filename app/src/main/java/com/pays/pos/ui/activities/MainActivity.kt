@@ -293,6 +293,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
     }
     fun addObserver(){
+/*
         dashboardViewModel.orderCompleted.observe(this){
             if(it){
 
@@ -330,6 +331,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 //                }
             }
         }
+*/
     }
 
 

@@ -7,13 +7,13 @@ import android.content.Context
 import android.content.Context.WINDOW_SERVICE
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
 import android.os.*
-import android.provider.Settings.Global
 import android.util.Base64
 import android.util.Log
 import android.view.*
@@ -119,7 +119,6 @@ import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
 import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
-import com.starmicronics.stario10.starxpandcommand.MagnificationParameter
 import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
 import com.starmicronics.stario10.starxpandcommand.StarXpandCommandBuilder
 import com.starmicronics.stario10.starxpandcommand.printer.*
@@ -128,10 +127,6 @@ import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
@@ -6075,12 +6070,23 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     override fun onStop() {
         super.onStop()
-        /* Runtime.getRuntime().gc()
-         System.runFinalization()*/
+//         Runtime.getRuntime().gc()
         prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
         if (!isSpilt) {
             removeCustomer()
         }
+
+        val packageManager: PackageManager = context!!.packageManager
+        val intent: Intent = packageManager.getLaunchIntentForPackage(context!!.packageName)!!
+        val componentName = intent.component
+        val mainIntent = Intent.makeRestartActivityTask(componentName)
+        // Required for API 34 and later
+        // Ref: https://developer.android.com/about/versions/14/behavior-changes-14#safer-intents
+        // Required for API 34 and later
+        // Ref: https://developer.android.com/about/versions/14/behavior-changes-14#safer-intents
+        mainIntent.setPackage(context!!.packageName)
+        context!!.startActivity(mainIntent)
+        Runtime.getRuntime().exit(0)
     }
 
     private fun moveToDashboard() {
