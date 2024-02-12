@@ -1620,7 +1620,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                                     }  checkURL:  ${requestURL}"
                                 )
 
-                                if (reConnectCount >= 10) {
+                                if (reConnectCount >= 1000) {
                                     consumer?.disconnect()
 
                                     reConnectPrinterQueue()
@@ -2149,7 +2149,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                                 modelOrder.dateAndTime =
                                     it.asJsonObject.get("date_and_time").asString
                                 modelOrder.employeeName =
-                                    it.asJsonObject.get("employee_name").asString
+                                    if (it.asJsonObject.has("employee_name") == true){
+                                    /*it.asJsonObject.get("employee_name").asString ?:*/ ""}else {""}
                                 modelOrder.orderNote = it.asJsonObject.get("order_note").asString
                                 modelOrder.isOrderUpdated =
                                     it.asJsonObject.get("is_updated").asBoolean
@@ -2447,7 +2448,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                             }"
                         )
 
-                        if (reConnectCount >= 10) {
+                        if (reConnectCount >= 1000) {
                             consumer?.disconnect()
                             reConnectPrinterQueue()
 
@@ -2495,7 +2496,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                             ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                         }"
                     )
-                    if (reConnectCount >= 10) {
+                    if (reConnectCount >= 1000) {
                         consumer?.disconnect()
 
                         reConnectPrinterQueue()
@@ -2528,7 +2529,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                 )
 
-                if (reConnectCount >= 10) {
+                if (reConnectCount >= 1000) {
                     consumer?.disconnect()
 
                     reConnectPrinterQueue()
@@ -2558,7 +2559,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     ""
                 ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
             )
-            if (reConnectCount >= 10) {
+            if (reConnectCount >= 1000) {
                 consumer?.disconnect()
                 reConnectPrinterQueue()
 
@@ -2707,7 +2708,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                     )
 
-                    if (reConnectCount >= 10) {
+                    if (reConnectCount >= 1000) {
                         consumer?.disconnect()
                         reConnectPrinterQueue()
 
@@ -2740,7 +2741,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         ""
                     ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                 )
-                if (reConnectCount >= 10) {
+                if (reConnectCount >= 1000) {
                     consumer?.disconnect()
                     reConnectPrinterQueue()
 
