@@ -42,6 +42,7 @@ object Constants {
     const val MAX_ITEM_QUANTITY_FOR_MANUAL_SALES = 15
 
     const val SUNMIBRAND = "Sunmi"
+    const val STAR = "Star"
     const val EPSONBRAND = "TM"
 
     const val FILE_PATH = "/storage/emulated/0/Download/"
@@ -580,7 +581,7 @@ object Constants {
             val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
             val date = inputFormat.parse(mdate)
             val formattedDate = outputFormat.format(date)
-            //  val formattedDateFinalDate = outputFormat.parse(formattedDate)
+            //  val forreceiptModel?.order?.createdAt.toString()mattedDateFinalDate = outputFormat.parse(formattedDate)
             return formattedDate
 
         }

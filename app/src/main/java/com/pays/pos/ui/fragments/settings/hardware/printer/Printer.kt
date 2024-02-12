@@ -84,6 +84,12 @@ import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.printer.PrinterClass.SEND_TIMEOUT
 import com.pays.pos.utils.printer.PrinterClass.language
 import com.pays.pos.utils.statusUtils.Status
+import com.starmicronics.stario10.*
+import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
+import com.starmicronics.stario10.starxpandcommand.MagnificationParameter
+import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
+import com.starmicronics.stario10.starxpandcommand.StarXpandCommandBuilder
+import com.starmicronics.stario10.starxpandcommand.printer.*
 import com.stealthcopter.networktools.SubnetDevices
 import com.stealthcopter.networktools.subnet.Device
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
@@ -97,13 +103,11 @@ import com.sunmi.externalprinterlibrary2.exceptions.SearchException
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
 import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import java.lang.Runnable
 import java.net.URLDecoder
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -151,6 +155,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     var mmInputStream: InputStream? = null
     var workerThread: Thread? = null
 
+    private var _manager: StarDeviceDiscoveryManager? = null
 
     private val viewModel by viewModels<PrinterViewModel>()
 
@@ -285,6 +290,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         printersLisFromFinder()
 
+        startStarPrinterDiscovery()
+
         // start thread
 //        future = scheduler!!.schedule(this, 0, TimeUnit.MILLISECONDS)
         /* future = scheduler!!.scheduleWithFixedDelay(
@@ -293,6 +300,61 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
              DISCOVERY_INTERVAL.toLong(),
              TimeUnit.MILLISECONDS
          )*/
+
+    }
+
+    private fun startStarPrinterDiscovery() {
+
+        val interfaceTypes = mutableListOf<InterfaceType>()
+        interfaceTypes += InterfaceType.Lan
+        try {
+            this._manager?.stopDiscovery()
+
+            _manager = StarDeviceDiscoveryManagerFactory.create(
+                interfaceTypes,
+                context!!
+            )
+            _manager?.discoveryTime = 10000
+            _manager?.callback = object : StarDeviceDiscoveryManager.Callback {
+                override fun onPrinterFound(printer: StarPrinter) {
+                    var identifier =
+                        "${printer.connectionSettings.identifier}"
+
+                    Log.d("Discovery", "Found printer: ${printer.connectionSettings.identifier}.")
+
+                   /* model : TSP650II, emulation : StarLine, reserved : {
+                        bluetoothAddress =
+                            null, macAddress = 0011624114E0, specifiedIdentifier = null, usbSerialNumber = null, configGateway = 0.0.0.0, configIPAddress = 0.0.0.0, configPrint = true, configSubnetMask = 0.0.0.0, deviceClass = PRINTER, deviceCommandSet = STAR, deviceManufacture = Star, deviceModel = TSP654 (STR_T-001), deviceStatus = null, dhcp = true, firmwareVersionBoot = V2.0.0, firmwareVersionMain = V5.1.2, gateway = 192.168.0.1, hostName = null, ipAddress = 192.168.0.194, ipAddressProtocol = DHCP, ipVersion = 1, multiSession = false, name = IFBD-HE07/08, nameDetail = null, pldRevision = V1.0.0, productSerialNumber = null, rarp = true, responseVersion = 1.0.1, subnetMask = 255.255.255.0, usedIPAddress = null, usedPort = null
+                    }*/
+                    availableNetworkAdapter.addItem(
+                        PrinterListModel(
+                            printerName = printer.information?.model?.name,
+                            connectionType = WIFI,
+                            deviceModel = DeviceInfo(
+                                DevType.TCP,
+                                identifier,
+                                printer.information?.model?.name,
+                                identifier,
+                                identifier
+                            ),
+                            type = AVAILABLE,
+                            uuid = UUID.randomUUID(),
+                            modelName = printer.information?.model?.name
+
+                        )
+                    )
+                }
+
+                override fun onDiscoveryFinished() {
+                    Log.d("Discovery", "Discovery finished.")
+                }
+            }
+
+            _manager?.startDiscovery()
+        } catch (e: Exception) {
+            Log.d("Discovery", "Error: ${e}")
+        }
+
 
     }
 
@@ -550,7 +612,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
     }
 
-    private fun syncPrinterList(saved: Boolean = false,isProgressShow : Boolean = false) {
+    private fun syncPrinterList(saved: Boolean = false, isProgressShow: Boolean = false) {
 
         allPrinterlist.clear()
         addedCustomerPrinters = false
@@ -763,9 +825,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                 }
                             } else {
                                 if (kitchenData[i].printer_type == Constants.WIFI) {
-                                    if (kitchenData[i].name.equals("TM-L100",ignoreCase = true)){
+                                    if (kitchenData[i].name.equals("TM-L100", ignoreCase = true) || kitchenData[i].name.contains("TSP", ignoreCase = true)) {
                                         addPrinters(kitchenPrintersList, kitchenData, i)
-                                    }else{
+                                    } else {
                                         viewModel.deleteKitchenPrinter(kitchenData[i].id)
                                     }
                                 } else {
@@ -1604,6 +1666,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     ) == true
                 ) {
                     initLabelPrinter(printerListModel)
+                }else if (it?.contains("TSP",ignoreCase = true)==true){
+                    initStarPrinter(printerListModel)
                 }
                 else {
                     Log.e(TAG, "printerListModel  ${Gson().toJson(printerListModel)}")
@@ -1653,11 +1717,63 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     }
 
-    private fun initLabelPrinter(printerListModel: PrinterListModel){
+    private fun initStarPrinter(printerListModel: PrinterListModel) {
+
+        val settings = StarConnectionSettings(InterfaceType.Lan, printerListModel.deviceModel!!.macAddress)
+        val printer = StarPrinter(settings,requireContext())
+
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                // TSP100III series and TSP100IIU+ do not support actionPrintText because these products are graphics-only printers.
+                // Please use the actionPrintImage method to create printing data for these products.
+                // For other available methods, please also refer to "Supported Model" of each method.
+                // https://star-m.jp/products/s_print/sdk/starxpand/manual/ja/android-kotlin-api-reference/stario10-star-xpand-command/printer-builder/action-print-image.html
+                val builder = StarXpandCommandBuilder()
+                builder.addDocument(
+                    DocumentBuilder()
+                        // To open a cash drawer, comment out the following code.
+//                      .addDrawer(
+//                          DrawerBuilder()
+//                              .actionOpen(OpenParameter())
+//                      )
+                        .addPrinter(
+                            PrinterBuilder()
+                                .styleInternationalCharacter(InternationalCharacterType.Usa)
+                                .styleCharacterSpace(0.0)
+                                .actionFeedLine(1)
+                                .styleAlignment(Alignment.Center)
+                                .actionPrintText(
+                                    "Test Print"
+                                )
+                                .actionCut(CutType.Partial)
+                        )
+                )
+                val commands = builder.getCommands()
+                printer.openAsync().await()
+                printer.printAsync(commands).await()
+
+
+                Log.d("Printing", "Success")
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.d("Printing", "Error: ${e.printStackTrace()}")
+            } finally {
+                printer.closeAsync().await()
+            }
+        }
+
+
+    }
+
+    private fun initLabelPrinter(printerListModel: PrinterListModel) {
         var printer: Printer? = null
 
         try {
-            printer = com.epson.epos2.printer.Printer(Printer.TM_L100,Printer.MODEL_JAPANESE,requireContext())
+            printer = com.epson.epos2.printer.Printer(
+                Printer.TM_L100,
+                Printer.MODEL_JAPANESE,
+                requireContext()
+            )
 
             printer!!.setReceiveEventListener(this)
 
@@ -1671,7 +1787,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             try {
                 printer.connect(
-                    "TCP:"+printerListModel.deviceModel?.ipAddress,
+                    "TCP:" + printerListModel.deviceModel?.ipAddress,
                     Printer.PARAM_DEFAULT
                 )
             } catch (e: Epos2Exception) {
@@ -2103,7 +2219,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             printerSettingsAttributes = list,
             printerBrand = if (printerListModel.printerName?.startsWith("Cloud", true) == true) {
                 Constants.SUNMIBRAND
-            } else {
+            }/*else if (printerListModel.printerName?.contains("TSP",ignoreCase = true)==true){
+                STAR
+            }*/ else {
                 EPSONBRAND
             },
             portNo = if (printerListModel.portNo != null && printerListModel.portNo != 0) printerListModel.portNo else 0
@@ -3291,7 +3409,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     override fun updatePrinters() {
-        Log.d("updatePrinters","updatePrinters()")
+        Log.d("updatePrinters", "updatePrinters()")
         viewModel.updatePrinter()
     }
 
@@ -3299,7 +3417,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         syncPrinterList()
     }
 
-    companion object{
+    companion object {
         var updatePrinter: UpdatePrinters? = null
         lateinit var viewModelObject: PrinterViewModel
 

@@ -1143,14 +1143,19 @@
         android:background="#1D1D1F"
         android:visibility="gone">
 
+
+
         <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="190dp"
-            android:layout_height="100dp"
-            android:src="@drawable/snacklogo_new"
+            android:layout_width="290dp"
+            android:layout_height="200dp"
+            android:background="@color/white"
+            android:padding="12dp"
+            android:src="@drawable/pays_logo_transparent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
 
         <TextView
             android:id="@+id/current_time"

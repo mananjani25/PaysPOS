@@ -100,6 +100,15 @@ import com.epson.epsonio.DevType
 import com.epson.epsonio.DeviceInfo
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.starmicronics.stario10.InterfaceType
+import com.starmicronics.stario10.StarConnectionSettings
+import com.starmicronics.stario10.StarPrinter
+import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
+import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
+import com.starmicronics.stario10.starxpandcommand.StarXpandCommandBuilder
+import com.starmicronics.stario10.starxpandcommand.printer.Alignment
+import com.starmicronics.stario10.starxpandcommand.printer.CutType
+import com.starmicronics.stario10.starxpandcommand.printer.InternationalCharacterType
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
@@ -156,6 +165,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private var orderOfflineId: String = ""
     private var paymentOfflineId: String = ""
     private var paymentId: Int? = null
+
+
+    /*Star label printer - START*/
+    lateinit var settings: StarConnectionSettings
+    lateinit var printer: StarPrinter
+    /*Star label printer - END*/
+
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -2128,6 +2144,204 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             setService(data, createOrderResponse.data)
 
+
+        }
+        else if (data.name.contains("TSP", ignoreCase = true)) {
+            settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
+            printer = StarPrinter(settings, requireContext())
+
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val builder = StarXpandCommandBuilder()
+
+                    var printerBuilder = PrinterBuilder()
+
+                    with(printerBuilder) {
+                        styleInternationalCharacter(InternationalCharacterType.Usa)
+                        styleCharacterSpace(0.0)
+                        styleAlignment(Alignment.Center)
+
+                        add(
+                            PrinterBuilder()
+                                .styleBold(true)
+                                .actionPrintText(
+                                    "OrderId:${createOrderResponse.data?.order?.custom_order_id}"
+                                )
+                        )
+
+                        styleAlignment(Alignment.Center)
+
+                        add(
+                            PrinterBuilder()
+                                .styleBold(true)
+                                .actionPrintText(
+                                    if (kitchenSettingModel.showOrderType)
+                                        createOrderResponse.data.order.orderType
+                                    else ""
+                                )
+                        )
+
+                        actionFeedLine(1)
+
+                        add(
+                            PrinterBuilder()
+                                .actionPrintText(
+                                    "Employee:${createOrderResponse.data?.order?.employee?.name}"
+                                )
+                        )
+                        actionFeedLine(1)
+
+                        add(
+                            PrinterBuilder()
+                                .actionPrintText(
+                                    Constants.getReceiptFormatDateFromUTCServer(
+                                        requireContext(),
+                                        createOrderResponse.data?.order?.createdAt.toString()
+                                    )
+                                )
+                        )
+
+                        actionFeedLine(1)
+
+                        add(
+                            PrinterBuilder()
+                                .styleBold(true)
+                                .actionPrintText(
+                                    "--------------------------------------------"
+                                )
+                        )
+
+                        actionFeedLine(1)
+
+                        add(
+                            PrinterBuilder()
+                                .styleAlignment(Alignment.Left)
+                                .actionPrintText(
+                                    content = addOrdersForStarKitchen(
+                                        createOrderResponse.data?.order?.orderItems!!,
+                                        data.printerCategories.toCollection(arrayListOf())
+                                    )
+                                )
+                        )
+
+                        actionFeedLine(1)
+                        if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                            add(
+                                PrinterBuilder()
+                                    .styleAlignment(Alignment.Center)
+                                    .styleBold(true)
+                                    .actionPrintText(
+                                        content = if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                            "--------------------------------------------\nOrder Note\n "
+                                        } else ""
+                                    )
+                            )
+                        }
+                        if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                            add(
+                                PrinterBuilder()
+                                    .styleAlignment(Alignment.Center)
+                                    .actionPrintText(
+                                        content = if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                            createOrderResponse.data?.order?.note.toString()
+                                        } else ""
+                                    )
+                            )
+                        }
+                        actionFeedLine(1)
+                        if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
+                            add(
+                                PrinterBuilder()
+                                    .styleAlignment(Alignment.Left)
+                                    .styleBold(true)
+                                    .actionPrintText(
+                                        content = if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
+                                            "Customer Details\n"
+                                        } else ""
+                                    )
+                            )
+                        }
+
+                        if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
+                            add(
+                                PrinterBuilder()
+                                    .styleAlignment(Alignment.Center)
+                                    .actionPrintText(
+                                        content = if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
+                                            "--------------------------------------------"
+                                        } else ""
+                                    )
+                            )
+                        }
+                        if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
+                            add(
+                                PrinterBuilder()
+                                    .styleAlignment(Alignment.Left)
+                                    .actionPrintText(
+                                        content = if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
+                                            createOrderResponse.data?.order?.customer?.firstName + " " + createOrderResponse.data?.order?.customer?.lastName
+                                        } else ""
+                                    )
+                            )
+                        }
+                        if (kitchenSettingModel.showCustomerPhone && createOrderResponse.data?.order?.customer?.phones?.get(
+                                0
+                            ) != null
+                        ) {
+                            add(
+                                PrinterBuilder()
+                                    .styleAlignment(Alignment.Left)
+                                    .actionPrintText(
+                                        content = if (kitchenSettingModel.showCustomerPhone && createOrderResponse.data?.order?.customer?.phones?.get(
+                                                0
+                                            ) != null
+                                        ) {
+                                            createOrderResponse.data.order?.customer?.phones?.get(
+                                                0
+                                            )?.phoneNumber.toString()
+                                        } else ""
+                                    )
+                            )
+                        }
+                    }
+
+
+                    printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
+
+                    var document = DocumentBuilder()
+                        .addPrinter(printerBuilder)
+                    builder.addDocument(
+                        document
+                    )
+
+                    val commands = builder.getCommands()
+
+                    printer.openAsync().await()
+
+//                val jobSettings = StarSpoolJobSettings(true, 30, "Print from Android")
+
+                    printer.printAsync(commands).await()
+
+                    try {
+                        SunmiPrintHelper.getInstance().openCashBox()
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
+                    }
+
+                    Log.d("Printing", "Success")
+                } catch (e: Exception) {
+
+                    Log.d("Printing", "Error: ${e}")
+                } finally {
+                    printer.closeAsync().await()
+
+                }
+            }
+            viewModel.downloadFinished(false)
+
+            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
+            }
 
         }
         else {
