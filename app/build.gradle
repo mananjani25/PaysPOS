@@ -204,6 +204,7 @@ dependencies {
 
     implementation 'com.github.stealthcopter:AndroidNetworkTools:0.4.5.3'
 
+
     //Phone no Fromating
     implementation 'com.googlecode.libphonenumber:libphonenumber:7.2.2'
     implementation 'com.github.poovamraj:PinEditTextField:1.2.6'
@@ -220,5 +221,7 @@ dependencies {
     implementation ('com.starmicronics:stario10:1.4.0') {
         exclude group: "com.android.support", module: "support-v4"
     }
+
+
 
 }
