@@ -140,9 +140,9 @@ open class PaymentViewModel @Inject constructor(
 
 //        orderRequestModel.print_order = printOrder
         if (cashPaymentType(orderRequestModel)) {
-            _showProgressCash.value = Event(false)
+            _showProgressCash.value = Event(true)
         } else
-            _showProgress.value = Event(false)
+            _showProgress.value = Event(true)
 
         viewModelScope.launch {
 
@@ -272,9 +272,9 @@ open class PaymentViewModel @Inject constructor(
 
                 Status.LOADING -> {
                     if (cashPaymentType(orderRequestModel)) {
-                        _showProgressCash.value = Event(false)
+                        _showProgressCash.value = Event(true)
                     } else
-                        _showProgress.value = Event(false)
+                        _showProgress.value = Event(true)
 
 //                    _showProgress.value = Event(true)
                 }

@@ -168,7 +168,7 @@ class OrderCompleteViewModel @Inject constructor(
                 when (resource.status) {
                     Status.SUCCESS -> {
                         itsFromETP = false
-                        _showProgress.value = Event(false)
+                        _showProgress.value = Event(true)
                         resource.data.let { baseResponse ->
                             if (baseResponse?.status == 200) {
 

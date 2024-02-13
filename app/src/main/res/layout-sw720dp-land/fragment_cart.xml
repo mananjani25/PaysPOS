@@ -632,7 +632,10 @@
                         android:layout_weight="1"
                         android:background="@drawable/border_save_button"
                         android:gravity="center"
-                        android:padding="@dimen/_5sdp"
+                        android:paddingLeft="@dimen/_5sdp"
+                        android:paddingRight="@dimen/_5sdp"
+                        android:paddingTop="@dimen/_10sdp"
+                        android:paddingBottom="@dimen/_10sdp"
                         android:text="@string/save"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_7mdpi" />
@@ -647,8 +650,10 @@
                         android:layout_weight="1"
                         android:background="@color/btnColorDark"
                         android:gravity="center"
-                        android:padding="@dimen/_5sdp"
-                        android:text="Pay $0.00"
+                        android:paddingLeft="@dimen/_5sdp"
+                        android:paddingRight="@dimen/_5sdp"
+                        android:paddingTop="@dimen/_10sdp"
+                        android:paddingBottom="@dimen/_10sdp"                        android:text="Pay $0.00"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_7mdpi" />
 
