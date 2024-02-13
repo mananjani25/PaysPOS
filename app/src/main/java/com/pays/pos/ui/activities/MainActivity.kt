@@ -286,10 +286,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             }
         }
     }
-
-    fun addObserver() {
-        dashboardViewModel.orderCompleted.observe(this) {
-            if (it) {
+    fun addObserver(){
+/*
+        dashboardViewModel.orderCompleted.observe(this){
+            if(it){
 
                 val memoryInfo = Debug.MemoryInfo()
                 Debug.getMemoryInfo(memoryInfo)
@@ -325,6 +325,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 //                }
             }
         }
+*/
     }
 
 

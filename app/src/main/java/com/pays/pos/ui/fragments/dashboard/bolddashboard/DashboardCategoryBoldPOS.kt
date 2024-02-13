@@ -513,7 +513,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         setFragmentResultListener("request_key_discount_order") { _: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbDiscount>("data")
             val value = bundle.getDouble("value")
-            if (result != null && viewModel.totalPrice != 0.0) {
+            if (result != null /*&& viewModel.totalPrice != 0.0*/) {
                 try {
                     orderDiscount = MethodUtils.roundOffAmountDouble(result.percentage)
 
@@ -779,7 +779,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
          checkSearch()
          observeServiceChargeUpdate()
          observerSyncItemPriceChange()*/
-        System.gc()
+//        System.gc()
         onClick()
 
         viewModel.showClockOutProgress.observe(viewLifecycleOwner) { event ->

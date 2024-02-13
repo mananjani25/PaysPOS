@@ -247,7 +247,8 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                 Status.ERROR ->
                     ProgressUtils.dismissProgressDialog()
 
-                Status.LOADING -> ProgressUtils.showProgressDialog(requireActivity())
+//                Status.LOADING -> ProgressUtils.showProgressDialog(requireActivity())
+                Status.LOADING -> ProgressUtils.dismissProgressDialog()
 
             }
         }
