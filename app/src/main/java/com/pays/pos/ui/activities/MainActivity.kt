@@ -2,7 +2,6 @@ package com.pays.pos.ui.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.app.Dialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -22,7 +21,6 @@ import android.os.StrictMode
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
-import android.util.LruCache
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
@@ -32,7 +30,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.core.util.lruCache
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
@@ -46,14 +43,33 @@ import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import com.epson.epos2.ConnectionListener
+import com.epson.epos2.printer.Printer
+import com.epson.epos2.printer.PrinterStatusInfo
+import com.epson.epos2.printer.ReceiveListener
+import com.epson.epos2.printer.StatusChangeListener
+import com.epson.eposprint.Builder
 import com.felhr.usbserial.BuildConfig.APPLICATION_ID
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.reflect.TypeToken
+import com.hosopy.actioncable.ActionCable
+import com.hosopy.actioncable.Channel
+import com.hosopy.actioncable.Consumer
+import com.hosopy.actioncable.Subscription
+import com.pays.pos.MainApplication
 import com.pays.pos.R
+import com.pays.pos.data.model.GuestAttrQueue
+import com.pays.pos.data.model.PrinterJSONElementData
 import com.pays.pos.data.model.PrinterQueueModel
 import com.pays.pos.data.model.TmpPrinterModel
+import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.pays.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.pays.pos.data.model.responseModel.PrinterResponse
 import com.pays.pos.data.remote.Constants
-import com.pays.pos.data.remote.Constants.INVENTORY_SYNC
 import com.pays.pos.data.remote.Constants.IS_MASTER_TERMINAL
 import com.pays.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.pays.pos.data.remote.Constants.LOCATION_ID
@@ -79,28 +95,6 @@ import com.pays.pos.utils.extensions.alert
 import com.pays.pos.utils.statusUtils.Status
 import com.pays.pos.utils.workmanager.ThreadPoolManager
 import com.pays.pos.utils.workmanager.UploadWorker2
-import com.epson.epos2.ConnectionListener
-import com.epson.epos2.printer.Printer
-import com.epson.epos2.printer.PrinterStatusInfo
-import com.epson.epos2.printer.ReceiveListener
-import com.epson.epos2.printer.StatusChangeListener
-import com.epson.eposprint.Builder
-import com.felhr.usbserial.BuildConfig.APPLICATION_ID
-import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.gson.Gson
-import com.google.gson.JsonElement
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
-import com.google.gson.reflect.TypeToken
-import com.hosopy.actioncable.ActionCable
-import com.hosopy.actioncable.Channel
-import com.hosopy.actioncable.Consumer
-import com.hosopy.actioncable.Subscription
-import com.pays.pos.MainApplication
-import com.pays.pos.data.model.GuestAttrQueue
-import com.pays.pos.data.model.PrinterJSONElementData
-import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.sunmi.externalprinterlibrary2.ConnectCallback
 import com.sunmi.externalprinterlibrary2.ResultCallback
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
@@ -268,23 +262,23 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         super.onTrimMemory(level)
 
 
-        when(level){
+        when (level) {
             ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE,
             ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW,
             ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL -> {
                 System.gc()
                 cacheDir.delete()
-                Log.e("Cache Clear","Cleared cache")
+                Log.e("Cache Clear", "Cleared cache")
             }
 
             ComponentCallbacks2.TRIM_MEMORY_BACKGROUND,
             ComponentCallbacks2.TRIM_MEMORY_MODERATE,
             ComponentCallbacks2.TRIM_MEMORY_COMPLETE -> {
                 System.gc()
-               // val lruCache = LruCache(100,10)
+                // val lruCache = LruCache(100,10)
                 cacheDir.delete()
 
-                Log.e("Cache Clear","Cleared cache")
+                Log.e("Cache Clear", "Cleared cache")
             }
 
             ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN -> {
@@ -304,12 +298,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 val totalUsedMemoryMB = totalUsedMemoryKB / 1024.0
 
 
-                if(totalUsedMemoryMB > 600) {
+                if (totalUsedMemoryMB > 600) {
                     dashboardViewModel.orderCompleted.value = false
 
                     Handler().postDelayed({
                         val intent = Intent(applicationContext, MainActivity::class.java)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK    )
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         startActivity(intent)
 
                         Process.killProcess(Process.myPid())
@@ -1277,6 +1271,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        permissionCheck()
+
         Log.e(TAG, "checkConsumerNullorNot  ${consumer}")
         if (consumer != null) {
             consumer = null
@@ -1285,7 +1281,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         queueOrderList = hashMapOf()
 
         addObserver()
-
 
 
 //        throw RuntimeException("Test Crash") // Force a crash
@@ -1531,6 +1526,20 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     }
 
+    private fun permissionCheck() {
+        ActivityCompat.requestPermissions(
+            this@MainActivity,
+            arrayOf(
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.BLUETOOTH_ADMIN,
+                Manifest.permission.BLUETOOTH
+            ), 1515
+        )
+
+
+    }
+
     private fun reConnectPrinterQueue() {
         Log.e(
             TAG,
@@ -1707,7 +1716,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                                     }  checkURL:  ${requestURL}"
                                 )
 
-                                if (reConnectCount >= 10) {
+                                if (reConnectCount >= 1000) {
                                     consumer?.disconnect()
 
                                     reConnectPrinterQueue()
@@ -2236,7 +2245,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                                 modelOrder.dateAndTime =
                                     it.asJsonObject.get("date_and_time").asString
                                 modelOrder.employeeName =
-                                    it.asJsonObject.get("employee_name").asString
+                                    if (it.asJsonObject.has("employee_name") == true) {
+                                        /*it.asJsonObject.get("employee_name").asString ?:*/ ""
+                                    } else {
+                                        ""
+                                    }
                                 modelOrder.orderNote = it.asJsonObject.get("order_note").asString
                                 modelOrder.isOrderUpdated =
                                     it.asJsonObject.get("is_updated").asBoolean
@@ -2534,7 +2547,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                             }"
                         )
 
-                        if (reConnectCount >= 10) {
+                        if (reConnectCount >= 1000) {
                             consumer?.disconnect()
                             reConnectPrinterQueue()
 
@@ -2582,7 +2595,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                             ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                         }"
                     )
-                    if (reConnectCount >= 10) {
+                    if (reConnectCount >= 1000) {
                         consumer?.disconnect()
 
                         reConnectPrinterQueue()
@@ -2615,14 +2628,18 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                 )
 
-                if (reConnectCount >= 10) {
+                if (reConnectCount >= 1000) {
                     consumer?.disconnect()
 
                     reConnectPrinterQueue()
 
                 } else {
                     reConnectCount += 1
-                    subscription?.perform("received", params)
+                    lifecycleScope.launch {
+                        delay(1000)
+                        subscription?.perform("received", params)
+
+                    }
                 }
 
                 isQueueRunning = false
@@ -2645,7 +2662,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     ""
                 ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
             )
-            if (reConnectCount >= 10) {
+            if (reConnectCount >= 1000) {
                 consumer?.disconnect()
                 reConnectPrinterQueue()
 
@@ -2794,7 +2811,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                     )
 
-                    if (reConnectCount >= 10) {
+                    if (reConnectCount >= 1000) {
                         consumer?.disconnect()
                         reConnectPrinterQueue()
 
@@ -2827,7 +2844,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         ""
                     ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                 )
-                if (reConnectCount >= 10) {
+                if (reConnectCount >= 1000) {
                     consumer?.disconnect()
                     reConnectPrinterQueue()
 
@@ -3366,7 +3383,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 }
             }
 
-            if(it.asJsonObject.has("inventory_sync")){
+            if (it.asJsonObject.has("inventory_sync")) {
                 val inventory_sync_data = it.asJsonObject.get("inventory_sync")
 
                 if (inventory_sync_data.toString() == "true") {
