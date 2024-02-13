@@ -9207,7 +9207,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 .styleBold(true)
                                 .actionPrintText(
                                     content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                        "--------------------------------------------\nOrder Note\n "
+                                        "--------------------------------------------\nOrder Note"
                                     } else ""
                                 )
                         )
@@ -9231,7 +9231,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     .styleBold(true)
                                     .actionPrintText(
                                         content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
-                                            "Customer Details\n"
+                                            "\nCustomer Details\n"
                                         } else ""
                                     )
                             )
@@ -9271,9 +9271,27 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 0
                                             ) != null
                                         ) {
-                                            receiptModel?.order?.customer?.phones?.get(
+
+                                            var phoneNumber=receiptModel?.order?.customer?.phones?.get(
                                                 0
                                             )?.phoneNumber.toString()
+                                            if (phoneNumber.length != 10) {
+                                                // Handle invalid input (must be 10 digits)
+                                                "Invalid phone number"
+                                            }
+
+                                            val areaCode = phoneNumber.substring(0, 3)
+                                            val firstPart = phoneNumber.substring(3, 6)
+                                            val secondPart = phoneNumber.substring(6)
+
+                                            "($areaCode)$firstPart-$secondPart"
+
+
+                                           /* MethodUtils.formatPhoneNumber(
+                                                receiptModel?.order?.customer?.phones?.get(
+                                                    0
+                                                )?.phoneNumber.toString()
+                                            )*/
                                         } else ""
                                     )
                             )
