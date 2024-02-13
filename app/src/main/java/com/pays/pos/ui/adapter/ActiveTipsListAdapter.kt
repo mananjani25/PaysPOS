@@ -28,12 +28,12 @@ class ActiveTipsListAdapter() :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: GetTipReponse.Data, position: Int) {
             if (selectedPosition == position) {
-                binding.rootLayout.setBackgroundColor(Color.parseColor("#ED5950"))
+                binding.rootLayout.setBackgroundColor(Color.parseColor("#ff6000"))
                 binding.txtTipTitle.setTextColor(Color.parseColor("#FFFFFF"))
                 binding.txtTipValue.setTextColor(Color.parseColor("#FFFFFF"))
             } else {
                 binding.rootLayout.setBackgroundColor(Color.parseColor("#363636"))
-                binding.txtTipTitle.setTextColor(Color.parseColor("#ED5950"))
+                binding.txtTipTitle.setTextColor(Color.parseColor("#ff6000"))
                 binding.txtTipValue.setTextColor(Color.parseColor("#FFFFFF"))
             }
 

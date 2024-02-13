@@ -1830,22 +1830,22 @@ class CustomDisplay(
 
     private fun shouldHighlightNoTipLayout(isHighlight: Boolean) {
         if (isHighlight) {
-            binding.noTipRootLayout.setBackgroundColor(Color.parseColor("#ED5950"))
+            binding.noTipRootLayout.setBackgroundColor(Color.parseColor("#ff6000"))
             binding.txtNoTipLabel.setTextColor(Color.parseColor("#FFFFFF"))
         } else {
             binding.noTipRootLayout.setBackgroundColor(Color.parseColor("#363636"))
-            binding.txtNoTipLabel.setTextColor(Color.parseColor("#ED5950"))
+            binding.txtNoTipLabel.setTextColor(Color.parseColor("#ff6000"))
         }
 
     }
 
     private fun shouldHighlightOtherTipLayout(isHighlight: Boolean) {
         if (isHighlight) {
-            binding.otherRootLayout.setBackgroundColor(Color.parseColor("#ED5950"))
+            binding.otherRootLayout.setBackgroundColor(Color.parseColor("#ff6000"))
             binding.txtOtherLabel.setTextColor(Color.parseColor("#FFFFFF"))
         } else {
             binding.otherRootLayout.setBackgroundColor(Color.parseColor("#363636"))
-            binding.txtOtherLabel.setTextColor(Color.parseColor("#ED5950"))
+            binding.txtOtherLabel.setTextColor(Color.parseColor("#ff6000"))
             binding.txtOtherLabel.text = "Other"
         }
 
@@ -1929,7 +1929,7 @@ class CustomDisplay(
 
     private fun enableConfirmButton() {
         binding.tvContinue.isEnabled = true
-        binding.tvContinue.setBackgroundColor(Color.parseColor("#ED5950"))
+        binding.tvContinue.setBackgroundColor(Color.parseColor("#ff6000"))
     }
 
     private fun disableConfirmButton() {

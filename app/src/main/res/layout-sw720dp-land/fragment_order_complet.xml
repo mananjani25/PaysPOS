@@ -436,10 +436,10 @@
                                     android:background="@drawable/selector_payment_complete_print"
                                     android:gravity="center"
                                     android:minWidth="@dimen/_80sdp"
-                                    android:padding="@dimen/_12sdp"
+                                    android:padding="@dimen/_15sdp"
                                     android:text="@string/print"
                                     android:textColor="@color/txtColor"
-                                    android:textSize="@dimen/_7mdpi" />
+                                    android:textSize="@dimen/_8mdpi" />
 
                                 <androidx.appcompat.widget.AppCompatTextView
                                     android:id="@+id/llEmail"
@@ -451,10 +451,10 @@
                                     android:background="@drawable/background_square_border_grey"
                                     android:gravity="center"
                                     android:minWidth="@dimen/_80sdp"
-                                    android:padding="@dimen/_12sdp"
+                                    android:padding="@dimen/_15sdp"
                                     android:text="@string/tv_email"
                                     android:textColor="@color/txtColor"
-                                    android:textSize="@dimen/_7mdpi" />
+                                    android:textSize="@dimen/_8mdpi" />
 
                                 <androidx.appcompat.widget.AppCompatTextView
                                     android:id="@+id/llMessage"
@@ -466,11 +466,11 @@
                                     android:background="@drawable/background_square_border_grey"
                                     android:gravity="center"
                                     android:minWidth="@dimen/_80sdp"
-                                    android:paddingVertical="@dimen/_12sdp"
+                                    android:paddingVertical="@dimen/_15sdp"
                                     android:paddingHorizontal="@dimen/_4sdp"
                                     android:text="@string/text_customer_receipt"
                                     android:textColor="@color/txtColor"
-                                    android:textSize="@dimen/_7mdpi" />
+                                    android:textSize="@dimen/_8mdpi" />
 
                                 <androidx.appcompat.widget.AppCompatTextView
                                     android:id="@+id/llNoReceipt"
@@ -482,12 +482,12 @@
                                     android:background="@drawable/background_square_border_grey"
                                     android:gravity="center"
                                     android:minWidth="@dimen/_80sdp"
-                                    android:paddingVertical="@dimen/_12sdp"
+                                    android:paddingVertical="@dimen/_15sdp"
                                     android:paddingHorizontal="@dimen/_4sdp"
                                     android:visibility="visible"
                                     android:text="@string/no_receipt"
                                     android:textColor="@color/txtColor"
-                                    android:textSize="@dimen/_7mdpi" />
+                                    android:textSize="@dimen/_8mdpi" />
 
                             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -515,7 +515,7 @@
                                     android:paddingHorizontal="@dimen/padding_home_button"
                                     android:text="@string/tv_home"
                                     android:textColor="@color/white"
-                                    android:textSize="@dimen/_7mdpi"
+                                    android:textSize="@dimen/_10mdpi"
                                     android:visibility="gone"
                                     android:layout_marginHorizontal="@dimen/_3sdp"/>
 
