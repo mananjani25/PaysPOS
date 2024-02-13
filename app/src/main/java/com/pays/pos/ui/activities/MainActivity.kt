@@ -1586,9 +1586,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
             Log.e(TAG, "checkConsumer ${consumer}")
             if (consumer != null) {
-                consumer?.disconnect()
+
                 lifecycleScope.launch(Dispatchers.Main) {
                     delay(1500)
+                    consumer?.disconnect()
                     connectActionCable()
 
                 }
@@ -1606,7 +1607,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
             if (subscription != null) {
                 subscription?.onConnected {
-//                    isLocalMasterFlag = false
+                    isLocalMasterFlag = false
 
                     prefProvider?.setValueboolean(Constants.WORKER_QUEUE_IN_PROGRESS, true)
 
@@ -1637,7 +1638,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     }
 
                 }?.onRejected {
-//                    isLocalMasterFlag = false
+                    isLocalMasterFlag = false
                     currentOrderIndex = 0
                     currentPrinterIndex = 0
 
@@ -1742,7 +1743,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
                 }?.onDisconnected {
-//                    isLocalMasterFlag = false
+                    isLocalMasterFlag = false
 
                     currentOrderIndex = 0
                     currentPrinterIndex = 0
@@ -1792,7 +1793,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
                 }?.onFailed {
 
-//                    isLocalMasterFlag = false
+                    isLocalMasterFlag = false
                     localCallConnect = false
                     currentOrderIndex = 0
                     currentPrinterIndex = 0
@@ -2501,13 +2502,15 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 for (i in 0 until listOfPrintersData.size) {
 
                     if (listOfPrintersData.get(i).printerQueueModelList.isNotEmpty()) {
+                        isDataGot = true
                         currentPrinterIndex = i
                         currentOrderIndex = 0
-                        isDataGot = true
                         break
                     }
                 }
-                if (isDataGot) {
+
+                Log.e(TAG,"isDataGot: ${isDataGot}")
+                if (isDataGot == true) {
 
                     if (listOfPrintersData.get(0).printerName.contains("CloudPrint_", true)) {
                         Log.e("checkCommitResult", "checkCommitResultForCloud 88")
@@ -2635,7 +2638,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 } else {
                     reConnectCount += 1
                     lifecycleScope.launch {
-                        delay(1000)
+                        delay(3000)
                         subscription?.perform("received", params)
 
                     }
@@ -2667,7 +2670,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
             } else {
                 reConnectCount += 1
-                subscription?.perform("received", params)
+                lifecycleScope.launch {
+                    delay(3000)
+                    subscription?.perform("received", params)
+                }
             }
 
             isQueueRunning = false
@@ -3329,7 +3335,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             }?.onFailed {
                 Log.e(TAG2, "onFailed")
                 if (isInternetAvailable()) {
-                    MainActivity.consumer2?.connect()
+                    try {
+                        MainActivity.consumer2?.connect()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 } else {
                     sendNotification("Please check your Network Connectivity.")
                 }
@@ -3778,7 +3788,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 false
             ) == true && prefProvider?.getValueboolean(
                 IS_MASTER_TERMINAL, false
-            ) == true /*&& consumer == null && isLocalMasterFlag == false */
+            ) == true && isLocalMasterFlag == false /*&& consumer == null && isLocalMasterFlag == false */
         ) {
             isLocalMasterFlag = true
 
