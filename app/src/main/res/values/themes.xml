@@ -174,4 +174,11 @@
         <item name="android:windowIsFloating">false</item>
     </style>
 
+    <style name="noAnimTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowBackground">@color/black</item>
+        <item name="android:colorBackground">@color/black</item>
+    </style>
+
+
 </resources>
