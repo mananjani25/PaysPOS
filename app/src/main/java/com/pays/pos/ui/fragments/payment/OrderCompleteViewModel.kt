@@ -181,6 +181,7 @@ class OrderCompleteViewModel @Inject constructor(
                                 _snackbarText.postValue(Event(resource.message))
                             }
                         }
+                        _showProgress.postValue(Event(false))
                     }
 
                     Status.ERROR -> {
