@@ -115,6 +115,7 @@ import java.util.*
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
+import java.util.function.Consumer
 import javax.inject.Inject
 
 
@@ -322,27 +323,58 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                     Log.d("Discovery", "Found printer: ${printer.connectionSettings.identifier}.")
 
-                   /* model : TSP650II, emulation : StarLine, reserved : {
-                        bluetoothAddress =
-                            null, macAddress = 0011624114E0, specifiedIdentifier = null, usbSerialNumber = null, configGateway = 0.0.0.0, configIPAddress = 0.0.0.0, configPrint = true, configSubnetMask = 0.0.0.0, deviceClass = PRINTER, deviceCommandSet = STAR, deviceManufacture = Star, deviceModel = TSP654 (STR_T-001), deviceStatus = null, dhcp = true, firmwareVersionBoot = V2.0.0, firmwareVersionMain = V5.1.2, gateway = 192.168.0.1, hostName = null, ipAddress = 192.168.0.194, ipAddressProtocol = DHCP, ipVersion = 1, multiSession = false, name = IFBD-HE07/08, nameDetail = null, pldRevision = V1.0.0, productSerialNumber = null, rarp = true, responseVersion = 1.0.1, subnetMask = 255.255.255.0, usedIPAddress = null, usedPort = null
-                    }*/
-                    availableNetworkAdapter.addItem(
-                        PrinterListModel(
-                            printerName = printer.information?.model?.name,
-                            connectionType = WIFI,
-                            deviceModel = DeviceInfo(
-                                DevType.TCP,
-                                identifier,
-                                printer.information?.model?.name,
-                                identifier,
-                                identifier
-                            ),
-                            type = AVAILABLE,
-                            uuid = UUID.randomUUID(),
-                            modelName = printer.information?.model?.name
+                    /* model : TSP650II, emulation : StarLine, reserved : {
+                         bluetoothAddress =
+                             null, macAddress = 0011624114E0, specifiedIdentifier = null, usbSerialNumber = null, configGateway = 0.0.0.0, configIPAddress = 0.0.0.0, configPrint = true, configSubnetMask = 0.0.0.0, deviceClass = PRINTER, deviceCommandSet = STAR, deviceManufacture = Star, deviceModel = TSP654 (STR_T-001), deviceStatus = null, dhcp = true, firmwareVersionBoot = V2.0.0, firmwareVersionMain = V5.1.2, gateway = 192.168.0.1, hostName = null, ipAddress = 192.168.0.194, ipAddressProtocol = DHCP, ipVersion = 1, multiSession = false, name = IFBD-HE07/08, nameDetail = null, pldRevision = V1.0.0, productSerialNumber = null, rarp = true, responseVersion = 1.0.1, subnetMask = 255.255.255.0, usedIPAddress = null, usedPort = null
+                     }*/
 
-                        )
+                    var starPrinterData = PrinterListModel(
+                        printerName = printer.information?.model?.name,
+                        connectionType = WIFI,
+                        deviceModel = DeviceInfo(
+                            DevType.TCP,
+                            identifier,
+                            printer.information?.model?.name,
+                            identifier,
+                            identifier
+                        ),
+                        type = AVAILABLE,
+                        uuid = UUID.randomUUID(),
+                        modelName = printer.information?.model?.name
+
                     )
+                    var found=false
+                    for (it in kitchenAdapter.dataList){
+                        if (it.modelName.equals(printer.information?.model?.name,ignoreCase = true)){
+                            found=true
+                            availableNetworkAdapter.dataList.forEachIndexed{index,it->
+                                if (it.modelName.equals(printer.information?.model?.name,ignoreCase = true)){
+                                    availableNetworkAdapter.dataList.removeAt(index)
+                                    availableNetworkAdapter.notifyItemChanged(index)
+                                }
+                            }
+                            break
+                        }
+                    }
+
+                    if (!found){
+                        var flagFound=false
+                        for (data in availableNetworkAdapter.dataList){
+                            if (data.modelName.equals(starPrinterData.modelName,ignoreCase = true)){
+                                flagFound=true
+                                break
+                            }
+                        }
+
+                        if (!flagFound){
+                            availableNetworkAdapter.addItem(
+                                starPrinterData
+                            )
+                        }
+
+                    }
+
+
                 }
 
                 override fun onDiscoveryFinished() {
@@ -825,7 +857,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                 }
                             } else {
                                 if (kitchenData[i].printer_type == Constants.WIFI) {
-                                    if (kitchenData[i].name.equals("TM-L100", ignoreCase = true) || kitchenData[i].name.contains("TSP", ignoreCase = true)) {
+                                    if (kitchenData[i].name.equals(
+                                            "TM-L100",
+                                            ignoreCase = true
+                                        ) || kitchenData[i].name.contains("TSP", ignoreCase = true)
+                                    ) {
                                         addPrinters(kitchenPrintersList, kitchenData, i)
                                     } else {
                                         viewModel.deleteKitchenPrinter(kitchenData[i].id)
@@ -1613,8 +1649,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         printerListModel.deviceModel?.let { sunmiPrinterInit(it.ipAddress) }
                     }
 
-                }
-                else if (it?.startsWith("Printer", true) == true) {
+                } else if (it?.startsWith("Printer", true) == true) {
                     if (prefProvider?.getValueboolean(
                             IS_MASTER_TERMINAL,
                             false
@@ -1656,20 +1691,17 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                     }
 
-                }
-                else if (it?.startsWith("InnerPrinter", true) == true) {
+                } else if (it?.startsWith("InnerPrinter", true) == true) {
                     sunmiInnerPrinter(printerListModel.deviceModel?.ipAddress)
-                }
-                else if (it?.equals(
+                } else if (it?.equals(
                         "TM-L100",
                         ignoreCase = true
                     ) == true
                 ) {
                     initLabelPrinter(printerListModel)
-                }else if (it?.contains("TSP",ignoreCase = true)==true){
+                } else if (it?.contains("TSP", ignoreCase = true) == true) {
                     initStarPrinter(printerListModel)
-                }
-                else {
+                } else {
                     Log.e(TAG, "printerListModel  ${Gson().toJson(printerListModel)}")
                     if (prefProvider?.getValueboolean(
                             IS_MASTER_TERMINAL,
@@ -1719,8 +1751,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     private fun initStarPrinter(printerListModel: PrinterListModel) {
 
-        val settings = StarConnectionSettings(InterfaceType.Lan, printerListModel.deviceModel!!.macAddress)
-        val printer = StarPrinter(settings,requireContext())
+        val settings =
+            StarConnectionSettings(InterfaceType.Lan, printerListModel.deviceModel!!.macAddress)
+        val printer = StarPrinter(settings, requireContext())
 
         CoroutineScope(Dispatchers.Main).launch {
             try {
