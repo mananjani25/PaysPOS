@@ -30,7 +30,7 @@ import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -210,6 +210,10 @@ open class PaymentViewModel @Inject constructor(
                                 if (onlySave) {
                                     LogUtil.logE("QueueCheck", "OnlySave")
 
+                                  /*  runBlocking {
+                                        getCartModelFromId(viewModel.cartModel!!.cartId)
+                                    }*/
+
                                     _queueStart.value = Event(createOrderResponse)
 
                                 } else {
@@ -281,6 +285,13 @@ open class PaymentViewModel @Inject constructor(
             }
         }
     }
+
+    /*suspend fun getCartModelFromId(cartId: Int) {
+        CoroutineScope(Dispatchers.IO).async {
+            viewModel.cartModel = viewModel.getCartModelFromID(cartId)
+        }.await()
+    }*/
+
 
     fun noUpdatesFound() {
         viewModelScope.launch {

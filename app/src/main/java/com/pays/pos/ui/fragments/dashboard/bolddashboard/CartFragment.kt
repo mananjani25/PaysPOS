@@ -2701,6 +2701,12 @@ class CartFragment(
                             if (!isOrderUpdate)
                                 cartModel?.customer = assignCustomer
 
+                            if (isOrderUpdate){
+                                viewModel.setCartEdited(1,cartModel?.cartId)
+                            }else{
+                                viewModel.setCartEdited(0,cartModel?.cartId)
+                            }
+
                             val formatterdate = SimpleDateFormat("yyyy-MM-dd")
                             val formattertime = SimpleDateFormat("hh:mm a")
                             val date = Date()

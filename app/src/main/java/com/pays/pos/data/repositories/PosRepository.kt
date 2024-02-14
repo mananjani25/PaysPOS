@@ -75,6 +75,7 @@ import com.pays.pos.utils.performGetOperationNew
 import com.pays.pos.utils.statusUtils.Resource
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 
@@ -879,7 +880,7 @@ class PosRepository @Inject constructor(
     }
 
     suspend fun deleteCartItems() {
-      //  appDatabase.cartDao().delete(employee_id)//delete cart model
+        //  appDatabase.cartDao().delete(employee_id)//delete cart model
         appDatabase.cartDao().deleteCartItems()//delete cart items from TbCartItem
     }
 
@@ -1358,9 +1359,9 @@ class PosRepository @Inject constructor(
 
     suspend fun deleteDineInCart() = appDatabase.cartDao().deleteDineInCart()
 
-    suspend fun updateItemQuantity(id:Int,itemQuantity:Int) {
+    suspend fun updateItemQuantity(id: Int, itemQuantity: Int) {
 
-        appDatabase.cartDao().updateItemQuantity(id,itemQuantity)
+        appDatabase.cartDao().updateItemQuantity(id, itemQuantity)
     }
 
     suspend fun timeDetails(terminalId: Int) = apiHelperNew.timeDetails(terminalId)
@@ -1401,6 +1402,17 @@ class PosRepository @Inject constructor(
             return appDatabase.cartDao().removeCustomer(cartId)
         }
 
+    }
+
+    fun setCartEdited(isEdited: Int, cartId: Int) {
+        synchronized(this) {
+            return appDatabase.cartDao().setCartEdited(isEdited, cartId)
+        }
+
+    }
+
+    suspend fun getCartModelFromID(cartId: Int): CartModel {
+        return appDatabase.cartDao().getCartModelFromID(cartId)
     }
 
 

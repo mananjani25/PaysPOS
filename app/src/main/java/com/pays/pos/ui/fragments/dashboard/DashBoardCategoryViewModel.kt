@@ -136,7 +136,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var order_note = ""
     var cartModel: CartModel? = null
     var currentCartItems: ArrayList<TbCartItem> = arrayListOf()
-    var duplicateCurrentCartItem : ArrayList<TbCartItem> = arrayListOf()
+    var duplicateCurrentCartItem: ArrayList<TbCartItem> = arrayListOf()
 
     var latestUpdatedCartItem = 0
     var assignCustomer: TbCustomer? = null
@@ -7485,6 +7485,17 @@ class DashBoardCategoryViewModel @Inject constructor(
             posRepository.removeCustomer(currentCartId!!)
         }
 
+    }
+
+    fun setCartEdited(isEdited: Int, currentCartId: Int?) {
+        CoroutineScope(Dispatchers.IO).launch {
+            posRepository.setCartEdited(isEdited, currentCartId!!)
+        }
+
+    }
+
+    suspend fun getCartModelFromID(cartId: Int): CartModel {
+        return posRepository.getCartModelFromID(cartId)
     }
 
 }
