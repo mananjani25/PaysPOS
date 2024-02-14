@@ -3033,6 +3033,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                                 }
                                                             }
                                                         } else {
+                                                            if (orderItem.orderItemModifiers != arrayItems[index].orderItemModifiers){
+                                                                if (!printOrderItems.contains(
+                                                                        orderItem
+                                                                    )
+                                                                ) {
+                                                                    printOrderItems.add(orderItem)
+                                                                }
+                                                            }
                                                         }
                                                     }
 
