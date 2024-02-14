@@ -1297,7 +1297,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#1D1D1F"
-        android:paddingHorizontal="@dimen/_30sdp"
+        android:paddingHorizontal="@dimen/_5sdp"
         android:visibility="gone">
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -1305,12 +1305,12 @@
             style="@style/CustomFontMediumStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_5sdp"
             android:gravity="center"
             android:padding="@dimen/_5sdp"
             android:text="Add Tip"
             android:textColor="@color/white"
-            android:textSize="@dimen/_12ssp"
+            android:textSize="@dimen/_14ssp"
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -1318,8 +1318,7 @@
             android:id="@+id/signLinearLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="@dimen/_5sdp"
-            android:layout_marginBottom="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_2sdp"
             android:gravity="center_vertical"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -1329,7 +1328,6 @@
                 android:id="@+id/rvActiveTipsList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
                 android:layout_gravity="center"
                 android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -1345,7 +1343,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/otherRootLayout"
                     android:layout_width="0dp"
-                    android:layout_height="@dimen/_25sdp"
+                    android:layout_height="@dimen/_65sdp"
                     android:layout_marginVertical="@dimen/_2sdp"
                     android:layout_marginEnd="@dimen/_5sdp"
                     android:layout_weight="1"
@@ -1358,7 +1356,7 @@
                         android:gravity="center"
                         android:text="Other"
                         android:textColor="@color/btnColor"
-                        android:textSize="@dimen/_8ssp"
+                        android:textSize="@dimen/_14ssp"
                         android:textStyle="bold"
                         android:visibility="visible"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -1369,7 +1367,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/noTipRootLayout"
                     android:layout_width="0dp"
-                    android:layout_height="@dimen/_25sdp"
+                    android:layout_height="@dimen/_65sdp"
                     android:layout_marginVertical="@dimen/_2sdp"
                     android:layout_weight="1"
                     android:background="#363636">
@@ -1381,7 +1379,7 @@
                         android:gravity="center"
                         android:text="No Tip"
                         android:textColor="@color/btnColor"
-                        android:textSize="@dimen/_8ssp"
+                        android:textSize="@dimen/_14ssp"
                         android:textStyle="bold"
                         android:visibility="visible"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -1398,7 +1396,7 @@
                 android:layout_margin="5dp"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:layout_weight="1"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@id/rvActiveTipsList">
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -1475,7 +1473,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#1D1D1F"
-        android:paddingHorizontal="@dimen/_60sdp"
+        android:paddingHorizontal="@dimen/_30sdp"
         android:visibility="gone">
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -1495,9 +1493,9 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/amountLayout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_22sdp"
+            android:layout_height="@dimen/_25sdp"
             android:layout_gravity="center_vertical"
-            android:layout_marginTop="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_5sdp"
             android:background="@drawable/bg_rect_border_light_grey"
             android:padding="@dimen/_5sdp"
             app:layout_constraintTop_toBottomOf="@id/wouldYouLikeToAddTipOtherLabel">
@@ -1514,7 +1512,7 @@
                 android:maxLength="11"
                 android:text="$0.00"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_8sdp"
+                android:textSize="@dimen/_10sdp"
                 tools:ignore="MissingConstraints,TouchTargetSizeCheck"
                 tools:layout_editor_absoluteX="14dp"
                 tools:layout_editor_absoluteY="14dp" />
@@ -1533,14 +1531,14 @@
             android:id="@+id/txtContinue"
             style="@style/CustomFontBold"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_20sdp"
+            android:layout_height="@dimen/_25sdp"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/_5sdp"
             android:background="@color/btnColor"
             android:gravity="center"
             android:text="Continue"
             android:textColor="@color/white"
-            android:textSize="@dimen/_7mdpi"
+            android:textSize="@dimen/_10mdpi"
             app:layout_constraintTop_toBottomOf="@id/incKeypad" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

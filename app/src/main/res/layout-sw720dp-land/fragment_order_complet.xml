@@ -293,7 +293,7 @@
                             android:padding="@dimen/_5sdp"
                             android:text="@string/how_would_the_customer_like_their_receipt"
                             android:textColor="@color/light_gray"
-                            android:textSize="@dimen/_9sdp" />
+                            android:textSize="@dimen/_10sdp" />
 
 
                         <androidx.appcompat.widget.LinearLayoutCompat
@@ -415,12 +415,12 @@
                             android:orientation="vertical">
 
 
-
                             <androidx.appcompat.widget.LinearLayoutCompat
                                 android:id="@+id/llMenus"
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
+                                android:paddingHorizontal="10dp"
                                 android:orientation="horizontal"
                                 app:layout_constraintLeft_toLeftOf="parent"
                                 app:layout_constraintRight_toRightOf="parent"
@@ -439,7 +439,7 @@
                                     android:padding="@dimen/_15sdp"
                                     android:text="@string/print"
                                     android:textColor="@color/txtColor"
-                                    android:textSize="@dimen/_8mdpi" />
+                                    android:textSize="@dimen/_10mdpi" />
 
                                 <androidx.appcompat.widget.AppCompatTextView
                                     android:id="@+id/llEmail"
@@ -454,7 +454,7 @@
                                     android:padding="@dimen/_15sdp"
                                     android:text="@string/tv_email"
                                     android:textColor="@color/txtColor"
-                                    android:textSize="@dimen/_8mdpi" />
+                                    android:textSize="@dimen/_10mdpi" />
 
                                 <androidx.appcompat.widget.AppCompatTextView
                                     android:id="@+id/llMessage"
@@ -466,11 +466,11 @@
                                     android:background="@drawable/background_square_border_grey"
                                     android:gravity="center"
                                     android:minWidth="@dimen/_80sdp"
-                                    android:paddingVertical="@dimen/_15sdp"
                                     android:paddingHorizontal="@dimen/_4sdp"
+                                    android:paddingVertical="@dimen/_15sdp"
                                     android:text="@string/text_customer_receipt"
                                     android:textColor="@color/txtColor"
-                                    android:textSize="@dimen/_8mdpi" />
+                                    android:textSize="@dimen/_10mdpi" />
 
                                 <androidx.appcompat.widget.AppCompatTextView
                                     android:id="@+id/llNoReceipt"
@@ -487,7 +487,7 @@
                                     android:visibility="visible"
                                     android:text="@string/no_receipt"
                                     android:textColor="@color/txtColor"
-                                    android:textSize="@dimen/_8mdpi" />
+                                    android:textSize="@dimen/_10mdpi" />
 
                             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -497,6 +497,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:orientation="horizontal"
+                                android:paddingHorizontal="10dp"
                                 android:visibility="visible"
                                 app:layout_constraintTop_toBottomOf="@+id/llMenus"
                                 app:layout_constraintLeft_toLeftOf="@+id/llMenus"
@@ -506,7 +507,7 @@
                                     android:id="@+id/llHome"
                                     style="@style/CustomFontBold"
                                     android:layout_width="match_parent"
-                                    android:layout_height="@dimen/height_home_button"
+                                    android:layout_height="80dp"
                                     android:layout_marginVertical="@dimen/_3sdp"
                                     android:background="@color/btnColorDark_"
                                     android:gravity="center"

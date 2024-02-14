@@ -19,20 +19,20 @@
             android:id="@+id/tvOne"
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
-            android:layout_height="@dimen/_20sdp"
+            android:layout_height="@dimen/_23sdp"
             android:layout_weight="1"
             android:background="@color/lightGrey"
             android:gravity="center"
             android:padding="@dimen/_5sdp"
             android:text="@string/buttonOne"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6mdpi" />
+            android:textSize="@dimen/_8mdpi" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvTwo"
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
-            android:layout_height="@dimen/_20sdp"
+            android:layout_height="@dimen/_23sdp"
             android:layout_marginHorizontal="@dimen/_3sdp"
             android:layout_weight="1"
             android:background="@color/lightGrey"
@@ -40,20 +40,20 @@
             android:padding="@dimen/_5sdp"
             android:text="@string/buttonTwo"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6mdpi" />
+            android:textSize="@dimen/_8mdpi" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvThree"
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
-            android:layout_height="@dimen/_20sdp"
+            android:layout_height="@dimen/_23sdp"
             android:layout_weight="1"
             android:background="@color/lightGrey"
             android:gravity="center"
             android:padding="@dimen/_5sdp"
             android:text="@string/buttonThree"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6mdpi" />
+            android:textSize="@dimen/_8mdpi" />
 
     </LinearLayout>
 
@@ -70,20 +70,20 @@
             android:id="@+id/tvFour"
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
-            android:layout_height="@dimen/_20sdp"
+            android:layout_height="@dimen/_23sdp"
             android:layout_weight="1"
             android:background="@color/lightGrey"
             android:gravity="center"
             android:padding="@dimen/_5sdp"
             android:text="@string/buttonFour"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6mdpi" />
+            android:textSize="@dimen/_8mdpi" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvFive"
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
-            android:layout_height="@dimen/_20sdp"
+            android:layout_height="@dimen/_23sdp"
             android:layout_marginHorizontal="@dimen/_3sdp"
             android:layout_weight="1"
             android:background="@color/lightGrey"
@@ -91,20 +91,20 @@
             android:padding="@dimen/_5sdp"
             android:text="@string/buttonFive"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6mdpi" />
+            android:textSize="@dimen/_8mdpi" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvSix"
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
-            android:layout_height="@dimen/_20sdp"
+            android:layout_height="@dimen/_23sdp"
             android:layout_weight="1"
             android:background="@color/lightGrey"
             android:gravity="center"
             android:padding="@dimen/_5sdp"
             android:text="@string/buttonSix"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6mdpi" />
+            android:textSize="@dimen/_8mdpi" />
 
     </LinearLayout>
 
@@ -120,20 +120,20 @@
             android:id="@+id/tvSeven"
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
-            android:layout_height="@dimen/_20sdp"
+            android:layout_height="@dimen/_23sdp"
             android:layout_weight="1"
             android:background="@color/lightGrey"
             android:gravity="center"
             android:padding="@dimen/_5sdp"
             android:text="@string/buttonSeven"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6mdpi" />
+            android:textSize="@dimen/_8mdpi" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvEight"
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
-            android:layout_height="@dimen/_20sdp"
+            android:layout_height="@dimen/_23sdp"
             android:layout_marginHorizontal="@dimen/_3sdp"
             android:layout_weight="1"
             android:background="@color/lightGrey"
@@ -141,20 +141,20 @@
             android:padding="@dimen/_5sdp"
             android:text="@string/buttonEight"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6mdpi" />
+            android:textSize="@dimen/_8mdpi" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvNine"
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
-            android:layout_height="@dimen/_20sdp"
+            android:layout_height="@dimen/_23sdp"
             android:layout_weight="1"
             android:background="@color/lightGrey"
             android:gravity="center"
             android:padding="@dimen/_5sdp"
             android:text="@string/buttonNine"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6mdpi" />
+            android:textSize="@dimen/_8mdpi" />
 
     </LinearLayout>
 
@@ -170,20 +170,20 @@
             android:id="@+id/txtClearAll"
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
-            android:layout_height="@dimen/_20sdp"
+            android:layout_height="@dimen/_23sdp"
             android:layout_weight="1"
             android:background="@color/lightGrey"
             android:gravity="center"
             android:padding="@dimen/_5sdp"
             android:text="@string/clear"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6mdpi" />
+            android:textSize="@dimen/_8mdpi" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvZero"
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
-            android:layout_height="@dimen/_20sdp"
+            android:layout_height="@dimen/_23sdp"
             android:layout_marginHorizontal="@dimen/_3sdp"
             android:layout_weight="1"
             android:background="@color/lightGrey"
@@ -191,13 +191,13 @@
             android:padding="@dimen/_5sdp"
             android:text="0"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6mdpi" />
+            android:textSize="@dimen/_8mdpi" />
 
         <ImageView
             android:id="@+id/txtClearLast"
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
-            android:layout_height="@dimen/_20sdp"
+            android:layout_height="@dimen/_23sdp"
             android:layout_weight="1"
             android:background="@color/lightGrey"
             android:padding="@dimen/_7sdp"
