@@ -13658,6 +13658,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         dashboardViewModel.orderCompleted.value = true
 
         viewLifecycleOwnerLiveData.removeObservers(viewLifecycleOwner)
+
+
+
+        Runtime.getRuntime().apply {
+            gc()
+            System.gc()
+            freeMemory()
+        }
+
+
+
         onDestroy()
 
 

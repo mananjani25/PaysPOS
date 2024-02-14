@@ -54,11 +54,13 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         key: String,
         value: String
     ) {
+        try{
         openPrefForLogin()
         val prefsPrivateEditor = loginRememberPreferences!!.edit()
         prefsPrivateEditor!!.putString(key, value)
         prefsPrivateEditor.apply()
         loginRememberPreferences = null
+        }catch (_:Exception){}
     }
     fun getValue(
         key: String,
@@ -88,22 +90,26 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         key: String,
         value: String
     ) {
+        try{
         openPref()
         val prefsPrivateEditor = sharedPreferences!!.edit()
         prefsPrivateEditor!!.putString(key, value)
         prefsPrivateEditor.commit()
         sharedPreferences = null
+    }catch (_:Exception){}
     }
 
     fun setValueInt(
         key: String?,
         value: Int
     ) {
+        try{
         openPref()
         val prefsPrivateEditor = sharedPreferences!!.edit()
         prefsPrivateEditor!!.putInt(key, value)
         prefsPrivateEditor.commit()
         sharedPreferences = null
+        }catch (_:Exception){}
     }
 
 
@@ -111,21 +117,24 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         key: String?,
         value: Double
     ) {
+        try{
         openPref()
         val prefsPrivateEditor = sharedPreferences!!.edit()
         prefsPrivateEditor!!.putLong(key, value.toLong())
         prefsPrivateEditor.commit()
         sharedPreferences = null
+        }catch (_:Exception){}
     }
 
     fun getValueDouble(
         key: String,
         defaultValue: Double
     ): Double {
+
         openPref()
-        val result = sharedPreferences!!.getFloat(key, defaultValue.toFloat())
+        val result = sharedPreferences?.getFloat(key, defaultValue.toFloat())
         sharedPreferences = null
-        return result.toDouble()
+        return result?.toDouble()?:defaultValue
     }
 
     fun getValueboolean(
@@ -143,19 +152,23 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         key: String?,
         value: Boolean
     ) {
+        try{
         openPref()
         val prefsPrivateEditor = sharedPreferences!!.edit()
         prefsPrivateEditor!!.putBoolean(key, value)
         prefsPrivateEditor.commit()
         sharedPreferences = null
+        }catch (_:Exception){}
     }
 
 
     fun setClear() {
+        try {
         openPref()
         val prefsPrivateEditor = sharedPreferences!!.edit().clear().commit()
 //        prefsPrivateEditor!!.clear().apply()
         sharedPreferences = null
+        }catch (_:Exception){}
     }
 
     fun saveCustomerData(customer: TbCustomer?) {
