@@ -310,7 +310,7 @@
                             <androidx.appcompat.widget.AppCompatEditText
                                 android:id="@+id/edtEmail"
                                 style="@style/CustomFontSemiBold"
-                                android:layout_width="@dimen/_300sdp"
+                                android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_gravity="center"
                                 android:layout_weight="0.5"
@@ -329,7 +329,7 @@
                             <com.santalu.maskedittext.MaskEditText
                                 android:id="@+id/edtPhoneNo"
                                 style="@style/CustomFontSemiBold"
-                                android:layout_width="@dimen/_300sdp"
+                                android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_gravity="center"
                                 android:layout_weight="0.1"
@@ -350,7 +350,7 @@
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/txtSend"
                                 style="@style/CustomFontSemiBold"
-                                android:layout_width="@dimen/_300sdp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentEnd="true"
                                 android:layout_gravity="center"
