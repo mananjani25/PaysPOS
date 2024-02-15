@@ -13,10 +13,8 @@ import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Debug
 import android.os.Handler
 import android.os.Looper
-import android.os.Process
 import android.os.StrictMode
 import android.provider.MediaStore
 import android.provider.Settings
@@ -286,46 +284,47 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             }
         }
     }
-    fun addObserver(){
-/*
-        dashboardViewModel.orderCompleted.observe(this){
-            if(it){
 
-                val memoryInfo = Debug.MemoryInfo()
-                Debug.getMemoryInfo(memoryInfo)
+    fun addObserver() {
+        /*
+                dashboardViewModel.orderCompleted.observe(this){
+                    if(it){
 
-                val totalUsedMemoryKB = memoryInfo.totalPrivateDirty
-                val totalUsedMemoryMB = totalUsedMemoryKB / 1024.0
+                        val memoryInfo = Debug.MemoryInfo()
+                        Debug.getMemoryInfo(memoryInfo)
+
+                        val totalUsedMemoryKB = memoryInfo.totalPrivateDirty
+                        val totalUsedMemoryMB = totalUsedMemoryKB / 1024.0
 
 
-                if (totalUsedMemoryMB > 600) {
-                    dashboardViewModel.orderCompleted.value = false
+                        if (totalUsedMemoryMB > 600) {
+                            dashboardViewModel.orderCompleted.value = false
 
-                    Handler().postDelayed({
-                        val intent = Intent(applicationContext, MainActivity::class.java)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        startActivity(intent)
+                            Handler().postDelayed({
+                                val intent = Intent(applicationContext, MainActivity::class.java)
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                startActivity(intent)
 
-                        Process.killProcess(Process.myPid())
-                    }, 0)
+                                Process.killProcess(Process.myPid())
+                            }, 0)
+                        }
+
+
+        //                if(dashboardViewModel.orderCompletedCount.value==1) {
+        //                    dashboardViewModel.orderCompleted.value = false
+        //
+        //                    Handler().postDelayed({
+        //                        val intent = Intent(applicationContext, MainActivity::class.java)
+        //                        intent.addFlags(Intent.FLAG_RECEIVER_NO_ABORT)
+        //                        startActivity(intent)
+        //
+        //                        // Delay the process kill to allow time for the new activity to start
+        //                        Process.killProcess(Process.myPid())
+        //                    }, 2000)
+        //                }
+                    }
                 }
-
-
-//                if(dashboardViewModel.orderCompletedCount.value==1) {
-//                    dashboardViewModel.orderCompleted.value = false
-//
-//                    Handler().postDelayed({
-//                        val intent = Intent(applicationContext, MainActivity::class.java)
-//                        intent.addFlags(Intent.FLAG_RECEIVER_NO_ABORT)
-//                        startActivity(intent)
-//
-//                        // Delay the process kill to allow time for the new activity to start
-//                        Process.killProcess(Process.myPid())
-//                    }, 2000)
-//                }
-            }
-        }
-*/
+        */
     }
 
 
@@ -2108,6 +2107,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     }
 
                     override fun onFailed(p0: CloudPrinterStatus?) {
+                        queueInProgressList.get(p0?.name)?.remove(listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.get(currentOrderIndex).id.toString())
+
 
                         if (p0?.name.equals("RUNNING", true) == false) {
                             //isQueueRunning = false
@@ -2510,7 +2511,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     }
                 }
 
-                Log.e(TAG,"isDataGot: ${isDataGot}")
+                Log.e(TAG, "isDataGot: ${isDataGot}")
                 if (isDataGot == true) {
 
                     if (listOfPrintersData.get(0).printerName.contains("CloudPrint_", true)) {
