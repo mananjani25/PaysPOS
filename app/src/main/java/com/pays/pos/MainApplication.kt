@@ -75,6 +75,7 @@ class MainApplication : Application() {
         createNotificationChannel()
         sdkHandler = SDKHandler(this, true)
         init()
+        /*Test comment*/
     }
 
     fun init(){
