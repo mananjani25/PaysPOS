@@ -18,7 +18,7 @@ import com.pays.pos.utils.TAG
 
 class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>() {
 
-    private var list: ArrayList<PrinterListModel> = arrayListOf()
+    public var dataList: ArrayList<PrinterListModel> = arrayListOf()
     private lateinit var listner: PrinterListInterface
 
     inner class MyViewHolder(private val binding: ViewPrinterItemBinding) :
@@ -32,7 +32,7 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
             }
 
 
-            if (list[layoutPosition].connectionType == WIFI) {
+            if (dataList[layoutPosition].connectionType == WIFI) {
                 binding.imgConnectionType.setImageDrawable(
                     binding.root.context.getDrawable(
                         R.drawable.ic_lan
@@ -54,16 +54,16 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
             }
 
             binding.imgPrinter.setOnClickListener {
-                if (list.isNotEmpty()) {
-                    if (list[layoutPosition].isActive) {
-                        listner.onPrinterSelected(list[layoutPosition])
+                if (dataList.isNotEmpty()) {
+                    if (dataList[layoutPosition].isActive) {
+                        listner.onPrinterSelected(dataList[layoutPosition])
                     }
                 }
             }
 
             binding.imgDelete.setOnClickListener {
-                if (list.isNotEmpty()) {
-                    listner.onDeletePrinter(list[layoutPosition])
+                if (dataList.isNotEmpty()) {
+                    listner.onDeletePrinter(dataList[layoutPosition])
                 }
             }
 
@@ -75,18 +75,18 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
                     }*/
 
                     if (buttonView!!.isPressed) {
-                        if (list[layoutPosition].type != AVAILABLE) {
+                        if (dataList[layoutPosition].type != AVAILABLE) {
                             if (isChecked) {
                                 buttonView!!.isChecked = false
-                                listner.onUpdatePrinterStatus(list[layoutPosition], isChecked)
+                                listner.onUpdatePrinterStatus(dataList[layoutPosition], isChecked)
                             } else {
                                 buttonView!!.isChecked = true
-                                listner.onUpdatePrinterStatus(list[layoutPosition], isChecked)
+                                listner.onUpdatePrinterStatus(dataList[layoutPosition], isChecked)
                             }
-                        } else if (isChecked && !(list.get(layoutPosition).isActive)) {
+                        } else if (isChecked && !(dataList.get(layoutPosition).isActive)) {
                             buttonView!!.isChecked = false
-                            listner.onPrinterActive(list.get(layoutPosition), layoutPosition)
-                            /*list.removeAt(layoutPosition)
+                            listner.onPrinterActive(dataList.get(layoutPosition), layoutPosition)
+                            /*dataList.removeAt(layoutPosition)
                         notifyDataSetChanged()*/
                         }
 
@@ -97,8 +97,8 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
 
             binding.imgEdit.setOnClickListener {
                 try {
-                    if (list[layoutPosition].type != AVAILABLE) {
-                        listner.onEditSelected(list[layoutPosition])
+                    if (dataList[layoutPosition].type != AVAILABLE) {
+                        listner.onEditSelected(dataList[layoutPosition])
                     }
                 } catch (e: Exception) {
                     Log.d("layoutPosition", "Error : ${e.message}")
@@ -106,7 +106,7 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
 
             }
 
-            if (list[layoutPosition].type == AVAILABLE) {
+            if (dataList[layoutPosition].type == AVAILABLE) {
                 binding.linearOption.visibility = View.GONE
             } else {
                 binding.linearOption.visibility = View.VISIBLE
@@ -134,22 +134,22 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
 
     override fun onBindViewHolder(holder: PrinterListAdapter.MyViewHolder, position: Int) {
         Log.e("REC_CRASH", position.toString())
-        holder.bind(list?.get(position))
+        holder.bind(dataList?.get(position))
     }
 
     override fun getItemCount(): Int {
 
-        return list.size
+        return dataList.size
     }
 
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setList(list: ArrayList<PrinterListModel>) {
+    fun setList(dataList: ArrayList<PrinterListModel>) {
 
         var temp = ""
         var newList = arrayListOf<PrinterListModel>()
 
-        list.forEach {
+        dataList.forEach {
 
             if (temp == it.printerName) {
                 //viewModelObject.deletePrinter(it)
@@ -163,28 +163,28 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
 
         }
 
-        this.list.clear()
-        this.list = newList
+        this.dataList.clear()
+        this.dataList = newList
         notifyDataSetChanged()
 
     }
 
 
     fun getList(): List<PrinterListModel> {
-        return list
+        return dataList
     }
 
 
     @SuppressLint("NotifyDataSetChanged")
     fun addItem(model: PrinterListModel) {
-        list.add(model)
-        notifyItemRangeInserted(0, list.size)
+        dataList.add(model)
+        notifyItemRangeInserted(0, dataList.size)
         notifyDataSetChanged()
 
     }
 
-    fun setListner(list: PrinterListInterface) {
-        this.listner = list
+    fun setListner(dataList: PrinterListInterface) {
+        this.listner = dataList
     }
 
     interface PrinterListInterface {
@@ -198,26 +198,26 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
 
     @SuppressLint("NotifyDataSetChanged")
     fun clearList() {
-        val size = list.size
-        this.list.clear()
-        list = arrayListOf()
+        val size = dataList.size
+        this.dataList.clear()
+        dataList = arrayListOf()
         notifyItemRangeRemoved(0, size)
         notifyDataSetChanged()
     }
 
     fun removeItemAt(pos: Int) {
-        list.removeAt(pos)
-        notifyItemRangeRemoved(pos, list.size)
+        dataList.removeAt(pos)
+        notifyItemRangeRemoved(pos, dataList.size)
     }
 
     fun removeItem(item: PrinterListModel) {
-        list.remove(item)
+        dataList.remove(item)
         notifyDataSetChanged()
 
     }
 
     fun addAll(tempAvailableList: java.util.ArrayList<PrinterListModel>) {
-        list.addAll(tempAvailableList)
+        dataList.addAll(tempAvailableList)
         notifyDataSetChanged()
     }
 }

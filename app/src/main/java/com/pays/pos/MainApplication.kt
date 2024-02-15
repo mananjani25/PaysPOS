@@ -38,19 +38,19 @@ class MainApplication : Application() {
 
 
 
-        CoroutineScope(Dispatchers.IO).launch {
-
-            while (true){
-            val count = Thread.getAllStackTraces().count()
-
-                val memoryInfo = Debug.MemoryInfo()
-                Debug.getMemoryInfo(memoryInfo)
-
-                val totalUsedMemoryKB = memoryInfo.totalPrivateDirty
-                val totalUsedMemoryMB = totalUsedMemoryKB / 1024.0
-                Log.e("Pays Thread Tracking","MEMORY = $totalUsedMemoryMB Pays Thread count $count")
-            }
-        }
+//        CoroutineScope(Dispatchers.IO).launch {
+//
+//            while (true){
+//            val count = Thread.getAllStackTraces().count()
+//
+//                val memoryInfo = Debug.MemoryInfo()
+//                Debug.getMemoryInfo(memoryInfo)
+//
+//                val totalUsedMemoryKB = memoryInfo.totalPrivateDirty
+//                val totalUsedMemoryMB = totalUsedMemoryKB / 1024.0
+//                Log.e("Pays Thread Tracking","MEMORY = $totalUsedMemoryMB Pays Thread count $count")
+//            }
+//        }
 
 
 

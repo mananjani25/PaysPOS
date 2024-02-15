@@ -245,7 +245,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
 
         printerDialog = PrinterDialog()
-        progressDialog()
+        //progressDialog()
 
         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
             IS_GIFT_CARD_TYPE = true
@@ -6385,7 +6385,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
                 Status.LOADING -> {
-                    ProgressUtils.showProgressDialog(requireActivity())
+//                    ProgressUtils.showProgressDialog(requireActivity())
                 }
 
                 Status.ERROR -> {
@@ -6524,7 +6524,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
                 Status.LOADING -> {
-                    ProgressUtils.showProgressDialog(requireActivity())
+//                    ProgressUtils.showProgressDialog(requireActivity())
 
                 }
 
@@ -6596,7 +6596,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
                 Status.LOADING -> {
-                    ProgressUtils.showProgressDialog(requireActivity())
+//                    ProgressUtils.showProgressDialog(requireActivity())
                 }
             }
         }
@@ -11128,7 +11128,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                   // ProgressUtils.showProgressDialog(requireActivity())
                 } else {
                     ProgressUtils.dismissProgressDialog()
                 }
@@ -13658,6 +13658,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         dashboardViewModel.orderCompleted.value = true
 
         viewLifecycleOwnerLiveData.removeObservers(viewLifecycleOwner)
+
+
+
+        Runtime.getRuntime().apply {
+            gc()
+            System.gc()
+            freeMemory()
+        }
+
+
+
         onDestroy()
 
 

@@ -815,6 +815,7 @@ object Constants {
     const val SURCHARGE_TEXT = "Surcharge"
     const val IS_PAX_PAYMENT_FAILED = "isPaxPaymentFailed"
     const val INVENTORY_SYNC = "INVENTORY_SYNC"
+    const val UPDATED_CARTMODEL_ID = "updated_cartmodel_id"
 
     fun createCloudPrinter(ipAddress: String, portNo: Int): CloudPrinter {
         return CloudPrinterBuilder.buildPrinter(ipAddress, portNo)

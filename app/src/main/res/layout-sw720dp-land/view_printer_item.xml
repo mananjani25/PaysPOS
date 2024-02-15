@@ -13,7 +13,7 @@
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="45dp"
         android:layout_marginVertical="@dimen/_2sdp">
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -82,8 +82,8 @@
                 android:id="@+id/imgEdit"
                 android:layout_width="@dimen/_12sdp"
                 android:layout_height="match_parent"
-                android:adjustViewBounds="true"
                 android:layout_marginEnd="@dimen/_3sdp"
+                android:adjustViewBounds="true"
                 android:src="@drawable/ic_baseline_edit_24"
                 android:tint="@color/txtColor" />
 
@@ -92,9 +92,9 @@
                 android:layout_width="@dimen/_12sdp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_3sdp"
+                android:adjustViewBounds="true"
                 android:src="@drawable/ic_baseline_delete_24"
-                android:tint="@color/txtColor"
-                android:adjustViewBounds="true"/>
+                android:tint="@color/txtColor" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

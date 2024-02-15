@@ -1617,6 +1617,8 @@ class CartFragment(
 //                        }
                     }
 
+//                    System.gc()
+//                    Runtime.getRuntime().gc()
 
                 }
             }
@@ -2552,7 +2554,7 @@ class CartFragment(
 
         binding.tvPayNow.setOnClickListener {
             runBlocking {
-                delay(300)
+              //  delay(300)
                 if (prefProvider.getValue(ORDER_TYPE, "") == OPEN_ORDER) {
 
                     prefProvider.setValueboolean(OPEN_ORDER_DIRECT_PAY, true)
@@ -2700,6 +2702,12 @@ class CartFragment(
                             cartModel?.openOrderType = Constants.PICK_UP
                             if (!isOrderUpdate)
                                 cartModel?.customer = assignCustomer
+
+                            if (isOrderUpdate){
+                                viewModel.setCartEdited(1,cartModel?.cartId)
+                            }else{
+                                viewModel.setCartEdited(0,cartModel?.cartId)
+                            }
 
                             val formatterdate = SimpleDateFormat("yyyy-MM-dd")
                             val formattertime = SimpleDateFormat("hh:mm a")
