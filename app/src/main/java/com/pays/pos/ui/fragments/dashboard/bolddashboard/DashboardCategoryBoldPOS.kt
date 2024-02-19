@@ -2148,7 +2148,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-            setService(data, createOrderResponse.data)
+            setService(data, createOrderResponse.data,cartModel)
 
 
         } else if (data.name.contains("TSP", ignoreCase = true)) {
@@ -2888,7 +2888,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     private fun setService(
         kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
-        data: CreateOrderResponse.Data
+        data: CreateOrderResponse.Data,
+        cartModel: CartModel?
     ) {
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
@@ -2898,14 +2899,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
-                generateKitchenReceiptSunmiInner(kitchenReceiptPrinters, data)
+                generateKitchenReceiptSunmiInner(kitchenReceiptPrinters, data,cartModel)
 
 
             }
 
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             Handler(Looper.getMainLooper()).postDelayed({
-                setService(kitchenReceiptPrinters, data)
+                setService(kitchenReceiptPrinters, data, cartModel)
             }, 2000)
             LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
@@ -3012,11 +3013,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     )
 
 
-                                    /* var printOrderItems:
+                                     var printOrderItems:
                                              ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
-                                         arrayListOf()*/
+                                         arrayListOf()
 
-                                    /*  val serializedObject: String =
+                                      val serializedObject: String =
                                           prefProvider.getValue(OPEN_ORDER_ITEMS, "")
                                       if (serializedObject.isNotEmpty()) {
                                           val gson = Gson()
@@ -3038,7 +3039,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                           }
 
                                           Log.d("ORDERITEMS",Gson().toJson(createOrderResponse.data.order.orderItems))
-                                          *//*createOrderResponse.data.order.orderItems.forEachIndexed { index, orderItem ->
+                                          createOrderResponse.data.order.orderItems.forEachIndexed { index, orderItem ->
                                             Log.d("IT_DATA", orderItem.id.toString())
                                             try {
                                                 if (itemIds.contains(orderItem.id)) {
@@ -3047,30 +3048,30 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                             if (orderItem.quantity > arrayItems[index].quantity) {
                                                                 orderItem.quantity =
                                                                     orderItem.quantity - arrayItems[index].quantity
-                                                              *//**//*  if (!printOrderItems.contains(
+                                                                if (!printOrderItems.contains(
                                                                         orderItem
                                                                     )
                                                                 ) {
                                                                     printOrderItems.add(orderItem)
-                                                                }*//**//*
+                                                                }
                                                             } else if (orderItem.quantity < arrayItems[index].quantity) {
                                                                 orderItem.quantity =
                                                                     arrayItems[index].quantity - orderItem.quantity
-                                                               *//**//* if (!printOrderItems.contains(
+                                                                if (!printOrderItems.contains(
                                                                         orderItem
                                                                     )
                                                                 ) {
                                                                     printOrderItems.add(orderItem)
-                                                                }*//**//*
+                                                                }
                                                             }
                                                         } else {
                                                             if (orderItem.orderItemModifiers != arrayItems[index].orderItemModifiers){
-                                                                *//**//*if (!printOrderItems.contains(
+                                                                if (!printOrderItems.contains(
                                                                         orderItem
                                                                     )
                                                                 ) {
                                                                     printOrderItems.add(orderItem)
-                                                                }*//**//*
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -3084,13 +3085,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                             }
 
 
-                                        }*//*
+                                        }
 
 
-                                        *//*createOrderResponse.data.order.orderItems = arrayListOf()
 
-                                        createOrderResponse.data.order.orderItems = printOrderItems*//*
-                                    }*/
+                                          if (printOrderItems.isEmpty()){
+                                              createOrderResponse.data.order.orderItems = arrayListOf()
+                                              printingData= arrayListOf()
+                                          }
+                                      }
 
                                     prefProvider.setValue(OPEN_ORDER_ITEMS, "")
 
@@ -3119,6 +3122,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                         ) && set.autoPrinting
                                                     ) {
                                                         if (printingData.isNotEmpty()) {
+                                                            var isUpdated=printingData.forEach{
+                                                                if (it.isEdited){
+                                                                    true
+                                                                    addCreditCardBreakDown()
+                                                                }
+                                                            }
+                                                            Log.d("UPDATED",isUpdated.toString())
                                                             if (checkItemsforPrinter(
                                                                     /*createOrderResponse.data.order.orderItems*/
                                                                     printingData
@@ -3221,13 +3231,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     /*if (oldItems.size >= newItems.size) {*/
 
                     for (oldIndex in 0 until oldItems.size){
-                        
+
                         for (indexNew in 0 until newItems.size){
 
-                            if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(oldIndex).orderItemModifiers.size != newItems.get(indexNew).orderItemModifiers.size) {
+                            if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldIndex== indexNew){
+                                if (!oldItems.get(oldIndex).note.equals(newItems.get(indexNew).note)){
+                                    newItems.get(indexNew).isEdited=true
+                                }
+                            }
+
+                            if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(oldIndex).orderItemModifiers.size != newItems.get(indexNew).orderItemModifiers.size && oldIndex==indexNew) {
                                 newItems.get(indexNew).isEdited = true
                             }
-                            else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(oldIndex).orderItemModifiers.size == newItems.get(indexNew).orderItemModifiers.size && oldItems.get(oldIndex).orderItemModifiers.size!=0) {
+                            else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(oldIndex).orderItemModifiers.size == newItems.get(indexNew).orderItemModifiers.size && oldItems.get(oldIndex).orderItemModifiers.size!=0 && oldIndex==indexNew) {
 
                                 if (oldItems.get(oldIndex).orderItemModifiers!=newItems.get(indexNew).orderItemModifiers){
                                     newItems.get(indexNew).isEdited=true
@@ -3242,15 +3258,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                             if (oldItems.get(oldIndex).orderItemModifiers.get(oldModifiersIndex).id == newItems.get(indexNew).orderItemModifiers.get(newModifiersIndex).id) {
                                                 if (oldItems.get(oldIndex).orderItemModifiers.get(oldModifiersIndex).modifierQuantity != newItems.get(indexNew).orderItemModifiers.get(newModifiersIndex).modifierQuantity) {
                                                     newItems.get(indexNew).isEdited = true
+
                                                 } else if (oldItems.get(oldIndex).orderItemModifiers.get(oldModifiersIndex).price != newItems.get(indexNew).orderItemModifiers.get(newModifiersIndex).price) {
                                                     newItems.get(indexNew).isEdited = true
+
                                                 } else if (oldItems.get(oldIndex).orderItemModifiers.get(oldModifiersIndex).totalPrice != newItems.get(indexNew).orderItemModifiers.get(newModifiersIndex).totalPrice) {
                                                     newItems.get(indexNew).isEdited = true
+
                                                 } else if (!oldItems.get(oldIndex).orderItemModifiers.get(oldModifiersIndex).name.equals(
                                                         newItems.get(indexNew).orderItemModifiers.get(newModifiersIndex).name
                                                     )
                                                 ) {
                                                     newItems.get(indexNew).isEdited = true
+
                                                 }
 
                                             }
@@ -3270,12 +3290,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     newItems.get(indexNew).isEdited = true
                                 }
                                 *//* Modifiers are equal, i.e. the quantity of modifiers may change*//*
-                            }*/ else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId) {
-                                if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity) {
+                            }*/ else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId ) {
+                                if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity && oldIndex==indexNew) {
                                     newItems.get(indexNew).isEdited = true
+
                                 }
                                 /* Modifiers are not equal, i.e. edited */
-                                else if (oldItems.get(oldIndex).orderItemModifiers != newItems.get(indexNew).orderItemModifiers) {
+                                else if ((oldItems.get(oldIndex).orderItemModifiers != newItems.get(indexNew).orderItemModifiers) && (oldIndex==indexNew)) {
                                     newItems.get(indexNew).isEdited = true
                                 }
                                 /* Modifiers are equal, i.e. the quantity of modifiers may change*/
@@ -3286,15 +3307,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                             if (oldItems.get(oldIndex).orderItemModifiers.get(oldModifiersIndex).id == newItems.get(indexNew).orderItemModifiers.get(newModifiersIndex).id) {
                                                 if (oldItems.get(oldIndex).orderItemModifiers.get(oldModifiersIndex).modifierQuantity != newItems.get(indexNew).orderItemModifiers.get(newModifiersIndex).modifierQuantity) {
                                                     newItems.get(indexNew).isEdited = true
+
                                                 } else if (oldItems.get(oldIndex).orderItemModifiers.get(oldModifiersIndex).price != newItems.get(indexNew).orderItemModifiers.get(newModifiersIndex).price) {
                                                     newItems.get(indexNew).isEdited = true
+
                                                 } else if (oldItems.get(oldIndex).orderItemModifiers.get(oldModifiersIndex).totalPrice != newItems.get(indexNew).orderItemModifiers.get(newModifiersIndex).totalPrice) {
                                                     newItems.get(indexNew).isEdited = true
+
                                                 } else if (!oldItems.get(oldIndex).orderItemModifiers.get(oldModifiersIndex).name.equals(
                                                         newItems.get(indexNew).orderItemModifiers.get(newModifiersIndex).name
                                                     )
                                                 ) {
                                                     newItems.get(indexNew).isEdited = true
+
                                                 }
 
                                             }
@@ -3304,13 +3329,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 }
 
                             }
-                            
+
                         }
-                        
+
                     }
-                    
-                    
-                        
+
+
+
 
                     /*}
                       else {
@@ -4345,12 +4370,20 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     private fun generateKitchenReceiptSunmiInner(
         kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
-        receiptModel: CreateOrderResponse.Data
+        receiptModel: CreateOrderResponse.Data,
+        cartModel: CartModel?
     ) {
         try {
 
             SunmiPrintHelper.getInstance().initPrinter()
             SunmiPrintHelper.getInstance().lineWrap(4)
+            cartModel?.let {
+                if (it.isEdited){
+                    PrintSunmiUtils.headerText("***** UPDATED *****")
+
+                }
+            }
+
             if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                 PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.custom_order_id)
             } else {

@@ -879,8 +879,12 @@ fun addCreditCardBreakDownEODP(builder: Printer): Printer {
 fun addCreditCardBreakDown() {
 
 
+try{
     PrintSunmiUtils.orderTime("CardName" + repeat(" ", 20) + "Tip" + repeat(" ", 11) + "Amount")
 
+}catch (e:java.lang.Exception){
+
+}
 }
 
 fun addCreditCardBreakDownInner() {
@@ -3125,7 +3129,8 @@ fun addOrdersForKitchen(
 
                 if (obj.isEdited){
                     PrintSunmiUtils.orderTime("(U)"+obj.quantity.toString() + " " + obj.itemName.uppercase())
-                }else{
+                }
+                else{
                     PrintSunmiUtils.orderTime(obj.quantity.toString() + " " + obj.itemName.uppercase())
                 }
 
