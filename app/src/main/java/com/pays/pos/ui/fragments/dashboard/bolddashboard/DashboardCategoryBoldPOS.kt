@@ -148,6 +148,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     var isupdate = false
+
+//    this isOrderUpdate is used to track is the order is really updated or just update button is clicked to move to the All Orders Screen
+    var isOrderUpdate = false
     var reorder = false
     var orderDiscount = 0.0
     var dineInResult: Bundle? = null
@@ -2148,7 +2151,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-            setService(data, createOrderResponse.data,cartModel)
+            setService(data, createOrderResponse.data, cartModel)
 
 
         } else if (data.name.contains("TSP", ignoreCase = true)) {
@@ -2899,7 +2902,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
-                generateKitchenReceiptSunmiInner(kitchenReceiptPrinters, data,cartModel)
+                generateKitchenReceiptSunmiInner(kitchenReceiptPrinters, data, cartModel)
 
 
             }
@@ -3007,17 +3010,75 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                             token.type
                                         )
 
-                                    printingData = getPrintingData(
+                                    Log.d(
+                                        "OLD::",
+                                        Gson().toJson((oldDataModel as List<CreateOrderResponse.Data.Order.OrderItem>))
+                                    )
+                                    Log.d(
+                                        "NEW::",
+                                        Gson().toJson(createOrderResponse.data.order.orderItems)
+                                    )
+
+                                    /*var itemsNotUpdated = 0
+                                    for (oldDataIndex in 0 until oldDataModel.size) {
+                                        var oldData = oldDataModel.get(oldDataIndex)
+                                        for (newDataIndex in oldDataIndex until createOrderResponse.data.order.orderItems.size) {
+                                            var newData =
+                                                createOrderResponse.data.order.orderItems.get(
+                                                    newDataIndex
+                                                )
+                                            if (oldDataIndex == newDataIndex) {
+                                                if (oldData.categoryId == newData.categoryId &&
+                                                    oldData.completedInKitchen == newData.completedInKitchen &&
+                                                    oldData.discountAmount == newData.discountAmount &&
+                                                    oldData.discountId == newData.discountId &&
+                                                    oldData.discountType == newData.discountType &&
+                                                    oldData.employeeId == newData.employeeId &&
+                                                    oldData.float == newData.float &&
+                                                    oldData.guestIndexForDineIn == newData.guestIndexForDineIn &&
+                                                    oldData.id == newData.id &&
+                                                    oldData.isPaid == newData.isPaid &&
+                                                    oldData.isPrinted == newData.isPrinted &&
+                                                    oldData.itemId == newData.itemId &&
+                                                    oldData.itemName == newData.itemName &&
+                                                    oldData.note == newData.note &&
+                                                    oldData.orderItemModifiers == newData.orderItemModifiers &&
+                                                    oldData.price == newData.price &&
+                                                    oldData.quantity == newData.quantity &&
+                                                    oldData.totalPrice == newData.totalPrice
+                                                )
+
+                                                    itemsNotUpdated += 1
+                                            }
+                                        }
+                                    }
+
+                                    if (itemsNotUpdated != createOrderResponse.data.order.orderItems.size) {
+
+                                        printingData = getPrintingData(
+                                            (oldDataModel as List<CreateOrderResponse.Data.Order.OrderItem>),
+                                            createOrderResponse.data.order.orderItems
+                                        )
+
+                                    }else{
+                                        printingData= arrayListOf()
+                                        createOrderResponse.data.order.orderItems= arrayListOf()
+                                    }*/
+
+                                    val (newData, isUpdated) = getPrintingData(
                                         (oldDataModel as List<CreateOrderResponse.Data.Order.OrderItem>),
                                         createOrderResponse.data.order.orderItems
                                     )
 
+                                    printingData=newData
+                                    isOrderUpdate=isUpdated
 
-                                     var printOrderItems:
+
+                                    /* var printOrderItems:
                                              ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
-                                         arrayListOf()
+                                         arrayListOf()*/
 
-                                      val serializedObject: String =
+                                    /*  val serializedObject: String =
                                           prefProvider.getValue(OPEN_ORDER_ITEMS, "")
                                       if (serializedObject.isNotEmpty()) {
                                           val gson = Gson()
@@ -3039,7 +3100,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                           }
 
                                           Log.d("ORDERITEMS",Gson().toJson(createOrderResponse.data.order.orderItems))
-                                          createOrderResponse.data.order.orderItems.forEachIndexed { index, orderItem ->
+                                          *//*createOrderResponse.data.order.orderItems.forEachIndexed { index, orderItem ->
                                             Log.d("IT_DATA", orderItem.id.toString())
                                             try {
                                                 if (itemIds.contains(orderItem.id)) {
@@ -3048,30 +3109,30 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                             if (orderItem.quantity > arrayItems[index].quantity) {
                                                                 orderItem.quantity =
                                                                     orderItem.quantity - arrayItems[index].quantity
-                                                                if (!printOrderItems.contains(
+                                                              *//**//*  if (!printOrderItems.contains(
                                                                         orderItem
                                                                     )
                                                                 ) {
                                                                     printOrderItems.add(orderItem)
-                                                                }
+                                                                }*//**//*
                                                             } else if (orderItem.quantity < arrayItems[index].quantity) {
                                                                 orderItem.quantity =
                                                                     arrayItems[index].quantity - orderItem.quantity
-                                                                if (!printOrderItems.contains(
+                                                               *//**//* if (!printOrderItems.contains(
                                                                         orderItem
                                                                     )
                                                                 ) {
                                                                     printOrderItems.add(orderItem)
-                                                                }
+                                                                }*//**//*
                                                             }
                                                         } else {
                                                             if (orderItem.orderItemModifiers != arrayItems[index].orderItemModifiers){
-                                                                if (!printOrderItems.contains(
+                                                                *//**//*if (!printOrderItems.contains(
                                                                         orderItem
                                                                     )
                                                                 ) {
                                                                     printOrderItems.add(orderItem)
-                                                                }
+                                                                }*//**//*
                                                             }
                                                         }
                                                     }
@@ -3085,125 +3146,232 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                             }
 
 
-                                        }
+                                        }*//*
 
 
+                                        *//*createOrderResponse.data.order.orderItems = arrayListOf()
 
-                                          if (printOrderItems.isEmpty()){
-                                              createOrderResponse.data.order.orderItems = arrayListOf()
-                                              printingData= arrayListOf()
-                                          }
-                                      }
+                                        createOrderResponse.data.order.orderItems = printOrderItems*//*
+                                    }*/
 
                                     prefProvider.setValue(OPEN_ORDER_ITEMS, "")
 
-                                }
 
+                                    Log.d("IT_DATA:", Gson().toJson(it.data))
+                                    Log.d(
+                                        "IT_DATA_CreateOrder:",
+                                        Gson().toJson(printingData)
+                                    )
 
-                                Log.d("IT_DATA:", Gson().toJson(it.data))
-                                Log.d(
-                                    "IT_DATA_CreateOrder:",
-                                    Gson().toJson(printingData)
-                                )
+                                    if (printingData!!.isNotEmpty()) {
+                                        createOrderResponse.data.order.orderItems = printingData!!
+                                    }
+                                    Log.d(
+                                        "updateORNew:",
+                                        Gson().toJson(isOrderUpdate)
+                                    )
+                                    Log.d(
+                                        "updateORNew:",
+                                        Gson().toJson(cartModel!!.isEdited)
+                                    )
+                                    if (it.data?.isNotEmpty() == true && isOrderUpdate/*&& createOrderResponse.data.order.orderItems*//*printingData!!.isNotEmpty()*/) {
+                                        var allstatus = false
 
-                                if (printingData!!.isNotEmpty()) {
-                                    createOrderResponse.data.order.orderItems = printingData!!
-                                }
-                                if (it.data?.isNotEmpty() == true /*&& createOrderResponse.data.order.orderItems*//*printingData!!.isNotEmpty()*/) {
-                                    var allstatus = false
-
-                                    for (i in 0 until it.data.size) {
-                                        it.data[i].orderTypes.forEach { order ->
-                                            if (order.orderTypeId == createOrderResponse.data.order.orderTypeId) {
-                                                order.printerSettings.forEach { set ->
-                                                    if (set.printType.equals(
-                                                            Constants.KITCHEN,
-                                                            true
-                                                        ) && set.autoPrinting
-                                                    ) {
-                                                        if (printingData.isNotEmpty()) {
-                                                            var isUpdated=printingData.forEach{
-                                                                if (it.isEdited){
-                                                                    true
-                                                                    addCreditCardBreakDown()
+                                        for (i in 0 until it.data.size) {
+                                            it.data[i].orderTypes.forEach { order ->
+                                                if (order.orderTypeId == createOrderResponse.data.order.orderTypeId) {
+                                                    order.printerSettings.forEach { set ->
+                                                        if (set.printType.equals(
+                                                                Constants.KITCHEN,
+                                                                true
+                                                            ) && set.autoPrinting
+                                                        ) {
+                                                            if (printingData!!.isNotEmpty()) {
+                                                                var isUpdated = printingData!!.forEach {
+                                                                    if (it.isEdited) {
+                                                                        true
+                                                                        addCreditCardBreakDown()
+                                                                    }
                                                                 }
-                                                            }
-                                                            Log.d("UPDATED",isUpdated.toString())
-                                                            if (checkItemsforPrinter(
-                                                                    /*createOrderResponse.data.order.orderItems*/
-                                                                    printingData
-                                                                        ?: arrayListOf(),
-                                                                    it.data[i].printerCategories.toCollection(
-                                                                        arrayListOf()
+                                                                Log.d("UPDATED", isUpdated.toString())
+                                                                if (checkItemsforPrinter(
+                                                                        /*createOrderResponse.data.order.orderItems*/
+                                                                        printingData
+                                                                            ?: arrayListOf(),
+                                                                        it.data[i].printerCategories.toCollection(
+                                                                            arrayListOf()
+                                                                        )
                                                                     )
-                                                                )
-                                                            ) {
-                                                                LogUtil.logE(
-                                                                    TAG,
-                                                                    "statusPrinter  ${it.data[i].status}"
-                                                                )
-                                                                if (it.data[i].status) {
-                                                                    allstatus = true
-                                                                    initKitchenPrinter(
-                                                                        it.data.get(i),
-                                                                        Constants.KITCHEN,
-                                                                        createOrderResponse,
-                                                                        cartModel
+                                                                ) {
+                                                                    LogUtil.logE(
+                                                                        TAG,
+                                                                        "statusPrinter  ${it.data[i].status}"
                                                                     )
+                                                                    if (it.data[i].status) {
+                                                                        allstatus = true
+                                                                        initKitchenPrinter(
+                                                                            it.data.get(i),
+                                                                            Constants.KITCHEN,
+                                                                            createOrderResponse,
+                                                                            cartModel
+                                                                        )
+                                                                    }
                                                                 }
+
+                                                            } else {
+                                                                if (checkItemsforPrinter(
+                                                                        createOrderResponse.data.order.orderItems
+                                                                            ?: arrayListOf(),
+                                                                        it.data[i].printerCategories.toCollection(
+                                                                            arrayListOf()
+                                                                        )
+                                                                    )
+                                                                ) {
+                                                                    LogUtil.logE(
+                                                                        TAG,
+                                                                        "statusPrinter  ${it.data[i].status}"
+                                                                    )
+                                                                    if (it.data[i].status) {
+                                                                        allstatus = true
+                                                                        initKitchenPrinter(
+                                                                            it.data.get(i),
+                                                                            Constants.KITCHEN,
+                                                                            createOrderResponse,
+                                                                            cartModel
+                                                                        )
+                                                                    }
+                                                                }
+
                                                             }
 
                                                         } else {
-                                                            if (checkItemsforPrinter(
-                                                                    createOrderResponse.data.order.orderItems
-                                                                        ?: arrayListOf(),
-                                                                    it.data[i].printerCategories.toCollection(
-                                                                        arrayListOf()
-                                                                    )
-                                                                )
-                                                            ) {
-                                                                LogUtil.logE(
-                                                                    TAG,
-                                                                    "statusPrinter  ${it.data[i].status}"
-                                                                )
-                                                                if (it.data[i].status) {
-                                                                    allstatus = true
-                                                                    initKitchenPrinter(
-                                                                        it.data.get(i),
-                                                                        Constants.KITCHEN,
-                                                                        createOrderResponse,
-                                                                        cartModel
-                                                                    )
-                                                                }
+                                                            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                                                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                                                             }
-
-                                                        }
-
-                                                    } else {
-                                                        if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                                                            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                                                         }
                                                     }
-                                                }
 
+                                                }
+                                            }
+
+
+                                        }
+                                        if (!allstatus) {
+                                            viewModel.downloadFinished(false)
+                                            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                                             }
                                         }
 
-
                                     }
-                                    if (!allstatus) {
+                                    else {
                                         viewModel.downloadFinished(false)
                                         if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                                             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                                         }
                                     }
 
-                                } else {
-                                    viewModel.downloadFinished(false)
-                                    if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
+                                }else{
+                                    printingData=createOrderResponse.data.order.orderItems
+                                    if (it.data?.isNotEmpty() == true /*&& createOrderResponse.data.order.orderItems*//*printingData!!.isNotEmpty()*/) {
+                                        var allstatus = false
+
+                                        for (i in 0 until it.data.size) {
+                                            it.data[i].orderTypes.forEach { order ->
+                                                if (order.orderTypeId == createOrderResponse.data.order.orderTypeId) {
+                                                    order.printerSettings.forEach { set ->
+                                                        if (set.printType.equals(
+                                                                Constants.KITCHEN,
+                                                                true
+                                                            ) && set.autoPrinting
+                                                        ) {
+                                                            if (printingData.isNotEmpty()) {
+                                                                var isUpdated = printingData.forEach {
+                                                                    if (it.isEdited) {
+                                                                        true
+                                                                        addCreditCardBreakDown()
+                                                                    }
+                                                                }
+                                                                Log.d("UPDATED", isUpdated.toString())
+                                                                if (checkItemsforPrinter(
+                                                                        /*createOrderResponse.data.order.orderItems*/
+                                                                        printingData
+                                                                            ?: arrayListOf(),
+                                                                        it.data[i].printerCategories.toCollection(
+                                                                            arrayListOf()
+                                                                        )
+                                                                    )
+                                                                ) {
+                                                                    LogUtil.logE(
+                                                                        TAG,
+                                                                        "statusPrinter  ${it.data[i].status}"
+                                                                    )
+                                                                    if (it.data[i].status) {
+                                                                        allstatus = true
+                                                                        initKitchenPrinter(
+                                                                            it.data.get(i),
+                                                                            Constants.KITCHEN,
+                                                                            createOrderResponse,
+                                                                            cartModel
+                                                                        )
+                                                                    }
+                                                                }
+
+                                                            } else {
+                                                                if (checkItemsforPrinter(
+                                                                        createOrderResponse.data.order.orderItems
+                                                                            ?: arrayListOf(),
+                                                                        it.data[i].printerCategories.toCollection(
+                                                                            arrayListOf()
+                                                                        )
+                                                                    )
+                                                                ) {
+                                                                    LogUtil.logE(
+                                                                        TAG,
+                                                                        "statusPrinter  ${it.data[i].status}"
+                                                                    )
+                                                                    if (it.data[i].status) {
+                                                                        allstatus = true
+                                                                        initKitchenPrinter(
+                                                                            it.data.get(i),
+                                                                            Constants.KITCHEN,
+                                                                            createOrderResponse,
+                                                                            cartModel
+                                                                        )
+                                                                    }
+                                                                }
+
+                                                            }
+
+                                                        } else {
+                                                            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                                                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
+                                                            }
+                                                        }
+                                                    }
+
+                                                }
+                                            }
+
+
+                                        }
+                                        if (!allstatus) {
+                                            viewModel.downloadFinished(false)
+                                            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
+                                            }
+                                        }
+
+                                    }
+                                    else {
+                                        viewModel.downloadFinished(false)
+                                        if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
+                                        }
                                     }
                                 }
+
+
 
                             }
                         }
@@ -3226,63 +3394,126 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 private fun getPrintingData(
                     oldItems: List<CreateOrderResponse.Data.Order.OrderItem>,
                     newItems: List<CreateOrderResponse.Data.Order.OrderItem>
-                ): List<CreateOrderResponse.Data.Order.OrderItem> {
+                ): Pair<List<CreateOrderResponse.Data.Order.OrderItem>, Boolean>   {
+
+                    var isUpdated=false
 
                     /*if (oldItems.size >= newItems.size) {*/
 
-                    for (oldIndex in 0 until oldItems.size){
+                    for (oldIndex in 0 until oldItems.size) {
 
-                        for (indexNew in 0 until newItems.size){
+                        for (indexNew in 0 until newItems.size) {
 
-                            if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldIndex== indexNew){
-                                if (!oldItems.get(oldIndex).note.equals(newItems.get(indexNew).note)){
-                                    newItems.get(indexNew).isEdited=true
+                            if (oldItems.size!=newItems.size){
+                                isUpdated=true
+                            }
+
+                            if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldIndex == indexNew) {
+                                if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity){
+                                    newItems.get(indexNew).isEdited = true
+                                    isUpdated=true
+                                }
+                                if (oldItems.get(oldIndex).price != newItems.get(indexNew).price){
+                                    newItems.get(indexNew).isEdited = true
+                                    isUpdated=true
+                                }
+
+                                if (!oldItems.get(oldIndex).note.equals(newItems.get(indexNew).note)) {
+                                    newItems.get(indexNew).isEdited = true
+                                    isUpdated=true
+
                                 }
                             }
 
-                            if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(oldIndex).orderItemModifiers.size != newItems.get(indexNew).orderItemModifiers.size && oldIndex==indexNew) {
+                            if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(
+                                    oldIndex
+                                ).orderItemModifiers.size != newItems.get(indexNew).orderItemModifiers.size && oldIndex == indexNew
+                            ) {
                                 newItems.get(indexNew).isEdited = true
-                            }
-                            else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(oldIndex).orderItemModifiers.size == newItems.get(indexNew).orderItemModifiers.size && oldItems.get(oldIndex).orderItemModifiers.size!=0 && oldIndex==indexNew) {
+                                isUpdated=true
 
-                                if (oldItems.get(oldIndex).orderItemModifiers!=newItems.get(indexNew).orderItemModifiers){
-                                    newItems.get(indexNew).isEdited=true
+                            } else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(
+                                    oldIndex
+                                ).orderItemModifiers.size == newItems.get(indexNew).orderItemModifiers.size && oldItems.get(
+                                    oldIndex
+                                ).orderItemModifiers.size != 0 && oldIndex == indexNew
+                            ) {
+
+                                if (oldItems.get(oldIndex).orderItemModifiers != newItems.get(
+                                        indexNew
+                                    ).orderItemModifiers
+                                ) {
+                                    newItems.get(indexNew).isEdited = true
+                                    isUpdated=true
+
                                 }
 
 //                                if (oldItems.get(oldIndex).orderItemModifiers == newItems.get(indexNew).orderItemModifiers) {
 
-                                    for (oldModifiersIndex in 0 until oldItems.get(oldIndex).orderItemModifiers.size){
+                                for (oldModifiersIndex in 0 until oldItems.get(oldIndex).orderItemModifiers.size) {
 
-                                        for(newModifiersIndex in 0 until newItems.get(indexNew).orderItemModifiers.size){
+                                    for (newModifiersIndex in 0 until newItems.get(indexNew).orderItemModifiers.size) {
 
-                                            if (oldItems.get(oldIndex).orderItemModifiers.get(oldModifiersIndex).id == newItems.get(indexNew).orderItemModifiers.get(newModifiersIndex).id) {
-                                                if (oldItems.get(oldIndex).orderItemModifiers.get(oldModifiersIndex).modifierQuantity != newItems.get(indexNew).orderItemModifiers.get(newModifiersIndex).modifierQuantity) {
-                                                    newItems.get(indexNew).isEdited = true
+                                        if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                oldModifiersIndex
+                                            ).id == newItems.get(indexNew).orderItemModifiers.get(
+                                                newModifiersIndex
+                                            ).id
+                                        ) {
+                                            if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                    oldModifiersIndex
+                                                ).modifierQuantity != newItems.get(indexNew).orderItemModifiers.get(
+                                                    newModifiersIndex
+                                                ).modifierQuantity
+                                            ) {
+                                                newItems.get(indexNew).isEdited = true
+                                                isUpdated=true
 
-                                                } else if (oldItems.get(oldIndex).orderItemModifiers.get(oldModifiersIndex).price != newItems.get(indexNew).orderItemModifiers.get(newModifiersIndex).price) {
-                                                    newItems.get(indexNew).isEdited = true
 
-                                                } else if (oldItems.get(oldIndex).orderItemModifiers.get(oldModifiersIndex).totalPrice != newItems.get(indexNew).orderItemModifiers.get(newModifiersIndex).totalPrice) {
-                                                    newItems.get(indexNew).isEdited = true
+                                            } else if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                    oldModifiersIndex
+                                                ).price != newItems.get(indexNew).orderItemModifiers.get(
+                                                    newModifiersIndex
+                                                ).price
+                                            ) {
+                                                newItems.get(indexNew).isEdited = true
+                                                isUpdated=true
 
-                                                } else if (!oldItems.get(oldIndex).orderItemModifiers.get(oldModifiersIndex).name.equals(
-                                                        newItems.get(indexNew).orderItemModifiers.get(newModifiersIndex).name
-                                                    )
-                                                ) {
-                                                    newItems.get(indexNew).isEdited = true
 
-                                                }
+                                            } else if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                    oldModifiersIndex
+                                                ).totalPrice != newItems.get(indexNew).orderItemModifiers.get(
+                                                    newModifiersIndex
+                                                ).totalPrice
+                                            ) {
+                                                newItems.get(indexNew).isEdited = true
+                                                isUpdated=true
+
+
+                                            } else if (!oldItems.get(oldIndex).orderItemModifiers.get(
+                                                    oldModifiersIndex
+                                                ).name.equals(
+                                                    newItems.get(indexNew).orderItemModifiers.get(
+                                                        newModifiersIndex
+                                                    ).name
+                                                )
+                                            ) {
+                                                newItems.get(indexNew).isEdited = true
+                                                isUpdated=true
+
 
                                             }
-                                        }
 
+                                        }
                                     }
+
+                                }
 
 //                                }
                             }
 
-                          /*  else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(oldIndex).orderItemModifiers.size == newItems.get(indexNew).orderItemModifiers.size) {
-                                *//*if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity) {
+                            /*  else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(oldIndex).orderItemModifiers.size == newItems.get(indexNew).orderItemModifiers.size) {
+                                  *//*if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity) {
                                     newItems.get(indexNew).isEdited = true
                                 }
                                  Modifiers are not equal, i.e. edited
@@ -3290,35 +3521,73 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     newItems.get(indexNew).isEdited = true
                                 }
                                 *//* Modifiers are equal, i.e. the quantity of modifiers may change*//*
-                            }*/ else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId ) {
-                                if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity && oldIndex==indexNew) {
+                            }*/ else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId) {
+                                if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity && oldIndex == indexNew) {
                                     newItems.get(indexNew).isEdited = true
+                                    isUpdated=true
+
 
                                 }
                                 /* Modifiers are not equal, i.e. edited */
-                                else if ((oldItems.get(oldIndex).orderItemModifiers != newItems.get(indexNew).orderItemModifiers) && (oldIndex==indexNew)) {
+                                else if ((oldItems.get(oldIndex).orderItemModifiers != newItems.get(
+                                        indexNew
+                                    ).orderItemModifiers) && (oldIndex == indexNew)
+                                ) {
                                     newItems.get(indexNew).isEdited = true
+                                    isUpdated=true
+
                                 }
                                 /* Modifiers are equal, i.e. the quantity of modifiers may change*/
-                                else if (oldItems.get(oldIndex).orderItemModifiers == newItems.get(indexNew).orderItemModifiers) {
+                                else if (oldItems.get(oldIndex).orderItemModifiers == newItems.get(
+                                        indexNew
+                                    ).orderItemModifiers
+                                ) {
 
-                                    for (oldModifiersIndex in 0 until oldItems.get(oldIndex).orderItemModifiers.size){
-                                        for (newModifiersIndex in 0 until newItems.get(indexNew).orderItemModifiers.size){
-                                            if (oldItems.get(oldIndex).orderItemModifiers.get(oldModifiersIndex).id == newItems.get(indexNew).orderItemModifiers.get(newModifiersIndex).id) {
-                                                if (oldItems.get(oldIndex).orderItemModifiers.get(oldModifiersIndex).modifierQuantity != newItems.get(indexNew).orderItemModifiers.get(newModifiersIndex).modifierQuantity) {
+                                    for (oldModifiersIndex in 0 until oldItems.get(oldIndex).orderItemModifiers.size) {
+                                        for (newModifiersIndex in 0 until newItems.get(indexNew).orderItemModifiers.size) {
+                                            if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                    oldModifiersIndex
+                                                ).id == newItems.get(indexNew).orderItemModifiers.get(
+                                                    newModifiersIndex
+                                                ).id
+                                            ) {
+                                                if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                        oldModifiersIndex
+                                                    ).modifierQuantity != newItems.get(indexNew).orderItemModifiers.get(
+                                                        newModifiersIndex
+                                                    ).modifierQuantity
+                                                ) {
                                                     newItems.get(indexNew).isEdited = true
+                                                    isUpdated=true
 
-                                                } else if (oldItems.get(oldIndex).orderItemModifiers.get(oldModifiersIndex).price != newItems.get(indexNew).orderItemModifiers.get(newModifiersIndex).price) {
+                                                } else if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                        oldModifiersIndex
+                                                    ).price != newItems.get(indexNew).orderItemModifiers.get(
+                                                        newModifiersIndex
+                                                    ).price
+                                                ) {
                                                     newItems.get(indexNew).isEdited = true
+                                                    isUpdated=true
 
-                                                } else if (oldItems.get(oldIndex).orderItemModifiers.get(oldModifiersIndex).totalPrice != newItems.get(indexNew).orderItemModifiers.get(newModifiersIndex).totalPrice) {
+                                                } else if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                        oldModifiersIndex
+                                                    ).totalPrice != newItems.get(indexNew).orderItemModifiers.get(
+                                                        newModifiersIndex
+                                                    ).totalPrice
+                                                ) {
                                                     newItems.get(indexNew).isEdited = true
+                                                    isUpdated=true
 
-                                                } else if (!oldItems.get(oldIndex).orderItemModifiers.get(oldModifiersIndex).name.equals(
-                                                        newItems.get(indexNew).orderItemModifiers.get(newModifiersIndex).name
+                                                } else if (!oldItems.get(oldIndex).orderItemModifiers.get(
+                                                        oldModifiersIndex
+                                                    ).name.equals(
+                                                        newItems.get(indexNew).orderItemModifiers.get(
+                                                            newModifiersIndex
+                                                        ).name
                                                     )
                                                 ) {
                                                     newItems.get(indexNew).isEdited = true
+                                                    isUpdated=true
 
                                                 }
 
@@ -3335,8 +3604,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     }
 
 
-
-
                     /*}
                       else {
                           newItems.forEachIndexed({ newIndex, newItems.get(indexNew) ->
@@ -3346,7 +3613,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                           })
                       }*/
 
-                    return newItems
+
+                    return Pair(newItems, isUpdated)
                 }
 
                 /*   private fun getPrintingData(
@@ -4378,7 +4646,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             SunmiPrintHelper.getInstance().initPrinter()
             SunmiPrintHelper.getInstance().lineWrap(4)
             cartModel?.let {
-                if (it.isEdited){
+                if (it.isEdited) {
                     PrintSunmiUtils.headerText("***** UPDATED *****")
 
                 }
