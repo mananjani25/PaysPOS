@@ -96,6 +96,7 @@ import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.getCustomerDisplay
+import com.pays.pos.utils.subTotalToDouble
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -1702,6 +1703,7 @@ class CartFragment(
             binding.tvPayNow.text =
                 "Pay " + binding.txtTotal.text.toString()
             Log.e("totalDiscount", viewModel.totalDiscount.toString())
+
             binding.txtDiscount.text =
                 "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
             if (prefProvider.getValue(
@@ -1715,6 +1717,7 @@ class CartFragment(
                 binding.txtNoncashAdj.text =
                     MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
             }
+
             var data: TbCustomer? = prefProvider.getCustomerData()
             if (data != null) {
                 if (viewModel.loyaltyPointCondition(data)) {
@@ -1929,6 +1932,8 @@ class CartFragment(
         LogUtil.logE(TAG, "itemClicked  ${Gson().toJson(data)}")
 
 
+        setCurrentSubTotal()
+        Log.e("Discount Tracking","Subtotal Cart Price = ${viewModel.currentTotalPrice}")
         itemClickListner?.onCartItemUpdate(data, position)
 
 
@@ -2300,6 +2305,12 @@ class CartFragment(
 
     }
 
+    private fun setCurrentSubTotal() {
+        val subTotalText = binding.txtSubTotal.text.toString()
+        val subTotal = subTotalText.subTotalToDouble()
+        viewModel.currentTotalPrice = subTotal
+    }
+
     private fun initListeners() {
 
         binding.relPreoceedToFire.setOnClickListener {
@@ -2502,8 +2513,15 @@ class CartFragment(
 
                         R.id.menu_discount -> {
                             val bundle = Bundle()
+
+
+                            setCurrentSubTotal()
+
                             bundle.putBoolean("isOrderDiscount", true)
-                            bundle.putDouble("totalPrice", viewModel.subTotalPrice)
+                            bundle.putDouble("totalPrice", viewModel.currentTotalPrice)
+
+                            Log.e("Discount Tracking","Subtotal Cart Price = ${viewModel.currentTotalPrice}")
+
                             if (viewModel.cartModel != null) {
                                 bundle.putDouble(
                                     "orderDiscountPrice",

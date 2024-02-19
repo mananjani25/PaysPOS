@@ -552,6 +552,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 result.percentage
                             )
                         }!!
+
+                        if(item.discountPrice > viewModel.currentTotalPrice){
+                            item.discountPrice = viewModel.currentTotalPrice
+                        }
+
                         //discountPrice = item.discountPrice / item.itemQuantity
                         item.discountId = result.id
                         item.discountType = result.discountType
