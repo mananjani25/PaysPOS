@@ -120,7 +120,7 @@
                     android:text="Order Tip Summary"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6sdp"
-                    android:visibility="visible" />
+                    android:visibility="gone" />
 
                 <View
                     android:layout_width="match_parent"
