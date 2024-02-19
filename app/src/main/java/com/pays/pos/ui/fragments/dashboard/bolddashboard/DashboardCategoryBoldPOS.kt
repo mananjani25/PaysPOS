@@ -26,6 +26,13 @@ import androidx.fragment.app.*
 import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
+import com.epson.epos2.printer.Printer
+import com.epson.eposprint.Builder
+import com.epson.eposprint.Print
+import com.epson.epsonio.DevType
+import com.epson.epsonio.DeviceInfo
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.pays.pos.MainApplication
 import com.pays.pos.R
 import com.pays.pos.aidl.ICallback
@@ -93,13 +100,6 @@ import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.scanner.helpers.ScannerAppEngine
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
-import com.epson.epos2.printer.Printer
-import com.epson.eposprint.Builder
-import com.epson.eposprint.Print
-import com.epson.epsonio.DevType
-import com.epson.epsonio.DeviceInfo
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
@@ -119,6 +119,7 @@ import java.io.IOException
 import java.lang.Runnable
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -147,6 +148,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     var isupdate = false
+
+//    this isOrderUpdate is used to track is the order is really updated or just update button is clicked to move to the All Orders Screen
+    var isOrderUpdate = false
     var reorder = false
     var orderDiscount = 0.0
     var dineInResult: Bundle? = null
@@ -2152,7 +2156,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-            setService(data, createOrderResponse.data)
+            setService(data, createOrderResponse.data, cartModel)
 
 
         } else if (data.name.contains("TSP", ignoreCase = true)) {
@@ -2170,7 +2174,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         styleCharacterSpace(0.0)
                         styleAlignment(Alignment.Center)
 
-                        if (cartModel!!.isEdited){
+                        if (cartModel!!.isEdited) {
                             add(
                                 PrinterBuilder()
                                     .styleBold(true)
@@ -2317,9 +2321,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                             ) != null
                                         ) {
 
-                                            var phoneNumber=createOrderResponse.data.order?.customer?.phones?.get(
-                                                0
-                                            )?.phoneNumber.toString()
+                                            var phoneNumber =
+                                                createOrderResponse.data.order?.customer?.phones?.get(
+                                                    0
+                                                )?.phoneNumber.toString()
                                             if (phoneNumber.length != 10) {
                                                 // Handle invalid input (must be 10 digits)
                                                 "Invalid phone number"
@@ -2891,7 +2896,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     private fun setService(
         kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
-        data: CreateOrderResponse.Data
+        data: CreateOrderResponse.Data,
+        cartModel: CartModel?
     ) {
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
@@ -2901,14 +2907,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
-                generateKitchenReceiptSunmiInner(kitchenReceiptPrinters, data)
+                generateKitchenReceiptSunmiInner(kitchenReceiptPrinters, data, cartModel)
 
 
             }
 
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             Handler(Looper.getMainLooper()).postDelayed({
-                setService(kitchenReceiptPrinters, data)
+                setService(kitchenReceiptPrinters, data, cartModel)
             }, 2000)
             LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
@@ -2995,36 +3001,111 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             requireActivity().runOnUiThread {
                                 ProgressUtils.dismissProgressDialog()
                                 viewModel.downloadFinished(true)
-
+                                var printingData: List<CreateOrderResponse.Data.Order.OrderItem>? =
+                                    arrayListOf()
                                 if (viewModelPayment.isUpdateOrder) {
-                                    var model = prefProvider.getValue(OPEN_ORDER_ITEMS, "")
-                                    LogUtil.logE(TAG, "getItemsModel  ${Gson().toJson(model)}")
-                                    var printOrderItems:
-                                            ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
-                                        arrayListOf()
 
-                                    val serializedObject: String =
-                                        prefProvider.getValue(OPEN_ORDER_ITEMS, "")
-                                    if (serializedObject.isNotEmpty()) {
-                                        val gson = Gson()
-                                        val type = object :
-                                            TypeToken<List<CreateOrderResponse.Data.Order.OrderItem?>?>() {}.type
-                                        var arrayItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
-                                            gson.fromJson<Any>(
-                                                serializedObject,
-                                                type
-                                            ) as ArrayList<CreateOrderResponse.Data.Order.OrderItem>
+                                    val token: TypeToken<List<CreateOrderResponse.Data.Order.OrderItem>?> =
+                                        object :
+                                            TypeToken<List<CreateOrderResponse.Data.Order.OrderItem>?>() {}
 
-                                        LogUtil.logE(
-                                            TAG,
-                                            "arrayItems:  ${Gson().toJson(arrayItems)}"
+                                    var oldDataModel: List<CreateOrderResponse.Data.Order.OrderItem> =
+                                        Gson().fromJson(
+                                            prefProvider.getValue(OPEN_ORDER_ITEMS, ""),
+                                            token.type
                                         )
-                                        var itemIds: ArrayList<Int> = arrayListOf()
-                                        arrayItems.forEach {
-                                            itemIds.add(it.id)
-                                        }
 
-                                        createOrderResponse.data.order.orderItems.forEachIndexed { index, orderItem ->
+                                    Log.d(
+                                        "OLD::",
+                                        Gson().toJson((oldDataModel as List<CreateOrderResponse.Data.Order.OrderItem>))
+                                    )
+                                    Log.d(
+                                        "NEW::",
+                                        Gson().toJson(createOrderResponse.data.order.orderItems)
+                                    )
+
+                                    /*var itemsNotUpdated = 0
+                                    for (oldDataIndex in 0 until oldDataModel.size) {
+                                        var oldData = oldDataModel.get(oldDataIndex)
+                                        for (newDataIndex in oldDataIndex until createOrderResponse.data.order.orderItems.size) {
+                                            var newData =
+                                                createOrderResponse.data.order.orderItems.get(
+                                                    newDataIndex
+                                                )
+                                            if (oldDataIndex == newDataIndex) {
+                                                if (oldData.categoryId == newData.categoryId &&
+                                                    oldData.completedInKitchen == newData.completedInKitchen &&
+                                                    oldData.discountAmount == newData.discountAmount &&
+                                                    oldData.discountId == newData.discountId &&
+                                                    oldData.discountType == newData.discountType &&
+                                                    oldData.employeeId == newData.employeeId &&
+                                                    oldData.float == newData.float &&
+                                                    oldData.guestIndexForDineIn == newData.guestIndexForDineIn &&
+                                                    oldData.id == newData.id &&
+                                                    oldData.isPaid == newData.isPaid &&
+                                                    oldData.isPrinted == newData.isPrinted &&
+                                                    oldData.itemId == newData.itemId &&
+                                                    oldData.itemName == newData.itemName &&
+                                                    oldData.note == newData.note &&
+                                                    oldData.orderItemModifiers == newData.orderItemModifiers &&
+                                                    oldData.price == newData.price &&
+                                                    oldData.quantity == newData.quantity &&
+                                                    oldData.totalPrice == newData.totalPrice
+                                                )
+
+                                                    itemsNotUpdated += 1
+                                            }
+                                        }
+                                    }
+
+                                    if (itemsNotUpdated != createOrderResponse.data.order.orderItems.size) {
+
+                                        printingData = getPrintingData(
+                                            (oldDataModel as List<CreateOrderResponse.Data.Order.OrderItem>),
+                                            createOrderResponse.data.order.orderItems
+                                        )
+
+                                    }else{
+                                        printingData= arrayListOf()
+                                        createOrderResponse.data.order.orderItems= arrayListOf()
+                                    }*/
+
+                                    val (newData, isUpdated) = getPrintingData(
+                                        (oldDataModel as List<CreateOrderResponse.Data.Order.OrderItem>),
+                                        createOrderResponse.data.order.orderItems
+                                    )
+
+                                    printingData=newData
+                                    isOrderUpdate=isUpdated
+
+
+                                    /* var printOrderItems:
+                                             ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
+                                         arrayListOf()*/
+
+                                    /*  val serializedObject: String =
+                                          prefProvider.getValue(OPEN_ORDER_ITEMS, "")
+                                      if (serializedObject.isNotEmpty()) {
+                                          val gson = Gson()
+                                          val type = object :
+                                              TypeToken<List<CreateOrderResponse.Data.Order.OrderItem?>?>() {}.type
+                                          var arrayItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
+                                              gson.fromJson<Any>(
+                                                  serializedObject,
+                                                  type
+                                              ) as ArrayList<CreateOrderResponse.Data.Order.OrderItem>
+
+                                          LogUtil.logE(
+                                              TAG,
+                                              "arrayItems:  ${Gson().toJson(arrayItems)}"
+                                          )
+                                          var itemIds: ArrayList<Int> = arrayListOf()
+                                          arrayItems.forEach {
+                                              itemIds.add(it.id)
+                                          }
+
+                                          Log.d("ORDERITEMS",Gson().toJson(createOrderResponse.data.order.orderItems))
+                                          *//*createOrderResponse.data.order.orderItems.forEachIndexed { index, orderItem ->
                                             Log.d("IT_DATA", orderItem.id.toString())
                                             try {
                                                 if (itemIds.contains(orderItem.id)) {
@@ -3033,30 +3114,30 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                             if (orderItem.quantity > arrayItems[index].quantity) {
                                                                 orderItem.quantity =
                                                                     orderItem.quantity - arrayItems[index].quantity
-                                                                if (!printOrderItems.contains(
+                                                              *//**//*  if (!printOrderItems.contains(
                                                                         orderItem
                                                                     )
                                                                 ) {
                                                                     printOrderItems.add(orderItem)
-                                                                }
+                                                                }*//**//*
                                                             } else if (orderItem.quantity < arrayItems[index].quantity) {
                                                                 orderItem.quantity =
                                                                     arrayItems[index].quantity - orderItem.quantity
-                                                                if (!printOrderItems.contains(
+                                                               *//**//* if (!printOrderItems.contains(
                                                                         orderItem
                                                                     )
                                                                 ) {
                                                                     printOrderItems.add(orderItem)
-                                                                }
+                                                                }*//**//*
                                                             }
                                                         } else {
                                                             if (orderItem.orderItemModifiers != arrayItems[index].orderItemModifiers){
-                                                                if (!printOrderItems.contains(
+                                                                *//**//*if (!printOrderItems.contains(
                                                                         orderItem
                                                                     )
                                                                 ) {
                                                                     printOrderItems.add(orderItem)
-                                                                }
+                                                                }*//**//*
                                                             }
                                                         }
                                                     }
@@ -3070,84 +3151,232 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                             }
 
 
-                                        }
+                                        }*//*
 
 
-                                        createOrderResponse.data.order.orderItems = arrayListOf()
+                                        *//*createOrderResponse.data.order.orderItems = arrayListOf()
 
-                                        createOrderResponse.data.order.orderItems = printOrderItems
-                                    }
+                                        createOrderResponse.data.order.orderItems = printOrderItems*//*
+                                    }*/
 
                                     prefProvider.setValue(OPEN_ORDER_ITEMS, "")
 
-                                }
 
+                                    Log.d("IT_DATA:", Gson().toJson(it.data))
+                                    Log.d(
+                                        "IT_DATA_CreateOrder:",
+                                        Gson().toJson(printingData)
+                                    )
 
-                                Log.d("IT_DATA:", Gson().toJson(it.data))
-                                Log.d(
-                                    "IT_DATA_CreateOrder:",
-                                    Gson().toJson(createOrderResponse.data.order.orderItems)
-                                )
-                                if (it.data?.isNotEmpty() == true && createOrderResponse.data.order.orderItems.isNotEmpty()) {
-                                    var allstatus = false
+                                    if (printingData!!.isNotEmpty()) {
+                                        createOrderResponse.data.order.orderItems = printingData!!
+                                    }
+                                    Log.d(
+                                        "updateORNew:",
+                                        Gson().toJson(isOrderUpdate)
+                                    )
+                                    Log.d(
+                                        "updateORNew:",
+                                        Gson().toJson(cartModel!!.isEdited)
+                                    )
+                                    if (it.data?.isNotEmpty() == true && isOrderUpdate/*&& createOrderResponse.data.order.orderItems*//*printingData!!.isNotEmpty()*/) {
+                                        var allstatus = false
 
-                                    for (i in 0 until it.data.size) {
-                                        it.data[i].orderTypes.forEach { order ->
-                                            if (order.orderTypeId == createOrderResponse.data.order.orderTypeId) {
-                                                order.printerSettings.forEach { set ->
-                                                    if (set.printType.equals(
-                                                            Constants.KITCHEN,
-                                                            true
-                                                        ) && set.autoPrinting
-                                                    ) {
-                                                        if (checkItemsforPrinter(
-                                                                createOrderResponse.data.order.orderItems
-                                                                    ?: arrayListOf(),
-                                                                it.data[i].printerCategories.toCollection(
-                                                                    arrayListOf()
-                                                                )
-                                                            )
+                                        for (i in 0 until it.data.size) {
+                                            it.data[i].orderTypes.forEach { order ->
+                                                if (order.orderTypeId == createOrderResponse.data.order.orderTypeId) {
+                                                    order.printerSettings.forEach { set ->
+                                                        if (set.printType.equals(
+                                                                Constants.KITCHEN,
+                                                                true
+                                                            ) && set.autoPrinting
                                                         ) {
-                                                            LogUtil.logE(
-                                                                TAG,
-                                                                "statusPrinter  ${it.data[i].status}"
-                                                            )
-                                                            if (it.data[i].status) {
-                                                                allstatus = true
-                                                                initKitchenPrinter(
-                                                                    it.data.get(i),
-                                                                    Constants.KITCHEN,
-                                                                    createOrderResponse,
-                                                                    cartModel
-                                                                )
+                                                            if (printingData!!.isNotEmpty()) {
+                                                                var isUpdated = printingData!!.forEach {
+                                                                    if (it.isEdited) {
+                                                                        true
+                                                                        addCreditCardBreakDown()
+                                                                    }
+                                                                }
+                                                                Log.d("UPDATED", isUpdated.toString())
+                                                                if (checkItemsforPrinter(
+                                                                        /*createOrderResponse.data.order.orderItems*/
+                                                                        printingData
+                                                                            ?: arrayListOf(),
+                                                                        it.data[i].printerCategories.toCollection(
+                                                                            arrayListOf()
+                                                                        )
+                                                                    )
+                                                                ) {
+                                                                    LogUtil.logE(
+                                                                        TAG,
+                                                                        "statusPrinter  ${it.data[i].status}"
+                                                                    )
+                                                                    if (it.data[i].status) {
+                                                                        allstatus = true
+                                                                        initKitchenPrinter(
+                                                                            it.data.get(i),
+                                                                            Constants.KITCHEN,
+                                                                            createOrderResponse,
+                                                                            cartModel
+                                                                        )
+                                                                    }
+                                                                }
+
+                                                            } else {
+                                                                if (checkItemsforPrinter(
+                                                                        createOrderResponse.data.order.orderItems
+                                                                            ?: arrayListOf(),
+                                                                        it.data[i].printerCategories.toCollection(
+                                                                            arrayListOf()
+                                                                        )
+                                                                    )
+                                                                ) {
+                                                                    LogUtil.logE(
+                                                                        TAG,
+                                                                        "statusPrinter  ${it.data[i].status}"
+                                                                    )
+                                                                    if (it.data[i].status) {
+                                                                        allstatus = true
+                                                                        initKitchenPrinter(
+                                                                            it.data.get(i),
+                                                                            Constants.KITCHEN,
+                                                                            createOrderResponse,
+                                                                            cartModel
+                                                                        )
+                                                                    }
+                                                                }
+
+                                                            }
+
+                                                        } else {
+                                                            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                                                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                                                             }
                                                         }
-
-                                                    } else {
-                                                        if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                                                            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
-                                                        }
                                                     }
-                                                }
 
+                                                }
+                                            }
+
+
+                                        }
+                                        if (!allstatus) {
+                                            viewModel.downloadFinished(false)
+                                            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                                             }
                                         }
 
-
                                     }
-                                    if (!allstatus) {
+                                    else {
                                         viewModel.downloadFinished(false)
                                         if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                                             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                                         }
                                     }
 
-                                } else {
-                                    viewModel.downloadFinished(false)
-                                    if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
+                                }else{
+                                    printingData=createOrderResponse.data.order.orderItems
+                                    if (it.data?.isNotEmpty() == true /*&& createOrderResponse.data.order.orderItems*//*printingData!!.isNotEmpty()*/) {
+                                        var allstatus = false
+
+                                        for (i in 0 until it.data.size) {
+                                            it.data[i].orderTypes.forEach { order ->
+                                                if (order.orderTypeId == createOrderResponse.data.order.orderTypeId) {
+                                                    order.printerSettings.forEach { set ->
+                                                        if (set.printType.equals(
+                                                                Constants.KITCHEN,
+                                                                true
+                                                            ) && set.autoPrinting
+                                                        ) {
+                                                            if (printingData.isNotEmpty()) {
+                                                                var isUpdated = printingData.forEach {
+                                                                    if (it.isEdited) {
+                                                                        true
+                                                                        addCreditCardBreakDown()
+                                                                    }
+                                                                }
+                                                                Log.d("UPDATED", isUpdated.toString())
+                                                                if (checkItemsforPrinter(
+                                                                        /*createOrderResponse.data.order.orderItems*/
+                                                                        printingData
+                                                                            ?: arrayListOf(),
+                                                                        it.data[i].printerCategories.toCollection(
+                                                                            arrayListOf()
+                                                                        )
+                                                                    )
+                                                                ) {
+                                                                    LogUtil.logE(
+                                                                        TAG,
+                                                                        "statusPrinter  ${it.data[i].status}"
+                                                                    )
+                                                                    if (it.data[i].status) {
+                                                                        allstatus = true
+                                                                        initKitchenPrinter(
+                                                                            it.data.get(i),
+                                                                            Constants.KITCHEN,
+                                                                            createOrderResponse,
+                                                                            cartModel
+                                                                        )
+                                                                    }
+                                                                }
+
+                                                            } else {
+                                                                if (checkItemsforPrinter(
+                                                                        createOrderResponse.data.order.orderItems
+                                                                            ?: arrayListOf(),
+                                                                        it.data[i].printerCategories.toCollection(
+                                                                            arrayListOf()
+                                                                        )
+                                                                    )
+                                                                ) {
+                                                                    LogUtil.logE(
+                                                                        TAG,
+                                                                        "statusPrinter  ${it.data[i].status}"
+                                                                    )
+                                                                    if (it.data[i].status) {
+                                                                        allstatus = true
+                                                                        initKitchenPrinter(
+                                                                            it.data.get(i),
+                                                                            Constants.KITCHEN,
+                                                                            createOrderResponse,
+                                                                            cartModel
+                                                                        )
+                                                                    }
+                                                                }
+
+                                                            }
+
+                                                        } else {
+                                                            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                                                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
+                                                            }
+                                                        }
+                                                    }
+
+                                                }
+                                            }
+
+
+                                        }
+                                        if (!allstatus) {
+                                            viewModel.downloadFinished(false)
+                                            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
+                                            }
+                                        }
+
+                                    }
+                                    else {
+                                        viewModel.downloadFinished(false)
+                                        if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
+                                        }
                                     }
                                 }
+
+
 
                             }
                         }
@@ -3166,6 +3395,259 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 }
 
+
+                private fun getPrintingData(
+                    oldItems: List<CreateOrderResponse.Data.Order.OrderItem>,
+                    newItems: List<CreateOrderResponse.Data.Order.OrderItem>
+                ): Pair<List<CreateOrderResponse.Data.Order.OrderItem>, Boolean>   {
+
+                    var isUpdated=false
+
+                    /*if (oldItems.size >= newItems.size) {*/
+
+                    for (oldIndex in 0 until oldItems.size) {
+
+                        for (indexNew in 0 until newItems.size) {
+
+                            if (oldItems.size!=newItems.size){
+                                isUpdated=true
+                            }
+
+                            if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldIndex == indexNew) {
+                                if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity){
+                                    newItems.get(indexNew).isEdited = true
+                                    isUpdated=true
+                                }
+                                if (oldItems.get(oldIndex).price != newItems.get(indexNew).price){
+                                    newItems.get(indexNew).isEdited = true
+                                    isUpdated=true
+                                }
+
+                                if (!oldItems.get(oldIndex).note.equals(newItems.get(indexNew).note)) {
+                                    newItems.get(indexNew).isEdited = true
+                                    isUpdated=true
+
+                                }
+                            }
+
+                            if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(
+                                    oldIndex
+                                ).orderItemModifiers.size != newItems.get(indexNew).orderItemModifiers.size && oldIndex == indexNew
+                            ) {
+                                newItems.get(indexNew).isEdited = true
+                                isUpdated=true
+
+                            } else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(
+                                    oldIndex
+                                ).orderItemModifiers.size == newItems.get(indexNew).orderItemModifiers.size && oldItems.get(
+                                    oldIndex
+                                ).orderItemModifiers.size != 0 && oldIndex == indexNew
+                            ) {
+
+                                if (oldItems.get(oldIndex).orderItemModifiers != newItems.get(
+                                        indexNew
+                                    ).orderItemModifiers
+                                ) {
+                                    newItems.get(indexNew).isEdited = true
+                                    isUpdated=true
+
+                                }
+
+//                                if (oldItems.get(oldIndex).orderItemModifiers == newItems.get(indexNew).orderItemModifiers) {
+
+                                for (oldModifiersIndex in 0 until oldItems.get(oldIndex).orderItemModifiers.size) {
+
+                                    for (newModifiersIndex in 0 until newItems.get(indexNew).orderItemModifiers.size) {
+
+                                        if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                oldModifiersIndex
+                                            ).id == newItems.get(indexNew).orderItemModifiers.get(
+                                                newModifiersIndex
+                                            ).id
+                                        ) {
+                                            if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                    oldModifiersIndex
+                                                ).modifierQuantity != newItems.get(indexNew).orderItemModifiers.get(
+                                                    newModifiersIndex
+                                                ).modifierQuantity
+                                            ) {
+                                                newItems.get(indexNew).isEdited = true
+                                                isUpdated=true
+
+
+                                            } else if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                    oldModifiersIndex
+                                                ).price != newItems.get(indexNew).orderItemModifiers.get(
+                                                    newModifiersIndex
+                                                ).price
+                                            ) {
+                                                newItems.get(indexNew).isEdited = true
+                                                isUpdated=true
+
+
+                                            } else if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                    oldModifiersIndex
+                                                ).totalPrice != newItems.get(indexNew).orderItemModifiers.get(
+                                                    newModifiersIndex
+                                                ).totalPrice
+                                            ) {
+                                                newItems.get(indexNew).isEdited = true
+                                                isUpdated=true
+
+
+                                            } else if (!oldItems.get(oldIndex).orderItemModifiers.get(
+                                                    oldModifiersIndex
+                                                ).name.equals(
+                                                    newItems.get(indexNew).orderItemModifiers.get(
+                                                        newModifiersIndex
+                                                    ).name
+                                                )
+                                            ) {
+                                                newItems.get(indexNew).isEdited = true
+                                                isUpdated=true
+
+
+                                            }
+
+                                        }
+                                    }
+
+                                }
+
+//                                }
+                            }
+
+                            /*  else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(oldIndex).orderItemModifiers.size == newItems.get(indexNew).orderItemModifiers.size) {
+                                  *//*if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity) {
+                                    newItems.get(indexNew).isEdited = true
+                                }
+                                 Modifiers are not equal, i.e. edited
+                                else*//* if (oldItems.get(oldIndex).orderItemModifiers != newItems.get(indexNew).orderItemModifiers) {
+                                    newItems.get(indexNew).isEdited = true
+                                }
+                                *//* Modifiers are equal, i.e. the quantity of modifiers may change*//*
+                            }*/ else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId) {
+                                if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity && oldIndex == indexNew) {
+                                    newItems.get(indexNew).isEdited = true
+                                    isUpdated=true
+
+
+                                }
+                                /* Modifiers are not equal, i.e. edited */
+                                else if ((oldItems.get(oldIndex).orderItemModifiers != newItems.get(
+                                        indexNew
+                                    ).orderItemModifiers) && (oldIndex == indexNew)
+                                ) {
+                                    newItems.get(indexNew).isEdited = true
+                                    isUpdated=true
+
+                                }
+                                /* Modifiers are equal, i.e. the quantity of modifiers may change*/
+                                else if (oldItems.get(oldIndex).orderItemModifiers == newItems.get(
+                                        indexNew
+                                    ).orderItemModifiers
+                                ) {
+
+                                    for (oldModifiersIndex in 0 until oldItems.get(oldIndex).orderItemModifiers.size) {
+                                        for (newModifiersIndex in 0 until newItems.get(indexNew).orderItemModifiers.size) {
+                                            if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                    oldModifiersIndex
+                                                ).id == newItems.get(indexNew).orderItemModifiers.get(
+                                                    newModifiersIndex
+                                                ).id
+                                            ) {
+                                                if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                        oldModifiersIndex
+                                                    ).modifierQuantity != newItems.get(indexNew).orderItemModifiers.get(
+                                                        newModifiersIndex
+                                                    ).modifierQuantity
+                                                ) {
+                                                    newItems.get(indexNew).isEdited = true
+                                                    isUpdated=true
+
+                                                } else if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                        oldModifiersIndex
+                                                    ).price != newItems.get(indexNew).orderItemModifiers.get(
+                                                        newModifiersIndex
+                                                    ).price
+                                                ) {
+                                                    newItems.get(indexNew).isEdited = true
+                                                    isUpdated=true
+
+                                                } else if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                        oldModifiersIndex
+                                                    ).totalPrice != newItems.get(indexNew).orderItemModifiers.get(
+                                                        newModifiersIndex
+                                                    ).totalPrice
+                                                ) {
+                                                    newItems.get(indexNew).isEdited = true
+                                                    isUpdated=true
+
+                                                } else if (!oldItems.get(oldIndex).orderItemModifiers.get(
+                                                        oldModifiersIndex
+                                                    ).name.equals(
+                                                        newItems.get(indexNew).orderItemModifiers.get(
+                                                            newModifiersIndex
+                                                        ).name
+                                                    )
+                                                ) {
+                                                    newItems.get(indexNew).isEdited = true
+                                                    isUpdated=true
+
+                                                }
+
+                                            }
+                                        }
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+
+                    /*}
+                      else {
+                          newItems.forEachIndexed({ newIndex, newItems.get(indexNew) ->
+                              oldItems.forEachIndexed({ oldIndex, oldItems.get(oldIndex) ->
+
+                              })
+                          })
+                      }*/
+
+
+                    return Pair(newItems, isUpdated)
+                }
+
+                /*   private fun getPrintingData(
+
+                   ):List<CreateOrderResponse.Data.Order.OrderItem> {
+
+                       *//*if (oldDataModel.size>createOrderResponse.data.order.orderItems.size){
+                        getPrintingData(oldDataModel as List<CreateOrderResponse.Data.Order.OrderItem>,createOrderResponse.data.order.orderItems)
+                    }else if (oldDataModel.size<=createOrderResponse.data.order.orderItems.size){
+                        getPrintingData(oldDataModel as List<CreateOrderResponse.Data.Order.OrderItem>createOrderResponse.data.order.orderItems)
+
+                    }*//*
+                    LogUtil.logE(TAG, "getItemsModel   ${Gson().toJson(oldDataModel)}")
+
+*//*
+                    try{
+                        Gson().fromJson(model,ArrayList::class.java).forEachIndexed({index, oldItems.get(oldIndex) ->
+                            var newItems.get(indexNew)=createOrderResponse.data.order.orderItems.get(index)
+                            LogUtil.logE(TAG, "getItemsModel  ${index} ${Gson().toJson(oldItems.get(oldIndex))}")
+
+                        })
+                    }catch (e:java.lang.Exception){
+                        e.printStackTrace()
+                    }
+
+*//*
+                }
+*/
             })
 
         /* viewModel.getKitchenPrinterList().observe(viewLifecycleOwner) { it ->
@@ -4161,12 +4643,20 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     private fun generateKitchenReceiptSunmiInner(
         kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
-        receiptModel: CreateOrderResponse.Data
+        receiptModel: CreateOrderResponse.Data,
+        cartModel: CartModel?
     ) {
         try {
 
             SunmiPrintHelper.getInstance().initPrinter()
             SunmiPrintHelper.getInstance().lineWrap(4)
+            cartModel?.let {
+                if (it.isEdited) {
+                    PrintSunmiUtils.headerText("***** UPDATED *****")
+
+                }
+            }
+
             if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                 PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.custom_order_id)
             } else {
