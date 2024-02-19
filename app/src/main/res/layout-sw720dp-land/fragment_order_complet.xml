@@ -22,6 +22,7 @@
                 android:layout_height="wrap_content"
                 android:background="@color/btnColor"
                 android:paddingVertical="@dimen/_5sdp"
+
                 >
 
                 <androidx.appcompat.widget.AppCompatImageView
@@ -430,7 +431,7 @@
                                     android:id="@+id/llPrint"
                                     style="@style/CustomFontBold"
                                     android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="match_parent"
                                     android:layout_margin="@dimen/_3sdp"
                                     android:layout_weight="1"
                                     android:background="@drawable/selector_payment_complete_print"
@@ -445,7 +446,7 @@
                                     android:id="@+id/llEmail"
                                     style="@style/CustomFontBold"
                                     android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="match_parent"
                                     android:layout_margin="@dimen/_3sdp"
                                     android:layout_weight="1"
                                     android:background="@drawable/background_square_border_grey"
@@ -476,7 +477,7 @@
                                     android:id="@+id/llNoReceipt"
                                     style="@style/CustomFontBold"
                                     android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="match_parent"
                                     android:layout_margin="@dimen/_3sdp"
                                     android:layout_weight="1"
                                     android:background="@drawable/background_square_border_grey"
