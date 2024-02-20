@@ -85,6 +85,7 @@ import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import com.pays.pos.utils.workmanager.ThreadPoolManager
 import com.google.gson.Gson
+import com.pax.poslink.log.LogFilter.Const
 import com.pays.pos.data.remote.Constants.AMOUNT
 import com.pays.pos.data.remote.Constants.QUEUE_SYNC_TIME_STAMP
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -607,6 +608,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             )
 
         }
+
     }
 
 
@@ -4760,6 +4762,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         itemtype.totalTaxTypePrice = getTotalTaxBirfurcation(item, itemtype, type)
                         cartModel.taxlistDynamic =
                             concatenate(cartModel.taxlistDynamic!!, listOf(itemtype))
+                        prefProvider.setValue(Constants.taxListDynamic,Gson().toJson(cartModel.taxlistDynamic))
                     } else {
                         if (itemtype.taxType != "Percentage") {
                             var modifierPrice: Double = 0.0
@@ -4829,6 +4832,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         )
                                     temp_arraylist.removeAt(found)
                                     cartModel.taxlistDynamic = temp_arraylist.toList()
+                                    prefProvider.setValue(Constants.taxListDynamic,Gson().toJson(cartModel.taxlistDynamic))
+
 
                                 }
                             }
@@ -4842,6 +4847,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 )
                                             temp_arraylist.removeAt(found)
                                             cartModel.taxlistDynamic = temp_arraylist.toList()
+                                            prefProvider.setValue(Constants.taxListDynamic,Gson().toJson(cartModel.taxlistDynamic))
+
 
                                         }
                                     }
@@ -4869,6 +4876,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
                     itemtype.totalTaxTypePrice = getTotalTaxBirfurcation(item, itemtype, type)
                     cartModel.taxlistDynamic = listOf(itemtype)
+                    prefProvider.setValue(Constants.taxListDynamic,Gson().toJson(cartModel.taxlistDynamic))
+
                 }
             }
 
@@ -4920,6 +4929,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                         cartModel.taxlistDynamic =
                             concatenate(cartModel.taxlistDynamic!!, listOf(itemtype))
+
+                        prefProvider.setValue(Constants.taxListDynamic,Gson().toJson(cartModel.taxlistDynamic))
+
                     } else {
                         if (itemtype.taxType != "Percentage") {
                             var modifierPrice: Double = 0.0
@@ -4989,6 +5001,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         )
                                     temp_arraylist.removeAt(found)
                                     cartModel.taxlistDynamic = temp_arraylist.toList()
+                                    prefProvider.setValue(Constants.taxListDynamic,Gson().toJson(cartModel.taxlistDynamic))
+
 
                                 }
                             }
@@ -5002,6 +5016,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 )
                                             temp_arraylist.removeAt(found)
                                             cartModel.taxlistDynamic = temp_arraylist.toList()
+                                            prefProvider.setValue(Constants.taxListDynamic,Gson().toJson(cartModel.taxlistDynamic))
+
 
                                         }
                                     }
@@ -5032,6 +5048,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                     Log.e("checkTotalTax", "TaxPrice 2: ${ttaxPrice}")
                     itemtype.totalTaxTypePrice = ttaxPrice
                     cartModel.taxlistDynamic = listOf(itemtype)
+                    prefProvider.setValue(Constants.taxListDynamic,Gson().toJson(cartModel.taxlistDynamic))
+
                 }
             }
 

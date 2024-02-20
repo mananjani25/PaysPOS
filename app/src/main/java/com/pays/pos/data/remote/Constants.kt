@@ -438,6 +438,12 @@ object Constants {
     const val PHONE_ORDER_TAB = "PhoneOrder"
     const val ONLINE_ORDER_TAB = "OnlineWebOrder"
     const val THIRD_PARTY_ORDER_TAB = "OnlineOrder"
+    const val taxListDynamic = "taxListDynamic"
+    const val discountType = "discountType"
+    const val discountSelectedValue = "discountSelectedValue"
+    const val orderNote = "orderNote"
+    const val discountPrice = "discountPrice"
+    const val isManual = "isManual"
 
     //PAX
     const val TRANSACTION_SUCCESSED = 100 //transaction success

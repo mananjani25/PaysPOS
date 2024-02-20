@@ -31,6 +31,8 @@ import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
 import com.pays.pos.utils.extensions.alert
 import com.google.gson.Gson
+import com.pays.pos.data.remote.Constants
+import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
@@ -222,9 +224,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
 
         }
-       // binding.txtCurrencyPercentage.performClick()
 
-        //added to enable Percentage view only - removed discount in amount i.e $
         percentageView()
     }
 
@@ -467,74 +467,66 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         }
     }
 
-
     private fun addDiscount() {
+        defaultModel.itemQuantity = itemQuantity
+        if (selectedListPos != -1) {
 
-        if(dashBoardViewModel.currentTotalPrice > 0.0) {
-
-            defaultModel.itemQuantity = itemQuantity
-
-            if (selectedListPos != -1) {
-
-                val model = discountAdapter.getItem(selectedListPos)
+            val model = discountAdapter.getItem(selectedListPos)
 
 
-                var a = binding.edtAmount.text.toString().toDouble()
+            var a = binding.edtAmount.text.toString().toDouble()
 
-                if (isOrderDiscount && selectedCurrency == PERCENTAGE) {
+            if (isOrderDiscount && selectedCurrency == PERCENTAGE) {
 
-                    a = (totalOrderPrice + orderDiscountPrice) * a / 100
+                a = (totalOrderPrice + orderDiscountPrice) * a / 100
+            }
+
+            val discount = TbDiscount(
+                "",
+                model.discountType,
+                model.id,
+                0,
+                model.name,
+                a,
+                ""
+            )
+
+            PrefProvider(requireContext()).setValue(Constants.discountType, discountModel!!.discountType)
+
+            val result = Bundle().apply {
+                putParcelable("data", discount)
+                putParcelable("item", defaultModel)
+                putDouble("value", binding.edtAmount.text.toString().toDouble())
+            }
+
+
+            when {
+                isFromDetails -> {
+                    setFragmentResult("request_key_discount_details", result)
                 }
-
-
-
-                val discount = TbDiscount(
-                    "",
-                    model.discountType,
-                    model.id,
-                    0,
-                    model.name,
-                    a,
-                    ""
-                )
-
-
-                val result = Bundle().apply {
-                    putParcelable("data", discount)
-                    putParcelable("item", defaultModel)
-                    putDouble("value", binding.edtAmount.text.toString().toDouble())
+                isOrderDiscount -> {
+                    setFragmentResult("request_key_discount_order", result)
                 }
+                else -> {
 
-
-                when {
-                    isFromDetails -> {
-                        setFragmentResult("request_key_discount_details", result)
-                    }
-
-                    isOrderDiscount -> {
-                        setFragmentResult("request_key_discount_order", result)
-                    }
-
-                    else -> {
-
-                        setFragmentResult("request_key_discount", result)
-                    }
+                    setFragmentResult("request_key_discount", result)
                 }
-                findNavController().navigateUp()
+            }
+            findNavController().navigateUp()
 
-            } else if (binding.edtAmount.text?.isNotEmpty() == true && binding.edtAmount.text.toString() != "0.00") {
-
-
-                discountModel =
-                    if (selectedCurrency == PERCENTAGE) {
+        } else if (binding.edtAmount.text?.isNotEmpty() == true && binding.edtAmount.text.toString() != "0.00") {
 
 
-                        var a = binding.edtAmount.text.toString().toDouble()
+            discountModel =
+                if (selectedCurrency == PERCENTAGE) {
 
-                        if (isOrderDiscount) {
 
-                            a = (totalOrderPrice + orderDiscountPrice) * a / 100
-                        }
+                    var a = binding.edtAmount.text.toString().toDouble()
+
+                    if (isOrderDiscount) {
+
+                        a = (totalOrderPrice + orderDiscountPrice) * a / 100
+                    }
 
                         TbDiscount(
                             "",
@@ -566,7 +558,9 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                     putParcelable("item", defaultModel)
                     putDouble("value", binding.edtAmount.text.toString().toDouble())
                 }
-                when {
+            PrefProvider(requireContext()).setValue(Constants.discountType, discountModel!!.discountType)
+
+            when {
                     isFromDetails -> {
                         LogUtil.logE(TAG, "PassingModel:  ${Gson().toJson(discountModel)}")
                         setFragmentResult("request_key_discount_details", result)
@@ -578,16 +572,15 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
                     else -> {
 
-                        setFragmentResult("request_key_discount", result)
-                    }
+                    setFragmentResult("request_key_discount", result)
                 }
-                findNavController().navigateUp()
-            } else {
-                removeDiscount()
-
             }
-        }else
-            dismiss()
+            findNavController().navigateUp()
+        } else {
+            removeDiscount()
+
+        }
+
     }
 
     private fun removeDiscount() {
@@ -596,6 +589,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             putParcelable("data", discount)
             putParcelable("item", defaultModel)
         }
+
+        PrefProvider(requireContext()).setValue(Constants.discountType, "")
 
 
         when {
