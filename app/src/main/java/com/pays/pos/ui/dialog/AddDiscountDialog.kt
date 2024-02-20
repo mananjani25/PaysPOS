@@ -225,6 +225,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
         }
 
+        percentageView()
     }
 
     private fun onClick() {
