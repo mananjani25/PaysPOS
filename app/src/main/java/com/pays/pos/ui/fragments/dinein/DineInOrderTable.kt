@@ -1300,6 +1300,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         itemtype.totalTaxTypePrice = getTotalTaxBirfurcation(item, itemtype)
                         cartModel.taxlistDynamic =
                             concatenate(cartModel.taxlistDynamic!!, listOf(itemtype))
+                        prefProvider.setValue(Constants.taxListDynamic,Gson().toJson(cartModel.taxlistDynamic))
+
                     } else {
                         if (itemtype.taxType != "Percentage") {
                             var modifierPrice: Double = 0.0
@@ -1339,6 +1341,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                     itemtype.totalTaxTypePrice = getTotalTaxBirfurcation(item, itemtype)
                     cartModel.taxlistDynamic = listOf(itemtype)
+                    prefProvider.setValue(Constants.taxListDynamic,Gson().toJson(cartModel.taxlistDynamic))
+
                 }
             }
 

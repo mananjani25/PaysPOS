@@ -18,6 +18,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.pays.pos.R
 import com.pays.pos.data.entities.CartModel
 import com.pays.pos.data.entities.CashDiscountModel
@@ -2687,7 +2688,46 @@ class CartFragment(
                                 orderOfflineId
                             )
 
+                            /* Added by Rahul to solve the cartModel crash issue, i.e. cartModel is getting null - START*/
+                            if (viewModel.cartModel == null) {
+                                var currentCartItems = arrayListOf<TbItem>()
+                                for (tbItem in viewModel.currentCartItems) {
+                                    currentCartItems.add(TbItem().convertCartToItem(tbItem, tbItem))
+                                }
+                                var isManual = false
+                                if (prefProvider.getValue(Constants.REDIRECT_FROM, "").equals("manual_sale")) {
+                                    isManual = true
+                                } else {
+                                    isManual = false
+                                }
+                                viewModel.cartModel = CartModel().apply {
+                                    terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+                                    employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+                                    locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+                                    orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
+                                    orderType = prefProvider.getValue(ORDER_TYPE, "").toString()
+                                    orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
+                                    items = currentCartItems
+                                    isOpenOrder = false
+                                    isMaual = isManual
+                                    isEdited = false
+                                    customer = Gson().fromJson(
+                                        prefProvider.getValue("pref_customer", "").toString(),
+                                        TbCustomer::class.java
+                                    )
+                                    taxlistDynamic = Gson().fromJson(
+                                        prefProvider.getValue("taxlistDynamic", "").toString(),
+                                        object : TypeToken<List<TaxData>?>() {}.getType()
+                                    )
+                                }
+
+                                viewModel.addCart(viewModel.cartModel!!)
+
+                            }
+                            /* Added by Rahul to solve the cartModel crash issue, i.e. cartModel is getting null - END*/
+
                             val cartModel = viewModel.cartModel
+
                             cartModel?.openOrderType = Constants.PICK_UP
                             cartModel?.orderType = ordertype
                             cartModel?.orderTypeId = ordertypeId
@@ -3116,6 +3156,8 @@ class CartFragment(
                     Log.e("checkTotalTax", "TaxPrice 2: ${ttaxPrice}")
                     itemtype.totalTaxTypePrice = ttaxPrice
                     cartModel.taxlistDynamic = listOf(itemtype)
+                    prefProvider.setValue(Constants.taxListDynamic,Gson().toJson(cartModel.taxlistDynamic))
+
                 }
 
 

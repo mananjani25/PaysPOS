@@ -1474,6 +1474,9 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
         }
         orderAttributeRequestModel.tax_bifurcation_data = Gson().toJson(cartModel.taxlistDynamic)
 
+        prefProvider.setValue(Constants.taxListDynamic,Gson().toJson(orderAttributeRequestModel.tax_bifurcation_data))
+
+
         val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
         if (customerId != -1) {
             orderAttributeRequestModel.customer_id = ""+customerId

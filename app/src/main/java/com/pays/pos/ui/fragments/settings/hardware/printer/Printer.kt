@@ -2281,6 +2281,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             )
 
         }
+
         //ip address for bg printer
         //if (printerListModel.connectionType == WIFI) "TCP:" + printerListModel.deviceModel?.ipAddress else "BT:" + printerListModel.deviceModel?.ipAddress
         val createPrinter = CreatePrinterRequestModel(

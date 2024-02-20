@@ -31,6 +31,8 @@ import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
 import com.pays.pos.utils.extensions.alert
 import com.google.gson.Gson
+import com.pays.pos.data.remote.Constants
+import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
@@ -488,12 +490,14 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 ""
             )
 
+            PrefProvider(requireContext()).setValue(Constants.discountType, discountModel!!.discountType)
 
             val result = Bundle().apply {
                 putParcelable("data", discount)
                 putParcelable("item", defaultModel)
                 putDouble("value", binding.edtAmount.text.toString().toDouble())
             }
+
 
 
             when {
@@ -549,6 +553,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 putParcelable("item", defaultModel)
                 putDouble("value", binding.edtAmount.text.toString().toDouble())
             }
+            PrefProvider(requireContext()).setValue(Constants.discountType, discountModel!!.discountType)
+
             when {
                 isFromDetails -> {
                     LogUtil.logE(TAG, "PassingModel:  ${Gson().toJson(discountModel)}")
@@ -576,6 +582,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             putParcelable("data", discount)
             putParcelable("item", defaultModel)
         }
+
+        PrefProvider(requireContext()).setValue(Constants.discountType, "")
 
 
         when {
