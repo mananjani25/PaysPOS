@@ -499,7 +499,6 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             }
 
 
-
             when {
                 isFromDetails -> {
                     setFragmentResult("request_key_discount_details", result)
@@ -528,42 +527,49 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                         a = (totalOrderPrice + orderDiscountPrice) * a / 100
                     }
 
-                    TbDiscount(
-                        "",
-                        getString(R.string.disc_percentage),
-                        -1,
-                        0,
-                        "",
-                        a,
-                        ""
-                    )
-                } else {
-                    TbDiscount(
-                        "",
-                        "Amount",
-                        -1,
-                        0,
-                        "",
-                        binding.edtAmount.text.toString().toDouble(),
-                        ""
-                    )
+                        TbDiscount(
+                            "",
+                            getString(R.string.disc_percentage),
+                            -1,
+                            0,
+                            "",
+                            a,
+                            ""
+                        )
+                    } else {
+                        TbDiscount(
+                            "",
+                            "Amount",
+                            -1,
+                            0,
+                            "",
+                            binding.edtAmount.text.toString().toDouble(),
+                            ""
+                        )
+                    }
+
+
+//                if(defaultModel.discountPrice > dashBoardViewModel.currentTotalPrice)
+//                    defaultModel.discountPrice = dashBoardViewModel.currentTotalPrice
+
+                val result = Bundle().apply {
+                    putParcelable("data", discountModel)
+                    putParcelable("item", defaultModel)
+                    putDouble("value", binding.edtAmount.text.toString().toDouble())
                 }
-            val result = Bundle().apply {
-                putParcelable("data", discountModel)
-                putParcelable("item", defaultModel)
-                putDouble("value", binding.edtAmount.text.toString().toDouble())
-            }
             PrefProvider(requireContext()).setValue(Constants.discountType, discountModel!!.discountType)
 
             when {
-                isFromDetails -> {
-                    LogUtil.logE(TAG, "PassingModel:  ${Gson().toJson(discountModel)}")
-                    setFragmentResult("request_key_discount_details", result)
-                }
-                isOrderDiscount -> {
-                    setFragmentResult("request_key_discount_order", result)
-                }
-                else -> {
+                    isFromDetails -> {
+                        LogUtil.logE(TAG, "PassingModel:  ${Gson().toJson(discountModel)}")
+                        setFragmentResult("request_key_discount_details", result)
+                    }
+
+                    isOrderDiscount -> {
+                        setFragmentResult("request_key_discount_order", result)
+                    }
+
+                    else -> {
 
                     setFragmentResult("request_key_discount", result)
                 }

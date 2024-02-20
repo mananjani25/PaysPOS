@@ -54,6 +54,7 @@ import com.pays.pos.utils.extensions.alert
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.extensions.visible
+import com.pays.pos.utils.subTotalToDouble
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import javax.inject.Inject
@@ -242,6 +243,14 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             findNavController().popBackStack()
         }
     }
+
+    private fun setCurrentSubTotal(itemQuantity: Int) {
+        val subTotalText = binding.txtSubTotal.text.toString()
+        val subTotal = subTotalText.subTotalToDouble()
+        viewModel.currentTotalPrice = subTotal
+        viewModel.clickedItemQuantity = itemQuantity
+    }
+
 
     fun setTaxBifurcationData(taxlistData: ArrayList<TaxData>) {
         if (taxlistData?.isNotEmpty()) {
@@ -963,6 +972,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         }
 
                         R.id.menu_order_discount -> {
+                            viewModel.currentTotalPrice = binding.txtSubTotal.text.toString().subTotalToDouble()
                             runBlocking {
                                 addOrderDiscount()
                             }
@@ -1091,7 +1101,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         bundle.putBoolean("isOrderDiscount", true)
         bundle.putDouble("totalPrice", viewModel.subTotalPrice)
 
-        if (viewModel.cartModel?.discountType!!.isEmpty()) {
+        if (viewModel.cartModel?.discountType?.isEmpty() == true) {
 
             CoroutineScope(Dispatchers.IO).async {
                 viewModel.cartModel = viewModel.getManualSaleFromCart(
@@ -1531,7 +1541,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         setFragmentResultListener("request_key_discount_order") { _: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbDiscount>("data")
             val value = bundle.getDouble("value")
-/*Added by Rahul for solving Discount issue */
+            /*Added by Rahul for solving Discount issue */
             if (viewModel.cartModel == null) {
                 runBlocking {
                     reasignCartModelFromDB()
@@ -1574,6 +1584,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                 val discountApplyPrice = viewModel.totalPrice
                 val price = discountApplyPrice - orderDiscount
+
+                if(orderDiscount > viewModel.currentTotalPrice)
+                    orderDiscount = viewModel.currentTotalPrice
 
                 manualCartModel?.let {
                     manualCartModel?.discountPrice = orderDiscount
@@ -2241,6 +2254,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         btnAddDiscount.setOnClickListener {
             viewModel.setPosition(position)
+            setCurrentSubTotal(txtQty.text.toString().toInt())
             setFragmentResultListener("request_key_discount_details") { requestKey: String, bundle: Bundle ->
                 val result = bundle.getParcelable<TbDiscount>("data")
                 if (result != null) {
@@ -2251,6 +2265,21 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                             model.price,
                             result.percentage
                         )
+
+                        Log.e("Value of Edit Amount","Value of Percentage= ${result.percentage} and Price of item = ${model.price}")
+
+                        if(model.discountPrice>viewModel.currentTotalPrice){
+                            model.discountPrice = viewModel.currentTotalPrice
+                            Log.e("Discount Tracking Pays","Discount greater  = ${model.discountPrice} and Current price = ${viewModel.currentTotalPrice}")
+
+                        }
+
+                        if(viewModel.clickedItemQuantity>1) {
+                            model.discountPrice = model.discountPrice / viewModel.clickedItemQuantity
+
+                            Log.e("Discount Tracking Pays","Item Quantity greater  = ${model.quantity} and Discount price = ${model.discountPrice}")
+                        }
+
                         model.discountId = result.id
                         model.discountType = result.discountType
                         model.isManualSales = true
