@@ -222,7 +222,10 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
 
         }
+       // binding.txtCurrencyPercentage.performClick()
 
+        //added to enable Percentage view only - removed discount in amount i.e $
+        percentageView()
     }
 
     private fun onClick() {
@@ -464,110 +467,127 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         }
     }
 
+
     private fun addDiscount() {
-        defaultModel.itemQuantity = itemQuantity
-        if (selectedListPos != -1) {
 
-            val model = discountAdapter.getItem(selectedListPos)
+        if(dashBoardViewModel.currentTotalPrice > 0.0) {
 
+            defaultModel.itemQuantity = itemQuantity
 
-            var a = binding.edtAmount.text.toString().toDouble()
+            if (selectedListPos != -1) {
 
-            if (isOrderDiscount && selectedCurrency == PERCENTAGE) {
-
-                a = (totalOrderPrice + orderDiscountPrice) * a / 100
-            }
-
-            val discount = TbDiscount(
-                "",
-                model.discountType,
-                model.id,
-                0,
-                model.name,
-                a,
-                ""
-            )
+                val model = discountAdapter.getItem(selectedListPos)
 
 
-            val result = Bundle().apply {
-                putParcelable("data", discount)
-                putParcelable("item", defaultModel)
-                putDouble("value", binding.edtAmount.text.toString().toDouble())
-            }
+                var a = binding.edtAmount.text.toString().toDouble()
 
+                if (isOrderDiscount && selectedCurrency == PERCENTAGE) {
 
-            when {
-                isFromDetails -> {
-                    setFragmentResult("request_key_discount_details", result)
+                    a = (totalOrderPrice + orderDiscountPrice) * a / 100
                 }
-                isOrderDiscount -> {
-                    setFragmentResult("request_key_discount_order", result)
+
+
+
+                val discount = TbDiscount(
+                    "",
+                    model.discountType,
+                    model.id,
+                    0,
+                    model.name,
+                    a,
+                    ""
+                )
+
+
+                val result = Bundle().apply {
+                    putParcelable("data", discount)
+                    putParcelable("item", defaultModel)
+                    putDouble("value", binding.edtAmount.text.toString().toDouble())
                 }
-                else -> {
-
-                    setFragmentResult("request_key_discount", result)
-                }
-            }
-            findNavController().navigateUp()
-
-        } else if (binding.edtAmount.text?.isNotEmpty() == true && binding.edtAmount.text.toString() != "0.00") {
 
 
-            discountModel =
-                if (selectedCurrency == PERCENTAGE) {
-
-
-                    var a = binding.edtAmount.text.toString().toDouble()
-
-                    if (isOrderDiscount) {
-
-                        a = (totalOrderPrice + orderDiscountPrice) * a / 100
+                when {
+                    isFromDetails -> {
+                        setFragmentResult("request_key_discount_details", result)
                     }
 
-                    TbDiscount(
-                        "",
-                        getString(R.string.disc_percentage),
-                        -1,
-                        0,
-                        "",
-                        a,
-                        ""
-                    )
-                } else {
-                    TbDiscount(
-                        "",
-                        "Amount",
-                        -1,
-                        0,
-                        "",
-                        binding.edtAmount.text.toString().toDouble(),
-                        ""
-                    )
+                    isOrderDiscount -> {
+                        setFragmentResult("request_key_discount_order", result)
+                    }
+
+                    else -> {
+
+                        setFragmentResult("request_key_discount", result)
+                    }
                 }
-            val result = Bundle().apply {
-                putParcelable("data", discountModel)
-                putParcelable("item", defaultModel)
-                putDouble("value", binding.edtAmount.text.toString().toDouble())
+                findNavController().navigateUp()
+
+            } else if (binding.edtAmount.text?.isNotEmpty() == true && binding.edtAmount.text.toString() != "0.00") {
+
+
+                discountModel =
+                    if (selectedCurrency == PERCENTAGE) {
+
+
+                        var a = binding.edtAmount.text.toString().toDouble()
+
+                        if (isOrderDiscount) {
+
+                            a = (totalOrderPrice + orderDiscountPrice) * a / 100
+                        }
+
+                        TbDiscount(
+                            "",
+                            getString(R.string.disc_percentage),
+                            -1,
+                            0,
+                            "",
+                            a,
+                            ""
+                        )
+                    } else {
+                        TbDiscount(
+                            "",
+                            "Amount",
+                            -1,
+                            0,
+                            "",
+                            binding.edtAmount.text.toString().toDouble(),
+                            ""
+                        )
+                    }
+
+
+//                if(defaultModel.discountPrice > dashBoardViewModel.currentTotalPrice)
+//                    defaultModel.discountPrice = dashBoardViewModel.currentTotalPrice
+
+                val result = Bundle().apply {
+                    putParcelable("data", discountModel)
+                    putParcelable("item", defaultModel)
+                    putDouble("value", binding.edtAmount.text.toString().toDouble())
+                }
+                when {
+                    isFromDetails -> {
+                        LogUtil.logE(TAG, "PassingModel:  ${Gson().toJson(discountModel)}")
+                        setFragmentResult("request_key_discount_details", result)
+                    }
+
+                    isOrderDiscount -> {
+                        setFragmentResult("request_key_discount_order", result)
+                    }
+
+                    else -> {
+
+                        setFragmentResult("request_key_discount", result)
+                    }
+                }
+                findNavController().navigateUp()
+            } else {
+                removeDiscount()
+
             }
-            when {
-                isFromDetails -> {
-                    LogUtil.logE(TAG, "PassingModel:  ${Gson().toJson(discountModel)}")
-                    setFragmentResult("request_key_discount_details", result)
-                }
-                isOrderDiscount -> {
-                    setFragmentResult("request_key_discount_order", result)
-                }
-                else -> {
-
-                    setFragmentResult("request_key_discount", result)
-                }
-            }
-            findNavController().navigateUp()
-        } else {
-            removeDiscount()
-
-        }
-
+        }else
+            dismiss()
     }
 
     private fun removeDiscount() {

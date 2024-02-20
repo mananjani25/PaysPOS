@@ -138,6 +138,13 @@ class DashBoardCategoryViewModel @Inject constructor(
     var currentCartItems: ArrayList<TbCartItem> = arrayListOf()
     var duplicateCurrentCartItem: ArrayList<TbCartItem> = arrayListOf()
 
+    /***
+     * Added to resolve BIS 1693 - Add discount issue
+     */
+    var currentTotalPrice = 0.0
+    var clickedItemQuantity = 1
+    var isFromKeyPad = false
+
     var latestUpdatedCartItem = 0
     var assignCustomer: TbCustomer? = null
     var orderItemDiscount = 0.0
