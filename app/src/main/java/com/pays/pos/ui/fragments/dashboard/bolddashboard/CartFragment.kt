@@ -2574,7 +2574,7 @@ class CartFragment(
 
         binding.tvPayNow.setOnClickListener {
             runBlocking {
-              //  delay(300)
+                delay(500)
                 if (prefProvider.getValue(ORDER_TYPE, "") == OPEN_ORDER) {
 
                     prefProvider.setValueboolean(OPEN_ORDER_DIRECT_PAY, true)
