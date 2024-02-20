@@ -1932,7 +1932,7 @@ class CartFragment(
         LogUtil.logE(TAG, "itemClicked  ${Gson().toJson(data)}")
 
 
-        setCurrentSubTotal()
+        setCurrentSubTotal(data.itemQuantity)
         Log.e("Discount Tracking","Subtotal Cart Price = ${viewModel.currentTotalPrice}")
         itemClickListner?.onCartItemUpdate(data, position)
 
@@ -2305,10 +2305,11 @@ class CartFragment(
 
     }
 
-    private fun setCurrentSubTotal() {
+    private fun setCurrentSubTotal(itemQuantity:Int) {
         val subTotalText = binding.txtSubTotal.text.toString()
         val subTotal = subTotalText.subTotalToDouble()
         viewModel.currentTotalPrice = subTotal
+        viewModel.clickedItemQuantity = itemQuantity
     }
 
     private fun initListeners() {
@@ -2515,7 +2516,7 @@ class CartFragment(
                             val bundle = Bundle()
 
 
-                            setCurrentSubTotal()
+                            setCurrentSubTotal(1)
 
                             bundle.putBoolean("isOrderDiscount", true)
                             bundle.putDouble("totalPrice", viewModel.currentTotalPrice)

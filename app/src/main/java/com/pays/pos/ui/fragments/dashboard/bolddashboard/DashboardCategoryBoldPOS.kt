@@ -557,11 +557,20 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             )
                         }!!
 
-                        if(item.discountPrice > viewModel.currentTotalPrice){
+
+                        if(item.discountPrice>viewModel.currentTotalPrice){
                             item.discountPrice = viewModel.currentTotalPrice
+                            Log.e("Discount Tracking Pays","Discount greater  = ${item.discountPrice} and Current price = ${viewModel.currentTotalPrice}")
+
                         }
 
-                        //discountPrice = item.discountPrice / item.itemQuantity
+                        if(viewModel.clickedItemQuantity>1) {
+                            item.discountPrice = item.discountPrice / viewModel.clickedItemQuantity
+
+                            Log.e("Discount Tracking Pays","Item Quantity greater  = ${item.quantity} and Discount price = ${item.discountPrice}")
+                        }
+
+
                         item.discountId = result.id
                         item.discountType = result.discountType
 

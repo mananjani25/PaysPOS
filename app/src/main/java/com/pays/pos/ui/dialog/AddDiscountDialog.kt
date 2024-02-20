@@ -222,7 +222,10 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
 
         }
+       // binding.txtCurrencyPercentage.performClick()
 
+        //added to enable Percentage view only - removed discount in amount i.e $
+        percentageView()
     }
 
     private fun onClick() {
@@ -464,11 +467,13 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         }
     }
 
+
     private fun addDiscount() {
 
         if(dashBoardViewModel.currentTotalPrice > 0.0) {
 
             defaultModel.itemQuantity = itemQuantity
+
             if (selectedListPos != -1) {
 
                 val model = discountAdapter.getItem(selectedListPos)
@@ -552,8 +557,9 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                         )
                     }
 
-                if(defaultModel.discountPrice > dashBoardViewModel.currentTotalPrice)
-                    defaultModel.discountPrice = dashBoardViewModel.currentTotalPrice
+
+//                if(defaultModel.discountPrice > dashBoardViewModel.currentTotalPrice)
+//                    defaultModel.discountPrice = dashBoardViewModel.currentTotalPrice
 
                 val result = Bundle().apply {
                     putParcelable("data", discountModel)

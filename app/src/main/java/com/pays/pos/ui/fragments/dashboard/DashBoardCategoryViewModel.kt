@@ -142,6 +142,8 @@ class DashBoardCategoryViewModel @Inject constructor(
      * Added to resolve BIS 1693 - Add discount issue
      */
     var currentTotalPrice = 0.0
+    var clickedItemQuantity = 1
+    var isFromKeyPad = false
 
     var latestUpdatedCartItem = 0
     var assignCustomer: TbCustomer? = null
