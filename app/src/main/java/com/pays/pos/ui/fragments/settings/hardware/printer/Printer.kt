@@ -2317,6 +2317,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         if (printerListModel.type.lowercase() == KITCHENANDCUSTOMER.lowercase()) {
             if (printerListModel.currentPrinterType == KITCHEN) {
+                Log.d("innerPrinterKitchen", "1st stage")
                 deletePrinter(printerListModel, CUSTOMER)
 
             } else {
@@ -3249,22 +3250,27 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     private fun deletePrinter(printerListModel: PrinterListModel, type: String? = null) {
         Log.d("deletePrinter", "type = $type")
         Log.d("deletePrinter", "id = $id")
+        Log.d("innerPrinterKitchen", "2nd stage")
+
         alert(
             getString(R.string.tv_pos),
             getString(R.string.delete_printer_message)
         ) {
             positiveButton(getString(R.string.tv_delete)) {
                 if (type != null) {
+                    Log.d("innerPrinterKitchen", "3rd stage")
                     viewModel.deletePrinter(printerListModel, type)
                     Log.d("deletePrinter", "delete type = $type")
                 } else {
+                    Log.d("innerPrinterKitchen", "4th stage")
                     viewModel.deletePrinter(printerListModel)
                     Log.d("deletePrinter", "delete id = $id")
                 }
 
             }
-            negativeButton(R.string.tv_cancel) {
 
+            negativeButton(R.string.tv_cancel) {
+                Log.d("innerPrinterKitchen", "5th stage")
             }
         }
     }
