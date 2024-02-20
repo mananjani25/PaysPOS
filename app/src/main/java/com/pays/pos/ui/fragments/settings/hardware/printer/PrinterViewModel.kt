@@ -166,6 +166,10 @@ class PrinterViewModel @Inject constructor(
     }
 
     fun deletePrinter(printerListModel: PrinterListModel, status: String? = null) {
+      /*  Log.d("innerPrinterKitchen", "6th stage")
+        Log.d("innerPrinterKitchen", status!!)
+*/
+
         _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource: com.pays.pos.utils.statusUtils.Resource<DeletePrinterResponseModel> =
@@ -175,12 +179,16 @@ class PrinterViewModel @Inject constructor(
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
                     if (status != null) {
-                        if (status.lowercase() == Constants.KITCHEN.lowercase()) {
+                        if(status.lowercase() == Constants.CUSTOMER.lowercase() && printerListModel.printerName!! == "InnerPrinter"){
+                            Log.e("PrinterDelete","Printer Inner ID: ${printerListModel.id}")
+                            posRepository.deleteKitchenPrinter(printerListModel.id)
+                        }
+                        else if (status.lowercase() == Constants.KITCHEN.lowercase()) {
                             Log.e("PrinterDelete","Printer ID: ${printerListModel.id}")
 
                             posRepository.deleteKitchenPrinter(printerListModel.id)
                         } else {
-
+                            Log.e("PrinterDeleteElse","Printer Else ID: ${printerListModel.id}")
                             posRepository.deleteCustomerPrinter(printerListModel.id)
                         }
 
