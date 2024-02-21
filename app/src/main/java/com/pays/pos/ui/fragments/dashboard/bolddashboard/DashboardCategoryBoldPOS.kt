@@ -3204,7 +3204,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                                 var isUpdated = printingData!!.forEach {
                                                                     if (it.isEdited) {
                                                                         true
-                                                                        addCreditCardBreakDown()
+                                                                       /* addCreditCardBreakDown()*/
                                                                     }
                                                                 }
                                                                 Log.d("UPDATED", isUpdated.toString())
@@ -3303,7 +3303,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                                 var isUpdated = printingData.forEach {
                                                                     if (it.isEdited) {
                                                                         true
-                                                                        addCreditCardBreakDown()
+                                                                        /*addCreditCardBreakDown()*/
                                                                     }
                                                                 }
                                                                 Log.d("UPDATED", isUpdated.toString())
