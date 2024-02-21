@@ -49,6 +49,8 @@ class MethodUtils {
         private var thirdValue: Double = 0.0
         private var secondValue: Int = 0
 
+
+
         fun getCardType(xml: String): String {
             if (xml != null && !xml.isNullOrEmpty()) {
 
