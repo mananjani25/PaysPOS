@@ -173,6 +173,9 @@ object Constants {
     const val DELIVERY_TYPE = "Delivery_Type"
     const val OPEN_ORDER_ITEMS = "Open_Order_Items"
 
+    /*Added By Rahul */
+    const val OPEN_ORDER_ITEMS_OLD = "Open_Order_Items_Old"
+
     //Api End Points
     const val USERS_LOG_IN = "users/log_in"
     const val EMPLOYEE_CLOCK_IN = "employee_activities/clock_in"

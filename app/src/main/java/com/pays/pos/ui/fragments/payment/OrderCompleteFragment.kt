@@ -206,6 +206,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     lateinit var printer: StarPrinter
     /*Star label printer - END*/
 
+    /*Added By Rahul */
+    private var isOrderUpdated = false
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -434,6 +436,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             dis_charge_value = requireArguments().getDouble("dis_charge_value", 0.0)
 
         }
+
+        /*Added By Rahul */
+        setUpdateEnabledInReceiptModel()
         setLabelData()
 
         binding.edtEmail.setOnFocusChangeListener { v, hasFocus ->
@@ -831,6 +836,447 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
     }
+
+    /*Added By Rahul */
+    private fun setUpdateEnabledInReceiptModel() {
+        if (prefProvider.getValue(Constants.OPEN_ORDER_ITEMS_OLD, "").isNotEmpty()) {
+            var oldDataModel: List<OnlineOrderResponseModel.Data.OrderItem> =
+                Gson().fromJson(
+                    prefProvider.getValue(Constants.OPEN_ORDER_ITEMS_OLD, ""),
+                    object :
+                        TypeToken<List<OnlineOrderResponseModel.Data.OrderItem>?>() {}
+                        .type
+                )
+
+            val (newData, isUpdated) = getPrintingData(
+                oldDataModel,
+                receiptModel?.order?.orderItems
+            )
+            receiptModel?.order?.apply {
+                orderItems = newData!!
+            }
+            isOrderUpdated = isUpdated
+        }
+    }
+
+    public fun getPrintingData(
+        oldItems: List<OnlineOrderResponseModel.Data.OrderItem>,
+        newItems: List<CreateOrderResponse.Data.Order.OrderItem>?
+    ): Pair<List<CreateOrderResponse.Data.Order.OrderItem>?, Boolean> {
+
+        var isUpdated = false
+
+        if (oldItems.size == newItems?.size) {
+            for (oldIndex in 0 until oldItems.size) {
+
+                for (indexNew in 0 until newItems.size) {
+
+                    if (oldItems.size != newItems.size) {
+                        isUpdated = true
+                    }
+
+                    if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldIndex == indexNew) {
+                        if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity) {
+                            newItems.get(indexNew).isEdited = true
+                            isUpdated = true
+                        }
+                        if (oldItems.get(oldIndex).price != newItems.get(indexNew).price) {
+                            newItems.get(indexNew).isEdited = true
+                            isUpdated = true
+                        }
+
+                        if (!oldItems.get(oldIndex).note.equals(newItems.get(indexNew).note)) {
+                            newItems.get(indexNew).isEdited = true
+                            isUpdated = true
+
+                        }
+                    }
+
+                    if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(
+                            oldIndex
+                        ).orderItemModifiers.size != newItems.get(indexNew).orderItemModifiers.size && oldIndex == indexNew
+                    ) {
+                        newItems.get(indexNew).isEdited = true
+                        isUpdated = true
+
+                    } else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(
+                            oldIndex
+                        ).orderItemModifiers.size == newItems.get(indexNew).orderItemModifiers.size && oldItems.get(
+                            oldIndex
+                        ).orderItemModifiers.size != 0 && oldIndex == indexNew
+                    ) {
+
+                        if (oldItems.get(oldIndex).orderItemModifiers != newItems.get(
+                                indexNew
+                            ).orderItemModifiers
+                        ) {
+                            newItems.get(indexNew).isEdited = true
+                            isUpdated = true
+
+                        }
+
+//                                if (oldItems.get(oldIndex).orderItemModifiers == newItems.get(indexNew).orderItemModifiers) {
+
+                        for (oldModifiersIndex in 0 until oldItems.get(oldIndex).orderItemModifiers.size) {
+
+                            for (newModifiersIndex in 0 until newItems.get(indexNew).orderItemModifiers.size) {
+
+                                if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                        oldModifiersIndex
+                                    ).id == newItems.get(indexNew).orderItemModifiers.get(
+                                        newModifiersIndex
+                                    ).id
+                                ) {
+                                    if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                            oldModifiersIndex
+                                        ).modifier_quantity != newItems.get(indexNew).orderItemModifiers.get(
+                                            newModifiersIndex
+                                        ).modifierQuantity
+                                    ) {
+                                        newItems.get(indexNew).isEdited = true
+                                        isUpdated = true
+
+
+                                    } else if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                            oldModifiersIndex
+                                        ).price != newItems.get(indexNew).orderItemModifiers.get(
+                                            newModifiersIndex
+                                        ).price
+                                    ) {
+                                        newItems.get(indexNew).isEdited = true
+                                        isUpdated = true
+
+
+                                    } else if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                            oldModifiersIndex
+                                        ).price != newItems.get(indexNew).orderItemModifiers.get(
+                                            newModifiersIndex
+                                        ).price
+                                    ) {
+                                        newItems.get(indexNew).isEdited = true
+                                        isUpdated = true
+
+
+                                    } else if (!oldItems.get(oldIndex).orderItemModifiers.get(
+                                            oldModifiersIndex
+                                        ).name.equals(
+                                            newItems.get(indexNew).orderItemModifiers.get(
+                                                newModifiersIndex
+                                            ).name
+                                        )
+                                    ) {
+                                        newItems.get(indexNew).isEdited = true
+                                        isUpdated = true
+
+
+                                    }
+
+                                }
+                            }
+
+                        }
+
+//                                }
+                    }
+
+                    /*  else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(oldIndex).orderItemModifiers.size == newItems.get(indexNew).orderItemModifiers.size) {
+                          *//*if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity) {
+                                    newItems.get(indexNew).isEdited = true
+                                }
+                                 Modifiers are not equal, i.e. edited
+                                else*//* if (oldItems.get(oldIndex).orderItemModifiers != newItems.get(indexNew).orderItemModifiers) {
+                                    newItems.get(indexNew).isEdited = true
+                                }
+                                *//* Modifiers are equal, i.e. the quantity of modifiers may change*//*
+                            }*/ else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId) {
+                        if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity && oldIndex == indexNew) {
+                            newItems.get(indexNew).isEdited = true
+                            isUpdated = true
+
+
+                        }
+                        /* Modifiers are not equal, i.e. edited */
+                        else if ((oldItems.get(oldIndex).orderItemModifiers != newItems.get(
+                                indexNew
+                            ).orderItemModifiers) && (oldIndex == indexNew)
+                        ) {
+                            newItems.get(indexNew).isEdited = true
+                            isUpdated = true
+
+                        }
+                        /* Modifiers are equal, i.e. the quantity of modifiers may change*/
+                        else if (oldItems.get(oldIndex).orderItemModifiers == newItems.get(
+                                indexNew
+                            ).orderItemModifiers
+                        ) {
+
+                            for (oldModifiersIndex in 0 until oldItems.get(oldIndex).orderItemModifiers.size) {
+                                for (newModifiersIndex in 0 until newItems.get(indexNew).orderItemModifiers.size) {
+                                    if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                            oldModifiersIndex
+                                        ).id == newItems.get(indexNew).orderItemModifiers.get(
+                                            newModifiersIndex
+                                        ).id
+                                    ) {
+                                        if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                oldModifiersIndex
+                                            ).modifier_quantity != newItems.get(indexNew).orderItemModifiers.get(
+                                                newModifiersIndex
+                                            ).modifierQuantity
+                                        ) {
+                                            newItems.get(indexNew).isEdited = true
+                                            isUpdated = true
+
+                                        } else if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                oldModifiersIndex
+                                            ).price != newItems.get(indexNew).orderItemModifiers.get(
+                                                newModifiersIndex
+                                            ).price
+                                        ) {
+                                            newItems.get(indexNew).isEdited = true
+                                            isUpdated = true
+
+                                        } else if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                oldModifiersIndex
+                                            ).price != newItems.get(indexNew).orderItemModifiers.get(
+                                                newModifiersIndex
+                                            ).price
+                                        ) {
+                                            newItems.get(indexNew).isEdited = true
+                                            isUpdated = true
+
+                                        } else if (!oldItems.get(oldIndex).orderItemModifiers.get(
+                                                oldModifiersIndex
+                                            ).name.equals(
+                                                newItems.get(indexNew).orderItemModifiers.get(
+                                                    newModifiersIndex
+                                                ).name
+                                            )
+                                        ) {
+                                            newItems.get(indexNew).isEdited = true
+                                            isUpdated = true
+
+                                        }
+
+                                    }
+                                }
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        } else {
+
+            isUpdated = true
+
+            for (oldIndex in 0 until oldItems.size) {
+
+                for (indexNew in 0 until newItems!!.size) {
+
+                    if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId) {
+                        if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity) {
+                            newItems.get(indexNew).isEdited = true
+                            isUpdated = true
+                        }
+                        if (oldItems.get(oldIndex).price != newItems.get(indexNew).price) {
+                            newItems.get(indexNew).isEdited = true
+                            isUpdated = true
+                        }
+
+                        if (!oldItems.get(oldIndex).note.equals(newItems.get(indexNew).note)) {
+                            newItems.get(indexNew).isEdited = true
+                            isUpdated = true
+
+                        }
+                    }
+
+                    if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(
+                            oldIndex
+                        ).orderItemModifiers.size != newItems.get(indexNew).orderItemModifiers.size
+                    ) {
+                        newItems.get(indexNew).isEdited = true
+                        isUpdated = true
+
+                    } else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(
+                            oldIndex
+                        ).orderItemModifiers.size == newItems.get(indexNew).orderItemModifiers.size && oldItems.get(
+                            oldIndex
+                        ).orderItemModifiers.size != 0
+                    ) {
+
+                        if (oldItems.get(oldIndex).orderItemModifiers != newItems.get(
+                                indexNew
+                            ).orderItemModifiers
+                        ) {
+                            newItems.get(indexNew).isEdited = true
+                            isUpdated = true
+
+                        }
+
+//                                if (oldItems.get(oldIndex).orderItemModifiers == newItems.get(indexNew).orderItemModifiers) {
+
+                        for (oldModifiersIndex in 0 until oldItems.get(oldIndex).orderItemModifiers.size) {
+
+                            for (newModifiersIndex in 0 until newItems.get(indexNew).orderItemModifiers.size) {
+
+                                if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                        oldModifiersIndex
+                                    ).id == newItems.get(indexNew).orderItemModifiers.get(
+                                        newModifiersIndex
+                                    ).id
+                                ) {
+                                    if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                            oldModifiersIndex
+                                        ).modifier_quantity != newItems.get(indexNew).orderItemModifiers.get(
+                                            newModifiersIndex
+                                        ).modifierQuantity
+                                    ) {
+                                        newItems.get(indexNew).isEdited = true
+                                        isUpdated = true
+
+
+                                    } else if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                            oldModifiersIndex
+                                        ).price != newItems.get(indexNew).orderItemModifiers.get(
+                                            newModifiersIndex
+                                        ).price
+                                    ) {
+                                        newItems.get(indexNew).isEdited = true
+                                        isUpdated = true
+
+
+                                    } else if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                            oldModifiersIndex
+                                        ).price != newItems.get(indexNew).orderItemModifiers.get(
+                                            newModifiersIndex
+                                        ).price
+                                    ) {
+                                        newItems.get(indexNew).isEdited = true
+                                        isUpdated = true
+
+
+                                    } else if (!oldItems.get(oldIndex).orderItemModifiers.get(
+                                            oldModifiersIndex
+                                        ).name.equals(
+                                            newItems.get(indexNew).orderItemModifiers.get(
+                                                newModifiersIndex
+                                            ).name
+                                        )
+                                    ) {
+                                        newItems.get(indexNew).isEdited = true
+                                        isUpdated = true
+
+
+                                    }
+
+                                }
+                            }
+
+                        }
+
+//                                }
+                    }
+
+                    /*  else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(oldIndex).orderItemModifiers.size == newItems.get(indexNew).orderItemModifiers.size) {
+                          *//*if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity) {
+                                    newItems.get(indexNew).isEdited = true
+                                }
+                                 Modifiers are not equal, i.e. edited
+                                else*//* if (oldItems.get(oldIndex).orderItemModifiers != newItems.get(indexNew).orderItemModifiers) {
+                                    newItems.get(indexNew).isEdited = true
+                                }
+                                *//* Modifiers are equal, i.e. the quantity of modifiers may change*//*
+                            }*/ else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId) {
+                        if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity) {
+                            newItems.get(indexNew).isEdited = true
+                            isUpdated = true
+
+
+                        }
+                        /* Modifiers are not equal, i.e. edited */
+                        else if ((oldItems.get(oldIndex).orderItemModifiers != newItems.get(
+                                indexNew
+                            ).orderItemModifiers) && (oldIndex == indexNew)
+                        ) {
+                            newItems.get(indexNew).isEdited = true
+                            isUpdated = true
+
+                        }
+                        /* Modifiers are equal, i.e. the quantity of modifiers may change*/
+                        else if (oldItems.get(oldIndex).orderItemModifiers == newItems.get(
+                                indexNew
+                            ).orderItemModifiers
+                        ) {
+
+                            for (oldModifiersIndex in 0 until oldItems.get(oldIndex).orderItemModifiers.size) {
+                                for (newModifiersIndex in 0 until newItems.get(indexNew).orderItemModifiers.size) {
+                                    if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                            oldModifiersIndex
+                                        ).id == newItems.get(indexNew).orderItemModifiers.get(
+                                            newModifiersIndex
+                                        ).id
+                                    ) {
+                                        if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                oldModifiersIndex
+                                            ).modifier_quantity != newItems.get(indexNew).orderItemModifiers.get(
+                                                newModifiersIndex
+                                            ).modifierQuantity
+                                        ) {
+                                            newItems.get(indexNew).isEdited = true
+                                            isUpdated = true
+
+                                        } else if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                oldModifiersIndex
+                                            ).price != newItems.get(indexNew).orderItemModifiers.get(
+                                                newModifiersIndex
+                                            ).price
+                                        ) {
+                                            newItems.get(indexNew).isEdited = true
+                                            isUpdated = true
+
+                                        } else if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                oldModifiersIndex
+                                            ).price != newItems.get(indexNew).orderItemModifiers.get(
+                                                newModifiersIndex
+                                            ).price
+                                        ) {
+                                            newItems.get(indexNew).isEdited = true
+                                            isUpdated = true
+
+                                        } else if (!oldItems.get(oldIndex).orderItemModifiers.get(
+                                                oldModifiersIndex
+                                            ).name.equals(
+                                                newItems.get(indexNew).orderItemModifiers.get(
+                                                    newModifiersIndex
+                                                ).name
+                                            )
+                                        ) {
+                                            newItems.get(indexNew).isEdited = true
+                                            isUpdated = true
+
+                                        }
+
+                                    }
+                                }
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        }
+
+
+        return Pair(newItems, isUpdated)
+    }
+
 
     private fun setLabelData() {
         if (paymentType == "Card") {
@@ -6067,10 +6513,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
         }
     }
+
     override fun onStop() {
         super.onStop()
 //         Runtime.getRuntime().gc()
         prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
+        /*Added By Rahul */
+        prefProvider.setValue(Constants.OPEN_ORDER_ITEMS_OLD, "")
         if (!isSpilt) {
             removeCustomer()
         }
@@ -6095,7 +6544,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
 
-    private inline fun restartTheApplication(){
+    private inline fun restartTheApplication() {
         val packageManager: PackageManager = context!!.packageManager
         val intent: Intent = packageManager.getLaunchIntentForPackage(context!!.packageName)!!
         val componentName = intent.component
@@ -6108,6 +6557,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         context!!.startActivity(mainIntent)
         Runtime.getRuntime().exit(0)
     }
+
     private fun moveToDashboard() {
         prefProvider.setValueboolean(Constants.TIP_ADDED, false)
         if (isSpilt) {
@@ -9145,8 +9595,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 setService2(data, type)
             }
 
-        }
-        else if (data.name.contains("TSP", ignoreCase = true)) {
+        } else if (data.name.contains("TSP", ignoreCase = true)) {
             settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
             printer = StarPrinter(settings, requireContext())
 
@@ -9159,6 +9608,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     with(printerBuilder) {
                         styleInternationalCharacter(InternationalCharacterType.Usa)
                         styleCharacterSpace(0.0)
+                        styleAlignment(Alignment.Center)
+
+                        /*Added By Rahul */
+                        if (isOrderUpdated) {
+                            add(
+                                PrinterBuilder()
+                                    .styleBold(true)
+                                    .actionPrintText(
+                                        "***** UPDATED *****"
+                                    )
+                            )
+                        }
+
                         styleAlignment(Alignment.Center)
 
                         add(
@@ -9226,17 +9688,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         actionFeedLine(1)
                         if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                        add(
-                            PrinterBuilder()
-                                .styleAlignment(Alignment.Center)
-                                .styleBold(true)
-                                .actionPrintText(
-                                    content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                        "--------------------------------------------\nOrder Note"
-                                    } else ""
-                                )
-                        )
-                    }
+                            add(
+                                PrinterBuilder()
+                                    .styleAlignment(Alignment.Center)
+                                    .styleBold(true)
+                                    .actionPrintText(
+                                        content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                            "--------------------------------------------\nOrder Note"
+                                        } else ""
+                                    )
+                            )
+                        }
                         if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
                             add(
                                 PrinterBuilder()
@@ -9297,9 +9759,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             ) != null
                                         ) {
 
-                                            var phoneNumber=receiptModel?.order?.customer?.phones?.get(
-                                                0
-                                            )?.phoneNumber.toString()
+                                            var phoneNumber =
+                                                receiptModel?.order?.customer?.phones?.get(
+                                                    0
+                                                )?.phoneNumber.toString()
                                             if (phoneNumber.length != 10) {
                                                 // Handle invalid input (must be 10 digits)
                                                 "Invalid phone number"
@@ -9312,11 +9775,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             "($areaCode)$firstPart-$secondPart"
 
 
-                                           /* MethodUtils.formatPhoneNumber(
-                                                receiptModel?.order?.customer?.phones?.get(
-                                                    0
-                                                )?.phoneNumber.toString()
-                                            )*/
+                                            /* MethodUtils.formatPhoneNumber(
+                                                 receiptModel?.order?.customer?.phones?.get(
+                                                     0
+                                                 )?.phoneNumber.toString()
+                                             )*/
                                         } else ""
                                     )
                             )
@@ -10690,6 +11153,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().printerInit()
+
+            /*Added By Rahul */
+            if (isOrderUpdated) {
+                PrintSunmiUtils.orderIdLarge("***** UPDATED *****")
+            }
+
             SunmiPrinterApi.getInstance().lineWrap(4)
             if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                 PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.custom_order_id)
@@ -11090,6 +11559,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             Constants.OPEN_ORDER_ITEMS,
             ""
         )
+
+        /*Added By Rahul */
+        prefProvider.setValue(
+            Constants.OPEN_ORDER_ITEMS_OLD,
+            ""
+        )
         prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)
         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
@@ -11128,7 +11603,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
-                   // ProgressUtils.showProgressDialog(requireActivity())
+                    // ProgressUtils.showProgressDialog(requireActivity())
                 } else {
                     ProgressUtils.dismissProgressDialog()
                 }
@@ -11215,6 +11690,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             pd?.dismiss()
         }
         prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
+
+        /*Added By Rahul */
+        prefProvider.setValue(Constants.OPEN_ORDER_ITEMS_OLD, "")
         if (this::presentation.isInitialized) {
             presentation.hide()
         }
@@ -13644,8 +14122,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private fun clearObserver() {
 
         //System.gc()
-       // requireActivity().cacheDir.delete()
-      //  restartActivity()
+        // requireActivity().cacheDir.delete()
+        //  restartActivity()
 
 
         deleteCache(requireContext())
@@ -13654,7 +14132,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         dashboardViewModel.currentCartItems = arrayListOf()
         dashboardViewModel.duplicateCurrentCartItem = arrayListOf()
 
-        dashboardViewModel.orderCompletedCount.value = dashboardViewModel.orderCompletedCount.value?.plus(1)
+        dashboardViewModel.orderCompletedCount.value =
+            dashboardViewModel.orderCompletedCount.value?.plus(1)
         dashboardViewModel.orderCompleted.value = true
 
         viewLifecycleOwnerLiveData.removeObservers(viewLifecycleOwner)
@@ -13670,7 +14149,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
         onDestroy()
-
 
 
     }
@@ -13700,15 +14178,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             false
         }
     }
+
     private fun restartActivity() {
 
         requireActivity().apply {
-        val intent = intent
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-        finish()
-        overridePendingTransition(0, 0)
-        startActivity(intent)
-        overridePendingTransition(0, 0)
+            val intent = intent
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            finish()
+            overridePendingTransition(0, 0)
+            startActivity(intent)
+            overridePendingTransition(0, 0)
         }
     }
 

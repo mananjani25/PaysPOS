@@ -149,7 +149,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     var isupdate = false
 
-//    this isOrderUpdate is used to track is the order is really updated or just update button is clicked to move to the All Orders Screen
+    //    this isOrderUpdate is used to track is the order is really updated or just update button is clicked to move to the All Orders Screen
     var isOrderUpdate = false
     var reorder = false
     var orderDiscount = 0.0
@@ -558,16 +558,22 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         }!!
 
 
-                        if(item.discountPrice>viewModel.currentTotalPrice){
+                        if (item.discountPrice > viewModel.currentTotalPrice) {
                             item.discountPrice = viewModel.currentTotalPrice
-                            Log.e("Discount Tracking Pays","Discount greater  = ${item.discountPrice} and Current price = ${viewModel.currentTotalPrice}")
+                            Log.e(
+                                "Discount Tracking Pays",
+                                "Discount greater  = ${item.discountPrice} and Current price = ${viewModel.currentTotalPrice}"
+                            )
 
                         }
 
-                        if(viewModel.clickedItemQuantity>1) {
+                        if (viewModel.clickedItemQuantity > 1) {
                             item.discountPrice = item.discountPrice / viewModel.clickedItemQuantity
 
-                            Log.e("Discount Tracking Pays","Item Quantity greater  = ${item.quantity} and Discount price = ${item.discountPrice}")
+                            Log.e(
+                                "Discount Tracking Pays",
+                                "Item Quantity greater  = ${item.quantity} and Discount price = ${item.discountPrice}"
+                            )
                         }
 
 
@@ -3084,8 +3090,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         createOrderResponse.data.order.orderItems
                                     )
 
-                                    printingData=newData
-                                    isOrderUpdate=isUpdated
+                                    printingData = newData
+                                    isOrderUpdate = isUpdated
 
 
                                     /* var printOrderItems:
@@ -3201,13 +3207,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                             ) && set.autoPrinting
                                                         ) {
                                                             if (printingData!!.isNotEmpty()) {
-                                                                var isUpdated = printingData!!.forEach {
-                                                                    if (it.isEdited) {
-                                                                        true
-                                                                       /* addCreditCardBreakDown()*/
+                                                                var isUpdated =
+                                                                    printingData!!.forEach {
+                                                                        if (it.isEdited) {
+                                                                            true
+                                                                            /* addCreditCardBreakDown()*/
+                                                                        }
                                                                     }
-                                                                }
-                                                                Log.d("UPDATED", isUpdated.toString())
+                                                                Log.d(
+                                                                    "UPDATED",
+                                                                    isUpdated.toString()
+                                                                )
                                                                 if (checkItemsforPrinter(
                                                                         /*createOrderResponse.data.order.orderItems*/
                                                                         printingData
@@ -3277,16 +3287,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                             }
                                         }
 
-                                    }
-                                    else {
+                                    } else {
                                         viewModel.downloadFinished(false)
                                         if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                                             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                                         }
                                     }
 
-                                }else{
-                                    printingData=createOrderResponse.data.order.orderItems
+                                } else {
+                                    printingData = createOrderResponse.data.order.orderItems
                                     if (it.data?.isNotEmpty() == true /*&& createOrderResponse.data.order.orderItems*//*printingData!!.isNotEmpty()*/) {
                                         var allstatus = false
 
@@ -3300,13 +3309,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                             ) && set.autoPrinting
                                                         ) {
                                                             if (printingData.isNotEmpty()) {
-                                                                var isUpdated = printingData.forEach {
-                                                                    if (it.isEdited) {
-                                                                        true
-                                                                        /*addCreditCardBreakDown()*/
+                                                                var isUpdated =
+                                                                    printingData.forEach {
+                                                                        if (it.isEdited) {
+                                                                            true
+                                                                            /*addCreditCardBreakDown()*/
+                                                                        }
                                                                     }
-                                                                }
-                                                                Log.d("UPDATED", isUpdated.toString())
+                                                                Log.d(
+                                                                    "UPDATED",
+                                                                    isUpdated.toString()
+                                                                )
                                                                 if (checkItemsforPrinter(
                                                                         /*createOrderResponse.data.order.orderItems*/
                                                                         printingData
@@ -3376,15 +3389,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                             }
                                         }
 
-                                    }
-                                    else {
+                                    } else {
                                         viewModel.downloadFinished(false)
                                         if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                                             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                                         }
                                     }
                                 }
-
 
 
                             }
@@ -3404,130 +3415,129 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 }
 
-
-                private fun getPrintingData(
+                /*Added By Rahul */
+                public fun getPrintingData(
                     oldItems: List<CreateOrderResponse.Data.Order.OrderItem>,
                     newItems: List<CreateOrderResponse.Data.Order.OrderItem>
-                ): Pair<List<CreateOrderResponse.Data.Order.OrderItem>, Boolean>   {
+                ): Pair<List<CreateOrderResponse.Data.Order.OrderItem>, Boolean> {
 
-                    var isUpdated=false
+                    var isUpdated = false
 
-                    /*if (oldItems.size >= newItems.size) {*/
+                    if (oldItems.size == newItems.size) {
+                        for (oldIndex in 0 until oldItems.size) {
 
-                    for (oldIndex in 0 until oldItems.size) {
+                            for (indexNew in 0 until newItems.size) {
 
-                        for (indexNew in 0 until newItems.size) {
-
-                            if (oldItems.size!=newItems.size){
-                                isUpdated=true
-                            }
-
-                            if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldIndex == indexNew) {
-                                if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity){
-                                    newItems.get(indexNew).isEdited = true
-                                    isUpdated=true
-                                }
-                                if (oldItems.get(oldIndex).price != newItems.get(indexNew).price){
-                                    newItems.get(indexNew).isEdited = true
-                                    isUpdated=true
+                                if (oldItems.size != newItems.size) {
+                                    isUpdated = true
                                 }
 
-                                if (!oldItems.get(oldIndex).note.equals(newItems.get(indexNew).note)) {
-                                    newItems.get(indexNew).isEdited = true
-                                    isUpdated=true
+                                if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldIndex == indexNew) {
+                                    if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity) {
+                                        newItems.get(indexNew).isEdited = true
+                                        isUpdated = true
+                                    }
+                                    if (oldItems.get(oldIndex).price != newItems.get(indexNew).price) {
+                                        newItems.get(indexNew).isEdited = true
+                                        isUpdated = true
+                                    }
 
+                                    if (!oldItems.get(oldIndex).note.equals(newItems.get(indexNew).note)) {
+                                        newItems.get(indexNew).isEdited = true
+                                        isUpdated = true
+
+                                    }
                                 }
-                            }
 
-                            if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(
-                                    oldIndex
-                                ).orderItemModifiers.size != newItems.get(indexNew).orderItemModifiers.size && oldIndex == indexNew
-                            ) {
-                                newItems.get(indexNew).isEdited = true
-                                isUpdated=true
-
-                            } else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(
-                                    oldIndex
-                                ).orderItemModifiers.size == newItems.get(indexNew).orderItemModifiers.size && oldItems.get(
-                                    oldIndex
-                                ).orderItemModifiers.size != 0 && oldIndex == indexNew
-                            ) {
-
-                                if (oldItems.get(oldIndex).orderItemModifiers != newItems.get(
-                                        indexNew
-                                    ).orderItemModifiers
+                                if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(
+                                        oldIndex
+                                    ).orderItemModifiers.size != newItems.get(indexNew).orderItemModifiers.size && oldIndex == indexNew
                                 ) {
                                     newItems.get(indexNew).isEdited = true
-                                    isUpdated=true
+                                    isUpdated = true
 
-                                }
+                                } else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(
+                                        oldIndex
+                                    ).orderItemModifiers.size == newItems.get(indexNew).orderItemModifiers.size && oldItems.get(
+                                        oldIndex
+                                    ).orderItemModifiers.size != 0 && oldIndex == indexNew
+                                ) {
+
+                                    if (oldItems.get(oldIndex).orderItemModifiers != newItems.get(
+                                            indexNew
+                                        ).orderItemModifiers
+                                    ) {
+                                        newItems.get(indexNew).isEdited = true
+                                        isUpdated = true
+
+                                    }
 
 //                                if (oldItems.get(oldIndex).orderItemModifiers == newItems.get(indexNew).orderItemModifiers) {
 
-                                for (oldModifiersIndex in 0 until oldItems.get(oldIndex).orderItemModifiers.size) {
+                                    for (oldModifiersIndex in 0 until oldItems.get(oldIndex).orderItemModifiers.size) {
 
-                                    for (newModifiersIndex in 0 until newItems.get(indexNew).orderItemModifiers.size) {
+                                        for (newModifiersIndex in 0 until newItems.get(indexNew).orderItemModifiers.size) {
 
-                                        if (oldItems.get(oldIndex).orderItemModifiers.get(
-                                                oldModifiersIndex
-                                            ).id == newItems.get(indexNew).orderItemModifiers.get(
-                                                newModifiersIndex
-                                            ).id
-                                        ) {
                                             if (oldItems.get(oldIndex).orderItemModifiers.get(
                                                     oldModifiersIndex
-                                                ).modifierQuantity != newItems.get(indexNew).orderItemModifiers.get(
+                                                ).id == newItems.get(indexNew).orderItemModifiers.get(
                                                     newModifiersIndex
-                                                ).modifierQuantity
+                                                ).id
                                             ) {
-                                                newItems.get(indexNew).isEdited = true
-                                                isUpdated=true
-
-
-                                            } else if (oldItems.get(oldIndex).orderItemModifiers.get(
-                                                    oldModifiersIndex
-                                                ).price != newItems.get(indexNew).orderItemModifiers.get(
-                                                    newModifiersIndex
-                                                ).price
-                                            ) {
-                                                newItems.get(indexNew).isEdited = true
-                                                isUpdated=true
-
-
-                                            } else if (oldItems.get(oldIndex).orderItemModifiers.get(
-                                                    oldModifiersIndex
-                                                ).totalPrice != newItems.get(indexNew).orderItemModifiers.get(
-                                                    newModifiersIndex
-                                                ).totalPrice
-                                            ) {
-                                                newItems.get(indexNew).isEdited = true
-                                                isUpdated=true
-
-
-                                            } else if (!oldItems.get(oldIndex).orderItemModifiers.get(
-                                                    oldModifiersIndex
-                                                ).name.equals(
-                                                    newItems.get(indexNew).orderItemModifiers.get(
+                                                if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                        oldModifiersIndex
+                                                    ).modifierQuantity != newItems.get(indexNew).orderItemModifiers.get(
                                                         newModifiersIndex
-                                                    ).name
-                                                )
-                                            ) {
-                                                newItems.get(indexNew).isEdited = true
-                                                isUpdated=true
+                                                    ).modifierQuantity
+                                                ) {
+                                                    newItems.get(indexNew).isEdited = true
+                                                    isUpdated = true
 
+
+                                                } else if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                        oldModifiersIndex
+                                                    ).price != newItems.get(indexNew).orderItemModifiers.get(
+                                                        newModifiersIndex
+                                                    ).price
+                                                ) {
+                                                    newItems.get(indexNew).isEdited = true
+                                                    isUpdated = true
+
+
+                                                } else if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                        oldModifiersIndex
+                                                    ).totalPrice != newItems.get(indexNew).orderItemModifiers.get(
+                                                        newModifiersIndex
+                                                    ).totalPrice
+                                                ) {
+                                                    newItems.get(indexNew).isEdited = true
+                                                    isUpdated = true
+
+
+                                                } else if (!oldItems.get(oldIndex).orderItemModifiers.get(
+                                                        oldModifiersIndex
+                                                    ).name.equals(
+                                                        newItems.get(indexNew).orderItemModifiers.get(
+                                                            newModifiersIndex
+                                                        ).name
+                                                    )
+                                                ) {
+                                                    newItems.get(indexNew).isEdited = true
+                                                    isUpdated = true
+
+
+                                                }
 
                                             }
-
                                         }
+
                                     }
 
+//                                }
                                 }
 
-//                                }
-                            }
-
-                            /*  else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(oldIndex).orderItemModifiers.size == newItems.get(indexNew).orderItemModifiers.size) {
-                                  *//*if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity) {
+                                /*  else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(oldIndex).orderItemModifiers.size == newItems.get(indexNew).orderItemModifiers.size) {
+                                      *//*if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity) {
                                     newItems.get(indexNew).isEdited = true
                                 }
                                  Modifiers are not equal, i.e. edited
@@ -3536,29 +3546,141 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 }
                                 *//* Modifiers are equal, i.e. the quantity of modifiers may change*//*
                             }*/ else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId) {
-                                if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity && oldIndex == indexNew) {
-                                    newItems.get(indexNew).isEdited = true
-                                    isUpdated=true
+                                    if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity && oldIndex == indexNew) {
+                                        newItems.get(indexNew).isEdited = true
+                                        isUpdated = true
 
+
+                                    }
+                                    /* Modifiers are not equal, i.e. edited */
+                                    else if ((oldItems.get(oldIndex).orderItemModifiers != newItems.get(
+                                            indexNew
+                                        ).orderItemModifiers) && (oldIndex == indexNew)
+                                    ) {
+                                        newItems.get(indexNew).isEdited = true
+                                        isUpdated = true
+
+                                    }
+                                    /* Modifiers are equal, i.e. the quantity of modifiers may change*/
+                                    else if (oldItems.get(oldIndex).orderItemModifiers == newItems.get(
+                                            indexNew
+                                        ).orderItemModifiers
+                                    ) {
+
+                                        for (oldModifiersIndex in 0 until oldItems.get(oldIndex).orderItemModifiers.size) {
+                                            for (newModifiersIndex in 0 until newItems.get(indexNew).orderItemModifiers.size) {
+                                                if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                        oldModifiersIndex
+                                                    ).id == newItems.get(indexNew).orderItemModifiers.get(
+                                                        newModifiersIndex
+                                                    ).id
+                                                ) {
+                                                    if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                            oldModifiersIndex
+                                                        ).modifierQuantity != newItems.get(indexNew).orderItemModifiers.get(
+                                                            newModifiersIndex
+                                                        ).modifierQuantity
+                                                    ) {
+                                                        newItems.get(indexNew).isEdited = true
+                                                        isUpdated = true
+
+                                                    } else if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                            oldModifiersIndex
+                                                        ).price != newItems.get(indexNew).orderItemModifiers.get(
+                                                            newModifiersIndex
+                                                        ).price
+                                                    ) {
+                                                        newItems.get(indexNew).isEdited = true
+                                                        isUpdated = true
+
+                                                    } else if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                            oldModifiersIndex
+                                                        ).totalPrice != newItems.get(indexNew).orderItemModifiers.get(
+                                                            newModifiersIndex
+                                                        ).totalPrice
+                                                    ) {
+                                                        newItems.get(indexNew).isEdited = true
+                                                        isUpdated = true
+
+                                                    } else if (!oldItems.get(oldIndex).orderItemModifiers.get(
+                                                            oldModifiersIndex
+                                                        ).name.equals(
+                                                            newItems.get(indexNew).orderItemModifiers.get(
+                                                                newModifiersIndex
+                                                            ).name
+                                                        )
+                                                    ) {
+                                                        newItems.get(indexNew).isEdited = true
+                                                        isUpdated = true
+
+                                                    }
+
+                                                }
+                                            }
+                                        }
+
+                                    }
 
                                 }
-                                /* Modifiers are not equal, i.e. edited */
-                                else if ((oldItems.get(oldIndex).orderItemModifiers != newItems.get(
-                                        indexNew
-                                    ).orderItemModifiers) && (oldIndex == indexNew)
+
+                            }
+
+                        }
+                    }  /*Added By Rahul */
+                    else {
+
+                        isUpdated=true
+
+                        for (oldIndex in 0 until oldItems.size) {
+
+                            for (indexNew in 0 until newItems.size) {
+
+                                if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId) {
+                                    if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity){
+                                        newItems.get(indexNew).isEdited = true
+                                        isUpdated=true
+                                    }
+                                    if (oldItems.get(oldIndex).price != newItems.get(indexNew).price){
+                                        newItems.get(indexNew).isEdited = true
+                                        isUpdated=true
+                                    }
+
+                                    if (!oldItems.get(oldIndex).note.equals(newItems.get(indexNew).note)) {
+                                        newItems.get(indexNew).isEdited = true
+                                        isUpdated=true
+
+                                    }
+                                }
+
+                                if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(
+                                        oldIndex
+                                    ).orderItemModifiers.size != newItems.get(indexNew).orderItemModifiers.size
                                 ) {
                                     newItems.get(indexNew).isEdited = true
                                     isUpdated=true
 
-                                }
-                                /* Modifiers are equal, i.e. the quantity of modifiers may change*/
-                                else if (oldItems.get(oldIndex).orderItemModifiers == newItems.get(
-                                        indexNew
-                                    ).orderItemModifiers
+                                } else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(
+                                        oldIndex
+                                    ).orderItemModifiers.size == newItems.get(indexNew).orderItemModifiers.size && oldItems.get(
+                                        oldIndex
+                                    ).orderItemModifiers.size != 0
                                 ) {
+
+                                    if (oldItems.get(oldIndex).orderItemModifiers != newItems.get(
+                                            indexNew
+                                        ).orderItemModifiers
+                                    ) {
+                                        newItems.get(indexNew).isEdited = true
+                                        isUpdated=true
+
+                                    }
+
+//                                if (oldItems.get(oldIndex).orderItemModifiers == newItems.get(indexNew).orderItemModifiers) {
 
                                     for (oldModifiersIndex in 0 until oldItems.get(oldIndex).orderItemModifiers.size) {
+
                                         for (newModifiersIndex in 0 until newItems.get(indexNew).orderItemModifiers.size) {
+
                                             if (oldItems.get(oldIndex).orderItemModifiers.get(
                                                     oldModifiersIndex
                                                 ).id == newItems.get(indexNew).orderItemModifiers.get(
@@ -3574,6 +3696,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                     newItems.get(indexNew).isEdited = true
                                                     isUpdated=true
 
+
                                                 } else if (oldItems.get(oldIndex).orderItemModifiers.get(
                                                         oldModifiersIndex
                                                     ).price != newItems.get(indexNew).orderItemModifiers.get(
@@ -3583,6 +3706,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                     newItems.get(indexNew).isEdited = true
                                                     isUpdated=true
 
+
                                                 } else if (oldItems.get(oldIndex).orderItemModifiers.get(
                                                         oldModifiersIndex
                                                     ).totalPrice != newItems.get(indexNew).orderItemModifiers.get(
@@ -3591,6 +3715,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                 ) {
                                                     newItems.get(indexNew).isEdited = true
                                                     isUpdated=true
+
 
                                                 } else if (!oldItems.get(oldIndex).orderItemModifiers.get(
                                                         oldModifiersIndex
@@ -3603,10 +3728,101 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                     newItems.get(indexNew).isEdited = true
                                                     isUpdated=true
 
+
                                                 }
 
                                             }
                                         }
+
+                                    }
+
+//                                }
+                                }
+
+                                /*  else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(oldIndex).orderItemModifiers.size == newItems.get(indexNew).orderItemModifiers.size) {
+                                      *//*if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity) {
+                                    newItems.get(indexNew).isEdited = true
+                                }
+                                 Modifiers are not equal, i.e. edited
+                                else*//* if (oldItems.get(oldIndex).orderItemModifiers != newItems.get(indexNew).orderItemModifiers) {
+                                    newItems.get(indexNew).isEdited = true
+                                }
+                                *//* Modifiers are equal, i.e. the quantity of modifiers may change*//*
+                            }*/ else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId) {
+                                    if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity ) {
+                                        newItems.get(indexNew).isEdited = true
+                                        isUpdated=true
+
+
+                                    }
+                                    /* Modifiers are not equal, i.e. edited */
+                                    else if ((oldItems.get(oldIndex).orderItemModifiers != newItems.get(
+                                            indexNew
+                                        ).orderItemModifiers) && (oldIndex == indexNew)
+                                    ) {
+                                        newItems.get(indexNew).isEdited = true
+                                        isUpdated=true
+
+                                    }
+                                    /*Added By Rahul */
+                                    /* Modifiers are equal, i.e. the quantity of modifiers may change*/
+                                    else if (oldItems.get(oldIndex).orderItemModifiers == newItems.get(
+                                            indexNew
+                                        ).orderItemModifiers
+                                    ) {
+
+                                        for (oldModifiersIndex in 0 until oldItems.get(oldIndex).orderItemModifiers.size) {
+                                            for (newModifiersIndex in 0 until newItems.get(indexNew).orderItemModifiers.size) {
+                                                if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                        oldModifiersIndex
+                                                    ).id == newItems.get(indexNew).orderItemModifiers.get(
+                                                        newModifiersIndex
+                                                    ).id
+                                                ) {
+                                                    if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                            oldModifiersIndex
+                                                        ).modifierQuantity != newItems.get(indexNew).orderItemModifiers.get(
+                                                            newModifiersIndex
+                                                        ).modifierQuantity
+                                                    ) {
+                                                        newItems.get(indexNew).isEdited = true
+                                                        isUpdated=true
+
+                                                    } else if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                            oldModifiersIndex
+                                                        ).price != newItems.get(indexNew).orderItemModifiers.get(
+                                                            newModifiersIndex
+                                                        ).price
+                                                    ) {
+                                                        newItems.get(indexNew).isEdited = true
+                                                        isUpdated=true
+
+                                                    } else if (oldItems.get(oldIndex).orderItemModifiers.get(
+                                                            oldModifiersIndex
+                                                        ).totalPrice != newItems.get(indexNew).orderItemModifiers.get(
+                                                            newModifiersIndex
+                                                        ).totalPrice
+                                                    ) {
+                                                        newItems.get(indexNew).isEdited = true
+                                                        isUpdated=true
+
+                                                    } else if (!oldItems.get(oldIndex).orderItemModifiers.get(
+                                                            oldModifiersIndex
+                                                        ).name.equals(
+                                                            newItems.get(indexNew).orderItemModifiers.get(
+                                                                newModifiersIndex
+                                                            ).name
+                                                        )
+                                                    ) {
+                                                        newItems.get(indexNew).isEdited = true
+                                                        isUpdated=true
+
+                                                    }
+
+                                                }
+                                            }
+                                        }
+
                                     }
 
                                 }
@@ -3614,18 +3830,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             }
 
                         }
-
                     }
-
-
-                    /*}
-                      else {
-                          newItems.forEachIndexed({ newIndex, newItems.get(indexNew) ->
-                              oldItems.forEachIndexed({ oldIndex, oldItems.get(oldIndex) ->
-
-                              })
-                          })
-                      }*/
 
 
                     return Pair(newItems, isUpdated)
