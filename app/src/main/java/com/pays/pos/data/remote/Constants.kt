@@ -447,6 +447,8 @@ object Constants {
     const val orderNote = "orderNote"
     const val discountPrice = "discountPrice"
     const val isManual = "isManual"
+    const val orderNoteOld = "orderNoteOld"
+    const val orderNoteNew = "orderNoteNew"
 
     //PAX
     const val TRANSACTION_SUCCESSED = 100 //transaction success

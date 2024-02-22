@@ -508,6 +508,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun addOrderNote(note: String) {
         if (cartModel != null) {
             cartModel!!.note = note
+            prefProvider.setValue(Constants.orderNoteNew,note)
             updateCartModel(cartModel!!)
 
         }

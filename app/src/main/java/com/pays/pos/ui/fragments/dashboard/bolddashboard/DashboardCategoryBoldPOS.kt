@@ -3194,6 +3194,18 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         "updateORNew:",
                                         Gson().toJson(cartModel!!.isEdited)
                                     )
+
+                                    var oldOrderNote=prefProvider.getValue(Constants.orderNoteOld,"")
+                                    var newOrderNote=prefProvider.getValue(Constants.orderNoteNew,"")
+                                    if (!oldOrderNote.equals(newOrderNote)){
+                                        isOrderUpdate=true
+                                        cartModel.isEdited=true
+                                    }
+
+                                    prefProvider.setValue(Constants.orderNoteNew,"")
+                                    prefProvider.setValue(Constants.orderNoteOld,"")
+
+
                                     if (it.data?.isNotEmpty() == true && isOrderUpdate/*&& createOrderResponse.data.order.orderItems*//*printingData!!.isNotEmpty()*/) {
                                         var allstatus = false
 
