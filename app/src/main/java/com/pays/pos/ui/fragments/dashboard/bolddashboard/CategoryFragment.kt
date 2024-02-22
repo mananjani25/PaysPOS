@@ -82,7 +82,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         binding = FragmentCategoryBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
 
-        binding.rvItemList.itemAnimator=null
+        binding.rvItemList.itemAnimator = null
         return binding.root
     }
 
@@ -200,17 +200,17 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                                         }
                                         runOnUiThread(Runnable {
                                             binding.rvItemList.adapter = null
-                                          /*  itemAdapter = ItemAdapterPagDash(
-                                                listner,
-                                                null,
-                                                prefProvider
-                                            )
-                                            binding.rvItemList.setHasFixedSize(true)
-                                            binding.rvItemList.layoutManager =
-                                                GridLayoutManager(
-                                                    requireContext(),
-                                                    4
-                                                )*/
+                                            /*  itemAdapter = ItemAdapterPagDash(
+                                                  listner,
+                                                  null,
+                                                  prefProvider
+                                              )
+                                              binding.rvItemList.setHasFixedSize(true)
+                                              binding.rvItemList.layoutManager =
+                                                  GridLayoutManager(
+                                                      requireContext(),
+                                                      4
+                                                  )*/
                                             binding.rvItemList.adapter = itemAdapter
                                         })
                                         runOnUiThread(Runnable {
@@ -310,16 +310,16 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                     })
 
 
-                        lifecycleScope.launch(Dispatchers.IO) {
-                            viewModel.itemsByCat(categoryList1[tabPos].category.id).collectLatest {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        viewModel.itemsByCat(categoryList1[tabPos].category.id).collectLatest {
 
-                                lifecycleScope.launch(Dispatchers.Main) {
-                                    itemAdapter.submitData(it)
-                                }
-
-
+                            lifecycleScope.launch(Dispatchers.Main) {
+                                itemAdapter.submitData(it)
                             }
+
+
                         }
+                    }
 
 
                 }
@@ -353,7 +353,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             }
             searchAdapter =
                 CategorySearchAdapter(
-                    requireActivity(),
+                    requireContext(),
                     R.layout.search_category_item,
                     searchList
                 )
@@ -419,7 +419,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             lifecycleScope.launch(Dispatchers.IO) {
                 viewModel.itemsByCat(categoryList1[tabPos].category.id).collectLatest {
 
-                    lifecycleScope.launch(Dispatchers.Main){
+                    lifecycleScope.launch(Dispatchers.Main) {
                         itemAdapter.snapshot().toCollection(arrayListOf()).clear()
 
 
@@ -488,25 +488,25 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
 
                 runOnUiThread(Runnable {
-                val bindingAdapterPos =
-                    (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+                    val bindingAdapterPos =
+                        (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
 
-                categoryParentAdapter.list.forEachIndexed { index1, it ->
-                    it.list.forEachIndexed { index, categoryTabModel ->
+                    categoryParentAdapter.list.forEachIndexed { index1, it ->
+                        it.list.forEachIndexed { index, categoryTabModel ->
 
-                        categoryTabModel.isSelected =
-                            categoryTabModel.id == prefProvider.getValueInt(
-                                Constants.CAT_ID_SELECTED,
-                                0
-                            )
+                            categoryTabModel.isSelected =
+                                categoryTabModel.id == prefProvider.getValueInt(
+                                    Constants.CAT_ID_SELECTED,
+                                    0
+                                )
+                        }
                     }
-                }
-                val tabList: ArrayList<CategoryTabModel> = arrayListOf()
-                for (i in 0 until categoryParentAdapter.list.size) {
-                    tabList.add(CategoryTabModel(0, "", i == bindingAdapterPos, 0))
-                }
-                categoryTabAdapter.addList(tabList)
-                categoryParentAdapter.notifyDataSetChanged()
+                    val tabList: ArrayList<CategoryTabModel> = arrayListOf()
+                    for (i in 0 until categoryParentAdapter.list.size) {
+                        tabList.add(CategoryTabModel(0, "", i == bindingAdapterPos, 0))
+                    }
+                    categoryTabAdapter.addList(tabList)
+                    categoryParentAdapter.notifyDataSetChanged()
 
                 })
 
@@ -569,8 +569,8 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                     edtSearch?.text?.clear()
                     if (prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0) == 0) {
 
-                            itemAdapter.submitData(it)
-                            binding.rvCategoryParent.scrollToPosition(0)
+                        itemAdapter.submitData(it)
+                        binding.rvCategoryParent.scrollToPosition(0)
 
 
                     } else {

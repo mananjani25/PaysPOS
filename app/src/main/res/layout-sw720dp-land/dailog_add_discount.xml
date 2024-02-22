@@ -156,6 +156,7 @@
                             style="@style/CustomFontSemiBold"
                             android:id="@+id/txtCurrencyDollar"
                             android:layout_width="wrap_content"
+                            android:visibility="gone"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_2sdp"
                             android:background="@drawable/background_square_border_grey"

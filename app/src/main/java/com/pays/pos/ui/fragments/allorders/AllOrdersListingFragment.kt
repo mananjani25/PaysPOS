@@ -977,6 +977,10 @@ class AllOrdersListingFragment(
                 prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, Gson().toJson(order.orderItems))
                 prefProvider.setValueboolean(Constants.OPEN_ORDER_UPDATE_FOR_PRINT, true)
 
+                /*we are using this to check whether the note is updated or not, if yes then we will print the *****Updated***** on the kitchen receipt*/
+                prefProvider.setValue(Constants.orderNoteOld,order.note)
+
+
                 val updatedCartModel = generateCartModelFromOrderModel(order)
                 dashboardViewModel.addCart(updatedCartModel)
                 dashboardViewModel.setUpdatedCartModel(updatedCartModel)

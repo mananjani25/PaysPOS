@@ -427,4 +427,264 @@ class TbItem : Parcelable {
     }
 
 
+    fun convertCartToItem(item: TbCartItem, model: TbCartItem): TbItem {
+        Log.e("GetItemForCheck", "item1  ${Gson().toJson(item)}")
+        Log.e("GetItemForCheck", "model1  ${Gson().toJson(model)}")
+
+        val modeTb = TbItem()
+
+        val itemList = mutableListOf<TaxData>()
+        val itemTaxIds: ArrayList<Int> = arrayListOf()
+
+
+        item.taxes?.forEach {
+            itemTaxIds.add(it.id)
+        }
+        model.taxes?.let {
+
+            itemList.addAll(it)
+        }
+        val removeItems: ArrayList<TaxData> = arrayListOf()
+
+        val itemListIds: ArrayList<Int> = arrayListOf()
+
+        for (m in 0 until itemList.size) {
+
+            itemListIds.add(itemList[m].id)
+        }
+
+        item.taxes?.forEachIndexed { index, it ->
+
+            for (i in 0 until itemList.size) {
+
+                if (itemList.get(i).id == it.id) {
+                    if (it.isDeleted || !it.isActive) {
+                        removeItems.add(itemList.get(i))
+
+                    }
+
+                }
+            }
+
+
+            if (!itemList.contains(it) && !it.isDeleted && it.isActive && !itemListIds.contains(it.id)) {
+                itemList.add(it)
+            }
+
+            //for update the tax
+            else if (itemListIds.contains(it.id) && !it.isDeleted && it.isActive) {
+
+                for (m in 0 until itemList.size) {
+                    if (itemList.get(m).id == it.id) {
+                        itemList.set(m, it)
+                    }
+                }
+            }
+        }
+        //remove items from list
+        itemList.removeAll(removeItems)
+
+
+        if (itemList.isEmpty()) {
+            modeTb.taxes = emptyList()
+        } else {
+            modeTb.taxes = itemList
+        }
+        modeTb.itemId = item.itemId
+        modeTb.name = item.name ?: ""
+        modeTb.price = item.price
+        modeTb.quantity = item.quantity
+        modeTb.sku = item.sku ?: ""
+        modeTb.isHide = item.isHide
+        modeTb.sort = item.sort
+        modeTb.imageUrl = item.imageUrl
+        modeTb.website_hide_status = item.website_hide_status ?: ""
+        modeTb.hide_status = item.hide_status ?: ""
+        modeTb.thumbImageUrl = item.thumbImageUrl
+        modeTb.categoryId = item.categoryId
+        modeTb.categoryName = item.categoryName
+
+
+        if (item.name.trim().equals("Veg slice",true)) {
+            Log.e("price_without_markup_1", Gson().toJson(modeTb.modifier_set_ids))
+            Log.e("price_without_markup_2", Gson().toJson(item.modifier_set_ids))
+        }
+        /*  if (item.itemModifierSetsSort?.isNotEmpty() == true) {
+              modeTb.itemModifierSetsSort = item.itemModifierSetsSort
+          } else {
+              modeTb.itemModifierSetsSort = model.itemModifierSetsSort
+          }*/
+        if (item.modifier_set_ids.isEmpty() && model.modifier_set_ids.isEmpty()) {
+
+            val listMod: ArrayList<Int> = arrayListOf()
+            listMod.addAll(item.modifier_set_ids)
+            listMod.addAll(modeTb.modifier_set_ids)
+
+            modeTb.modifier_set_ids = java.util.LinkedHashSet(listMod).toMutableList()
+
+        } else if (item.modifier_set_ids.isNotEmpty()) {
+            modeTb.modifier_set_ids = item.modifier_set_ids
+
+        } else {
+
+            modeTb.modifier_set_ids = item.modifier_set_ids
+
+        }
+
+        if (item.variationsAttributes.isNotEmpty() && model.variationsAttributes.isNotEmpty()) {
+            val variationList: ArrayList<VariationsAttribute> = arrayListOf()
+            variationList.addAll(model.variationsAttributes)
+            val removeVar: ArrayList<VariationsAttribute> = arrayListOf()
+            val listIdsVariation: ArrayList<Int> = arrayListOf()
+            model.variationsAttributes.forEach {
+                it.id?.let { it1 -> listIdsVariation.add(it1) }
+            }
+
+            item.variationsAttributes.forEach {
+                if (listIdsVariation.contains(it.id)) {
+                    Log.e("ModYEs", "Content")
+                    model.variationsAttributes.forEach { it1 ->
+
+                        if (it1.id == it.id && it.isDeleted) {
+                            variationList.forEach { varI ->
+                                if (varI.id == it.id) {
+                                    varI.isDeleted = it.isDeleted
+                                }
+                            }
+                            removeVar.add(it)
+
+
+                        } else if (it1.id == it.id && !it.isActive) {
+                            variationList.forEach { varI ->
+                                if (varI.id == it.id) {
+                                    varI.isActive = it.isActive
+                                }
+                            }
+                            removeVar.add(it)
+                        } else {
+                            variationList.forEach { varI ->
+                                if (varI.id == it.id) {
+                                    varI.name = it.name
+                                    varI.priceType = it.priceType
+                                    varI.price = it.price
+                                    varI.optionIds = it.optionIds
+                                    varI.optionSetIds = it.optionSetIds
+                                    varI.orderVariationId = it.orderVariationId
+                                    varI.stockQty = it.stockQty
+                                    varI.sku = it.sku
+                                }
+
+                            }
+                        }
+
+                    }
+
+
+                } else {
+                    variationList.add(it)
+                }
+
+
+            }
+
+            variationList.removeAll(removeVar)
+
+            Log.e("CheckVarRemove", "removeVar  ${Gson().toJson(removeVar)}")
+            Log.e("CheckVarRemove", "variation  ${Gson().toJson(variationList)}")
+
+
+
+            Log.e("GetVaroatom", "${variationList.size}")
+
+            modeTb.variationsAttributes = variationList
+
+        } else if (item.variationsAttributes.isNotEmpty()) {
+            modeTb.variationsAttributes = item.variationsAttributes
+
+        } else {
+            modeTb.variationsAttributes = model.variationsAttributes
+
+        }
+
+        if (item.modifiers.isNotEmpty() && model.modifiers.isNotEmpty()) {
+
+            var modifierList: ArrayList<Modifier> = arrayListOf()
+            modifierList.addAll(model.modifiers)
+            var removeVar: ArrayList<Modifier> = arrayListOf()
+            var listIdsVariation: ArrayList<Int> = arrayListOf()
+            model.modifiers.forEach {
+                it.id?.let { it1 -> listIdsVariation.add(it1) }
+            }
+
+            item.modifiers.forEach {
+                if (listIdsVariation.contains(it.id)) {
+                    Log.e("ModYEs", "Content")
+                    model.variationsAttributes.forEach { it1 ->
+
+                        if (it1.id == it.id && it.isDeleted) {
+                            modifierList.forEach { varI ->
+                                if (varI.id == it.id) {
+                                    varI.isDeleted = it.isDeleted
+                                }
+                            }
+                            removeVar.add(it)
+
+
+                        } else if (it1.id == it.id && !it.isChecked) {
+                            modifierList.forEach { varI ->
+                                if (varI.id == it.id) {
+                                    varI.isChecked = it.isChecked
+                                }
+                            }
+                            removeVar.add(it)
+                        } else {
+                            modifierList.forEach { varI ->
+                                if (varI.id == it.id) {
+                                    varI.name = it.name
+                                    varI.sort = it.sort
+                                    varI.price = it.price
+                                    varI._destroy = it._destroy
+                                    varI.isChecked = it.isChecked
+                                    varI.isDeleted = it.isDeleted
+                                    varI.modifierSetId = it.modifierSetId
+                                    varI.orderItemTaxes = it.orderItemTaxes
+                                }
+
+                            }
+                        }
+
+                    }
+
+
+                } else {
+                    modifierList.add(it)
+                }
+
+
+            }
+
+            modifierList.removeAll(removeVar)
+
+
+            Log.e("GetVaroatommodifierList", "${modifierList.size}")
+
+            modeTb.modifiers = modifierList
+
+
+        } else if (item.modifiers.isNotEmpty()) {
+            modeTb.modifiers = item.modifiers
+
+        } else {
+            modeTb.modifiers = model.modifiers
+
+        }
+
+
+        modeTb.shortDescription = item.shortDescription ?: ""
+        modeTb.isDeleted = item.isDeleted
+        //  modeTb.price_without_markup = item.price_without_markup
+        return modeTb
+    }
+
+
 }

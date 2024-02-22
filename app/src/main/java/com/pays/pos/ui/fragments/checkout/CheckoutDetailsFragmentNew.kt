@@ -18,11 +18,21 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.reflect.TypeToken
+import com.magtek.mobile.android.mtlib.IMTCardData
+import com.magtek.mobile.android.mtlib.MTConnectionState
+import com.magtek.mobile.android.mtusdk.*
+import com.pax.poslink.PaymentRequest
+import com.pax.poslink.PosLink
+import com.pax.poslink.ProcessTransResult
+import com.pax.poslink.aidl.BasePOSLinkCallback
+import com.pax.poslink.broadpos.BroadPOSCommunicator
+import com.pax.poslink.fullIntegration.InputAccount
+import com.pax.poslink.fullIntegration.InputAccount.InputAccountCallback
 import com.pays.pos.R
-import com.pays.pos.data.entities.CartModel
-import com.pays.pos.data.entities.PAXData
-import com.pays.pos.data.entities.RedeemLoyaltyInfo
-import com.pays.pos.data.entities.TbItem
+import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.requestModel.*
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
@@ -65,18 +75,6 @@ import com.pays.pos.utils.paxUtils.AppThreadPool
 import com.pays.pos.utils.paxUtils.POSLinkCreatorWrapper
 import com.pays.pos.utils.paxUtils.SettingINI
 import com.pays.pos.utils.statusUtils.Status
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.magtek.mobile.android.mtlib.IMTCardData
-import com.magtek.mobile.android.mtlib.MTConnectionState
-import com.magtek.mobile.android.mtusdk.*
-import com.pax.poslink.PaymentRequest
-import com.pax.poslink.PosLink
-import com.pax.poslink.ProcessTransResult
-import com.pax.poslink.aidl.BasePOSLinkCallback
-import com.pax.poslink.broadpos.BroadPOSCommunicator
-import com.pax.poslink.fullIntegration.InputAccount
-import com.pax.poslink.fullIntegration.InputAccount.InputAccountCallback
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import retrofit2.Call
@@ -85,7 +83,6 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 
@@ -3089,6 +3086,48 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 paymentAttributesRequest(myRequest)
             }
         } else {
+
+            /* Added by Rahul to solve the cartModel crash issue, i.e. cartModel is getting null - START*/
+
+            if (viewModel.cartModel == null) {
+                var currentCartItems = arrayListOf<TbItem>()
+                for (tbItem in viewModel.currentCartItems) {
+                    currentCartItems.add(TbItem().convertCartToItem(tbItem, tbItem))
+                }
+                var isManual = false
+                if (prefProvider.getValue(Constants.REDIRECT_FROM, "").equals("manual_sale")) {
+                    isManual = true
+                } else {
+                    isManual = false
+                }
+                viewModel.cartModel = CartModel().apply {
+                    terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+                    employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+                    locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+                    orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
+                    orderType = prefProvider.getValue(ORDER_TYPE, "").toString()
+                    orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
+                    items = currentCartItems
+                    isOpenOrder = false
+                    isMaual = isManual
+                    isEdited = false
+                    customer = Gson().fromJson(
+                        prefProvider.getValue("pref_customer", "").toString(),
+                        TbCustomer::class.java
+                    )
+                    taxlistDynamic = Gson().fromJson(
+                        prefProvider.getValue("taxlistDynamic", "").toString(),
+                        object : TypeToken<List<TaxData>?>() {}.getType()
+                    )
+                }
+
+                dashboardViewModel.addCart(viewModel.cartModel!!)
+
+            }
+
+            /* Added by Rahul to solve the cartModel crash issue, i.e. cartModel is getting null - END*/
+
+
             val myRequest = viewModel.cartModel?.let {
                 paymentviewModel.createOrderRequestNew(
                     viewModel.currentCartItems,
@@ -3126,6 +3165,31 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
     }
+
+    /* private fun cartModel(order: OpenOrderResponse.Data.Order): CartModel {
+         LogUtil.logE("futureDeliveryDate  ", Gson().toJson(order))
+         return CartModel().apply {
+             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+             employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+             locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+             orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
+             orderType = prefProvider.getValue(ORDER_TYPE, "").toString()
+             orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
+             isOpenOrder = false
+             serviceCharge = serviceChargesList(order)
+             customer = assignCustomer(order)
+             items = inventoryList(order)
+             note = order.note
+             var itemDiscount = 0.0
+             items?.forEach {
+                 itemDiscount += it.discountPrice
+             }
+             discountPrice = order.totalDiscount
+             deliveryType = order.deliveryType ?: ""
+             taxlistDynamic = getTaxBirfucationList(order.orderItems)
+
+         }
+     }*/
 
     /*   private fun makeCashPayment() {
            paymentType = if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
