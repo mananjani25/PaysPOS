@@ -16,6 +16,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.google.gson.Gson
 import com.pays.pos.MainApplication
 import com.pays.pos.data.db.AppDatabase
 import com.pays.pos.data.entities.*
@@ -84,10 +85,6 @@ import com.pays.pos.utils.*
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import com.pays.pos.utils.workmanager.ThreadPoolManager
-import com.google.gson.Gson
-import com.pax.poslink.log.LogFilter.Const
-import com.pays.pos.data.remote.Constants.AMOUNT
-import com.pays.pos.data.remote.Constants.QUEUE_SYNC_TIME_STAMP
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
@@ -100,7 +97,6 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 import kotlin.collections.set
 import kotlin.math.ceil
 
@@ -731,12 +727,12 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun manualSaleCartLogicNew(cartList: List<TbCartItem>?, item: TbCartItem, type: String) {
         /*Added by Rahul for solving Discount issue */
         if (item.discountType.isEmpty()) {
-            item.discountType = AMOUNT
+            item.discountType = Constants.AMOUNT
         }
         var cartModel = addCartModelNew(item, true)
         /*Added by Rahul for solving Discount issue */
         if (cartModel?.discountType!!.isEmpty()) {
-            cartModel.discountType = AMOUNT
+            cartModel.discountType = Constants.AMOUNT
         }
 
         if (cartList != null && cartList.isEmpty()) {
@@ -6725,7 +6721,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 intent.action = Constants.MASTER_TEMINAL_CHANGED
                                 _masterTerminal.value = Event(true)
                                 prefProvider.setValue(
-                                    QUEUE_SYNC_TIME_STAMP,
+                                    Constants.QUEUE_SYNC_TIME_STAMP,
                                     System.currentTimeMillis().toString()
                                 )
 
@@ -7515,7 +7511,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun setCartEdited(isEdited: Int, currentCartId: Int?) {
         CoroutineScope(Dispatchers.IO).launch {
-            posRepository.setCartEdited(isEdited, currentCartId!!)
+            try {
+                posRepository.setCartEdited(isEdited, currentCartId!!)
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
         }
 
     }
