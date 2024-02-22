@@ -77,7 +77,7 @@
                         <com.google.android.material.switchmaterial.SwitchMaterial
                             android:id="@+id/swtEnableTax"
                             style="@style/AppTheme"
-                            android:layout_width="@dimen/_20sdp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:scaleX="1.5"
