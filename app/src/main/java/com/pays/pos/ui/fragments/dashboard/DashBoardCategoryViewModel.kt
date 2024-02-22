@@ -30,7 +30,6 @@ import com.pays.pos.data.model.responseModel.OnlineOrderNotificationCount
 import com.pays.pos.data.model.responseModel.PrinterResponse
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.ADD
-import com.pays.pos.data.remote.Constants.AMOUNT
 import com.pays.pos.data.remote.Constants.BASE_URL_NEW
 import com.pays.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.pays.pos.data.remote.Constants.BUSINESS_NAME
@@ -64,7 +63,6 @@ import com.pays.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.pays.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.pays.pos.data.remote.Constants.PAX_SERIAL_NO
 import com.pays.pos.data.remote.Constants.PAX_TERMINAL_ID
-import com.pays.pos.data.remote.Constants.QUEUE_SYNC_TIME_STAMP
 import com.pays.pos.data.remote.Constants.REPORT_END_TIME
 import com.pays.pos.data.remote.Constants.REPORT_START_TIME
 import com.pays.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
@@ -87,10 +85,6 @@ import com.pays.pos.utils.*
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import com.pays.pos.utils.workmanager.ThreadPoolManager
-import com.google.gson.Gson
-import com.pax.poslink.log.LogFilter.Const
-import com.pays.pos.data.remote.Constants.AMOUNT
-import com.pays.pos.data.remote.Constants.QUEUE_SYNC_TIME_STAMP
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
@@ -733,12 +727,12 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun manualSaleCartLogicNew(cartList: List<TbCartItem>?, item: TbCartItem, type: String) {
         /*Added by Rahul for solving Discount issue */
         if (item.discountType.isEmpty()) {
-            item.discountType = AMOUNT
+            item.discountType = Constants.AMOUNT
         }
         var cartModel = addCartModelNew(item, true)
         /*Added by Rahul for solving Discount issue */
         if (cartModel?.discountType!!.isEmpty()) {
-            cartModel.discountType = AMOUNT
+            cartModel.discountType = Constants.AMOUNT
         }
 
         if (cartList != null && cartList.isEmpty()) {
@@ -6727,7 +6721,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 intent.action = Constants.MASTER_TEMINAL_CHANGED
                                 _masterTerminal.value = Event(true)
                                 prefProvider.setValue(
-                                    QUEUE_SYNC_TIME_STAMP,
+                                    Constants.QUEUE_SYNC_TIME_STAMP,
                                     System.currentTimeMillis().toString()
                                 )
 
