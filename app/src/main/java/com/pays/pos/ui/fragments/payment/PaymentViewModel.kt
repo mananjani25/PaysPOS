@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.pays.pos.data.db.AppDatabase
 import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.requestModel.*
@@ -28,7 +29,6 @@ import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.TimeFormatUtils
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
-import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import javax.inject.Inject
@@ -137,6 +137,7 @@ open class PaymentViewModel @Inject constructor(
     }
 
     fun submit(orderRequestModel: OrderRequestModel) {
+        Log.e(TAG,"checkOrderRequest:  ${Gson().toJson(orderRequestModel)}")
 
 //        orderRequestModel.print_order = printOrder
         if (cashPaymentType(orderRequestModel)) {

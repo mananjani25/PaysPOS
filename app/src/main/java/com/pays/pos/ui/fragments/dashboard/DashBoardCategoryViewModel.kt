@@ -16,6 +16,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.google.gson.Gson
 import com.pays.pos.MainApplication
 import com.pays.pos.data.db.AppDatabase
 import com.pays.pos.data.entities.*
@@ -29,6 +30,7 @@ import com.pays.pos.data.model.responseModel.OnlineOrderNotificationCount
 import com.pays.pos.data.model.responseModel.PrinterResponse
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.ADD
+import com.pays.pos.data.remote.Constants.AMOUNT
 import com.pays.pos.data.remote.Constants.BASE_URL_NEW
 import com.pays.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.pays.pos.data.remote.Constants.BUSINESS_NAME
@@ -62,6 +64,7 @@ import com.pays.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.pays.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.pays.pos.data.remote.Constants.PAX_SERIAL_NO
 import com.pays.pos.data.remote.Constants.PAX_TERMINAL_ID
+import com.pays.pos.data.remote.Constants.QUEUE_SYNC_TIME_STAMP
 import com.pays.pos.data.remote.Constants.REPORT_END_TIME
 import com.pays.pos.data.remote.Constants.REPORT_START_TIME
 import com.pays.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
@@ -84,9 +87,6 @@ import com.pays.pos.utils.*
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import com.pays.pos.utils.workmanager.ThreadPoolManager
-import com.google.gson.Gson
-import com.pays.pos.data.remote.Constants.AMOUNT
-import com.pays.pos.data.remote.Constants.QUEUE_SYNC_TIME_STAMP
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
@@ -99,7 +99,6 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 import kotlin.collections.set
 import kotlin.math.ceil
 
@@ -7489,7 +7488,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun setCartEdited(isEdited: Int, currentCartId: Int?) {
         CoroutineScope(Dispatchers.IO).launch {
-            posRepository.setCartEdited(isEdited, currentCartId!!)
+            try {
+                posRepository.setCartEdited(isEdited, currentCartId!!)
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
         }
 
     }
