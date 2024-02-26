@@ -3452,11 +3452,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             }?.onFailed {
                 Log.e(TAG2, "onFailed")
                 if (isInternetAvailable()) {
-                    try {
-                        MainActivity.consumer2?.connect()
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
+                    Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                        try {
+                            MainActivity.consumer2?.connect()
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    },25000)
+
                 } else {
                     sendNotification("Please check your Network Connectivity.")
                 }
