@@ -17,11 +17,8 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Base64
 import android.util.Log
-import android.view.Display
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
@@ -32,27 +29,22 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.volley.AuthFailureError
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.VolleyError
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
+import com.epson.epos2.printer.Printer
+import com.epson.eposprint.Builder
+import com.epson.eposprint.Print
+import com.epson.eposprint.StatusChangeEventListener
+import com.google.gson.Gson
 import com.pays.pos.R
-import com.pays.pos.data.entities.CartModel
-import com.pays.pos.data.entities.LoyaltyProgramsModel
-import com.pays.pos.data.entities.Modifier
-import com.pays.pos.data.entities.RedeemLoyaltyInfo
-import com.pays.pos.data.entities.TaxData
-import com.pays.pos.data.entities.TbAddress
-import com.pays.pos.data.entities.TbCartItem
-import com.pays.pos.data.entities.TbCustomer
-import com.pays.pos.data.entities.TbItem
-import com.pays.pos.data.entities.TbOrderType
-import com.pays.pos.data.entities.TbPhones
-import com.pays.pos.data.entities.TbServiceCharge
-import com.pays.pos.data.entities.VariationsAttribute
+import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.requestModel.OrderItemVariationAttribute
 import com.pays.pos.data.model.requestModel.RefundRequestModelOnlineOrder
-import com.pays.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
-import com.pays.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
-import com.pays.pos.data.model.responseModel.GetTipReponse
-import com.pays.pos.data.model.responseModel.OnlineOrderResponseModel
-import com.pays.pos.data.model.responseModel.PrinterResponse
+import com.pays.pos.data.model.responseModel.*
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.ALL_ORDER_TAB
 import com.pays.pos.data.remote.Constants.EMPLOYEE_NAME
@@ -73,18 +65,9 @@ import com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.utils.*
 import com.pays.pos.utils.callback.OrderCallBack
-import com.pays.pos.utils.extensions.alert
-import com.pays.pos.utils.extensions.gone
-import com.pays.pos.utils.extensions.runOnUiThread
-import com.pays.pos.utils.extensions.showAlert
-import com.pays.pos.utils.extensions.visible
+import com.pays.pos.utils.extensions.*
 import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.statusUtils.Status
-import com.epson.epos2.printer.Printer
-import com.epson.eposprint.Builder
-import com.epson.eposprint.Print
-import com.epson.eposprint.StatusChangeEventListener
-import com.google.gson.Gson
 import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
@@ -98,17 +81,18 @@ import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserFactory
+import java.io.StringReader
+import java.lang.Runnable
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
 import kotlin.math.abs
+
 
 // This fragment contains listing of orders based on selected order types and order status
 @AndroidEntryPoint
@@ -200,7 +184,7 @@ class AllOrdersListingFragment(
         ) { requestKey: String, bundle: Bundle ->
             var time = bundle.getInt("time")
             var order_id = bundle.getInt("order_id")
-            acceptedAndDeclineOrder(time, order_id, true)
+            acceptedAndDeclineOrder("", time, order_id, true)
         }
 
         requireActivity().supportFragmentManager.setFragmentResultListener(
@@ -208,7 +192,7 @@ class AllOrdersListingFragment(
             viewLifecycleOwner
         ) { requestKey: String, bundle: Bundle ->
             var order_id = bundle.getInt("order_id")
-            acceptedAndDeclineOrder(0, order_id, false)
+            acceptedAndDeclineOrder("", 0, order_id, false)
         }
     }
 
@@ -282,7 +266,170 @@ class AllOrdersListingFragment(
     }
 
     // To accept/decline online or phone orders
-    private fun acceptedAndDeclineOrder(time: Int, orderId: Int, is_accepted: Boolean) {
+    private fun acceptedAndDeclineOrder(
+        pax_data: String,
+        time: Int,
+        orderId: Int,
+        is_accepted: Boolean
+    ) {
+        if (pax_data.isNotEmpty()) {
+            var CUST_NBR = ""
+            var MERCH_NBR = ""
+            var DBA_NBR = ""
+            var TERMINAL_NBR = ""
+            var TRAN_TYPE = "CCE7"
+            var BATCH_ID = ""
+            var TRAN_NBR = ""
+            var ORIG_AUTH_GUID = ""
+            var CARD_ENT_METH = ""
+            var AMOUNT = ""
+            var AUTH_GUID = ""
+
+            var key = ""
+            var value = ""
+            val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
+            factory.setNamespaceAware(true)
+            val xpp: XmlPullParser = factory.newPullParser()
+
+            xpp.setInput(StringReader(pax_data))
+            var eventType = xpp.eventType
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_DOCUMENT) {
+                    println("Start document")
+                } else if (eventType == XmlPullParser.START_TAG) {
+
+                    try {
+                        key = xpp.getAttributeValue(0)
+                    } catch (e: Exception) {
+                        key = ""
+                    }
+                } else if (eventType == XmlPullParser.END_TAG) {
+
+                } else if (eventType == XmlPullParser.TEXT) {
+                    println("Text " + xpp.text)
+                    if (!value.equals(xpp.text)) {
+                        value = xpp.text
+                    }
+                }
+
+                if (key.equals("CUST_NBR")) {
+                    CUST_NBR = value
+                } else if (key.equals("MERCH_NBR")) {
+                    MERCH_NBR = value
+                } else if (key.equals("DBA_NBR")) {
+                    DBA_NBR = value
+                } else if (key.equals("TERMINAL_NBR")) {
+                    TERMINAL_NBR = value
+                } else if (key.equals("BATCH_ID")) {
+                    BATCH_ID = value
+                } else if (key.equals("TRAN_NBR")) {
+                    TRAN_NBR = value
+                } else if (key.equals("AUTH_GUID")) {
+                    AUTH_GUID = value
+                }else if (key.equals("AUTH_AMOUNT")) {
+                    AMOUNT = value
+                }
+
+                eventType = xpp.next()
+            }
+
+
+            CoroutineScope(Dispatchers.IO).launch {
+                val queue = Volley.newRequestQueue(requireContext())
+                val url = "https://secure.epxuap.com/"
+                val getRequest: StringRequest = object : StringRequest(
+                    Request.Method.POST, url,
+                    object : Response.Listener<String?> {
+                        override fun onResponse(response: String?) {
+                            // response
+                            var AUTH_RESP_TEXT=""
+                            Log.d("Response", response!!)
+                            xpp.setInput(StringReader(response))
+                            var eventType = xpp.eventType
+                            while (eventType != XmlPullParser.END_DOCUMENT) {
+                                if (eventType == XmlPullParser.START_DOCUMENT) {
+                                    println("Start document")
+                                } else if (eventType == XmlPullParser.START_TAG) {
+
+                                    try {
+                                        key = xpp.getAttributeValue(0)
+                                    } catch (e: Exception) {
+                                        key = ""
+                                    }
+                                } else if (eventType == XmlPullParser.END_TAG) {
+
+                                } else if (eventType == XmlPullParser.TEXT) {
+                                    println("Text " + xpp.text)
+                                    if (!value.equals(xpp.text)) {
+                                        value = xpp.text
+                                    }
+                                }
+
+                                if (key.equals("AUTH_RESP_TEXT")) {
+                                    AUTH_RESP_TEXT = value
+                                }
+
+                                eventType = xpp.next()
+                            }
+
+                            if (AUTH_RESP_TEXT.contains("UNABLE")){
+                                /*Make refund Call*/
+                                makeRefundCallToNAB(xpp,time,orderId,is_accepted,CUST_NBR, MERCH_NBR, DBA_NBR, TERMINAL_NBR, TRAN_TYPE, BATCH_ID, TRAN_NBR, AMOUNT, AUTH_GUID)
+                            }else if (AUTH_RESP_TEXT.contains("APPROVAL")){
+                                /*Make server call*/
+                                ProgressUtils.dismissProgressDialog()
+                                makeRefundServerCall(time,orderId,is_accepted)
+                            }
+
+                        }
+                    },
+                    object : Response.ErrorListener {
+                        override fun onErrorResponse(error: VolleyError) {
+                            // TODO Auto-generated method stub
+                            Log.d("ERROR", "error => $error")
+                        }
+                    }
+                ) {
+                    @Throws(AuthFailureError::class)
+                    override fun getHeaders(): Map<String, String> {
+                        val params: MutableMap<String, String> = HashMap()
+                        params["Accept"] = "*/*"
+                        params["Cache-Control"] = "no-cache"
+                        params["Host"] = "secure.epxuap.com"
+                        params["Accept-Encoding"] = "gzip, deflate, br"
+                        params["Connection"] = "keep-alive"
+                        params["Content-Type"] = "application/x-www-form-urlencoded"
+                        return params
+                    }
+
+                    @Throws(AuthFailureError::class)
+                    override fun getParams(): Map<String, String>? {
+                        val params: MutableMap<String, String> = HashMap()
+                        params["CUST_NBR"] = CUST_NBR
+                        params["MERCH_NBR"] = MERCH_NBR
+                        params["DBA_NBR"] = DBA_NBR
+                        params["TERMINAL_NBR"] = TERMINAL_NBR
+                        params["TRAN_TYPE"] = "CCE7"
+                        params["BATCH_ID"] = BATCH_ID
+                        params["TRAN_NBR"] = TRAN_NBR
+                        params["CARD_ENT_METH"] = "Z"
+                        params["INDUSTRY_TYPE"] = "E"
+                        params["ORIG_AUTH_GUID"] = ORIG_AUTH_GUID
+                        return params
+                    }
+                }
+                queue.add(getRequest)
+                withContext(Dispatchers.Main){
+                    ProgressUtils.showProgressDialog(requireActivity())
+                }
+            }
+        }
+
+
+
+    }
+
+    private fun makeRefundServerCall(time:Int,orderId:Int,is_accepted: Boolean) {
         var employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         var terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
         viewModel.acceptedAndDeclineOrder(
@@ -314,11 +461,166 @@ class AllOrdersListingFragment(
                     }
 
                     Status.LOADING -> {
-                        ProgressUtils.showProgressDialog(requireActivity())
+//                        ProgressUtils.showProgressDialog(requireActivity())
                     }
                 }
             }
         }
+    }
+
+    fun makeRefundCallToNAB(xpp: XmlPullParser,time:Int,orderId:Int,is_accepted: Boolean,CUST_NBR:String, MERCH_NBR:String, DBA_NBR:String, TERMINAL_NBR:String, TRAN_TYPE:String, BATCH_ID:String, TRAN_NBR:String, AMOUNT:String, ORIG_AUTH_GUID:String){
+        val queue = Volley.newRequestQueue(requireContext())
+        val url = "https://secure.epxuap.com/"
+        val getRequest: StringRequest = object : StringRequest(
+            Request.Method.POST, url,
+            object : Response.Listener<String?> {
+                override fun onResponse(response: String?) {
+                    // response
+                    Log.d("Response", response!!)
+                    var AUTH_RESP_TEXT=""
+                    var key = ""
+                    var value = ""
+
+                    Log.d("Response", response!!)
+                    xpp.setInput(StringReader(response))
+                    var eventType = xpp.eventType
+                    while (eventType != XmlPullParser.END_DOCUMENT) {
+                        if (eventType == XmlPullParser.START_DOCUMENT) {
+                            println("Start document")
+                        } else if (eventType == XmlPullParser.START_TAG) {
+
+                            try {
+                                key = xpp.getAttributeValue(0)
+                            } catch (e: Exception) {
+                                key = ""
+                            }
+                        } else if (eventType == XmlPullParser.END_TAG) {
+
+                        } else if (eventType == XmlPullParser.TEXT) {
+                            println("Text " + xpp.text)
+                            if (!value.equals(xpp.text)) {
+                                value = xpp.text
+                            }
+                        }
+
+                        if (key.equals("AUTH_RESP_TEXT")) {
+                            AUTH_RESP_TEXT = value
+                        }
+
+                        eventType = xpp.next()
+                    }
+
+                    if (!AUTH_RESP_TEXT.contains("APPROVAL")){
+
+
+                        /*if (!(context as AppCompatActivity).isFinishing()) {
+                            requireActivity().runOnUiThread(object:Runnable{
+                                override fun run() {
+                                    AlertUtils.showAlert(requireActivity(),AUTH_RESP_TEXT)
+                                }
+
+                            })
+
+                        }*/
+                       /* else{
+                            try{
+                                AlertUtils.showAlert(requireActivity(),AUTH_RESP_TEXT)
+
+                            }catch (e:Exception){
+                                try{
+                                    AlertUtils.showAlert(requireContext(),AUTH_RESP_TEXT)
+                                }catch (e:Exception){
+
+                                }
+                            }
+                        }*/
+                    }
+
+                    makeRefundServerCall(time,orderId,is_accepted)
+
+
+                }
+            },
+            object : Response.ErrorListener {
+                override fun onErrorResponse(error: VolleyError) {
+                    // TODO Auto-generated method stub
+                    Log.d("ERROR", "error => $error")
+                }
+            }
+        ) {
+            @Throws(AuthFailureError::class)
+            override fun getHeaders(): Map<String, String> {
+                val params: MutableMap<String, String> = HashMap()
+                params["Accept"] = "*/*"
+                params["Cache-Control"] = "no-cache"
+                params["Host"] = "secure.epxuap.com"
+                params["Accept-Encoding"] = "gzip, deflate, br"
+                params["Connection"] = "keep-alive"
+                params["Content-Type"] = "application/x-www-form-urlencoded"
+                return params
+            }
+
+            @Throws(AuthFailureError::class)
+            override fun getParams(): Map<String, String>? {
+                val params: MutableMap<String, String> = HashMap()
+                params["CUST_NBR"] = CUST_NBR
+                params["MERCH_NBR"] = MERCH_NBR
+                params["DBA_NBR"] = DBA_NBR
+                params["TERMINAL_NBR"] = TERMINAL_NBR
+                params["TRAN_TYPE"] = "CCE9"
+                params["BATCH_ID"] = BATCH_ID
+                params["TRAN_NBR"] = TRAN_NBR
+                params["CARD_ENT_METH"] = "Z"
+                params["AMOUNT"] = AMOUNT
+                params["ORIG_AUTH_GUID"] = ORIG_AUTH_GUID
+                params["INDUSTRY_TYPE"] = "E"
+                return params
+            }
+        }
+        queue.add(getRequest)
+
+
+    }
+
+    fun getValueFromXml(
+        xmlString: String,
+        key: String
+    ): kotlin.collections.HashMap<String, String>? {
+
+        var dataList = HashMap<String, String>()
+        var key = ""
+        var value = ""
+        val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
+        factory.setNamespaceAware(true)
+        val xpp: XmlPullParser = factory.newPullParser()
+
+        xpp.setInput(StringReader(xmlString))
+        var eventType = xpp.eventType
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+            if (eventType == XmlPullParser.START_DOCUMENT) {
+                println("Start document")
+            } else if (eventType == XmlPullParser.START_TAG) {
+
+                try {
+                    key = xpp.getAttributeValue(0)
+                } catch (e: Exception) {
+                    key = ""
+                }
+            } else if (eventType == XmlPullParser.END_TAG) {
+
+            } else if (eventType == XmlPullParser.TEXT) {
+                println("Text " + xpp.text)
+                if (!value.equals(xpp.text)) {
+                    value = xpp.text
+                }
+            }
+
+            dataList.put(key, value)
+            eventType = xpp.next()
+        }
+
+        return dataList
+
     }
 
     // To update order
@@ -886,6 +1188,11 @@ class AllOrdersListingFragment(
                                     "magensa_response_data",
                                     adapter.orderList[pos].magensa_response_data
                                 )
+
+                                putString(
+                                    "pax_response_data",
+                                    adapter.orderList[pos].payments.get(0).pax_data
+                                )
                             }
                             bundle.putString("isFrom", "rejectOnlineOrder")
                             if (prefProvider.isAdmin() || prefProvider.isManager()) {
@@ -916,7 +1223,12 @@ class AllOrdersListingFragment(
                     alert("", "Are you sure, you want to reject this order ?") {
 
                         this.positiveButton("YES") {
-                            acceptedAndDeclineOrder(0, adapter.filterList[pos].id, false)
+                            acceptedAndDeclineOrder(
+                                order.payments.get(0).pax_data,
+                                0,
+                                adapter.filterList[pos].id,
+                                false
+                            )
                         }
                         this.negativeButton("NO") {
                         }
@@ -978,7 +1290,7 @@ class AllOrdersListingFragment(
                 prefProvider.setValueboolean(Constants.OPEN_ORDER_UPDATE_FOR_PRINT, true)
 
                 /*we are using this to check whether the note is updated or not, if yes then we will print the *****Updated***** on the kitchen receipt*/
-                prefProvider.setValue(Constants.orderNoteOld,order.note)
+                prefProvider.setValue(Constants.orderNoteOld, order.note)
 
 
                 val updatedCartModel = generateCartModelFromOrderModel(order)
@@ -3829,8 +4141,7 @@ class AllOrdersListingFragment(
                 delay(100)
                 setServiceForKitchen(data, type, orderData)
             }
-        }
-        else if (data.name.contains("TSP", ignoreCase = true)) {
+        } else if (data.name.contains("TSP", ignoreCase = true)) {
             settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
             printer = StarPrinter(settings, requireContext())
 
@@ -3981,7 +4292,7 @@ class AllOrdersListingFragment(
                                             ) != null
                                         ) {
 
-                                            var phoneNumber=orderData.customer?.phones?.get(
+                                            var phoneNumber = orderData.customer?.phones?.get(
                                                 0
                                             )?.phoneNumber.toString()
                                             if (phoneNumber.length != 10) {
@@ -4032,8 +4343,7 @@ class AllOrdersListingFragment(
                 }
             }
 
-        }
-        else {
+        } else {
 
             if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
                 var mPrinter = if (data.name.substring(0, 6).toString().lowercase()
@@ -5743,7 +6053,7 @@ class AllOrdersListingFragment(
                     )
                 )
             } else {
-               SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
             if (customerSettingModel.showOrderType) {
                 PrintSunmiUtils.headerText(receiptModel?.orderTypeName?.trim())
@@ -5751,7 +6061,7 @@ class AllOrdersListingFragment(
 
 
             if (receiptModel?.orderType?.lowercase() == Constants.PHONE_ORDER.lowercase()
-               // || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
+            // || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
             ) {
                 PrintSunmiUtils.headerText(receiptModel?.deliveryType)
 
@@ -5883,7 +6193,7 @@ class AllOrdersListingFragment(
                 )
             }
 
-           SunmiPrintHelper.getInstance().lineWrap(2)
+            SunmiPrintHelper.getInstance().lineWrap(2)
 
 
             if (receiptModel?.totalDiscount != null) {
@@ -6277,7 +6587,7 @@ class AllOrdersListingFragment(
                     PrintSunmiUtils.boldText("Customer Signature           __________________")
                 }
 
-               SunmiPrintHelper.getInstance().lineWrap(2)
+                SunmiPrintHelper.getInstance().lineWrap(2)
             }
             if (customerSettingModel.showQrCode) {
 

@@ -491,7 +491,9 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 ""
             )
 
-            PrefProvider(requireContext()).setValue(Constants.discountType, discountModel!!.discountType)
+            PrefProvider(requireContext()).setValue(Constants.discountType,
+                discountModel?.discountType ?: defaultModel.discountType
+            )
 
             val result = Bundle().apply {
                 putParcelable("data", discount)
@@ -558,7 +560,10 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                     putParcelable("item", defaultModel)
                     putDouble("value", binding.edtAmount.text.toString().toDouble())
                 }
-            PrefProvider(requireContext()).setValue(Constants.discountType, discountModel!!.discountType)
+
+            PrefProvider(requireContext()).setValue(Constants.discountType,
+                discountModel?.discountType ?: defaultModel.discountType
+            )
 
             when {
                     isFromDetails -> {

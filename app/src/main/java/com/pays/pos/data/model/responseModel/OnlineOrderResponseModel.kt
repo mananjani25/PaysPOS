@@ -311,7 +311,9 @@ data class OnlineOrderResponseModel(
             @SerializedName("transaction_id")
             val transactionId: String,
             @SerializedName("updated_at")
-            val updatedAt: String
+            val updatedAt: String,
+            @SerializedName("pax_data")
+            val pax_data: String
         )
 
         data class Customer(

@@ -16,6 +16,11 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.android.volley.AuthFailureError
+import com.android.volley.Request
+import com.android.volley.VolleyError
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.pays.pos.R
 import com.pays.pos.data.model.requestModel.RefundRequestModel
 import com.pays.pos.data.model.requestModel.RefundRequestModelOnlineOrder
@@ -42,14 +47,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONArray
+import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.StringReader
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ReasonForRefundOnlineOrder : DialogFragment() {
     private var magensa_response_data: String = ""
+    private var pax_response_data: String = ""
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -82,6 +91,7 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
         refundAmount = arguments?.getDouble("refundAmount")!!
         isfromTransaction = arguments?.getBoolean("isfromTransaction") == true
         magensa_response_data = arguments?.getString("magensa_response_data").toString()
+        pax_response_data = arguments?.getString("pax_response_data").toString()
         return binding.root
     }
 
@@ -115,6 +125,159 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
             val jsonObject = jsonParser.parse(magensa_response_data).asJsonObject
             Log.d(TAG, "onViewCreated: " + jsonObject)
             if (refundAmount != 0.0 || refundAmount > 0.0) {
+
+
+                if (pax_response_data.isNotEmpty()) {
+                    var CUST_NBR = ""
+                    var MERCH_NBR = ""
+                    var DBA_NBR = ""
+                    var TERMINAL_NBR = ""
+                    var TRAN_TYPE = "CCE7"
+                    var BATCH_ID = ""
+                    var TRAN_NBR = ""
+                    var ORIG_AUTH_GUID = ""
+                    var CARD_ENT_METH = ""
+                    var AMOUNT = ""
+                    var AUTH_GUID = ""
+
+                    var key = ""
+                    var value = ""
+                    val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
+                    factory.setNamespaceAware(true)
+                    val xpp: XmlPullParser = factory.newPullParser()
+
+                    xpp.setInput(StringReader(pax_response_data))
+                    var eventType = xpp.eventType
+                    while (eventType != XmlPullParser.END_DOCUMENT) {
+                        if (eventType == XmlPullParser.START_DOCUMENT) {
+                            println("Start document")
+                        } else if (eventType == XmlPullParser.START_TAG) {
+
+                            try {
+                                key = xpp.getAttributeValue(0)
+                            } catch (e: Exception) {
+                                key = ""
+                            }
+                        } else if (eventType == XmlPullParser.END_TAG) {
+
+                        } else if (eventType == XmlPullParser.TEXT) {
+                            println("Text " + xpp.text)
+                            if (!value.equals(xpp.text)) {
+                                value = xpp.text
+                            }
+                        }
+
+                        if (key.equals("CUST_NBR")) {
+                            CUST_NBR = value
+                        } else if (key.equals("MERCH_NBR")) {
+                            MERCH_NBR = value
+                        } else if (key.equals("DBA_NBR")) {
+                            DBA_NBR = value
+                        } else if (key.equals("TERMINAL_NBR")) {
+                            TERMINAL_NBR = value
+                        } else if (key.equals("BATCH_ID")) {
+                            BATCH_ID = value
+                        } else if (key.equals("TRAN_NBR")) {
+                            TRAN_NBR = value
+                        } else if (key.equals("AUTH_GUID")) {
+                            AUTH_GUID = value
+                        }else if (key.equals("AUTH_AMOUNT")) {
+                            AMOUNT = value
+                        }
+
+                        eventType = xpp.next()
+                    }
+
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val queue = Volley.newRequestQueue(requireContext())
+                        val url = "https://secure.epxuap.com/"
+                        val getRequest: StringRequest = object : StringRequest(
+                            Request.Method.POST, url,
+                            object : com.android.volley.Response.Listener<String?> {
+                                override fun onResponse(response: String?) {
+                                    // response
+                                    var AUTH_RESP_TEXT=""
+                                    Log.d("Response", response!!)
+                                    xpp.setInput(StringReader(response))
+                                    var eventType = xpp.eventType
+                                    while (eventType != XmlPullParser.END_DOCUMENT) {
+                                        if (eventType == XmlPullParser.START_DOCUMENT) {
+                                            println("Start document")
+                                        } else if (eventType == XmlPullParser.START_TAG) {
+
+                                            try {
+                                                key = xpp.getAttributeValue(0)
+                                            } catch (e: Exception) {
+                                                key = ""
+                                            }
+                                        } else if (eventType == XmlPullParser.END_TAG) {
+
+                                        } else if (eventType == XmlPullParser.TEXT) {
+                                            println("Text " + xpp.text)
+                                            if (!value.equals(xpp.text)) {
+                                                value = xpp.text
+                                            }
+                                        }
+
+                                        if (key.equals("AUTH_RESP_TEXT")) {
+                                            AUTH_RESP_TEXT = value
+                                        }
+
+                                        eventType = xpp.next()
+                                    }
+
+                                    if (AUTH_RESP_TEXT.lowercase().contains("unable")){
+                                        /*Make refund Call*/
+                                        makeRefundCall(CUST_NBR, MERCH_NBR, DBA_NBR, TERMINAL_NBR, TRAN_TYPE, BATCH_ID, TRAN_NBR, AMOUNT, AUTH_GUID)
+                                    }else{
+                                        /*Make server call*/
+                                    }
+
+                                }
+                            },
+                            object : com.android.volley.Response.ErrorListener {
+                                override fun onErrorResponse(error: VolleyError) {
+                                    // TODO Auto-generated method stub
+                                    Log.d("ERROR", "error => $error")
+                                }
+                            }
+                        ) {
+                            @Throws(AuthFailureError::class)
+                            override fun getHeaders(): Map<String, String> {
+                                val params: MutableMap<String, String> = HashMap()
+                                params["Accept"] = "*/*"
+                                params["Cache-Control"] = "no-cache"
+                                params["Host"] = "secure.epxuap.com"
+                                params["Accept-Encoding"] = "gzip, deflate, br"
+                                params["Connection"] = "keep-alive"
+                                params["Content-Type"] = "application/x-www-form-urlencoded"
+                                return params
+                            }
+
+                            @Throws(AuthFailureError::class)
+                            override fun getParams(): Map<String, String>? {
+                                val params: MutableMap<String, String> = HashMap()
+                                params["CUST_NBR"] = CUST_NBR
+                                params["MERCH_NBR"] = MERCH_NBR
+                                params["DBA_NBR"] = DBA_NBR
+                                params["TERMINAL_NBR"] = TERMINAL_NBR
+                                params["TRAN_TYPE"] = "CCE7"
+                                params["BATCH_ID"] = BATCH_ID
+                                params["TRAN_NBR"] = TRAN_NBR
+                                params["CARD_ENT_METH"] = "Z"
+                                params["INDUSTRY_TYPE"] = "E"
+                                params["ORIG_AUTH_GUID"] = ORIG_AUTH_GUID
+                                return params
+                            }
+                        }
+                        queue.add(getRequest)
+
+
+                    }
+                }
+
+
                 val model = Gson().fromJson(
                     jsonObject, MagtekOnlineOrderRefundResponse::class.java
                 )
@@ -236,49 +399,107 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
 
     }
 
-  /*  private fun checkBroadPOSVersion() {
-        GlobalScope.launch {
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+    fun makeRefundCall(CUST_NBR:String, MERCH_NBR:String,DBA_NBR:String,TERMINAL_NBR:String,TRAN_TYPE:String,BATCH_ID:String,TRAN_NBR:String,AMOUNT:String,ORIG_AUTH_GUID:String){
+        val queue = Volley.newRequestQueue(requireContext())
+        val url = "https://secure.epxuap.com/"
+        val getRequest: StringRequest = object : StringRequest(
+            Request.Method.POST, url,
+            object : com.android.volley.Response.Listener<String?> {
+                override fun onResponse(response: String?) {
+                    // response
+                    Log.d("Response", response!!)
 
-            val manageRequest = ManageRequest()
-            manageRequest.TransType = manageRequest.ParseTransType("INIT")
-            posLink.ManageRequest = manageRequest
-            val result = posLink.ProcessTrans()
-            Log.d("result: ", result.Code.toString() + " " + result.Msg)
-            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
-                val msg = Message()
-                msg.what = Constants.TRANSACTION_SUCCESSED
-                msg.obj = posLink.ManageResponse
+                    /* if (AUTH_RESP_TEXT.lowercase().contains("unable")){
+                         makeRefundCall()
+                     }*/
 
-                val response = msg.obj as ManageResponse
-                response.ResultCode
-                response.resultTxt
-
-                val response11 = response.ExtData
-                Log.d("response11: ", "response11-${Gson().toJson(response11)}")
-                val regex = Regex("<AppName>(.*?)</AppName>")
-                val matchResult = regex.find(response11)
-                val versionName = matchResult?.groupValues?.getOrNull(1)
-
-                if (versionName != null) {
-                    println("versionName value: $versionName")
-                    if (versionName.contains("TSYS")) {
-                        Log.d("versionName:", "versionName $versionName")
-                        refundViaPAXTSYS()
-                    } else if (versionName.contains("Rapid")) {
-                        Log.d("versionName:", "versionName $versionName")
-                        refundViaPAX("Rapid")
-                    } else if (versionName.contains("EPX")) {
-                        Log.d("versionName:", "versionName $versionName")
-                        refundViaPAX("EPX")
-                    }
-                } else {
-                    println("versionName value not found")
+                }
+            },
+            object : com.android.volley.Response.ErrorListener {
+                override fun onErrorResponse(error: VolleyError) {
+                    // TODO Auto-generated method stub
+                    Log.d("ERROR", "error => $error")
                 }
             }
+        ) {
+            @Throws(AuthFailureError::class)
+            override fun getHeaders(): Map<String, String> {
+                val params: MutableMap<String, String> = HashMap()
+                params["Accept"] = "*/*"
+                params["Cache-Control"] = "no-cache"
+                params["Host"] = "secure.epxuap.com"
+                params["Accept-Encoding"] = "gzip, deflate, br"
+                params["Connection"] = "keep-alive"
+                params["Content-Type"] = "application/x-www-form-urlencoded"
+                return params
+            }
+
+            @Throws(AuthFailureError::class)
+            override fun getParams(): Map<String, String>? {
+                val params: MutableMap<String, String> = HashMap()
+                params["CUST_NBR"] = CUST_NBR
+                params["MERCH_NBR"] = MERCH_NBR
+                params["DBA_NBR"] = DBA_NBR
+                params["TERMINAL_NBR"] = TERMINAL_NBR
+                params["TRAN_TYPE"] = "CCE9"
+                params["BATCH_ID"] = BATCH_ID
+                params["TRAN_NBR"] = TRAN_NBR
+                params["CARD_ENT_METH"] = "Z"
+                params["AMOUNT"] = AMOUNT
+                params["ORIG_AUTH_GUID"] = ORIG_AUTH_GUID
+                params["INDUSTRY_TYPE"] = "E"
+                return params
+            }
         }
+        queue.add(getRequest)
+
+
     }
-*/
+
+
+    /*  private fun checkBroadPOSVersion() {
+          GlobalScope.launch {
+              posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+
+              val manageRequest = ManageRequest()
+              manageRequest.TransType = manageRequest.ParseTransType("INIT")
+              posLink.ManageRequest = manageRequest
+              val result = posLink.ProcessTrans()
+              Log.d("result: ", result.Code.toString() + " " + result.Msg)
+              if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                  val msg = Message()
+                  msg.what = Constants.TRANSACTION_SUCCESSED
+                  msg.obj = posLink.ManageResponse
+
+                  val response = msg.obj as ManageResponse
+                  response.ResultCode
+                  response.resultTxt
+
+                  val response11 = response.ExtData
+                  Log.d("response11: ", "response11-${Gson().toJson(response11)}")
+                  val regex = Regex("<AppName>(.*?)</AppName>")
+                  val matchResult = regex.find(response11)
+                  val versionName = matchResult?.groupValues?.getOrNull(1)
+
+                  if (versionName != null) {
+                      println("versionName value: $versionName")
+                      if (versionName.contains("TSYS")) {
+                          Log.d("versionName:", "versionName $versionName")
+                          refundViaPAXTSYS()
+                      } else if (versionName.contains("Rapid")) {
+                          Log.d("versionName:", "versionName $versionName")
+                          refundViaPAX("Rapid")
+                      } else if (versionName.contains("EPX")) {
+                          Log.d("versionName:", "versionName $versionName")
+                          refundViaPAX("EPX")
+                      }
+                  } else {
+                      println("versionName value not found")
+                  }
+              }
+          }
+      }
+  */
   /*  private fun getBatchLocalReport() {
         GlobalScope.launch {
             posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
