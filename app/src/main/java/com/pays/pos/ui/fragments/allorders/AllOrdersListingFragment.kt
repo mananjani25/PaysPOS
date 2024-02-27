@@ -4185,7 +4185,7 @@ class AllOrdersListingFragment(
                         add(
                             PrinterBuilder()
                                 .actionPrintText(
-                                    "Employee:${orderData.employee?.name}"
+                                    "Employee:${prefProvider.getValue(Constants.EMPLOYEE_NAME,"")}"
                                 )
                         )
                         actionFeedLine(1)
