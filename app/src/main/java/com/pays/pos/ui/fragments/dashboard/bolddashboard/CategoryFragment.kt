@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AutoCompleteTextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -353,6 +354,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             }
             searchAdapter =
                 CategorySearchAdapter(
+                    requireActivity() as AppCompatActivity,
                     requireContext(),
                     R.layout.search_category_item,
                     searchList
