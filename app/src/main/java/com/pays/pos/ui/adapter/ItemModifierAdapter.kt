@@ -22,6 +22,7 @@ class ItemModifierAdapter(
     RecyclerView.Adapter<ItemModifierAdapter.MyViewHolder>() {
     var list = ArrayList<Modifier>()
 
+
     inner class MyViewHolder(private val binding: ViewOrderModifiersBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Modifier) {
