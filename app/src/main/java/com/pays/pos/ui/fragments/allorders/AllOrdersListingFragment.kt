@@ -18,7 +18,6 @@ import android.text.TextWatcher
 import android.util.Base64
 import android.util.Log
 import android.view.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
@@ -272,164 +271,169 @@ class AllOrdersListingFragment(
         orderId: Int,
         is_accepted: Boolean
     ) {
-        if (pax_data.isNotEmpty()) {
-            var CUST_NBR = ""
-            var MERCH_NBR = ""
-            var DBA_NBR = ""
-            var TERMINAL_NBR = ""
-            var TRAN_TYPE = "CCE7"
-            var BATCH_ID = ""
-            var TRAN_NBR = ""
-            var ORIG_AUTH_GUID = ""
-            var CARD_ENT_METH = ""
-            var AMOUNT = ""
-            var AUTH_GUID = ""
+        if (is_accepted){
+            makeAcceptedDeclinedServerCall(time,orderId,is_accepted)
+        }else{
+            if (pax_data.isNotEmpty()) {
+                var CUST_NBR = ""
+                var MERCH_NBR = ""
+                var DBA_NBR = ""
+                var TERMINAL_NBR = ""
+                var TRAN_TYPE = "CCE7"
+                var BATCH_ID = ""
+                var TRAN_NBR = ""
+                var ORIG_AUTH_GUID = ""
+                var CARD_ENT_METH = ""
+                var AMOUNT = ""
+                var AUTH_GUID = ""
 
-            var key = ""
-            var value = ""
-            val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
-            factory.setNamespaceAware(true)
-            val xpp: XmlPullParser = factory.newPullParser()
+                var key = ""
+                var value = ""
+                val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
+                factory.setNamespaceAware(true)
+                val xpp: XmlPullParser = factory.newPullParser()
 
-            xpp.setInput(StringReader(pax_data))
-            var eventType = xpp.eventType
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_DOCUMENT) {
-                    println("Start document")
-                } else if (eventType == XmlPullParser.START_TAG) {
+                xpp.setInput(StringReader(pax_data))
+                var eventType = xpp.eventType
+                while (eventType != XmlPullParser.END_DOCUMENT) {
+                    if (eventType == XmlPullParser.START_DOCUMENT) {
+                        println("Start document")
+                    } else if (eventType == XmlPullParser.START_TAG) {
 
-                    try {
-                        key = xpp.getAttributeValue(0)
-                    } catch (e: Exception) {
-                        key = ""
-                    }
-                } else if (eventType == XmlPullParser.END_TAG) {
-
-                } else if (eventType == XmlPullParser.TEXT) {
-                    println("Text " + xpp.text)
-                    if (!value.equals(xpp.text)) {
-                        value = xpp.text
-                    }
-                }
-
-                if (key.equals("CUST_NBR")) {
-                    CUST_NBR = value
-                } else if (key.equals("MERCH_NBR")) {
-                    MERCH_NBR = value
-                } else if (key.equals("DBA_NBR")) {
-                    DBA_NBR = value
-                } else if (key.equals("TERMINAL_NBR")) {
-                    TERMINAL_NBR = value
-                } else if (key.equals("BATCH_ID")) {
-                    BATCH_ID = value
-                } else if (key.equals("TRAN_NBR")) {
-                    TRAN_NBR = value
-                } else if (key.equals("AUTH_GUID")) {
-                    AUTH_GUID = value
-                }else if (key.equals("AUTH_AMOUNT")) {
-                    AMOUNT = value
-                }
-
-                eventType = xpp.next()
-            }
-
-
-            CoroutineScope(Dispatchers.IO).launch {
-                val queue = Volley.newRequestQueue(requireContext())
-                val url = "https://secure.epxuap.com/"
-                val getRequest: StringRequest = object : StringRequest(
-                    Request.Method.POST, url,
-                    object : Response.Listener<String?> {
-                        override fun onResponse(response: String?) {
-                            // response
-                            var AUTH_RESP_TEXT=""
-                            Log.d("Response", response!!)
-                            xpp.setInput(StringReader(response))
-                            var eventType = xpp.eventType
-                            while (eventType != XmlPullParser.END_DOCUMENT) {
-                                if (eventType == XmlPullParser.START_DOCUMENT) {
-                                    println("Start document")
-                                } else if (eventType == XmlPullParser.START_TAG) {
-
-                                    try {
-                                        key = xpp.getAttributeValue(0)
-                                    } catch (e: Exception) {
-                                        key = ""
-                                    }
-                                } else if (eventType == XmlPullParser.END_TAG) {
-
-                                } else if (eventType == XmlPullParser.TEXT) {
-                                    println("Text " + xpp.text)
-                                    if (!value.equals(xpp.text)) {
-                                        value = xpp.text
-                                    }
-                                }
-
-                                if (key.equals("AUTH_RESP_TEXT")) {
-                                    AUTH_RESP_TEXT = value
-                                }
-
-                                eventType = xpp.next()
-                            }
-
-                            if (AUTH_RESP_TEXT.contains("UNABLE")){
-                                /*Make refund Call*/
-                                makeRefundCallToNAB(xpp,time,orderId,is_accepted,CUST_NBR, MERCH_NBR, DBA_NBR, TERMINAL_NBR, TRAN_TYPE, BATCH_ID, TRAN_NBR, AMOUNT, AUTH_GUID)
-                            }else if (AUTH_RESP_TEXT.contains("APPROVAL")){
-                                /*Make server call*/
-                                ProgressUtils.dismissProgressDialog()
-                                makeRefundServerCall(time,orderId,is_accepted)
-                            }
-
+                        try {
+                            key = xpp.getAttributeValue(0)
+                        } catch (e: Exception) {
+                            key = ""
                         }
-                    },
-                    object : Response.ErrorListener {
-                        override fun onErrorResponse(error: VolleyError) {
-                            // TODO Auto-generated method stub
-                            Log.d("ERROR", "error => $error")
+                    } else if (eventType == XmlPullParser.END_TAG) {
+
+                    } else if (eventType == XmlPullParser.TEXT) {
+                        println("Text " + xpp.text)
+                        if (!value.equals(xpp.text)) {
+                            value = xpp.text
                         }
                     }
-                ) {
-                    @Throws(AuthFailureError::class)
-                    override fun getHeaders(): Map<String, String> {
-                        val params: MutableMap<String, String> = HashMap()
-                        params["Accept"] = "*/*"
-                        params["Cache-Control"] = "no-cache"
-                        params["Host"] = "secure.epxuap.com"
-                        params["Accept-Encoding"] = "gzip, deflate, br"
-                        params["Connection"] = "keep-alive"
-                        params["Content-Type"] = "application/x-www-form-urlencoded"
-                        return params
+
+                    if (key.equals("CUST_NBR")) {
+                        CUST_NBR = value
+                    } else if (key.equals("MERCH_NBR")) {
+                        MERCH_NBR = value
+                    } else if (key.equals("DBA_NBR")) {
+                        DBA_NBR = value
+                    } else if (key.equals("TERMINAL_NBR")) {
+                        TERMINAL_NBR = value
+                    } else if (key.equals("BATCH_ID")) {
+                        BATCH_ID = value
+                    } else if (key.equals("TRAN_NBR")) {
+                        TRAN_NBR = value
+                    } else if (key.equals("AUTH_GUID")) {
+                        AUTH_GUID = value
+                    }else if (key.equals("AUTH_AMOUNT")) {
+                        AMOUNT = value
                     }
 
-                    @Throws(AuthFailureError::class)
-                    override fun getParams(): Map<String, String>? {
-                        val params: MutableMap<String, String> = HashMap()
-                        params["CUST_NBR"] = CUST_NBR
-                        params["MERCH_NBR"] = MERCH_NBR
-                        params["DBA_NBR"] = DBA_NBR
-                        params["TERMINAL_NBR"] = TERMINAL_NBR
-                        params["TRAN_TYPE"] = "CCE7"
-                        params["BATCH_ID"] = BATCH_ID
-                        params["TRAN_NBR"] = TRAN_NBR
-                        params["CARD_ENT_METH"] = "Z"
-                        params["INDUSTRY_TYPE"] = "E"
-                        params["ORIG_AUTH_GUID"] = ORIG_AUTH_GUID
-                        return params
-                    }
+                    eventType = xpp.next()
                 }
-                queue.add(getRequest)
-                withContext(Dispatchers.Main){
-                    ProgressUtils.showProgressDialog(requireActivity())
+
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    val queue = Volley.newRequestQueue(requireContext())
+                    val url = "https://secure.epxuap.com/"
+                    val getRequest: StringRequest = object : StringRequest(
+                        Request.Method.POST, url,
+                        object : Response.Listener<String?> {
+                            override fun onResponse(response: String?) {
+                                // response
+                                var AUTH_RESP_TEXT=""
+                                Log.d("Response", response!!)
+                                xpp.setInput(StringReader(response))
+                                var eventType = xpp.eventType
+                                while (eventType != XmlPullParser.END_DOCUMENT) {
+                                    if (eventType == XmlPullParser.START_DOCUMENT) {
+                                        println("Start document")
+                                    } else if (eventType == XmlPullParser.START_TAG) {
+
+                                        try {
+                                            key = xpp.getAttributeValue(0)
+                                        } catch (e: Exception) {
+                                            key = ""
+                                        }
+                                    } else if (eventType == XmlPullParser.END_TAG) {
+
+                                    } else if (eventType == XmlPullParser.TEXT) {
+                                        println("Text " + xpp.text)
+                                        if (!value.equals(xpp.text)) {
+                                            value = xpp.text
+                                        }
+                                    }
+
+                                    if (key.equals("AUTH_RESP_TEXT")) {
+                                        AUTH_RESP_TEXT = value
+                                    }
+
+                                    eventType = xpp.next()
+                                }
+
+                                if (AUTH_RESP_TEXT.contains("UNABLE")){
+                                    /*Make refund Call*/
+                                    makeRefundCallToNAB(xpp,time,orderId,is_accepted,CUST_NBR, MERCH_NBR, DBA_NBR, TERMINAL_NBR, TRAN_TYPE, BATCH_ID, TRAN_NBR, AMOUNT, AUTH_GUID)
+                                }else if (AUTH_RESP_TEXT.contains("APPROVAL")){
+                                    /*Make server call*/
+                                    ProgressUtils.dismissProgressDialog()
+                                    makeAcceptedDeclinedServerCall(time,orderId,is_accepted)
+                                }
+
+                            }
+                        },
+                        object : Response.ErrorListener {
+                            override fun onErrorResponse(error: VolleyError) {
+                                // TODO Auto-generated method stub
+                                Log.d("ERROR", "error => $error")
+                            }
+                        }
+                    ) {
+                        @Throws(AuthFailureError::class)
+                        override fun getHeaders(): Map<String, String> {
+                            val params: MutableMap<String, String> = HashMap()
+                            params["Accept"] = "*/*"
+                            params["Cache-Control"] = "no-cache"
+                            params["Host"] = "secure.epxuap.com"
+                            params["Accept-Encoding"] = "gzip, deflate, br"
+                            params["Connection"] = "keep-alive"
+                            params["Content-Type"] = "application/x-www-form-urlencoded"
+                            return params
+                        }
+
+                        @Throws(AuthFailureError::class)
+                        override fun getParams(): Map<String, String>? {
+                            val params: MutableMap<String, String> = HashMap()
+                            params["CUST_NBR"] = CUST_NBR
+                            params["MERCH_NBR"] = MERCH_NBR
+                            params["DBA_NBR"] = DBA_NBR
+                            params["TERMINAL_NBR"] = TERMINAL_NBR
+                            params["TRAN_TYPE"] = "CCE7"
+                            params["BATCH_ID"] = BATCH_ID
+                            params["TRAN_NBR"] = TRAN_NBR
+                            params["CARD_ENT_METH"] = "Z"
+                            params["INDUSTRY_TYPE"] = "E"
+                            params["ORIG_AUTH_GUID"] = ORIG_AUTH_GUID
+                            return params
+                        }
+                    }
+                    queue.add(getRequest)
+                    withContext(Dispatchers.Main){
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
                 }
             }
         }
 
 
 
+
     }
 
-    private fun makeRefundServerCall(time:Int,orderId:Int,is_accepted: Boolean) {
+    private fun makeAcceptedDeclinedServerCall(time:Int, orderId:Int, is_accepted: Boolean) {
         var employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         var terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
         viewModel.acceptedAndDeclineOrder(
@@ -536,7 +540,7 @@ class AllOrdersListingFragment(
                         }*/
                     }
 
-                    makeRefundServerCall(time,orderId,is_accepted)
+                    makeAcceptedDeclinedServerCall(time,orderId,is_accepted)
 
 
                 }
