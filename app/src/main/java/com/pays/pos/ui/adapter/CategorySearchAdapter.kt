@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter
 import android.widget.Filter
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import com.pays.pos.R
 import com.pays.pos.data.model.CategorySearchData
 import com.bumptech.glide.Glide
@@ -16,6 +17,7 @@ import java.util.*
 import javax.inject.Inject
 
 class CategorySearchAdapter @Inject constructor(
+    val activity: AppCompatActivity,
     val mcon: Context,
     val resourceId: Int,
     var list: ArrayList<CategorySearchData>
@@ -31,7 +33,7 @@ class CategorySearchAdapter @Inject constructor(
         var view: View? = convertView
         try {
             if (convertView == null) {
-                val inflater: LayoutInflater = (mcon as Activity).layoutInflater
+                val inflater: LayoutInflater = (activity).layoutInflater
                 view = inflater.inflate(resourceId, parent, false)
                 val model: CategorySearchData = getItem(position)
                 val txtCategory: TextView = view.findViewById(R.id.txtCategoryName)
@@ -45,7 +47,11 @@ class CategorySearchAdapter @Inject constructor(
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return view!!
+        try{
+            return view!!
+        }catch (e:java.lang.NullPointerException){
+            return View(context)
+        }
 
 
     }
