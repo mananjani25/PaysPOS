@@ -3571,8 +3571,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 intent.action = Constants.ONLINE_ORDER_GET_NOTIFICATION
                 sendBroadcast(intent)
 
-                if(it.asJsonObject.has("new_order"))
-                    setSoundForOnlineOrder()
+//                if(it.asJsonObject.has("new_order"))
+//                    setSoundForOnlineOrder()
 
             }
 
