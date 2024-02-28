@@ -159,6 +159,9 @@ class AllOrdersListingFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupAdapter()
+
+        adapter.enableReprintKitchenReceiptButton()
+
         observeShowProgress()
         requireActivity().registerReceiver(
             broadcastReceiver,
@@ -4149,7 +4152,7 @@ class AllOrdersListingFragment(
             settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
             printer = StarPrinter(settings, requireContext())
 
-            CoroutineScope(Dispatchers.IO).launch {
+            CoroutineScope(Dispatchers.Main).launch {
                 try {
                     val builder = StarXpandCommandBuilder()
 
@@ -4345,6 +4348,8 @@ class AllOrdersListingFragment(
                 } finally {
                     printer.closeAsync().await()
                 }
+
+                adapter.enableReprintKitchenReceiptButton()
             }
 
         } else {
