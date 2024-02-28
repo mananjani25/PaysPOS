@@ -537,8 +537,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-
-
             }
         }
 
@@ -556,26 +554,26 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 result.percentage
                             )
                         }!!
-
-
-                        if (item.discountPrice > viewModel.currentTotalPrice) {
-                            item.discountPrice = viewModel.currentTotalPrice
-                            Log.e(
-                                "Discount Tracking Pays",
-                                "Discount greater  = ${item.discountPrice} and Current price = ${viewModel.currentTotalPrice}"
-                            )
-
-                        }
-
-                        if (viewModel.clickedItemQuantity > 1) {
-                            item.discountPrice = item.discountPrice / viewModel.clickedItemQuantity
-
-                            Log.e(
-                                "Discount Tracking Pays",
-                                "Item Quantity greater  = ${item.quantity} and Discount price = ${item.discountPrice}"
-                            )
-                        }
-
+//
+//
+//                        if (item.discountPrice > viewModel.currentTotalPrice) {
+//                            item.discountPrice = viewModel.currentTotalPrice
+//                            Log.e(
+//                                "Discount Tracking Pays",
+//                                "Discount greater  = ${item.discountPrice} and Current price = ${viewModel.currentTotalPrice}"
+//                            )
+//
+//                        }
+//
+//                        if (viewModel.clickedItemQuantity > 1) {
+//                            item.discountPrice = item.discountPrice / viewModel.clickedItemQuantity
+//
+//                            Log.e(
+//                                "Discount Tracking Pays",
+//                                "Item Quantity greater  = ${item.quantity} and Discount price = ${item.discountPrice}"
+//                            )
+//                        }
+//
 
                         item.discountId = result.id
                         item.discountType = result.discountType
