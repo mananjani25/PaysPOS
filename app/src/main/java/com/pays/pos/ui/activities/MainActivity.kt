@@ -3359,15 +3359,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         locationId = PrefProvider(baseContext).getLocationId()
         baseUrl = PrefProvider(baseContext).getBaseUrl()
 
-
-
-        // TODO : REMOVE THIS
-        Handler(mainLooper).postDelayed({
-            val intent = Intent()
-            intent.putExtra("message", "refresh")
-            intent.action = Constants.ONLINE_ORDER_GET_NOTIFICATION
-            sendBroadcast(intent)
-        },5000)
     }
 
     //Dynamic SYNC
