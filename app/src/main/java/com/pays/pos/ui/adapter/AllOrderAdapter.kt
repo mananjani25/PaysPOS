@@ -38,6 +38,7 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
     var orderList = ArrayList<OnlineOrderResponseModel.Data>()
     var filterList = ArrayList<OnlineOrderResponseModel.Data>()
     var orderedTab: String = ""
+    var isReprintKitchenReceiptEnabled=true
     private var mCallback: OrderCallBack? = null
     fun setCallback(callback: OrderCallBack) {
         mCallback = callback
@@ -356,15 +357,25 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
             }
 
             binding.txtRePrintKitchenReceipt.setOnClickListener {
-                mCallback?.onItemClickListener(
-                    it,
-                    bindingAdapterPosition,
-                    "REPRINT_KITCHEN_RECEIPT"
-                )
+                if (isReprintKitchenReceiptEnabled){
+                    disableReprintKitchenReceiptButton()
+                    mCallback?.onItemClickListener(
+                        it,
+                        bindingAdapterPosition,
+                        "REPRINT_KITCHEN_RECEIPT"
+                    )
+                }
             }
         }
     }
 
+    public fun enableReprintKitchenReceiptButton(){
+        isReprintKitchenReceiptEnabled=true
+    }
+
+    public fun disableReprintKitchenReceiptButton(){
+        isReprintKitchenReceiptEnabled=false
+    }
 
     fun add(orders: List<OnlineOrderResponseModel.Data>, orderTab: String) {
         this.orderList = orders as ArrayList<OnlineOrderResponseModel.Data>
