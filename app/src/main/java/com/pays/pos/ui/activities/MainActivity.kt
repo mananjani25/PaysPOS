@@ -7,6 +7,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.*
 import android.content.pm.PackageManager
+import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -101,6 +102,7 @@ import com.sunmi.externalprinterlibrary2.style.AlignStyle
 import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
 import com.sunmi.externalprinterlibrary2.style.UnderlineStyle
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
@@ -3356,6 +3358,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 //        baseUrl = inputData.getString("base_url").toString()
         locationId = PrefProvider(baseContext).getLocationId()
         baseUrl = PrefProvider(baseContext).getBaseUrl()
+
     }
 
     //Dynamic SYNC
@@ -3432,10 +3435,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 if (lastSyncTime == 0L || System.currentTimeMillis() - lastSyncTime > 900) {
                     lastSyncTime = System.currentTimeMillis()
 
-                    if (PrefProvider(baseContext).getLocationId() == it.asJsonObject.get("location_id").asInt) {
-                        Log.e(TAG2, "onReceived  Inside" + Gson().toJson(it))
-                        handleUpdatedData(it)
-                    }
+                    handleUpdatedData(it)
+
                 }
 
 
@@ -3561,8 +3562,32 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     }
                 }
             }
+
+
+            // Added to refresh online orders
+            if(it.asJsonObject.has("cancelled_order") || it.asJsonObject.has("new_order")) {
+                val intent = Intent()
+                intent.putExtra("message", "refresh")
+                intent.action = Constants.ONLINE_ORDER_GET_NOTIFICATION
+                sendBroadcast(intent)
+
+                if(it.asJsonObject.has("new_order"))
+                    setSoundForOnlineOrder()
+
+            }
+
         } catch (e: Exception) {
             Log.e(TAG2, "Exception ${e.message}")
+        }
+    }
+
+    private fun setSoundForOnlineOrder() {
+        try {
+            val resID = resources.getIdentifier("bell", "raw", packageName)
+            val mediaPlayer: MediaPlayer = MediaPlayer.create(this, resID)
+            mediaPlayer.start()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
