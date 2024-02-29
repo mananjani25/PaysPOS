@@ -3435,7 +3435,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 if (lastSyncTime == 0L || System.currentTimeMillis() - lastSyncTime > 900) {
                     lastSyncTime = System.currentTimeMillis()
 
-                    handleUpdatedData(it)
+                    if(it.asJsonObject.has("location_id"))
+                        if (PrefProvider(baseContext).getLocationId() == it.asJsonObject.get("location_id").asInt) {
+                            Log.e(TAG2, "onReceived  Inside" + Gson().toJson(it))
+                            handleUpdatedData(it)
+                        }
+                   // handleUpdatedData(it)
 
                 }
 
