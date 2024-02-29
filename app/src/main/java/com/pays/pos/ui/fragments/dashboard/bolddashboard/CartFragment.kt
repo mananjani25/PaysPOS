@@ -31,10 +31,8 @@ import com.pays.pos.data.entities.TbServiceCharge
 import com.pays.pos.data.model.DineInModel
 import com.pays.pos.data.model.DineInOrderDetailAttributes
 import com.pays.pos.data.model.GuestPaymentCalculationModel
-import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.pays.pos.data.model.responseModel.GetFloorPlanResponse
 import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
-import com.pays.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.pays.pos.data.remote.ApiService
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.ADD
@@ -3226,6 +3224,7 @@ class CartFragment(
         var totaltaxtemp: Double = 0.0
         var modifierPrice = 0.0
         val price = (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+        Log.e("checkTotalTax","checkItemPrice:  ${price}")
 
         item.modifiers.forEach {
             var modQty = it.modifier_quantity * item.itemQuantity
@@ -3234,6 +3233,7 @@ class CartFragment(
 
         val totalPrice = price + modifierPrice /*- (discountPrice * item.itemQuantity)*/
 
+        Log.e("checkTotalTax","totalPrice:  ${totalPrice}  taxRate  ${itemtype.rate}")
 
         totaltaxtemp += if (itemtype.taxType == "Percentage") {
             if (totalPrice < 0.0) {
