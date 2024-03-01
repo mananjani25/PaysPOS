@@ -11603,7 +11603,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
-                    // ProgressUtils.showProgressDialog(requireActivity())
+                    ProgressUtils.showProgressDialog(requireActivity())
                 } else {
                     ProgressUtils.dismissProgressDialog()
                 }
