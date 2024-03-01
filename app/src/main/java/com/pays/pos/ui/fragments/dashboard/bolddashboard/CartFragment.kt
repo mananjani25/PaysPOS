@@ -1154,7 +1154,22 @@ class CartFragment(
                             }
 
                         } else {
-                            viewModel.cartModel = taxBifurcationCalculationUpdate(it[0])
+                            if (viewModel.currentCartItems.isEmpty()) {
+                                viewModel.getAllCartItems(
+                                    prefProvider.getValue(
+                                        Constants.ORDER_TYPE,
+                                        TAKEOUT
+                                    ),
+                                    prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                                ).asLiveData().value?.let { it1 ->
+                                    viewModel.cartModel =
+                                        taxBifurcationCalculationUpdate(it[0], it1)
+                                }
+                            }else{
+                                viewModel.cartModel =
+                                    taxBifurcationCalculationUpdate(it[0], viewModel.currentCartItems)
+                            }
+
                             Log.e(
                                 TAG,
                                 "CheckCartFragTax 12: ${Gson().toJson(it[0].taxlistDynamic)}"
@@ -3193,9 +3208,12 @@ class CartFragment(
     }
 
     private fun taxBifurcationCalculationUpdate(
-        cartModel: CartModel
+        cartModel: CartModel,
+        listItems: List<TbCartItem>
     ): CartModel {
-        cartModel.items?.forEach { item ->
+        var listTaxData: ArrayList<TaxData> = arrayListOf()
+        Log.e(TAG,"checkCurrentItems:  ${listItems.size}")
+        listItems.forEach { item ->
 
             item.taxes?.forEachIndexed { indextax, itemtype ->
                 if (itemtype.isActive && !itemtype.isDeleted) {
@@ -3217,11 +3235,28 @@ class CartFragment(
                     var ttaxPrice = getTotalTaxBirfurcationNew(item, itemtype)
                     Log.e("checkTotalTax", "TaxPrice 2: ${ttaxPrice}")
                     itemtype.totalTaxTypePrice = ttaxPrice
-                    cartModel.taxlistDynamic = listOf(itemtype)
-                    prefProvider.setValue(
-                        Constants.taxListDynamic,
-                        Gson().toJson(cartModel.taxlistDynamic)
-                    )
+                    if (listTaxData.isNotEmpty()) {
+
+                        var checkLocal = false
+                        for (i in 0 until listTaxData.size) {
+                            if (itemtype.name.equals(listTaxData.get(i).name,true)) {
+                                checkLocal = true
+                                listTaxData.get(i).totalTaxTypePrice += ttaxPrice
+                                break
+                            } else {
+                                checkLocal = false
+
+                            }
+
+                        }
+                        if (checkLocal == false) {
+                            listTaxData.add(itemtype)
+                        }
+
+                    } else {
+                        listTaxData.add(itemtype)
+                    }
+
 
                 }
 
@@ -3229,15 +3264,24 @@ class CartFragment(
             }
         }
 
+        Log.e(TAG,"checkSize  ${listTaxData.size}")
+        Log.e(TAG,"checkSizeWithData  ${Gson().toJson(listTaxData)}")
+        cartModel.taxlistDynamic = listTaxData
+        prefProvider.setValue(
+            Constants.taxListDynamic,
+            Gson().toJson(listTaxData)
+        )
+
         return cartModel
     }
 
     private fun getTotalTaxBirfurcationNew(
-        item: TbItem, itemtype: TaxData
+        item: TbCartItem, itemtype: TaxData
     ): Double {
         var totaltaxtemp: Double = 0.0
         var modifierPrice = 0.0
         val price = (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+        Log.e("checkTotalTax", "checkItemPrice:  ${price}")
 
         item.modifiers.forEach {
             var modQty = it.modifier_quantity * item.itemQuantity
@@ -3246,6 +3290,7 @@ class CartFragment(
 
         val totalPrice = price + modifierPrice /*- (discountPrice * item.itemQuantity)*/
 
+        Log.e("checkTotalTax", "totalPrice:  ${totalPrice}  taxRate  ${itemtype.rate}")
 
         totaltaxtemp += if (itemtype.taxType == "Percentage") {
             if (totalPrice < 0.0) {

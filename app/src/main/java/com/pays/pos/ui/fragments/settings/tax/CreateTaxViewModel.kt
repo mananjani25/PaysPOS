@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pays.pos.R
+import com.pays.pos.data.db.AppDatabase
 import com.pays.pos.data.entities.TaxData
 import com.pays.pos.data.entities.TbItem
 import com.pays.pos.data.model.requestModel.CreateTaxRequestModel
@@ -30,6 +31,7 @@ import javax.inject.Inject
 class CreateTaxViewModel @Inject constructor(
     private val taxServiceChargeRepository: TaxServiceChargeRepository,
     private val posRepository: PosRepository,
+    private val appDatabase: AppDatabase,
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
@@ -41,6 +43,9 @@ class CreateTaxViewModel @Inject constructor(
 
     private val _data = MutableLiveData<Event<CreateTaxResponse?>>()
     val data: LiveData<Event<CreateTaxResponse?>> = _data
+
+    private val _isTaxUpdate = MutableLiveData<Event<CreateTaxResponse?>>()
+    val taxUpdated: LiveData<Event<CreateTaxResponse?>> = _isTaxUpdate
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -111,7 +116,7 @@ class CreateTaxViewModel @Inject constructor(
                     val item: TbItem? = posRepository.getSingleItem(it)
                     if (item != null && !item.taxes.isNullOrEmpty()) {
                         tempTaxData = item.taxes as ArrayList<TaxData> ?: arrayListOf()
-                        tempTaxData.removeIf { taxData-> taxData.id == tax.id }
+                        tempTaxData.removeIf { taxData -> taxData.id == tax.id }
                         tempTaxData.add(tax)
                         posRepository.updateTaxDataForItem(tempTaxData, it)
                     }
@@ -141,6 +146,7 @@ class CreateTaxViewModel @Inject constructor(
     fun discountType(taxType: String) {
         this.taxTypeViewModel = taxType
     }
+
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun submit(rates: Double) {
@@ -214,12 +220,12 @@ class CreateTaxViewModel @Inject constructor(
                                          createdAt = createTaxResponse.data.createdAt,
                                          updatedAt = createTaxResponse.data.updatedAt
                                      )*/
-
 //                                    updateTaxDataInItem(tax, taxData.itemIds as ArrayList<Int>, oldItemIds)
                                     taxServiceChargeRepository.createTaxDatabase(tax)
 
                                     itemIdsViewModel = ArrayList()
                                     _data.value = Event(createTaxResponse)
+
 
                                 }
                             } else {

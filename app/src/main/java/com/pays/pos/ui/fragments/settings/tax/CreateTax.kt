@@ -12,8 +12,10 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.pays.pos.R
 import com.pays.pos.data.entities.TaxData
 import com.pays.pos.data.entities.TbItem
@@ -26,13 +28,14 @@ import com.pays.pos.data.remote.Constants.INCLUDE_TAX
 import com.pays.pos.data.remote.Constants.KEY
 import com.pays.pos.databinding.DialogCreateNewTaxBinding
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.extensions.getNavigationResultLiveData
 import com.pays.pos.utils.extensions.liveSnackBar
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -42,6 +45,7 @@ class CreateTax : Fragment() {
 
     private var previousValue: String = ""
     private lateinit var binding: DialogCreateNewTaxBinding
+    private val dashViewModel by activityViewModels<DashBoardCategoryViewModel>()
 
     private val viewModel by viewModels<CreateTaxViewModel>()
     private var itemIds = ArrayList<Int>()
@@ -117,51 +121,51 @@ class CreateTax : Fragment() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                Log.d("addTextChangedListener","editable = ${s.toString()}")
+                Log.d("addTextChangedListener", "editable = ${s.toString()}")
 
                 try {
-                 if (binding.swtTaxType.text == "Percentage") {
+                    if (binding.swtTaxType.text == "Percentage") {
 
-                     if(s?.length == 1 && s[0] == '.'){
-                         binding.edtAmount.setText("")
-                         return
-                     }
+                        if (s?.length == 1 && s[0] == '.') {
+                            binding.edtAmount.setText("")
+                            return
+                        }
 
-                     if (previousValue.contains(".")){
-                         Log.d("addTextChangedListener","1 dot is already exist")
-                         val str = s.toString()
-                         val strold = str.substring(0, str.length - 1)
-                         val lastchar = str.substring(str.length - 1)
-                         if (strold.contains(".") && lastchar == ".") {
-                             val length: Int? = binding.edtAmount.text?.length
-                             if (length != null) {
-                                 if (length > 0) {
-                                     binding.edtAmount.text?.delete(length - 1, length)
-                                 }
-                             }
-                         }
+                        if (previousValue.contains(".")) {
+                            Log.d("addTextChangedListener", "1 dot is already exist")
+                            val str = s.toString()
+                            val strold = str.substring(0, str.length - 1)
+                            val lastchar = str.substring(str.length - 1)
+                            if (strold.contains(".") && lastchar == ".") {
+                                val length: Int? = binding.edtAmount.text?.length
+                                if (length != null) {
+                                    if (length > 0) {
+                                        binding.edtAmount.text?.delete(length - 1, length)
+                                    }
+                                }
+                            }
 
-                         return
-                     }
+                            return
+                        }
 
 
-                     val temp_rate = s.toString()
-                     previousValue = temp_rate
-                     if (temp_rate.isNotEmpty()) {
-                         if (temp_rate.toFloat() > 100) {
-                             AlertUtils.showCustomAlertWithListenerWithOK(
-                                 requireContext(),
-                                 "Please enter percentage less than or equal to 100"
-                             ) { _, _ ->
-                                 binding.edtAmount.setText("")
-                             }
-                         }
-                     }
+                        val temp_rate = s.toString()
+                        previousValue = temp_rate
+                        if (temp_rate.isNotEmpty()) {
+                            if (temp_rate.toFloat() > 100) {
+                                AlertUtils.showCustomAlertWithListenerWithOK(
+                                    requireContext(),
+                                    "Please enter percentage less than or equal to 100"
+                                ) { _, _ ->
+                                    binding.edtAmount.setText("")
+                                }
+                            }
+                        }
 
-                 }
-             }catch (e:Exception){
-                 Log.d("addTextChangedListener","exception = $e")
-             }
+                    }
+                } catch (e: Exception) {
+                    Log.d("addTextChangedListener", "exception = $e")
+                }
             }
 
         })
@@ -324,18 +328,23 @@ class CreateTax : Fragment() {
                         it, createTaxResponse.message
                     ) { _, _ ->
 
-                        Log.e(TAG,"checkDeviceToken:  ${prefProvider?.getValue("device_token", "")}")
-                        if (prefProvider?.getValue("device_token", "")?.trim()?.isEmpty() == true) {
-                            val intent = Intent()
-                            intent.action = Constants.SYNC_SETTING_NOTIFICATION
-                            requireContext().sendBroadcast(intent)
+                        Log.e(
+                            TAG,
+                            "checkDeviceToken:  ${prefProvider?.getValue("device_token", "")}"
+                        )
+                        /*  if (prefProvider?.getValue("device_token", "")?.trim()?.isEmpty() == true) {
+                              val intent = Intent()
+                              intent.action = Constants.SYNC_SETTING_NOTIFICATION
+                              requireContext().sendBroadcast(intent)
 
-                            val intent2 = Intent()
-                            intent2.action = Constants.SYNC_NOTIFICATION
-                            requireContext().sendBroadcast(intent2)
-                        }
+                              val intent2 = Intent()
+                              intent2.action = Constants.SYNC_NOTIFICATION
+                              requireContext().sendBroadcast(intent2)
+                          }*/
+                        //  dashViewModel.syncInventoryModule(false)
+
+                        //callSyncAPI()
                         backPressManage()
-                        callSyncAPI()
                     }
                 }
 
