@@ -47,6 +47,7 @@ import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
+import com.pax.poslink.log.LogFilter.Const
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
@@ -448,6 +449,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             LogUtil.logE("NewItem", "ItemSame ${Gson().toJson(item)}")
 
                            // if(!isUpdateItem)
+                            prefProvider.setValue(Constants.OLD_ITEM,Gson().toJson(viewModel.currentCartItems))
 
                             for(it in viewModel.currentCartItems){
 

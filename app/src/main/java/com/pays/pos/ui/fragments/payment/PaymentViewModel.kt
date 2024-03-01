@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.pays.pos.data.db.AppDatabase
 import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.requestModel.*
@@ -53,7 +54,7 @@ open class PaymentViewModel @Inject constructor(
     private var orderOfflineId: String? = null
     private var totalServiceChargeM: Double? = null
     private var totalDiscountM: Double? = null
-    public var extData:String=""
+    public var extData: String = ""
 
     var orderCreateCallSent = false
 
@@ -137,7 +138,7 @@ open class PaymentViewModel @Inject constructor(
     }
 
     fun submit(orderRequestModel: OrderRequestModel) {
-        Log.e(TAG,"checkOrderRequest:  ${Gson().toJson(orderRequestModel)}")
+        Log.e(TAG, "checkOrderRequest:  ${Gson().toJson(orderRequestModel)}")
 
 //        orderRequestModel.print_order = printOrder
         if (cashPaymentType(orderRequestModel)) {
@@ -159,6 +160,7 @@ open class PaymentViewModel @Inject constructor(
 
             when (resource.status) {
                 Status.SUCCESS -> {
+                    prefProvider.setValue(Constants.OLD_ITEM, "")
                     prefProvider.setValue("CART_MODEL1", "")
                     prefProvider.setValue("CART_MODEL2", "")
                     _showProgress.value = Event(false)
@@ -204,16 +206,16 @@ open class PaymentViewModel @Inject constructor(
                                         )
                                     }"
                                 )
-                             /*   if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
-                                    LogUtil.logE(TAG, "QueueStart")
-                                    _queueStartSaveOrder.value = Event(createOrderResponse)
-                                }*/
+                                /*   if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+                                       LogUtil.logE(TAG, "QueueStart")
+                                       _queueStartSaveOrder.value = Event(createOrderResponse)
+                                   }*/
                                 if (onlySave) {
                                     LogUtil.logE("QueueCheck", "OnlySave")
 
-                                  /*  runBlocking {
-                                        getCartModelFromId(viewModel.cartModel!!.cartId)
-                                    }*/
+                                    /*  runBlocking {
+                                          getCartModelFromId(viewModel.cartModel!!.cartId)
+                                      }*/
 
                                     _queueStart.value = Event(createOrderResponse)
 
@@ -222,19 +224,19 @@ open class PaymentViewModel @Inject constructor(
                                     if (response.data.order.payments.isNotEmpty()) {
                                         if (createOrderResponse.data.order.orderType != "Dine In" && response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
 
-                                           if (response.data.order.payments[0].payableType != "GiftCardRedeem"){
-                                               cashLogApi(createOrderResponse, "in")
-                                           }else {
-                                               val order = createOrderResponse.data.order
+                                            if (response.data.order.payments[0].payableType != "GiftCardRedeem") {
+                                                cashLogApi(createOrderResponse, "in")
+                                            } else {
+                                                val order = createOrderResponse.data.order
 
-                                               if (order.payments.isNotEmpty()) {
-                                                   if (order.payments[order.payments.size - 1].amount + order.payments[order.payments.size - 1].tips == totalPayAmounts) {
-                                                       _data.value = Event(createOrderResponse)
-                                                   } else {
-                                                       cashOutApi(createOrderResponse, "out")
-                                                   }
-                                               }
-                                           }
+                                                if (order.payments.isNotEmpty()) {
+                                                    if (order.payments[order.payments.size - 1].amount + order.payments[order.payments.size - 1].tips == totalPayAmounts) {
+                                                        _data.value = Event(createOrderResponse)
+                                                    } else {
+                                                        cashOutApi(createOrderResponse, "out")
+                                                    }
+                                                }
+                                            }
                                         } else {
                                             _data.value = Event(createOrderResponse)
                                             LogUtil.logE("QueueCheck", "CreateOrderData")
@@ -297,10 +299,10 @@ open class PaymentViewModel @Inject constructor(
     fun noUpdatesFound() {
         viewModelScope.launch {
             posRepository.deleteCart(
-                    prefProvider.getValueInt(
-                        Constants.EMPLOYEE_ID,
-                        0
-                    )
+                prefProvider.getValueInt(
+                    Constants.EMPLOYEE_ID,
+                    0
+                )
             )
             _orderNotUpdated.value = Event(true)
             deletePaxPaymentData()
@@ -580,13 +582,22 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.openOrderType =
             prefProvider.getValue(Constants.ORDER_TYPE, "")
 
-        Log.e("checkOrderTypeID","getOrderTypeID  ${prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)}")
-        Log.e("checkOrderTypeID","getOrderTypeIDVARTE  ${order_type_id}")
-        if (order_type_id == -1 && prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER)
-        {
+        Log.e(
+            "checkOrderTypeID",
+            "getOrderTypeID  ${prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)}"
+        )
+        Log.e("checkOrderTypeID", "getOrderTypeIDVARTE  ${order_type_id}")
+        if (order_type_id == -1 && prefProvider.getValue(
+                Constants.ORDER_TYPE,
+                TAKEOUT
+            ) == Constants.OPEN_ORDER
+        ) {
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
-        }
-        else if (prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) == Constants.DINE_IN && orderId != 0){
+        } else if (prefProvider.getValue(
+                Constants.ORDER_TYPE,
+                TAKEOUT
+            ) == Constants.DINE_IN && orderId != 0
+        ) {
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
         }
 
@@ -782,21 +793,32 @@ open class PaymentViewModel @Inject constructor(
             isPaidOrder = isPaid
         }
 
-        isPaidOrder = prefProvider.getValueboolean(Constants.IS_ORDER_REDEEMABLE_WITH_GIFT_CARD, false)
+        isPaidOrder =
+            prefProvider.getValueboolean(Constants.IS_ORDER_REDEEMABLE_WITH_GIFT_CARD, false)
 
         Log.e("completed_all_payments", isPaidOrder.toString())
 
         var giftCardRedeem: OrderRequestModel.GiftCardRedeem? = null
 
-        if(prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)){
-           giftCardRedeem = OrderRequestModel.GiftCardRedeem(prefProvider.getValue(Constants.GIFT_CARD_NUMBER, ""),prefProvider.getValue(Constants.GIFT_CARD_PIN,""))
+        if (prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)) {
+            giftCardRedeem = OrderRequestModel.GiftCardRedeem(
+                prefProvider.getValue(
+                    Constants.GIFT_CARD_NUMBER,
+                    ""
+                ), prefProvider.getValue(Constants.GIFT_CARD_PIN, "")
+            )
         }
 
         val orderRequestModel =
-            OrderRequestModel(isPaidOrder, orderAttributeRequestModel,
+            OrderRequestModel(
+                isPaidOrder, orderAttributeRequestModel,
                 sendPaymentLink,
-                gift_card_redeem = prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false),
-                gift_card = giftCardRedeem)
+                gift_card_redeem = prefProvider.getValueboolean(
+                    Constants.IS_GIFT_CARD_REDEEM,
+                    false
+                ),
+                gift_card = giftCardRedeem
+            )
 
         LogUtil.logE("orderRequestModel", ":  ${Gson().toJson(orderRequestModel)}")
 
@@ -804,7 +826,8 @@ open class PaymentViewModel @Inject constructor(
     }
 
     fun createOrderRequestNew(
-        cartItems: List<TbCartItem>,
+        oldItems:String,
+        cartItems: ArrayList<TbCartItem>,
         cartModel: CartModel,
         subTotalPrice: Double,
         totalPrice: Double,
@@ -832,6 +855,48 @@ open class PaymentViewModel @Inject constructor(
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
 
+        try{
+            if (oldItems.isNotEmpty()) {
+                /*Added by Rahul to solve the modifiers not removing issue*/
+                val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
+
+                var oldCartItemsList = Gson().fromJson<java.util.ArrayList<TbCartItem>>(
+                    oldItems,
+                    listType
+                )
+
+                for (oldItem in oldCartItemsList) {
+                    val found = cartItems.filter { it.cartItemId == oldItem.cartItemId }
+
+                    try {
+                        if (found.size == 0) {
+                            oldItem.isDestroy = true
+                        }
+                    } catch (e: Exception) {
+                        oldItem.isDestroy = true
+                    }
+
+
+
+//                for (currentItem in cartItems) {
+//                    if (oldItem.cartItemId == currentItem.cartItemId) {
+////                        oldItem.isDestroy = true
+//                        count+=1
+//                    }
+//                }
+//                if (count==oldCartItemsList.size-1){
+//                    oldItem.isDestroy=true
+//                }
+                }
+                cartItems.clear()
+                cartItems.addAll(oldCartItemsList)
+
+            }
+            prefProvider.setValue(Constants.OLD_ITEM, oldItems)
+        }catch (e:Exception){
+            prefProvider.setValue(Constants.OLD_ITEM, oldItems)
+        }
+
         if (isUpdateOrder)
             orderAttributeRequestModel.id = orderId
 
@@ -845,13 +910,22 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.openOrderType =
             prefProvider.getValue(Constants.ORDER_TYPE, "")
 
-        Log.e("checkOrderTypeID","getOrderTypeID  ${prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)}")
-        Log.e("checkOrderTypeID","getOrderTypeIDVARTE  ${order_type_id}")
-        if (order_type_id == -1 && prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER)
-        {
+        Log.e(
+            "checkOrderTypeID",
+            "getOrderTypeID  ${prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)}"
+        )
+        Log.e("checkOrderTypeID", "getOrderTypeIDVARTE  ${order_type_id}")
+        if (order_type_id == -1 && prefProvider.getValue(
+                Constants.ORDER_TYPE,
+                TAKEOUT
+            ) == Constants.OPEN_ORDER
+        ) {
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
-        }
-        else if (prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) == Constants.DINE_IN && orderId != 0){
+        } else if (prefProvider.getValue(
+                Constants.ORDER_TYPE,
+                TAKEOUT
+            ) == Constants.DINE_IN && orderId != 0
+        ) {
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
         }
 
@@ -1012,7 +1086,8 @@ open class PaymentViewModel @Inject constructor(
             orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
             orderAttributeRequestModel.orderItemsAttributes = dineInOrderItemAttributed(cartModel)
         } else {
-            orderAttributeRequestModel.orderItemsAttributes = orderItemsAttributesNew(cartModel, cartItems)
+            orderAttributeRequestModel.orderItemsAttributes =
+                orderItemsAttributesNew(cartModel, cartItems)
         }
 
 //        if (cartModel.customer != null)
@@ -1031,21 +1106,32 @@ open class PaymentViewModel @Inject constructor(
             isPaidOrder = isPaid
         }
 
-        isPaidOrder = prefProvider.getValueboolean(Constants.IS_ORDER_REDEEMABLE_WITH_GIFT_CARD, false)
+        isPaidOrder =
+            prefProvider.getValueboolean(Constants.IS_ORDER_REDEEMABLE_WITH_GIFT_CARD, false)
 
         Log.e("completed_all_payments", isPaidOrder.toString())
 
         var giftCardRedeem: OrderRequestModel.GiftCardRedeem? = null
 
-        if(prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)){
-            giftCardRedeem = OrderRequestModel.GiftCardRedeem(prefProvider.getValue(Constants.GIFT_CARD_NUMBER, ""),prefProvider.getValue(Constants.GIFT_CARD_PIN,""))
+        if (prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)) {
+            giftCardRedeem = OrderRequestModel.GiftCardRedeem(
+                prefProvider.getValue(
+                    Constants.GIFT_CARD_NUMBER,
+                    ""
+                ), prefProvider.getValue(Constants.GIFT_CARD_PIN, "")
+            )
         }
 
         val orderRequestModel =
-            OrderRequestModel(isPaidOrder, orderAttributeRequestModel,
+            OrderRequestModel(
+                isPaidOrder, orderAttributeRequestModel,
                 sendPaymentLink,
-                gift_card_redeem = prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false),
-                gift_card = giftCardRedeem)
+                gift_card_redeem = prefProvider.getValueboolean(
+                    Constants.IS_GIFT_CARD_REDEEM,
+                    false
+                ),
+                gift_card = giftCardRedeem
+            )
 
         LogUtil.logE("orderRequestModel", ":  ${Gson().toJson(orderRequestModel)}")
 
@@ -1245,7 +1331,7 @@ open class PaymentViewModel @Inject constructor(
     }
 
     fun createOpenOrderRequestNew(
-        cartItems: List<TbCartItem>,
+        cartItems: ArrayList<TbCartItem>,
         cartModel: CartModel,
         subTotalPrice: Double,
         totalPrice: Double,
@@ -1267,6 +1353,44 @@ open class PaymentViewModel @Inject constructor(
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
 
+        if (prefProvider.getValue(Constants.OLD_ITEM, "").isNotEmpty()) {
+            /*Added by Rahul to solve the modifiers not removing issue*/
+            val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
+
+            var oldCartItemsList = Gson().fromJson<java.util.ArrayList<TbCartItem>>(
+                prefProvider.getValue(Constants.OLD_ITEM, ""),
+                listType
+            )
+
+            for (oldItem in oldCartItemsList) {
+
+                val found = cartItems.filter { it.cartItemId == oldItem.cartItemId }
+
+                try {
+                    if (found.size == 0) {
+                        oldItem.isDestroy = true
+                    }
+                } catch (e: Exception) {
+                    oldItem.isDestroy = true
+                }
+
+
+
+//                for (currentItem in cartItems) {
+//                    if (oldItem.cartItemId == currentItem.cartItemId) {
+////                        oldItem.isDestroy = true
+//                        count+=1
+//                    }
+//                }
+//                if (count==oldCartItemsList.size-1){
+//                    oldItem.isDestroy=true
+//                }
+            }
+            cartItems.clear()
+            cartItems.addAll(oldCartItemsList)
+
+        }
+        prefProvider.setValue(Constants.OLD_ITEM, "")
 
         if (isUpdateOrder)
             orderAttributeRequestModel.id = orderId
@@ -1385,7 +1509,8 @@ open class PaymentViewModel @Inject constructor(
 
         } else {
 
-            orderAttributeRequestModel.orderItemsAttributes = orderItemsAttributesNew(cartModel,cartItems)
+            orderAttributeRequestModel.orderItemsAttributes =
+                orderItemsAttributesNew(cartModel, cartItems)
         }
 
 //        if (cartModel.customer != null)
@@ -1415,7 +1540,7 @@ open class PaymentViewModel @Inject constructor(
         finaldiscount: Double,
         needToAddPaymentAttributes: Boolean?,
         paymentType: String,
-        cardNumberValue :String,
+        cardNumberValue: String,
         cashdiscountType: String,
         tipID: Int? = null,
         globalUID: String = "",
@@ -1535,7 +1660,7 @@ open class PaymentViewModel @Inject constructor(
                 tipAmount,
                 splitValue,
                 finaldiscount,
-                paymentType,cardNumberValue,
+                paymentType, cardNumberValue,
                 orderAttributeRequestModel.cash_discount_type,
                 redeemLoyaltyInfo = redeemLoyaltyInfo,
                 globalUID,
@@ -1848,7 +1973,8 @@ open class PaymentViewModel @Inject constructor(
             orderItemsAttribute.isEdited = item.isEdited
             orderItemsAttribute.isDestroy = item.isDestroy
             orderItemsAttribute.isPaid = false
-            orderItemsAttribute.isPrinted = if (isUpdateOrder && item.isEdited == true) false else if (isUpdateOrder && item.isEdited == false) true else false
+            orderItemsAttribute.isPrinted =
+                if (isUpdateOrder && item.isEdited == true) false else if (isUpdateOrder && item.isEdited == false) true else false
             orderItemsAttribute.isTaxRemoved = false
             orderItemsAttribute.itemId = item.itemId
             orderItemsAttribute.is_manual_sales = item.isManualSales
@@ -1880,7 +2006,10 @@ open class PaymentViewModel @Inject constructor(
         return orderItemsAttributeList
     }
 
-    private fun orderItemsAttributesNew(cartModel: CartModel, cartItems: List<TbCartItem>): List<OrderItemsAttribute> {
+    private fun orderItemsAttributesNew(
+        cartModel: CartModel,
+        cartItems: List<TbCartItem>
+    ): List<OrderItemsAttribute> {
 
         val orderItemsAttributeList: ArrayList<OrderItemsAttribute> =
             arrayListOf()
@@ -1913,7 +2042,8 @@ open class PaymentViewModel @Inject constructor(
             orderItemsAttribute.isEdited = item.isEdited
             orderItemsAttribute.isDestroy = item.isDestroy
             orderItemsAttribute.isPaid = false
-            orderItemsAttribute.isPrinted = if (isUpdateOrder && item.isEdited == true) false else if (isUpdateOrder && item.isEdited == false) true else false
+            orderItemsAttribute.isPrinted =
+                if (isUpdateOrder && item.isEdited == true) false else if (isUpdateOrder && item.isEdited == false) true else false
             orderItemsAttribute.isTaxRemoved = false
             orderItemsAttribute.itemId = item.itemId
             orderItemsAttribute.is_manual_sales = item.isManualSales
@@ -2462,10 +2592,10 @@ open class PaymentViewModel @Inject constructor(
                 if (isUpdateOrder) paymentOfflineId.toString() else MethodUtils.randomOfflineId(
                     prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
                 )
-            payableType = if(prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)){
+            payableType = if (prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)) {
                 gift_card_redeemed_amount = MethodUtils.roundOffAmountDouble(totalAM + tipAmount)
                 "GiftCardRedeem"
-            }else{
+            } else {
                 gift_card_redeemed_amount = 0.0
                 "Order"
             }
@@ -2544,7 +2674,7 @@ open class PaymentViewModel @Inject constructor(
                     }
                     cardName = cardN
                     cardNumber = model.dataOutput.PANLast4
-                    if(cardNumber1.isNotEmpty()){
+                    if (cardNumber1.isNotEmpty()) {
                         cardNumber = cardNumber1
                     }
                 }
@@ -2571,8 +2701,9 @@ open class PaymentViewModel @Inject constructor(
                     }
 
                     cardName = CardType
-                    cardNumber = if (cardNumberLast4.isNotEmpty()) cardNumberLast4.takeLast(4) else ""
-                    if(cardNumber1.isNotEmpty()){
+                    cardNumber =
+                        if (cardNumberLast4.isNotEmpty()) cardNumberLast4.takeLast(4) else ""
+                    if (cardNumber1.isNotEmpty()) {
                         cardNumber = cardNumber1
                     }
                 }
@@ -2861,8 +2992,8 @@ open class PaymentViewModel @Inject constructor(
 
     }
 
-    fun savePaxPaymentDataLocally(paxData: PAXData){
-        this.extData=paxData.extData
+    fun savePaxPaymentDataLocally(paxData: PAXData) {
+        this.extData = paxData.extData
         viewModelScope.launch {
             posRepository.addPAXData(paxData)
         }

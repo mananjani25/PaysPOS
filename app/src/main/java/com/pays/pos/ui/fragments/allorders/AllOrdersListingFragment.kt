@@ -1247,6 +1247,7 @@ class AllOrdersListingFragment(
             }
 
             "UPDATE" -> {
+                prefProvider.setValue(Constants.OLD_ITEM,"")
                 var itemDiscountTotal: Double = 0.0
                 var itemPassDis: Double = 0.0
                 order.orderItems.forEach {

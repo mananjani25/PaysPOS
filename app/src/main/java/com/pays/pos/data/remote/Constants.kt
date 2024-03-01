@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutionException
 object Constants {
 
 
+    const val OLD_ITEM: String="OLD_ITEM"
     const val START_DATE = "start_date"
     const val END_DATE = "end_date"
 

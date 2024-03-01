@@ -83,6 +83,7 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 
@@ -154,6 +155,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     var PAXtoken = ""
     var ExtData = ""
 
+    var oldItems = ""
+
     private var cartList: CartModel? = null
 
     @Inject
@@ -210,6 +213,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         orderId = arguments?.getInt("orderId")
+        oldItems = arguments?.getString(Constants.OLD_ITEM) + ""
+
+        /*if user will move to the old screen, then this will value will be found in the preferences, otherwise it was getting cleared */
+        prefProvider.setValue(Constants.OLD_ITEM, oldItems)
 
         LogUtil.logE("orderId :: ", orderId.toString())
         if (orderId != null) {
@@ -2865,6 +2872,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         if (cartList!!.items == null || cartList!!.items!!.isEmpty()) {
             var items: ArrayList<TbItem>? = ArrayList()
+            /*  for (item in viewModel.currentCartItems) {*/
             for (item in viewModel.currentCartItems) {
                 var tbItem = TbItem()
                 tbItem.id = item.id
@@ -2912,8 +2920,90 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 tbItem.quantity = item.quantity
                 tbItem.price = item.price
                 tbItem.orderItemId = item.orderItemId
+
                 items!!.add(tbItem)
+
             }
+
+            /*Addeding the deleted items*/
+
+            try {
+                if (oldItems.isNotEmpty()) {
+                    /*Added by Rahul to solve the modifiers not removing issue*/
+                    val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
+
+                    var oldCartItemsList = Gson().fromJson<java.util.ArrayList<TbCartItem>>(
+                        oldItems,
+                        listType
+                    )
+
+                    for (item in viewModel.currentCartItems) {
+                        val notPresentItems =
+                            oldCartItemsList.filter { it.cartItemId != item.cartItemId }
+
+                        for (notPresentItem in notPresentItems) {
+                            var tbItem = TbItem()
+                            tbItem.id = notPresentItem.id
+                            tbItem.itemId = notPresentItem.itemId
+                            tbItem.categoryId = notPresentItem.categoryId
+                            tbItem.categoryName = notPresentItem.categoryName
+                            tbItem.createdAt = notPresentItem.createdAt
+                            tbItem.customItemCount = notPresentItem.customItemCount
+                            tbItem.dineInSort = notPresentItem.dineInSort
+                            tbItem.customItemID = notPresentItem.customItemCount
+                            tbItem.discountId = notPresentItem.discountId
+                            tbItem.discountPrice = notPresentItem.discountPrice
+                            tbItem.discountType = notPresentItem.discountType
+                            tbItem.guestItemId = notPresentItem.guestItemId
+                            tbItem.headerPositionDinein = notPresentItem.headerPositionDinein
+                            tbItem.hide_status = notPresentItem.hide_status
+                            tbItem.isHide = notPresentItem.isHide
+                            tbItem.imageUrl = notPresentItem.imageUrl
+                            tbItem.isChecked = notPresentItem.isChecked
+                            tbItem.isDeleted = notPresentItem.isDeleted
+                            tbItem.isDestroy = true
+                            tbItem.isEdited = notPresentItem.isEdited
+                            tbItem.isFired = notPresentItem.isFired
+                            tbItem.isManualSales = notPresentItem.isManualSales
+                            tbItem.isPaid = notPresentItem.isPaid
+                            tbItem.itemOriginalModifiersList =
+                                notPresentItem.itemOriginalModifiersList
+                            tbItem.itemQuantity = notPresentItem.itemQuantity
+                            tbItem.modifier_set_ids = notPresentItem.modifier_set_ids
+                            tbItem.modifiers = notPresentItem.modifiers
+                            tbItem.name = notPresentItem.name
+                            tbItem.note = notPresentItem.note
+                            tbItem.manualSaleId = notPresentItem.manualSaleId
+                            tbItem.optionSets = notPresentItem.optionSets
+                            tbItem.website_hide_status = notPresentItem.website_hide_status
+                            tbItem.variationsAttributes = notPresentItem.variationsAttributes
+                            tbItem.updatedAt = notPresentItem.updatedAt
+                            tbItem.timeStamp = notPresentItem.timeStamp
+                            tbItem.thumbImageUrl = notPresentItem.thumbImageUrl
+                            tbItem.taxes = notPresentItem.taxes
+                            tbItem.sort = notPresentItem.sort
+                            tbItem.sku = notPresentItem.sku
+                            tbItem.singleItemPrice = notPresentItem.singleItemPrice
+                            tbItem.shortDescription = notPresentItem.shortDescription
+                            tbItem.reorder = notPresentItem.reorder
+                            tbItem.quantity = notPresentItem.quantity
+                            tbItem.price = notPresentItem.price
+                            tbItem.orderItemId = notPresentItem.orderItemId
+
+
+                            items!!.add(tbItem)
+
+                        }
+                        Log.d("UNCOMMON:::", Gson().toJson(notPresentItems))
+
+                    }
+
+                }
+                prefProvider.setValue(Constants.OLD_ITEM, "")
+            } catch (e: Exception) {
+                prefProvider.setValue(Constants.OLD_ITEM, "")
+            }
+
             cartList!!.items = items
         }
 
@@ -3025,6 +3115,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             viewModel.cartModel = cartModel
             val myRequest = cartModel.let {
                 paymentviewModel.createOrderRequestNew(
+                    oldItems,
                     viewModel.currentCartItems,
                     it,
                     subTotalPrice,
@@ -3057,6 +3148,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             viewModel.cartModel = cartModel2
             val myRequest = cartModel2.let {
                 paymentviewModel.createOrderRequestNew(
+                    oldItems,
                     viewModel.currentCartItems,
                     it,
                     subTotalPrice,
@@ -3130,6 +3222,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             val myRequest = viewModel.cartModel?.let {
                 paymentviewModel.createOrderRequestNew(
+                    oldItems,
                     viewModel.currentCartItems,
                     it,
                     subTotalPrice,

@@ -64,7 +64,7 @@ class PaymentBoldPosFragment : Fragment() {
     private var guestRequestModel: GuestPaymentRequest? = null
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
     private val paymentViewModel by viewModels<DineInOrderTableViewModel>()
-
+    public var oldItems = ""
     private val dineInPaymentViewModel by viewModels<CheckoutDineInPaymentViewModel>()
     private var isFromActiveOrder: Boolean = false
 
@@ -105,6 +105,7 @@ class PaymentBoldPosFragment : Fragment() {
         binding.lifecycleOwner = this
         isFromActiveOrder = arguments?.getBoolean("isFromActiveOrder") ?: false
         orderId = arguments?.getInt("orderId")
+        oldItems = arguments?.getString(Constants.OLD_ITEM)+""
         viewModel.setSplitCount(1)
         LogUtil.logE("orderId :: ", orderId.toString())
         getCustomerDisplay(requireContext())?.let { display ->
@@ -172,7 +173,7 @@ class PaymentBoldPosFragment : Fragment() {
                     )
                     guestRequestModel = requireArguments().getParcelable("model")
                     viewModel.setGuestPay(true)
-                    if(this::presentation.isInitialized){
+                    if (this::presentation.isInitialized) {
                         presentation.show()
                         presentation.onDisplayChanged()
                         presentation.setGuestPay(true, model)
@@ -321,7 +322,7 @@ class PaymentBoldPosFragment : Fragment() {
         }
     }
 
-    private fun onBackPress(){
+    private fun onBackPress() {
         Log.d(TAG, "onViewCreated: " + prefProvider.getValueboolean(SPLIT_ENABLE, false))
 
         viewModel.setTipAmount(0.0)
@@ -333,7 +334,10 @@ class PaymentBoldPosFragment : Fragment() {
         if (prefProvider.getValueboolean(Constants.SPLIT_ENABLE, false)) {
             AlertUtils.showCustomAlert(requireContext(), "Please complete all payment.")
         } else if (prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
-            AlertUtils.showCustomAlert(requireContext(), getString(R.string.pax_transaction_error_message))
+            AlertUtils.showCustomAlert(
+                requireContext(),
+                getString(R.string.pax_transaction_error_message)
+            )
         } else {
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == OPEN_ORDER) {
                 val navController = findNavController()
@@ -347,35 +351,38 @@ class PaymentBoldPosFragment : Fragment() {
                     var bundle1: Bundle = Bundle()
                     bundle1.putBundle("updateBundle", bundle)
 
-                        navController.previousBackStackEntry?.savedStateHandle?.set(
-                            "data", bundle1
-                        )
-                    }
-                    if(prefProvider.getValueboolean(IS_FROM_ALL_ORDER,false)){
-                        navController.navigate(R.id.action_paymentBoldPosFragment_to_allOrdersFragment)
-                    }else{
-                        navController.popBackStack()
-                    }
-                prefProvider.setValueboolean(Constants.BACK_FROM_PAYMENT,true)
-
-                } else {
-                    if(prefProvider.getValueboolean(IS_FROM_ALL_ORDER,false)){
-                        findNavController().navigate(R.id.action_paymentBoldPosFragment_to_allOrdersFragment)
-                    }else{
-                        if(prefProvider.getValue(REDIRECT_FROM, "") == MANUAL_SALE) {
-                            viewModel.cartModel = null
-                        }
-                        findNavController().popBackStack()
-                    }
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        "data", bundle1
+                    )
                 }
+                if (prefProvider.getValueboolean(IS_FROM_ALL_ORDER, false)) {
+                    navController.navigate(R.id.action_paymentBoldPosFragment_to_allOrdersFragment)
+                } else {
+                    navController.popBackStack()
+                }
+                prefProvider.setValueboolean(Constants.BACK_FROM_PAYMENT, true)
+
+            } else {
+                if (prefProvider.getValueboolean(IS_FROM_ALL_ORDER, false)) {
+                    findNavController().navigate(R.id.action_paymentBoldPosFragment_to_allOrdersFragment)
+                } else {
+                    if (prefProvider.getValue(REDIRECT_FROM, "") == MANUAL_SALE) {
+                        viewModel.cartModel = null
+                    }
+                    findNavController().popBackStack()
+                }
+            }
 
         }
     }
 
     private fun listeners() {
         binding.layoutHeaderCheckout.tvAddTip.setOnClickListener {
-            if(prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
-                AlertUtils.showCustomAlert(requireContext(), getString(R.string.pax_transaction_error_message))
+            if (prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
+                AlertUtils.showCustomAlert(
+                    requireContext(),
+                    getString(R.string.pax_transaction_error_message)
+                )
             } else {
                 if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                     findNavController().navigate(
@@ -447,6 +454,7 @@ class PaymentBoldPosFragment : Fragment() {
                 putInt("paymentId", paymentId)
                 putString("orderOfflineId", orderOfflineId)
                 putString("paymentOfflineId", paymentOfflineId)
+                putString(Constants.OLD_ITEM, oldItems)
                 putString(REDIRECT_FROM, prefProvider.getValue(REDIRECT_FROM, ""))
 
             }
@@ -489,5 +497,5 @@ class PaymentBoldPosFragment : Fragment() {
 }
 
 private operator fun Double?.div(toInt: Int?): Double {
-   return this?:0.0.toDouble()
+    return this ?: 0.0.toDouble()
 }

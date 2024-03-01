@@ -9638,7 +9638,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 .styleBold(true)
                                 .actionPrintText(
                                     if (kitchenSettingModel.showOrderType)
-                                        receiptModel!!.order.orderType
+                                        receiptModel!!.order.orderTypeName
                                     else ""
                                 )
                         )

@@ -20,21 +20,12 @@ import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.pays.pos.R
-import com.pays.pos.data.entities.CartModel
-import com.pays.pos.data.entities.CashDiscountModel
-import com.pays.pos.data.entities.TaxData
-import com.pays.pos.data.entities.TbCartItem
-import com.pays.pos.data.entities.TbCustomer
-import com.pays.pos.data.entities.TbItem
-import com.pays.pos.data.entities.TbOrderType
-import com.pays.pos.data.entities.TbServiceCharge
+import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.DineInModel
 import com.pays.pos.data.model.DineInOrderDetailAttributes
 import com.pays.pos.data.model.GuestPaymentCalculationModel
-import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.pays.pos.data.model.responseModel.GetFloorPlanResponse
 import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
-import com.pays.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.pays.pos.data.remote.ApiService
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.ADD
@@ -70,6 +61,7 @@ import com.pays.pos.data.remote.Constants.PICK_UP
 import com.pays.pos.data.remote.Constants.REDIRECT_FROM
 import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.remote.Constants.WHOLE_AMOUNT
+import com.pays.pos.data.typeconvert.TCBusiness
 import com.pays.pos.databinding.FragmentCartBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.adapter.DineInAdapter
@@ -84,20 +76,8 @@ import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.ProgressUtils
-import com.pays.pos.utils.callback.DineInOrderCallBack
-import com.pays.pos.utils.callback.ItemCallback
-import com.pays.pos.utils.callback.ItemClickListner
-import com.pays.pos.utils.callback.ItemListner
-import com.pays.pos.utils.callback.MyCallback
-import com.pays.pos.utils.extensions.alert
-import com.pays.pos.utils.extensions.disableItemAnimator
-import com.pays.pos.utils.extensions.getColor
-import com.pays.pos.utils.extensions.gone
-import com.pays.pos.utils.extensions.invisible
-import com.pays.pos.utils.extensions.isVisible
-import com.pays.pos.utils.extensions.runOnUiThread
-import com.pays.pos.utils.extensions.setOnSingleClickListener
-import com.pays.pos.utils.extensions.visible
+import com.pays.pos.utils.callback.*
+import com.pays.pos.utils.extensions.*
 import com.pays.pos.utils.getCustomerDisplay
 import com.pays.pos.utils.subTotalToDouble
 import dagger.hilt.android.AndroidEntryPoint
@@ -110,8 +90,10 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.json.JSONArray
 import org.json.JSONObject
+import java.lang.Runnable
+import java.lang.System
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.*
 import javax.inject.Inject
 
 
@@ -2622,6 +2604,7 @@ class CartFragment(
                             bundle.putInt("paymentId", paymentId!!)
                             bundle.putString("paymentOfflineId", paymentOfflineId)
                             bundle.putString("orderOfflineId", orderOfflineId)
+                            bundle.putString(Constants.OLD_ITEM, prefProvider.getValue(Constants.OLD_ITEM,""))
                             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                                 prefProvider.setValueboolean(IS_FROM_ALL_ORDER, false)
                                 clearObserver()
@@ -2651,232 +2634,260 @@ class CartFragment(
 
         })
 
-        binding.tvSave.setOnClickListener {
-            try {
-                prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)
-                if (isOrderUpdate == false) {
-                    prefProvider.setValue(
-                        Constants.OPEN_ORDER_ITEMS,
-                        ""
-                    )
+        binding.tvSave.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(p0: View?) {
+                try {
+                    prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)
+                    if (isOrderUpdate == false) {
+                        prefProvider.setValue(
+                            Constants.OPEN_ORDER_ITEMS,
+                            ""
+                        )
 
-                    /*Added By Rahul */
-                    prefProvider.setValue(
-                        Constants.OPEN_ORDER_ITEMS_OLD,
-                        ""
-                    )
+                        /*Added By Rahul */
+                        prefProvider.setValue(
+                            Constants.OPEN_ORDER_ITEMS_OLD,
+                            ""
+                        )
+                        prefProvider.getValue(Constants.OLD_ITEM, "")
 
-                }
-                if (cartItemsAdapter.currentList.isNotEmpty()) {
-                    prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false)
-                    prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                    }
+                    if (cartItemsAdapter.currentList.isNotEmpty()) {
+                        prefProvider.setValueboolean(
+                            Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                            false
+                        )
+                        prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
 
-                    prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
-                    prefProvider.setValue("PaidAmount", "")
-                    prefProvider.setValue(WHOLE_AMOUNT, "")
-                    prefProvider.setValueInt("cardCount", 0)
-                    prefProvider.setValue(Constants.SUB_TOTAL, "")
-                    prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
-                    prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
-                    prefProvider.setValue(Constants.TIP, "")
-                    prefProvider.setValue(Constants.TAX_CHARGE, "")
-                    prefProvider.setValue(Constants.SERVICE_CHARGE, "")
-                    if (prefProvider.getValue(ORDER_TYPE, "") != Constants.DINE_IN) {
+                        prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
+                        prefProvider.setValue("PaidAmount", "")
+                        prefProvider.setValue(WHOLE_AMOUNT, "")
+                        prefProvider.setValueInt("cardCount", 0)
+                        prefProvider.setValue(Constants.SUB_TOTAL, "")
+                        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+                        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+                        prefProvider.setValue(Constants.TIP, "")
+                        prefProvider.setValue(Constants.TAX_CHARGE, "")
+                        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+                        if (prefProvider.getValue(ORDER_TYPE, "") != Constants.DINE_IN) {
 
-                        var ordertype = ""
-                        var ordertypeId = 0
-                        if (prefProvider.getValue(ORDER_TYPE, "") == OPEN_ORDER) {
-                            ordertype = prefProvider.getValue(ORDER_TYPE, "")
-                            ordertypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 0)
-                        } else {
-                            run breaking@{
-                                viewModel.ordertypelist.forEach {
-                                    if (it.orderType == OPEN_ORDER) {
-                                        ordertype = it.orderType
-                                        ordertypeId = it.id
-                                        return@breaking
+                            var ordertype = ""
+                            var ordertypeId = 0
+                            if (prefProvider.getValue(ORDER_TYPE, "") == OPEN_ORDER) {
+                                ordertype = prefProvider.getValue(ORDER_TYPE, "")
+                                ordertypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 0)
+                            } else {
+                                run breaking@{
+                                    viewModel.ordertypelist.forEach {
+                                        if (it.orderType == OPEN_ORDER) {
+                                            ordertype = it.orderType
+                                            ordertypeId = it.id
+                                            return@breaking
+                                        }
                                     }
                                 }
-                            }
-
-
-                        }
-
-                        if (prefProvider.getValue(ORDER_TYPE, "").toString()
-                                .trim() == PHONE_ORDER.toString().trim()
-                        ) {
-
-                            viewModel.ordertypelist.forEach {
-                                if (it.orderType == PHONE_ORDER) {
-                                    ordertype = it.orderType
-                                    ordertypeId = it.id
-                                }
 
 
                             }
-                        }
+
+                            if (prefProvider.getValue(ORDER_TYPE, "").toString()
+                                    .trim() == PHONE_ORDER.toString().trim()
+                            ) {
+
+                                viewModel.ordertypelist.forEach {
+                                    if (it.orderType == PHONE_ORDER) {
+                                        ordertype = it.orderType
+                                        ordertypeId = it.id
+                                    }
 
 
-                        Log.e("TAGGER", "ordertype :: $ordertype")
-                        Log.e("TAGGER", "ordertypeId :: $ordertypeId")
-
-                        if (viewModel.restrictedAmount(binding.txtTotal)) {
-
-
-                            viewModelPayment.updateOrder(
-                                isOrderUpdate,
-                                orderId,
-                                paymentId,
-                                paymentOfflineId,
-                                orderOfflineId
-                            )
-
-                            /* Added by Rahul to solve the cartModel crash issue, i.e. cartModel is getting null - START*/
-                            if (viewModel.cartModel == null) {
-                                var currentCartItems = arrayListOf<TbItem>()
-                                for (tbItem in viewModel.currentCartItems) {
-                                    currentCartItems.add(TbItem().convertCartToItem(tbItem, tbItem))
                                 }
-                                var isManual = false
-                                if (prefProvider.getValue(Constants.REDIRECT_FROM, "")
-                                        .equals("manual_sale")
-                                ) {
-                                    isManual = true
-                                } else {
-                                    isManual = false
-                                }
-                                viewModel.cartModel = CartModel().apply {
-                                    terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
-                                    employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
-                                    locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
-                                    orderTypeId =
-                                        prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
-                                    orderType = prefProvider.getValue(ORDER_TYPE, "").toString()
-                                    orderTypeName =
-                                        prefProvider.getValue(Constants.ORDER_TYPE_NAME, "")
-                                            .toString()
-                                    items = currentCartItems
-                                    isOpenOrder = false
-                                    isMaual = isManual
-                                    isEdited = false
-                                    customer = Gson().fromJson(
-                                        prefProvider.getValue("pref_customer", "").toString(),
-                                        TbCustomer::class.java
-                                    )
-                                    taxlistDynamic = Gson().fromJson(
-                                        prefProvider.getValue("taxlistDynamic", "").toString(),
-                                        object : TypeToken<List<TaxData>?>() {}.getType()
-                                    )
-                                }
-
-                                viewModel.addCart(viewModel.cartModel!!)
-
-                            }
-                            /* Added by Rahul to solve the cartModel crash issue, i.e. cartModel is getting null - END*/
-
-                            val cartModel = viewModel.cartModel
-
-                            cartModel?.openOrderType = Constants.PICK_UP
-                            cartModel?.orderType = ordertype
-                            cartModel?.orderTypeId = ordertypeId
-
-                            val totalAmountTobeSave =
-                                if (viewModel.redeemLoyaltyInfo.isLoyaltyApplied == true) {
-                                    (viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0)
-                                } else {
-                                    viewModel.totalPrice
-                                }
-
-                            cartModel?.openOrderType = Constants.PICK_UP
-                            if (!isOrderUpdate)
-                                cartModel?.customer = assignCustomer
-
-                            if (isOrderUpdate) {
-                                viewModel.setCartEdited(1, cartModel?.cartId)
-                            } else {
-                                viewModel.setCartEdited(0, cartModel?.cartId)
                             }
 
-                            val formatterdate = SimpleDateFormat("yyyy-MM-dd")
-                            val formattertime = SimpleDateFormat("hh:mm a")
-                            val date = Date()
-                            future_delivery_date = formatterdate.format(date)
-                            future_delivery_time = formattertime.format(date)
 
-                            LogUtil.logE(
-                                TAG,
-                                "UpdateOrderItemsList  ${viewModel.currentCartItems.size}"
-                            )
-                            val request = cartModel?.let {
-                                viewModelPayment.createOpenOrderRequestNew(
-                                    viewModel.currentCartItems,
-                                    it,
-                                    viewModel.subTotalPrice,
-                                    totalAmountTobeSave,
-                                    viewModel.totalServiceCharge,
-                                    viewModel.totalTax,
-                                    OPEN_ORDER,
-                                    future_delivery_date,
-                                    future_delivery_time,
-                                    false,
-                                    viewModel.totalDiscount,
-                                    0.00,
-                                    -1,
-                                    viewModel.redeemLoyaltyInfo,
-                                    MethodUtils.calculateCashDiscount(
-                                        viewModel.totalPrice,
-                                        prefProvider,
-                                        requireContext()
-                                    ),
-                                    false,
-                                    "Cash",
-                                    cashDiscountType
+                            Log.e("TAGGER", "ordertype :: $ordertype")
+                            Log.e("TAGGER", "ordertypeId :: $ordertypeId")
 
+                            if (viewModel.restrictedAmount(binding.txtTotal)) {
+
+
+                                viewModelPayment.updateOrder(
+                                    isOrderUpdate,
+                                    orderId,
+                                    paymentId,
+                                    paymentOfflineId,
+                                    orderOfflineId
                                 )
-                            }
-                            isSaveOrder = true
-                            viewModelPayment.saveOrder(true)
-
-                            viewModelPayment.orderCreateCallSent = true
 
 
-                            //
-                            viewModel.fromAllOrderFragment = false
-                            request?.let { it1 -> viewModelPayment.submit(it1) }
-                            if (!prefProvider.getValueboolean(Constants.NO_NEED_TO_PRINT, false)) {
-                                //print
-                                Log.d(TAG, "checkUpdation calling submit -> printing ")
-                                if (!viewModelPayment.orderCreateCallSent)
-                                    request?.let { it1 -> viewModelPayment.submit(it1) }
+                                /* Added by Rahul to solve the cartModel crash issue, i.e. cartModel is getting null - START*/
+                                if (viewModel.cartModel == null) {
+                                    var currentCartItems = arrayListOf<TbItem>()
+                                    for (tbItem in viewModel.currentCartItems) {
+                                        currentCartItems.add(
+                                            TbItem().convertCartToItem(
+                                                tbItem,
+                                                tbItem
+                                            )
+                                        )
+                                    }
+                                    var isManual = false
+                                    if (prefProvider.getValue(Constants.REDIRECT_FROM, "")
+                                            .equals("manual_sale")
+                                    ) {
+                                        isManual = true
+                                    } else {
+                                        isManual = false
+                                    }
+                                    viewModel.cartModel = CartModel().apply {
+                                        terminalId =
+                                            prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+                                        employeeID =
+                                            prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+                                        locationId =
+                                            prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+                                        orderTypeId =
+                                            prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
+                                        orderType = prefProvider.getValue(ORDER_TYPE, "").toString()
+                                        orderTypeName =
+                                            prefProvider.getValue(Constants.ORDER_TYPE_NAME, "")
+                                                .toString()
+                                        items = currentCartItems
+                                        isOpenOrder = false
+                                        isMaual = isManual
+                                        isEdited = false
+                                        customer = Gson().fromJson(
+                                            prefProvider.getValue("pref_customer", "").toString(),
+                                            TbCustomer::class.java
+                                        )
+                                        taxlistDynamic = Gson().fromJson(
+                                            prefProvider.getValue("taxlistDynamic", "").toString(),
+                                            object : TypeToken<List<TaxData>?>() {}.getType()
+                                        )
+                                    }
+
+                                    viewModel.addCart(viewModel.cartModel!!)
+
+                                }
+                                /* Added by Rahul to solve the cartModel crash issue, i.e. cartModel is getting null - END*/
+
+                                val cartModel = viewModel.cartModel
+
+                                cartModel?.openOrderType = Constants.PICK_UP
+                                cartModel?.orderType = ordertype
+                                cartModel?.orderTypeId = ordertypeId
+
+                                val totalAmountTobeSave =
+                                    if (viewModel.redeemLoyaltyInfo.isLoyaltyApplied == true) {
+                                        (viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0)
+                                    } else {
+                                        viewModel.totalPrice
+                                    }
+
+                                cartModel?.openOrderType = Constants.PICK_UP
+                                if (!isOrderUpdate)
+                                    cartModel?.customer = assignCustomer
+
+                                if (isOrderUpdate) {
+                                    viewModel.setCartEdited(1, cartModel?.cartId)
+                                } else {
+                                    viewModel.setCartEdited(0, cartModel?.cartId)
+                                }
+
+                                val formatterdate = SimpleDateFormat("yyyy-MM-dd")
+                                val formattertime = SimpleDateFormat("hh:mm a")
+                                val date = Date()
+                                future_delivery_date = formatterdate.format(date)
+                                future_delivery_time = formattertime.format(date)
+
+                                LogUtil.logE(
+                                    TAG,
+                                    "UpdateOrderItemsListOLD::  ${Gson().toJson(viewModel.currentCartItems)}"
+                                )
+
+                                LogUtil.logE(
+                                    TAG,
+                                    "UpdateOrderItemsListDUPLI::  ${Gson().toJson(viewModel.duplicateCurrentCartItem)}"
+                                )
+
+                                val request = cartModel?.let {
+                                    viewModelPayment.createOpenOrderRequestNew(
+                                        viewModel.currentCartItems,
+                                        it,
+                                        viewModel.subTotalPrice,
+                                        totalAmountTobeSave,
+                                        viewModel.totalServiceCharge,
+                                        viewModel.totalTax,
+                                        OPEN_ORDER,
+                                        future_delivery_date,
+                                        future_delivery_time,
+                                        false,
+                                        viewModel.totalDiscount,
+                                        0.00,
+                                        -1,
+                                        viewModel.redeemLoyaltyInfo,
+                                        MethodUtils.calculateCashDiscount(
+                                            viewModel.totalPrice,
+                                            prefProvider,
+                                            requireContext()
+                                        ),
+                                        false,
+                                        "Cash",
+                                        cashDiscountType
+
+                                    )
+                                }
+                                isSaveOrder = true
+                                viewModelPayment.saveOrder(true)
+
+                                viewModelPayment.orderCreateCallSent = true
+
+
+                                //
+                                viewModel.fromAllOrderFragment = false
+                                request?.let { it1 -> viewModelPayment.submit(it1) }
+                                if (!prefProvider.getValueboolean(
+                                        Constants.NO_NEED_TO_PRINT,
+                                        false
+                                    )
+                                ) {
+                                    //print
+                                    Log.d(TAG, "checkUpdation calling submit -> printing ")
+                                    if (!viewModelPayment.orderCreateCallSent)
+                                        request?.let { it1 -> viewModelPayment.submit(it1) }
+                                } else {
+                                    //no print
+                                    Log.d(TAG, "checkUpdation not printing ")
+                                    viewModelPayment.noUpdatesFound()
+                                }
+
+                                isOrderUpdate = false
+                                binding.tvSave.text = getString(R.string.save)
+
+                                viewModel.fromSaveOrderToAllOrders = true
+
                             } else {
-                                //no print
-                                Log.d(TAG, "checkUpdation not printing ")
-                                viewModelPayment.noUpdatesFound()
+                                showMessage()
                             }
+                        }
 
-                            isOrderUpdate = false
-                            binding.tvSave.text = getString(R.string.save)
-
-                            viewModel.fromSaveOrderToAllOrders = true
-
-                        } else {
-                            showMessage()
+                        viewModel.currentCartItems = arrayListOf()
+                        viewModel.duplicateCurrentCartItem = arrayListOf()
+                    } else {
+                        prefProvider.setValue(Constants.OLD_ITEM, "")
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(),
+                            resources.getString(R.string.please_add_Atleast_one_item_in_cart)
+                        ) { _, _ ->
                         }
                     }
-
-                    viewModel.currentCartItems = arrayListOf()
-                    viewModel.duplicateCurrentCartItem = arrayListOf()
-                } else {
-                    AlertUtils.showCustomAlertWithListenerWithOK(
-                        requireContext(),
-                        resources.getString(R.string.please_add_Atleast_one_item_in_cart)
-                    ) { _, _ ->
-                    }
+                } catch (e: Exception) {
+                    prefProvider.setValue(Constants.OLD_ITEM, "")
+                    e.printStackTrace()
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
-        }
+
+        })
     }
 
     private fun checkUpdation() {
@@ -2916,7 +2927,6 @@ class CartFragment(
             Log.d(TAG, "checkUpdation: NO_NEED_TO_PRINT false")
         }
     }
-
 
 
     private fun clearObserver() {
@@ -3148,6 +3158,8 @@ class CartFragment(
 
     override fun onStop() {
         super.onStop()
+        prefProvider.setValue(Constants.OLD_ITEM, "")
+
         org.greenrobot.eventbus.EventBus.getDefault().unregister(this)
 
         viewModel.fromSaveOrderToAllOrders = false
