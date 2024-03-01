@@ -97,6 +97,7 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.collections.set
 import kotlin.math.ceil
 
@@ -444,23 +445,27 @@ class DashBoardCategoryViewModel @Inject constructor(
         var mCartModel = cartModel
         System.currentTimeMillis()
         CoroutineScope(Dispatchers.IO).launch {
-            Log.e(TAG,"checkAddedItemSi ${listItems.size}")
-            Log.e(TAG,"checkAddedItemSi 1${listItems.size}")
-            Log.e(TAG,"checkAddedItemSi 2${listItems.size}")
 
-          for (i in 0 until listItems.size){
-              listItems.get(i).taxes?.let {it ->
-                  for (j in 0 until it.size) {
-                     mCartModel =  taxBifurcationCalculationNew(
-                          cartModel = mCartModel,
-                          item = listItems.get(i),
-                          type = ADD,
-                          orderTaxID = false
-                      )
-                  }
-              }
+            var listItems: ArrayList<TbCartItem> = arrayListOf()
+            cartModel.items?.forEach {
+                listItems.add(TbCartItem().convertToCartItem(it, it))
 
-          }
+            }
+            Log.e(TAG,"checkConvertedItem: ${listItems.size}")
+
+            for (i in 0 until listItems.size) {
+                listItems.get(i).taxes?.let { it ->
+                    for (j in 0 until it.size) {
+                        mCartModel = taxBifurcationCalculationNew(
+                            cartModel = mCartModel,
+                            item = listItems.get(i),
+                            type = ADD,
+                            orderTaxID = false
+                        )
+                    }
+                }
+
+            }
             posRepository.addItemCart(mCartModel)
             destroyedList.clear()
         }
