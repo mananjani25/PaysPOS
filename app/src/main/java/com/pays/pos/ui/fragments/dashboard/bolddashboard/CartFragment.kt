@@ -1154,21 +1154,6 @@ class CartFragment(
                             }
 
                         } else {
-                            if (viewModel.currentCartItems.isEmpty()) {
-                                viewModel.getAllCartItems(
-                                    prefProvider.getValue(
-                                        Constants.ORDER_TYPE,
-                                        TAKEOUT
-                                    ),
-                                    prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                                ).asLiveData().value?.let { it1 ->
-                                    viewModel.cartModel =
-                                        taxBifurcationCalculationUpdate(it[0], it1)
-                                }
-                            }else{
-                                viewModel.cartModel =
-                                    taxBifurcationCalculationUpdate(it[0], viewModel.currentCartItems)
-                            }
 
                             Log.e(
                                 TAG,
@@ -1199,6 +1184,23 @@ class CartFragment(
                                     cartFooterNeedToBeUpdated = true
                                 }
                             }
+
+                            if (viewModel.currentCartItems.isEmpty()) {
+                                viewModel.getAllCartItems(
+                                    prefProvider.getValue(
+                                        Constants.ORDER_TYPE,
+                                        TAKEOUT
+                                    ),
+                                    prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                                ).asLiveData().value?.let { it1 ->
+                                    viewModel.cartModel =
+                                        taxBifurcationCalculationUpdate(it[0], it1)
+                                }
+                            }else{
+                                viewModel.cartModel =
+                                    taxBifurcationCalculationUpdate(it[0], viewModel.currentCartItems)
+                            }
+
                         }
                     }
                 }
@@ -1545,6 +1547,29 @@ class CartFragment(
                                         } else {
                                             binding.linearButtonView.visible()
                                             binding.relPreoceedToFire.gone()
+                                        }
+
+
+                                        if (viewModel.currentCartItems.isEmpty()) {
+                                            viewModel.getAllCartItems(
+                                                prefProvider.getValue(
+                                                    Constants.ORDER_TYPE,
+                                                    TAKEOUT
+                                                ),
+                                                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                                            ).asLiveData().value?.let { it1 ->
+                                                viewModel.cartModel =
+                                                    viewModel.cartModel?.let { it2 ->
+                                                        taxBifurcationCalculationUpdate(
+                                                            it2, it1)
+                                                    }
+                                            }
+                                        }else{
+                                            viewModel.cartModel =
+                                                viewModel.cartModel?.let { it1 ->
+                                                    taxBifurcationCalculationUpdate(
+                                                        it1, viewModel.currentCartItems)
+                                                }
                                         }
                                         /* binding.rvCartList.removeAllViews()
                                      binding.rvCartList.removeAllViewsInLayout()*/
