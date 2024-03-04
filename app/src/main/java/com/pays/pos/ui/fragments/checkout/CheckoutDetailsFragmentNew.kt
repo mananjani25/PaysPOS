@@ -2860,7 +2860,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             prefProvider.getValue("CART_MODEL2", ""),
             CartModel::class.java
         )
+
         if (cartList == null) {
+            CoroutineScope(Dispatchers.Main).launch {
+                getCartModelsList()
+            }
+
             if (cartModel != null) {
                 viewModel.cartModel = cartModel
                 cartList = cartModel
@@ -3049,6 +3054,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             paymentAttributesRequest(myRequest)
         }
+    }
+
+    suspend fun getCartModelsList() {
+        CoroutineScope(Dispatchers.IO).async {
+           var cartListFromDb:List<CartModel> = viewModel.getAllCartModels()
+            if (cartListFromDb!=null){
+                cartList=cartListFromDb.get(0)
+                viewModel.cartModel=cartList
+            }
+        }.await()
+
     }
 
 

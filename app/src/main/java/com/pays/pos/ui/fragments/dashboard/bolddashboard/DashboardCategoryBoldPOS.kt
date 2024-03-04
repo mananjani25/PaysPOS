@@ -1024,10 +1024,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         binding.layoutHeader.txtTransaction.setOnClickListener {
             if (rolePermission.hasTransactionPermission(binding.root)) {
-                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                    prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_transactionFragment)
-                }
+                Handler(Looper.getMainLooper()).postDelayed(object:Runnable{
+                    override fun run() {
+                        if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                            prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_transactionFragment)
+                        }
+                    }
+
+                },1000)
+
             }
 
         }

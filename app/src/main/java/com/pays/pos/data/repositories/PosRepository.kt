@@ -1411,8 +1411,13 @@ class PosRepository @Inject constructor(
 
     }
 
-    suspend fun getCartModelFromID(cartId: Int): CartModel {
+    suspend fun getCartModelFromID(cartId: Int): CartModel? {
         return appDatabase.cartDao().getCartModelFromID(cartId)
+    }
+
+
+    suspend fun getAllCartModels(): List<CartModel> {
+        return appDatabase.cartDao().getAllCartModels()
     }
 
 

@@ -451,7 +451,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 listItems.add(TbCartItem().convertToCartItem(it, it))
 
             }
-            Log.e(TAG,"checkConvertedItem: ${listItems.size}")
+            Log.e(TAG, "checkConvertedItem: ${listItems.size}")
 
             for (i in 0 until listItems.size) {
                 listItems.get(i).taxes?.let { it ->
@@ -7570,7 +7570,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-    suspend fun getCartModelFromID(cartId: Int): CartModel {
+    suspend fun getAllCartModels(): List<CartModel> {
+        return posRepository.getAllCartModels()
+    }
+
+    suspend fun getCartModelFromID(cartId: Int): CartModel? {
         return posRepository.getCartModelFromID(cartId)
     }
 

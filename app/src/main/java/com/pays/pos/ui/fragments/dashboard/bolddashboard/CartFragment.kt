@@ -2625,6 +2625,13 @@ class CartFragment(
                         )
                     }
 
+                    /*insert into db if the cart model is not present in the db*/
+                    CoroutineScope(Dispatchers.IO).launch {
+                        var currentCartModel:CartModel?=viewModel.getCartModelFromID(viewModel.cartModel!!.cartId)
+                        if (currentCartModel==null){
+                            viewModel.createEmptyCart(viewModel.cartModel!!)
+                        }
+                    }
                     if (cartItemsAdapter.currentList.isNotEmpty()) {
                         prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
                         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)

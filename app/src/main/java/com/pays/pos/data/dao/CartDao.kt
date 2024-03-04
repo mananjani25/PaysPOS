@@ -121,7 +121,10 @@ interface CartDao {
     fun setCartEdited(isEdited:Int,id: Int)
 
     @Query("select * from CartModel where CartModel.cartId = :cartId")
-    fun getCartModelFromID(cartId: Int): CartModel
+    fun getCartModelFromID(cartId: Int): CartModel?
+
+    @Query("select * from CartModel")
+    fun getAllCartModels(): List<CartModel>
 
     @Query("UPDATE TbCartItem SET itemQuantity=:itemQuantity WHERE cartItemId =:id")
     suspend fun updateItemQuantity(id: Int,itemQuantity:Int)
