@@ -871,6 +871,13 @@ open class PaymentViewModel @Inject constructor(
                     try {
                         if (found.size == 0) {
                             oldItem.isDestroy = true
+                        }else{
+                            cartItems.forEach{
+                                if (it.cartItemId==oldItem.cartItemId){
+                                    oldItem.itemOriginalModifiersList=it.itemOriginalModifiersList
+                                    oldItem.modifiers=it.modifiers
+                                }
+                            }
                         }
                     } catch (e: Exception) {
                         oldItem.isDestroy = true
@@ -1369,10 +1376,19 @@ open class PaymentViewModel @Inject constructor(
                 try {
                     if (found.size == 0) {
                         oldItem.isDestroy = true
+                    }else{
+                        cartItems.forEach{
+                            if (it.cartItemId==oldItem.cartItemId){
+                                oldItem.itemOriginalModifiersList=it.itemOriginalModifiersList
+                                oldItem.modifiers=it.modifiers
+                            }
+                        }
                     }
                 } catch (e: Exception) {
                     oldItem.isDestroy = true
                 }
+
+
 
 
 

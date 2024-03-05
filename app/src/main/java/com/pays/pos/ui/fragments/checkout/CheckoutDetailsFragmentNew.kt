@@ -2860,12 +2860,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             prefProvider.getValue("CART_MODEL2", ""),
             CartModel::class.java
         )
-
+        
         if (cartList == null) {
             CoroutineScope(Dispatchers.Main).launch {
                 getCartModelsList()
             }
-
+            
             if (cartModel != null) {
                 viewModel.cartModel = cartModel
                 cartList = cartModel
@@ -3064,7 +3064,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 viewModel.cartModel=cartList
             }
         }.await()
-
+        
     }
 
 
