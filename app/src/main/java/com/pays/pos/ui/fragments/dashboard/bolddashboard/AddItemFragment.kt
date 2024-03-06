@@ -495,6 +495,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                             }
 
+                            prefProvider.setValue(Constants.OLD_ITEM,Gson().toJson(viewModel.currentCartItems))
+
+
                             runBlocking {
                                 viewModel.deleteCartItems()
 

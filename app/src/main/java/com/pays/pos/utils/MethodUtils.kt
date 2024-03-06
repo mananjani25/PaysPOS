@@ -310,7 +310,8 @@ class MethodUtils {
             createItemRequestMap["name"] = data.name.toString().toMultiPartRequestBody()
             createItemRequestMap["price"] =
                 data.price.toString().toMultiPartRequestBody()
-            createItemRequestMap["priceType"] = data.priceType.toString().toMultiPartRequestBody()
+//            createItemRequestMap["priceType"] = data.priceType.toString().toMultiPartRequestBody()
+            createItemRequestMap["price_type"] = data.priceType.toString().toMultiPartRequestBody()
             createItemRequestMap["product_code"] =
                 data.productCode.toString().toMultiPartRequestBody()
             createItemRequestMap["quantity"] = data.quantity.toString().toMultiPartRequestBody()

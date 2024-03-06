@@ -3022,6 +3022,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 viewModel.downloadFinished(true)
                                 var printingData: List<CreateOrderResponse.Data.Order.OrderItem>? =
                                     arrayListOf()
+
                                 if (viewModelPayment.isUpdateOrder) {
 
                                     val token: TypeToken<List<CreateOrderResponse.Data.Order.OrderItem>?> =
@@ -3089,11 +3090,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         createOrderResponse.data.order.orderItems= arrayListOf()
                                     }*/
 
-                                    val (newData, isUpdated) = getPrintingData(
+                                    var (newData, isUpdated) = getPrintingData(
                                         (oldDataModel as List<CreateOrderResponse.Data.Order.OrderItem>),
                                         createOrderResponse.data.order.orderItems
                                     )
 
+                                    newData.forEach {
+                                        if(!it.isPrinted){
+                                            isUpdated=true
+                                        }
+                                    }
                                     printingData = newData
                                     isOrderUpdate = isUpdated
 

@@ -112,7 +112,7 @@ import com.pays.pos.data.typeconvert.TypeConvertorPhone
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, PAXData::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class,
         VenueDetailsResponse.Data.WastageReason::class, TbCartItem::class],
-    version = 14
+    version = 15
 )
 @TypeConverters(
     TypeConvertersItems::class,
@@ -331,6 +331,18 @@ public abstract class AppDatabase : RoomDatabase() {
 
         }
 
+        private val MIGRATION_13_14: Migration = object : Migration(13, 14) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                try {
+                    database.execSQL("ALTER TABLE TbItem ADD COLUMN cartItemId INTEGER DEFAULT 0 NOT NULL")
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+        }
+
         private val MIGRATION_12_13: Migration = object : Migration(11, 12) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 try {
@@ -415,7 +427,7 @@ public abstract class AppDatabase : RoomDatabase() {
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
                 .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7
-                    , MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11,MIGRATION_11_12, MIGRATION_12_13
+                    , MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11,MIGRATION_11_12, MIGRATION_12_13,MIGRATION_13_14
                 ).fallbackToDestructiveMigration()
                 .build()
     }

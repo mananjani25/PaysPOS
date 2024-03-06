@@ -31,6 +31,9 @@ interface CartDao {
     @Query("select * from TbCartItem ORDER BY timeStamp")
     fun getCartItems(): Flow<List<TbCartItem>>
 
+ @Query("select * from TbCartItem ORDER BY timeStamp")
+    fun getAllCartItems(): List<TbCartItem>
+
     @Transaction
     @Query("DELETE FROM TbCartItem")
     suspend fun deleteCartItems()

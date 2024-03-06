@@ -2627,9 +2627,14 @@ class CartFragment(
 
                     /*insert into db if the cart model is not present in the db*/
                     CoroutineScope(Dispatchers.IO).launch {
-                        var currentCartModel:CartModel?=viewModel.getCartModelFromID(viewModel.cartModel!!.cartId)
-                        if (currentCartModel==null){
-                            viewModel.createEmptyCart(viewModel.cartModel!!)
+                        delay(1000)
+                        try{
+                            var currentCartModel:CartModel?=viewModel.getCartModelFromID(viewModel.cartModel!!.cartId)
+                            if (currentCartModel==null){
+                                viewModel.createEmptyCart(viewModel.cartModel!!)
+                            }
+                        }catch (e:Exception){
+
                         }
                     }
                     if (cartItemsAdapter.currentList.isNotEmpty()) {
@@ -2696,7 +2701,7 @@ class CartFragment(
                             Constants.OPEN_ORDER_ITEMS_OLD,
                             ""
                         )
-                        prefProvider.getValue(Constants.OLD_ITEM, "")
+                        prefProvider.setValue(Constants.OLD_ITEM, "")
 
                     }
                     if (cartItemsAdapter.currentList.isNotEmpty()) {

@@ -9,10 +9,7 @@ import android.os.StrictMode
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -504,6 +501,12 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun addOrderItemsToCartItems(tbCartItem: List<TbCartItem>) {
         CoroutineScope(Dispatchers.IO).launch {
             posRepository.addCartItemsList(tbCartItem)
+
+            prefProvider.setValue(
+                Constants.OLD_ITEM_BASE,
+                Gson().toJson(appDatabase.cartDao().getAllCartItems())
+            )
+
             destroyedCartItemsList.clear()
         }
     }

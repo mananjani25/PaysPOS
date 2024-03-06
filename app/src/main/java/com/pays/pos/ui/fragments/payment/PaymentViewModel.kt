@@ -1,5 +1,7 @@
 package com.pays.pos.ui.fragments.payment
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -32,6 +34,7 @@ import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
+import kotlinx.coroutines.Runnable
 import javax.inject.Inject
 
 @HiltViewModel
@@ -161,6 +164,7 @@ open class PaymentViewModel @Inject constructor(
             when (resource.status) {
                 Status.SUCCESS -> {
                     prefProvider.setValue(Constants.OLD_ITEM, "")
+                    prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
                     prefProvider.setValue("CART_MODEL1", "")
                     prefProvider.setValue("CART_MODEL2", "")
                     _showProgress.value = Event(false)
@@ -826,7 +830,7 @@ open class PaymentViewModel @Inject constructor(
     }
 
     fun createOrderRequestNew(
-        oldItems:String,
+        oldItems: String,
         cartItems: ArrayList<TbCartItem>,
         cartModel: CartModel,
         subTotalPrice: Double,
@@ -855,7 +859,9 @@ open class PaymentViewModel @Inject constructor(
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
 
-        try{
+
+        try {
+            var oldItems=prefProvider.getValue(Constants.OLD_ITEM_BASE,"")
             if (oldItems.isNotEmpty()) {
                 /*Added by Rahul to solve the modifiers not removing issue*/
                 val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
@@ -871,11 +877,28 @@ open class PaymentViewModel @Inject constructor(
                     try {
                         if (found.size == 0) {
                             oldItem.isDestroy = true
-                        }else{
-                            cartItems.forEach{
-                                if (it.cartItemId==oldItem.cartItemId){
-                                    oldItem.itemOriginalModifiersList=it.itemOriginalModifiersList
-                                    oldItem.modifiers=it.modifiers
+                        } else {
+                            cartItems.forEach {
+                                if (it.cartItemId == oldItem.cartItemId) {
+                                    oldItem.itemOriginalModifiersList = it.itemOriginalModifiersList
+                                    oldItem.modifiers = it.modifiers
+                                    oldItem.isDestroy=it.isDestroy
+                                    oldItem.timeStamp=it.timeStamp
+                                    oldItem.orderType=it.orderType
+                                    oldItem.note=it.note
+                                    oldItem.name=it.name
+                                    oldItem.website_hide_status=it.website_hide_status
+                                    oldItem.categoryId=it.categoryId
+                                    oldItem.isEdited=it.isEdited
+                                    oldItem.discountId=it.discountId
+                                    oldItem.discountPrice=it.discountPrice
+                                    oldItem.discountType=it.discountType
+                                    oldItem.employeeID=it.employeeID
+                                    oldItem.isHide=it.isHide
+                                    oldItem.quantity=it.quantity
+                                    oldItem.itemQuantity=it.itemQuantity
+                                    oldItem.variationsAttributes=it.variationsAttributes
+                                    oldItem.taxes=it.taxes
                                 }
                             }
                         }
@@ -884,25 +907,61 @@ open class PaymentViewModel @Inject constructor(
                     }
 
 
-
-//                for (currentItem in cartItems) {
-//                    if (oldItem.cartItemId == currentItem.cartItemId) {
-////                        oldItem.isDestroy = true
-//                        count+=1
-//                    }
-//                }
-//                if (count==oldCartItemsList.size-1){
-//                    oldItem.isDestroy=true
-//                }
+                    cartItems.forEach {
+                        if (oldItem.cartItemId==it.cartItemId){
+                            oldItem.website_hide_status=it.website_hide_status
+                            oldItem.discountType=it.discountType
+                            oldItem.quantity=it.quantity
+                            oldItem.itemQuantity=it.itemQuantity
+                            oldItem.taxes=it.taxes
+//                            oldItem.isDestroy=it.isDestroy
+                            oldItem.isEdited=it.isEdited
+                            oldItem.isFired=it.isFired
+                            oldItem.isPaid=it.isPaid
+                            oldItem.createdAt=it.createdAt
+                            oldItem.employeeID=it.employeeID
+                            oldItem.customItemCount=it.customItemCount
+                            oldItem.customItemID=it.customItemID
+                            oldItem.hide_status=it.hide_status
+                            oldItem.discountId=it.discountId
+                            oldItem.discountPrice=it.discountPrice
+                            oldItem.modifier_set_ids=it.modifier_set_ids
+                            oldItem.name=it.name
+                            oldItem.note=it.note
+                            oldItem.optionSets=it.optionSets
+                            oldItem.orderItemId=it.orderItemId
+                            oldItem.orderType=it.orderType
+                            oldItem.orderTypeId=it.orderTypeId
+                            oldItem.orderTypeName=it.orderTypeName
+                            oldItem.reorder=it.reorder
+                            oldItem.timeStamp=it.timeStamp
+                            oldItem.price=it.price
+                            oldItem.singleItemPrice=it.singleItemPrice
+                            oldItem.sku=it.sku
+                            oldItem.variationsAttributes=it.variationsAttributes
+                        }
+                    }
                 }
+
+                cartItems.forEach { cartItemData ->
+                    val found = oldCartItemsList.filter { it.cartItemId == cartItemData.cartItemId }
+                    if (found.size == 0) {
+                        cartItemData.isEdited=true
+                        oldCartItemsList.add(cartItemData)
+                    }
+                }
+
+
                 cartItems.clear()
                 cartItems.addAll(oldCartItemsList)
 
             }
             prefProvider.setValue(Constants.OLD_ITEM, oldItems)
-        }catch (e:Exception){
+        } catch (e: Exception)
+        {
             prefProvider.setValue(Constants.OLD_ITEM, oldItems)
         }
+
 
         if (isUpdateOrder)
             orderAttributeRequestModel.id = orderId
@@ -1360,12 +1419,12 @@ open class PaymentViewModel @Inject constructor(
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
 
-        if (prefProvider.getValue(Constants.OLD_ITEM, "").isNotEmpty()) {
+        if (/*prefProvider.getValue(Constants.OLD_ITEM, "")*/prefProvider.getValue(Constants.OLD_ITEM_BASE,"").isNotEmpty()) {
             /*Added by Rahul to solve the modifiers not removing issue*/
             val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
 
             var oldCartItemsList = Gson().fromJson<java.util.ArrayList<TbCartItem>>(
-                prefProvider.getValue(Constants.OLD_ITEM, ""),
+                /*prefProvider.getValue(Constants.OLD_ITEM, "")*/prefProvider.getValue(Constants.OLD_ITEM_BASE,""),
                 listType
             )
 
@@ -1376,11 +1435,30 @@ open class PaymentViewModel @Inject constructor(
                 try {
                     if (found.size == 0) {
                         oldItem.isDestroy = true
-                    }else{
-                        cartItems.forEach{
-                            if (it.cartItemId==oldItem.cartItemId){
-                                oldItem.itemOriginalModifiersList=it.itemOriginalModifiersList
-                                oldItem.modifiers=it.modifiers
+                    } else {
+                        cartItems.forEach {
+                            if (it.cartItemId == oldItem.cartItemId) {
+                                if (it.cartItemId == oldItem.cartItemId) {
+                                    oldItem.itemOriginalModifiersList = it.itemOriginalModifiersList
+                                    oldItem.modifiers = it.modifiers
+                                    oldItem.isDestroy=it.isDestroy
+                                    oldItem.timeStamp=it.timeStamp
+                                    oldItem.orderType=it.orderType
+                                    oldItem.note=it.note
+                                    oldItem.name=it.name
+                                    oldItem.website_hide_status=it.website_hide_status
+                                    oldItem.categoryId=it.categoryId
+                                    oldItem.isEdited=it.isEdited
+                                    oldItem.discountId=it.discountId
+                                    oldItem.discountPrice=it.discountPrice
+                                    oldItem.discountType=it.discountType
+                                    oldItem.employeeID=it.employeeID
+                                    oldItem.isHide=it.isHide
+                                    oldItem.quantity=it.quantity
+                                    oldItem.itemQuantity=it.itemQuantity
+                                    oldItem.variationsAttributes=it.variationsAttributes
+                                    oldItem.taxes=it.taxes
+                                }
                             }
                         }
                     }
@@ -1388,25 +1466,60 @@ open class PaymentViewModel @Inject constructor(
                     oldItem.isDestroy = true
                 }
 
+                cartItems.forEach {
+                    if (oldItem.cartItemId==it.cartItemId){
+                        oldItem.website_hide_status=it.website_hide_status
+                        oldItem.discountType=it.discountType
+                        oldItem.quantity=it.quantity
+                        oldItem.itemQuantity=it.itemQuantity
+                        oldItem.taxes=it.taxes
+//                        oldItem.isDestroy=it.isDestroy
+                        oldItem.isEdited=it.isEdited
+                        oldItem.isFired=it.isFired
+                        oldItem.isPaid=it.isPaid
+                        oldItem.createdAt=it.createdAt
+                        oldItem.employeeID=it.employeeID
+                        oldItem.customItemCount=it.customItemCount
+                        oldItem.customItemID=it.customItemID
+                        oldItem.hide_status=it.hide_status
+                        oldItem.discountId=it.discountId
+                        oldItem.discountPrice=it.discountPrice
+                        oldItem.modifier_set_ids=it.modifier_set_ids
+                        oldItem.name=it.name
+                        oldItem.note=it.note
+                        oldItem.optionSets=it.optionSets
+                        oldItem.orderItemId=it.orderItemId
+                        oldItem.orderType=it.orderType
+                        oldItem.orderTypeId=it.orderTypeId
+                        oldItem.orderTypeName=it.orderTypeName
+                        oldItem.reorder=it.reorder
+                        oldItem.timeStamp=it.timeStamp
+                        oldItem.price=it.price
+                        oldItem.singleItemPrice=it.singleItemPrice
+                        oldItem.sku=it.sku
+                        oldItem.variationsAttributes=it.variationsAttributes
+                    }
+                }
 
 
 
+            }
 
-//                for (currentItem in cartItems) {
-//                    if (oldItem.cartItemId == currentItem.cartItemId) {
-////                        oldItem.isDestroy = true
-//                        count+=1
-//                    }
-//                }
-//                if (count==oldCartItemsList.size-1){
-//                    oldItem.isDestroy=true
-//                }
+            cartItems.forEach { cartItemData ->
+
+
+                val found = oldCartItemsList.filter { it.cartItemId == cartItemData.cartItemId }
+                if (found.size == 0) {
+                    cartItemData.isEdited=true
+                    oldCartItemsList.add(cartItemData)
+                }
             }
             cartItems.clear()
             cartItems.addAll(oldCartItemsList)
 
         }
         prefProvider.setValue(Constants.OLD_ITEM, "")
+
 
         if (isUpdateOrder)
             orderAttributeRequestModel.id = orderId

@@ -2860,12 +2860,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             prefProvider.getValue("CART_MODEL2", ""),
             CartModel::class.java
         )
-        
+
         if (cartList == null) {
             CoroutineScope(Dispatchers.Main).launch {
                 getCartModelsList()
             }
-            
+
             if (cartModel != null) {
                 viewModel.cartModel = cartModel
                 cartList = cartModel
@@ -2881,6 +2881,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             for (item in viewModel.currentCartItems) {
                 var tbItem = TbItem()
                 tbItem.id = item.id
+                tbItem.cartItemId = item.cartItemId
                 tbItem.itemId = item.itemId
                 tbItem.categoryId = item.categoryId
                 tbItem.categoryName = item.categoryName
@@ -2930,87 +2931,121 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             }
 
-            /*Addeding the deleted items*/
+            oldItems=prefProvider.getValue(Constants.OLD_ITEM_BASE,"")
+            if (oldItems.isNotEmpty()) {
+                val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
 
-            try {
-                if (oldItems.isNotEmpty()) {
-                    /*Added by Rahul to solve the modifiers not removing issue*/
-                    val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
+                var oldCartItemsList = Gson().fromJson<java.util.ArrayList<TbCartItem>>(
+                    oldItems,
+                    listType
+                )
 
-                    var oldCartItemsList = Gson().fromJson<java.util.ArrayList<TbCartItem>>(
-                        oldItems,
-                        listType
-                    )
+                for (item in viewModel.currentCartItems) {
+                    try {
+                        if (oldItems.isNotEmpty()) {
+                            /*Added by Rahul to solve the modifiers not removing issue*/
 
-                    for (item in viewModel.currentCartItems) {
-                        val notPresentItems =
-                            oldCartItemsList.filter { it.cartItemId != item.cartItemId }
+                            val notPresentItems =
+                                oldCartItemsList.filter { it.cartItemId != item.cartItemId }
 
-                        for (notPresentItem in notPresentItems) {
-                            var tbItem = TbItem()
-                            tbItem.id = notPresentItem.id
-                            tbItem.itemId = notPresentItem.itemId
-                            tbItem.categoryId = notPresentItem.categoryId
-                            tbItem.categoryName = notPresentItem.categoryName
-                            tbItem.createdAt = notPresentItem.createdAt
-                            tbItem.customItemCount = notPresentItem.customItemCount
-                            tbItem.dineInSort = notPresentItem.dineInSort
-                            tbItem.customItemID = notPresentItem.customItemCount
-                            tbItem.discountId = notPresentItem.discountId
-                            tbItem.discountPrice = notPresentItem.discountPrice
-                            tbItem.discountType = notPresentItem.discountType
-                            tbItem.guestItemId = notPresentItem.guestItemId
-                            tbItem.headerPositionDinein = notPresentItem.headerPositionDinein
-                            tbItem.hide_status = notPresentItem.hide_status
-                            tbItem.isHide = notPresentItem.isHide
-                            tbItem.imageUrl = notPresentItem.imageUrl
-                            tbItem.isChecked = notPresentItem.isChecked
-                            tbItem.isDeleted = notPresentItem.isDeleted
-                            tbItem.isDestroy = true
-                            tbItem.isEdited = notPresentItem.isEdited
-                            tbItem.isFired = notPresentItem.isFired
-                            tbItem.isManualSales = notPresentItem.isManualSales
-                            tbItem.isPaid = notPresentItem.isPaid
-                            tbItem.itemOriginalModifiersList =
-                                notPresentItem.itemOriginalModifiersList
-                            tbItem.itemQuantity = notPresentItem.itemQuantity
-                            tbItem.modifier_set_ids = notPresentItem.modifier_set_ids
-                            tbItem.modifiers = notPresentItem.modifiers
-                            tbItem.name = notPresentItem.name
-                            tbItem.note = notPresentItem.note
-                            tbItem.manualSaleId = notPresentItem.manualSaleId
-                            tbItem.optionSets = notPresentItem.optionSets
-                            tbItem.website_hide_status = notPresentItem.website_hide_status
-                            tbItem.variationsAttributes = notPresentItem.variationsAttributes
-                            tbItem.updatedAt = notPresentItem.updatedAt
-                            tbItem.timeStamp = notPresentItem.timeStamp
-                            tbItem.thumbImageUrl = notPresentItem.thumbImageUrl
-                            tbItem.taxes = notPresentItem.taxes
-                            tbItem.sort = notPresentItem.sort
-                            tbItem.sku = notPresentItem.sku
-                            tbItem.singleItemPrice = notPresentItem.singleItemPrice
-                            tbItem.shortDescription = notPresentItem.shortDescription
-                            tbItem.reorder = notPresentItem.reorder
-                            tbItem.quantity = notPresentItem.quantity
-                            tbItem.price = notPresentItem.price
-                            tbItem.orderItemId = notPresentItem.orderItemId
+                            if (!notPresentItems.isEmpty()) {
+                                var isFound=false
+                                notPresentItems.forEach { notPresentData ->
+                                    items?.forEach {
+                                        if (it.cartItemId==notPresentData.cartItemId){
+                                            isFound=true
+                                            return@forEach
+                                        }
+                                    }
+                                    if (!isFound){
+//                                        Not found
+                                        isFound=false
+
+                                        var tbItemDeleted = TbItem()
+                                        tbItemDeleted.id = notPresentData.id
+                                        tbItemDeleted.cartItemId = notPresentData.cartItemId
+                                        tbItemDeleted.itemId = notPresentData.itemId
+                                        tbItemDeleted.itemQuantity = notPresentData.itemQuantity
+                                        tbItemDeleted.categoryId = notPresentData.categoryId
+                                        tbItemDeleted.categoryName = notPresentData.categoryName
+                                        tbItemDeleted.createdAt = notPresentData.createdAt
+                                        tbItemDeleted.customItemCount =
+                                            notPresentData.customItemCount
+                                        tbItemDeleted.dineInSort = notPresentData.dineInSort
+                                        tbItemDeleted.customItemID = notPresentData.customItemCount
+                                        tbItemDeleted.discountId = notPresentData.discountId
+                                        tbItemDeleted.discountPrice = notPresentData.discountPrice
+                                        tbItemDeleted.discountType = notPresentData.discountType
+                                        tbItemDeleted.guestItemId = notPresentData.guestItemId
+                                        tbItemDeleted.headerPositionDinein =
+                                            notPresentData.headerPositionDinein
+                                        tbItemDeleted.hide_status = notPresentData.hide_status
+                                        tbItemDeleted.isHide = notPresentData.isHide
+                                        tbItemDeleted.imageUrl = notPresentData.imageUrl
+                                        tbItemDeleted.isChecked = notPresentData.isChecked
+                                        tbItemDeleted.isDeleted = notPresentData.isDeleted
+                                        tbItemDeleted.isDestroy = true
+                                        tbItemDeleted.isEdited = notPresentData.isEdited
+                                        tbItemDeleted.isFired = notPresentData.isFired
+                                        tbItemDeleted.isManualSales = notPresentData.isManualSales
+                                        tbItemDeleted.isPaid = notPresentData.isPaid
+                                        tbItemDeleted.itemOriginalModifiersList =
+                                            notPresentData.itemOriginalModifiersList
+                                        tbItemDeleted.quantity = notPresentData.quantity
+                                        tbItemDeleted.modifier_set_ids =
+                                            notPresentData.modifier_set_ids
+                                        tbItemDeleted.modifiers = notPresentData.modifiers
+                                        tbItemDeleted.name = notPresentData.name
+                                        tbItemDeleted.note = notPresentData.note
+                                        tbItemDeleted.manualSaleId = notPresentData.manualSaleId
+                                        tbItemDeleted.optionSets = notPresentData.optionSets
+                                        tbItemDeleted.website_hide_status =
+                                            notPresentData.website_hide_status
+                                        tbItemDeleted.variationsAttributes =
+                                            notPresentData.variationsAttributes
+                                        tbItemDeleted.updatedAt = notPresentData.updatedAt
+                                        tbItemDeleted.timeStamp = notPresentData.timeStamp
+                                        tbItemDeleted.thumbImageUrl = notPresentData.thumbImageUrl
+                                        tbItemDeleted.taxes = notPresentData.taxes
+                                        tbItemDeleted.sort = notPresentData.sort
+                                        tbItemDeleted.sku = notPresentData.sku
+                                        tbItemDeleted.singleItemPrice =
+                                            notPresentData.singleItemPrice
+                                        tbItemDeleted.shortDescription =
+                                            notPresentData.shortDescription
+                                        tbItemDeleted.reorder = notPresentData.reorder
+                                        tbItemDeleted.price = notPresentData.price
+                                        tbItemDeleted.orderItemId = notPresentData.orderItemId
+
+                                        items!!.add(tbItemDeleted)
+                                    }
+
+                                }
+
+                            }
+//                        for (notPresentItem in notPresentItems) {
+//                            if (item.itemId != notPresentItem.itemId) {
 
 
-                            items!!.add(tbItem)
+//                            }
+//                        }
+                            Log.d("UNCOMMON:::", Gson().toJson(notPresentItems))
+
 
                         }
-                        Log.d("UNCOMMON:::", Gson().toJson(notPresentItems))
-
+                    } catch (e: Exception) {
                     }
 
                 }
-                prefProvider.setValue(Constants.OLD_ITEM, "")
-            } catch (e: Exception) {
-                prefProvider.setValue(Constants.OLD_ITEM, "")
+
             }
+            /*Adding the deleted items*/
+
 
             cartList!!.items = items
         }
+        prefProvider.setValue(Constants.OLD_ITEM, "")
+        prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
 
         val myRequest = cartList?.let {
             paymentviewModel.createOrderRequestForCard(
@@ -3058,13 +3093,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     suspend fun getCartModelsList() {
         CoroutineScope(Dispatchers.IO).async {
-           var cartListFromDb:List<CartModel> = viewModel.getAllCartModels()
-            if (cartListFromDb!=null){
-                cartList=cartListFromDb.get(0)
-                viewModel.cartModel=cartList
+            var cartListFromDb: List<CartModel> = viewModel.getAllCartModels()
+            if (cartListFromDb != null) {
+                cartList = cartListFromDb.get(0)
+                viewModel.cartModel = cartList
             }
         }.await()
-        
+
     }
 
 

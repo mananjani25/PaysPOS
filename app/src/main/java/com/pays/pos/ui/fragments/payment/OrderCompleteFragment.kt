@@ -848,10 +848,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         .type
                 )
 
-            val (newData, isUpdated) = getPrintingData(
+            var (newData, isUpdated) = getPrintingData(
                 oldDataModel,
                 receiptModel?.order?.orderItems
             )
+
+            newData?.forEach {
+                if(!it.isPrinted){
+                    isUpdated=true
+                }
+            }
+
             receiptModel?.order?.apply {
                 orderItems = newData!!
             }

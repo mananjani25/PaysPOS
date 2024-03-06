@@ -22,6 +22,7 @@ object Constants {
 
 
     const val OLD_ITEM: String="OLD_ITEM"
+    const val OLD_ITEM_BASE: String="OLD_ITEM_BASE"
     const val START_DATE = "start_date"
     const val END_DATE = "end_date"
 

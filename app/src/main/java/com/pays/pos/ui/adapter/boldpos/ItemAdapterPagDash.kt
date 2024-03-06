@@ -193,6 +193,7 @@ class ItemAdapterPagDash(
 
 
             }
+            binding.linearItem.setBackgroundColor(Color.parseColor("#FFFFFF"))
         }
 
 

@@ -4,6 +4,7 @@ package com.pays.pos.data.repositories
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
 import com.pays.pos.data.db.AppDatabase
 import com.pays.pos.data.db.IDataManager
 import com.pays.pos.data.entities.CartModel
@@ -74,6 +75,9 @@ import com.pays.pos.utils.performGetOperationDatabase
 import com.pays.pos.utils.performGetOperationNew
 import com.pays.pos.utils.statusUtils.Resource
 import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
@@ -843,6 +847,7 @@ class PosRepository @Inject constructor(
         // Calculate the time taken
         val endTime = System.currentTimeMillis()
         val timeTaken = endTime - startTime
+
         Log.d("InsertTime", "Time taken to insert: $timeTaken ms")
     }
 
