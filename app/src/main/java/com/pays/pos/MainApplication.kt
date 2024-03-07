@@ -66,7 +66,7 @@ class MainApplication : Application() {
 
             paramThrowable.localizedMessage?.let {
                 Log.e(
-                    "Error" + Thread.currentThread().stackTrace[2],
+                    "Error" + Thread.currentThread().stackTrace,
                     it
                 )
             }

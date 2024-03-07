@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.FragmentActivity
@@ -15,7 +16,6 @@ import com.pays.pos.R
 import com.pays.pos.utils.callback.DeleteOptionCallback
 import com.pays.pos.utils.extensions.visible
 import java.lang.Exception
-
 
 /**
  * CommonUtils class
@@ -102,11 +102,17 @@ object ProgressUtils {
             listener?.onItemClickListener(0)
         }
 
-        if (builder != null) {
-            if (!builder!!.isShowing) {
-                builder!!.show()
+        try {
+            if (builder != null) {
+                if (!builder!!.isShowing) {
+                    builder!!.show()
+                }
             }
+        }catch (e:Exception){
+            Toast.makeText(context, "Loading...", Toast.LENGTH_SHORT).show()
         }
+        
+        
     }
 
     /***
