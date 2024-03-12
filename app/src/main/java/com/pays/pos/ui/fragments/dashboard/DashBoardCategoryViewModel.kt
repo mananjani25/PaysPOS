@@ -194,6 +194,11 @@ class DashBoardCategoryViewModel @Inject constructor(
     val doesItemContainsModifiers = MutableLiveData<Boolean>()
 
     /**
+    * resolved for manual cart item adding issue, i.e. the item was not getting added to the normal cart so we restarted the screen
+     */
+    var boldPosNeedToRefresh = false
+
+    /**
      * BIS - 3500 issue resolved
      */
     val autoSyncEnabled = MutableLiveData<Boolean>()
@@ -580,6 +585,18 @@ class DashBoardCategoryViewModel @Inject constructor(
         return cartModel
     }
 
+    suspend fun deleteCartItem(cartItemId: Int){
+        viewModelScope.launch{
+            posRepository.deleteCartItems(cartItemId)
+        }
+    }
+    suspend fun deleteManualCartModel(){
+        viewModelScope.launch{
+            posRepository.deleteManualCartModel()
+        }
+    }
+
+
     fun deleteCartItems() {
         viewModelScope.launch {
             posRepository.deleteCartItems()
@@ -593,6 +610,9 @@ class DashBoardCategoryViewModel @Inject constructor(
             GlobalScope.launch {
                 posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
                 destroyedList.clear()
+
+                currentCartItems.clear()
+                duplicateCurrentCartItem.clear()
             }
         } catch (e: Exception) {
             Log.d("deleteCart", "Preference is null")
@@ -656,6 +676,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun getKitchenPrinterList(): LiveData<Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>> {
         return posRepository.getKitchenPrinters()
+    }
+
+    suspend fun getManualSaleCartItemsList(orderType: String, employee_Id: Int): List<TbCartItem> {
+        return posRepository.getManualSaleCartItemsList(orderType, employee_Id)
     }
 
 

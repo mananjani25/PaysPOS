@@ -786,7 +786,13 @@ class PosRepository @Inject constructor(
     }
 
     fun getManualSaleCartItems(orderType: String, employee_Id: Int): LiveData<List<TbCartItem>> {
-        return appDatabase.cartDao().getManualSaleCartItems(orderType, employee_Id)
+        var data=appDatabase.cartDao().getManualSaleCartItems(orderType, employee_Id)
+        return data
+    }
+
+    suspend fun getManualSaleCartItemsList(orderType: String, employee_Id: Int): List<TbCartItem> {
+        var data=appDatabase.cartDao().getManualSaleCartItemsList(orderType, employee_Id)
+        return data
     }
 
     fun getManualCategoryId(): LiveData<TbCategory> {
@@ -887,6 +893,16 @@ class PosRepository @Inject constructor(
     suspend fun deleteCartItems() {
         //  appDatabase.cartDao().delete(employee_id)//delete cart model
         appDatabase.cartDao().deleteCartItems()//delete cart items from TbCartItem
+    }
+
+    suspend fun deleteCartItems(cartItemId:Int) {
+        //  appDatabase.cartDao().delete(employee_id)//delete cart model
+        appDatabase.cartDao().deleteCartItems(cartItemId)//delete cart items from TbCartItem
+    }
+
+    suspend fun deleteManualCartModel() {
+        //  appDatabase.cartDao().delete(employee_id)//delete cart model
+        appDatabase.cartDao().deleteManualCartModel()//delete cart items from TbCartItem
     }
 
     suspend fun deleteAllCart() {

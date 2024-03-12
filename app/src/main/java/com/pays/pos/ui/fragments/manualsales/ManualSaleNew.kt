@@ -306,7 +306,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             if (rolePermission.hasTransactionPermission(binding.root)) {
                 findNavController().navigate(R.id.action_manualSalesNew_to_transactionFragment)
             }
-
+            clearManualCartItems()
         }
         binding.layoutHeader.imgSync.setOnClickListener {
             //  viewModel.syncInventoryModule(requireActivity())
@@ -862,6 +862,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     findNavController().navigate(
                         R.id.action_manualSaleCart_to_paymentBoldPosFragment
                     )
+                    viewModel.boldPosNeedToRefresh = true
                 } else {
 
                     AlertUtils.showCustomAlertWithListenerWithOK(
@@ -943,7 +944,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                                     clearCustomer()
                                     reSetTaxBifurcationData()
                                     redirectToCategoryType()
-
+                                    viewModel.boldPosNeedToRefresh = true
                                 }
                                 negativeButton(R.string.tv_cancel) {
 
@@ -1422,6 +1423,23 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 calculateValue("", true)
             }
 
+        }
+    }
+
+    fun clearManualCartItems(){
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val data = viewModel.getManualSaleCartItemsList(
+                prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT),
+                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+            )
+
+            if(data?.isNotEmpty() == true){
+                data.forEach {
+                    viewModel.deleteCartItem(it.cartItemId)
+                }
+                viewModel.deleteManualCartModel()
+            }
         }
     }
 
@@ -2231,7 +2249,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 }
             }
             viewModel.manualSaleCartLogicNew(cartItemsList, model, Constants.UPDATE)
-
+            viewModel.boldPosNeedToRefresh = true
         }
 
         llPlus.setOnClickListener {

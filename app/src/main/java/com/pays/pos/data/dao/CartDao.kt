@@ -31,12 +31,18 @@ interface CartDao {
     @Query("select * from TbCartItem ORDER BY timeStamp")
     fun getCartItems(): Flow<List<TbCartItem>>
 
- @Query("select * from TbCartItem ORDER BY timeStamp")
+    @Query("select * from TbCartItem ORDER BY timeStamp")
     fun getAllCartItems(): List<TbCartItem>
 
     @Transaction
     @Query("DELETE FROM TbCartItem")
     suspend fun deleteCartItems()
+
+    @Query("DELETE FROM TbCartItem WHERE cartItemId=:cartItemId")
+    suspend fun deleteCartItems(cartItemId:Int)
+
+    @Query("DELETE FROM cartmodel WHERE isMaual=1")
+    suspend fun deleteManualCartModel()
 
     @Delete
     fun deleteCartModel(cartModel: CartModel)
@@ -51,16 +57,16 @@ interface CartDao {
     fun getDineInCartItems(guestIndexForDineIn:Int): List<TbCartItem>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-     fun addSuspended(cartModel: CartModel): Long?
+    fun addSuspended(cartModel: CartModel): Long?
 
-     @Update
-     fun updateCartModel(cartModel: CartModel)
+    @Update
+    fun updateCartModel(cartModel: CartModel)
 
-     @Query("UPDATE CartModel SET taxlistDynamic = :list")
-     fun updateTaxBif(list:ArrayList<TaxData>)
+    @Query("UPDATE CartModel SET taxlistDynamic = :list")
+    fun updateTaxBif(list:ArrayList<TaxData>)
 
-     @Query("select * from CartModel LIMIT 1")
-     suspend fun getCurrentCartModel(): List<CartModel>
+    @Query("select * from CartModel LIMIT 1")
+    suspend fun getCurrentCartModel(): List<CartModel>
 
     @Query("select * from CartModel")
     fun observeCartModel(): LiveData<List<CartModel>>
@@ -105,6 +111,9 @@ interface CartDao {
 
     @Query("select * from TbCartItem where orderType = :orderType AND isManualSaleItem = 1 AND employeeID=:employee_Id")
     fun getManualSaleCartItems(orderType: String, employee_Id: Int): LiveData<List<TbCartItem>>
+
+    @Query("select * from TbCartItem where orderType = :orderType AND isManualSaleItem = 1 AND employeeID=:employee_Id")
+    fun getManualSaleCartItemsList(orderType: String, employee_Id: Int):List<TbCartItem>
 
     //For Dine in Local Database
     @Insert(onConflict = OnConflictStrategy.REPLACE)

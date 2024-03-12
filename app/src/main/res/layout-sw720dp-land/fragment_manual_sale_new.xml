@@ -435,6 +435,7 @@
                     android:id="@+id/linear_bottom_info"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_60sdp"
+                    android:layout_marginBottom="@dimen/_10sdp"
                     android:orientation="horizontal"
                     android:weightSum="2">
 
@@ -847,7 +848,8 @@
                     android:layout_height="match_parent"
                     android:background="@drawable/border_backgroundcolor_with_orange_color"
                     android:gravity="center"
-                    android:padding="@dimen/_4sdp"
+                    android:paddingBottom="@dimen/_10sdp"
+                    android:paddingTop="@dimen/_10sdp"
                     android:text="Add to Cart"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_7mdpi"
@@ -863,7 +865,8 @@
                     android:visibility="visible"
                     android:gravity="center"
                     android:layout_marginStart="@dimen/_5sdp"
-                    android:padding="@dimen/_2sdp"
+                    android:paddingBottom="@dimen/_8sdp"
+                    android:paddingTop="@dimen/_8sdp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/txtSave"
                     tools:ignore="MissingConstraints">

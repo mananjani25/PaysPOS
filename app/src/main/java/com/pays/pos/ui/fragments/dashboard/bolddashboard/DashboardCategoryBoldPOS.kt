@@ -274,89 +274,100 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        syncDataCallback = this
-        Binding()// putting method in onviewcreated due to UI glitch issue
-        checkCashDrawerObserver() // putting method in onviewcreated due to UI glitch issue
-        SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-        releaseMemory()// putting method in onviewcreated due to UI glitch issue
-        prefProvider.setValue(Constants.REDIRECT_FROM, "")
-        //prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
 
-        addFragmentReplaceObserver()
-        autoSyncObserver()
-        /* if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+        if(viewModel.boldPosNeedToRefresh){
+
+            viewModel.boldPosNeedToRefresh = false
+
+            var intent=Intent(requireActivity(),MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            requireActivity().startActivity(intent)
+            requireActivity().finish()
+        }
+        else {
+            syncDataCallback = this
+            Binding()// putting method in onviewcreated due to UI glitch issue
+            checkCashDrawerObserver() // putting method in onviewcreated due to UI glitch issue
+            SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+            releaseMemory()// putting method in onviewcreated due to UI glitch issue
+            prefProvider.setValue(Constants.REDIRECT_FROM, "")
+            //prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
+
+            addFragmentReplaceObserver()
+            autoSyncObserver()
+            /* if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
              viewModel.clearGiftCardCart()
          }*/ // putting method in onviewcreated due to UI glitch issue
 
-        binding = FragmentDashboardCategoryBoldPosBinding.inflate(inflater, container, false)
-        binding.lifecycleOwner = this
-        syncData() // putting method in onviewcreated due to UI glitch issue
-        getCustomerDisplay(requireContext())?.let { display ->
-            presentation = CustomDisplay(
-                display,
-                requireContext(),
-                viewLifecycleOwner,
-                viewModel,
-                passcodeViewModel,
-                dineInViewModel
+            binding = FragmentDashboardCategoryBoldPosBinding.inflate(inflater, container, false)
+            binding.lifecycleOwner = this
+            syncData() // putting method in onviewcreated due to UI glitch issue
+            getCustomerDisplay(requireContext())?.let { display ->
+                presentation = CustomDisplay(
+                    display,
+                    requireContext(),
+                    viewLifecycleOwner,
+                    viewModel,
+                    passcodeViewModel,
+                    dineInViewModel
 
-            )
-        }
-        prefProvider.setValueboolean(IS_PAYMENT_SCREEN, false)
-        val callback: OnBackPressedCallback =
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    requireActivity().finish()
-                }
+                )
             }
+            prefProvider.setValueboolean(IS_PAYMENT_SCREEN, false)
+            val callback: OnBackPressedCallback =
+                object : OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
+                        requireActivity().finish()
+                    }
+                }
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 //        if (prefProvider.getValueboolean(ONLINE_ORDER_ENABLE, false)) {
 //            binding.layoutHeader.linearOnlineorder?.visible()
 //            viewModel.getOnlineOrderCount()
 //        } else {
 //            binding.layoutHeader.linearOnlineorder?.gone()
 //        }
-        getOrderTypes()
-        observeSaveOrder()
-        observeOrderNotUpdated()
-        getKitchenReceiptSettings()
-        addObserver()
-        getServiceCharges()
-        resultListener()
-        observeQueueCreate()
-        dineInUpdateOrder()
-        navigateDineInOrder()
-        getLoyaltyPrograms()
+            getOrderTypes()
+            observeSaveOrder()
+            observeOrderNotUpdated()
+            getKitchenReceiptSettings()
+            addObserver()
+            getServiceCharges()
+            resultListener()
+            observeQueueCreate()
+            dineInUpdateOrder()
+            navigateDineInOrder()
+            getLoyaltyPrograms()
 
-        checkDineInEditOrder()
-        printerProgress()
-        observeShowProgress()
-        allOrdersPendingCountObserver()
-        getDineInData()
-        checkSearch()
-        observeServiceChargeUpdate()
-        observerSyncItemPriceChange()   // putting these methods in onviewcreated due to UI glitch issue
-        prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
-
-
-        binding.layoutHeader.ivLock.setOnClickListener {
-
-            alert(
-                getString(R.string.app_name),
-                prefProvider.employeeName() + ", Are you sure, you want to clockout?"
-            ) {
-                positiveButton(getString(android.R.string.ok)) {
-                    viewModel.clockOut()
+            checkDineInEditOrder()
+            printerProgress()
+            observeShowProgress()
+            allOrdersPendingCountObserver()
+            getDineInData()
+            checkSearch()
+            observeServiceChargeUpdate()
+            observerSyncItemPriceChange()   // putting these methods in onviewcreated due to UI glitch issue
+            prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
 
 
-                }
-                negativeButton(R.string.tv_cancel) {
-                    // Do negative stuff here
+            binding.layoutHeader.ivLock.setOnClickListener {
+
+                alert(
+                    getString(R.string.app_name),
+                    prefProvider.employeeName() + ", Are you sure, you want to clockout?"
+                ) {
+                    positiveButton(getString(android.R.string.ok)) {
+                        viewModel.clockOut()
+
+
+                    }
+                    negativeButton(R.string.tv_cancel) {
+                        // Do negative stuff here
+                    }
                 }
             }
         }
-
         return binding.root
     }
 

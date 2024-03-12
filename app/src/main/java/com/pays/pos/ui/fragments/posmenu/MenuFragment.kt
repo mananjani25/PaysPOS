@@ -42,6 +42,8 @@ import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.getCustomerDisplay
 import com.pays.pos.utils.workmanager.UploadWorker2
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -226,14 +228,34 @@ class MenuFragment : DialogFragment() {
         }
     }
 
+    fun clearManualCartItems(){
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val data = viewModel.getManualSaleCartItemsList(
+                prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT),
+                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+            )
+
+            if(data?.isNotEmpty() == true){
+                data.forEach {
+                    dashboardViewModel.deleteCartItem(it.cartItemId)
+                }
+                dashboardViewModel.deleteManualCartModel()
+
+            }
+        }
+    }
+
 
     private fun onClick() {
+
         binding.txtTerminal.setOnClickListener {
             copy()
         }
 
         binding.linearPrinterQueue.setOnClickListener {
             findNavController().navigate(R.id.action_menuFragment_to_printerQueueList)
+            clearManualCartItems()
         }
 
         binding.header.txtSave.setOnClickListener {
@@ -242,9 +264,11 @@ class MenuFragment : DialogFragment() {
         }
         binding.linearSettings.setOnClickListener {
             findNavController().navigate(R.id.action_menuFragment_to_settings)
+            clearManualCartItems()
         }
         binding.linearHardware.setOnClickListener {
             findNavController().navigate(R.id.action_menuFragment_to_hardware)
+            clearManualCartItems()
         }
         binding.header.imgBack.setOnClickListener {
             findNavController().navigateUp()
@@ -255,36 +279,42 @@ class MenuFragment : DialogFragment() {
             if (rolePermission.hasInventoryPermission(binding.root)) {
                 findNavController().navigate(R.id.action_menuFragment_to_inventory)
             }
+            clearManualCartItems()
         }
 
         binding.linearOrders.setOnClickListener {
-            viewModel.deleteCart()
+            dashBoardCategoryViewModel.deleteCart()
             findNavController().navigate(R.id.action_menuFragment_to_allOrders)
         }
         binding.linearTeam.setOnClickListener {
             if (rolePermission.hasEmployeePermission(binding.root)) {
                 findNavController().navigate(R.id.action_menuFragment_to_teamList)
             }
+            clearManualCartItems()
         }
         binding.linearTransactions.setOnClickListener {
             if (rolePermission.hasTransactionPermission(binding.root)) {
                 findNavController().navigate(R.id.action_menuFragment_to_transactionFragment)
             }
+            clearManualCartItems()
         }
         binding.linearCashLog.setOnClickListener {
             if (rolePermission.hasCashLogPermission(binding.root)) {
                 findNavController().navigate(R.id.action_menuFragment_to_cashLogFragment)
             }
+            clearManualCartItems()
         }
         binding.linearCustomers.setOnClickListener {
             if (rolePermission.hasCustomerPermission(binding.root)) {
                 findNavController().navigate(R.id.action_menuFragment_to_customer)
             }
+            clearManualCartItems()
         }
         binding.linearReports.setOnClickListener {
             if (rolePermission.hasReportSummaryPermission(binding.root)) {
                 findNavController().navigate(R.id.action_menuFragment_to_reports)
             }
+            clearManualCartItems()
         }
         binding.header.txtLogout?.setOnClickListener {
             alert("", "Are you sure you want to Logout?") {
@@ -326,6 +356,7 @@ class MenuFragment : DialogFragment() {
             }
 //            findNavController().navigate(R.id.action_menuFragment_to_reportEODFragment)
 //            }
+            clearManualCartItems()
         }
 
     }
