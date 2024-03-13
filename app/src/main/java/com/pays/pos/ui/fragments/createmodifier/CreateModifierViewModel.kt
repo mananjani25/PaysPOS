@@ -104,7 +104,11 @@ class CreateModifierViewModel @Inject constructor(
 
                                     isUpdated = true
                                     _data.value = Event(it.message)
-                                    modifierSetId?.let { it1 -> updateModifiersJSON(it1,modifierSets.modifierSet.modifiersAttributes) }
+                                    modifierSetId?.let { it1 ->
+
+                                        // dynamic sync automatically updated this modifiers so no need to updated in room
+                                        /*updateModifiersJSON(it1,modifierSets.modifierSet.modifiersAttributes)*/
+                                    }
                                     updateModifierDataInItem(it.data.modifierSet)
                                     posRepository.addModifierSets(it.data.modifierSet)
                                 }
