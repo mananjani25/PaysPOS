@@ -164,7 +164,7 @@ open class PaymentViewModel @Inject constructor(
             when (resource.status) {
                 Status.SUCCESS -> {
                     prefProvider.setValue(Constants.OLD_ITEM, "")
-                    prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
+//                    prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
                     prefProvider.setValue("CART_MODEL1", "")
                     prefProvider.setValue("CART_MODEL2", "")
                     _showProgress.value = Event(false)
@@ -2169,6 +2169,7 @@ open class PaymentViewModel @Inject constructor(
             orderItemsAttribute.employeeId = cartModel.employeeID
             orderItemsAttribute.isCount = 0
             orderItemsAttribute.isEdited = item.isEdited
+            orderItemsAttribute.isItemEdited=item.isItemEdited
             orderItemsAttribute.isDestroy = item.isDestroy
             orderItemsAttribute.isPaid = false
             orderItemsAttribute.isPrinted =

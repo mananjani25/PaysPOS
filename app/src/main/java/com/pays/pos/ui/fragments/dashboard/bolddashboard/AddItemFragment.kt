@@ -741,6 +741,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                 )
                                 found = true
                                 it.itemQuantity += item.itemQuantity
+                                item.isItemEdited=true
                                 break
                             }
                         }
@@ -926,6 +927,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                     it.itemQuantity = item.itemQuantity
                                     newFound = true
                                     item.isItemEdited=true
+                                    it.isItemEdited=true
                                     return@forEach
                                 }
                             }
