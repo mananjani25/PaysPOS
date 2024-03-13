@@ -2704,6 +2704,11 @@ class CartFragment(
                         prefProvider.setValue(Constants.OLD_ITEM, "")
 
                     }
+
+                    /*Added by Rahul  - Update*/
+                    prefProvider.setValue(Constants.OPEN_ORDER_ITEMS_BASE, "")
+
+
                     if (cartItemsAdapter.currentList.isNotEmpty()) {
                         prefProvider.setValueboolean(
                             Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,

@@ -293,6 +293,9 @@ class OrderItemsAttribute {
     @SerializedName("is_edited")
     var isEdited: Boolean = false
 
+    @SerializedName("is_item_edited")
+    var isItemEdited: Boolean = false
+
     @SerializedName("is_paid")
     var isPaid: Boolean = false
 

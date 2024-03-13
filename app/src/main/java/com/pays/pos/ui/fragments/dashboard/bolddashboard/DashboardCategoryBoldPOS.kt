@@ -1823,6 +1823,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     override fun onCartItemUpdate(item: TbCartItem, position: Int) {
+        /*Added By Rahul - Update,  for checking the update for the given item, This will be the base object, with which we will compare the updated object*/
+        prefProvider.setValue(Constants.OPEN_ORDER_ITEMS_BASE, Gson().toJson(item))
+
         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
         val backStateName: String = AddItemFragment.javaClass.getName()
         val fragment = AddItemFragment.newInstance(item, this, cartList, true, position)
@@ -2410,7 +2413,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
             }
 
-        } else {
+        }  else {
 
             if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
 
@@ -3036,25 +3039,24 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                                 if (viewModelPayment.isUpdateOrder) {
 
-                                    val token: TypeToken<List<CreateOrderResponse.Data.Order.OrderItem>?> =
-                                        object :
-                                            TypeToken<List<CreateOrderResponse.Data.Order.OrderItem>?>() {}
+                                    /* val token: TypeToken<List<CreateOrderResponse.Data.Order.OrderItem>?> =
+                                         object :
+                                             TypeToken<List<CreateOrderResponse.Data.Order.OrderItem>?>() {}
 
-                                    var oldDataModel: List<CreateOrderResponse.Data.Order.OrderItem> =
-                                        Gson().fromJson(
-                                            prefProvider.getValue(OPEN_ORDER_ITEMS, ""),
-                                            token.type
-                                        )
-
-                                    Log.d(
-                                        "OLD::",
-                                        Gson().toJson((oldDataModel as List<CreateOrderResponse.Data.Order.OrderItem>))
-                                    )
-                                    Log.d(
-                                        "NEW::",
-                                        Gson().toJson(createOrderResponse.data.order.orderItems)
-                                    )
-
+                                     var oldDataModel: List<CreateOrderResponse.Data.Order.OrderItem> =
+                                         Gson().fromJson(
+                                             prefProvider.getValue(OPEN_ORDER_ITEMS, ""),
+                                             token.type
+                                         )
+                                     Log.d(
+                                         "OLD::",
+                                         Gson().toJson((oldDataModel as List<CreateOrderResponse.Data.Order.OrderItem>))
+                                     )
+                                     Log.d(
+                                         "NEW::",
+                                         Gson().toJson(createOrderResponse.data.order.orderItems)
+                                     )
+ */
                                     /*var itemsNotUpdated = 0
                                     for (oldDataIndex in 0 until oldDataModel.size) {
                                         var oldData = oldDataModel.get(oldDataIndex)
@@ -3101,18 +3103,46 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         createOrderResponse.data.order.orderItems= arrayListOf()
                                     }*/
 
-                                    var (newData, isUpdated) = getPrintingData(
-                                        (oldDataModel as List<CreateOrderResponse.Data.Order.OrderItem>),
-                                        createOrderResponse.data.order.orderItems
-                                    )
+                                    /*    val (newData, isUpdated) = getPrintingData(
+                                            (oldDataModel as List<CreateOrderResponse.Data.Order.OrderItem>),
+                                            createOrderResponse.data.order.orderItems
+                                        )*/
+/*CREATE ORDER RESPONSE IS COMING FROM SERVER, THE RESPONSE DOES NOT CONTAINS THE LATEST ISEDITED FIELD VALUE, ASK THE BACKEND DEVELOPER TO SEND THE UPDATED VALUE THAT IS BEING SENT IN THE REQUEST*/
+/*Testing, just to generate from frontent, this will come from server - START*/
 
-                                    newData.forEach {
-                                        if(!it.isPrinted){
-                                            isUpdated=true
+
+                                    /*    runBlocking {
+                                            getDataFromDb(oldDataModel)
+                                        }*/
+
+                                    val token: TypeToken<List<TbCartItem>> =
+                                        object :
+                                            TypeToken<List<TbCartItem>>() {}
+
+                                    var oldDataModel: List<TbCartItem> =
+                                        Gson().fromJson(
+                                            prefProvider.getValue(Constants.OLD_ITEM_BASE,""),
+                                            token.type
+                                        )
+
+                                    if (oldDataModel.size!=createOrderResponse.data.order.orderItems.size){
+                                        isOrderUpdate = true
+                                    }else {
+                                        for (item in createOrderResponse.data.order.orderItems) {
+                                            if (item.isItemEdited) {
+                                                isOrderUpdate = true
+                                                break
+                                            }
                                         }
                                     }
-                                    printingData = newData
-                                    isOrderUpdate = isUpdated
+
+                                    prefProvider.setValue(Constants.OLD_ITEM_BASE,"")
+
+/*Testing, just to generate from frontent, this will come from server - END*/
+
+//                                    printingData = newData
+                                    printingData = createOrderResponse.data.order.orderItems
+//                                    isOrderUpdate = isUpdated
 
 
                                     /* var printOrderItems:
@@ -3216,15 +3246,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         Gson().toJson(cartModel!!.isEdited)
                                     )
 
-                                    var oldOrderNote=prefProvider.getValue(Constants.orderNoteOld,"")
-                                    var newOrderNote=prefProvider.getValue(Constants.orderNoteNew,"")
-                                    if (!oldOrderNote.equals(newOrderNote)){
-                                        isOrderUpdate=true
-                                        cartModel.isEdited=true
+                                    var oldOrderNote =
+                                        prefProvider.getValue(Constants.orderNoteOld, "")
+                                    var newOrderNote =
+                                        prefProvider.getValue(Constants.orderNoteNew, "")
+                                    if (!oldOrderNote.equals(newOrderNote)) {
+                                        isOrderUpdate = true
+                                        cartModel.isEdited = true
                                     }
 
-                                    prefProvider.setValue(Constants.orderNoteNew,"")
-                                    prefProvider.setValue(Constants.orderNoteOld,"")
+                                    prefProvider.setValue(Constants.orderNoteNew, "")
+                                    prefProvider.setValue(Constants.orderNoteOld, "")
 
 
                                     if (it.data?.isNotEmpty() == true && isOrderUpdate/*&& createOrderResponse.data.order.orderItems*//*printingData!!.isNotEmpty()*/) {

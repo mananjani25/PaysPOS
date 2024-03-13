@@ -1188,6 +1188,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         binding.tvCash0.setOnSingleClickListener {
 
             custom_paymentAmount = 0.0
+            prefProvider.setValue(Constants.OPEN_ORDER_ITEMS_BASE, "")
 
             if (isGuestPay) {
                 dineinOrderVieweModel.totalPayAmount(

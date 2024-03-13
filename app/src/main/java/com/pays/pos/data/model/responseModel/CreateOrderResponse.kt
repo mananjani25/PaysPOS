@@ -204,6 +204,10 @@ data class CreateOrderResponse(
                 val completedInKitchen: Boolean = false,
                 @SerializedName("is_edited")
                 var isEdited: Boolean = false,
+
+                @SerializedName("is_item_edited")
+                var isItemEdited: Boolean = false,
+
                 @SerializedName("discount_amount")
                 val discountAmount: Double = 0.0,
                 @SerializedName("discount_id")
