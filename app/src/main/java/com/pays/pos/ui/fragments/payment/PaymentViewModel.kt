@@ -899,6 +899,7 @@ open class PaymentViewModel @Inject constructor(
                                     oldItem.itemQuantity=it.itemQuantity
                                     oldItem.variationsAttributes=it.variationsAttributes
                                     oldItem.taxes=it.taxes
+                                    oldItem.isItemEdited=it.isItemEdited
                                 }
                             }
                         }
@@ -939,6 +940,7 @@ open class PaymentViewModel @Inject constructor(
                             oldItem.singleItemPrice=it.singleItemPrice
                             oldItem.sku=it.sku
                             oldItem.variationsAttributes=it.variationsAttributes
+                            oldItem.isItemEdited=it.isItemEdited
                         }
                     }
                 }
@@ -1419,8 +1421,9 @@ open class PaymentViewModel @Inject constructor(
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
 
+        /*This is working well just uncomment it, we have commented it because the update list is being fetched in the OPEN_ORDER_ITEMS_BASE, that's why we are changing the get field*/
         if (/*prefProvider.getValue(Constants.OLD_ITEM, "")*/prefProvider.getValue(Constants.OLD_ITEM_BASE,"").isNotEmpty()) {
-            /*Added by Rahul to solve the modifiers not removing issue*/
+//            Added by Rahul to solve the modifiers not removing issue
             val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
 
             var oldCartItemsList = Gson().fromJson<java.util.ArrayList<TbCartItem>>(
@@ -1458,6 +1461,7 @@ open class PaymentViewModel @Inject constructor(
                                     oldItem.itemQuantity=it.itemQuantity
                                     oldItem.variationsAttributes=it.variationsAttributes
                                     oldItem.taxes=it.taxes
+                                    oldItem.isItemEdited=it.isItemEdited
                                 }
                             }
                         }
@@ -1498,6 +1502,7 @@ open class PaymentViewModel @Inject constructor(
                         oldItem.singleItemPrice=it.singleItemPrice
                         oldItem.sku=it.sku
                         oldItem.variationsAttributes=it.variationsAttributes
+                        oldItem.isItemEdited=it.isItemEdited
                     }
                 }
 
@@ -1519,6 +1524,9 @@ open class PaymentViewModel @Inject constructor(
 
         }
         prefProvider.setValue(Constants.OLD_ITEM, "")
+        /*Added by Rahul  - Update*/
+        prefProvider.setValue(Constants.OPEN_ORDER_ITEMS_BASE, "")
+
 
 
         if (isUpdateOrder)

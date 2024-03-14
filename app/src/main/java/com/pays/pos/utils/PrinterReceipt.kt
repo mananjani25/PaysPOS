@@ -2929,7 +2929,7 @@ fun addOrdersForStarKitchen(
                 if (it.categoryActive && it.printerEnable) {
 
                     val obj = list.get(i)
-                    if (obj.isEdited){
+                    if (obj.isItemEdited){
                         items += "(U) "+obj.quantity.toString() + " " + obj.itemName.uppercase()
                     }else{
                         items += obj.quantity.toString() + " " + obj.itemName.uppercase()

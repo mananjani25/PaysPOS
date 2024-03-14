@@ -70,38 +70,41 @@ class ItemModifierAdapter(
                     list[position].modifier_quantity
                 )
             }
-            binding.llMain.setOnClickListener {
+            binding.llMain.setOnClickListener(object:View.OnClickListener{
+                override fun onClick(p0: View?) {
+                    if (list.isNotEmpty() && bindingAdapterPosition >= 0) {
 
-                if (list.isNotEmpty() && bindingAdapterPosition >= 0) {
+                        list[bindingAdapterPosition].isChecked = !list[bindingAdapterPosition].isChecked
+                        list[bindingAdapterPosition].itemQuantity = 1
 
-                    list[bindingAdapterPosition].isChecked = !list[bindingAdapterPosition].isChecked
-                    list[bindingAdapterPosition].itemQuantity = 1
-
-                    if (maxLogic(
-                            maxAllowed,
-                            list
-                        )
-                    ) {
-                        LogUtil.logE("minRequired", "ture")
-                    } else {
-                        LogUtil.logE("minRequired", "false")
-
-                        AlertUtils.showCustomAlert(
-                            binding.root.context,
-                            binding.root.context.getString(R.string.you_can_not_add_more_then) + maxAllowed + binding.root.context.getString(
-                                R.string.items
+                        if (maxLogic(
+                                maxAllowed,
+                                list
                             )
-                        )
+                        ) {
+                            LogUtil.logE("minRequired", "ture")
+                        } else {
+                            LogUtil.logE("minRequired", "false")
+
+                            AlertUtils.showCustomAlert(
+                                binding.root.context,
+                                binding.root.context.getString(R.string.you_can_not_add_more_then) + maxAllowed + binding.root.context.getString(
+                                    R.string.items
+                                )
+                            )
 
 
-                        list[bindingAdapterPosition].isChecked =
-                            !list[bindingAdapterPosition].isChecked
+                            list[bindingAdapterPosition].isChecked =
+                                !list[bindingAdapterPosition].isChecked
+                        }
+
+
+                        notifyDataSetChanged()
                     }
 
-
-                    notifyDataSetChanged()
                 }
-            }
+
+            })
         }
 
     }

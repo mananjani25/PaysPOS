@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -2704,10 +2705,6 @@ class CartFragment(
                         prefProvider.setValue(Constants.OLD_ITEM, "")
 
                     }
-
-                    /*Added by Rahul  - Update*/
-                    prefProvider.setValue(Constants.OPEN_ORDER_ITEMS_BASE, "")
-
 
                     if (cartItemsAdapter.currentList.isNotEmpty()) {
                         prefProvider.setValueboolean(

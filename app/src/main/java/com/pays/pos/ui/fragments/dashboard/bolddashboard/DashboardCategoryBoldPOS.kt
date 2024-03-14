@@ -2207,7 +2207,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         styleCharacterSpace(0.0)
                         styleAlignment(Alignment.Center)
 
-                        if (cartModel!!.isEdited) {
+                        if (cartModel!!.isEdited || isOrderUpdate) {
                             add(
                                 PrinterBuilder()
                                     .styleBold(true)
