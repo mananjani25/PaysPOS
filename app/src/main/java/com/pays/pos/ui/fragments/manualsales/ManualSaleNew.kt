@@ -2283,21 +2283,21 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                             model.price,
                             result.percentage
                         )
-
-                        Log.e("Value of Edit Amount","Value of Percentage= ${result.percentage} and Price of item = ${model.price}")
-
-                        if(model.discountPrice>viewModel.currentTotalPrice){
-                            model.discountPrice = viewModel.currentTotalPrice
-                            Log.e("Discount Tracking Pays","Discount greater  = ${model.discountPrice} and Current price = ${viewModel.currentTotalPrice}")
-
-                        }
-
-                        if(viewModel.clickedItemQuantity>1) {
-                            model.discountPrice = model.discountPrice / viewModel.clickedItemQuantity
-
-                            Log.e("Discount Tracking Pays","Item Quantity greater  = ${model.quantity} and Discount price = ${model.discountPrice}")
-                        }
-
+//
+//                        Log.e("Value of Edit Amount","Value of Percentage= ${result.percentage} and Price of item = ${model.price}")
+//
+//                        if(model.discountPrice>viewModel.currentTotalPrice){
+//                            model.discountPrice = viewModel.currentTotalPrice
+//                            Log.e("Discount Tracking Pays","Discount greater  = ${model.discountPrice} and Current price = ${viewModel.currentTotalPrice}")
+//
+//                        }
+//
+//                        if(viewModel.clickedItemQuantity>1) {
+//                            model.discountPrice = model.discountPrice / viewModel.clickedItemQuantity
+//
+//                            Log.e("Discount Tracking Pays","Item Quantity greater  = ${model.quantity} and Discount price = ${model.discountPrice}")
+//                        }
+//
                         model.discountId = result.id
                         model.discountType = result.discountType
                         model.isManualSales = true

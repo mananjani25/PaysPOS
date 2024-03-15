@@ -274,34 +274,77 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
                                     upcomingOrderCount = 0
                                 }
 
-                                ONLINE_ORDER_TAB -> {
-                                    pendingOrdersCount = it.data?.data?.web_orders?.pending ?: 0
-                                    ongoingOrderCount = it.data?.data?.web_orders?.in_progress ?: 0
-                                    completedOrdersCount = it.data?.data?.web_orders?.completed ?: 0
-                                    cancelledOrdersCount = it.data?.data?.web_orders?.rejected ?: 0
-                                    upcomingOrderCount = it.data?.data?.web_orders?.upcoming ?: 0
-                                }
+//                                ONLINE_ORDER_TAB -> {
+//                                    pendingOrdersCount = it.data?.data?.web_orders?.pending ?: 0
+//                                    ongoingOrderCount = it.data?.data?.web_orders?.in_progress ?: 0
+//                                    completedOrdersCount = it.data?.data?.web_orders?.completed ?: 0
+//                                    cancelledOrdersCount = it.data?.data?.web_orders?.rejected ?: 0
+//                                    upcomingOrderCount = it.data?.data?.web_orders?.upcoming ?: 0
+//                                }
+//
+//                                THIRD_PARTY_ORDER_TAB -> {
+//                                    pendingOrdersCount =
+//                                        it.data?.data?.third_party_online_orders?.pending ?: 0
+//                                    ongoingOrderCount =
+//                                        it.data?.data?.third_party_online_orders?.in_progress ?: 0
+//                                    completedOrdersCount =
+//                                        it.data?.data?.third_party_online_orders?.completed ?: 0
+//                                    cancelledOrdersCount =
+//                                        it.data?.data?.third_party_online_orders?.rejected ?: 0
+//                                    upcomingOrderCount =
+//                                        it.data?.data?.third_party_online_orders?.upcoming ?: 0
+//                                }
 
+                                // Added to reflect order count of online order and web order combine
+
+                                ONLINE_ORDER_TAB,
                                 THIRD_PARTY_ORDER_TAB -> {
-                                    pendingOrdersCount =
-                                        it.data?.data?.third_party_online_orders?.pending ?: 0
-                                    ongoingOrderCount =
-                                        it.data?.data?.third_party_online_orders?.in_progress ?: 0
-                                    completedOrdersCount =
-                                        it.data?.data?.third_party_online_orders?.completed ?: 0
-                                    cancelledOrdersCount =
-                                        it.data?.data?.third_party_online_orders?.rejected ?: 0
-                                    upcomingOrderCount =
-                                        it.data?.data?.third_party_online_orders?.upcoming ?: 0
+                                    var orderOl = 0
+                                    var orderWeb = 0
+
+                                    // combine pending order
+                                    orderOl = it.data?.data?.web_orders?.pending ?: 0
+                                    orderWeb = it.data?.data?.third_party_online_orders?.pending ?: 0
+
+                                    pendingOrdersCount = orderOl+orderWeb
+
+                                    //combine in progress order
+                                    orderOl = it.data?.data?.web_orders?.in_progress ?: 0
+                                    orderWeb = it.data?.data?.third_party_online_orders?.in_progress ?: 0
+
+                                    ongoingOrderCount = orderOl+orderWeb
+
+                                    //combine in completed order
+                                    orderOl = it.data?.data?.web_orders?.completed ?: 0
+                                    orderWeb = it.data?.data?.third_party_online_orders?.completed ?: 0
+
+                                    completedOrdersCount = orderOl+orderWeb
+
+                                    //combine in rejected order
+                                    orderOl = it.data?.data?.web_orders?.completed ?: 0
+                                    orderWeb = it.data?.data?.third_party_online_orders?.rejected ?: 0
+
+                                    completedOrdersCount = orderOl+orderWeb
+
+                                    //combine in upcoming order
+                                    orderOl = it.data?.data?.web_orders?.completed ?: 0
+                                    orderWeb = it.data?.data?.third_party_online_orders?.upcoming ?: 0
+
+                                    completedOrdersCount = orderOl+orderWeb
                                 }
                             }
 
                             val allOrdersPendingCount = it.data?.data?.all_orders?.pending ?: 0
                             val openOrdersPendingCount = it.data?.data?.open_orders?.active ?: 0
                             val phoneOrdersPendingCount = it.data?.data?.phone_orders?.active ?: 0
-                            val webOrdersPendingCount = it.data?.data?.web_orders?.pending ?: 0
-                            val thirdPartyOrdersPendingCount =
+                            var webOrdersPendingCount = it.data?.data?.web_orders?.pending ?: 0
+                            var thirdPartyOrdersPendingCount =
                                 it.data?.data?.third_party_online_orders?.pending ?: 0
+
+                            //Added to reflect order count of online order and web order combine
+                            webOrdersPendingCount += thirdPartyOrdersPendingCount
+                            thirdPartyOrdersPendingCount = webOrdersPendingCount
+
 
                             EventBus.getDefault().post(
                                 PendingCounts(

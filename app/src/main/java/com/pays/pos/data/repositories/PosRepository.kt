@@ -600,6 +600,9 @@ class PosRepository @Inject constructor(
         networkCall = { apiHelperNew.orderTypes() },
         saveCallResult = { appDatabase.orderTypeDao().addAll(it.data) })
 
+    fun getAllOrderTypes() = appDatabase.orderTypeDao().getAllOrderTypes
+
+
     fun orderTypesDb() = performGetOperationDatabase(
         databaseQuery = {
             appDatabase.orderTypeDao().orderTypes

@@ -20,6 +20,9 @@ interface OrderTypeDao {
     @get:Query("select * from TbOrderType where TbOrderType.isActive = 1 and TbOrderType.isDeleted = 0 ORDER BY TbOrderType.sort ASC")
     val orderTypes: LiveData<List<TbOrderType>>
 
+    @get:Query("select * from TbOrderType")
+    val getAllOrderTypes: List<TbOrderType>
+
     @Query("select * from TbOrderType where TbOrderType.isActive = 1 and TbOrderType.isDeleted = 0 ORDER BY TbOrderType.sort ASC")
     fun allModulesList(): List<TbOrderType>
 
