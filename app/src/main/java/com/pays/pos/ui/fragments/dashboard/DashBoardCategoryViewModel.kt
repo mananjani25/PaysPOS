@@ -2266,11 +2266,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 item.isEdited = true
                                                 list[i].isEdited = true
 
-                                                /*Added to check if the merged item is showing update or not - START*/
+                                               /* *//*Added to check if the merged item is showing update or not - START*//*
                                                 item.isItemEdited=true
                                                 list[i].isItemEdited=true
-                                                /*Added to check if the merged item is showing update or not - END*/
-
+                                                *//*Added to check if the merged item is showing update or not - END*//*
+*/
                                             } catch (e: java.lang.Exception) {
                                                 e.printStackTrace()
                                             }
@@ -2406,7 +2406,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     item.isEdited = true
 
                                     /*Added to check if the merged item is showing update or not - START*/
-                                    item.isItemEdited=true
+//                                    item.isItemEdited=true
                                     /*Added to check if the merged item is showing update or not - END*/
 
                                 }

@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -25,8 +24,10 @@ import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.DineInModel
 import com.pays.pos.data.model.DineInOrderDetailAttributes
 import com.pays.pos.data.model.GuestPaymentCalculationModel
+import com.pays.pos.data.model.requestModel.OrderItemsAttribute
 import com.pays.pos.data.model.responseModel.GetFloorPlanResponse
 import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.pays.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.pays.pos.data.remote.ApiService
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.ADD
@@ -62,7 +63,6 @@ import com.pays.pos.data.remote.Constants.PICK_UP
 import com.pays.pos.data.remote.Constants.REDIRECT_FROM
 import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.remote.Constants.WHOLE_AMOUNT
-import com.pays.pos.data.typeconvert.TCBusiness
 import com.pays.pos.databinding.FragmentCartBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.adapter.DineInAdapter
@@ -1197,9 +1197,12 @@ class CartFragment(
                                     viewModel.cartModel =
                                         taxBifurcationCalculationUpdate(it[0], it1)
                                 }
-                            }else{
+                            } else {
                                 viewModel.cartModel =
-                                    taxBifurcationCalculationUpdate(it[0], viewModel.currentCartItems)
+                                    taxBifurcationCalculationUpdate(
+                                        it[0],
+                                        viewModel.currentCartItems
+                                    )
                             }
 
                         }
@@ -1562,14 +1565,16 @@ class CartFragment(
                                                 viewModel.cartModel =
                                                     viewModel.cartModel?.let { it2 ->
                                                         taxBifurcationCalculationUpdate(
-                                                            it2, it1)
+                                                            it2, it1
+                                                        )
                                                     }
                                             }
-                                        }else{
+                                        } else {
                                             viewModel.cartModel =
                                                 viewModel.cartModel?.let { it1 ->
                                                     taxBifurcationCalculationUpdate(
-                                                        it1, viewModel.currentCartItems)
+                                                        it1, viewModel.currentCartItems
+                                                    )
                                                 }
                                         }
                                         /* binding.rvCartList.removeAllViews()
@@ -2627,17 +2632,19 @@ class CartFragment(
                     }
 
                     /*insert into db if the cart model is not present in the db*/
-                    CoroutineScope(Dispatchers.IO).launch {
+                    var cartJob = CoroutineScope(Dispatchers.IO).launch {
                         delay(1000)
-                        try{
-                            var currentCartModel:CartModel?=viewModel.getCartModelFromID(viewModel.cartModel!!.cartId)
-                            if (currentCartModel==null){
+                        try {
+                            var currentCartModel: CartModel? =
+                                viewModel.getCartModelFromID(viewModel.cartModel!!.cartId)
+                            if (currentCartModel == null) {
                                 viewModel.createEmptyCart(viewModel.cartModel!!)
                             }
-                        }catch (e:Exception){
+                        } catch (e: Exception) {
 
                         }
                     }
+                    cartJob.join()
                     if (cartItemsAdapter.currentList.isNotEmpty()) {
                         prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
                         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
@@ -2657,7 +2664,10 @@ class CartFragment(
                             bundle.putInt("paymentId", paymentId!!)
                             bundle.putString("paymentOfflineId", paymentOfflineId)
                             bundle.putString("orderOfflineId", orderOfflineId)
-                            bundle.putString(Constants.OLD_ITEM, prefProvider.getValue(Constants.OLD_ITEM,""))
+                            bundle.putString(
+                                Constants.OLD_ITEM,
+                                prefProvider.getValue(Constants.OLD_ITEM, "")
+                            )
                             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                                 prefProvider.setValueboolean(IS_FROM_ALL_ORDER, false)
                                 clearObserver()
@@ -2689,256 +2699,384 @@ class CartFragment(
 
         binding.tvSave.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
-                try {
-                    prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)
-                    if (isOrderUpdate == false) {
-                        prefProvider.setValue(
-                            Constants.OPEN_ORDER_ITEMS,
-                            ""
-                        )
+                runBlocking {
+                    try {
+                        prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)
+                        if (isOrderUpdate == false) {
+                            prefProvider.setValue(
+                                Constants.OPEN_ORDER_ITEMS,
+                                ""
+                            )
 
-                        /*Added By Rahul */
-                        prefProvider.setValue(
-                            Constants.OPEN_ORDER_ITEMS_OLD,
-                            ""
-                        )
-                        prefProvider.setValue(Constants.OLD_ITEM, "")
+                            /*Added By Rahul */
+                            prefProvider.setValue(
+                                Constants.OPEN_ORDER_ITEMS_OLD,
+                                ""
+                            )
+                            prefProvider.setValue(Constants.OLD_ITEM, "")
 
-                    }
+                        }
 
-                    if (cartItemsAdapter.currentList.isNotEmpty()) {
-                        prefProvider.setValueboolean(
-                            Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
-                            false
-                        )
-                        prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                        if (cartItemsAdapter.currentList.isNotEmpty()) {
+                            prefProvider.setValueboolean(
+                                Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                false
+                            )
+                            prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
 
-                        prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
-                        prefProvider.setValue("PaidAmount", "")
-                        prefProvider.setValue(WHOLE_AMOUNT, "")
-                        prefProvider.setValueInt("cardCount", 0)
-                        prefProvider.setValue(Constants.SUB_TOTAL, "")
-                        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
-                        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
-                        prefProvider.setValue(Constants.TIP, "")
-                        prefProvider.setValue(Constants.TAX_CHARGE, "")
-                        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
-                        if (prefProvider.getValue(ORDER_TYPE, "") != Constants.DINE_IN) {
+                            prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
+                            prefProvider.setValue("PaidAmount", "")
+                            prefProvider.setValue(WHOLE_AMOUNT, "")
+                            prefProvider.setValueInt("cardCount", 0)
+                            prefProvider.setValue(Constants.SUB_TOTAL, "")
+                            prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+                            prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+                            prefProvider.setValue(Constants.TIP, "")
+                            prefProvider.setValue(Constants.TAX_CHARGE, "")
+                            prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+                            if (prefProvider.getValue(ORDER_TYPE, "") != Constants.DINE_IN) {
 
-                            var ordertype = ""
-                            var ordertypeId = 0
-                            if (prefProvider.getValue(ORDER_TYPE, "") == OPEN_ORDER) {
-                                ordertype = prefProvider.getValue(ORDER_TYPE, "")
-                                ordertypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 0)
-                            } else {
-                                run breaking@{
-                                    viewModel.ordertypelist.forEach {
-                                        if (it.orderType == OPEN_ORDER) {
-                                            ordertype = it.orderType
-                                            ordertypeId = it.id
-                                            return@breaking
+                                var ordertype = ""
+                                var ordertypeId = 0
+                                if (prefProvider.getValue(ORDER_TYPE, "") == OPEN_ORDER) {
+                                    ordertype = prefProvider.getValue(ORDER_TYPE, "")
+                                    ordertypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 0)
+                                } else {
+                                    run breaking@{
+                                        viewModel.ordertypelist.forEach {
+                                            if (it.orderType == OPEN_ORDER) {
+                                                ordertype = it.orderType
+                                                ordertypeId = it.id
+                                                return@breaking
+                                            }
                                         }
                                     }
-                                }
-
-
-                            }
-
-                            if (prefProvider.getValue(ORDER_TYPE, "").toString()
-                                    .trim() == PHONE_ORDER.toString().trim()
-                            ) {
-
-                                viewModel.ordertypelist.forEach {
-                                    if (it.orderType == PHONE_ORDER) {
-                                        ordertype = it.orderType
-                                        ordertypeId = it.id
-                                    }
 
 
                                 }
-                            }
 
-
-                            Log.e("TAGGER", "ordertype :: $ordertype")
-                            Log.e("TAGGER", "ordertypeId :: $ordertypeId")
-
-                            if (viewModel.restrictedAmount(binding.txtTotal)) {
-
-
-                                viewModelPayment.updateOrder(
-                                    isOrderUpdate,
-                                    orderId,
-                                    paymentId,
-                                    paymentOfflineId,
-                                    orderOfflineId
-                                )
-
-
-                                /* Added by Rahul to solve the cartModel crash issue, i.e. cartModel is getting null - START*/
-                                if (viewModel.cartModel == null) {
-                                    var currentCartItems = arrayListOf<TbItem>()
-                                    for (tbItem in viewModel.currentCartItems) {
-                                        currentCartItems.add(
-                                            TbItem().convertCartToItem(
-                                                tbItem,
-                                                tbItem
-                                            )
-                                        )
-                                    }
-                                    var isManual = false
-                                    if (prefProvider.getValue(Constants.REDIRECT_FROM, "")
-                                            .equals("manual_sale")
-                                    ) {
-                                        isManual = true
-                                    } else {
-                                        isManual = false
-                                    }
-                                    viewModel.cartModel = CartModel().apply {
-                                        terminalId =
-                                            prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
-                                        employeeID =
-                                            prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
-                                        locationId =
-                                            prefProvider.getValueInt(Constants.LOCATION_ID, -1)
-                                        orderTypeId =
-                                            prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
-                                        orderType = prefProvider.getValue(ORDER_TYPE, "").toString()
-                                        orderTypeName =
-                                            prefProvider.getValue(Constants.ORDER_TYPE_NAME, "")
-                                                .toString()
-                                        items = currentCartItems
-                                        isOpenOrder = false
-                                        isMaual = isManual
-                                        isEdited = false
-                                        customer = Gson().fromJson(
-                                            prefProvider.getValue("pref_customer", "").toString(),
-                                            TbCustomer::class.java
-                                        )
-                                        taxlistDynamic = Gson().fromJson(
-                                            prefProvider.getValue("taxlistDynamic", "").toString(),
-                                            object : TypeToken<List<TaxData>?>() {}.getType()
-                                        )
-                                    }
-
-                                    viewModel.addCart(viewModel.cartModel!!)
-
-                                }
-                                /* Added by Rahul to solve the cartModel crash issue, i.e. cartModel is getting null - END*/
-
-                                val cartModel = viewModel.cartModel
-
-                                cartModel?.openOrderType = Constants.PICK_UP
-                                cartModel?.orderType = ordertype
-                                cartModel?.orderTypeId = ordertypeId
-
-                                val totalAmountTobeSave =
-                                    if (viewModel.redeemLoyaltyInfo.isLoyaltyApplied == true) {
-                                        (viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0)
-                                    } else {
-                                        viewModel.totalPrice
-                                    }
-
-                                cartModel?.openOrderType = Constants.PICK_UP
-                                if (!isOrderUpdate)
-                                    cartModel?.customer = assignCustomer
-
-                                if (isOrderUpdate) {
-                                    viewModel.setCartEdited(1, cartModel?.cartId)
-                                } else {
-                                    viewModel.setCartEdited(0, cartModel?.cartId)
-                                }
-
-                                val formatterdate = SimpleDateFormat("yyyy-MM-dd")
-                                val formattertime = SimpleDateFormat("hh:mm a")
-                                val date = Date()
-                                future_delivery_date = formatterdate.format(date)
-                                future_delivery_time = formattertime.format(date)
-
-                                LogUtil.logE(
-                                    TAG,
-                                    "UpdateOrderItemsListOLD::  ${Gson().toJson(viewModel.currentCartItems)}"
-                                )
-
-                                LogUtil.logE(
-                                    TAG,
-                                    "UpdateOrderItemsListDUPLI::  ${Gson().toJson(viewModel.duplicateCurrentCartItem)}"
-                                )
-
-                                val request = cartModel?.let {
-                                    viewModelPayment.createOpenOrderRequestNew(
-                                        viewModel.currentCartItems,
-                                        it,
-                                        viewModel.subTotalPrice,
-                                        totalAmountTobeSave,
-                                        viewModel.totalServiceCharge,
-                                        viewModel.totalTax,
-                                        OPEN_ORDER,
-                                        future_delivery_date,
-                                        future_delivery_time,
-                                        false,
-                                        viewModel.totalDiscount,
-                                        0.00,
-                                        -1,
-                                        viewModel.redeemLoyaltyInfo,
-                                        MethodUtils.calculateCashDiscount(
-                                            viewModel.totalPrice,
-                                            prefProvider,
-                                            requireContext()
-                                        ),
-                                        false,
-                                        "Cash",
-                                        cashDiscountType
-
-                                    )
-                                }
-                                isSaveOrder = true
-                                viewModelPayment.saveOrder(true)
-
-                                viewModelPayment.orderCreateCallSent = true
-
-
-                                //
-                                viewModel.fromAllOrderFragment = false
-                                request?.let { it1 -> viewModelPayment.submit(it1) }
-                                if (!prefProvider.getValueboolean(
-                                        Constants.NO_NEED_TO_PRINT,
-                                        false
-                                    )
+                                if (prefProvider.getValue(ORDER_TYPE, "").toString()
+                                        .trim() == PHONE_ORDER.toString().trim()
                                 ) {
-                                    //print
-                                    Log.d(TAG, "checkUpdation calling submit -> printing ")
-                                    if (!viewModelPayment.orderCreateCallSent)
-                                        request?.let { it1 -> viewModelPayment.submit(it1) }
-                                } else {
-                                    //no print
-                                    Log.d(TAG, "checkUpdation not printing ")
-                                    viewModelPayment.noUpdatesFound()
+
+                                    viewModel.ordertypelist.forEach {
+                                        if (it.orderType == PHONE_ORDER) {
+                                            ordertype = it.orderType
+                                            ordertypeId = it.id
+                                        }
+
+
+                                    }
                                 }
 
-                                isOrderUpdate = false
-                                binding.tvSave.text = getString(R.string.save)
 
-                                viewModel.fromSaveOrderToAllOrders = true
+                                Log.e("TAGGER", "ordertype :: $ordertype")
+                                Log.e("TAGGER", "ordertypeId :: $ordertypeId")
 
-                            } else {
-                                showMessage()
+                                if (viewModel.restrictedAmount(binding.txtTotal)) {
+
+
+                                    viewModelPayment.updateOrder(
+                                        isOrderUpdate,
+                                        orderId,
+                                        paymentId,
+                                        paymentOfflineId,
+                                        orderOfflineId
+                                    )
+
+
+                                    /* Added by Rahul to solve the cartModel crash issue, i.e. cartModel is getting null - START*/
+                                    if (viewModel.cartModel == null) {
+                                        var currentCartItems = arrayListOf<TbItem>()
+                                        for (tbItem in viewModel.currentCartItems) {
+                                            currentCartItems.add(
+                                                TbItem().convertCartToItem(
+                                                    tbItem,
+                                                    tbItem
+                                                )
+                                            )
+                                        }
+                                        var isManual = false
+                                        if (prefProvider.getValue(Constants.REDIRECT_FROM, "")
+                                                .equals("manual_sale")
+                                        ) {
+                                            isManual = true
+                                        } else {
+                                            isManual = false
+                                        }
+                                        viewModel.cartModel = CartModel().apply {
+                                            terminalId =
+                                                prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+                                            employeeID =
+                                                prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+                                            locationId =
+                                                prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+                                            orderTypeId =
+                                                prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
+                                            orderType = prefProvider.getValue(ORDER_TYPE, "").toString()
+                                            orderTypeName =
+                                                prefProvider.getValue(Constants.ORDER_TYPE_NAME, "")
+                                                    .toString()
+                                            items = currentCartItems
+                                            isOpenOrder = false
+                                            isMaual = isManual
+                                            isEdited = false
+                                            customer = Gson().fromJson(
+                                                prefProvider.getValue("pref_customer", "").toString(),
+                                                TbCustomer::class.java
+                                            )
+                                            taxlistDynamic = Gson().fromJson(
+                                                prefProvider.getValue("taxlistDynamic", "").toString(),
+                                                object : TypeToken<List<TaxData>?>() {}.getType()
+                                            )
+                                        }
+
+                                        viewModel.addCart(viewModel.cartModel!!)
+
+                                    }
+                                    /* Added by Rahul to solve the cartModel crash issue, i.e. cartModel is getting null - END*/
+
+                                    val cartModel = viewModel.cartModel
+
+                                    cartModel?.openOrderType = Constants.PICK_UP
+                                    cartModel?.orderType = ordertype
+                                    cartModel?.orderTypeId = ordertypeId
+
+                                    val totalAmountTobeSave =
+                                        if (viewModel.redeemLoyaltyInfo.isLoyaltyApplied == true) {
+                                            (viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0)
+                                        } else {
+                                            viewModel.totalPrice
+                                        }
+
+                                    cartModel?.openOrderType = Constants.PICK_UP
+                                    if (!isOrderUpdate)
+                                        cartModel?.customer = assignCustomer
+
+                                    if (isOrderUpdate) {
+                                        viewModel.setCartEdited(1, cartModel?.cartId)
+                                    } else {
+                                        viewModel.setCartEdited(0, cartModel?.cartId)
+                                    }
+
+                                    val formatterdate = SimpleDateFormat("yyyy-MM-dd")
+                                    val formattertime = SimpleDateFormat("hh:mm a")
+                                    val date = Date()
+                                    future_delivery_date = formatterdate.format(date)
+                                    future_delivery_time = formattertime.format(date)
+
+                                    LogUtil.logE(
+                                        TAG,
+                                        "UpdateOrderItemsListOLD::  ${Gson().toJson(viewModel.currentCartItems)}"
+                                    )
+
+                                    LogUtil.logE(
+                                        TAG,
+                                        "UpdateOrderItemsListDUPLI::  ${Gson().toJson(viewModel.duplicateCurrentCartItem)}"
+                                    )
+
+                                    val request = cartModel?.let {
+                                        viewModelPayment.createOpenOrderRequestNew(
+                                            viewModel.currentCartItems,
+                                            it,
+                                            viewModel.subTotalPrice,
+                                            totalAmountTobeSave,
+                                            viewModel.totalServiceCharge,
+                                            viewModel.totalTax,
+                                            OPEN_ORDER,
+                                            future_delivery_date,
+                                            future_delivery_time,
+                                            false,
+                                            viewModel.totalDiscount,
+                                            0.00,
+                                            -1,
+                                            viewModel.redeemLoyaltyInfo,
+                                            MethodUtils.calculateCashDiscount(
+                                                viewModel.totalPrice,
+                                                prefProvider,
+                                                requireContext()
+                                            ),
+                                            false,
+                                            "Cash",
+                                            cashDiscountType
+
+                                        )
+                                    }
+                                    isSaveOrder = true
+                                    viewModelPayment.saveOrder(true)
+
+                                    viewModelPayment.orderCreateCallSent = true
+                                    try {
+                                        /*This is added because: when we remove the updated values and make the item as default, then it was taking as updated*/
+
+                                        val listType = object :
+                                            TypeToken<List<OnlineOrderResponseModel.Data.OrderItem>>() {}.type
+
+                                        var redundantDatas =
+                                            Gson().fromJson<List<OnlineOrderResponseModel.Data.OrderItem>>(
+                                                prefProvider.getValue(Constants.OPEN_ORDER_ITEMS, ""),
+                                                listType
+                                            )
+
+                                        with(request?.order){
+                                            this?.orderItemsAttributes?.forEach {orderItemAttribute->
+                                                redundantDatas.forEach { reduntantData->
+                                                    if ((orderItemAttribute.employeeId==reduntantData.employeeId) && (orderItemAttribute.category_id==reduntantData.categoryId) && (orderItemAttribute.id==reduntantData.id) && (orderItemAttribute.itemId==reduntantData.itemId)){
+                                                        if (orderItemAttribute.note.equals(reduntantData.note) && (orderItemAttribute.price==orderItemAttribute.price) && (orderItemAttribute.totalPrice==orderItemAttribute.totalPrice) && (orderItemAttribute.discountAmount==orderItemAttribute.discountAmount) && (orderItemAttribute.discountType==orderItemAttribute.discountType)
+                                                            && (orderItemAttribute.quantity==orderItemAttribute.quantity) && (orderItemAttribute.itemName.equals(orderItemAttribute.itemName)
+                                                                    && (areTaxesEqual(orderItemAttribute,reduntantData)) && (areModifiersEqual(orderItemAttribute,reduntantData))
+                                                                    && (areVariationsEqual(orderItemAttribute,reduntantData)))){
+
+                                                            orderItemAttribute.isItemEdited=false
+
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+
+                                    } catch (e: Exception) {
+                                    }
+
+                                    //
+                                    viewModel.fromAllOrderFragment = false
+                                    request?.let { it1 -> viewModelPayment.submit(it1) }
+                                    if (!prefProvider.getValueboolean(
+                                            Constants.NO_NEED_TO_PRINT,
+                                            false
+                                        )
+                                    ) {
+                                        //print
+                                        Log.d(TAG, "checkUpdation calling submit -> printing ")
+                                        if (!viewModelPayment.orderCreateCallSent)
+                                            request?.let { it1 -> viewModelPayment.submit(it1) }
+                                    } else {
+                                        //no print
+                                        Log.d(TAG, "checkUpdation not printing ")
+                                        viewModelPayment.noUpdatesFound()
+                                    }
+
+                                    isOrderUpdate = false
+                                    binding.tvSave.text = getString(R.string.save)
+
+                                    viewModel.fromSaveOrderToAllOrders = true
+
+                                } else {
+                                    showMessage()
+                                }
+                            }
+
+                            viewModel.currentCartItems = arrayListOf()
+                            viewModel.duplicateCurrentCartItem = arrayListOf()
+                        } else {
+                            prefProvider.setValue(Constants.OLD_ITEM, "")
+                            AlertUtils.showCustomAlertWithListenerWithOK(
+                                requireContext(),
+                                resources.getString(R.string.please_add_Atleast_one_item_in_cart)
+                            ) { _, _ ->
                             }
                         }
-
-                        viewModel.currentCartItems = arrayListOf()
-                        viewModel.duplicateCurrentCartItem = arrayListOf()
-                    } else {
+                    } catch (e: Exception) {
                         prefProvider.setValue(Constants.OLD_ITEM, "")
-                        AlertUtils.showCustomAlertWithListenerWithOK(
-                            requireContext(),
-                            resources.getString(R.string.please_add_Atleast_one_item_in_cart)
-                        ) { _, _ ->
+                        e.printStackTrace()
+                    }
+                }
+            }
+
+            private fun areVariationsEqual(
+                orderItemAttribute: OrderItemsAttribute,
+                reduntantData: OnlineOrderResponseModel.Data.OrderItem
+            ): Boolean {
+
+                if (orderItemAttribute.orderItemVariationAttributes!=null && reduntantData.order_item_variation!=null){
+                    if ((orderItemAttribute.orderItemVariationAttributes?.orderId==reduntantData.order_item_variation?.orderId) && (orderItemAttribute.orderItemVariationAttributes?.order_item_id==reduntantData.order_item_variation?.order_item_id) && (orderItemAttribute.orderItemVariationAttributes?.price==reduntantData.order_item_variation?.price)
+                        && (orderItemAttribute.orderItemVariationAttributes?.totalPrice==reduntantData.order_item_variation?.totalPrice)
+                        && (orderItemAttribute.orderItemVariationAttributes?.quantity==reduntantData.order_item_variation?.quantity)
+                        && (orderItemAttribute.orderItemVariationAttributes?.variationId==reduntantData.order_item_variation?.variationId)) {
+                        return true
+                    }else{
+                        return false
+                    }
+                }else{
+                    return (orderItemAttribute.orderItemVariationAttributes == reduntantData.order_item_variation)
+                }
+
+
+                return false
+
+            }
+
+            private fun areModifiersEqual(
+                orderItemAttribute: OrderItemsAttribute,
+                reduntantData: OnlineOrderResponseModel.Data.OrderItem
+            ): Boolean {
+
+                if (orderItemAttribute.orderItemModifiersAttributes!=null && reduntantData.orderItemModifiers!=null) {
+                    if (orderItemAttribute.orderItemModifiersAttributes.isNotEmpty() && reduntantData.orderItemModifiers.isNotEmpty()){
+                        if (orderItemAttribute.orderItemModifiersAttributes.size == reduntantData.orderItemModifiers.size) {
+                            orderItemAttribute.orderItemModifiersAttributes.forEach { modAttribute ->
+                                reduntantData.orderItemModifiers.forEach { modData ->
+                                    if ((modAttribute.id == modData.id) && (modAttribute.name.equals(
+                                            modData.name
+                                        )) && (modAttribute.modifier_id == modData.modifierId)
+                                        && (modAttribute.modifier_quantity == modData.modifier_quantity) && (modAttribute.modifier_set_id == modData.modifierSetId)
+                                        && (modAttribute.order_item_id == modData.orderItemId) && (modAttribute.price == modData.price) && (modAttribute.quantity == modData.quantity)
+                                    ) {
+                                        return true
+                                    }
+
+
+                                }
+                            }
+                        } else {
+                            return false
+                        }
+                }else{
+                        return (orderItemAttribute.orderItemModifiersAttributes == reduntantData.orderItemModifiers)
+                    }
+                }else{
+                    return (orderItemAttribute.orderItemModifiersAttributes == reduntantData.orderItemModifiers)
+                }
+
+                return false
+            }
+
+            private fun areTaxesEqual(
+                orderItemAttribute: OrderItemsAttribute,
+                reduntantData: OnlineOrderResponseModel.Data.OrderItem
+            ): Boolean {
+
+                if (orderItemAttribute.orderItemTaxesAttributes!=null && reduntantData.orderItemTax!=null){
+                    if (orderItemAttribute.orderItemTaxesAttributes.isNotEmpty() && reduntantData.orderItemTax.isNotEmpty()) {
+
+                        if (orderItemAttribute.orderItemTaxesAttributes.size == reduntantData.orderItemTax.size) {
+                            orderItemAttribute.orderItemTaxesAttributes.forEach { taxAttribute ->
+                                reduntantData.orderItemTax.forEach { taxData ->
+                                    if ((taxAttribute.id == taxData.id) && (taxAttribute.name.equals(
+                                            taxData.name
+                                        )) && (taxAttribute.orderId == taxData.orderId) && (taxAttribute.orderItemId == taxData.orderItemId) && (taxAttribute.rate == taxData.rate)
+                                        && (taxAttribute.taxId == taxData.taxId)
+                                    ) {
+                                        return true
+                                    }
+
+
+                                }
+                            }
+                        } else {
+                            return false
                         }
                     }
-                } catch (e: Exception) {
-                    prefProvider.setValue(Constants.OLD_ITEM, "")
-                    e.printStackTrace()
+                        else{
+                        return (orderItemAttribute.orderItemTaxesAttributes == reduntantData.orderItemTax)
+
+                    }
+                }else{
+                    return (orderItemAttribute.orderItemTaxesAttributes == reduntantData.orderItemTax)
                 }
+
+                return false
             }
 
         })
@@ -3251,7 +3389,7 @@ class CartFragment(
         listItems: List<TbCartItem>
     ): CartModel {
         var listTaxData: ArrayList<TaxData> = arrayListOf()
-        Log.e(TAG,"checkCurrentItems:  ${listItems.size}")
+        Log.e(TAG, "checkCurrentItems:  ${listItems.size}")
         listItems.forEach { item ->
 
             item.taxes?.forEachIndexed { indextax, itemtype ->
@@ -3278,7 +3416,7 @@ class CartFragment(
 
                         var checkLocal = false
                         for (i in 0 until listTaxData.size) {
-                            if (itemtype.name.equals(listTaxData.get(i).name,true)) {
+                            if (itemtype.name.equals(listTaxData.get(i).name, true)) {
                                 checkLocal = true
                                 listTaxData.get(i).totalTaxTypePrice += ttaxPrice
                                 break
@@ -3303,8 +3441,8 @@ class CartFragment(
             }
         }
 
-        Log.e(TAG,"checkSize  ${listTaxData.size}")
-        Log.e(TAG,"checkSizeWithData  ${Gson().toJson(listTaxData)}")
+        Log.e(TAG, "checkSize  ${listTaxData.size}")
+        Log.e(TAG, "checkSizeWithData  ${Gson().toJson(listTaxData)}")
         cartModel.taxlistDynamic = listTaxData
         prefProvider.setValue(
             Constants.taxListDynamic,

@@ -1461,7 +1461,6 @@ open class PaymentViewModel @Inject constructor(
                                     oldItem.itemQuantity=it.itemQuantity
                                     oldItem.variationsAttributes=it.variationsAttributes
                                     oldItem.taxes=it.taxes
-                                    oldItem.isItemEdited=it.isItemEdited
                                 }
                             }
                         }

@@ -87,20 +87,20 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
 
 
         with(binding) {
-            binding.txtRemovenote?.gone()
+            txtRemovenote?.gone()
             if (isOrderNote) {
                 if (dashBoardCategoryViewModel.cartModel?.note?.isNotEmpty() == true) {
                     edtNote.setText(dashBoardCategoryViewModel.cartModel?.note ?: "")
-                    binding.txtRemovenote?.visible()
+                    txtRemovenote?.visible()
                 } else {
-                    binding.txtRemovenote?.gone()
+                    txtRemovenote?.gone()
                 }
             } else {
                 if (item?.note?.isNotEmpty() == true) {
                     edtNote.setText(item?.note)
-                    binding.txtRemovenote?.visible()
+                    txtRemovenote?.visible()
                 } else {
-                    binding.txtRemovenote?.gone()
+                    txtRemovenote?.gone()
                 }
             }
         }
@@ -124,23 +124,37 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
         binding.imgBack.setOnClickListener {
             dismiss()
         }
-        binding.txtRemovenote?.setOnClickListener {
-            val result = Bundle().apply {
-                putString("note", "")
-                putParcelable("item", item)
-                putBoolean("isOrderNote", isOrderNote)
-                headerItemPosition?.let { putInt("headerPos", it) }
+        binding.txtRemovenote?.setOnClickListener(object:View.OnClickListener{
+            override fun onClick(p0: View?) {
+                val result = Bundle().apply {
+                    putString("note", "")
+                    item?.let {
+                        if (!it.note.equals("")){
+                            it.isItemEdited=true
+                        }
+                    }
+                    putParcelable("item", item)
+                    putBoolean("isOrderNote", isOrderNote)
+                    headerItemPosition?.let { putInt("headerPos", it) }
+                }
+
+                setFragmentResult("request_key_note", result)
+                findNavController().navigateUp()
             }
 
-            setFragmentResult("request_key_note", result)
-            findNavController().navigateUp()
-        }
+        })
     }
 
 
     private fun addNote() {
         val result = Bundle().apply {
             putString("note", binding.edtNote.text.toString().trim())
+            item?.let {
+                if (!it.note.equals(binding.edtNote.text.toString().trim())){
+                    it.isItemEdited=true
+                }
+            }
+
             putParcelable("item", item)
             putBoolean("isOrderNote", isOrderNote)
             headerItemPosition?.let { putInt("headerPos", it) }
