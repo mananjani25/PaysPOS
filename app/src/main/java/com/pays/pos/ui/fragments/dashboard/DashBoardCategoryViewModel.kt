@@ -294,7 +294,17 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     val serviceCharges = posRepository.serviceChargeList()
+    /*
+     * Returns active order types
+     */
     val getOrderTypes = posRepository.getOrderTypes()
+
+    /*
+     * Returns all active or Deactivated order types
+     */
+    fun getAllOrderTypes():List<TbOrderType> {
+            return posRepository.getAllOrderTypes()
+    }
 
     val activeLoyaltyProgramLiveData = posRepository.getActiveLoyaltyProgramFromDb()
 

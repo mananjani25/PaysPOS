@@ -145,7 +145,7 @@ class AllOrdersListingFragment(
             if (refresh == true) {
                 adapter.orderList.clear()
                 adapter.filterList.clear()
-                getAllOrders()
+                    getAllOrders()
             }
 
         }
@@ -274,9 +274,9 @@ class AllOrdersListingFragment(
         orderId: Int,
         is_accepted: Boolean
     ) {
-        if (is_accepted){
-            makeAcceptedDeclinedServerCall(time,orderId,is_accepted)
-        }else{
+        if (is_accepted) {
+            makeAcceptedDeclinedServerCall(time, orderId, is_accepted)
+        } else {
             if (pax_data.isNotEmpty()) {
                 var CUST_NBR = ""
                 var MERCH_NBR = ""
@@ -331,7 +331,7 @@ class AllOrdersListingFragment(
                         TRAN_NBR = value
                     } else if (key.equals("AUTH_GUID")) {
                         AUTH_GUID = value
-                    }else if (key.equals("AUTH_AMOUNT")) {
+                    } else if (key.equals("AUTH_AMOUNT")) {
                         AMOUNT = value
                     }
 
@@ -347,7 +347,7 @@ class AllOrdersListingFragment(
                         object : Response.Listener<String?> {
                             override fun onResponse(response: String?) {
                                 // response
-                                var AUTH_RESP_TEXT=""
+                                var AUTH_RESP_TEXT = ""
                                 Log.d("Response", response!!)
                                 xpp.setInput(StringReader(response))
                                 var eventType = xpp.eventType
@@ -377,13 +377,27 @@ class AllOrdersListingFragment(
                                     eventType = xpp.next()
                                 }
 
-                                if (AUTH_RESP_TEXT.contains("UNABLE")){
+                                if (AUTH_RESP_TEXT.contains("UNABLE")) {
                                     /*Make refund Call*/
-                                    makeRefundCallToNAB(xpp,time,orderId,is_accepted,CUST_NBR, MERCH_NBR, DBA_NBR, TERMINAL_NBR, TRAN_TYPE, BATCH_ID, TRAN_NBR, AMOUNT, AUTH_GUID)
-                                }else if (AUTH_RESP_TEXT.contains("APPROVAL")){
+                                    makeRefundCallToNAB(
+                                        xpp,
+                                        time,
+                                        orderId,
+                                        is_accepted,
+                                        CUST_NBR,
+                                        MERCH_NBR,
+                                        DBA_NBR,
+                                        TERMINAL_NBR,
+                                        TRAN_TYPE,
+                                        BATCH_ID,
+                                        TRAN_NBR,
+                                        AMOUNT,
+                                        AUTH_GUID
+                                    )
+                                } else if (AUTH_RESP_TEXT.contains("APPROVAL")) {
                                     /*Make server call*/
                                     ProgressUtils.dismissProgressDialog()
-                                    makeAcceptedDeclinedServerCall(time,orderId,is_accepted)
+                                    makeAcceptedDeclinedServerCall(time, orderId, is_accepted)
                                 }
 
                             }
@@ -424,7 +438,7 @@ class AllOrdersListingFragment(
                         }
                     }
                     queue.add(getRequest)
-                    withContext(Dispatchers.Main){
+                    withContext(Dispatchers.Main) {
                         ProgressUtils.showProgressDialog(requireActivity())
                     }
                 }
@@ -432,11 +446,9 @@ class AllOrdersListingFragment(
         }
 
 
-
-
     }
 
-    private fun makeAcceptedDeclinedServerCall(time:Int, orderId:Int, is_accepted: Boolean) {
+    private fun makeAcceptedDeclinedServerCall(time: Int, orderId: Int, is_accepted: Boolean) {
         var employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         var terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
         viewModel.acceptedAndDeclineOrder(
@@ -475,7 +487,21 @@ class AllOrdersListingFragment(
         }
     }
 
-    fun makeRefundCallToNAB(xpp: XmlPullParser,time:Int,orderId:Int,is_accepted: Boolean,CUST_NBR:String, MERCH_NBR:String, DBA_NBR:String, TERMINAL_NBR:String, TRAN_TYPE:String, BATCH_ID:String, TRAN_NBR:String, AMOUNT:String, ORIG_AUTH_GUID:String){
+    fun makeRefundCallToNAB(
+        xpp: XmlPullParser,
+        time: Int,
+        orderId: Int,
+        is_accepted: Boolean,
+        CUST_NBR: String,
+        MERCH_NBR: String,
+        DBA_NBR: String,
+        TERMINAL_NBR: String,
+        TRAN_TYPE: String,
+        BATCH_ID: String,
+        TRAN_NBR: String,
+        AMOUNT: String,
+        ORIG_AUTH_GUID: String
+    ) {
         val queue = Volley.newRequestQueue(requireContext())
         val url = "https://secure.epxuap.com/"
         val getRequest: StringRequest = object : StringRequest(
@@ -484,7 +510,7 @@ class AllOrdersListingFragment(
                 override fun onResponse(response: String?) {
                     // response
                     Log.d("Response", response!!)
-                    var AUTH_RESP_TEXT=""
+                    var AUTH_RESP_TEXT = ""
                     var key = ""
                     var value = ""
 
@@ -517,7 +543,7 @@ class AllOrdersListingFragment(
                         eventType = xpp.next()
                     }
 
-                    if (!AUTH_RESP_TEXT.contains("APPROVAL")){
+                    if (!AUTH_RESP_TEXT.contains("APPROVAL")) {
 
 
                         /*if (!(context as AppCompatActivity).isFinishing()) {
@@ -529,7 +555,7 @@ class AllOrdersListingFragment(
                             })
 
                         }*/
-                       /* else{
+                        /* else{
                             try{
                                 AlertUtils.showAlert(requireActivity(),AUTH_RESP_TEXT)
 
@@ -543,7 +569,7 @@ class AllOrdersListingFragment(
                         }*/
                     }
 
-                    makeAcceptedDeclinedServerCall(time,orderId,is_accepted)
+                    makeAcceptedDeclinedServerCall(time, orderId, is_accepted)
 
 
                 }
@@ -689,72 +715,136 @@ class AllOrdersListingFragment(
 //            orderStatusLabel = ""
 //        }
 
-        viewModel.getAllOrders(
-            viewModel.startDate.value.toString(),
-            viewModel.endDate.value.toString(),
-            orderStatusLabel,
-            paymentStatus,
-            orderTabTypeId
-        ).observe(viewLifecycleOwner) { it ->
-            Log.d("08JUNE23", "getAllOrders response: CALLED")
-            it?.let { resource ->
-                when (resource.status) {
-                    Status.SUCCESS -> {
-                        ProgressUtils.dismissProgressDialog()
-                        resource.data?.let {
+        //Added to reflect online orders and web orders in same tab
 
-                            if (it.data.isNotEmpty()) {
-                                when (orderTab) {
-                                    ALL_ORDER_TAB -> {
-                                        binding.tvOrderType.visible()
-                                        binding.tvOrderStatus.visible()
-                                    }
 
-                                    Constants.ONLINE_ORDER_TAB, Constants.THIRD_PARTY_ORDER_TAB -> {
-                                        binding.tvOrderStatus.visible()
-                                    }
+//         /*   runBlocking {
+//                val res =
+//                    CoroutineScope(Dispatchers.IO).async { dashboardViewModel.getAllOrderTypes() }
+//                        .await()
+//
+//                if (orderTabTypeId.isNotEmpty()) {
+//                    runBlocking {
+//
+//                        if (res.isNotEmpty()) {
+//
+//                            val found =
+//                                res.filter { it.id == orderTabTypeId.toInt() && (it.orderType == ONLINE_ORDER_TAB || it.orderType == THIRD_PARTY_ORDER_TAB) }
+//
+//                            if (found.isNotEmpty()) {
+//                                val list =
+//                                    res.filter { it.orderType == ONLINE_ORDER_TAB || it.orderType == THIRD_PARTY_ORDER_TAB }
+//                                orderTabTypeId = "[${list[0].id},${list[1].id}]"
+//                            }
+//                        }
+//                    }
+//
+//                } else {
+//                    if (orderTab == PHONE_ORDER_TAB) {
+//                        val phoneOrderId = res.filter { it -> it.orderType == PHONE_ORDER_TAB }
+//                        orderTabTypeId =
+//                            "" + if (phoneOrderId.isNotEmpty()) phoneOrderId.first().id else ""
+//                    }
+//                }
+//            }*/
 
-                                    OPEN_ORDER_TAB -> {
-                                        binding.lblDelivery.gone()
-                                    }
+        try {
+            runBlocking {
+                val res =
+                    withContext(CoroutineScope(Dispatchers.IO).coroutineContext) { dashboardViewModel.getAllOrderTypes() }
 
-                                }
-                                binding.rvOpenOrder.visibility = View.VISIBLE
-                                binding.llNoData.visibility = View.GONE
-                                val data = it.data
+                if (orderTabTypeId.isNotEmpty()) {
+                    val relevantOrders =
+                        res.filter { it.orderType == ONLINE_ORDER_TAB || it.orderType == THIRD_PARTY_ORDER_TAB }
+                    val found = relevantOrders.find { it.id == orderTabTypeId.toInt() }
 
-                                adapter.add(data, orderTab)
-                                LogUtil.logE("DATA", data.size.toString())
-
-                            } else {
-                                binding.llNoData.visibility = View.VISIBLE
-                                binding.txtNodata.text = it.message
-                                binding.rvOpenOrder.visibility = View.GONE
-
-                            }
-                            val intent = Intent()
-                            intent.action = "allOrderCounts"
-                            intent.putExtra("isCount", true)
-                            intent.putExtra("orderStatus", orderStatus)
-                            intent.putExtra("count", it.data.size)
-                            intent.putExtra("start_date", viewModel.startDate.value.toString())
-                            intent.putExtra("end_date", viewModel.endDate.value.toString())
-                            requireContext().sendBroadcast(intent)
-                        }
+                    if (found != null) {
+                        val listIds =
+                            relevantOrders.joinToString(separator = ",") { it.id.toString() }
+                        orderTabTypeId = "[$listIds]"
                     }
-
-                    Status.ERROR -> {
-                        ProgressUtils.dismissProgressDialog()
-                        binding.root.showAlert(resource.message)
-
-                    }
-
-                    Status.LOADING -> {
-                        ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    if (orderTab == PHONE_ORDER_TAB) {
+                        val phoneOrderId = res.find { it.orderType == PHONE_ORDER_TAB }
+                        orderTabTypeId = phoneOrderId?.id.toString()
                     }
                 }
             }
-        }
+
+
+
+            viewModel.getAllOrders(
+                viewModel.startDate.value.toString(),
+                viewModel.endDate.value.toString(),
+                orderStatusLabel,
+                paymentStatus,
+                orderTabTypeId
+            ).observe(viewLifecycleOwner) { it ->
+
+
+                Log.d("08JUNE23", "getAllOrders response: CALLED")
+                it?.let { resource ->
+                    when (resource.status) {
+                        Status.SUCCESS -> {
+                            ProgressUtils.dismissProgressDialog()
+                            resource.data?.let {
+
+                                if (it.data.isNotEmpty()) {
+                                    when (orderTab) {
+                                        ALL_ORDER_TAB -> {
+                                            binding.tvOrderType.visible()
+                                            binding.tvOrderStatus.visible()
+                                        }
+
+                                        Constants.ONLINE_ORDER_TAB, Constants.THIRD_PARTY_ORDER_TAB -> {
+                                            binding.tvOrderStatus.visible()
+                                        }
+
+                                        OPEN_ORDER_TAB -> {
+                                            binding.lblDelivery.gone()
+                                        }
+
+                                    }
+                                    binding.rvOpenOrder.visibility = View.VISIBLE
+                                    binding.llNoData.visibility = View.GONE
+                                    val data = it.data
+
+                                    adapter.add(data, orderTab)
+                                    LogUtil.logE("DATA", data.size.toString())
+
+                                } else {
+                                    binding.llNoData.visibility = View.VISIBLE
+                                    binding.txtNodata.text = it.message
+                                    binding.rvOpenOrder.visibility = View.GONE
+
+                                }
+                                val intent = Intent()
+                                intent.action = "allOrderCounts"
+                                intent.putExtra("isCount", true)
+                                intent.putExtra("orderStatus", orderStatus)
+                                intent.putExtra("count", it.data.size)
+                                intent.putExtra(
+                                    "start_date",
+                                    viewModel.startDate.value.toString()
+                                )
+                                intent.putExtra("end_date", viewModel.endDate.value.toString())
+                                requireContext().sendBroadcast(intent)
+                            }
+                        }
+
+                        Status.ERROR -> {
+                            ProgressUtils.dismissProgressDialog()
+                            binding.root.showAlert(resource.message)
+
+                        }
+
+                        Status.LOADING -> {
+                            ProgressUtils.showProgressDialog(requireActivity())
+                        }
+                    }
+                }
+            }
+        }catch (e:Exception){}
     }
 
     private fun observeShowProgress() {
@@ -820,7 +910,8 @@ class AllOrdersListingFragment(
             val timecalender = Calendar.getInstance()
             timecalender.set(Calendar.HOUR_OF_DAY, hour)
             timecalender.set(Calendar.MINUTE, minute)
-            viewModel.startDate.value = timeCalculateForStartEndTime(hour, minute, "isstart")
+            viewModel.startDate.value =
+                timeCalculateForStartEndTime(hour, minute, "isstart")
             if (differnceTrue(viewModel.startDate.value!!, viewModel.endDate.value) <= 30) {
                 /*checkFilter = true
                 currentPage = 1
@@ -854,35 +945,37 @@ class AllOrdersListingFragment(
 
         }
 
-        startDate = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-            myCalendar.set(Calendar.YEAR, year)
-            myCalendar.set(Calendar.MONTH, monthOfYear)
-            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-            TimePickerDialog(
-                requireActivity(),
-                android.R.style.Theme_Material_Light_Dialog,
-                startTime,
-                myCalendar2.get(2),
-                myCalendar2.get(2),
-                false
-            ).show()
-        }
+        startDate =
+            DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                myCalendar.set(Calendar.YEAR, year)
+                myCalendar.set(Calendar.MONTH, monthOfYear)
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                TimePickerDialog(
+                    requireActivity(),
+                    android.R.style.Theme_Material_Light_Dialog,
+                    startTime,
+                    myCalendar2.get(2),
+                    myCalendar2.get(2),
+                    false
+                ).show()
+            }
 
-        endDate = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-            myCalendar1.set(Calendar.YEAR, year)
-            myCalendar1.set(Calendar.MONTH, monthOfYear)
-            myCalendar1.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+        endDate =
+            DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                myCalendar1.set(Calendar.YEAR, year)
+                myCalendar1.set(Calendar.MONTH, monthOfYear)
+                myCalendar1.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
-            TimePickerDialog(
-                requireActivity(),
-                android.R.style.Theme_Material_Light_Dialog,
-                endTime,
-                myCalendar3.get(2),
-                myCalendar3.get(2),
-                false
-            ).show()
+                TimePickerDialog(
+                    requireActivity(),
+                    android.R.style.Theme_Material_Light_Dialog,
+                    endTime,
+                    myCalendar3.get(2),
+                    myCalendar3.get(2),
+                    false
+                ).show()
 
-        }
+            }
         return binding.root
     }
 
@@ -1011,7 +1104,10 @@ class AllOrdersListingFragment(
                 //currentPage = 1
                 myCalendar = Calendar.getInstance()
                 myCalendar.add(Calendar.DATE, 0)
-                Log.d(TAG, "startDatePickerObserver: " + myCalendar.get(Calendar.DAY_OF_MONTH))
+                Log.d(
+                    TAG,
+                    "startDatePickerObserver: " + myCalendar.get(Calendar.DAY_OF_MONTH)
+                )
                 Log.d(TAG, "startDatePickerObserver: " + myCalendar.get(Calendar.MONTH))
                 Log.d(
                     TAG, "startDatePickerObserver: " + myCalendar
@@ -1090,14 +1186,24 @@ class AllOrdersListingFragment(
     private fun searchFilter() {
 
         binding.autoSearch.addTextChangedListener(object : TextWatcher {
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            override fun onTextChanged(
+                s: CharSequence,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
                 if (s.toString() == " ") {
                     binding.autoSearch.setText("")
                 }
 
             }
 
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+            override fun beforeTextChanged(
+                s: CharSequence,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
             }
 
             override fun afterTextChanged(s: Editable) {
@@ -1142,8 +1248,10 @@ class AllOrdersListingFragment(
                     alert("", "Are you sure, you want to reject this order ?") {
 
                         this.positiveButton("YES") {
-                            var employeeIdtemp = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                            var terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+                            var employeeIdtemp =
+                                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                            var terminal_id =
+                                prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
                             var orderItemRefundsAttributesList =
                                 ArrayList<RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute>()
                             adapter.orderList[pos].orderItems.forEach { item ->
@@ -1158,7 +1266,9 @@ class AllOrdersListingFragment(
                                     adapter.orderList[pos].payments[0].id
                                 orderItemRefundsAttributeModel.orderItemId = item.id
                                 orderItemRefundsAttributeModel.quantity = item.quantity
-                                orderItemRefundsAttributesList.add(orderItemRefundsAttributeModel)
+                                orderItemRefundsAttributesList.add(
+                                    orderItemRefundsAttributeModel
+                                )
                             }
 
                             refundData = RefundRequestModelOnlineOrder().apply {
@@ -1169,8 +1279,10 @@ class AllOrdersListingFragment(
                                         orderId = adapter.orderList[pos].id
                                         paymentId = adapter.orderList[pos].payments[0].id
                                         employeeId = employeeIdtemp
-                                        taxRefunded = adapter.orderList[pos].payments[0].taxAmount
-                                        tipsRefunded = adapter.orderList[pos].payments[0].tips
+                                        taxRefunded =
+                                            adapter.orderList[pos].payments[0].taxAmount
+                                        tipsRefunded =
+                                            adapter.orderList[pos].payments[0].tips
                                         terminalId = terminal_id
                                         serviceChargeRefunded =
                                             adapter.orderList[pos].payments[0].serviceChargeAmount
@@ -1178,7 +1290,8 @@ class AllOrdersListingFragment(
                                             adapter.orderList[pos].payments[0].cashDiscount
                                         subtotal_refunded =
                                             adapter.orderList[pos].payments[0].subTotal
-                                        orderItemRefundsAttributes = orderItemRefundsAttributesList
+                                        orderItemRefundsAttributes =
+                                            orderItemRefundsAttributesList
                                     }
                             }
                             val bundle = Bundle().apply {
@@ -1247,7 +1360,7 @@ class AllOrdersListingFragment(
             }
 
             "UPDATE" -> {
-                prefProvider.setValue(Constants.OLD_ITEM,"")
+                prefProvider.setValue(Constants.OLD_ITEM, "")
                 var itemDiscountTotal: Double = 0.0
                 var itemPassDis: Double = 0.0
                 order.orderItems.forEach {
@@ -1267,7 +1380,10 @@ class AllOrdersListingFragment(
 
                 order.totalDiscount = order.totalDiscount - itemDiscountTotal
 
-                LogUtil.logE(TAG, "OpenORderUpdateOrder:  ${Gson().toJson(order.orderItems)}")
+                LogUtil.logE(
+                    TAG,
+                    "OpenORderUpdateOrder:  ${Gson().toJson(order.orderItems)}"
+                )
 
                 if (order.orderType == OPEN_ORDER_TAB) {
                     prefProvider.setValue(Constants.ORDER_TYPE, Constants.OPEN_ORDER)
@@ -1294,7 +1410,10 @@ class AllOrdersListingFragment(
 
                     prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                 }
-                prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, Gson().toJson(order.orderItems))
+                prefProvider.setValue(
+                    Constants.OPEN_ORDER_ITEMS,
+                    Gson().toJson(order.orderItems)
+                )
                 prefProvider.setValueboolean(Constants.OPEN_ORDER_UPDATE_FOR_PRINT, true)
 
                 /*we are using this to check whether the note is updated or not, if yes then we will print the *****Updated***** on the kitchen receipt*/
@@ -1336,7 +1455,10 @@ class AllOrdersListingFragment(
                     Constants.LOYALTY_ADDED,
                     order.isLoyaltyApplied
                 )
-                prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, true)
+                prefProvider.setValueboolean(
+                    Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                    true
+                )
                 prefProvider.setValueInt(Constants.IS_UPDATE_ORDER_ID, order.id)
 
                 if (!order.payments.isNullOrEmpty()) {
@@ -1504,7 +1626,10 @@ class AllOrdersListingFragment(
                     order.isLoyaltyApplied
                 )
                 prefProvider.setValueboolean(IS_FROM_ALL_ORDER, true)
-                findNavController().navigate(R.id.action_allOrder_to_paymentBoldPosFragment, bundle)
+                findNavController().navigate(
+                    R.id.action_allOrder_to_paymentBoldPosFragment,
+                    bundle
+                )
 
 
             }
@@ -1621,7 +1746,10 @@ class AllOrdersListingFragment(
         if (customerReceiptPrinters.name.startsWith(SUNMI_PRINTER, true)) {
 
             SunmiPrinterApi.getInstance()
-                .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, customerReceiptPrinters.ipAddress)
+                .setPrinter(
+                    SunmiPrinter.SunmiBlueToothPrinter,
+                    customerReceiptPrinters.ipAddress
+                )
 
 
             if (!SunmiPrinterApi.getInstance().isConnected) {
@@ -1638,7 +1766,12 @@ class AllOrdersListingFragment(
 
                         override fun onConnect() {
                             println("onConnect")
-                            generatePrintSunmi(customerReceiptPrinters, type, order, printType)
+                            generatePrintSunmi(
+                                customerReceiptPrinters,
+                                type,
+                                order,
+                                printType
+                            )
 
 
                         }
@@ -1655,7 +1788,11 @@ class AllOrdersListingFragment(
             }
 
 
-        } else if (customerReceiptPrinters.name.startsWith(Constants.SUNMI_INNER_PRINTER, true)) {
+        } else if (customerReceiptPrinters.name.startsWith(
+                Constants.SUNMI_INNER_PRINTER,
+                true
+            )
+        ) {
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
@@ -1737,7 +1874,10 @@ class AllOrdersListingFragment(
                     }, PrinterClass.language, requireActivity()
                 )
 
-            LogUtil.logE(TAG, "getVanueLogo:  ${prefProvider.getValue(Constants.VENUE_LOGO, "")}")
+            LogUtil.logE(
+                TAG,
+                "getVanueLogo:  ${prefProvider.getValue(Constants.VENUE_LOGO, "")}"
+            )
 
 
             if (customerSettingModel.showOrderIdTop) {
@@ -1821,7 +1961,10 @@ class AllOrdersListingFragment(
             )
             builder.addTextAlign(Builder.ALIGN_CENTER)
 
-            addBuilderText(builder, prefProvider.getValue(Constants.BUSINESS_NAME, "").toString())
+            addBuilderText(
+                builder,
+                prefProvider.getValue(Constants.BUSINESS_NAME, "").toString()
+            )
 
             if (customerSettingModel.showVenueAddress) {
                 builder.addFeedLine(1)
@@ -2255,7 +2398,10 @@ class AllOrdersListingFragment(
             }
 
             val result =
-                prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)
+                prefProvider.getValueboolean(
+                    Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
+                    false
+                )
             if (receiptModel.totalServiceCharges != null && result) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
@@ -2333,7 +2479,10 @@ class AllOrdersListingFragment(
                 )
 
 
-                if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(receiptModel.payments.size - 1).paymentType.lowercase() == "Card".lowercase()) {
+                if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(
+                        receiptModel.payments.size - 1
+                    ).paymentType.lowercase() == "Card".lowercase()
+                ) {
                     builder.addText(
                         padLine(
                             Constants.SURCHARGE_TEXT,
@@ -2980,7 +3129,8 @@ class AllOrdersListingFragment(
 
     private fun generateQRCode(qrcodeStaticUrl: String): Bitmap {
 
-        val manager = requireContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager?
+        val manager =
+            requireContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager?
 
         // initializing a variable for default display.
 
@@ -3066,7 +3216,12 @@ class AllOrdersListingFragment(
             )
 
             if (customerSettingModel.showWebsiteAddress) {
-                PrintSunmiUtils.venueWebsite(prefProvider.getValue(Constants.BUSINESS_WEBSITE, ""))
+                PrintSunmiUtils.venueWebsite(
+                    prefProvider.getValue(
+                        Constants.BUSINESS_WEBSITE,
+                        ""
+                    )
+                )
             }
 
             if (customerSettingModel.showOrderType) {
@@ -3279,7 +3434,10 @@ class AllOrdersListingFragment(
             }
 
             val result =
-                prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)
+                prefProvider.getValueboolean(
+                    Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
+                    false
+                )
 
             if (result) {
 
@@ -3327,7 +3485,10 @@ class AllOrdersListingFragment(
             if (receiptModel.cash_discount_or_surcharge != 0.0 && customerSettingModel.showCashDisSurCharg) {
 
 
-                if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(receiptModel.payments.size - 1).paymentType.lowercase() == "Card".lowercase()) {
+                if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(
+                        receiptModel.payments.size - 1
+                    ).paymentType.lowercase() == "Card".lowercase()
+                ) {
 
                     val str8 = padLine(
                         Constants.SURCHARGE_TEXT,
@@ -4189,7 +4350,12 @@ class AllOrdersListingFragment(
                         add(
                             PrinterBuilder()
                                 .actionPrintText(
-                                    "Employee:${prefProvider.getValue(Constants.EMPLOYEE_NAME,"")}"
+                                    "Employee:${
+                                        prefProvider.getValue(
+                                            Constants.EMPLOYEE_NAME,
+                                            ""
+                                        )
+                                    }"
                                 )
                         )
                         actionFeedLine(1)
@@ -4300,9 +4466,10 @@ class AllOrdersListingFragment(
                                             ) != null
                                         ) {
 
-                                            var phoneNumber = orderData.customer?.phones?.get(
-                                                0
-                                            )?.phoneNumber.toString()
+                                            var phoneNumber =
+                                                orderData.customer?.phones?.get(
+                                                    0
+                                                )?.phoneNumber.toString()
                                             if (phoneNumber.length != 10) {
                                                 // Handle invalid input (must be 10 digits)
                                                 "Invalid phone number"
@@ -4355,7 +4522,9 @@ class AllOrdersListingFragment(
 
         } else {
 
-            if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
+            if (!data.name.substring(0, 6).toString().lowercase()
+                    .contains("TM-m".lowercase())
+            ) {
                 var mPrinter = if (data.name.substring(0, 6).toString().lowercase()
                         .contains("TM-m".lowercase())
                 ) {
@@ -6256,7 +6425,10 @@ class AllOrdersListingFragment(
             }
 
             val result =
-                prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)
+                prefProvider.getValueboolean(
+                    Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
+                    false
+                )
 
             if (receiptModel.totalServiceCharges != null && result) {
 
@@ -6299,7 +6471,10 @@ class AllOrdersListingFragment(
             if (receiptModel.cash_discount_or_surcharge != 0.0 && customerSettingModel.showCashDisSurCharg) {
 
 
-                if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(receiptModel.payments.size - 1).paymentType.lowercase() == "Card".lowercase()) {
+                if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(
+                        receiptModel.payments.size - 1
+                    ).paymentType.lowercase() == "Card".lowercase()
+                ) {
 
                     val str8 = padLine(
                         Constants.SURCHARGE_TEXT,
