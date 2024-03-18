@@ -859,9 +859,10 @@ open class PaymentViewModel @Inject constructor(
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
 
+        prefProvider.setValueboolean(Constants.DO_PRINT, false)
 
         try {
-            var oldItems=prefProvider.getValue(Constants.OLD_ITEM_BASE,"")
+            var oldItems = prefProvider.getValue(Constants.OLD_ITEM_BASE, "")
             if (oldItems.isNotEmpty()) {
                 /*Added by Rahul to solve the modifiers not removing issue*/
                 val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
@@ -876,30 +877,43 @@ open class PaymentViewModel @Inject constructor(
 
                     try {
                         if (found.size == 0) {
+                            prefProvider.setValueboolean(Constants.DO_PRINT, true)
                             oldItem.isDestroy = true
                         } else {
                             cartItems.forEach {
                                 if (it.cartItemId == oldItem.cartItemId) {
                                     oldItem.itemOriginalModifiersList = it.itemOriginalModifiersList
                                     oldItem.modifiers = it.modifiers
-                                    oldItem.isDestroy=it.isDestroy
-                                    oldItem.timeStamp=it.timeStamp
-                                    oldItem.orderType=it.orderType
-                                    oldItem.note=it.note
-                                    oldItem.name=it.name
-                                    oldItem.website_hide_status=it.website_hide_status
-                                    oldItem.categoryId=it.categoryId
-                                    oldItem.isEdited=it.isEdited
-                                    oldItem.discountId=it.discountId
-                                    oldItem.discountPrice=it.discountPrice
-                                    oldItem.discountType=it.discountType
-                                    oldItem.employeeID=it.employeeID
-                                    oldItem.isHide=it.isHide
-                                    oldItem.quantity=it.quantity
-                                    oldItem.itemQuantity=it.itemQuantity
-                                    oldItem.variationsAttributes=it.variationsAttributes
-                                    oldItem.taxes=it.taxes
-                                    oldItem.isItemEdited=it.isItemEdited
+                                    oldItem.isDestroy = it.isDestroy
+                                    oldItem.timeStamp = it.timeStamp
+                                    oldItem.orderType = it.orderType
+                                    oldItem.note = it.note
+                                    oldItem.name = it.name
+                                    oldItem.website_hide_status = it.website_hide_status
+                                    oldItem.categoryId = it.categoryId
+                                    oldItem.isEdited = it.isEdited
+                                    oldItem.discountId = it.discountId
+                                    oldItem.discountPrice = it.discountPrice
+                                    oldItem.discountType = it.discountType
+                                    oldItem.employeeID = it.employeeID
+                                    oldItem.isHide = it.isHide
+                                    if (oldItem.itemQuantity != it.itemQuantity) {
+                                        oldItem.isItemEdited = true
+                                    } else {
+                                        oldItem.isItemEdited = it.isItemEdited
+                                    }
+                                    oldItem.quantity = it.quantity
+                                    oldItem.itemQuantity = it.itemQuantity
+                                    oldItem.variationsAttributes = it.variationsAttributes
+                                    oldItem.taxes = it.taxes
+
+                                }
+
+                                if (oldItem.isItemEdited || it.orderItemId==null) {
+                                    prefProvider.setValueboolean(
+                                        Constants.DO_PRINT,
+                                        true
+                                    )
                                 }
                             }
                         }
@@ -909,38 +923,40 @@ open class PaymentViewModel @Inject constructor(
 
 
                     cartItems.forEach {
-                        if (oldItem.cartItemId==it.cartItemId){
-                            oldItem.website_hide_status=it.website_hide_status
-                            oldItem.discountType=it.discountType
-                            oldItem.quantity=it.quantity
-                            oldItem.itemQuantity=it.itemQuantity
-                            oldItem.taxes=it.taxes
+                        if (oldItem.cartItemId == it.cartItemId) {
+                            oldItem.website_hide_status = it.website_hide_status
+                            oldItem.discountType = it.discountType
+                            oldItem.quantity = it.quantity
+                            oldItem.itemQuantity = it.itemQuantity
+                            oldItem.taxes = it.taxes
 //                            oldItem.isDestroy=it.isDestroy
-                            oldItem.isEdited=it.isEdited
-                            oldItem.isFired=it.isFired
-                            oldItem.isPaid=it.isPaid
-                            oldItem.createdAt=it.createdAt
-                            oldItem.employeeID=it.employeeID
-                            oldItem.customItemCount=it.customItemCount
-                            oldItem.customItemID=it.customItemID
-                            oldItem.hide_status=it.hide_status
-                            oldItem.discountId=it.discountId
-                            oldItem.discountPrice=it.discountPrice
-                            oldItem.modifier_set_ids=it.modifier_set_ids
-                            oldItem.name=it.name
-                            oldItem.note=it.note
-                            oldItem.optionSets=it.optionSets
-                            oldItem.orderItemId=it.orderItemId
-                            oldItem.orderType=it.orderType
-                            oldItem.orderTypeId=it.orderTypeId
-                            oldItem.orderTypeName=it.orderTypeName
-                            oldItem.reorder=it.reorder
-                            oldItem.timeStamp=it.timeStamp
-                            oldItem.price=it.price
-                            oldItem.singleItemPrice=it.singleItemPrice
-                            oldItem.sku=it.sku
-                            oldItem.variationsAttributes=it.variationsAttributes
-                            oldItem.isItemEdited=it.isItemEdited
+                            oldItem.isEdited = it.isEdited
+                            oldItem.isFired = it.isFired
+                            oldItem.isPaid = it.isPaid
+                            oldItem.createdAt = it.createdAt
+                            oldItem.employeeID = it.employeeID
+                            oldItem.customItemCount = it.customItemCount
+                            oldItem.customItemID = it.customItemID
+                            oldItem.hide_status = it.hide_status
+                            oldItem.discountId = it.discountId
+                            oldItem.discountPrice = it.discountPrice
+                            oldItem.modifier_set_ids = it.modifier_set_ids
+                            oldItem.name = it.name
+                            oldItem.note = it.note
+                            oldItem.optionSets = it.optionSets
+                            oldItem.orderItemId = it.orderItemId
+                            oldItem.orderType = it.orderType
+                            oldItem.orderTypeId = it.orderTypeId
+                            oldItem.orderTypeName = it.orderTypeName
+                            oldItem.reorder = it.reorder
+                            oldItem.timeStamp = it.timeStamp
+                            oldItem.price = it.price
+                            oldItem.singleItemPrice = it.singleItemPrice
+                            oldItem.sku = it.sku
+                            oldItem.variationsAttributes = it.variationsAttributes
+                            if (!oldItem.isItemEdited) {
+                                oldItem.isItemEdited = it.isItemEdited
+                            }
                         }
                     }
                 }
@@ -948,7 +964,7 @@ open class PaymentViewModel @Inject constructor(
                 cartItems.forEach { cartItemData ->
                     val found = oldCartItemsList.filter { it.cartItemId == cartItemData.cartItemId }
                     if (found.size == 0) {
-                        cartItemData.isEdited=true
+                        cartItemData.isEdited = true
                         oldCartItemsList.add(cartItemData)
                     }
                 }
@@ -959,8 +975,7 @@ open class PaymentViewModel @Inject constructor(
 
             }
             prefProvider.setValue(Constants.OLD_ITEM, oldItems)
-        } catch (e: Exception)
-        {
+        } catch (e: Exception) {
             prefProvider.setValue(Constants.OLD_ITEM, oldItems)
         }
 
@@ -1422,12 +1437,19 @@ open class PaymentViewModel @Inject constructor(
         val orderAttributeRequestModel = OrderAttributeRequestModel()
 
         /*This is working well just uncomment it, we have commented it because the update list is being fetched in the OPEN_ORDER_ITEMS_BASE, that's why we are changing the get field*/
-        if (/*prefProvider.getValue(Constants.OLD_ITEM, "")*/prefProvider.getValue(Constants.OLD_ITEM_BASE,"").isNotEmpty()) {
+        if (/*prefProvider.getValue(Constants.OLD_ITEM, "")*/prefProvider.getValue(
+                Constants.OLD_ITEM_BASE,
+                ""
+            ).isNotEmpty()
+        ) {
 //            Added by Rahul to solve the modifiers not removing issue
             val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
 
             var oldCartItemsList = Gson().fromJson<java.util.ArrayList<TbCartItem>>(
-                /*prefProvider.getValue(Constants.OLD_ITEM, "")*/prefProvider.getValue(Constants.OLD_ITEM_BASE,""),
+                /*prefProvider.getValue(Constants.OLD_ITEM, "")*/prefProvider.getValue(
+                    Constants.OLD_ITEM_BASE,
+                    ""
+                ),
                 listType
             )
 
@@ -1444,23 +1466,28 @@ open class PaymentViewModel @Inject constructor(
                                 if (it.cartItemId == oldItem.cartItemId) {
                                     oldItem.itemOriginalModifiersList = it.itemOriginalModifiersList
                                     oldItem.modifiers = it.modifiers
-                                    oldItem.isDestroy=it.isDestroy
-                                    oldItem.timeStamp=it.timeStamp
-                                    oldItem.orderType=it.orderType
-                                    oldItem.note=it.note
-                                    oldItem.name=it.name
-                                    oldItem.website_hide_status=it.website_hide_status
-                                    oldItem.categoryId=it.categoryId
-                                    oldItem.isEdited=it.isEdited
-                                    oldItem.discountId=it.discountId
-                                    oldItem.discountPrice=it.discountPrice
-                                    oldItem.discountType=it.discountType
-                                    oldItem.employeeID=it.employeeID
-                                    oldItem.isHide=it.isHide
-                                    oldItem.quantity=it.quantity
-                                    oldItem.itemQuantity=it.itemQuantity
-                                    oldItem.variationsAttributes=it.variationsAttributes
-                                    oldItem.taxes=it.taxes
+                                    oldItem.isDestroy = it.isDestroy
+                                    oldItem.timeStamp = it.timeStamp
+                                    oldItem.orderType = it.orderType
+                                    oldItem.note = it.note
+                                    oldItem.name = it.name
+                                    oldItem.website_hide_status = it.website_hide_status
+                                    oldItem.categoryId = it.categoryId
+                                    oldItem.isEdited = it.isEdited
+                                    oldItem.discountId = it.discountId
+                                    oldItem.discountPrice = it.discountPrice
+                                    oldItem.discountType = it.discountType
+                                    oldItem.employeeID = it.employeeID
+                                    oldItem.isHide = it.isHide
+                                    oldItem.quantity = it.quantity
+                                    if (oldItem.itemQuantity != it.itemQuantity) {
+                                        oldItem.isItemEdited = true
+                                    } else {
+                                        oldItem.isItemEdited = it.isItemEdited
+                                    }
+                                    oldItem.itemQuantity = it.itemQuantity
+                                    oldItem.variationsAttributes = it.variationsAttributes
+                                    oldItem.taxes = it.taxes
                                 }
                             }
                         }
@@ -1470,41 +1497,42 @@ open class PaymentViewModel @Inject constructor(
                 }
 
                 cartItems.forEach {
-                    if (oldItem.cartItemId==it.cartItemId){
-                        oldItem.website_hide_status=it.website_hide_status
-                        oldItem.discountType=it.discountType
-                        oldItem.quantity=it.quantity
-                        oldItem.itemQuantity=it.itemQuantity
-                        oldItem.taxes=it.taxes
+                    if (oldItem.cartItemId == it.cartItemId) {
+                        oldItem.website_hide_status = it.website_hide_status
+                        oldItem.discountType = it.discountType
+                        oldItem.quantity = it.quantity
+                        oldItem.itemQuantity = it.itemQuantity
+                        oldItem.taxes = it.taxes
 //                        oldItem.isDestroy=it.isDestroy
-                        oldItem.isEdited=it.isEdited
-                        oldItem.isFired=it.isFired
-                        oldItem.isPaid=it.isPaid
-                        oldItem.createdAt=it.createdAt
-                        oldItem.employeeID=it.employeeID
-                        oldItem.customItemCount=it.customItemCount
-                        oldItem.customItemID=it.customItemID
-                        oldItem.hide_status=it.hide_status
-                        oldItem.discountId=it.discountId
-                        oldItem.discountPrice=it.discountPrice
-                        oldItem.modifier_set_ids=it.modifier_set_ids
-                        oldItem.name=it.name
-                        oldItem.note=it.note
-                        oldItem.optionSets=it.optionSets
-                        oldItem.orderItemId=it.orderItemId
-                        oldItem.orderType=it.orderType
-                        oldItem.orderTypeId=it.orderTypeId
-                        oldItem.orderTypeName=it.orderTypeName
-                        oldItem.reorder=it.reorder
-                        oldItem.timeStamp=it.timeStamp
-                        oldItem.price=it.price
-                        oldItem.singleItemPrice=it.singleItemPrice
-                        oldItem.sku=it.sku
-                        oldItem.variationsAttributes=it.variationsAttributes
-                        oldItem.isItemEdited=it.isItemEdited
+                        oldItem.isEdited = it.isEdited
+                        oldItem.isFired = it.isFired
+                        oldItem.isPaid = it.isPaid
+                        oldItem.createdAt = it.createdAt
+                        oldItem.employeeID = it.employeeID
+                        oldItem.customItemCount = it.customItemCount
+                        oldItem.customItemID = it.customItemID
+                        oldItem.hide_status = it.hide_status
+                        oldItem.discountId = it.discountId
+                        oldItem.discountPrice = it.discountPrice
+                        oldItem.modifier_set_ids = it.modifier_set_ids
+                        oldItem.name = it.name
+                        oldItem.note = it.note
+                        oldItem.optionSets = it.optionSets
+                        oldItem.orderItemId = it.orderItemId
+                        oldItem.orderType = it.orderType
+                        oldItem.orderTypeId = it.orderTypeId
+                        oldItem.orderTypeName = it.orderTypeName
+                        oldItem.reorder = it.reorder
+                        oldItem.timeStamp = it.timeStamp
+                        oldItem.price = it.price
+                        oldItem.singleItemPrice = it.singleItemPrice
+                        oldItem.sku = it.sku
+                        oldItem.variationsAttributes = it.variationsAttributes
+                        if (!oldItem.isItemEdited) {
+                            oldItem.isItemEdited = it.isItemEdited
+                        }
                     }
                 }
-
 
 
             }
@@ -1514,7 +1542,7 @@ open class PaymentViewModel @Inject constructor(
 
                 val found = oldCartItemsList.filter { it.cartItemId == cartItemData.cartItemId }
                 if (found.size == 0) {
-                    cartItemData.isEdited=true
+                    cartItemData.isEdited = true
                     oldCartItemsList.add(cartItemData)
                 }
             }
@@ -2092,6 +2120,7 @@ open class PaymentViewModel @Inject constructor(
 
             orderItemsAttribute.category_id = item.categoryId
             orderItemsAttribute.custom_item_id = item.id
+            orderItemsAttribute.isItemEdited = item.isItemEdited
 
 
             if (cartModel.reorder) {
@@ -2176,7 +2205,7 @@ open class PaymentViewModel @Inject constructor(
             orderItemsAttribute.employeeId = cartModel.employeeID
             orderItemsAttribute.isCount = 0
             orderItemsAttribute.isEdited = item.isEdited
-            orderItemsAttribute.isItemEdited=item.isItemEdited
+            orderItemsAttribute.isItemEdited = item.isItemEdited
             orderItemsAttribute.isDestroy = item.isDestroy
             orderItemsAttribute.isPaid = false
             orderItemsAttribute.isPrinted =

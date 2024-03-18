@@ -131,6 +131,10 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
                     item?.let {
                         if (!it.note.equals("")){
                             it.isItemEdited=true
+                            prefProvider.setValueboolean(
+                                Constants.DO_PRINT,
+                                true
+                            )
                         }
                     }
                     putParcelable("item", item)
@@ -152,6 +156,11 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
             item?.let {
                 if (!it.note.equals(binding.edtNote.text.toString().trim())){
                     it.isItemEdited=true
+
+                    prefProvider.setValueboolean(
+                        Constants.DO_PRINT,
+                        true
+                    )
                 }
             }
 

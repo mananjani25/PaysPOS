@@ -21,8 +21,9 @@ import java.util.concurrent.ExecutionException
 object Constants {
 
 
-    const val OLD_ITEM: String="OLD_ITEM"
-    const val OLD_ITEM_BASE: String="OLD_ITEM_BASE"
+    const val DO_PRINT: String = "DO_PRINT"
+    const val OLD_ITEM: String = "OLD_ITEM"
+    const val OLD_ITEM_BASE: String = "OLD_ITEM_BASE"
     const val START_DATE = "start_date"
     const val END_DATE = "end_date"
 
@@ -80,7 +81,7 @@ object Constants {
     //SharedPref Keys
     const val AUTH_TOKEN = "authToken"
     const val CHECK_QUEUE_CANCEL = "check_queue_cancel"
-    const val WORKER_QUEUE_IN_PROGRESS="worker_queue_in_progress"
+    const val WORKER_QUEUE_IN_PROGRESS = "worker_queue_in_progress"
     const val TERMINAL_ID = "terminalId"
     const val TERMINAL_NAME = "terminalName"
     const val SYNC_TIME_STAMP = "SyncTimeStamp"
@@ -839,7 +840,7 @@ object Constants {
         return CloudPrinterBuilder.buildPrinter(name, ipAddress, portNo)
     }
 
-    fun checkUploadWorker(str:String,context: Context):Boolean{
+    fun checkUploadWorker(str: String, context: Context): Boolean {
         var instance = WorkManager.getInstance(context)
 
         val statuses = instance.getWorkInfosByTag(str)
@@ -849,7 +850,7 @@ object Constants {
             for (workInfo in workInfoList) {
                 val state = workInfo.state
 
-                Log.e("ConstantsExt","checkState:  ${state}")
+                Log.e("ConstantsExt", "checkState:  ${state}")
                 running = (state == WorkInfo.State.RUNNING) or (state == WorkInfo.State.ENQUEUED)
             }
             running

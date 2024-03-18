@@ -2906,8 +2906,11 @@ class CartFragment(
                                     viewModelPayment.saveOrder(true)
 
                                     viewModelPayment.orderCreateCallSent = true
-                                    try {
-                                        /*This is added because: when we remove the updated values and make the item as default, then it was taking as updated*/
+
+                                    /*Removing this for now, because it was not behaving as per requirement*/
+
+                                  /*  try {
+                                        *//*This is added because: when we remove the updated values and make the item as default, then it was taking as updated*//*
 
                                         val listType = object :
                                             TypeToken<List<OnlineOrderResponseModel.Data.OrderItem>>() {}.type
@@ -2918,12 +2921,13 @@ class CartFragment(
                                                 listType
                                             )
 
+
                                         with(request?.order){
                                             this?.orderItemsAttributes?.forEach {orderItemAttribute->
                                                 redundantDatas.forEach { reduntantData->
                                                     if ((orderItemAttribute.employeeId==reduntantData.employeeId) && (orderItemAttribute.category_id==reduntantData.categoryId) && (orderItemAttribute.id==reduntantData.id) && (orderItemAttribute.itemId==reduntantData.itemId)){
-                                                        if (orderItemAttribute.note.equals(reduntantData.note) && (orderItemAttribute.price==orderItemAttribute.price) && (orderItemAttribute.totalPrice==orderItemAttribute.totalPrice) && (orderItemAttribute.discountAmount==orderItemAttribute.discountAmount) && (orderItemAttribute.discountType==orderItemAttribute.discountType)
-                                                            && (orderItemAttribute.quantity==orderItemAttribute.quantity) && (orderItemAttribute.itemName.equals(orderItemAttribute.itemName)
+                                                        if (orderItemAttribute.note.equals(reduntantData.note) && (orderItemAttribute.price==reduntantData.price) && (orderItemAttribute.totalPrice==reduntantData.totalPrice) && (orderItemAttribute.discountAmount==reduntantData.discountAmount) && (orderItemAttribute.discountType==reduntantData.discountType)
+                                                            && (orderItemAttribute.quantity==reduntantData.quantity)  && (orderItemAttribute.itemName.equals(reduntantData.itemName)
                                                                     && (areTaxesEqual(orderItemAttribute,reduntantData)) && (areModifiersEqual(orderItemAttribute,reduntantData))
                                                                     && (areVariationsEqual(orderItemAttribute,reduntantData)))){
 
@@ -2938,7 +2942,7 @@ class CartFragment(
 
                                     } catch (e: Exception) {
                                     }
-
+*/
                                     //
                                     viewModel.fromAllOrderFragment = false
                                     request?.let { it1 -> viewModelPayment.submit(it1) }

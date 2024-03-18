@@ -2196,7 +2196,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
             printer = StarPrinter(settings, requireContext())
 
-            CoroutineScope(Dispatchers.IO).launch {
+            runBlocking{
                 try {
                     val builder = StarXpandCommandBuilder()
 
@@ -3136,7 +3136,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         }
                                     }
 
-                                    prefProvider.setValue(Constants.OLD_ITEM_BASE,"")
+//                                    prefProvider.setValue(Constants.OLD_ITEM_BASE,"")
 
 /*Testing, just to generate from frontent, this will come from server - END*/
 

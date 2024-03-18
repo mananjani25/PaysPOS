@@ -3127,7 +3127,7 @@ fun addOrdersForKitchen(
                 val obj = list.get(i)
 
 
-                if (obj.isEdited){
+                if (obj.isItemEdited){
                     PrintSunmiUtils.orderTime("(U)"+obj.quantity.toString() + " " + obj.itemName.uppercase())
                 }
                 else{
@@ -3397,7 +3397,7 @@ fun addOrdersForKitchenInner(
 
                 val obj = list.get(i)
 
-                if (obj.isEdited){
+                if (obj.isItemEdited){
                     PrintSunmiUtils.normalTextLarge("(U)"+obj.quantity.toString() + " " + obj.itemName.uppercase())
                 }else{
                     PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName.uppercase())

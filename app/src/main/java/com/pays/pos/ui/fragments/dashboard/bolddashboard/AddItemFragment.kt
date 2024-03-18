@@ -1140,12 +1140,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         item.name = item.name.substringBefore(" (") + " (" + variation.name + ")"
                         item.price = variation.price ?: 0.0
 
-                        with(item.variationsAttributes.get(0)){
+                       /* with(item.variationsAttributes.get(0)){
                             if (!name.equals(variation.name) || (id!=variation.id) || (price!=variation.price)){
                                 item.isItemEdited=true
                             }
                         }
-
+*/
                         if (item.price == 0.0 && variation.priceType == "Variable") {
                             AlertUtils.showCustomAlertWithListenerWithOK(
                                 requireContext(), "Please enter amount"

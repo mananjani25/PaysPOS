@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <LinearLayout
         android:id="@+id/linear_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/_4sdp"
-        android:background="@drawable/item_selector"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground">
 
         <TextView
             android:id="@+id/txtCategoryName"
@@ -22,13 +25,14 @@
             android:gravity="center"
             android:lines="4"
             android:maxLines="4"
+            android:background="@color/white"
             android:paddingStart="@dimen/_5sdp"
             android:paddingTop="@dimen/_3sdp"
             android:paddingEnd="@dimen/_5sdp"
             android:paddingBottom="@dimen/_2sdp"
-            tools:text="FOOD"
             android:textColor="@drawable/text_selector"
-            android:textSize="@dimen/_6mdpi" />
+            android:textSize="@dimen/_6mdpi"
+            tools:text="FOOD" />
 
         <TextView
             android:id="@+id/txtPrice"
@@ -46,6 +50,7 @@
             android:text="@string/_0_00"
             android:textColor="@drawable/text_selector"
             android:textSize="@dimen/_5mdpi" />
+
         <View
             android:id="@+id/view_line_formodifier"
             android:layout_width="match_parent"
@@ -53,5 +58,5 @@
             android:background="@color/txt_color_blue"
             android:visibility="gone" />
 
-    </androidx.appcompat.widget.LinearLayoutCompat>
+    </LinearLayout>
 </layout>

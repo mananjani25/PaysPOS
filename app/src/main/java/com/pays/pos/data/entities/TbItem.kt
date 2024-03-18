@@ -65,6 +65,7 @@ class TbItem : Parcelable {
     var timeStamp: String? = null
     var isPaid: Boolean = false
     var isEdited: Boolean = false
+    var isItemEdited: Boolean = false
     var guestItemId: Int? = null
     var isDestroy: Boolean = false
     var reorder: Boolean = false

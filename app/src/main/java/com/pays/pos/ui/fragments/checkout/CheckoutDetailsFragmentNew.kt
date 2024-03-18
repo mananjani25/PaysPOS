@@ -2875,70 +2875,94 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
 
+
+        oldItems = prefProvider.getValue(Constants.OLD_ITEM_BASE, "")
+        val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
+        lateinit var oldCartItemsList: ArrayList<TbCartItem>
+        if (oldItems.isNotEmpty()) {
+            oldCartItemsList = Gson().fromJson<java.util.ArrayList<TbCartItem>>(
+                oldItems,
+                listType
+            )
+        }
+
         if (cartList!!.items == null || cartList!!.items!!.isEmpty()) {
             var items: ArrayList<TbItem>? = ArrayList()
             /*  for (item in viewModel.currentCartItems) {*/
             for (item in viewModel.currentCartItems) {
                 var tbItem = TbItem()
-                tbItem.id = item.id
-                tbItem.cartItemId = item.cartItemId
-                tbItem.itemId = item.itemId
-                tbItem.categoryId = item.categoryId
-                tbItem.categoryName = item.categoryName
-                tbItem.createdAt = item.createdAt
-                tbItem.customItemCount = item.customItemCount
-                tbItem.dineInSort = item.dineInSort
-                tbItem.customItemID = item.customItemCount
-                tbItem.discountId = item.discountId
-                tbItem.discountPrice = item.discountPrice
-                tbItem.discountType = item.discountType
-                tbItem.guestItemId = item.guestItemId
-                tbItem.headerPositionDinein = item.headerPositionDinein
-                tbItem.hide_status = item.hide_status
-                tbItem.isHide = item.isHide
-                tbItem.imageUrl = item.imageUrl
-                tbItem.isChecked = item.isChecked
-                tbItem.isDeleted = item.isDeleted
-                tbItem.isDestroy = item.isDestroy
-                tbItem.isEdited = item.isEdited
-                tbItem.isFired = item.isFired
-                tbItem.isManualSales = item.isManualSales
-                tbItem.isPaid = item.isPaid
-                tbItem.itemOriginalModifiersList = item.itemOriginalModifiersList
-                tbItem.itemQuantity = item.itemQuantity
-                tbItem.modifier_set_ids = item.modifier_set_ids
-                tbItem.modifiers = item.modifiers
-                tbItem.name = item.name
-                tbItem.note = item.note
-                tbItem.manualSaleId = item.manualSaleId
-                tbItem.optionSets = item.optionSets
-                tbItem.website_hide_status = item.website_hide_status
-                tbItem.variationsAttributes = item.variationsAttributes
-                tbItem.updatedAt = item.updatedAt
-                tbItem.timeStamp = item.timeStamp
-                tbItem.thumbImageUrl = item.thumbImageUrl
-                tbItem.taxes = item.taxes
-                tbItem.sort = item.sort
-                tbItem.sku = item.sku
-                tbItem.singleItemPrice = item.singleItemPrice
-                tbItem.shortDescription = item.shortDescription
-                tbItem.reorder = item.reorder
-                tbItem.quantity = item.quantity
-                tbItem.price = item.price
-                tbItem.orderItemId = item.orderItemId
+                tbItem.apply {
+
+                    isItemEdited=item.isItemEdited
+
+                    itemQuantity = item.itemQuantity
+                    id = item.id
+                    cartItemId = item.cartItemId
+                    itemId = item.itemId
+                    categoryId = item.categoryId
+                    categoryName = item.categoryName
+                    createdAt = item.createdAt
+                    customItemCount = item.customItemCount
+                    dineInSort = item.dineInSort
+                    customItemID = item.customItemCount
+                    discountId = item.discountId
+                    discountPrice = item.discountPrice
+                    discountType = item.discountType
+                    guestItemId = item.guestItemId
+                    headerPositionDinein = item.headerPositionDinein
+                    hide_status = item.hide_status
+                    isHide = item.isHide
+                    imageUrl = item.imageUrl
+                    isChecked = item.isChecked
+                    isDeleted = item.isDeleted
+                    isDestroy = item.isDestroy
+                    isEdited = item.isEdited
+                    isFired = item.isFired
+                    isManualSales = item.isManualSales
+                    isPaid = item.isPaid
+                    itemOriginalModifiersList = item.itemOriginalModifiersList
+                    modifier_set_ids = item.modifier_set_ids
+                    modifiers = item.modifiers
+                    name = item.name
+                    note = item.note
+                    manualSaleId = item.manualSaleId
+                    optionSets = item.optionSets
+                    website_hide_status = item.website_hide_status
+                    variationsAttributes = item.variationsAttributes
+                    updatedAt = item.updatedAt
+                    timeStamp = item.timeStamp
+                    thumbImageUrl = item.thumbImageUrl
+                    taxes = item.taxes
+                    sort = item.sort
+                    sku = item.sku
+                    singleItemPrice = item.singleItemPrice
+                    shortDescription = item.shortDescription
+                    reorder = item.reorder
+                    quantity = item.quantity
+                    price = item.price
+                    orderItemId = item.orderItemId
+
+
+                    oldCartItemsList.forEach { oldItem ->
+                        if ((oldItem.cartItemId == item.cartItemId) &&
+                            (oldItem.categoryId == item.categoryId) &&
+                            (oldItem.employeeID == item.employeeID) &&
+                            (oldItem.itemId == item.itemId) &&
+                            (oldItem.name.equals(item.name))) {
+
+                            if (item.itemQuantity!=oldItem.itemQuantity){
+                                isItemEdited=true
+                            }
+
+                        }
+                    }
+                }
 
                 items!!.add(tbItem)
 
             }
 
-            oldItems=prefProvider.getValue(Constants.OLD_ITEM_BASE,"")
             if (oldItems.isNotEmpty()) {
-                val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
-
-                var oldCartItemsList = Gson().fromJson<java.util.ArrayList<TbCartItem>>(
-                    oldItems,
-                    listType
-                )
 
                 for (item in viewModel.currentCartItems) {
                     try {
@@ -2949,17 +2973,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 oldCartItemsList.filter { it.cartItemId != item.cartItemId }
 
                             if (!notPresentItems.isEmpty()) {
-                                var isFound=false
+                                var isFound = false
                                 notPresentItems.forEach { notPresentData ->
                                     items?.forEach {
-                                        if (it.cartItemId==notPresentData.cartItemId){
-                                            isFound=true
+                                        if (it.cartItemId == notPresentData.cartItemId) {
+                                            isFound = true
                                             return@forEach
                                         }
                                     }
-                                    if (!isFound){
+                                    if (!isFound) {
 //                                        Not found
-                                        isFound=false
+                                        isFound = false
 
                                         var tbItemDeleted = TbItem()
                                         tbItemDeleted.id = notPresentData.id
@@ -3039,9 +3063,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
 
             }
+
+
             /*Adding the deleted items*/
-
-
             cartList!!.items = items
         }
         prefProvider.setValue(Constants.OLD_ITEM, "")

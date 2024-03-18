@@ -4,6 +4,9 @@
     <item android:drawable="@color/txt_color_blue"
         android:state_last="true" />
 
+    <item android:drawable="@color/white"
+        android:state_first="true" />
+
 
 
     <item android:drawable="@color/white" />
