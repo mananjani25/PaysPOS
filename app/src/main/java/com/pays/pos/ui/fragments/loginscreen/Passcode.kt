@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
@@ -76,11 +77,13 @@ class Passcode : Fragment() {
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true /* enabled by default */) {
                 override fun handleOnBackPressed() {
-                    if ((isSwap || isDashboard) && !isExit) {
-                        findNavController().navigateUp()
-                    } else {
-                        (requireActivity() as MainActivity).finish()
-                    }
+                    Toast.makeText(requireContext(), "Please enter passcode", Toast.LENGTH_SHORT).show()
+//                    if ((isSwap || isDashboard) && !isExit) {
+////                        findNavController().navigateUp()
+//                        Toast.makeText(requireContext(), "Please input your passcode", Toast.LENGTH_SHORT).show()
+//                    } else {
+//                        (requireActivity() as MainActivity).finish()
+//                    }
                 }
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
