@@ -187,7 +187,7 @@
                     android:textColor="@color/txtColor"
                     android:textColorHint="@color/hint_color"
                     android:textSize="@dimen/_6mdpi"
-                    tools:ignore="Autofill" />
+                    tools:ignore="Autofill,TouchTargetSizeCheck" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -364,7 +364,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:gravity="center"
-                    android:text=""
+                    android:text="No data"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6sdp"
                     android:visibility="visible" />

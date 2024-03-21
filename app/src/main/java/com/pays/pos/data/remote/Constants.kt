@@ -24,6 +24,7 @@ object Constants {
     const val DO_PRINT: String = "DO_PRINT"
     const val OLD_ITEM: String = "OLD_ITEM"
     const val OLD_ITEM_BASE: String = "OLD_ITEM_BASE"
+    const val OLD_ITEM_BASE_CUSTOM_ITEM: String = "OLD_ITEM_BASE_ITEM"
     const val START_DATE = "start_date"
     const val END_DATE = "end_date"
 

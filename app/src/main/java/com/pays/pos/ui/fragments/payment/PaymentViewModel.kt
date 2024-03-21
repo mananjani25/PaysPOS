@@ -1447,13 +1447,26 @@ open class PaymentViewModel @Inject constructor(
 //            Added by Rahul to solve the modifiers not removing issue
             val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
 
-            var oldCartItemsList = Gson().fromJson<java.util.ArrayList<TbCartItem>>(
+
+            val isCustomItemFound = cartItems.filter { it.customItemID!=0 }
+
+            var oldCartItemsList = if (isCustomItemFound.isEmpty()) {
+                Gson().fromJson<java.util.ArrayList<TbCartItem>>(
                 /*prefProvider.getValue(Constants.OLD_ITEM, "")*/prefProvider.getValue(
                     Constants.OLD_ITEM_BASE,
                     ""
                 ),
                 listType
-            )
+                )
+            }else {
+                Gson().fromJson<java.util.ArrayList<TbCartItem>>(
+                    /*prefProvider.getValue(Constants.OLD_ITEM, "")*/prefProvider.getValue(
+                        Constants.OLD_ITEM_BASE_CUSTOM_ITEM,
+                        ""
+                    ),
+                    listType
+                )
+            }
 
             for (oldItem in oldCartItemsList) {
 
