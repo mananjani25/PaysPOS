@@ -175,8 +175,16 @@ class MagtekViewModel @Inject constructor(
             ) {
 
                 ProgressUtils.dismissProgressDialog()
+                when(t.message?.contains("org.simpleframework.xml")){
+                    true->{
+                        AlertUtils.showCustomAlert(context,  "Please connect your credit card machine to the Wi-Fi network. Ensure that both your Point of Sale (POS) terminal and credit card machine are connected to the same Wi-Fi network.")
+                    }
+                        false->{
+                            AlertUtils.showCustomAlert(context,  t.message)
+                        }
+                }
 
-                AlertUtils.showCustomAlert(context, t.message)
+
                 Log.d("onFailure: ", "Message-> ${t.message}")
             }
         })
