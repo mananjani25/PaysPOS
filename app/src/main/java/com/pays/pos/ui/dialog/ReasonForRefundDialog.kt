@@ -2,9 +2,7 @@ package com.pays.pos.ui.dialog
 
 import android.content.*
 import android.graphics.Point
-import android.os.Bundle
-import android.os.IBinder
-import android.os.Message
+import android.os.*
 import android.util.Log
 import android.view.*
 import android.widget.Toast
@@ -12,6 +10,11 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.android.volley.AuthFailureError
+import com.android.volley.Request
+import com.android.volley.VolleyError
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.pays.pos.MainApplication
 import com.pays.pos.R
 import com.pays.pos.aidl.ICallback
@@ -47,13 +50,14 @@ import com.google.gson.JsonArray
 import com.pax.poslink.*
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.StringReader
+import java.util.HashMap
 import javax.inject.Inject
 
 
@@ -74,6 +78,9 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
     private val viewModel by viewModels<TransactionDetailsViewModel>()
     private val magtekProViewModel by viewModels<MagtekViewModel>()
     private var woyouService: IWoyouService? = null
+
+    private var requiredNABServerPostAPICall = false
+    private var paxData = ""
 
     // PAX variables
     private lateinit var mPaymentRequest: PaymentRequest
@@ -112,6 +119,10 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
         paxToken = arguments?.getString("pax_token").toString()
         paxExtData = arguments?.getString("pax_ext_data").toString()
         paxECRreferenceNo = arguments?.getString("pax_ecrref_num").toString()
+
+        requiredNABServerPostAPICall = arguments?.getBoolean("requiredNABServerPostAPICall")!!
+        paxData = arguments?.getString("pax_data")+""
+
         Log.d(
             "PAX params:",
             "pax params: paxToken-$paxToken paxECRreferenceNo-$paxECRreferenceNo referenceNo-$referenceNo paxExtData-${
@@ -141,25 +152,33 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             } else {
                 doneClick()
             }*/
-            if (referenceNo.isNullOrEmpty()) {
-                doneClick()
-            } else if (!referenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
-                    Constants.IS_PAX_CONNECTED,
-                    false
-                )
-            ) {
+
+
+           if (requiredNABServerPostAPICall && paxData.isNotEmpty()){
+               runBlocking {
+                   proceedWithServerPostApiRefund()
+               }
+           }else{
+               if (referenceNo.isNullOrEmpty()) {
+                   doneClick()
+               } else if (!referenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
+                       Constants.IS_PAX_CONNECTED,
+                       false
+                   )
+               ) {
 //                refundViaPAX()
-                getBatchLocalReport()
-            } else if (!referenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
-                    Constants.IS_PAX_CONNECTED,
-                    false
-                )
-            ) {
-                AlertUtils.showCustomAlert(
-                    requireContext(),
-                    "Please connect to PAX device"
-                )
-            }
+                   getBatchLocalReport()
+               } else if (!referenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                       Constants.IS_PAX_CONNECTED,
+                       false
+                   )
+               ) {
+                   AlertUtils.showCustomAlert(
+                       requireContext(),
+                       "Please connect to PAX device"
+                   )
+               }
+           }
         }
 
         setupSnackbar()
@@ -176,6 +195,334 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 //        getBatchLocalReport()
 
         return binding.root
+    }
+
+    private suspend fun proceedWithServerPostApiRefund() {
+
+        if (paxData.isNotEmpty()) {
+            var CUST_NBR = ""
+            var MERCH_NBR = ""
+            var DBA_NBR = ""
+            var TERMINAL_NBR = ""
+            var TRAN_TYPE = "CCE7"
+            var BATCH_ID = ""
+            var TRAN_NBR = ""
+            var ORIG_AUTH_GUID = ""
+            var CARD_ENT_METH = ""
+            var AMOUNT = ""
+            var AUTH_GUID = ""
+
+            var key = ""
+            var value = ""
+            val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
+            factory.setNamespaceAware(true)
+            val xpp: XmlPullParser = factory.newPullParser()
+
+            xpp.setInput(StringReader(paxData))
+            var eventType = xpp.eventType
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_DOCUMENT) {
+                    println("Start document")
+                } else if (eventType == XmlPullParser.START_TAG) {
+
+                    try {
+                        key = xpp.getAttributeValue(0)
+                    } catch (e: Exception) {
+                        key = ""
+                    }
+                } else if (eventType == XmlPullParser.END_TAG) {
+
+                } else if (eventType == XmlPullParser.TEXT) {
+                    println("Text " + xpp.text)
+                    if (!value.equals(xpp.text)) {
+                        value = xpp.text
+                    }
+                }
+
+                if (key.equals("CUST_NBR")) {
+                    CUST_NBR = value
+                } else if (key.equals("MERCH_NBR")) {
+                    MERCH_NBR = value
+                } else if (key.equals("DBA_NBR")) {
+                    DBA_NBR = value
+                } else if (key.equals("TERMINAL_NBR")) {
+                    TERMINAL_NBR = value
+                } else if (key.equals("BATCH_ID")) {
+                    BATCH_ID = value
+                } else if (key.equals("TRAN_NBR")) {
+                    TRAN_NBR = value
+                } else if (key.equals("AUTH_GUID")) {
+                    AUTH_GUID = value
+                } else if (key.equals("AUTH_AMOUNT")) {
+                    AMOUNT = value
+                }
+
+                eventType = xpp.next()
+            }
+
+
+            CoroutineScope(Dispatchers.IO).async {
+                val queue = Volley.newRequestQueue(requireContext())
+                val url = "https://secure.epxuap.com/"
+                val getRequest: StringRequest = object : StringRequest(
+                    Request.Method.POST, url,
+                    object : com.android.volley.Response.Listener<String?> {
+                        override fun onResponse(response: String?) {
+                            // response
+                            var AUTH_RESP_TEXT = ""
+                            Log.d("Response", response!!)
+                            xpp.setInput(StringReader(response))
+                            var eventType = xpp.eventType
+                            while (eventType != XmlPullParser.END_DOCUMENT) {
+                                if (eventType == XmlPullParser.START_DOCUMENT) {
+                                    println("Start document")
+                                } else if (eventType == XmlPullParser.START_TAG) {
+
+                                    try {
+                                        key = xpp.getAttributeValue(0)
+                                    } catch (e: Exception) {
+                                        key = ""
+                                    }
+                                } else if (eventType == XmlPullParser.END_TAG) {
+
+                                } else if (eventType == XmlPullParser.TEXT) {
+                                    println("Text " + xpp.text)
+                                    if (!value.equals(xpp.text)) {
+                                        value = xpp.text
+                                    }
+                                }
+
+                                if (key.equals("AUTH_RESP_TEXT")) {
+                                    AUTH_RESP_TEXT = value
+                                }
+
+                                eventType = xpp.next()
+                            }
+
+                            if (AUTH_RESP_TEXT.contains("UNABLE")) {
+                                /*Make refund Call*/
+                                makeRefundCallToNAB(
+                                    xpp,
+                                    CUST_NBR,
+                                    MERCH_NBR,
+                                    DBA_NBR,
+                                    TERMINAL_NBR,
+                                    TRAN_TYPE,
+                                    BATCH_ID,
+                                    TRAN_NBR,
+                                    AMOUNT,
+                                    AUTH_GUID
+                                )
+                            } else if (AUTH_RESP_TEXT.contains("APPROVAL")) {
+                                /*Make our server call*/
+
+                                    refundCall()
+
+                                Handler(Looper.getMainLooper()).post(object:java.lang.Runnable{
+                                    override fun run() {
+                                        ProgressUtils.dismissProgressDialog()
+                                    }
+                                })
+
+                            }
+
+                        }
+                    },
+                    object : com.android.volley.Response.ErrorListener {
+                        override fun onErrorResponse(error: VolleyError) {
+                            // TODO Auto-generated method stub
+                            Log.d("ERROR", "error => $error")
+                        }
+                    }
+                ) {
+                    @Throws(AuthFailureError::class)
+                    override fun getHeaders(): Map<String, String> {
+                        val params: MutableMap<String, String> = HashMap()
+                        params["Accept"] = "*/*"
+                        params["Cache-Control"] = "no-cache"
+                        params["Host"] = "secure.epxuap.com"
+                        params["Accept-Encoding"] = "gzip, deflate, br"
+                        params["Connection"] = "keep-alive"
+                        params["Content-Type"] = "application/x-www-form-urlencoded"
+                        return params
+                    }
+
+                    @Throws(AuthFailureError::class)
+                    override fun getParams(): Map<String, String>? {
+                        val params: MutableMap<String, String> = HashMap()
+                        params["CUST_NBR"] = CUST_NBR
+                        params["MERCH_NBR"] = MERCH_NBR
+                        params["DBA_NBR"] = DBA_NBR
+                        params["TERMINAL_NBR"] = TERMINAL_NBR
+                        params["TRAN_TYPE"] = "CCE7"
+                        params["BATCH_ID"] = BATCH_ID
+                        params["TRAN_NBR"] = TRAN_NBR
+                        params["CARD_ENT_METH"] = "Z"
+                        params["INDUSTRY_TYPE"] = "E"
+                        params["ORIG_AUTH_GUID"] = ORIG_AUTH_GUID
+                        return params
+                    }
+                }
+                queue.add(getRequest)
+
+                Handler(Looper.getMainLooper()).post(object:java.lang.Runnable{
+                    override fun run() {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
+                })
+
+            }.await()
+        }
+    }
+
+    fun makeRefundCallToNAB(
+        xpp: XmlPullParser,
+        CUST_NBR: String,
+        MERCH_NBR: String,
+        DBA_NBR: String,
+        TERMINAL_NBR: String,
+        TRAN_TYPE: String,
+        BATCH_ID: String,
+        TRAN_NBR: String,
+        AMOUNT: String,
+        ORIG_AUTH_GUID: String
+    ) {
+        val queue = Volley.newRequestQueue(requireContext())
+        val url = "https://secure.epxuap.com/"
+        val getRequest: StringRequest = object : StringRequest(
+            Request.Method.POST, url,
+            object : com.android.volley.Response.Listener<String?> {
+                override fun onResponse(response: String?) {
+                    // response
+                    Log.d("Response", response!!)
+                    var AUTH_RESP_TEXT = ""
+                    var key = ""
+                    var value = ""
+
+                    Log.d("Response", response!!)
+                    xpp.setInput(StringReader(response))
+                    var eventType = xpp.eventType
+                    while (eventType != XmlPullParser.END_DOCUMENT) {
+                        if (eventType == XmlPullParser.START_DOCUMENT) {
+                            println("Start document")
+                        } else if (eventType == XmlPullParser.START_TAG) {
+
+                            try {
+                                key = xpp.getAttributeValue(0)
+                            } catch (e: Exception) {
+                                key = ""
+                            }
+                        } else if (eventType == XmlPullParser.END_TAG) {
+
+                        } else if (eventType == XmlPullParser.TEXT) {
+                            println("Text " + xpp.text)
+                            if (!value.equals(xpp.text)) {
+                                value = xpp.text
+                            }
+                        }
+
+                        if (key.equals("AUTH_RESP_TEXT")) {
+                            AUTH_RESP_TEXT = value
+                        }
+
+                        eventType = xpp.next()
+                    }
+
+                    if (AUTH_RESP_TEXT.contains("APPROVAL")) {
+
+
+                        /*if (!(context as AppCompatActivity).isFinishing()) {
+                            requireActivity().runOnUiThread(object:Runnable{
+                                override fun run() {
+                                    AlertUtils.showAlert(requireActivity(),AUTH_RESP_TEXT)
+                                }
+
+                            })
+
+                        }*/
+                        /* else{
+                            try{
+                                AlertUtils.showAlert(requireActivity(),AUTH_RESP_TEXT)
+
+                            }catch (e:Exception){
+                                try{
+                                    AlertUtils.showAlert(requireContext(),AUTH_RESP_TEXT)
+                                }catch (e:Exception){
+
+                                }
+                            }
+                        }*/
+                            refundCall()
+
+                        Handler(Looper.getMainLooper()).post(object:java.lang.Runnable{
+                            override fun run() {
+                                ProgressUtils.showProgressDialog(requireActivity())
+                            }
+                        })
+
+                    }else{
+                        Handler(Looper.getMainLooper()).post(object :
+                            java.lang.Runnable {
+                            override fun run() {
+                                ProgressUtils.dismissProgressDialog()
+                            }
+                        })
+                        try{
+                            AlertUtils.showCustomAlert(requireActivity(),AUTH_RESP_TEXT)
+
+                        }catch (e:Exception){
+                            try{
+                                AlertUtils.showCustomAlert(requireContext(),AUTH_RESP_TEXT)
+                            }catch (e:Exception){
+
+                            }
+                        }
+                    }
+
+
+
+
+                }
+            },
+            object : com.android.volley.Response.ErrorListener {
+                override fun onErrorResponse(error: VolleyError) {
+                    // TODO Auto-generated method stub
+                    Log.d("ERROR", "error => $error")
+                }
+            }
+        ) {
+            @Throws(AuthFailureError::class)
+            override fun getHeaders(): Map<String, String> {
+                val params: MutableMap<String, String> = HashMap()
+                params["Accept"] = "*/*"
+                params["Cache-Control"] = "no-cache"
+                params["Host"] = "secure.epxuap.com"
+                params["Accept-Encoding"] = "gzip, deflate, br"
+                params["Connection"] = "keep-alive"
+                params["Content-Type"] = "application/x-www-form-urlencoded"
+                return params
+            }
+
+            @Throws(AuthFailureError::class)
+            override fun getParams(): Map<String, String>? {
+                val params: MutableMap<String, String> = HashMap()
+                params["CUST_NBR"] = CUST_NBR
+                params["MERCH_NBR"] = MERCH_NBR
+                params["DBA_NBR"] = DBA_NBR
+                params["TERMINAL_NBR"] = TERMINAL_NBR
+                params["TRAN_TYPE"] = "CCE9"
+                params["BATCH_ID"] = BATCH_ID
+                params["TRAN_NBR"] = TRAN_NBR
+                params["CARD_ENT_METH"] = "Z"
+                params["AMOUNT"] = AMOUNT
+                params["ORIG_AUTH_GUID"] = ORIG_AUTH_GUID
+                params["INDUSTRY_TYPE"] = "E"
+                return params
+            }
+        }
+        queue.add(getRequest)
+
+
     }
 
     private fun initPOSLink() {

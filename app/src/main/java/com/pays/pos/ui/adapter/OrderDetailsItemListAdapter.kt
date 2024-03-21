@@ -56,7 +56,7 @@ class OrderDetailsItemListAdapter :
             itemBinding.rvModifiers.visibility = View.VISIBLE
             val adapter = OrderDetailModifierListAdapter()
             itemBinding.rvModifiers.adapter = adapter
-            LogUtil.logE(TAG, "dineinMod  ${Gson().toJson(taxList[position].orderItemModifiers)}")
+//            LogUtil.logE(TAG, "dineinMod  ${Gson().toJson(taxList[position].orderItemModifiers)}")
             adapter.addAll(taxList[position].orderItemModifiers)
         } else {
             itemBinding.rvModifiers.gone()
