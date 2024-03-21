@@ -973,7 +973,9 @@ open class PaymentViewModel @Inject constructor(
                 cartItems.clear()
                 cartItems.addAll(oldCartItemsList)
 
-            }
+            }else
+                prefProvider.setValueboolean(Constants.DO_PRINT,true)
+
             prefProvider.setValue(Constants.OLD_ITEM, oldItems)
         } catch (e: Exception) {
             prefProvider.setValue(Constants.OLD_ITEM, oldItems)

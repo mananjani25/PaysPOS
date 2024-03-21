@@ -2,10 +2,7 @@ package com.pays.pos.data.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.pays.pos.data.entities.CartModel
-import com.pays.pos.data.entities.DineInCartModel
-import com.pays.pos.data.entities.TaxData
-import com.pays.pos.data.entities.TbCartItem
+import com.pays.pos.data.entities.*
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -17,7 +14,17 @@ interface CartDao {
     suspend fun add(cartModel: CartModel): Long?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addCartModelBackup(cartModelBackup: CartModelBackup): Long?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addCartItem(cartItem: TbCartItem): Long?
+
+    @Query("select * from CartModelBackup")
+    fun getCartModelBackup(): List<CartModelBackup>
+
+    @Transaction
+    @Query("DELETE FROM CartModelBackup")
+    suspend fun clearCartModelBackup()
 
     @Query("select * from TbCartItem where orderType = :orderType AND isManualSaleItem = 0 AND employeeID=:employee_Id ORDER BY timeStamp")
     fun getCartItems(orderType: String, employee_Id: Int): Flow<List<TbCartItem>>

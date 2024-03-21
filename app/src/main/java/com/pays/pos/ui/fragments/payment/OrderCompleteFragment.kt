@@ -1309,6 +1309,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
             R.id.llHome -> {
+                dashboardViewModel.clearCartModelBackup()
                 moveToDashboard()
             }
 

@@ -39,30 +39,7 @@ import com.pays.pos.data.dao.TimeZonesDao
 import com.pays.pos.data.dao.TipsDao
 import com.pays.pos.data.dao.WastageReasonsDao
 import com.pays.pos.data.dao.cardReaderDao
-import com.pays.pos.data.entities.CartModel
-import com.pays.pos.data.entities.CashDiscountModel
-import com.pays.pos.data.entities.DineInCartModel
-import com.pays.pos.data.entities.Employee
-import com.pays.pos.data.entities.ItemModifierSets
-import com.pays.pos.data.entities.LoyaltyProgramsModel
-import com.pays.pos.data.entities.ModifierSet
-import com.pays.pos.data.entities.ModulePermission
-import com.pays.pos.data.entities.OptionSet
-import com.pays.pos.data.entities.PAXData
-import com.pays.pos.data.entities.TaxData
-import com.pays.pos.data.entities.TbBusinessDetails
-import com.pays.pos.data.entities.TbCardReader
-import com.pays.pos.data.entities.TbCartItem
-import com.pays.pos.data.entities.TbCategory
-import com.pays.pos.data.entities.TbCountryList
-import com.pays.pos.data.entities.TbCustomer
-import com.pays.pos.data.entities.TbDiscount
-import com.pays.pos.data.entities.TbItem
-import com.pays.pos.data.entities.TbOrderType
-import com.pays.pos.data.entities.TbServiceCharge
-import com.pays.pos.data.entities.TbTimeZones
-import com.pays.pos.data.entities.TeamRole
-import com.pays.pos.data.entities.TypeConvertersQueueDineIn
+import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.CharacterModel
 import com.pays.pos.data.model.PrinterQueueModel
 import com.pays.pos.data.model.ShiftRportConfiguration
@@ -111,8 +88,8 @@ import com.pays.pos.data.typeconvert.TypeConvertorPhone
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, PAXData::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class,
-        VenueDetailsResponse.Data.WastageReason::class, TbCartItem::class],
-    version = 16
+        VenueDetailsResponse.Data.WastageReason::class, TbCartItem::class, CartModelBackup::class],
+    version = 17
 )
 @TypeConverters(
     TypeConvertersItems::class,
@@ -436,10 +413,26 @@ public abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_15_16: Migration = object : Migration(15,16) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                try {
+                    database.execSQL(
+                        "CREATE TABLE IF NOT EXISTS `CartModelBackup` " +
+                                "(`id` Integer PRIMARY KEY NOT NULL, " +
+                                "`data` TEXT NOT NULL)"
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
+
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
                 .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7
-                    , MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11,MIGRATION_11_12, MIGRATION_12_13,MIGRATION_13_14,MIGRATION_14_15
+                    , MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11,MIGRATION_11_12,
+                    MIGRATION_12_13,MIGRATION_13_14,MIGRATION_14_15,MIGRATION_15_16
                 ).fallbackToDestructiveMigration()
                 .build()
     }

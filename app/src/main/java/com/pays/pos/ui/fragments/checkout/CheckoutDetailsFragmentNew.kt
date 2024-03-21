@@ -39,6 +39,7 @@ import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.pays.pos.data.remote.ApiService
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.DEFAULT_ORDER
+import com.pays.pos.data.remote.Constants.DO_PRINT
 import com.pays.pos.data.remote.Constants.GIFT_CARD
 import com.pays.pos.data.remote.Constants.GIFT_CARD_NUMBER
 import com.pays.pos.data.remote.Constants.GIFT_CARD_PIN
@@ -2872,6 +2873,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             } else if (cartModel2 != null) {
                 viewModel.cartModel = cartModel2
                 cartList = cartModel2
+            }else if(viewModel.cartModel == null){
+                runBlocking {
+                    var model =
+                        CoroutineScope(Dispatchers.IO).async { viewModel.getCartModelBackup() }.await().last().data
+
+                    viewModel.cartModel = Gson().fromJson(model,CartModel::class.java)
+                }
             }
         }
 
@@ -2879,12 +2887,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         oldItems = prefProvider.getValue(Constants.OLD_ITEM_BASE, "")
         val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
         lateinit var oldCartItemsList: ArrayList<TbCartItem>
+
         if (oldItems.isNotEmpty()) {
             oldCartItemsList = Gson().fromJson<java.util.ArrayList<TbCartItem>>(
                 oldItems,
                 listType
             )
-        }
+        }else
+            prefProvider.setValueboolean(DO_PRINT,true)
 
         if (cartList!!.items == null || cartList!!.items!!.isEmpty()) {
             var items: ArrayList<TbItem>? = ArrayList()
@@ -2942,20 +2952,25 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     price = item.price
                     orderItemId = item.orderItemId
 
+                    try {
+                        if(oldCartItemsList.isNotEmpty()) { // Order is updated
+                            oldCartItemsList.forEach { oldItem ->
+                                if ((oldItem.cartItemId == item.cartItemId) &&
+                                    (oldItem.categoryId == item.categoryId) &&
+                                    (oldItem.employeeID == item.employeeID) &&
+                                    (oldItem.itemId == item.itemId) &&
+                                    (oldItem.name.equals(item.name))) {
 
-                    oldCartItemsList.forEach { oldItem ->
-                        if ((oldItem.cartItemId == item.cartItemId) &&
-                            (oldItem.categoryId == item.categoryId) &&
-                            (oldItem.employeeID == item.employeeID) &&
-                            (oldItem.itemId == item.itemId) &&
-                            (oldItem.name.equals(item.name))) {
+                                    if (item.itemQuantity!=oldItem.itemQuantity){
+                                        isItemEdited=true
+                                    }
 
-                            if (item.itemQuantity!=oldItem.itemQuantity){
-                                isItemEdited=true
+                                }
                             }
-
                         }
-                    }
+                    }catch (e:Exception){
+                        //order is not updated , its new order
+                     }
                 }
 
                 items!!.add(tbItem)
