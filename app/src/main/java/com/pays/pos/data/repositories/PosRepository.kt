@@ -7,26 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import com.pays.pos.data.db.AppDatabase
 import com.pays.pos.data.db.IDataManager
-import com.pays.pos.data.entities.CartModel
-import com.pays.pos.data.entities.CashDiscountModel
-import com.pays.pos.data.entities.DineInCartModel
-import com.pays.pos.data.entities.Employee
-import com.pays.pos.data.entities.ItemModifierSets
-import com.pays.pos.data.entities.LoyaltyProgramsModel
-import com.pays.pos.data.entities.ModifierSet
-import com.pays.pos.data.entities.OptionSet
-import com.pays.pos.data.entities.PAXData
-import com.pays.pos.data.entities.TaxData
-import com.pays.pos.data.entities.TbBusinessDetails
-import com.pays.pos.data.entities.TbCardReader
-import com.pays.pos.data.entities.TbCartItem
-import com.pays.pos.data.entities.TbCategory
-import com.pays.pos.data.entities.TbCountryList
-import com.pays.pos.data.entities.TbCustomer
-import com.pays.pos.data.entities.TbItem
-import com.pays.pos.data.entities.TbOrderType
-import com.pays.pos.data.entities.TbTimeZones
-import com.pays.pos.data.entities.TeamRole
 import com.pays.pos.data.model.PrinterQueueModel
 import com.pays.pos.data.model.ShiftRportConfiguration
 import com.pays.pos.data.model.SplitDetailListModel
@@ -51,16 +31,6 @@ import com.pays.pos.data.model.requestModel.WastageItemRequest
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardAddValueRequest
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.requestModel.giftCard.request.SellGiftCardRequestModel
-import com.pays.pos.data.model.responseModel.BaseResponse
-import com.pays.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
-import com.pays.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
-import com.pays.pos.data.model.responseModel.NoteResponse
-import com.pays.pos.data.model.responseModel.OnlineOrderResponseModel
-import com.pays.pos.data.model.responseModel.OnlineOrderStatusUpdateResponse
-import com.pays.pos.data.model.responseModel.OpenOrderResponse
-import com.pays.pos.data.model.responseModel.PrinterResponse
-import com.pays.pos.data.model.responseModel.VenueDataResponse
-import com.pays.pos.data.model.responseModel.VenueDetailsResponse
 import com.pays.pos.data.remote.ApiHelper
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.DINE_IN
@@ -75,6 +45,8 @@ import com.pays.pos.utils.performGetOperationDatabase
 import com.pays.pos.utils.performGetOperationNew
 import com.pays.pos.utils.statusUtils.Resource
 import com.google.gson.Gson
+import com.pays.pos.data.entities.*
+import com.pays.pos.data.model.responseModel.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -600,6 +572,10 @@ class PosRepository @Inject constructor(
         networkCall = { apiHelperNew.orderTypes() },
         saveCallResult = { appDatabase.orderTypeDao().addAll(it.data) })
 
+    suspend fun fetchOrderTypesFromServer(): Resource<OrderTypeResponse> {
+        return apiHelperNew.orderTypes()
+    }
+
     fun getAllOrderTypes() = appDatabase.orderTypeDao().getAllOrderTypes
 
 
@@ -850,6 +826,10 @@ class PosRepository @Inject constructor(
         Log.d("InsertTime", "Time taken to insert: $timeTaken ms")
     }
 
+     fun getCartModelBackup():List<CartModelBackup> {
+        return appDatabase.cartDao().getCartModelBackup()
+    }
+
     suspend fun addCartItemsList(tbCartItems: List<TbCartItem>) {
         val startTime = System.currentTimeMillis()
         appDatabase.cartDao().addCartItemsList(tbCartItems)
@@ -887,6 +867,13 @@ class PosRepository @Inject constructor(
         appDatabase.cartDao().add(cartModel)
     }
 
+    suspend fun addCartModelBackup(cartModelBackup: String) {
+
+        val cartModelBackupThis = CartModelBackup().apply { data = cartModelBackup }
+        appDatabase.cartDao().addCartModelBackup(cartModelBackupThis)
+    }
+
+
 
     suspend fun deleteCart(employee_id: Int) {
         appDatabase.cartDao().delete(employee_id)//delete cart model
@@ -896,6 +883,11 @@ class PosRepository @Inject constructor(
     suspend fun deleteCartItems() {
         //  appDatabase.cartDao().delete(employee_id)//delete cart model
         appDatabase.cartDao().deleteCartItems()//delete cart items from TbCartItem
+    }
+
+    suspend fun clearCartModelBackup() {
+        //  appDatabase.cartDao().delete(employee_id)//delete cart model
+        appDatabase.cartDao().clearCartModelBackup()//delete cart items from TbCartItem
     }
 
     suspend fun deleteCartItems(cartItemId:Int) {

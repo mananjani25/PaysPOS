@@ -2608,6 +2608,11 @@ class CartFragment(
             override fun onClick(p0: View?) {
 
                 runBlocking {
+
+                    lifecycleScope.launch {
+                        viewModel.addCartModelBackup(Gson().toJson(viewModel.cartModel).toString())
+                    }
+
                     delay(500)
                     if (prefProvider.getValue(ORDER_TYPE, "") == OPEN_ORDER) {
 

@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.ProgressDialog
 import android.content.*
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
@@ -102,11 +103,7 @@ import com.sunmi.externalprinterlibrary2.style.AlignStyle
 import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
 import com.sunmi.externalprinterlibrary2.style.UnderlineStyle
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Runnable
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.io.File
 import java.io.IOException
 import java.net.URI
@@ -3359,6 +3356,43 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         locationId = PrefProvider(baseContext).getLocationId()
         baseUrl = PrefProvider(baseContext).getBaseUrl()
 
+
+        dashboardViewModel.allInventoryItems.observe(this) { it ->
+            if(it.data?.isEmpty() == true) {
+
+
+                val dialog = Dialog(this)
+                dialog.setContentView(R.layout.new_loading)
+                dialog.setCancelable(false)
+                dialog.setCanceledOnTouchOutside(false)
+                dialog.show()
+
+                Handler().postDelayed({dialog.dismiss()},15000)
+
+                runBlocking {
+
+                dashboardViewModel.apply {
+
+                    syncInventoryModule(true, isMigrationOn = true)
+                    syncSettingModule()
+
+
+                    val orderTypes =
+                        CoroutineScope(Dispatchers.IO).async { fetchOrderTypesFromServer() }.await()
+
+                    orderTypes.data?.data?.let { orderTypes ->
+                        addOrderTypesToDatabase(orderTypes)
+                    }
+
+
+                    allOrderCounts("", "")
+                }
+                   // allInventoryItems.removeObserver {  }
+                }
+
+
+            }
+        }
     }
 
     //Dynamic SYNC

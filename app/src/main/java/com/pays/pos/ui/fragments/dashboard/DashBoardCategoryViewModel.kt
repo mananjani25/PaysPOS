@@ -24,7 +24,9 @@ import com.pays.pos.data.model.GuestPaymentCalculationModel
 import com.pays.pos.data.model.requestModel.*
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.pays.pos.data.model.responseModel.OnlineOrderNotificationCount
+import com.pays.pos.data.model.responseModel.OrderTypeResponse
 import com.pays.pos.data.model.responseModel.PrinterResponse
+import com.pays.pos.data.model.responseModel.allOrders.AllOrdersCountResponse
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.ADD
 import com.pays.pos.data.remote.Constants.BASE_URL_NEW
@@ -203,6 +205,19 @@ class DashBoardCategoryViewModel @Inject constructor(
      */
     val autoSyncEnabled = MutableLiveData<Boolean>()
 
+    //Fetch all Items from TBITEM
+    val allInventoryItems = posRepository.getItemsList()
+
+    //Fetch all orders count
+    fun allOrderCounts(startDate: String?, endDate: String?): LiveData<Resource<AllOrdersCountResponse>> =
+        posRepository.allOrderCounts(startDate, endDate)
+
+    //all order types
+    fun fetchAllOrderTypes() = posRepository.orderTypes()
+
+    //fetch order types from server
+    suspend fun fetchOrderTypesFromServer(): Resource<OrderTypeResponse> { return posRepository.fetchOrderTypesFromServer() }
+
     // Added to resolve Add Discount issue BIS-3547
     var discountNeedToUpdate = true
     var cartFooterNeedToBeUpdated = true
@@ -312,7 +327,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     val discountList = posRepository.disocuntList()
 
-    private val _showProgress = MutableLiveData<Event<Boolean>>()
+    val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
     private val _showClockOutProgress = MutableLiveData<Event<Boolean>>()
@@ -555,9 +570,17 @@ class DashBoardCategoryViewModel @Inject constructor(
         viewModelScope.launch {
             posRepository.createEmptyCart(model)
         }
-
-
     }
+
+    fun addCartModelBackup(cartModelBackup: String) {
+        viewModelScope.launch {
+            posRepository.addCartModelBackup(cartModelBackup)
+        }
+    }
+
+    suspend fun getCartModelBackup():List<CartModelBackup> = posRepository.getCartModelBackup()
+
+
 
     // combine two similar items
     fun generateCombinedItems(cartModel: CartModel): CartModel {
@@ -629,6 +652,11 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
+    fun clearCartModelBackup() {
+        viewModelScope.launch {
+            posRepository.clearCartModelBackup()
+        }
+    }
 
     fun deleteManualSaleCart() {
         viewModelScope.launch {
@@ -6505,15 +6533,18 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
 
-    fun syncInventoryModule(b: Boolean) {
+    fun syncInventoryModule(b: Boolean,isMigrationOn:Boolean=false) {
         var needToUpdate = false
         _showProgress.value = Event(true)
         _syncDone.value = Event(false)
         viewModelScope.launch {
             val resource = posRepository.syncInventory(
-                prefProvider.getValueInt(TERMINAL_ID, -1), prefProvider.getValue(
-                    SYNC_TIME_STAMP, ""
-                )
+                prefProvider.getValueInt(TERMINAL_ID, -1),
+
+                if(isMigrationOn)
+                    ""
+                else
+                    prefProvider.getValue(SYNC_TIME_STAMP, "")
             )
             when (resource.status) {
                 Status.SUCCESS -> {
@@ -6760,6 +6791,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
             }
 
+        }
+    }
+
+    suspend fun addOrderTypesToDatabase(orderTypes: List<TbOrderType>){
+        viewModelScope.launch {
+            posRepository.addOrderType(orderTypes)
         }
     }
 

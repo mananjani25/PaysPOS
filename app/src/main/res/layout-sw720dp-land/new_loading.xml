@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_gravity="center"
+    android:background="@color/bg_color"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:padding="@dimen/_5sdp"
+    tools:ignore="MissingDefaultResource">
+
+    <ProgressBar
+        android:layout_width="@dimen/_10sdp"
+        android:layout_height="@dimen/_10sdp"
+        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/_10sdp" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        style="@style/CustomFontSemiBold"
+        android:id="@+id/txtMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:paddingStart="@dimen/_10sdp"
+        android:textColor="@color/txtColor"
+        android:paddingTop="@dimen/_5sdp"
+        android:paddingEnd="@dimen/_30sdp"
+        android:paddingBottom="@dimen/_5sdp"
+        android:text="@string/loading"
+        android:textSize="@dimen/_7mdpi" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/imgClose"
+        android:layout_width="wrap_content"
+        android:padding="@dimen/_5sdp"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_cancel_black"
+        android:layout_height="wrap_content" />
+</LinearLayout>
