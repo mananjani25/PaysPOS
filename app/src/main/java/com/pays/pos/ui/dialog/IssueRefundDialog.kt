@@ -59,6 +59,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
     lateinit var prefProvider: PrefProvider
     private var serviceChargesList: List<TbServiceCharge>? = arrayListOf()
     private var isSplitPayment = false
+    private var requiredNABServerPostAPICall = false
+    private var paxData = ""
     private var guestCount: Int = 0
     @Inject
     lateinit var magtekRequestUtils: MagtekRequestUtils
@@ -81,6 +83,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         paymentOrderDetailsResponse = arguments?.getParcelable("orderDetailsResponse")!!
         payment_id = arguments?.getInt("paymentId")!!
         isSplitPayment = arguments?.getBoolean("isSplitPayment")!!
+        requiredNABServerPostAPICall = arguments?.getBoolean("requiredNABServerPostAPICall")!!
+        paxData = arguments?.getString("pax_data")+""
         serviceChargesList = arguments?.getParcelableArrayList("serviceChargesList")!!
         guestCount = arguments?.getInt("guestCount") ?: 0
         binding.orderDetails = paymentOrderDetailsResponse
@@ -259,6 +263,15 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                             "magensa_response_data",
                             paymentOrderDetailsResponse.data.magensa_response_data
                         )
+
+                        if (paymentOrderDetailsResponse.data.order.order_type == "OnlineOrder" && paymentOrderDetailsResponse.data.pax_data!=null)  {
+                            /*Online order refund should pass a new parameter so that the next screen will detect the parameter and process the operation accordingly, because there are two processes
+                            * 1. PAX Gateway refund
+                            * 2. NAB Server POST API Call */
+                            putString("pax_data",paxData)
+                            putBoolean("requiredNABServerPostAPICall", requiredNABServerPostAPICall)
+                        }
+
                     }
                     findNavController().navigate(
                         R.id.action_issueRefundFragment_to_reasonForRefundDialog,

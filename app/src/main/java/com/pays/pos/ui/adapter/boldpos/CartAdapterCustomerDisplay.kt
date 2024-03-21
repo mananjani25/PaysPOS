@@ -148,7 +148,7 @@ class CartAdapterCustomerDisplay : RecyclerView.Adapter<CartAdapterCustomerDispl
                 binding.rvModifiers.visibility = View.VISIBLE
                 val adapter = CartItemModifierAdapterForCustomerDisplay()
                 binding.rvModifiers.adapter = adapter
-                LogUtil.logE(TAG, "dineinMod  ${Gson().toJson(item.modifiers)}")
+//                LogUtil.logE(TAG, "dineinMod  ${Gson().toJson(item.modifiers)}")
                 adapter.addAll(item.modifiers)
             } else {
                 binding.rvModifiers.visibility = View.GONE
