@@ -179,9 +179,9 @@ class MagtekViewModel @Inject constructor(
                     true->{
                         AlertUtils.showCustomAlert(context,  "Please connect your credit card machine to the Wi-Fi network. Ensure that both your Point of Sale (POS) terminal and credit card machine are connected to the same Wi-Fi network.")
                     }
-                        false->{
-                            AlertUtils.showCustomAlert(context,  t.message)
-                        }
+                    false->{
+                        AlertUtils.showCustomAlert(context,  t.message)
+                    }
                 }
 
 

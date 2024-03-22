@@ -21,7 +21,7 @@ data class TaxData(
     @SerializedName("name")
     val name: String?,
     @SerializedName("rate")
-    val rate: Double,
+    var rate: Double,
     @SerializedName("tax_type")
     var taxType: String?,
     @SerializedName("updated_at")

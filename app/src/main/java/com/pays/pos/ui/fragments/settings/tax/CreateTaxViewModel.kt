@@ -21,9 +21,7 @@ import com.pays.pos.utils.Event
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 
@@ -159,7 +157,7 @@ class CreateTaxViewModel @Inject constructor(
         } /*else if (TextUtils.isEmpty(itemPricingViewModel.trim())) {
             _snackbarText.value = Event(R.string.item_pricing_validate)
         } */ else {
-            _showProgress.value = Event(true)
+                _showProgress.value = Event(true)
 
 
             taxData = CreateTaxRequestModel().apply {
@@ -248,6 +246,20 @@ class CreateTaxViewModel @Inject constructor(
         }
 
     }
+    /*Added by Rahul, to solved the tax update issue - START*/
+    public suspend fun updateTax(rateDouble: Double, taxDataItem: TaxData){
+            var itemsList = taxServiceChargeRepository.fetchAllItemsList()
+            itemsList?.forEach { item ->
+                item?.taxes?.forEach {
+                    if (taxDataItem.id == it.id) {
+                        it.rate=rateDouble
+                    }
+                }
+            }
+            taxServiceChargeRepository.insertAllTbItems(itemsList)
+
+    }
+    /*Added by Rahul, to solved the tax update issue - END*/
 
 
 }

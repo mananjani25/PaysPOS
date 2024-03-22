@@ -43,4 +43,10 @@ interface TaxDao {
 
     @Query("UPDATE TbTax SET isActive = :active WHERE  TbTax.id = :id")
     suspend fun activeTax(id: Int, active: Boolean?): Int
+
+    /*Added by Rahul, to solved the tax update issue - START*/
+    @Query("UPDATE TbTax SET isActive = :active AND isDeleted=:isDeleted WHERE  TbTax.id = :id")
+    suspend fun updateTaxStatus(id: Int, active: Boolean?,isDeleted: Boolean?): Int
+    /*Added by Rahul, to solved the tax update issue - END*/
+
 }

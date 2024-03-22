@@ -14,6 +14,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.pays.pos.R
@@ -29,7 +30,6 @@ import com.pays.pos.data.remote.Constants.KEY
 import com.pays.pos.databinding.DialogCreateNewTaxBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
@@ -37,6 +37,7 @@ import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.extensions.getNavigationResultLiveData
 import com.pays.pos.utils.extensions.liveSnackBar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 
@@ -174,11 +175,16 @@ class CreateTax : Fragment() {
         navigate()
 
         binding.header.txtSave.setOnClickListener {
-
             val rate = binding.edtAmount.text.toString()
             var rate_double = 0.0
             if (rate.isNotEmpty()) {
                 rate_double = MethodUtils.roundOffAmountDouble(rate.toDouble())
+                /*Added by Rahul, to solved the tax update issue - START*/
+                GlobalScope.launch(Dispatchers.IO) {
+                    viewModel.updateTax(rate_double, taxData)
+                }
+                /*Added by Rahul, to solved the tax update issue - END*/
+
             }
             viewModel.submit(rate_double)
         }
