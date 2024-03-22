@@ -2888,13 +2888,20 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
         lateinit var oldCartItemsList: ArrayList<TbCartItem>
 
-        if (oldItems.isNotEmpty()) {
-            oldCartItemsList = Gson().fromJson<java.util.ArrayList<TbCartItem>>(
-                oldItems,
-                listType
-            )
-        }else
+        if(oldItems.isNotEmpty()) {
+            val isCustomItemFound = viewModel.currentCartItems.filter { it.customItemID != 0 }
+
+            val oldCartItemsJson = if (isCustomItemFound.isNotEmpty()) {
+                prefProvider.getValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
+            } else {
+                prefProvider.getValue(Constants.OLD_ITEM_BASE, "")
+            }
+
+            oldCartItemsList = Gson().fromJson(oldCartItemsJson, listType) as ArrayList<TbCartItem>
+        } else {
             prefProvider.setValueboolean(DO_PRINT,true)
+        }
+
 
         if (cartList!!.items == null || cartList!!.items!!.isEmpty()) {
             var items: ArrayList<TbItem>? = ArrayList()
@@ -2997,6 +3004,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                         }
                                     }
                                     if (!isFound) {
+
+                                        prefProvider.setValueboolean(DO_PRINT,true)
 //                                        Not found
                                         isFound = false
 

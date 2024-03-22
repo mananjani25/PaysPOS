@@ -1497,7 +1497,11 @@ class AllOrdersListingFragment(
                         itemDiscount += it.discountPrice
                         it.itemOriginalModifiersList = it.modifiers
                     }
+
+                    dashboardViewModel.isUpdatedOnce = true
+
                     dashboardViewModel.addOrderItemsToCartItems(it)
+
                 }
 
                 val bundle = Bundle()
@@ -1557,13 +1561,6 @@ class AllOrdersListingFragment(
 
 //                findNavController().navigateUp()
 
-                val oldItemsList = dashboardViewModel.getAllCartItems(prefProvider.getValue(
-                    Constants.ORDER_TYPE,
-                    Constants.TAKEOUT
-                ),
-                    prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)).asLiveData().value
-
-                prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM,Gson().toJson(oldItemsList))
 
             }
 
