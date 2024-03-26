@@ -12,6 +12,7 @@ import com.pays.pos.data.model.responseModel.allOrders.AllOrdersCountResponse
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.repositories.PosRepository
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.ui.adapter.AllOrderAdapter
 import com.pays.pos.utils.Event
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
@@ -42,6 +43,12 @@ class AllOrdersViewModel @Inject constructor(
     var selectPicker1: Boolean = false
     private val _startDateSelection = MutableLiveData<Event<Unit>>()
     val startDateSelection: LiveData<Event<Unit>> = _startDateSelection
+
+    /**
+     * to remove completed order
+     * */
+
+    var removedPosition = MutableLiveData<Pair<Int,Boolean>>()
 
     fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()
 

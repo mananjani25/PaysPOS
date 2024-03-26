@@ -113,6 +113,7 @@ class AllOrdersListingFragment(
     private var isStationAtoZ: Boolean = false
     private var isPrint: Boolean = true
     private val viewModel by viewModels<AllOrdersViewModel>()
+    private val ordersViewModel by activityViewModels<AllOrdersViewModel>()
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val activeOrderViewModel by viewModels<ActiveOrderViewModel>()
     lateinit var binding: AllOrdersListingFragmentBinding
@@ -1225,6 +1226,11 @@ class AllOrdersListingFragment(
 
                //     prefProvider.setValue(Constants.OLD_ITEM_BASE,Gson().toJson(adapter.filterList[pos]).toString())
 
+                    var data = Pair(pos,false)
+
+                    ordersViewModel.removedPosition.apply {
+                        value = data
+                    }
 
                     findNavController().navigate(
                         R.id.action_allOrders_to_addOnlneTime,
@@ -1232,6 +1238,15 @@ class AllOrdersListingFragment(
                             "order_id" to adapter.filterList[pos].id
                         )
                     )
+
+                    ordersViewModel.removedPosition.observe(viewLifecycleOwner){
+                        if(it.second && it.first != -1 ){
+                            adapter.orderList.removeAt(it.first)
+                            adapter.notifyDataSetChanged()
+                            data = Pair(-1,false)
+                            ordersViewModel.removedPosition.value = data
+                        }
+                    }
                 }
             }
 
@@ -1239,6 +1254,8 @@ class AllOrdersListingFragment(
                 alert("", "Are you sure, you want to complete this order ?") {
                     this.positiveButton("YES") {
                         updateOrder(adapter.filterList[0].id, status)
+                        adapter.orderList.removeAt(pos)
+                        adapter.notifyDataSetChanged()
                     }
                     this.negativeButton("NO") {
                     }

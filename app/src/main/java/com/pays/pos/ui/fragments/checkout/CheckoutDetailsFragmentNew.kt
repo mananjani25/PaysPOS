@@ -2884,18 +2884,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
 
-        oldItems = prefProvider.getValue(Constants.OLD_ITEM_BASE, "")
+        oldItems = prefProvider.getValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
         val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
         lateinit var oldCartItemsList: ArrayList<TbCartItem>
 
         if(oldItems.isNotEmpty()) {
-            val isCustomItemFound = viewModel.currentCartItems.filter { it.customItemID != 0 }
 
-            val oldCartItemsJson = if (isCustomItemFound.isNotEmpty()) {
-                prefProvider.getValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
-            } else {
-                prefProvider.getValue(Constants.OLD_ITEM_BASE, "")
-            }
+            val oldCartItemsJson = prefProvider.getValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
 
             oldCartItemsList = Gson().fromJson(oldCartItemsJson, listType) as ArrayList<TbCartItem>
         } else {
@@ -2994,13 +2989,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             val notPresentItems =
                                 oldCartItemsList.filter { it.cartItemId != item.cartItemId }
 
-                            if (!notPresentItems.isEmpty()) {
+                            if (true) {
                                 var isFound = false
-                                notPresentItems.forEach { notPresentData ->
-                                    items?.forEach {
-                                        if (it.cartItemId == notPresentData.cartItemId) {
-                                            isFound = true
-                                            return@forEach
+
+                                for(notPresentData in oldCartItemsList) {
+                                    if (items != null) {
+                                        for(it in items ) {
+                                            if (it.cartItemId == notPresentData.cartItemId) {
+                                                isFound = true
+                                                break
+                                            }else isFound = false
                                         }
                                     }
                                     if (!isFound) {
@@ -3066,6 +3064,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                         tbItemDeleted.orderItemId = notPresentData.orderItemId
 
                                         items!!.add(tbItemDeleted)
+                                        break
                                     }
 
                                 }
@@ -3094,6 +3093,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
         prefProvider.setValue(Constants.OLD_ITEM, "")
         prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
+        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
 
         val myRequest = cartList?.let {
             paymentviewModel.createOrderRequestForCard(

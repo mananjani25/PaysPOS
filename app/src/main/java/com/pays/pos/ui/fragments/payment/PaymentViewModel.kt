@@ -1449,44 +1449,14 @@ open class PaymentViewModel @Inject constructor(
 
         /*This is working well just uncomment it, we have commented it because the update list is being fetched in the OPEN_ORDER_ITEMS_BASE, that's why we are changing the get field*/
         if (/*prefProvider.getValue(Constants.OLD_ITEM, "")*/prefProvider.getValue(
-                Constants.OLD_ITEM_BASE,
+                Constants.OLD_ITEM_BASE_CUSTOM_ITEM,
                 ""
             ).isNotEmpty()
         ) {
 //            Added by Rahul to solve the modifiers not removing issue
             val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
 
-
-//            val isCustomItemFound = cartItems.filter { it.customItemID!=0 }
-//
-//            var oldCartItemsList = if (isCustomItemFound.isEmpty()) {
-//                Gson().fromJson<java.util.ArrayList<TbCartItem>>(
-//                /*prefProvider.getValue(Constants.OLD_ITEM, "")*/prefProvider.getValue(
-//                    Constants.OLD_ITEM_BASE,
-//                    ""
-//                ),
-//                listType
-//                )
-//            }else {
-//                Gson().fromJson<java.util.ArrayList<TbCartItem>>(
-//                    /*prefProvider.getValue(Constants.OLD_ITEM, "")*/prefProvider.getValue(
-//                        Constants.OLD_ITEM_BASE_CUSTOM_ITEM,
-//                        ""
-//                    ),
-//                    listType
-//                )
-//            }
-
-
-            val isCustomItemFound = cartItems.any { it.customItemID != 0 }
-
-            val oldCartItemsJson = if (isCustomItemFound) {
-                prefProvider.getValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
-            } else {
-                prefProvider.getValue(Constants.OLD_ITEM_BASE, "")
-            }
-
-            val oldCartItemsList = Gson().fromJson(oldCartItemsJson, listType) as ArrayList<TbCartItem>
+            val oldCartItemsList = Gson().fromJson(prefProvider.getValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, ""), listType) as ArrayList<TbCartItem>
 
 
             for (oldItem in oldCartItemsList) {

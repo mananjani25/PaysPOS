@@ -12,11 +12,14 @@ import android.view.*
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.pays.pos.R
 import com.pays.pos.databinding.AddOnlineTimeDiialogBinding
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.ui.fragments.allorders.AllOrdersViewModel
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.visible
@@ -35,6 +38,7 @@ class AddOnlineTimeDialog : DialogFragment() {
     private var isFromDetails = false
     private var isFromTransaction = false
     lateinit var binding: AddOnlineTimeDiialogBinding
+    private val ordersViewModel by activityViewModels<AllOrdersViewModel>()
     var doneOnce = false
     var finalstring = ""
     var timeFilter: InputFilter? = null
@@ -257,9 +261,13 @@ class AddOnlineTimeDialog : DialogFragment() {
                     result
                 )
 
+                ordersViewModel.removedPosition.apply {
+                    value = this.value?.let {
+                            it1 -> Pair(it1.first,true) }
+                }
+
                 findNavController().navigateUp()
             }
-
         }
     }
 

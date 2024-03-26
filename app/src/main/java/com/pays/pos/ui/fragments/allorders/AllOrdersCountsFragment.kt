@@ -62,6 +62,7 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
     var endDate: String? = null
     private var mPos: Int = 0
     private val viewModel by viewModels<AllOrdersViewModel>()
+    private val ordersViewModel by activityViewModels<AllOrdersViewModel>()
     private var ongoingOrderCount: Int? = 0
     private var pendingOrdersCount: Int? = 0
     private var cancelledOrdersCount: Int? = 0
@@ -90,6 +91,8 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
         requireContext().registerReceiver(cancelledBroadcastReceiver, IntentFilter("cancelled"));
         binding.commonToolbar.root.gone()
         getAllOrderCounts(viewModel.startDate.value, viewModel.endDate.value)
+
+        addChangeFragmentObserver()
 
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
@@ -126,6 +129,15 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
         requireContext().unregisterReceiver(broadcastReceiver)
         requireContext().unregisterReceiver(cancelledBroadcastReceiver)
     }
+
+    private fun addChangeFragmentObserver(){
+        ordersViewModel.removedPosition.observe(viewLifecycleOwner){
+            if(it.second && it.first != -1 ){
+              changePosition(1)
+            }
+        }
+    }
+
 
     // To update all orders count if any new order created or updated
     private var broadcastReceiver = object : BroadcastReceiver() {
