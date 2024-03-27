@@ -328,15 +328,16 @@ class CreateTax : Fragment() {
             }
         }
     }
+    var message = ""
 
     private fun navigate() {
-        var message = ""
+        setSyncObserver()
+
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { createTaxResponse ->
                 activity?.let {
 
                     message = createTaxResponse.message
-                    setSyncObserver(message)
                     runBlocking {
                         lifecycleScope.launch {
                             dashViewModel.syncTaxes()
@@ -352,7 +353,7 @@ class CreateTax : Fragment() {
 
     }
 
-    private fun setSyncObserver(message: String) {
+    private fun setSyncObserver() {
         dashViewModel.taxSyncDone.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
@@ -366,6 +367,7 @@ class CreateTax : Fragment() {
 
 
                                 try{
+                                    message=""
                                     backPressManage()
                                 }catch (e:Exception){
 
