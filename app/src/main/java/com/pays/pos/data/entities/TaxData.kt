@@ -19,7 +19,7 @@ data class TaxData(
     @SerializedName("location_id")
     var locationId: Int,
     @SerializedName("name")
-    val name: String?,
+    var name: String?,
     @SerializedName("rate")
     var rate: Double,
     @SerializedName("tax_type")
@@ -35,7 +35,7 @@ data class TaxData(
     @SerializedName("item_pricing")
     var itemPricing: String?,
     @SerializedName("item_ids")
-    val itemIds: List<Int>,
+    var itemIds: List<Int>,
     var orderTaxId: Int? = null,
     var isChecked: Boolean? = false,
     var totalTaxTypePrice: Double = 0.0,

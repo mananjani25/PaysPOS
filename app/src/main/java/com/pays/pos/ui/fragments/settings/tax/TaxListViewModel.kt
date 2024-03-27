@@ -13,10 +13,7 @@ import com.pays.pos.data.repositories.TaxServiceChargeRepository
 import com.pays.pos.utils.Event
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -125,7 +122,7 @@ class TaxListViewModel @Inject constructor(
 
                                     /* Now update all the rows of TbItem */
 
-                                    var updaterJob = CoroutineScope(Dispatchers.IO).launch {
+                                   CoroutineScope(Dispatchers.IO).async {
                                         runBlocking {
                                             var itemsList = taxServiceChargeRepository.fetchAllItemsList()
                                             itemsList?.forEach { item ->
@@ -135,13 +132,17 @@ class TaxListViewModel @Inject constructor(
                                                     }
                                                 }
                                             }
-                                            taxServiceChargeRepository.insertAllTbItems(itemsList)
+                                            launch {
+                                                taxServiceChargeRepository.insertAllTbItems(itemsList)
+                                            }
+                                            launch {
+                                                taxServiceChargeRepository.updateTaxStatus(taxDataItem.id,taxDataItem.isActive,taxDataItem.isDeleted)
+                                            }
                                         }
 
-                                    }
+                                    }.await()
 
                                     taxActiveJob.join()
-                                    updaterJob.join()
 
                                     _notifydata.value = Event(true)
                                 }

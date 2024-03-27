@@ -5,7 +5,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.pays.pos.data.entities.CartModel
 import com.pays.pos.data.entities.TaxData
+import com.pays.pos.data.entities.TbCartItem
 
 
 @Dao
@@ -46,7 +48,14 @@ interface TaxDao {
 
     /*Added by Rahul, to solved the tax update issue - START*/
     @Query("UPDATE TbTax SET isActive = :active AND isDeleted=:isDeleted WHERE  TbTax.id = :id")
-    suspend fun updateTaxStatus(id: Int, active: Boolean?,isDeleted: Boolean?): Int
+    suspend fun updateTaxStatus(id: Int, active: Boolean?, isDeleted: Boolean?): Int
     /*Added by Rahul, to solved the tax update issue - END*/
+
+
+    /*Added by Rahul, to solved the tax update issue - START*/
+    @Query("UPDATE TbTax SET name = :name AND isActive = :active AND isDeleted=:isDeleted AND itemIds= :itemIds WHERE  TbTax.id = :id")
+    suspend fun updateTax(id: Int, name: String?, active: Boolean?, isDeleted: Boolean?, itemIds:List<Int>): Int
+    /*Added by Rahul, to solved the tax update issue - END*/
+
 
 }

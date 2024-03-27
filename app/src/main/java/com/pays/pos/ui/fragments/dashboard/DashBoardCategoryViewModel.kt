@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Handler
+import android.os.Looper
 import android.os.StrictMode
 import android.util.Base64
 import android.util.Log
@@ -196,7 +198,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     val doesItemContainsModifiers = MutableLiveData<Boolean>()
 
     /**
-    * resolved for manual cart item adding issue, i.e. the item was not getting added to the normal cart so we restarted the screen
+     * resolved for manual cart item adding issue, i.e. the item was not getting added to the normal cart so we restarted the screen
      */
     var boldPosNeedToRefresh = false
 
@@ -209,14 +211,19 @@ class DashBoardCategoryViewModel @Inject constructor(
     val allInventoryItems = posRepository.getItemsList()
 
     //Fetch all orders count
-    fun allOrderCounts(startDate: String?, endDate: String?): LiveData<Resource<AllOrdersCountResponse>> =
+    fun allOrderCounts(
+        startDate: String?,
+        endDate: String?
+    ): LiveData<Resource<AllOrdersCountResponse>> =
         posRepository.allOrderCounts(startDate, endDate)
 
     //all order types
     fun fetchAllOrderTypes() = posRepository.orderTypes()
 
     //fetch order types from server
-    suspend fun fetchOrderTypesFromServer(): Resource<OrderTypeResponse> { return posRepository.fetchOrderTypesFromServer() }
+    suspend fun fetchOrderTypesFromServer(): Resource<OrderTypeResponse> {
+        return posRepository.fetchOrderTypesFromServer()
+    }
 
     // Added to resolve Add Discount issue BIS-3547
     var discountNeedToUpdate = true
@@ -309,6 +316,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     val serviceCharges = posRepository.serviceChargeList()
+
     /*
      * Returns active order types
      */
@@ -317,8 +325,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     /*
      * Returns all active or Deactivated order types
      */
-    fun getAllOrderTypes():List<TbOrderType> {
-            return posRepository.getAllOrderTypes()
+    fun getAllOrderTypes(): List<TbOrderType> {
+        return posRepository.getAllOrderTypes()
     }
 
     val activeLoyaltyProgramLiveData = posRepository.getActiveLoyaltyProgramFromDb()
@@ -329,6 +337,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
+
+    val _syncProgressDialog = MutableLiveData<Event<Boolean>>()
+    val syncProgressDialog: LiveData<Event<Boolean>> = _syncProgressDialog
 
     private val _showClockOutProgress = MutableLiveData<Event<Boolean>>()
     val showClockOutProgress: LiveData<Event<Boolean>> = _showClockOutProgress
@@ -348,6 +359,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private val _syncDone = MutableLiveData<Event<Boolean?>>()
     val syncDone: LiveData<Event<Boolean?>> = _syncDone
+
+
+    private val _taxSyncDone = MutableLiveData<Event<Boolean?>>()
+    val taxSyncDone: LiveData<Event<Boolean?>> = _taxSyncDone
 
     private val _logout = MutableLiveData<Event<Boolean>>()
     val logout: LiveData<Event<Boolean>> = _logout
@@ -578,8 +593,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    suspend fun getCartModelBackup():List<CartModelBackup> = posRepository.getCartModelBackup()
-
+    suspend fun getCartModelBackup(): List<CartModelBackup> = posRepository.getCartModelBackup()
 
 
     // combine two similar items
@@ -618,13 +632,14 @@ class DashBoardCategoryViewModel @Inject constructor(
         return cartModel
     }
 
-    suspend fun deleteCartItem(cartItemId: Int){
-        viewModelScope.launch{
+    suspend fun deleteCartItem(cartItemId: Int) {
+        viewModelScope.launch {
             posRepository.deleteCartItems(cartItemId)
         }
     }
-    suspend fun deleteManualCartModel(){
-        viewModelScope.launch{
+
+    suspend fun deleteManualCartModel() {
+        viewModelScope.launch {
             posRepository.deleteManualCartModel()
         }
     }
@@ -2217,8 +2232,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 item.isEdited = true
                                                 list[i].isEdited = true
                                                 /*Added to check if the merged item is showing update or not - START*/
-                                                item.isItemEdited=true
-                                                list[i].isItemEdited=true
+                                                item.isItemEdited = true
+                                                list[i].isItemEdited = true
                                                 /*Added to check if the merged item is showing update or not - END*/
                                             } catch (e: java.lang.Exception) {
                                                 e.printStackTrace()
@@ -2304,7 +2319,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 item.isEdited = true
                                                 list[i].isEdited = true
 
-                                               /* *//*Added to check if the merged item is showing update or not - START*//*
+                                                /* *//*Added to check if the merged item is showing update or not - START*//*
                                                 item.isItemEdited=true
                                                 list[i].isItemEdited=true
                                                 *//*Added to check if the merged item is showing update or not - END*//*
@@ -2384,7 +2399,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             model.isEdited = true
 
                                             /*Added to check if the merged item is showing update or not - START*/
-                                            item.isItemEdited=true
+                                            item.isItemEdited = true
                                             /*Added to check if the merged item is showing update or not - END*/
                                         }
                                         itemDiscountApplyNew(model, item)
@@ -2404,7 +2419,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             model.isEdited = true
 
                                             /*Added to check if the merged item is showing update or not - START*/
-                                            item.isItemEdited=true
+                                            item.isItemEdited = true
                                             /*Added to check if the merged item is showing update or not - END*/
                                         }
                                         itemDiscountApplyNew(model, item)
@@ -6533,7 +6548,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
 
-    fun syncInventoryModule(b: Boolean,isMigrationOn:Boolean=false) {
+    fun syncInventoryModule(b: Boolean, isMigrationOn: Boolean = false) {
         var needToUpdate = false
         _showProgress.value = Event(true)
         _syncDone.value = Event(false)
@@ -6541,7 +6556,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             val resource = posRepository.syncInventory(
                 prefProvider.getValueInt(TERMINAL_ID, -1),
 
-                if(isMigrationOn)
+                if (isMigrationOn)
                     ""
                 else
                     prefProvider.getValue(SYNC_TIME_STAMP, "")
@@ -6794,7 +6809,224 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    suspend fun addOrderTypesToDatabase(orderTypes: List<TbOrderType>){
+    fun syncTaxes() {
+        _taxSyncDone.value = Event(false)
+        viewModelScope.launch {
+
+            withContext(Dispatchers.Main){
+                _syncProgressDialog.value = Event(true)
+            }
+            val resource = posRepository.syncInventory(
+                prefProvider.getValueInt(TERMINAL_ID, -1),
+
+                prefProvider.getValue(SYNC_TIME_STAMP, "")
+            )
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    Log.e("SyncInventory", "SyncSuccess")
+
+                    resource.data.let { response ->
+                        if (response?.status == 200) {
+                            Log.d("BINGE", "syncInventoryModule: START")
+//                            posRepository.saveDatabase(response)
+
+                            val mData = response.data
+                            val mCategory = mData.categories
+                            val categoryModelList = ArrayList<TbCategory>()
+                            val inventoryModelList = ArrayList<TbItem>()
+
+                            val modifierSetList = ArrayList<ModifierSet>()
+                            val itemModifierSetList = ArrayList<ItemModifierSets>()
+
+                            mCategory.forEach { category ->
+
+                                if (category.name.lowercase() == "Manual Sales".lowercase()) {
+                                    prefProvider.setValueInt(MANUAL_SALE_CATEGORY_ID, category.id)
+                                }
+                                val model = TbCategory().apply {
+                                    createdAt = ""
+                                    id = category.id
+                                    active = category.active
+                                    name = category.name
+                                    sort = category.sort
+                                    updatedAt = ""
+                                    locationId = category.locationId
+                                    item_ids = category.itemIds
+                                    thumbImgUrl = category.thumbImgUrl
+                                    originalImgUrl = category.originalImgUrl
+                                    isDeleted = category.isDeleted
+                                }
+                                categoryModelList.add(model)
+                                Log.d(
+                                    "TAG",
+                                    "Sync getAllCategoryList: response of API : " + Gson().toJson(
+                                        model
+                                    )
+                                )
+
+                                if (category.name == GIFT_CARD) {
+                                    if (category.sort == 1) {
+                                        prefProvider.setValueboolean(
+                                            Constants.GIFT_CARD_AT_FIRST,
+                                            true
+                                        )
+                                    } else {
+                                        prefProvider.setValueboolean(
+                                            Constants.GIFT_CARD_AT_FIRST,
+                                            false
+                                        )
+                                    }
+                                }
+                                if (category.name == Constants.GIFT_CARD) {
+                                    prefProvider.setValueInt(
+                                        Constants.GIFT_CARD_SORT,
+                                        category.sort
+                                    )
+                                }
+                                if (category.name == Constants.DEFAULT_CATEGORY) {
+                                    prefProvider.setValueInt(
+                                        Constants.DEFAULT_CATEGORY_SORT,
+                                        category.sort
+                                    )
+                                }
+
+
+                                // if created new category by admin web panel
+                                if (mCategory.size == 1 && !category.isDeleted) {
+                                    if (prefProvider.getValueboolean(
+                                            Constants.GIFT_CARD_AT_FIRST,
+                                            false
+                                        )
+                                    ) {
+                                        posRepository.updateSorting(
+                                            Constants.DEFAULT_CATEGORY,
+                                            prefProvider.getValueInt(
+                                                Constants.DEFAULT_CATEGORY_SORT,
+                                                0
+                                            ) + 1
+                                        )
+                                    } else {
+                                        posRepository.updateSorting(
+                                            Constants.GIFT_CARD_CATEGORY,
+                                            prefProvider.getValueInt(
+                                                Constants.GIFT_CARD_SORT,
+                                                0
+                                            ) + 1
+                                        )
+                                        posRepository.updateSorting(
+                                            Constants.DEFAULT_CATEGORY,
+                                            prefProvider.getValueInt(
+                                                Constants.DEFAULT_CATEGORY_SORT,
+                                                0
+                                            ) + 2
+                                        )
+                                    }
+                                }
+
+                                category.items.forEach {
+                                    if (it.name?.lowercase() == "Manual Sales".lowercase()) {
+                                        prefProvider.setValueInt(MANUAL_SALE_ITEM_ID, it.id)
+                                    }
+
+                                    it.modifierSets.forEach { modifierset ->
+                                        val itemModifierSets = ItemModifierSets().apply {
+                                            itemId = it.id
+                                            modifierSetId = modifierset.id!!
+                                            minRequired = modifierset.min_required
+                                            maxAllowed = modifierset.max_allowed
+                                            isDeleted = modifierset.isDeleted
+                                        }
+                                        itemModifierSetList.add(itemModifierSets)
+                                    }
+
+                                    //new optimise code
+                                    inventoryModelList.add(TbItem().convertToItem(it, category))
+                                }
+
+
+                            }
+
+
+                            modifierSetList.addAll(mData.modifierSets)
+
+                            delay(1000)
+
+                            appDatabase.categoryDao().addAll(categoryModelList)
+
+                            val listInventory: ArrayList<TbItem> = arrayListOf()
+                            ThreadPoolManager.instance.executeTask {
+
+                                inventoryModelList.forEachIndexed { index, it ->
+                                    val item = posRepository.getSingleItem(it.itemId)
+
+                                    if (item != null) {
+
+                                        val model = TbItem().convertToItem1(it, item)
+
+                                        listInventory.add(model)
+
+                                    } else {
+                                        listInventory.add(it)
+                                    }
+
+
+                                }
+
+
+
+                                viewModelScope.launch {
+                                    appDatabase.itemDao().addAllItem(listInventory)
+                                }
+
+                                CoroutineScope(Dispatchers.Main).launch{
+                                    _syncProgressDialog.postValue(Event(false))
+                                }
+
+                                _taxSyncDone.postValue(Event(true))
+
+                            }
+
+
+
+
+                            prefProvider.setValue(SYNC_TIME_STAMP, response.data.timeStamp)
+
+                            if (syncMarkeup) {
+                                syncMarkeup = false
+                                prefProvider.setValueboolean(IS_SYNC_MARKUP, false)
+                            }
+                            Log.d("BINGE", "syncInventoryModule: END")
+                        } else {
+                            _tableStatus.value = response?.let { Event(it.message) }
+                        }
+
+//                        syncSettingModule()
+
+                    }
+
+                    autoSyncEnabled.value = true
+                }
+
+                Status.ERROR -> {
+                    Log.e("SyncInventory", "SyncError")
+                    _snackbarText.value = Event(resource.message.toString())
+                    _showProgress.value = Event(false)
+
+                    autoSyncEnabled.value = true
+                }
+
+                Status.LOADING -> {
+                    Log.e("SyncInventory", "SyncLoading")
+                    _showProgress.value = Event(false)
+
+                    autoSyncEnabled.value = true
+                }
+            }
+
+        }
+    }
+
+    suspend fun addOrderTypesToDatabase(orderTypes: List<TbOrderType>) {
         viewModelScope.launch {
             posRepository.addOrderType(orderTypes)
         }

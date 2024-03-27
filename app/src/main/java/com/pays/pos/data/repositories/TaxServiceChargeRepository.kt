@@ -76,6 +76,11 @@ class TaxServiceChargeRepository @Inject constructor(
     suspend fun updateTaxStatus(taxId: Int,isActive:Boolean,isDeleted:Boolean) = appDatabase.taxDao().updateTaxStatus(taxId,isActive,isDeleted)
     /*Added by Rahul, to solved the tax update issue - END*/
 
+    /*Added by Rahul, to solved the tax update issue - START*/
+    suspend fun updateTax(id: Int, name: String?, active: Boolean?, isDeleted: Boolean?, itemIds:List<Int>) = appDatabase.taxDao().updateTax(id, name, active, isDeleted, itemIds)
+    /*Added by Rahul, to solved the tax update issue - END*/
+
+
     fun getCurrentUserTeamRoleFromDb(taxId: Int) =
         performGetOperationDatabase(databaseQuery = { appDatabase.teamRoleDao().roleById(taxId) })
 

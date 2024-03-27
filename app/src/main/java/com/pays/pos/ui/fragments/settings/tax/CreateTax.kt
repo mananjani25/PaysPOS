@@ -30,12 +30,11 @@ import com.pays.pos.data.remote.Constants.KEY
 import com.pays.pos.databinding.DialogCreateNewTaxBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.pays.pos.utils.AlertUtils
-import com.pays.pos.utils.LogUtil
-import com.pays.pos.utils.MethodUtils
-import com.pays.pos.utils.ProgressUtils
+import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
+import com.pays.pos.utils.*
 import com.pays.pos.utils.extensions.getNavigationResultLiveData
 import com.pays.pos.utils.extensions.liveSnackBar
+import com.pays.pos.utils.extensions.visible
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import javax.inject.Inject
@@ -177,11 +176,16 @@ class CreateTax : Fragment() {
         binding.header.txtSave.setOnClickListener {
             val rate = binding.edtAmount.text.toString()
             var rate_double = 0.0
+            if (this::taxData.isInitialized) {
+                taxData.name = viewModel.createTaxDetails.value?.name
+            }
             if (rate.isNotEmpty()) {
                 rate_double = MethodUtils.roundOffAmountDouble(rate.toDouble())
                 /*Added by Rahul, to solved the tax update issue - START*/
-                GlobalScope.launch(Dispatchers.IO) {
-                    viewModel.updateTax(rate_double, taxData)
+                if (isEdit) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        viewModel.updateTax(rate_double, taxData)
+                    }
                 }
                 /*Added by Rahul, to solved the tax update issue - END*/
 
@@ -326,36 +330,72 @@ class CreateTax : Fragment() {
     }
 
     private fun navigate() {
-
+        var message = ""
         viewModel.data.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { createTaxResponse ->
                 activity?.let {
-                    AlertUtils.showCustomAlertWithListenerWithOK(
-                        it, createTaxResponse.message
-                    ) { _, _ ->
 
-                        Log.e(
-                            TAG,
-                            "checkDeviceToken:  ${prefProvider?.getValue("device_token", "")}"
-                        )
-                        /*  if (prefProvider?.getValue("device_token", "")?.trim()?.isEmpty() == true) {
-                              val intent = Intent()
-                              intent.action = Constants.SYNC_SETTING_NOTIFICATION
-                              requireContext().sendBroadcast(intent)
+                    message = createTaxResponse.message
+                    setSyncObserver(message)
+                    runBlocking {
+                        lifecycleScope.launch {
+                            dashViewModel.syncTaxes()
+                        }.join()
 
-                              val intent2 = Intent()
-                              intent2.action = Constants.SYNC_NOTIFICATION
-                              requireContext().sendBroadcast(intent2)
-                          }*/
-                        //  dashViewModel.syncInventoryModule(false)
-
-                        //callSyncAPI()
-                        backPressManage()
                     }
+
                 }
 
             }
         })
+
+
+    }
+
+    private fun setSyncObserver(message: String) {
+        dashViewModel.taxSyncDone.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    viewModel.setItemIds(ArrayList())
+
+                    if (message.isNotEmpty()) {
+                        activity?.let {
+                            AlertUtils.showCustomAlertWithListenerWithOK(
+                                it, message
+                            ) { _, _ ->
+
+
+                                backPressManage()
+
+                                Log.e(
+                                    TAG,
+                                    "checkDeviceToken:  ${
+                                        prefProvider?.getValue(
+                                            "device_token",
+                                            ""
+                                        )
+                                    }"
+                                )
+                                /*  if (prefProvider?.getValue("device_token", "")?.trim()?.isEmpty() == true) {
+                                  val intent = Intent()
+                                  intent.action = Constants.SYNC_SETTING_NOTIFICATION
+                                  requireContext().sendBroadcast(intent)
+
+                                  val intent2 = Intent()
+                                  intent2.action = Constants.SYNC_NOTIFICATION
+                                  requireContext().sendBroadcast(intent2)
+                              }*/
+                                //  dashViewModel.syncInventoryModule(false)
+
+                                //callSyncAPI()
+
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
     }
 
     private fun callSyncAPI() {
