@@ -24,6 +24,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -48,6 +49,7 @@ import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.ALL_ORDER_TAB
 import com.pays.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.pays.pos.data.remote.Constants.IS_FROM_ALL_ORDER
+import com.pays.pos.data.remote.Constants.OLD_ITEM_BASE_CUSTOM_ITEM
 import com.pays.pos.data.remote.Constants.ONLINE_ORDER_TAB
 import com.pays.pos.data.remote.Constants.OPEN_ORDER_TAB
 import com.pays.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
@@ -111,6 +113,7 @@ class AllOrdersListingFragment(
     private var isStationAtoZ: Boolean = false
     private var isPrint: Boolean = true
     private val viewModel by viewModels<AllOrdersViewModel>()
+    private val ordersViewModel by activityViewModels<AllOrdersViewModel>()
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val activeOrderViewModel by viewModels<ActiveOrderViewModel>()
     lateinit var binding: AllOrdersListingFragmentBinding
@@ -1220,6 +1223,7 @@ class AllOrdersListingFragment(
             "accepted" -> {
                 isPrint = true
                 if (findNavController().currentDestination?.id == R.id.allOrdersFragment) {
+
                     findNavController().navigate(
                         R.id.action_allOrders_to_addOnlneTime,
                         bundleOf(
@@ -1233,6 +1237,9 @@ class AllOrdersListingFragment(
                 alert("", "Are you sure, you want to complete this order ?") {
                     this.positiveButton("YES") {
                         updateOrder(adapter.filterList[0].id, status)
+
+                        ordersViewModel.changeTabPosition.value = 2
+
                     }
                     this.negativeButton("NO") {
                     }
@@ -1330,8 +1337,6 @@ class AllOrdersListingFragment(
                                     )
                                 }
                             }
-
-
                         }
                         this.negativeButton("NO") {
                         }
@@ -1360,6 +1365,65 @@ class AllOrdersListingFragment(
             }
 
             "UPDATE" -> {
+
+                prefProvider.setValue(OLD_ITEM_BASE_CUSTOM_ITEM,Gson().toJson(order.orderItems))
+
+                 var itemList = mutableListOf<TbCartItem> ()
+
+//                order.orderItems.forEach {
+//                    TbCartItem().apply {
+//
+//                        var modifierList = mutableListOf<Modifier>()
+//
+//                        it.orderItemModifiers.forEach { orderModifier ->
+//                            Modifier().apply {
+//
+//                                this.id = orderModifier.id
+//                                this.modifierSetId = orderModifier.modifierSetId
+//                                this.name = orderModifier.name
+//                                this.price = orderModifier.price
+//                                this.sort = 0
+//                                this._destroy = false
+//                                this.isDeleted = false
+//                                this.isChecked = false
+//                                this.itemQuantity = orderModifier.quantity
+//                                this.modifier_quantity =
+//                                this.orderModifierId =
+//                                this.orderItemTaxes =
+//
+//
+//                            }
+//
+//                        }
+//
+//                        this.itemOriginalModifiersList = it.orderItemModifiers as List<Modifier>
+//                        this.modifiers = it.modifiers
+//                        this.isDestroy = it.isDestroy
+//                        this.timeStamp = it.timeStamp
+//                        this.orderType = it.orderType
+//                        this.note = it.note
+//                        this.name = it.name
+//                        this.website_hide_status = it.website_hide_status
+//                        this.categoryId = it.categoryId
+//                        this.isEdited = it.isEdited
+//                        this.discountId = it.discountId
+//                        this.discountPrice = it.discountPrice
+//                        this.discountType = it.discountType
+//                        this.employeeID = it.employeeID
+//                        this.isHide = it.isHide
+//                        this.quantity = it.quantity
+//                        if (this.itemQuantity != it.itemQuantity) {
+//                            this.isItemEdited = true
+//                        } else {
+//                            this.isItemEdited = it.isItemEdited
+//                        }
+//                        this.itemQuantity = it.itemQuantity
+//                        this.variationsAttributes = it.variationsAttributes
+//                        this.taxes = it.taxes
+//                    }
+//                }
+
+
                 prefProvider.setValue(Constants.OLD_ITEM, "")
                 var itemDiscountTotal: Double = 0.0
                 var itemPassDis: Double = 0.0
@@ -1411,9 +1475,11 @@ class AllOrdersListingFragment(
                     prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                 }
                 prefProvider.setValue(
+
                     Constants.OPEN_ORDER_ITEMS,
                     Gson().toJson(order.orderItems)
                 )
+
                 prefProvider.setValueboolean(Constants.OPEN_ORDER_UPDATE_FOR_PRINT, true)
 
                 /*we are using this to check whether the note is updated or not, if yes then we will print the *****Updated***** on the kitchen receipt*/
@@ -1430,7 +1496,11 @@ class AllOrdersListingFragment(
                         itemDiscount += it.discountPrice
                         it.itemOriginalModifiersList = it.modifiers
                     }
+
+                    dashboardViewModel.isUpdatedOnce = true
+
                     dashboardViewModel.addOrderItemsToCartItems(it)
+
                 }
 
                 val bundle = Bundle()
@@ -1489,6 +1559,7 @@ class AllOrdersListingFragment(
                 }
 
 //                findNavController().navigateUp()
+
 
             }
 
@@ -1678,17 +1749,17 @@ class AllOrdersListingFragment(
     }
 
     override fun noDataAvailableFilter() {
-
-        runOnUiThread(Runnable {
+        runOnUiThread {
             binding.llNoData.visible()
             binding.txtNodata.text = requireContext().getText(R.string.no_data_available)
-        })
-
+        }
         Log.d("noDataAvailableFilter", "no data available")
     }
 
     override fun hideNoDataAvailable() {
-        binding.llNoData.gone()
+        runOnUiThread {
+            binding.llNoData.gone()
+        }
         Log.d("noDataAvailableFilter", "hide")
     }
 

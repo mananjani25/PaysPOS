@@ -824,6 +824,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 }
             }
 
+
         }
 
         binding.txtSave.setOnClickListener {

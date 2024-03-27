@@ -1448,13 +1448,13 @@ class CustomDisplay(
 
             edtAmount.setText(MethodUtils.roundOffAmountString(0.00))
 
-            txtContinue.setOnClickListener {
+            txtContinue.setOnSingleClickListener  {
 
                 tippedAmount =
                     edtAmount.text.toString().replace("$", "").trim().toDouble()
 
                 if (mIsCardPayment) {
-                    if (mIsSignatureRequired) {
+                    if (!mIsSignatureRequired) {
                         showWouldYouLikeToAddTipScreen(
                             tipsListViewModel,
                             mTransactionViewModel,

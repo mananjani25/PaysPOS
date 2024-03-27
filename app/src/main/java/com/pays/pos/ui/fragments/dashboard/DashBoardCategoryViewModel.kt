@@ -9,7 +9,10 @@ import android.os.StrictMode
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -96,7 +99,6 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 import kotlin.collections.set
 import kotlin.math.ceil
 
@@ -169,6 +171,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _removeGuestSuccess = MutableLiveData<Event<String>>()
     val removeGuestSuccess: LiveData<Event<String>> = _removeGuestSuccess
 
+    var isUpdatedOnce = false
+
     /**
      * Fields used to check navigation from fragments
      */
@@ -196,7 +200,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     val doesItemContainsModifiers = MutableLiveData<Boolean>()
 
     /**
-    * resolved for manual cart item adding issue, i.e. the item was not getting added to the normal cart so we restarted the screen
+     * resolved for manual cart item adding issue, i.e. the item was not getting added to the normal cart so we restarted the screen
      */
     var boldPosNeedToRefresh = false
 
@@ -209,14 +213,19 @@ class DashBoardCategoryViewModel @Inject constructor(
     val allInventoryItems = posRepository.getItemsList()
 
     //Fetch all orders count
-    fun allOrderCounts(startDate: String?, endDate: String?): LiveData<Resource<AllOrdersCountResponse>> =
+    fun allOrderCounts(
+        startDate: String?,
+        endDate: String?
+    ): LiveData<Resource<AllOrdersCountResponse>> =
         posRepository.allOrderCounts(startDate, endDate)
 
     //all order types
     fun fetchAllOrderTypes() = posRepository.orderTypes()
 
     //fetch order types from server
-    suspend fun fetchOrderTypesFromServer(): Resource<OrderTypeResponse> { return posRepository.fetchOrderTypesFromServer() }
+    suspend fun fetchOrderTypesFromServer(): Resource<OrderTypeResponse> {
+        return posRepository.fetchOrderTypesFromServer()
+    }
 
     // Added to resolve Add Discount issue BIS-3547
     var discountNeedToUpdate = true
@@ -309,6 +318,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     val serviceCharges = posRepository.serviceChargeList()
+
     /*
      * Returns active order types
      */
@@ -317,8 +327,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     /*
      * Returns all active or Deactivated order types
      */
-    fun getAllOrderTypes():List<TbOrderType> {
-            return posRepository.getAllOrderTypes()
+    fun getAllOrderTypes(): List<TbOrderType> {
+        return posRepository.getAllOrderTypes()
     }
 
     val activeLoyaltyProgramLiveData = posRepository.getActiveLoyaltyProgramFromDb()
@@ -529,16 +539,35 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun addOrderItemsToCartItems(tbCartItem: List<TbCartItem>) {
-        CoroutineScope(Dispatchers.IO).launch {
-            posRepository.addCartItemsList(tbCartItem)
 
-            prefProvider.setValue(
-                Constants.OLD_ITEM_BASE,
-                Gson().toJson(appDatabase.cartDao().getAllCartItems())
-            )
+       // runBlocking {
+            CoroutineScope(Dispatchers.IO).launch {
+                posRepository.addCartItemsList(tbCartItem)
 
-            destroyedCartItemsList.clear()
-        }
+                prefProvider.setValue(
+                    Constants.OLD_ITEM_BASE,
+                    Gson().toJson(appDatabase.cartDao().getAllCartItems())
+                )
+
+
+                if (isUpdatedOnce) {
+
+                    isUpdatedOnce = false
+
+
+                    prefProvider.setValue(
+                        Constants.OLD_ITEM_BASE_CUSTOM_ITEM,
+                        Gson().toJson(appDatabase.cartDao().getAllCartItems())
+                    )
+
+                }
+
+
+                destroyedCartItemsList.clear()
+            }
+
+            //delay(2000)
+       // }
     }
 
     private fun deleteItemFromCartItem(tbCartItem: TbCartItem) {

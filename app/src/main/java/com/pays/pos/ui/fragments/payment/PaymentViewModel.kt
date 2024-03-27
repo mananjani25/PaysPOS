@@ -867,10 +867,18 @@ open class PaymentViewModel @Inject constructor(
                 /*Added by Rahul to solve the modifiers not removing issue*/
                 val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
 
-                var oldCartItemsList = Gson().fromJson<java.util.ArrayList<TbCartItem>>(
+                val isCustomFound = cartItems.filter { it.customItemID !=0 }
+
+                var oldCartItemsList =if(isCustomFound.isEmpty()) {
+
+                    Gson().fromJson<java.util.ArrayList<TbCartItem>>(
                     oldItems,
-                    listType
-                )
+                    listType)
+                }else{
+                    Gson().fromJson<java.util.ArrayList<TbCartItem>>(
+                        prefProvider.getValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, ""),
+                        listType)
+                    }
 
                 for (oldItem in oldCartItemsList) {
                     val found = cartItems.filter { it.cartItemId == oldItem.cartItemId }
@@ -979,6 +987,7 @@ open class PaymentViewModel @Inject constructor(
             prefProvider.setValue(Constants.OLD_ITEM, oldItems)
         } catch (e: Exception) {
             prefProvider.setValue(Constants.OLD_ITEM, oldItems)
+
         }
 
 
@@ -1440,20 +1449,15 @@ open class PaymentViewModel @Inject constructor(
 
         /*This is working well just uncomment it, we have commented it because the update list is being fetched in the OPEN_ORDER_ITEMS_BASE, that's why we are changing the get field*/
         if (/*prefProvider.getValue(Constants.OLD_ITEM, "")*/prefProvider.getValue(
-                Constants.OLD_ITEM_BASE,
+                Constants.OLD_ITEM_BASE_CUSTOM_ITEM,
                 ""
             ).isNotEmpty()
         ) {
 //            Added by Rahul to solve the modifiers not removing issue
             val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
 
-            var oldCartItemsList = Gson().fromJson<java.util.ArrayList<TbCartItem>>(
-                /*prefProvider.getValue(Constants.OLD_ITEM, "")*/prefProvider.getValue(
-                    Constants.OLD_ITEM_BASE,
-                    ""
-                ),
-                listType
-            )
+            val oldCartItemsList = Gson().fromJson(prefProvider.getValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, ""), listType) as ArrayList<TbCartItem>
+
 
             for (oldItem in oldCartItemsList) {
 
