@@ -365,7 +365,11 @@ class CreateTax : Fragment() {
                             ) { _, _ ->
 
 
-                                backPressManage()
+                                try{
+                                    backPressManage()
+                                }catch (e:Exception){
+
+                                }
 
                                 Log.e(
                                     TAG,
