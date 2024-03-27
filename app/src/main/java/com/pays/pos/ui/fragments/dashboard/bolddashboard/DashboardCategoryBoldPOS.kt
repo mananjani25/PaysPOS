@@ -25,6 +25,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
@@ -1594,6 +1595,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     //ProgressUtils.showProgressDialog(requireActivity())
                 } else {
                     // ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
+        viewModel.syncProgressDialog.observe(requireActivity()) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                     ProgressUtils.dismissProgressDialog()
                 }
             }
         }
@@ -5527,4 +5537,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         viewModel.syncInventoryModule(false)
     }
 
+    override fun syncTaxes() {
+        runBlocking {
+            lifecycleScope.launch {
+                viewModel.syncTaxes()
+            }.join()
+
+        }
+    }
 }

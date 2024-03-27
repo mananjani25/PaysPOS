@@ -116,7 +116,12 @@ class TaxesList : Fragment(), ItemCallback {
     private fun notifyAdapter() {
         viewModel.notifydata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                DashboardCategoryBoldPOS.syncDataCallback?.syncNotification()
+//                DashboardCategoryBoldPOS.syncDataCallback?.syncNotification()
+
+                /*Added by Rahul to solve the Tax issue - START*/
+                DashboardCategoryBoldPOS.syncDataCallback?.syncTaxes()
+                /*Added by Rahul to solve the Tax issue - END*/
+
                 taxListadapter.notifyDataSetChanged()
             }
         }

@@ -6,6 +6,7 @@ import androidx.room.*
 import com.pays.pos.data.entities.TaxData
 import com.pays.pos.data.entities.TbItem
 
+
 /**
  * Created by vishal patel on 2/3/2018.
  */
@@ -111,4 +112,10 @@ interface DBItemDao {
 
     @Query("select * from TbItem where TbItem.isDeleted = 0 and TbItem.name != 'Manual Item'")
     suspend fun allItemsList(): List<TbItem?>?
+
+    /*Added by Rahul, to solved the tax update issue - START*/
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAllTbItems(tbItemsList: List<TbItem?>?)
+    /*Added by Rahul, to solved the tax update issue - END*/
+
 }

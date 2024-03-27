@@ -1,10 +1,7 @@
 package com.pays.pos.data.repositories
 
 import com.pays.pos.data.db.AppDatabase
-import com.pays.pos.data.entities.LoyaltyProgramsModel
-import com.pays.pos.data.entities.TaxData
-import com.pays.pos.data.entities.TbServiceCharge
-import com.pays.pos.data.entities.TeamRole
+import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.requestModel.*
 import com.pays.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
 import com.pays.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
@@ -33,7 +30,7 @@ class TaxServiceChargeRepository @Inject constructor(
     fun getTempTaxList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.taxDao().allTax })
 
-     fun getTaxList() =
+    fun getTaxList() =
         performGetOperation(
             databaseQuery = { appDatabase.taxDao().allTax },
             networkCall = { apiHelperNew.getTaxList() },
@@ -43,8 +40,7 @@ class TaxServiceChargeRepository @Inject constructor(
         return apiHelperNew.getTaxList()
     }
 
-    suspend fun getItemsListOfTax(taxId: Int) : TaxData?
-       = appDatabase.taxDao().taxById(taxId)
+    suspend fun getItemsListOfTax(taxId: Int): TaxData? = appDatabase.taxDao().taxById(taxId)
 
     fun enableTaxes() =
         performGetOperationDatabase(
@@ -76,6 +72,15 @@ class TaxServiceChargeRepository @Inject constructor(
 
     suspend fun deleteTaxDatabase(taxId: Int) = appDatabase.taxDao().deleteTaxById(taxId)
 
+    /*Added by Rahul, to solved the tax update issue - START*/
+    suspend fun updateTaxStatus(taxId: Int,isActive:Boolean,isDeleted:Boolean) = appDatabase.taxDao().updateTaxStatus(taxId,isActive,isDeleted)
+    /*Added by Rahul, to solved the tax update issue - END*/
+
+    /*Added by Rahul, to solved the tax update issue - START*/
+    suspend fun updateTax(id: Int, name: String?, active: Boolean?, isDeleted: Boolean?, itemIds:List<Int>) = appDatabase.taxDao().updateTax(id, name, active, isDeleted, itemIds)
+    /*Added by Rahul, to solved the tax update issue - END*/
+
+
     fun getCurrentUserTeamRoleFromDb(taxId: Int) =
         performGetOperationDatabase(databaseQuery = { appDatabase.teamRoleDao().roleById(taxId) })
 
@@ -100,7 +105,16 @@ class TaxServiceChargeRepository @Inject constructor(
 //        )
 //    }
 
+    /*Added by Rahul, to solved the tax update issue - START*/
+    suspend fun fetchAllItemsList(): List<TbItem?>? {
+        return appDatabase.itemDao().allItemsList()
+    }
 
+
+    suspend fun insertAllTbItems(items: List<TbItem?>?) {
+        return appDatabase.itemDao().insertAllTbItems(items)
+    }
+    /*Added by Rahul, to solved the tax update issue - END*/
 
     fun loyaltyPointList() =
         performGetOperation(
@@ -115,6 +129,7 @@ class TaxServiceChargeRepository @Inject constructor(
     suspend fun addServiceCharges(serviceChargeList: List<TbServiceCharge>) {
         appDatabase.serviceChargeDao().addServiceCharges(serviceChargeList)
     }
+
     suspend fun addServiceCharge(serviceChargeList: TbServiceCharge) {
         appDatabase.serviceChargeDao().addServiceCharge(serviceChargeList)
     }

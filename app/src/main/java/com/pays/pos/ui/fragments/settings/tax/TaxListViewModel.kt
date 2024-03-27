@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.pays.pos.data.entities.TaxData
 import com.pays.pos.data.model.responseModel.CreateTaxResponse
 import com.pays.pos.data.model.responseModel.GetTaxResponse
@@ -12,7 +13,7 @@ import com.pays.pos.data.repositories.TaxServiceChargeRepository
 import com.pays.pos.utils.Event
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -75,8 +76,11 @@ class TaxListViewModel @Inject constructor(
 
     fun isTaxActive(taxDataItem: TaxData) {
 
-        // _showProgress.value = Event(true)
+        _showProgress.value = Event(true)
 
+        /* This taxDataItem is the current clicked item, in this item we are changing the isActive flag, now we need to update all the rows on the TbItem
+        * so that the active tax is set and vice-versa
+        * */
         viewModelScope.launch {
             taxDataItem.isActive = !taxDataItem.isActive
 
@@ -85,10 +89,8 @@ class TaxListViewModel @Inject constructor(
 
             when (resource.status) {
                 Status.SUCCESS -> {
-
-                    //   _showProgress.value = Event(false)
-
-                    resource.data.let {
+                   /* OLD Implementation of tax, below is the new implementation
+                   resource.data.let {
                         if (it?.status == 200) {
                             resource.data?.let { baseResponse ->
                                 Log.e("checkTax","checkTaxActive ${taxDataItem.isActive}")
@@ -103,7 +105,58 @@ class TaxListViewModel @Inject constructor(
                             _snackbarText.value = Event(resource.message)
                         }
 
+                    }*/
+                    /*Added by Rahul, to solved the tax update issue - START*/
+                    resource.data.let {
+                        runBlocking {
+
+                            if (it?.status == 200) {
+                                resource.data?.let { baseResponse ->
+                                    Log.e("checkTax", "checkTaxActive ${taxDataItem.isActive}")
+                                    var taxActiveJob=CoroutineScope(Dispatchers.IO).launch {
+                                        taxServiceChargeRepository.taxActiveDatabase(
+                                            taxDataItem.id,
+                                            taxDataItem.isActive
+                                        )
+                                    }
+
+                                    /* Now update all the rows of TbItem */
+
+                                   CoroutineScope(Dispatchers.IO).async {
+                                        runBlocking {
+                                            var itemsList = taxServiceChargeRepository.fetchAllItemsList()
+                                            itemsList?.forEach { item ->
+                                                item?.taxes?.forEach {
+                                                    if (taxDataItem.id == it.id) {
+                                                        it.isActive=taxDataItem.isActive
+                                                    }
+                                                }
+                                            }
+                                            launch {
+                                                taxServiceChargeRepository.insertAllTbItems(itemsList)
+                                            }
+                                            launch {
+                                                taxServiceChargeRepository.updateTaxStatus(taxDataItem.id,taxDataItem.isActive,taxDataItem.isDeleted)
+                                            }
+                                        }
+
+                                    }.await()
+
+                                    taxActiveJob.join()
+
+                                    _notifydata.value = Event(true)
+                                }
+                            } else {
+                                _snackbarText.value = Event(resource.message)
+                            }
+
+                            _showProgress.value = Event(false)
+
+                        }
+
                     }
+                    /*Added by Rahul, to solved the tax update issue - END*/
+
 
                 }
 
@@ -127,6 +180,8 @@ class TaxListViewModel @Inject constructor(
         viewModelScope.launch {
             val resource = taxServiceChargeRepository.deleteTax(id)
             when (resource.status) {
+
+                /* Old implementation of taxes, below is the new implementation
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
 
@@ -142,6 +197,53 @@ class TaxListViewModel @Inject constructor(
                         }
 
                     }
+
+
+                }*/
+
+
+                Status.SUCCESS -> {
+                    /*Added by Rahul, to solved the tax update issue - START*/
+                    runBlocking {
+                        resource.data.let {
+                            var updaterJob = CoroutineScope(Dispatchers.IO).launch {
+                                runBlocking {
+                                    var itemsList = taxServiceChargeRepository.fetchAllItemsList()
+                                    itemsList?.forEach { item ->
+                                        var taxesList=item?.taxes?.let {
+                                            it.filter {
+                                                it.id!=id
+                                            }
+                                        }
+                                        item?.taxes=taxesList
+                                    }
+                                    CoroutineScope(Dispatchers.IO).launch{
+                                        launch {
+                                            taxServiceChargeRepository.updateTaxStatus(id,false,true)
+                                        }
+                                        launch {
+                                            taxServiceChargeRepository.insertAllTbItems(itemsList)
+                                        }
+                                    }
+                                }
+
+                            }
+
+                            updaterJob.join()
+                            if (it?.status == 200) {
+                                resource.data?.let { createTaxResponse ->
+                                    taxServiceChargeRepository.deleteTaxDatabase(id)
+                                    _data.value = Event(createTaxResponse)
+
+                                }
+                            } else {
+                                _snackbarText.value = Event(resource.message)
+                            }
+                        }
+
+                        _showProgress.value = Event(false)
+                    }
+                    /*Added by Rahul, to solved the tax update issue - END*/
 
 
                 }

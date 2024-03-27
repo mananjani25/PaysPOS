@@ -21,9 +21,7 @@ import com.pays.pos.utils.Event
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 
@@ -221,9 +219,22 @@ class CreateTaxViewModel @Inject constructor(
                                          updatedAt = createTaxResponse.data.updatedAt
                                      )*/
 //                                    updateTaxDataInItem(tax, taxData.itemIds as ArrayList<Int>, oldItemIds)
-                                    taxServiceChargeRepository.createTaxDatabase(tax)
+                                    if (taxDataFromDb == null) {
+                                        taxServiceChargeRepository.createTaxDatabase(tax)
+                                        var addTaxToItems=CoroutineScope(Dispatchers.IO).launch {
+                                            addTaxToExistingItems(tax)
+                                        }
+                                        addTaxToItems.join()
+                                    } else {
+                                        taxServiceChargeRepository.updateTax(
+                                            taxDataFromDb.id,
+                                            tax.name,
+                                            tax.isActive,
+                                            tax.isDeleted,
+                                            tax.itemIds
+                                        )
+                                    }
 
-                                    itemIdsViewModel = ArrayList()
                                     _data.value = Event(createTaxResponse)
 
 
@@ -248,6 +259,41 @@ class CreateTaxViewModel @Inject constructor(
         }
 
     }
+
+    /*Added by Rahul, to solved the tax update issue - START*/
+    public suspend fun updateTax(rateDouble: Double, taxDataItem: TaxData) {
+        var itemsList = taxServiceChargeRepository.fetchAllItemsList()
+        itemsList?.forEach { item ->
+            item?.taxes?.forEach {
+                if (taxDataItem.id == it.id) {
+                    it.rate = rateDouble
+                    it.name = taxDataItem.name
+                    it.itemIds = taxDataItem.itemIds
+                }
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            taxServiceChargeRepository.insertAllTbItems(itemsList)
+        }
+
+    }
+    /*Added by Rahul, to solved the tax update issue - END*/
+
+
+    /*Added by Rahul, to solved the tax update issue - START*/
+    public suspend fun addTaxToExistingItems(taxDataItem: TaxData) {
+
+        var itemsList = taxServiceChargeRepository.fetchAllItemsList()
+        itemsList?.forEach { item ->
+            if (itemIdsViewModel.contains(item?.itemId)) {
+                (item?.taxes as ArrayList<TaxData>).add(taxDataItem)
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            taxServiceChargeRepository.insertAllTbItems(itemsList)
+        }
+    }
+    /*Added by Rahul, to solved the tax update issue - END*/
 
 
 }
