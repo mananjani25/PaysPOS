@@ -131,11 +131,17 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
     }
 
     private fun addChangeFragmentObserver(){
-        ordersViewModel.removedPosition.observe(viewLifecycleOwner){
-            if(it.second && it.first != -1 ){
-              changePosition(1)
+
+        /**
+         * 0 = Pending orders , 1 = InProgress orders , 2 = Completed
+         */
+
+        ordersViewModel.changeTabPosition.observe(viewLifecycleOwner){
+            if(it != -1){
+                changePosition(it)
             }
         }
+
     }
 
 

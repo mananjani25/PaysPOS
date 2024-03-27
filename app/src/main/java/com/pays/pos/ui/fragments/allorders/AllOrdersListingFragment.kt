@@ -1224,29 +1224,12 @@ class AllOrdersListingFragment(
                 isPrint = true
                 if (findNavController().currentDestination?.id == R.id.allOrdersFragment) {
 
-               //     prefProvider.setValue(Constants.OLD_ITEM_BASE,Gson().toJson(adapter.filterList[pos]).toString())
-
-                    var data = Pair(pos,false)
-
-                    ordersViewModel.removedPosition.apply {
-                        value = data
-                    }
-
                     findNavController().navigate(
                         R.id.action_allOrders_to_addOnlneTime,
                         bundleOf(
                             "order_id" to adapter.filterList[pos].id
                         )
                     )
-
-                    ordersViewModel.removedPosition.observe(viewLifecycleOwner){
-                        if(it.second && it.first != -1 ){
-                            adapter.orderList.removeAt(it.first)
-                            adapter.notifyDataSetChanged()
-                            data = Pair(-1,false)
-                            ordersViewModel.removedPosition.value = data
-                        }
-                    }
                 }
             }
 
@@ -1254,8 +1237,9 @@ class AllOrdersListingFragment(
                 alert("", "Are you sure, you want to complete this order ?") {
                     this.positiveButton("YES") {
                         updateOrder(adapter.filterList[0].id, status)
-                        adapter.orderList.removeAt(pos)
-                        adapter.notifyDataSetChanged()
+
+                        ordersViewModel.changeTabPosition.value = 2
+
                     }
                     this.negativeButton("NO") {
                     }
@@ -1353,8 +1337,6 @@ class AllOrdersListingFragment(
                                     )
                                 }
                             }
-
-
                         }
                         this.negativeButton("NO") {
                         }

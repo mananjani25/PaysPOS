@@ -261,10 +261,12 @@ class AddOnlineTimeDialog : DialogFragment() {
                     result
                 )
 
-                ordersViewModel.removedPosition.apply {
-                    value = this.value?.let {
-                            it1 -> Pair(it1.first,true) }
-                }
+                ordersViewModel.changeTabPosition.value = 1
+
+//                ordersViewModel.removedPosition.apply {
+//                    value = this.value?.let {
+//                            it1 -> Pair(it1.first,true) }
+//                }
 
                 findNavController().navigateUp()
             }

@@ -45,10 +45,9 @@ class AllOrdersViewModel @Inject constructor(
     val startDateSelection: LiveData<Event<Unit>> = _startDateSelection
 
     /**
-     * to remove completed order
+     * To change tab
      * */
-
-    var removedPosition = MutableLiveData<Pair<Int,Boolean>>()
+    var changeTabPosition = MutableLiveData<Int>(-1)
 
     fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()
 
