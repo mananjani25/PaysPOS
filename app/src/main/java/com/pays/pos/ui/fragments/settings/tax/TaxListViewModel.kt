@@ -89,7 +89,8 @@ class TaxListViewModel @Inject constructor(
 
             when (resource.status) {
                 Status.SUCCESS -> {
-                   /* OLD Implementation of tax, below is the new implementation
+                /*
+//                    OLD Implementation of tax, below is the new implementation
                    resource.data.let {
                         if (it?.status == 200) {
                             resource.data?.let { baseResponse ->
@@ -120,7 +121,7 @@ class TaxListViewModel @Inject constructor(
                                         )
                                     }
 
-                                    /* Now update all the rows of TbItem */
+//                                     Now update all the rows of TbItem
 
                                    CoroutineScope(Dispatchers.IO).async {
                                         runBlocking {

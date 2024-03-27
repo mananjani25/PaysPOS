@@ -6833,10 +6833,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun syncTaxes() {
-        _taxSyncDone.value = Event(false)
+//        _taxSyncDone.value = Event(false)
         viewModelScope.launch {
 
-            withContext(Dispatchers.Main){
+            CoroutineScope(Dispatchers.Main).launch{
                 _syncProgressDialog.value = Event(true)
             }
             val resource = posRepository.syncInventory(
@@ -7002,10 +7002,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
 
                                 CoroutineScope(Dispatchers.Main).launch{
+                                    delay(1000)
                                     _syncProgressDialog.postValue(Event(false))
+                                    _taxSyncDone.value=Event(true)
                                 }
 
-                                _taxSyncDone.postValue(Event(true))
 
                             }
 
