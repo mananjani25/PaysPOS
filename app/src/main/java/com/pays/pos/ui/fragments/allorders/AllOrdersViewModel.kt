@@ -12,7 +12,6 @@ import com.pays.pos.data.model.responseModel.allOrders.AllOrdersCountResponse
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.repositories.PosRepository
 import com.pays.pos.di.PrefProvider
-import com.pays.pos.ui.adapter.AllOrderAdapter
 import com.pays.pos.utils.Event
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
@@ -21,7 +20,6 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.io.path.createTempDirectory
 
 @HiltViewModel
 class AllOrdersViewModel @Inject constructor(
@@ -48,6 +46,7 @@ class AllOrdersViewModel @Inject constructor(
      * To change tab
      * */
     var changeTabPosition = MutableLiveData<Int>(-1)
+
 
     fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()
 

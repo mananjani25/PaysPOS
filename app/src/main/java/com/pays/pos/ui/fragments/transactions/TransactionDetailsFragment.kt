@@ -1173,7 +1173,8 @@ class TransactionDetailsFragment : Fragment() {
                     binding.tvIssueRefund.visibility = View.GONE
                 }*/
 
-                if (!paymentDetailsResponse.data.order.refund_detail.refunded_amount.equals(0.0)) {
+                if ((!paymentDetailsResponse.data.order.refund_detail.refunded_amount.equals(0.0)  || paymentDetailsResponse.data.order.payment_status == "Cancelled") && paymentDetailsResponse.data.order.refund_detail.refunded_amount == paymentDetailsResponse.data.order.total_amount
+                ) {
                     binding.tvIssueRefund.visibility = View.GONE
                     binding.tvtipadd.visibility = View.GONE
                 }

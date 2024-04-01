@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pays.pos.data.model.CancelOnlineWebOrderModel
 import com.pays.pos.data.model.requestModel.RefundRequestModelOnlineOrder
 import com.pays.pos.data.model.responseModel.*
 import com.pays.pos.data.model.responseModel.allOrders.AllOrdersCountResponse
@@ -40,6 +41,12 @@ class OnlineDetailViewModel @Inject constructor(
     var selectPicker1: Boolean = false
     private val _startDateSelection = MutableLiveData<Event<Unit>>()
     val startDateSelection: LiveData<Event<Unit>> = _startDateSelection
+
+    /**
+     * To cancel currently refunded order from list
+     */
+    val cancelOnlineWebOrderLiveData = MutableLiveData<CancelOnlineWebOrderModel>()
+
 
     fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()
 
@@ -113,6 +120,12 @@ class OnlineDetailViewModel @Inject constructor(
             val resource = posRepository.refundPaymentOnline(refundData)
             when (resource.status) {
                 Status.SUCCESS -> {
+
+                    cancelOnlineWebOrderLiveData.postValue(refundData.paymentRefund?.orderId?.let {
+                        CancelOnlineWebOrderModel(0,
+                            it,false, isRefunded = true)
+                    })
+
                     _showProgress.value = Event(false)
                     resource.data.let { logInResponse ->
                         if (logInResponse?.status == 200) {
