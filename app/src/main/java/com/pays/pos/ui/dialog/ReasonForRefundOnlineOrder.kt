@@ -43,6 +43,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.pax.poslink.*
+import com.pays.pos.ui.fragments.allorders.AllOrdersViewModel
 import com.pays.pos.utils.extensions.toast
 import com.pays.pos.utils.paxUtils.SettingINI
 import dagger.hilt.android.AndroidEntryPoint
@@ -97,7 +98,11 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
         magensa_response_data = arguments?.getString("magensa_response_data").toString()
 
         requiredNABServerPostAPICall = arguments?.getBoolean("requiredNABServerPostAPICall")!!
-        paxData = arguments?.getString("pax_data") + ""
+        if (arguments?.containsKey("pax_response_data")==true){
+            paxData = arguments?.getString("pax_response_data") + ""
+        }else{
+            paxData = arguments?.getString("pax_data") + ""
+        }
 
         return binding.root
     }
@@ -125,139 +130,141 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
         binding.imgBack.setOnClickListener {
             findNavController().popBackStack()
         }
-        binding.txtDone.setOnClickListener {
-            MethodUtils.hideSoftKeyboard(requireActivity())
-            if (refundAmount != 0.0 || refundAmount > 0.0) {
-                if (magensa_response_data.isNotEmpty() && !magensa_response_data.contains("null")) {
+        binding.txtDone.setOnClickListener(object:View.OnClickListener{
+            override fun onClick(p0: View?) {
+                MethodUtils.hideSoftKeyboard(requireActivity())
+                if (refundAmount != 0.0 || refundAmount > 0.0) {
+                    if (paxData.isNotEmpty()) {
+                        runBlocking {
+                            startServerPOSTRefund()
+                        }
+                    } else if (magensa_response_data.isNotEmpty() && !magensa_response_data.contains("null")) {
 //                Magensa implementation
-                    val jsonParser = JsonParser()
-                    var jsonObject: JsonObject? = null
-                    try {
-                        jsonObject = jsonParser.parse(magensa_response_data).asJsonObject
-                    } catch (e: Exception) {
+                        val jsonParser = JsonParser()
+                        var jsonObject: JsonObject? = null
+                        try {
+                            jsonObject = jsonParser.parse(magensa_response_data).asJsonObject
+                        } catch (e: Exception) {
+                            val a =0
+                        }
 
-                    }
+                        val model = Gson().fromJson(
+                            jsonObject, MagtekOnlineOrderRefundResponse::class.java
+                        )
 
-                    val model = Gson().fromJson(
-                        jsonObject, MagtekOnlineOrderRefundResponse::class.java
-                    )
+                        val jsonArray: JsonArray?
 
-                    val jsonArray: JsonArray?
+                        /*This is the Magensa implementation - START*/
+                        when {
 
-                    /*This is the Magensa implementation - START*/
-                    when {
+                            Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
-                        Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
+                                if (model != null) {
+                                    jsonArray =
+                                        model.transactionOutput?.token?.let { it1 ->
+                                            magtekRequestUtils.processTokenFirstData(
+                                                (refundAmount * 100),
+                                                it1,
+                                                model.customerTransactionID ?: "",
+                                                model.transactionOutput.transactionOutputDetails[0].value,
+                                                Constants.REFUND1
+                                            )
+                                        }
 
-                            if (model != null) {
+                                    networkCall(jsonArray, 0)
+                                }
+                            }
+
+
+                            Constants.ELAVON_GATEWAY == magtekRequestUtils.gatewayName() -> {
                                 jsonArray =
                                     model.transactionOutput?.token?.let { it1 ->
-                                        magtekRequestUtils.processTokenFirstData(
+                                        magtekRequestUtils.processTokenElavon(
                                             (refundAmount * 100),
                                             it1,
                                             model.customerTransactionID ?: "",
-                                            model.transactionOutput.transactionOutputDetails[0].value,
-                                            Constants.REFUND1
+                                            model.transactionOutput.transactionOutputDetails[0].value
+
                                         )
                                     }
 
                                 networkCall(jsonArray, 0)
                             }
-                        }
 
+                            Constants.EPX_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
-                        Constants.ELAVON_GATEWAY == magtekRequestUtils.gatewayName() -> {
-                            jsonArray =
-                                model.transactionOutput?.token?.let { it1 ->
-                                    magtekRequestUtils.processTokenElavon(
+                                jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                                    magtekRequestUtils.processReferenceIDEPX(
                                         (refundAmount * 100),
-                                        it1,
-                                        model.customerTransactionID ?: "",
-                                        model.transactionOutput.transactionOutputDetails[0].value
-
+                                        model.customerTransactionID ?: "", it1, Constants.REFUND1
                                     )
                                 }
-
-                            networkCall(jsonArray, 0)
-                        }
-
-                        Constants.EPX_GATEWAY == magtekRequestUtils.gatewayName() -> {
-
-                            jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                                magtekRequestUtils.processReferenceIDEPX(
-                                    (refundAmount * 100),
-                                    model.customerTransactionID ?: "", it1, Constants.REFUND1
-                                )
+                                networkCall(jsonArray, 1)
                             }
-                            networkCall(jsonArray, 1)
-                        }
 
-                        Constants.VANIT_EXORESS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+                            Constants.VANIT_EXORESS_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
-                            jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                                magtekRequestUtils.processReferenceIDRefund(
-                                    (refundAmount * 100),
-                                    model.customerTransactionID ?: "", it1,
-                                    model.transactionOutput.authCode
-                                )
+                                jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                                    magtekRequestUtils.processReferenceIDRefund(
+                                        (refundAmount * 100),
+                                        model.customerTransactionID ?: "", it1,
+                                        model.transactionOutput.authCode
+                                    )
+                                }
+                                networkCall(jsonArray, 1)
                             }
-                            networkCall(jsonArray, 1)
-                        }
 
-                        Constants.CHASE_GATEWAY == magtekRequestUtils.gatewayName() -> {
+                            Constants.CHASE_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
-                            jsonArray = magtekRequestUtils.processTokenChase(
-                                (refundAmount * 100),
-                                model.transactionOutput?.token ?: "",
-                                model.customerTransactionID ?: "",
-                                model.transactionOutput?.authCode ?: "",
-                                Constants.REFUND1
-                            )
-
-                            networkCall(jsonArray, 0)
-                        }
-                        Constants.HEARTLAND_GATEWAY == magtekRequestUtils.gatewayName() -> {
-
-                            jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                                magtekRequestUtils.processReferenceIHeartland(
+                                jsonArray = magtekRequestUtils.processTokenChase(
                                     (refundAmount * 100),
+                                    model.transactionOutput?.token ?: "",
                                     model.customerTransactionID ?: "",
-                                    it1,
-                                    model.transactionOutput.authCode,
+                                    model.transactionOutput?.authCode ?: "",
                                     Constants.REFUND1
                                 )
+
+                                networkCall(jsonArray, 0)
                             }
-                            networkCall(jsonArray, 1)
-                        }
-                        Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+                            Constants.HEARTLAND_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
-                            jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                                magtekRequestUtils.processReferenceIDTSYS(
-                                    (refundAmount),
-                                    model.customerTransactionID ?: "", it1, Constants.REFUND1
-                                )
+                                jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                                    magtekRequestUtils.processReferenceIHeartland(
+                                        (refundAmount * 100),
+                                        model.customerTransactionID ?: "",
+                                        it1,
+                                        model.transactionOutput.authCode,
+                                        Constants.REFUND1
+                                    )
+                                }
+                                networkCall(jsonArray, 1)
                             }
-                            networkCall(jsonArray, 1)
+                            Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                                jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                                    magtekRequestUtils.processReferenceIDTSYS(
+                                        (refundAmount),
+                                        model.customerTransactionID ?: "", it1, Constants.REFUND1
+                                    )
+                                }
+                                networkCall(jsonArray, 1)
+                            }
+
+
                         }
-
-
-                    }
 //This is the Magensa implementation - END
 
-                } else if (paxData.isNotEmpty()) {
-                    runBlocking {
-                        startServerPOSTRefund()
                     }
-                }
 /*
                 checkBroadPOSVersion()
 */
-            } else {
-                AlertUtils.showCustomAlert(requireActivity(), getString(R.string.msg_amount_refund))
+                } else {
+                    AlertUtils.showCustomAlert(requireActivity(), getString(R.string.msg_amount_refund))
+                }
+
+
             }
-
-
-        }
+        })
 
     }
 

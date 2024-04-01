@@ -133,7 +133,7 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
     private fun addChangeFragmentObserver(){
 
         /**
-         * 0 = Pending orders , 1 = InProgress orders , 2 = Completed
+         * 0 = Pending orders , 1 = InProgress orders , 2 = Completed , 3 = Cancelled / Rejected
          */
 
         ordersViewModel.changeTabPosition.observe(viewLifecycleOwner){

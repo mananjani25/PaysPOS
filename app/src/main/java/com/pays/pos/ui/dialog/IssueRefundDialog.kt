@@ -297,7 +297,17 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                             paymentOrderDetailsResponse.data.magensa_response_data
                         )
                         Log.d("subTotalPriceRefund", "::$totalItemPrice")
+
+
+                        if (paymentOrderDetailsResponse.data.order.order_type == "OnlineOrder" && paymentOrderDetailsResponse.data.pax_data!=null)  {
+                            /*Online order refund should pass a new parameter so that the next screen will detect the parameter and process the operation accordingly, because there are two processes
+                            * 1. PAX Gateway refund
+                            * 2. NAB Server POST API Call */
+                            putString("pax_data",paxData)
+                            putBoolean("requiredNABServerPostAPICall", requiredNABServerPostAPICall)
+                        }
                     }
+
                     findNavController().navigate(
                         R.id.action_issueRefundFragment_to_reasonForRefundDialog,
                         bundle

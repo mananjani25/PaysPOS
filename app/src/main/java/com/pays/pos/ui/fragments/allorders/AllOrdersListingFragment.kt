@@ -42,6 +42,7 @@ import com.epson.eposprint.StatusChangeEventListener
 import com.google.gson.Gson
 import com.pays.pos.R
 import com.pays.pos.data.entities.*
+import com.pays.pos.data.model.CancelOnlineWebOrderModel
 import com.pays.pos.data.model.requestModel.OrderItemVariationAttribute
 import com.pays.pos.data.model.requestModel.RefundRequestModelOnlineOrder
 import com.pays.pos.data.model.responseModel.*
@@ -61,6 +62,7 @@ import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
 import com.pays.pos.ui.adapter.AllOrderAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.pays.pos.ui.fragments.onlineorder.OnlineDetailViewModel
 import com.pays.pos.ui.fragments.orders.ActiveOrderViewModel
 import com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
@@ -115,6 +117,7 @@ class AllOrdersListingFragment(
     private val viewModel by viewModels<AllOrdersViewModel>()
     private val ordersViewModel by activityViewModels<AllOrdersViewModel>()
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val onlineDetailViewModel by activityViewModels<OnlineDetailViewModel>()
     private val activeOrderViewModel by viewModels<ActiveOrderViewModel>()
     lateinit var binding: AllOrdersListingFragmentBinding
     private lateinit var refundData: RefundRequestModelOnlineOrder
@@ -380,7 +383,7 @@ class AllOrdersListingFragment(
                                     eventType = xpp.next()
                                 }
 
-                                if (AUTH_RESP_TEXT.contains("UNABLE")) {
+                                if (AUTH_RESP_TEXT.contains("UNABLE")) { // batch closed and need to call refund
                                     /*Make refund Call*/
                                     makeRefundCallToNAB(
                                         xpp,
@@ -397,7 +400,7 @@ class AllOrdersListingFragment(
                                         AMOUNT,
                                         AUTH_GUID
                                     )
-                                } else if (AUTH_RESP_TEXT.contains("APPROVAL")) {
+                                } else if (AUTH_RESP_TEXT.contains("APPROVAL")) { // void and refund success
                                     /*Make server call*/
                                     ProgressUtils.dismissProgressDialog()
                                     makeAcceptedDeclinedServerCall(time, orderId, is_accepted)
@@ -472,7 +475,6 @@ class AllOrdersListingFragment(
                             if (it.data.orderItems.isNotEmpty()) {
                                 getKitchenPrinters(it.data)
                             }
-
                         }
                     }
 
@@ -908,6 +910,7 @@ class AllOrdersListingFragment(
         endDatePickerObserver()
         getCustomerReceiptSettings()
         observeTipsList()
+        cancelOrderObserver()
 
         startTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
             val timecalender = Calendar.getInstance()
@@ -982,6 +985,41 @@ class AllOrdersListingFragment(
         return binding.root
     }
 
+    fun cancelOrderObserver(){
+        onlineDetailViewModel.cancelOnlineWebOrderLiveData.observe(viewLifecycleOwner){
+            if(it.isRefunded){
+
+                makeAcceptedDeclinedServerCall(0,
+                    it.orderId,
+                    false)
+            }
+
+            onlineDetailViewModel.cancelOnlineWebOrderLiveData.value?.isRefunded = false
+        }
+
+        onlineDetailViewModel.dataRefundDone.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { createTaxResponse ->
+                activity?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        it, createTaxResponse.message
+                    ) { _, _ ->
+
+                            val result = Bundle().apply {
+                                refundData.paymentRefund?.orderId?.let { it1 ->
+                                    putInt(
+                                        "order_id", it1
+                                    )
+                                }
+                            }
+                            requireActivity().supportFragmentManager.setFragmentResult(
+                                "request_for_rejectOrder", result
+                            )
+                            findNavController().navigateUp()
+                        }
+                }
+            }
+        }
+    }
 
     private fun getCustomerReceiptSettings() {
         activeOrderViewModel.getCustomerReceiptSettings().observe(viewLifecycleOwner) {
@@ -1322,6 +1360,17 @@ class AllOrdersListingFragment(
                                 )
                             }
                             bundle.putString("isFrom", "rejectOnlineOrder")
+
+
+                            val cancelOnlineWebOrderModel = CancelOnlineWebOrderModel(
+                                0,
+                                adapter.filterList[pos].id,
+                                false,
+                                isRefunded = false)
+
+                            onlineDetailViewModel.cancelOnlineWebOrderLiveData.value = cancelOnlineWebOrderModel
+
+
                             if (prefProvider.isAdmin() || prefProvider.isManager()) {
                                 if (findNavController().currentDestination?.id == R.id.allOrdersFragment) {
                                     findNavController().navigate(
