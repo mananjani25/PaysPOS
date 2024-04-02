@@ -351,6 +351,7 @@ class TransactionDetailsFragment : Fragment() {
                         paymentRefund = RefundRequestModelOnlineOrder.PaymentRefund().apply {
                             amount =
                                 paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips
+                            refunded_amount = amount
                             orderId = paymentDetailsResponse.data.order_id
                             paymentId = paymentDetailsResponse.data.id
                             employeeId = employeeIdtemp

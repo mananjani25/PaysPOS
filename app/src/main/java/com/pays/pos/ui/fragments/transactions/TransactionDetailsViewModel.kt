@@ -137,6 +137,7 @@ class TransactionDetailsViewModel @Inject constructor(
 
         refundData.paymentRefund?.reasonForRefund = refundReason
         refundData.paymentRefund?.amount = refundAmount
+        refundData.paymentRefund?.refunded_amount = refundAmount
 
         if (refundData.paymentRefund?.employeeId != prefProvider.employeeId()) {
             refundData.paymentRefund?.employeeId = prefProvider.employeeId()
