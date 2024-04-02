@@ -112,6 +112,7 @@ class OnlineDetailViewModel @Inject constructor(
 
         refundData.paymentRefund?.reasonForRefund = refundReason
         refundData.paymentRefund?.amount = refundAmount
+        refundData.paymentRefund?.refunded_amount = refundAmount
 
         _showProgress.value = Event(true)
 
