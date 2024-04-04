@@ -195,6 +195,17 @@ class CartFragment(
             //presentation.show()
         }
 
+        viewModel.updateCartFooter.observe(viewLifecycleOwner){
+            it?.getContentIfNotHandled()?.let {_it->
+                if (_it){
+                    Log.d("CurrentItems::", Gson().toJson(viewModel.currentCartItems))
+
+                    addObserver()
+
+                }
+            }
+
+        }
 
         checkOrderType()
 

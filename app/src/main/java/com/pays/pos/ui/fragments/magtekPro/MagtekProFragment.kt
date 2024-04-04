@@ -147,6 +147,20 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         }
     }
 
+    /*Added by Rahul to solve the crash issue, when PAX is connected - START*/
+    override fun onPause() {
+        super.onPause()
+        try{
+            ProgressUtils.dismissProgressDialog()
+        }catch (e:Exception){
+            if (activity!=null) {
+                ProgressUtils.dismissProgressDialog()
+            }
+        }
+    }
+    /*Added by Rahul to solve the crash issue, when PAX is connected - END*/
+
+
     private fun connectBP() {
         BroadPOSCommunicator.getInstance(activity)
             .startListeningService(object : BroadPOSCommunicator.StartListenerCallBack {
