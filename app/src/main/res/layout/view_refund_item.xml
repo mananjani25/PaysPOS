@@ -17,75 +17,94 @@
             type="com.pays.pos.ui.fragments.transactions.TransactionDetailsViewModel" />
     </data>
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
         <View
+            android:id="@+id/viewStrikeThrough"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/view" />
+            android:layout_height="0.5dp"
+            android:background="#FF6000"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/linearLayoutCompat"
+            app:layout_constraintEnd_toEndOf="@+id/linearLayoutCompat"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/linearLayoutCompat" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearLayoutCompat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <LinearLayout
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/view" />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="@dimen/_3sdp">
+                android:orientation="horizontal">
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvItemName"
-                    style="@style/CustomFontSemiBold"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_3sdp">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvItemName"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="start"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvModifierName"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/txtColorGray"
+                        android:textSize="@dimen/_6mdpi" />
+                </LinearLayout>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvItemPrice"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="@dimen/_5sdp"
                     android:gravity="start"
+                    android:padding="@dimen/_5sdp"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvModifierName"
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="match_parent"
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivCheck"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/txtColorGray"
-                    android:textSize="@dimen/_6mdpi" />
-            </LinearLayout>
+                    android:layout_gravity="center"
+                    android:padding="@dimen/_5sdp"
+                    android:src="@{refundItemListModel.isChecked ? @drawable/ic_check_circle: @drawable/ic_uncheck_circle}" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvItemPrice"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:gravity="start"
-                android:padding="@dimen/_5sdp"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/ivCheck"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:padding="@dimen/_5sdp"
-                android:src="@{refundItemListModel.isChecked ? @drawable/ic_check_circle: @drawable/ic_uncheck_circle}" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:background="@color/view" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.3dp"
-            android:background="@color/view" />
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
