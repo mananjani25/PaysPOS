@@ -48,6 +48,7 @@ import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import com.pax.poslink.log.LogFilter.Const
+import com.pays.pos.utils.Event
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
@@ -1579,7 +1580,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             //  listner.onCancelItemSelected()
 
 
-            viewModel.fragmentNeedToBeUpdated.value = true
+//            viewModel.fragmentNeedToBeUpdated.value = true
+            viewModel.updateCartFooter.value=Event(true)
 
         }
 

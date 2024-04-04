@@ -342,6 +342,9 @@ class DashBoardCategoryViewModel @Inject constructor(
     val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+
+    val updateCartFooter = MutableLiveData<Event<Boolean>>()
+
     val _syncProgressDialog = MutableLiveData<Event<Boolean>>()
     val syncProgressDialog: LiveData<Event<Boolean>> = _syncProgressDialog
 
@@ -5231,7 +5234,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         return cartModel
     }
 
-    fun <T> concatenate(vararg lists: List<T>): List<T> {
+    inline fun <T> concatenate(vararg lists: List<T>): List<T> {
         return listOf(*lists).flatten()
     }
 
