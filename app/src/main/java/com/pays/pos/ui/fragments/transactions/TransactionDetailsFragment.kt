@@ -366,6 +366,9 @@ class TransactionDetailsFragment : Fragment() {
                             orderItemRefundsAttributes = orderItemRefundsAttributesList
                         }
                     }
+
+
+
                     val bundle = Bundle().apply {
 
                         if (paymentDetailsResponse.data.pax_data!=null)  {
@@ -388,6 +391,7 @@ class TransactionDetailsFragment : Fragment() {
                             paymentDetailsResponse.data.magensa_response_data
                         )
                         putInt("guestCount", paymentDetailsResponse.data.guestCount ?: 0)
+
                     }
                     bundle.putString("isFrom", "refundOnline")
                     if (prefProvider.isManager() || prefProvider.isAdmin()) {
@@ -405,6 +409,21 @@ class TransactionDetailsFragment : Fragment() {
 
                 }
                 else {
+
+                    var isItemRefund = false
+                    var isAmountRefund = false
+
+                    paymentDetailsResponse.data.order.order_items.forEach {
+                        if(it.refundedAmount != 0.0)
+                            isItemRefund = true
+                    }
+
+                    if(!isItemRefund) {
+                        if(paymentDetailsResponse.data.order.refund_detail.refunded_amount !=0.0){
+                            isAmountRefund = true
+                        }
+                    }
+
                     val bundle = Bundle().apply {
                         paymentDetailsResponse.data.order.order_items.forEach {
                             it.isChecked = true
@@ -421,6 +440,9 @@ class TransactionDetailsFragment : Fragment() {
                         }
                         putParcelableArrayList("serviceChargesList", serviceChargesList)
                         putInt("guestCount", paymentDetailsResponse.data.guestCount ?: 0)
+
+                        putBoolean("isItemRefund",isItemRefund)
+                        putBoolean("isAmountRefund",isAmountRefund)
                     }
                     bundle.putString("isFrom", "refund")
                     if (prefProvider.isManager() || prefProvider.isAdmin()) {

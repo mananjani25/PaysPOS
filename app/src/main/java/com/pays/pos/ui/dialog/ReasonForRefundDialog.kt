@@ -8,6 +8,7 @@ import android.view.*
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.volley.AuthFailureError
@@ -75,7 +76,9 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
     private var refundAmount: Double = 0.0
     private lateinit var binding: DialogRefundReasonBinding
     private lateinit var refundData: RefundRequestModel
+   // private lateinit var orderItemRefundsAttributes:String
     private val viewModel by viewModels<TransactionDetailsViewModel>()
+    private val transactionViewModel by activityViewModels<TransactionDetailsViewModel>()
     private val magtekProViewModel by viewModels<MagtekViewModel>()
     private var woyouService: IWoyouService? = null
 
@@ -112,6 +115,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         refundData = arguments?.getParcelable("refundData")!!
+    //    orderItemRefundsAttributes = arguments?.getString("orderItemRefundsAttributes").toString()
         refundAmount = arguments?.getDouble("refundAmount")!!
         magensa_response_data = arguments?.getString("magensa_response_data").toString()
         paymentType = arguments?.getString("paymentType").toString()
@@ -123,6 +127,8 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
         requiredNABServerPostAPICall = arguments?.getBoolean("requiredNABServerPostAPICall")!!
         paxData = arguments?.getString("pax_data")+""
 
+
+        refundData.paymentRefund?.orderItemRefundsAttributes = transactionViewModel.orderItemAttribututes
         Log.d(
             "PAX params:",
             "pax params: paxToken-$paxToken paxECRreferenceNo-$paxECRreferenceNo referenceNo-$referenceNo paxExtData-${

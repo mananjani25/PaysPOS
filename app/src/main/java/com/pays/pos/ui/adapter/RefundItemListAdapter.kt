@@ -289,7 +289,17 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
 
 
             if(selectedItemList[bindingAdapterPosition].refundedAmount != 0.0) {
-                itemBinding.root.visibility = View.GONE
+                item.isChecked = false
+                //itemBinding.root.visibility = View.GONE
+                itemBinding.root.apply {
+                    isActivated = false
+                    isEnabled = false
+                    isClickable = false
+                }
+
+                itemBinding.viewStrikeThrough.visibility = View.VISIBLE
+
+
             }
 
             itemBinding.executePendingBindings()

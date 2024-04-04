@@ -56,6 +56,9 @@ class TransactionDetailsViewModel @Inject constructor(
 
     val startDate = MutableLiveData<String>()
 
+
+    var orderItemAttribututes :MutableList<RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute>? = null
+
     // get added tips of any transaction
     fun getTipsList() = posRepository.getTipsList()
 
@@ -137,7 +140,6 @@ class TransactionDetailsViewModel @Inject constructor(
 
         refundData.paymentRefund?.reasonForRefund = refundReason
         refundData.paymentRefund?.amount = refundAmount
-        refundData.paymentRefund?.refunded_amount = refundAmount
 
         if (refundData.paymentRefund?.employeeId != prefProvider.employeeId()) {
             refundData.paymentRefund?.employeeId = prefProvider.employeeId()

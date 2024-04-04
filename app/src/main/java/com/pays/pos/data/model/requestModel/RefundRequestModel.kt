@@ -38,8 +38,6 @@ data class RefundRequestModel(
         var tipsRefunded: Double = 0.0,
         @SerializedName("cash_discount_or_surcharge_refunded")
         var cash_discount_or_surcharge_refunded: Double = 0.0,
-        @SerializedName("refunded_amount")
-        var refunded_amount: Double = 0.0
 
     ) : Parcelable {
         @Parcelize
@@ -63,7 +61,9 @@ data class RefundRequestModel(
             @SerializedName("refund_type")
             var refundType: Int? = null,
             @SerializedName("wastage_id")
-            var wastageId: Int? = null
+            var wastageId: Int? = null,
+            @SerializedName("refunded_amount")
+        var refunded_amount: Double = 0.0
         ) : Parcelable
     }
 }
