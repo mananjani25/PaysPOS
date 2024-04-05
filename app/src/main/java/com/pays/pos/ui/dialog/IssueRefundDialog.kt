@@ -161,7 +161,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                             price
                         )
 
-                        binding.edtAmount.setText((price * 100).toString())
+                        binding.edtAmount.setText(price.toString())
+                        //binding.edtAmount.setText((price * 100).toString())
                     } else {
                         val price =
                             (mData.amount) - mData.order.refund_detail.refunded_amount
@@ -174,25 +175,26 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     }
                 }
 
-                var alreadyRefundedAmount = paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
-                var allTotalAmount = paymentOrderDetailsResponse.data.order.total_amount
-
-                val subTotalPriceNew = allTotalAmount - alreadyRefundedAmount
-                binding.edtAmount.setText(subTotalPriceNew.toString())
+//                var alreadyRefundedAmount = paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
+//                var allTotalAmount = (mData.amount + tipCalculation(mData.tips)) - mData.order.refund_detail.refunded_amount
+//
+//                val subTotalPriceNew = allTotalAmount - alreadyRefundedAmount
+//                binding.edtAmount.setText(allTotalAmount.toString())
 
 
             }
         }
-        else
-        if(isItemRefund) {
-            binding.apply {
-                rbItems.performClick()
-                rbItems.visibility = View.VISIBLE
-                rbAmount.visibility = View.GONE
-                rgRefundType.check(R.id.rbItems)
+        else{
+            if(isItemRefund) {
+                binding.apply {
+                    rbItems.performClick()
+                    rbItems.visibility = View.VISIBLE
+                    rbAmount.visibility = View.GONE
+                    rgRefundType.check(R.id.rbItems)
 
-                llRefundAmount.visibility = View.GONE
-                llItemList.visibility = View.VISIBLE
+                    llRefundAmount.visibility = View.GONE
+                    llItemList.visibility = View.VISIBLE
+                }
             }
         }
 
@@ -236,7 +238,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                         price
                     )
 
-                    binding.edtAmount.setText((price * 100).toString())
+                    binding.edtAmount.setText(price.toString())
+                    //binding.edtAmount.setText((price * 100).toString())
                 } else {
                     val price =
                         (mData.amount) - mData.order.refund_detail.refunded_amount
@@ -310,7 +313,9 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                             price
                         )
 
-                        binding.edtAmount.setText((price * 100).toString())
+
+                        binding.edtAmount.setText(price.toString())
+                        //binding.edtAmount.setText((price * 100).toString())
                     } else {
                         val price =
                             (mData.amount) - mData.order.refund_detail.refunded_amount
@@ -323,11 +328,17 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     }
                 }
 
-                var alreadyRefundedAmount = paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
-                var allTotalAmount = paymentOrderDetailsResponse.data.order.total_amount
+//                var alreadyRefundedAmount = paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
+//                var allTotalAmount = (mData.amount + tipCalculation(mData.tips)) - mData.order.refund_detail.refunded_amount
+//
+//                val subTotalPriceNew = allTotalAmount - alreadyRefundedAmount
+//                binding.edtAmount.setText(allTotalAmount.toString())
 
-                val subTotalPriceNew = allTotalAmount - alreadyRefundedAmount
-                binding.edtAmount.setText(subTotalPriceNew.toString())
+//                var alreadyRefundedAmount = paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
+//                var allTotalAmount = paymentOrderDetailsResponse.data.order.total_amount
+//
+//                val subTotalPriceNew = allTotalAmount - alreadyRefundedAmount
+//                binding.edtAmount.setText(subTotalPriceNew.toString())
 
 
             }
@@ -823,7 +834,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             } else {
                 val newPrice: Double =
                     if (paymentOrderDetailsResponse.data.payment_type == "Card") {
-                        (paymentOrderDetailsResponse.data.amount + tipCalculation(paymentOrderDetailsResponse.data.tips)) /*paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount*/
+                        (paymentOrderDetailsResponse.data.amount + tipCalculation(paymentOrderDetailsResponse.data.tips) - paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount) /*paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount*/
                     } else {
                         paymentOrderDetailsResponse.data.amount - paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
                     }

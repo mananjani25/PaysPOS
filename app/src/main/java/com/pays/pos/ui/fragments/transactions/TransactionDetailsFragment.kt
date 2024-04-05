@@ -1188,19 +1188,21 @@ class TransactionDetailsFragment : Fragment() {
                     binding.llLoyaltyPoints.visibility = View.VISIBLE
                 }
 
-                if (!paymentDetailsResponse.data.order.refund_detail.refunded_amount.equals(0.0)) {
+                if (!paymentDetailsResponse.data.order.refund_detail.refunded_amount.equals(0.0) && paymentDetailsResponse.data.order.payment_status !="Cancelled") {
                     binding.llRefundAmount.visibility = View.VISIBLE
+                    binding.tvtipadd.visibility = View.GONE
+                    binding.tvIssueRefund.visibility = View.VISIBLE
                 }
 
-                /*if (orderDetailsResponse.data.totalAmount == orderDetailsResponse.data.refundDetails.refundedAmount) {
-                    binding.tvIssueRefund.visibility = View.GONE
-                }*/
 
-                if ((!paymentDetailsResponse.data.order.refund_detail.refunded_amount.equals(0.0)  || paymentDetailsResponse.data.order.payment_status == "Cancelled") && paymentDetailsResponse.data.order.refund_detail.refunded_amount == paymentDetailsResponse.data.order.total_amount
+                val total = paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips
+                if (total == paymentDetailsResponse.data.order.refund_detail.refunded_amount
+                    || paymentDetailsResponse.data.order.payment_status == "Cancelled"
                 ) {
                     binding.tvIssueRefund.visibility = View.GONE
-                    binding.tvtipadd.visibility = View.GONE
                 }
+
+
 
                 if (paymentDetailsResponse.data.order.open_order_type.equals(
                         "Open Order",
