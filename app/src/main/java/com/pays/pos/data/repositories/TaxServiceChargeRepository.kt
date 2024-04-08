@@ -96,7 +96,7 @@ class TaxServiceChargeRepository @Inject constructor(
         return apiHelperNew.getServiceChargeWholeList(terminalId)
     }
 //    suspend fun getServiceChargeWholeList(): Resource<ServiceChargeListResponse> {
-//        performGetOperation(
+//        performGetOperation(d by Rahul, to solved the tax update
 //            databaseQuery = { appDatabase.serviceChargeDao().allServiceCharge },
 //            networkCall = { apiHelperNew.getServiceChargeWholeList() },
 //            saveCallResult = {

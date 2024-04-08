@@ -154,7 +154,7 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
         val result = Bundle().apply {
             putString("note", binding.edtNote.text.toString().trim())
             item?.let {
-                if (!it.note.equals(binding.edtNote.text.toString().trim())){
+                if (!it.note.equals(binding.edtNote.text.toString().trim()) && prefProvider.getValue(Constants.OPEN_ORDER_ITEMS,"").isNotEmpty()){
                     it.isItemEdited=true
 
                     prefProvider.setValueboolean(

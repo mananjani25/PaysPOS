@@ -281,7 +281,7 @@ class AllOrdersListingFragment(
         is_accepted: Boolean
     ) {
         if (is_accepted) {
-            makeAcceptedDeclinedServerCall(time, orderId, is_accepted)
+                makeAcceptedDeclinedServerCall(time, orderId, is_accepted)
         } else {
             if (pax_data.isNotEmpty()) {
                 var CUST_NBR = ""
@@ -463,13 +463,12 @@ class AllOrdersListingFragment(
             is_accepted,
             employee_id,
             terminal_id
-        ).observe(viewLifecycleOwner) { it ->
+        ).observe(requireActivity()) { it ->
 
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
-                        getAllOrders()
                         resource.data?.let {
                             LogUtil.logE(TAG, "getREsponseForOnline  ${Gson().toJson(it)}")
                             if (it.data.orderItems.isNotEmpty()) {
@@ -4331,47 +4330,76 @@ class AllOrdersListingFragment(
 
     // To get connected kitchen printers
     private fun getKitchenPrinters(data: OnlineOrderResponseModel.Data) {
-        viewModel.getKitchenPrinterList().observe(viewLifecycleOwner) { it ->
-            when (it.status) {
-                Status.SUCCESS -> {
-                    ProgressUtils.dismissProgressDialog()
+        CoroutineScope(Dispatchers.IO).launch{
+           var it = viewModel.getKitchenPrinterList()
 
+            if (isPrint) {
 
-                    if (isPrint) {
+                isPrint = false
+                it?.forEach {
+                    if (it.status && checkItemsforPrinterOnlineOrder(
+                            data.orderItems, it.printerCategories.toCollection(
+                                arrayListOf()
+                            )
+                        )
+                    ) {
 
-                        isPrint = false
-                        it.data?.forEach {
-                            if (it.status && checkItemsforPrinterOnlineOrder(
-                                    data.orderItems, it.printerCategories.toCollection(
-                                        arrayListOf()
-                                    )
-                                )
-                            ) {
+                        Log.d("getKitchenPrinterList", "getKitchenPrinterList mmm")
 
-                                Log.d("getKitchenPrinterList", "getKitchenPrinterList mmm")
+                        initKitchenPrinter(
+                            it,
+                            Constants.KITCHEN,
+                            data
+                        )
+                        getAllOrders()
 
-                                initKitchenPrinter(
-                                    it,
-                                    Constants.KITCHEN,
-                                    data
-                                )
-
-                            }
-                        }
                     }
-                }
-
-                Status.LOADING -> {
-                    ProgressUtils.showProgressDialog(requireActivity())
-                }
-
-                Status.ERROR -> {
-                    ProgressUtils.dismissProgressDialog()
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
-
                 }
             }
 
+            /*viewModel.getKitchenPrinterList().observe(viewLifecycleOwner) { it ->
+                when (it.status) {
+                    Status.SUCCESS -> {
+                        ProgressUtils.dismissProgressDialog()
+
+
+                        if (isPrint) {
+
+                            isPrint = false
+                            it.data?.forEach {
+                                if (it.status && checkItemsforPrinterOnlineOrder(
+                                        data.orderItems, it.printerCategories.toCollection(
+                                            arrayListOf()
+                                        )
+                                    )
+                                ) {
+
+                                    Log.d("getKitchenPrinterList", "getKitchenPrinterList mmm")
+
+                                    initKitchenPrinter(
+                                        it,
+                                        Constants.KITCHEN,
+                                        data
+                                    )
+                                    getAllOrders()
+
+                                }
+                            }
+                        }
+                    }
+
+                    Status.LOADING -> {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
+
+                    Status.ERROR -> {
+                        ProgressUtils.dismissProgressDialog()
+                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
+
+                    }
+                }
+
+            }*/
         }
 
     }

@@ -73,6 +73,10 @@ class PrinterViewModel @Inject constructor(
         return posRepository.getKitchenPrintersList()
     }
 
+   suspend fun getKitchenPrinterForPrint(): List<PrinterResponse.Data.KitchenReceiptPrinters> {
+        return posRepository.getKitchenPrinterForPrint()
+    }
+
 
     fun createPrinterQueueTestOrder(orderRequest: OrderRequestModel) {
 

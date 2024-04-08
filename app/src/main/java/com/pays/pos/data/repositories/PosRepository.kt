@@ -4,7 +4,6 @@ package com.pays.pos.data.repositories
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
 import com.pays.pos.data.db.AppDatabase
 import com.pays.pos.data.db.IDataManager
 import com.pays.pos.data.model.PrinterQueueModel
@@ -47,11 +46,7 @@ import com.pays.pos.utils.statusUtils.Resource
 import com.google.gson.Gson
 import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.responseModel.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 
@@ -127,6 +122,7 @@ class PosRepository @Inject constructor(
         performGetOperationDatabase { appDatabase.printerDao().kitchenPrintList }
 
     suspend fun getKitchenPrintersList() = appDatabase.printerDao().getKitchenPrinterList()
+    suspend fun getKitchenPrinterForPrint() = appDatabase.printerDao().getKitchenPrinterForPrinting()
 
     suspend fun addWastageReasonInDb(wastageReasonsList: List<VenueDetailsResponse.Data.WastageReason>) {
         appDatabase.wastageReasonsDao().addAllWastageReasons(wastageReasonsList)

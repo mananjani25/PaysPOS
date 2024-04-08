@@ -2913,6 +2913,64 @@ fun addOrdersForKitchen(
 }
 
 
+fun addOrdersForStarKitchen(isEdited:Boolean, isOrderUpdate:Boolean,
+    list: List<CreateOrderResponse.Data.Order.OrderItem>,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null
+): String {
+
+    var items: String = ""
+    if (list.isNullOrEmpty()){
+        return items
+    }
+    for (i in 0 until list.size) {
+        printerCat?.forEach {
+            Log.e("PrinterReceipt", "checkPrinterItemN:   ${list.get(i).itemName}")
+            if (it?.id == list[i].categoryId) {
+                if (it.categoryActive && it.printerEnable) {
+
+                    val obj = list.get(i)
+                    if ((obj.isItemEdited && isEdited) || (obj.isItemEdited && isOrderUpdate)){
+                        items += "(U) "+obj.quantity.toString() + " " + obj.itemName.uppercase()
+                    }else{
+                        items += obj.quantity.toString() + " " + obj.itemName.uppercase()
+                    }
+
+                    items += "\n"
+                    if (obj.orderItemModifiers.isNotEmpty()) {
+                        for (j in 0 until obj.orderItemModifiers.size) {
+                            val modifierObj = obj.orderItemModifiers.get(j)
+                            items += " "
+                            items += " " + if (modifierObj.modifierQuantity == 1) {
+                                " "
+                            } else {
+                                "" + modifierObj.modifierQuantity + "x "
+                            } + modifierObj.name.uppercase()
+
+                            items += "\n"
+                        }
+                    }
+
+                    if (obj.note.isNotEmpty()) {
+//                        builder.addTextLineSpace(30)
+                        items += " "
+                        items += "  Note:${obj.note}"
+                        items += "\n"
+                    }
+
+
+                }
+            }
+        }
+
+
+    }
+
+
+    return items
+}
+
+
+
 fun addOrdersForStarKitchen(
     list: List<CreateOrderResponse.Data.Order.OrderItem>,
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null
@@ -3112,6 +3170,54 @@ fun addOrdersForKitchenU220(
 
 
     return builder
+}
+
+
+fun addOrdersForKitchen(
+    isEdited:Boolean,isOrderUpdate:Boolean,
+    list: List<CreateOrderResponse.Data.Order.OrderItem>,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
+) {
+    for (i in 0 until list.size) {
+
+        printerCat?.forEach {
+            if (it.id == list[i].categoryId && it.categoryActive && it.printerEnable) {
+
+                val obj = list.get(i)
+
+
+                if ((obj.isItemEdited && isEdited) || (obj.isItemEdited && isOrderUpdate)){
+                    PrintSunmiUtils.orderTime("(U)"+obj.quantity.toString() + " " + obj.itemName.uppercase())
+                }
+                else{
+                    PrintSunmiUtils.orderTime(obj.quantity.toString() + " " + obj.itemName.uppercase())
+                }
+
+                if (obj.orderItemModifiers.isNotEmpty()) {
+                    for (j in 0 until obj.orderItemModifiers.size) {
+                        val modifierObj = obj.orderItemModifiers.get(j)
+
+                        PrintSunmiUtils.orderTime(
+                            if (modifierObj.modifierQuantity == 1) {
+                                "      " + modifierObj.name.uppercase()
+                            } else {
+                                "  " + modifierObj.modifierQuantity + "x  " + modifierObj.name.uppercase()
+                            }
+                        )
+
+
+                    }
+                }
+                if (obj.note.isNotEmpty()) {
+                    PrintSunmiUtils.orderTime("  Note:" + obj.note)
+                }
+
+                SunmiPrinterApi.getInstance().lineWrap(1)
+
+            }
+        }
+    }
+
 }
 
 
@@ -3398,6 +3504,51 @@ fun addOrdersForKitchenInner(
                 val obj = list.get(i)
 
                 if (obj.isItemEdited){
+                    PrintSunmiUtils.normalTextLarge("(U)"+obj.quantity.toString() + " " + obj.itemName.uppercase())
+                }else{
+                    PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName.uppercase())
+                }
+
+//                PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName.uppercase())
+
+                if (obj.orderItemModifiers.isNotEmpty()) {
+                    for (j in 0 until obj.orderItemModifiers.size) {
+                        val modifierObj = obj.orderItemModifiers.get(j)
+                        PrintSunmiUtils.normalTextLarge(
+                            if (modifierObj.modifierQuantity == 1) {
+                                "     " + modifierObj.name.uppercase()
+                            } else {
+                                "  " + modifierObj.modifierQuantity + "x " + modifierObj.name.uppercase()
+                            }
+                        )
+
+                    }
+                }
+                if (obj.note.isNotEmpty()) {
+                    PrintSunmiUtils.normalTextLarge("  Note:" + obj.note)
+                }
+
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+        }
+    }
+
+}
+
+
+fun addOrdersForKitchenInner(
+    isEdited: Boolean,isOrderUpdate: Boolean,
+    list: List<CreateOrderResponse.Data.Order.OrderItem>,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
+) {
+    for (i in 0 until list.size) {
+
+        printerCat?.forEach {
+            if (it.id == list[i].categoryId && it.categoryActive && it.printerEnable) {
+
+                val obj = list.get(i)
+
+                if ((obj.isItemEdited && isEdited) || (obj.isItemEdited && isOrderUpdate)){
                     PrintSunmiUtils.normalTextLarge("(U)"+obj.quantity.toString() + " " + obj.itemName.uppercase())
                 }else{
                     PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName.uppercase())

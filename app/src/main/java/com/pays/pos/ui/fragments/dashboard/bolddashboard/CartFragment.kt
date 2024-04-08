@@ -2719,10 +2719,6 @@ class CartFragment(
                     try {
                         prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)
                         if (isOrderUpdate == false) {
-                            prefProvider.setValue(
-                                Constants.OPEN_ORDER_ITEMS,
-                                ""
-                            )
 
                             /*Added By Rahul */
                             prefProvider.setValue(
@@ -2991,6 +2987,10 @@ class CartFragment(
                             viewModel.duplicateCurrentCartItem = arrayListOf()
                         } else {
                             prefProvider.setValue(Constants.OLD_ITEM, "")
+                            prefProvider.setValue(
+                                Constants.OPEN_ORDER_ITEMS,
+                                ""
+                            )
                             AlertUtils.showCustomAlertWithListenerWithOK(
                                 requireContext(),
                                 resources.getString(R.string.please_add_Atleast_one_item_in_cart)
@@ -2999,6 +2999,10 @@ class CartFragment(
                         }
                     } catch (e: Exception) {
                         prefProvider.setValue(Constants.OLD_ITEM, "")
+                        prefProvider.setValue(
+                            Constants.OPEN_ORDER_ITEMS,
+                            ""
+                        )
                         e.printStackTrace()
                     }
                 }

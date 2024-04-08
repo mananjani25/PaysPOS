@@ -46,4 +46,9 @@ interface PrinterDao {
     @get:Query("select * from TbCustomerPrint")
     val getCustomerPrintList: List<PrinterResponse.Data.CustomerReceiptPrinters>
 
+    @Query("select * from TbKitchenPrint")
+    suspend fun getKitchenPrinterForPrinting() : List<PrinterResponse.Data.KitchenReceiptPrinters>
+
+
+
 }

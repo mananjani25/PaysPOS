@@ -16,6 +16,7 @@ import com.pays.pos.utils.Event
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -50,8 +51,8 @@ class AllOrdersViewModel @Inject constructor(
 
     fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()
 
-    fun getKitchenPrinterList(): LiveData<Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>> {
-        return posRepository.getKitchenPrinters()
+    suspend fun getKitchenPrinterList(): List<PrinterResponse.Data.KitchenReceiptPrinters> {
+        return posRepository.getKitchenPrinterForPrint()
     }
 
 
@@ -72,7 +73,10 @@ class AllOrdersViewModel @Inject constructor(
         }
     }
 
-    fun allOrderCounts(startDate: String?, endDate: String?): LiveData<Resource<AllOrdersCountResponse>> =
+    fun allOrderCounts(
+        startDate: String?,
+        endDate: String?
+    ): LiveData<Resource<AllOrdersCountResponse>> =
         posRepository.allOrderCounts(startDate, endDate)
 
     fun getAllOrders(
@@ -137,6 +141,7 @@ class AllOrdersViewModel @Inject constructor(
             }
         }
     }
+
     // To update online order
     fun updateOnlineOrder(
         order_id: Int,
@@ -174,10 +179,10 @@ class AllOrdersViewModel @Inject constructor(
             }
             if (endTime.isNotEmpty()) {
                 var temp_calender = Calendar.getInstance()
-                if (status=="4"){
-                    temp_calender.add(Calendar.DATE,7)
+                if (status == "4") {
+                    temp_calender.add(Calendar.DATE, 7)
                     endDate.value = sdf.format(temp_calender.time) + " " + endTime
-                }else{
+                } else {
                     endDate.value = sdf.format(temp_calender.time) + " " + endTime
                 }
             } else {
