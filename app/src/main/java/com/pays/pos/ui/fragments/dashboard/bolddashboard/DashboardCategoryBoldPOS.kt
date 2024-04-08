@@ -1599,12 +1599,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
         }
         viewModel.syncProgressDialog.observe(requireActivity()) { event ->
-            event.getContentIfNotHandled()?.let {
-                if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
-                } else {
-                     ProgressUtils.dismissProgressDialog()
+            try{
+                event.getContentIfNotHandled()?.let {
+
+                    if (it) {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    } else {
+                        ProgressUtils.dismissProgressDialog()
+                    }
                 }
+            }catch (e:Exception){
+                    e.printStackTrace()
             }
         }
 
