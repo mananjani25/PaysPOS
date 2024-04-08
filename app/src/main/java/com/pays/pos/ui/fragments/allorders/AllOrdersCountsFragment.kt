@@ -332,23 +332,23 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
 
                                     ongoingOrderCount = orderOl+orderWeb
 
-                                    //combine in completed order
+                                    //combine  completed order
                                     orderOl = it.data?.data?.web_orders?.completed ?: 0
                                     orderWeb = it.data?.data?.third_party_online_orders?.completed ?: 0
 
                                     completedOrdersCount = orderOl+orderWeb
 
-                                    //combine in rejected order
+                                    //combine rejected order
                                     orderOl = it.data?.data?.web_orders?.completed ?: 0
                                     orderWeb = it.data?.data?.third_party_online_orders?.rejected ?: 0
 
-                                    completedOrdersCount = orderOl+orderWeb
+                                    cancelledOrdersCount = orderOl+orderWeb
 
-                                    //combine in upcoming order
+                                    //combine upcoming order
                                     orderOl = it.data?.data?.web_orders?.completed ?: 0
                                     orderWeb = it.data?.data?.third_party_online_orders?.upcoming ?: 0
 
-                                    completedOrdersCount = orderOl+orderWeb
+                                    upcomingOrderCount = orderOl+orderWeb
                                 }
                             }
 
