@@ -131,9 +131,17 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
                         context.getString(R.string.format),
                         model.refundedAmount
                     ) + ")"
+            }
+
+            if(model.orderDetails.paymentStatus == "Cancelled"){
+                itemBinding.txtTip.isEnabled = false
+                itemBinding.tvRefundedAmount.visibility = View.GONE
+                itemBinding.tvOrderCancelled.visibility = View.VISIBLE
+
+                model.orderDetails.paymentStatus
             } else {
                 itemBinding.txtTip.isEnabled = true
-                itemBinding.tvRefundedAmount.visibility = View.GONE
+              //  itemBinding.tvRefundedAmount.visibility = View.GONE
             }
 
 //            if (model.transactionId.isNotEmpty()) {

@@ -38,7 +38,7 @@ class NoteListViewModel @Inject constructor(
     private val _notifydata = MutableLiveData<Event<Boolean?>>()
     val notifydata: LiveData<Event<Boolean?>> = _notifydata
 
-    val getTaxList = posRepository.getNoteList()
+    val getTaxList = posRepository.getNoteListNew()
     val taxListActive = posRepository.taxListActive()
 
     fun isNoteActive(noteDataItem: NoteResponse.Data) {

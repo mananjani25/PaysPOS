@@ -39,7 +39,7 @@ class TipListViewModel @Inject constructor(
     private val _notifydata = MutableLiveData<Event<Boolean?>>()
     val notifydata: LiveData<Event<Boolean?>> = _notifydata
 
-    val getTipList = tipDiscountRepository.getTipList1()
+    val getTipList = tipDiscountRepository.getTipList()
 
     val getTipActiveList = tipDiscountRepository.getTipActiveList()
 

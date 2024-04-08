@@ -80,6 +80,16 @@ class CreateTax : Fragment() {
         binding.header.txtSave.text = getString(R.string.save)
         binding.header.txtTitle.text = getString(R.string.tv_new_tax_add)
 
+        binding.swtTaxType.apply {
+            isEnabled = false
+            isChecked = true
+            isActivated = false
+            visibility = View.GONE
+            binding.edtAmount.hint = resources.getString(R.string.add_tax__percentage)
+        }
+
+
+
         if (isEdit) {
             taxDataTmp = arguments?.getParcelable("taxObject")!!
             taxData = arguments?.getParcelable("taxObject")!!
@@ -100,15 +110,15 @@ class CreateTax : Fragment() {
             viewModel.setItemPricing(itemPricing)
             viewModel.setItemIds(itemIds)
 
-            if (taxData.taxType == getString(R.string.disc_percentage)) {
-                binding.swtTaxType.isChecked = true
-                binding.swtTaxType.text = getString(R.string.disc_percentage)
-                binding.edtAmount.hint = resources.getString(R.string.add_tax__percentage)
-            } else {
-                binding.swtTaxType.isChecked = false
-                binding.swtTaxType.text = getString(R.string.dollar_amount)
-                binding.edtAmount.hint = resources.getString(R.string.add_tax__dollor)
-            }
+//            if (taxData.taxType == getString(R.string.disc_percentage)) {
+//                binding.swtTaxType.isChecked = true
+//                binding.swtTaxType.text = getString(R.string.disc_percentage)
+//                binding.edtAmount.hint = resources.getString(R.string.add_tax__percentage)
+//            } else {
+//                binding.swtTaxType.isChecked = false
+//                binding.swtTaxType.text = getString(R.string.dollar_amount)
+//                binding.edtAmount.hint = resources.getString(R.string.add_tax__dollor)
+//            }
         }
 
         binding.edtAmount.addTextChangedListener(object : TextWatcher {

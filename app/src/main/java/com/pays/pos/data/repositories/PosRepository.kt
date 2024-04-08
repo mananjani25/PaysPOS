@@ -392,7 +392,16 @@ class PosRepository @Inject constructor(
             databaseQuery = { appDatabase.itemDao().allItem!! }
         )
 
+    fun getTipList() = performGetOperation(
+        databaseQuery = { appDatabase.tipDao().allTips },
+        networkCall = { apiHelperNew.getTipsList() },
+        saveCallResult = { appDatabase.tipDao().addAllTips(it.data) })
 
+    fun getNoteListNew() = performGetOperation(
+        databaseQuery = { appDatabase.notesDao().alllNotes },
+        networkCall = { apiHelperNew.getNoteList() },
+        saveCallResult = { appDatabase.notesDao().addAllNotes(it.data) }
+    )
     fun getNoteList() = performGetOperationDatabase(
         databaseQuery = { appDatabase.notesDao().alllNotes },
     )

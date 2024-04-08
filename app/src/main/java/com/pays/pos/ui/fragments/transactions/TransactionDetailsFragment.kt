@@ -1200,6 +1200,7 @@ class TransactionDetailsFragment : Fragment() {
                     || paymentDetailsResponse.data.order.payment_status == "Cancelled"
                 ) {
                     binding.tvIssueRefund.visibility = View.GONE
+                    binding.tvtipadd.visibility = View.GONE
                 }
 
 

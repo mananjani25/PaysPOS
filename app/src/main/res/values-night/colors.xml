@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#ff6000</color>
     <color name="purple_700">#FF3700B3</color>
@@ -131,4 +132,6 @@
     <color name="swipe_bg_delete">#ff6000</color>
     <color name="swipe_bg_edit">#23049D</color>
     <color name="swipe_bg_hide">#FA9905</color>
+
+    <color name="redColor">#FA0505</color>
 </resources>
