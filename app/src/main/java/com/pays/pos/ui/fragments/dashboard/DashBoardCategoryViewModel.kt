@@ -402,6 +402,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     val clockOut: LiveData<Event<String>> = _clockOut
 
 
+    val refreshLiveData = MutableLiveData<Boolean>()
+
     var barcodeFoundDbItemLiveData: LiveData<Resource<TbItem>>? = null
 
     fun modifierSet(intArray: IntArray) = posRepository.modifierSetList(intArray)

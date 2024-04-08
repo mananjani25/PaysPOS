@@ -117,12 +117,12 @@ class AllOrdersFragment : Fragment() {
                 2 -> {
                     tab.text = "Phone ($phonePendingCount)"
                 }
-                3 -> {
+                3 ,4-> {
                     tab.text = "Online ($onlinePendingCount)"
                 }
-                4 -> {
-                    tab.text = "3rd Party ($thirdPartyPendingCount)"
-                }
+//                4 -> {
+//                    tab.text = "3rd Party ($thirdPartyPendingCount)"
+//                }
             }
 
         }.attach()
