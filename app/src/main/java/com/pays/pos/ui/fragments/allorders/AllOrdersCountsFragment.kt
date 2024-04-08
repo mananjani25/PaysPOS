@@ -142,12 +142,19 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
             }
         }
 
+
+        dashboardViewModel.refreshLiveData.observe(viewLifecycleOwner){
+
+            Log.d("08JUNE23", "onReceive: CALLED REFRESH")
+        }
+
     }
 
 
     // To update all orders count if any new order created or updated
     private var broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
+
             Log.d("08JUNE23", "onReceive: CALLED")
             val isCount = intent?.getBooleanExtra("isCount", false)
             startDate = intent?.getStringExtra("start_date")
