@@ -11414,6 +11414,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         try {
             // PrintSunmiUtils.fontSizeInner(LARGE)
             SunmiPrintHelper.getInstance().initPrinter()
+            /*Added By Rahul */
+            if (isOrderUpdated || cartList!!.isEdited) {
+                PrintSunmiUtils.headerText("***** UPDATED *****")
+            }
             SunmiPrintHelper.getInstance().lineWrap(4)
             if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
                 PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.custom_order_id)
@@ -12899,6 +12903,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             SunmiPrintHelper.getInstance().initPrinter()
 
+
+            if (isOrderUpdated) {
+                PrintSunmiUtils.orderIdLarge("***** UPDATED *****")
+            }
 
             if (customerSettingModel.showOrderIdTop) {
                 if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {

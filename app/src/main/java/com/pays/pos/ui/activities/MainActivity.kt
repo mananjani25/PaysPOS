@@ -3605,15 +3605,17 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
             // Added to refresh online orders
             if(it.asJsonObject.has("cancelled_order") || it.asJsonObject.has("new_order")) {
+
+
+                if(it.asJsonObject.has("new_order"))
+                    setSoundForOnlineOrder()
+
                 val intent = Intent()
                 intent.putExtra("message", "refresh")
                 intent.action = Constants.ONLINE_ORDER_GET_NOTIFICATION
                 sendBroadcast(intent)
 
                 dashBoardCategoryViewModel.refreshLiveData.value = true
-
-                if(it.asJsonObject.has("new_order"))
-                    setSoundForOnlineOrder()
 
             }
 
