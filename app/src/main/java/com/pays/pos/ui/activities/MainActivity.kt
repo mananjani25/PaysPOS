@@ -3722,6 +3722,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     logout()
                     viewModel.clearTable()
 
+                    prefProvider?.deleteValue(Constants.IS_PAX_CONNECTED)
+
                     prefProvider?.setValue(Constants.BASE_URL_NEW, BASE_URL)
                     prefProvider?.setValue(UNIQUE_ID, getDeviceId())
                     hostSelectionInterceptor?.setHostBaseUrl()
