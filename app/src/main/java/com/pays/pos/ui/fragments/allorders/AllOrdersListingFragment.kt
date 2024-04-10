@@ -149,9 +149,19 @@ class AllOrdersListingFragment(
         override fun onReceive(context: Context?, intent: Intent?) {
             var refresh = intent?.getBooleanExtra("refresh", false)
             if (refresh == true) {
-                adapter.orderList.clear()
-                adapter.filterList.clear()
-                    getAllOrders()
+//
+//
+//                val navController = findNavController()
+//
+//                val currentDestinationId = navController.currentDestination?.id
+//                currentDestinationId?.let { navController.popBackStack(it, false) }
+//                currentDestinationId?.let { navController.navigate(it) }
+
+                dashboardViewModel.refreshLiveData.value = true
+//
+//                adapter.orderList.clear()
+//                adapter.filterList.clear()
+//                    getAllOrders()
             }
 
         }
@@ -715,6 +725,22 @@ class AllOrdersListingFragment(
         if (orderTab == ALL_ORDER_TAB && orderStatusLabel == "InProgress") {
             paymentStatus = ""
         }
+//
+//        if(orderTab == ONLINE_ORDER_TAB || orderTab == THIRD_PARTY_ORDER_TAB) {
+//            //AllOrdersCountsFragment(4)
+//            dashboardViewModel.refreshLiveData.value = true
+//            val intent = Intent()
+//            intent.action = "allOrderCounts"
+//            intent.putExtra("isCount", true)
+//            intent.putExtra("orderStatus", orderStatus)
+//           // intent.putExtra("count", it.data.size)
+//            intent.putExtra(
+//                "start_date",
+//                viewModel.startDate.value.toString()
+//            )
+//            intent.putExtra("end_date", viewModel.endDate.value.toString())
+//            requireContext().sendBroadcast(intent)
+//        }
 
 //        if (orderTab == OPEN_ORDER_TAB || orderTab == PHONE_ORDER_TAB) {
 //            orderStatusLabel = ""

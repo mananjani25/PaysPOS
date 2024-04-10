@@ -3614,9 +3614,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 intent.putExtra("message", "refresh")
                 intent.action = Constants.ONLINE_ORDER_GET_NOTIFICATION
                 sendBroadcast(intent)
-
-                dashBoardCategoryViewModel.refreshLiveData.value = true
-
             }
 
         } catch (e: Exception) {
