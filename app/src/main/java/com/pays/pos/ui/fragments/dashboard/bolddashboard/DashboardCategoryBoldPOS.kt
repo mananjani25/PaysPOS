@@ -909,8 +909,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
         } else {
 
-            Log.e("Track Dashboard", "Track Dashboard - Load cart fragment 786")
-
             viewModel.fromAllOrderFragment = true
 
             loadCartFragment(
