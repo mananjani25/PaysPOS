@@ -4770,7 +4770,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             * Add a Update text when the receipt is updated
             * */
             cartModel?.let {
-                if (it.isEdited)
+                if (it.isEdited || isOrderUpdate)
                     PrintSunmiUtils.orderIdLarge("***** UPDATED *****")
             }
 
@@ -4943,7 +4943,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             SunmiPrintHelper.getInstance().initPrinter()
             SunmiPrintHelper.getInstance().lineWrap(4)
             cartModel?.let {
-                if (it.isEdited) {
+                if (it.isEdited || isOrderUpdate) {
                     PrintSunmiUtils.headerText("***** UPDATED *****")
 
                 }

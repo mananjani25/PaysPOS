@@ -4454,7 +4454,7 @@ class AllOrdersListingFragment(
         } else if (data.name.startsWith(Constants.SUNMI_INNER_PRINTER, true)) {
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-            viewLifecycleOwner.lifecycleScope.launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 delay(100)
                 setServiceForKitchen(data, type, orderData)
             }
