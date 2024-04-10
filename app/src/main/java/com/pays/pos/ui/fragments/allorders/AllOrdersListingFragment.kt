@@ -468,6 +468,7 @@ class AllOrdersListingFragment(
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
+                        getAllOrders()
                         ProgressUtils.dismissProgressDialog()
                         resource.data?.let {
                             LogUtil.logE(TAG, "getREsponseForOnline  ${Gson().toJson(it)}")
@@ -4351,7 +4352,6 @@ class AllOrdersListingFragment(
                             Constants.KITCHEN,
                             data
                         )
-                        getAllOrders()
 
                     }
                 }
