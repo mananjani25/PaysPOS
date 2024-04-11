@@ -1195,14 +1195,26 @@ class TransactionDetailsFragment : Fragment() {
                 }
 
 
-                val total = paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips
-                if (total == paymentDetailsResponse.data.order.refund_detail.refunded_amount
-                    || paymentDetailsResponse.data.order.payment_status == "Cancelled"
-                ) {
-                    binding.tvIssueRefund.visibility = View.GONE
-                    binding.tvtipadd.visibility = View.GONE
+                if(paymentDetailsResponse.data.payment_type == "Card") {
+                    val total = String.format("%.2f",paymentDetailsResponse.data.amount)
+                    val refundedAmount =String.format("%.2f", paymentDetailsResponse.data.order.refund_detail.refunded_amount - paymentDetailsResponse.data.tips)
+
+                    if (total == refundedAmount
+                        || paymentDetailsResponse.data.order.payment_status == "Cancelled"
+                    ) {
+                        binding.tvIssueRefund.visibility = View.GONE
+                        binding.tvtipadd.visibility = View.GONE
+                    }
                 }
 
+                //Tips can't be refunded in CASH , added this logic to check amount without tip
+                if(paymentDetailsResponse.data.payment_type == "Cash"){
+                    if(String.format("%.2f",paymentDetailsResponse.data.order.refund_detail.refunded_amount) ==
+                        String.format("%.2f",paymentDetailsResponse.data.amount)) {
+                        binding.tvIssueRefund.visibility = View.GONE
+                        binding.tvtipadd.visibility = View.GONE
+                    }
+                }
 
 
                 if (paymentDetailsResponse.data.order.open_order_type.equals(
@@ -1221,6 +1233,9 @@ class TransactionDetailsFragment : Fragment() {
                     binding.tvIssueRefund.visibility = View.GONE
                     binding.tvtipadd.visibility = View.GONE
                 }
+
+
+
 
 
                 if (MethodUtils.isEnableCashDiscount(requireContext())) {
