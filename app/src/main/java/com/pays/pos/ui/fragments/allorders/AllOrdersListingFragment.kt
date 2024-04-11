@@ -160,10 +160,10 @@ class AllOrdersListingFragment(
 //                currentDestinationId?.let { navController.navigate(it) }
 
                 dashboardViewModel.refreshLiveData.value = true
-//
-//                adapter.orderList.clear()
-//                adapter.filterList.clear()
-//                    getAllOrders()
+
+                adapter.orderList.clear()
+                adapter.filterList.clear()
+                    getAllOrders()
             }
 
         }
@@ -488,12 +488,12 @@ class AllOrdersListingFragment(
                                     it.id == removedPos
                                 }
 */
+
+                                ordersViewModel.refreshOrderCount.value = true
+
                                 val filterListIndex = adapter.filterList.indexOfFirst{
                                     it.id == removedPos
                                 }
-
-
-//                                adapter.orderList.removeAt(orderListIndex)
                                 adapter.filterList.removeAt(filterListIndex)
 
                                 adapter.notifyDataSetChanged()
@@ -709,6 +709,12 @@ class AllOrdersListingFragment(
                         resource.data?.let {
                             getAllOrders()
                         }
+
+                        ordersViewModel.refreshOrderCount.value = true
+
+                        // Remove Completed order from list
+                        adapter.filterList.removeIf{ it.id == orderId }
+                        adapter.notifyDataSetChanged()
                     }
 
                     Status.ERROR -> {
@@ -1308,28 +1314,9 @@ class AllOrdersListingFragment(
             "Completed" -> {
                 alert("", "Are you sure, you want to complete this order ?") {
                     this.positiveButton("YES") {
-                        removedPos=order.id
                         updateOrder(adapter.filterList[0].id, status)
 
                         ordersViewModel.changeTabPosition.value = 2
-
-                        /*if (removedPos > 0) {
-                            *//*   val orderListIndex = adapter.orderList.indexOfFirst{
-                                   it.id == removedPos
-                               }
-*//*
-                            val filterListIndex = adapter.filterList.indexOfFirst{
-                                it.id == removedPos
-                            }
-
-
-//                                adapter.orderList.removeAt(orderListIndex)
-                            adapter.filterList.removeAt(filterListIndex)
-
-                            adapter.notifyDataSetChanged()
-                            removedPos = 0
-                        }*/
-
                     }
                     this.negativeButton("NO") {
                     }

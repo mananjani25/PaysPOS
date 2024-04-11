@@ -48,6 +48,11 @@ class AllOrdersViewModel @Inject constructor(
      * */
     var changeTabPosition = MutableLiveData<Int>(-1)
 
+    /**
+     * Re-fetch order counts
+     */
+    val refreshOrderCount = MutableLiveData<Boolean>()
+
 
     fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()
 
