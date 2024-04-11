@@ -9652,7 +9652,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }*/
 
             if (isPrint) {
-                CoroutineScope(Dispatchers.IO).launch {
+                GlobalScope.launch {
                     try {
                         val builder = StarXpandCommandBuilder()
 
