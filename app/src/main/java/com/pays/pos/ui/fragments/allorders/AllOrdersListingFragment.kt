@@ -204,6 +204,7 @@ class AllOrdersListingFragment(
         ) { requestKey: String, bundle: Bundle ->
             var time = bundle.getInt("time")
             var order_id = bundle.getInt("order_id")
+            removedPos=order_id
             acceptedAndDeclineOrder("", time, order_id, true)
         }
 
@@ -481,9 +482,29 @@ class AllOrdersListingFragment(
                 when (resource.status) {
                     Status.SUCCESS -> {
                         getAllOrders()
+//                        if (!is_accepted) {
+                            if (removedPos > 0) {
+                             /*   val orderListIndex = adapter.orderList.indexOfFirst{
+                                    it.id == removedPos
+                                }
+*/
+                                val filterListIndex = adapter.filterList.indexOfFirst{
+                                    it.id == removedPos
+                                }
+
+
+//                                adapter.orderList.removeAt(orderListIndex)
+                                adapter.filterList.removeAt(filterListIndex)
+
+                                adapter.notifyDataSetChanged()
+                                removedPos = 0
+                            }
+//                        }
+
                         ProgressUtils.dismissProgressDialog()
                         resource.data?.let {
                             LogUtil.logE(TAG, "getREsponseForOnline  ${Gson().toJson(it)}")
+                            removedPos = 0
                             if (it.data.orderItems.isNotEmpty()) {
                                 getKitchenPrinters(it.data)
                             }
@@ -491,6 +512,7 @@ class AllOrdersListingFragment(
                     }
 
                     Status.ERROR -> {
+                        removedPos=0
                         ProgressUtils.dismissProgressDialog()
                         binding.root.showAlert(resource.message)
 
@@ -1286,9 +1308,27 @@ class AllOrdersListingFragment(
             "Completed" -> {
                 alert("", "Are you sure, you want to complete this order ?") {
                     this.positiveButton("YES") {
+                        removedPos=order.id
                         updateOrder(adapter.filterList[0].id, status)
 
                         ordersViewModel.changeTabPosition.value = 2
+
+                        /*if (removedPos > 0) {
+                            *//*   val orderListIndex = adapter.orderList.indexOfFirst{
+                                   it.id == removedPos
+                               }
+*//*
+                            val filterListIndex = adapter.filterList.indexOfFirst{
+                                it.id == removedPos
+                            }
+
+
+//                                adapter.orderList.removeAt(orderListIndex)
+                            adapter.filterList.removeAt(filterListIndex)
+
+                            adapter.notifyDataSetChanged()
+                            removedPos = 0
+                        }*/
 
                     }
                     this.negativeButton("NO") {
@@ -1300,11 +1340,12 @@ class AllOrdersListingFragment(
             "rejected" -> {
 
                 if ((orderTab == ALL_ORDER_TAB || orderTab == ONLINE_ORDER_TAB)
-                    && adapter.orderList[pos].orderType == ONLINE_ORDER_TAB
+                    && ((adapter.orderList[pos].orderType == ONLINE_ORDER_TAB) || (adapter.orderList[pos].orderType == THIRD_PARTY_ORDER_TAB))
                 ) {
                     alert("", "Are you sure, you want to reject this order ?") {
 
                         this.positiveButton("YES") {
+                            removedPos=order.id
                             var employeeIdtemp =
                                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                             var terminal_id =
@@ -1378,9 +1419,11 @@ class AllOrdersListingFragment(
                                 0,
                                 adapter.filterList[pos].id,
                                 false,
-                                isRefunded = false)
+                                isRefunded = false
+                            )
 
-                            onlineDetailViewModel.cancelOnlineWebOrderLiveData.value = cancelOnlineWebOrderModel
+                            onlineDetailViewModel.cancelOnlineWebOrderLiveData.value =
+                                cancelOnlineWebOrderModel
 
 
                             if (prefProvider.isAdmin() || prefProvider.isManager()) {
@@ -1409,6 +1452,7 @@ class AllOrdersListingFragment(
                     alert("", "Are you sure, you want to reject this order ?") {
 
                         this.positiveButton("YES") {
+                            removedPos = pos
                             acceptedAndDeclineOrder(
                                 order.payments.get(0).pax_data,
                                 0,
@@ -1427,9 +1471,9 @@ class AllOrdersListingFragment(
 
             "UPDATE" -> {
 
-                prefProvider.setValue(OLD_ITEM_BASE_CUSTOM_ITEM,Gson().toJson(order.orderItems))
+                prefProvider.setValue(OLD_ITEM_BASE_CUSTOM_ITEM, Gson().toJson(order.orderItems))
 
-                 var itemList = mutableListOf<TbCartItem> ()
+                var itemList = mutableListOf<TbCartItem>()
 
 //                order.orderItems.forEach {
 //                    TbCartItem().apply {

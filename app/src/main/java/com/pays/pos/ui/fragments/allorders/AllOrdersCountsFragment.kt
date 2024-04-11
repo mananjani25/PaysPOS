@@ -138,8 +138,8 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
 
         ordersViewModel.changeTabPosition.observe(viewLifecycleOwner){
             if(it != -1){
-                ORDER_TAB = THIRD_PARTY_ORDER_TAB
-                changePosition(it)
+//                ORDER_TAB = THIRD_PARTY_ORDER_TAB
+//                changePosition(it)
             }
         }
 
