@@ -9632,7 +9632,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-            viewLifecycleOwner.lifecycleScope.launch {
+            GlobalScope.launch {
                 delay(200)
                 setService2(data, type)
             }
@@ -11415,15 +11415,23 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             // PrintSunmiUtils.fontSizeInner(LARGE)
             SunmiPrintHelper.getInstance().initPrinter()
             /*Added By Rahul */
-            if (isOrderUpdated || cartList!!.isEdited) {
-                PrintSunmiUtils.headerText("***** UPDATED *****")
+            try{
+                if (isOrderUpdated || cartList!!.isEdited) {
+                    PrintSunmiUtils.headerText("***** UPDATED *****")
+                }
+            }catch (e:java.lang.NullPointerException){
+
             }
-            SunmiPrintHelper.getInstance().lineWrap(4)
-            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
-                PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.custom_order_id)
-            } else {
-                PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
-            }
+
+            try{
+                SunmiPrintHelper.getInstance().lineWrap(4)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                    PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.custom_order_id)
+                } else {
+                    PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
+                }
+            }catch (e:Exception){}
+
             SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {
