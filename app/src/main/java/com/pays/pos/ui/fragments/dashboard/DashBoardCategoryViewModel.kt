@@ -4472,62 +4472,151 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalServiceCharge = 0.0
         var amountToBePaid = 0.0
 
-        if (cartItems.isNotEmpty()) {
+        runBlocking {
 
-            if (cartModel?.reorder == true) {
+            if (cartModel==null) {
+
+                CoroutineScope(Dispatchers.IO).async {
+                    cartModel = getManualSaleFromCart(prefProvider.getValueInt(EMPLOYEE_ID, -1))
+            }.await()
+            }
+
+            if (cartItems.isNotEmpty()) {
+
+                if (cartModel?.reorder == true) {
 
 
-                val itemCount = cartItems.size
+                    val itemCount = cartItems.size
 
-                cartItems.forEach { item ->
-                    totalCount += item.itemQuantity
-                    totalDiscount += (item.discountPrice * item.itemQuantity)
-                    subTotalPrice += (item.price * item.itemQuantity)
-                    item.modifiers.forEach {
-                        subTotalPrice += (it.price * it.itemQuantity)
+                    cartItems.forEach { item ->
+                        totalCount += item.itemQuantity
+                        totalDiscount += (item.discountPrice * item.itemQuantity)
+                        subTotalPrice += (item.price * item.itemQuantity)
+                        item.modifiers.forEach {
+                            subTotalPrice += (it.price * it.itemQuantity)
+                        }
+                        taxCalculationReorderNew(item)
+
+
                     }
-                    taxCalculationReorderNew(item)
+                    String.format("%.2f", totalTax).toDouble()
+                    subTotalPrice -= cartModel?.discountPrice ?: 0.0
+                    if (subTotalPrice < 0) {
+                        subTotalPrice = 0.0
+                    }
+                    cartModel?.let {
+                        serviceChargeCalculationModel(it)
+                    }
+
+                    totalDiscount += cartModel?.discountPrice ?: 0.0
+                    order_note = cartModel?.note ?: ""
+
+                    var finalTotal = 0.0
+                    finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+
+                    cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+                    //loyalty point and price calculation
+                    amountToBePaid = finalTotal
+                    if (selectedCustomer == null) {
+                        totalPrice = amountToBePaid
+                        MethodUtils.setPriceTextView(
+                            txtTotalAmount, amountToBePaid
+                        )
+                    } else {
+                        checkAppliedLoyaltyProgram(
+                            selectedCustomer, amountToBePaid, txtTotalAmount
+                        )
+                        redeemLoyaltyInfo.getAmountToBePaid()?.let {
+                            totalPrice = it
+                        }
+                    }
+
+                    if (MethodUtils.isEnableCashDiscount(context)) {
+                        cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                            totalPrice, prefProvider, context
+                        )
+                    } else {
+                        cashdiscountAmount = 0.0
+                    }
 
 
-                }
-                String.format("%.2f", totalTax).toDouble()
-                subTotalPrice -= cartModel?.discountPrice ?: 0.0
-                if (subTotalPrice < 0) {
+                } else {
+
+                    nonCashAdj = 0.0
+                    totalPrice = 0.0
+                    totalCount = 0
                     subTotalPrice = 0.0
-                }
-                cartModel?.let {
-                    serviceChargeCalculationModel(it)
-                }
+                    totalDiscount = 0.0
+                    totalTax = 0.0
+                    totalServiceCharge = 0.0
 
-                totalDiscount += cartModel?.discountPrice ?: 0.0
-                order_note = cartModel?.note ?: ""
+                    val itemCount = cartItems.size
+                    var taxList: ArrayList<TaxData> = arrayListOf()
+                    cartItems.forEach { item ->
+                        if (!item.isDestroy) {
+                            totalCount += item.itemQuantity
+                            totalDiscount += item.discountPrice * item.itemQuantity
+                            subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
-                var finalTotal = 0.0
-                finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
 
-                cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
-                //loyalty point and price calculation
-                amountToBePaid = finalTotal
-                if (selectedCustomer == null) {
-                    totalPrice = amountToBePaid
-                    MethodUtils.setPriceTextView(
-                        txtTotalAmount, amountToBePaid
-                    )
-                } else {
-                    checkAppliedLoyaltyProgram(
-                        selectedCustomer, amountToBePaid, txtTotalAmount
-                    )
-                    redeemLoyaltyInfo.getAmountToBePaid()?.let {
-                        totalPrice = it
+                            taxCalculationNew(item, 0.0 / itemCount)
+
+                            item.modifiers.forEach {
+                                subTotalPrice += (it.price * it.itemQuantity)
+
+                            }
+                        }
                     }
-                }
+                    subTotalPrice -= cartModel?.discountPrice ?: 0.0
+                    if (subTotalPrice < 0) {
+                        subTotalPrice = 0.0
+                    }
+                    cartModel?.let {
+                        serviceChargeCalculationModel(it)
+                    }
 
-                if (MethodUtils.isEnableCashDiscount(context)) {
-                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
-                        totalPrice, prefProvider, context
+                    totalDiscount += cartModel?.discountPrice ?: 0.0
+                    order_note = cartModel?.note ?: ""
+
+                    var finalTotal = 0.0
+                    finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+
+                    redeemLoyaltyInfo.needToApplyLoyalty = prefProvider.getValueboolean(
+                        LOYALTY_ADDED, false
                     )
-                } else {
-                    cashdiscountAmount = 0.0
+                    totalPrice = finalTotal
+
+
+
+                    cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+                    //loyalty point and price calculation
+                    amountToBePaid = finalTotal
+
+                    if (selectedCustomer == null) {
+                        totalPrice = amountToBePaid
+                        MethodUtils.setPriceTextView(
+                            txtTotalAmount, amountToBePaid
+                        )
+                    } else {
+                        checkAppliedLoyaltyProgram(
+                            selectedCustomer, amountToBePaid, txtTotalAmount
+                        )
+                        redeemLoyaltyInfo.getAmountToBePaid()?.let {
+                            totalPrice = it
+                        }
+                    }
+
+                    if (MethodUtils.isEnableCashDiscount(context) && prefProvider.getValue(
+                            ORDER_TYPE, TAKEOUT
+                        ) != GIFT_CARD
+                    ) {
+                        cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                            totalPrice, prefProvider, context
+                        )
+                    } else {
+                        cashdiscountAmount = 0.0
+                    }
+
                 }
 
 
@@ -4540,88 +4629,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                 totalDiscount = 0.0
                 totalTax = 0.0
                 totalServiceCharge = 0.0
-
-                val itemCount = cartItems.size
-                var taxList: ArrayList<TaxData> = arrayListOf()
-                cartItems.forEach { item ->
-                    if (!item.isDestroy) {
-                        totalCount += item.itemQuantity
-                        totalDiscount += item.discountPrice * item.itemQuantity
-                        subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
-
-
-                        taxCalculationNew(item, 0.0 / itemCount)
-
-                        item.modifiers.forEach {
-                            subTotalPrice += (it.price * it.itemQuantity)
-
-                        }
-                    }
-                }
-                subTotalPrice -= cartModel?.discountPrice ?: 0.0
-                if (subTotalPrice < 0) {
-                    subTotalPrice = 0.0
-                }
-                cartModel?.let {
-                    serviceChargeCalculationModel(it)
-                }
-
-                totalDiscount += cartModel?.discountPrice ?: 0.0
-                order_note = cartModel?.note ?: ""
-
-                var finalTotal = 0.0
-                finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
-
-                redeemLoyaltyInfo.needToApplyLoyalty = prefProvider.getValueboolean(
-                    LOYALTY_ADDED, false
-                )
-                totalPrice = finalTotal
-
-
-
-                cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
-                //loyalty point and price calculation
-                amountToBePaid = finalTotal
-
-                if (selectedCustomer == null) {
-                    totalPrice = amountToBePaid
-                    MethodUtils.setPriceTextView(
-                        txtTotalAmount, amountToBePaid
-                    )
-                } else {
-                    checkAppliedLoyaltyProgram(
-                        selectedCustomer, amountToBePaid, txtTotalAmount
-                    )
-                    redeemLoyaltyInfo.getAmountToBePaid()?.let {
-                        totalPrice = it
-                    }
-                }
-
-                if (MethodUtils.isEnableCashDiscount(context) && prefProvider.getValue(
-                        ORDER_TYPE, TAKEOUT
-                    ) != GIFT_CARD
-                ) {
-                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
-                        totalPrice, prefProvider, context
-                    )
-                } else {
-                    cashdiscountAmount = 0.0
-                }
-
+                amountToBePaid = 0.0
+                MethodUtils.setPriceTextView(txtTotalAmount, totalPrice)
             }
 
-
-        } else {
-
-            nonCashAdj = 0.0
-            totalPrice = 0.0
-            totalCount = 0
-            subTotalPrice = 0.0
-            totalDiscount = 0.0
-            totalTax = 0.0
-            totalServiceCharge = 0.0
-            amountToBePaid = 0.0
-            MethodUtils.setPriceTextView(txtTotalAmount, totalPrice)
         }
 
     }

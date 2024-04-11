@@ -1106,7 +1106,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                             // it1.itemQuantity = it.itemQuantity
                                             it.orderModifierId = it1.orderModifierId
                                             if (it.modifier_quantity!=it1.modifier_quantity){
-                                                item.isItemEdited=true
+                                                if (prefProvider.getValue(Constants.OPEN_ORDER_ITEMS,"").isNotEmpty())
+                                                {
+                                                    item.isItemEdited=true
+                                                }
                                             }
 
                                         }
