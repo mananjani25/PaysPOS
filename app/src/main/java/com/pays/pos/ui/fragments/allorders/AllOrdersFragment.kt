@@ -1,6 +1,7 @@
 package com.pays.pos.ui.fragments.allorders
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,11 @@ import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.selects.select
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
@@ -43,8 +49,39 @@ class AllOrdersFragment : Fragment() {
             viewLifecycleOwner,
             onBackPressedCallback
         )
+
+        addObserver()
+
         return binding.root
     }
+
+    fun addObserver(){
+        dashboardViewModel.refreshLiveData.observe(viewLifecycleOwner){
+
+            if(it){
+
+                binding.commonToolbar.tabLayout.apply {
+                if (selectedTabPosition == 3) {
+
+                    //    getTabAt(2)?.select()
+                    binding.viewPager.currentItem = 2
+
+                    Handler().postDelayed({
+                        binding.viewPager.currentItem = 3
+                    },10)
+
+
+                   //     getTabAt(3)?.select()
+
+                    }
+                }
+              //  binding.commonToolbar.tabLayout.selectTab(3,false)
+
+                dashboardViewModel.refreshLiveData.value = false
+            }
+        }
+    }
+
 
     // this is base fragment of ALL ORDERS screen, which contains order types tab
     private fun setupTabs() {

@@ -5467,6 +5467,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
                     prefProvider.setValueboolean(Constants.IS_CLOCKOUT, true)
+                    Handler(Looper.getMainLooper()).postDelayed(object :java.lang.Runnable{
+                        override fun run() {
+                            prefProvider?.setValueboolean(Constants.IS_PAX_CONNECTED,false)
+                        }
+
+                    },500)
+
                     resourceClockout.data.let {
                         if (it?.status == 200) {
                             resourceClockout.data?.let {

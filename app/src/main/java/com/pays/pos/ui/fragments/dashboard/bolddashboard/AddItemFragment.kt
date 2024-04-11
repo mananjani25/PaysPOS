@@ -1375,22 +1375,24 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             var newItem = item
 
 
-                            if (newItem.cartItemId == oldItem.cartItemId) {
-                                if (newItem.quantity != oldItem.quantity) {
-                                    newItem.isItemEdited = true
-                                } else if (newItem.itemQuantity != oldItem.itemQuantity) {
-                                    newItem.isItemEdited = true
-                                } else if (!newItem.discountType.equals(oldItem.discountType)) {
-                                    newItem.isItemEdited = true
-                                } else if (newItem.discountPrice != oldItem.discountPrice) {
-                                    newItem.isItemEdited = true
-                                } else if (newItem.price != oldItem.price) {
-                                    newItem.isItemEdited=true
-                                } else if (newItem.itemOriginalModifiersList?.size != oldItem.itemOriginalModifiersList?.size) {
-                                    newItem.isItemEdited = true
-                                } else if (newItem.modifiers.size != oldItem.modifiers.size) {
-                                    newItem.isItemEdited = true
-                                }
+                            if (prefProvider.getValue(Constants.OPEN_ORDER_ITEMS,"").isNotEmpty())
+                            {
+                                if (newItem.cartItemId == oldItem.cartItemId) {
+                                    if (newItem.quantity != oldItem.quantity) {
+                                        newItem.isItemEdited = true
+                                    } else if (newItem.itemQuantity != oldItem.itemQuantity) {
+                                        newItem.isItemEdited = true
+                                    } else if (!newItem.discountType.equals(oldItem.discountType)) {
+                                        newItem.isItemEdited = true
+                                    } else if (newItem.discountPrice != oldItem.discountPrice) {
+                                        newItem.isItemEdited = true
+                                    } else if (newItem.price != oldItem.price) {
+                                        newItem.isItemEdited=true
+                                    } else if (newItem.itemOriginalModifiersList?.size != oldItem.itemOriginalModifiersList?.size) {
+                                        newItem.isItemEdited = true
+                                    } else if (newItem.modifiers.size != oldItem.modifiers.size) {
+                                        newItem.isItemEdited = true
+                                    }
 /*
                                 try {
 
@@ -1404,7 +1406,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                             }*/
 
-                        }
+                                }
+                            }
                         item = newItem
 
                     }

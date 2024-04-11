@@ -92,7 +92,7 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
         binding.commonToolbar.root.gone()
         getAllOrderCounts(viewModel.startDate.value, viewModel.endDate.value)
 
-        addChangeFragmentObserver()
+        addObservers()
 
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
@@ -130,7 +130,7 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
         requireContext().unregisterReceiver(cancelledBroadcastReceiver)
     }
 
-    private fun addChangeFragmentObserver(){
+    private fun addObservers(){
 
         /**
          * 0 = Pending orders , 1 = InProgress orders , 2 = Completed , 3 = Cancelled / Rejected
@@ -138,8 +138,13 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
 
         ordersViewModel.changeTabPosition.observe(viewLifecycleOwner){
             if(it != -1){
-                changePosition(it)
+//                ORDER_TAB = THIRD_PARTY_ORDER_TAB
+//                changePosition(it)
             }
+        }
+
+        ordersViewModel.refreshOrderCount.observe(viewLifecycleOwner) {
+            getAllOrderCounts(viewModel.startDate.value, viewModel.endDate.value)
         }
 
 

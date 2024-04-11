@@ -3614,9 +3614,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 intent.putExtra("message", "refresh")
                 intent.action = Constants.ONLINE_ORDER_GET_NOTIFICATION
                 sendBroadcast(intent)
-
-                dashBoardCategoryViewModel.refreshLiveData.value = true
-
             }
 
         } catch (e: Exception) {
@@ -3721,6 +3718,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     disableDrawer()
                     logout()
                     viewModel.clearTable()
+
+                    prefProvider?.deleteValue(Constants.IS_PAX_CONNECTED)
 
                     prefProvider?.setValue(Constants.BASE_URL_NEW, BASE_URL)
                     prefProvider?.setValue(UNIQUE_ID, getDeviceId())
