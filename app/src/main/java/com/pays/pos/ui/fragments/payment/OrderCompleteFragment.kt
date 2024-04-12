@@ -9632,7 +9632,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-            GlobalScope.launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 delay(200)
                 setService2(data, type)
             }
