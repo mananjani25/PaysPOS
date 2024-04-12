@@ -133,6 +133,10 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
                     ) + ")"
             }
 
+            if(model.refundedAmount == 0.0) {
+                itemBinding.tvRefundedAmount.visibility = View.GONE
+            }
+
             if(model.orderDetails.paymentStatus == "Cancelled"){
                 itemBinding.txtTip.isEnabled = false
                 itemBinding.tvRefundedAmount.visibility = View.GONE
