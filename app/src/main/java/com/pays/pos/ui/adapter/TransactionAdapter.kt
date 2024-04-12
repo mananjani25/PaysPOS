@@ -141,10 +141,9 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
                 itemBinding.txtTip.isEnabled = false
                 itemBinding.tvRefundedAmount.visibility = View.GONE
                 itemBinding.tvOrderCancelled.visibility = View.VISIBLE
-
-                model.orderDetails.paymentStatus
             } else {
                 itemBinding.txtTip.isEnabled = true
+                itemBinding.tvOrderCancelled.visibility = View.GONE
               //  itemBinding.tvRefundedAmount.visibility = View.GONE
             }
 
