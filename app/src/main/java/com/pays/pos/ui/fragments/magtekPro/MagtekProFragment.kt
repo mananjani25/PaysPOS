@@ -137,7 +137,11 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
                 )
                 CoroutineScope(Dispatchers.Main).launch {
                     ProgressUtils.dismissProgressDialog()
-                    AlertUtils.showCustomAlert(requireContext(), "Merchant $mID is connected successfully")
+                    try {
+                        AlertUtils.showCustomAlert(requireContext(), "Merchant $mID is connected successfully")
+                    } catch (e: Exception) {
+                        AlertUtils.showCustomAlert(requireActivity(), "Merchant $mID is connected successfully")
+                    }
                     binding.tvDisconnectPax.visibility = View.VISIBLE
                     binding.tvPax.visibility = View.GONE
                 }
