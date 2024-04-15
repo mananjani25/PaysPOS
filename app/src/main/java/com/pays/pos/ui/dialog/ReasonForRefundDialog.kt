@@ -613,9 +613,12 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
 
             Log.d("paxRefNo: ", "paxRefNo: ${referenceNo}")
-            CoroutineScope(Dispatchers.Main).launch {
-                ProgressUtils.showProgressDialog(requireActivity())
-            }
+            try{
+                CoroutineScope(Dispatchers.Main).launch {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                }
+            }catch (e:Exception){}
+
 
             val report = ReportRequest()
             report.TransType = report.ParseTransType("LOCALDETAILREPORT") //recommend
