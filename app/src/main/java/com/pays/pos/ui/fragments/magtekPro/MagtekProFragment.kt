@@ -40,10 +40,7 @@ import com.magtek.mobile.android.mtusdk.*
 import com.pax.poslink.*
 import com.pax.poslink.broadpos.BroadPOSCommunicator
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -140,6 +137,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
                     try {
                         AlertUtils.showCustomAlert(requireContext(), "Merchant $mID is connected successfully")
                     } catch (e: Exception) {
+                        delay(500)
                         AlertUtils.showCustomAlert(requireActivity(), "Merchant $mID is connected successfully")
                     }
                     binding.tvDisconnectPax.visibility = View.VISIBLE

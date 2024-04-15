@@ -107,6 +107,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         getLoyaltyPrograms()
         getServiceCharge()
         getDiscountList()
+
+        /*Added by Rahul to solve the custom item not printing issue - START*/
+        prefProvider.setValueboolean(Constants.DO_PRINT_CUSTOM, false)
+        /*Added by Rahul to solve the custom item not printing issue - END*/
+
+
         if (arguments != null) {
             selectedHeaderPosition = requireArguments().getInt("selectedHeaderPosition", 0)
         }
@@ -828,6 +834,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
 
         binding.txtSave.setOnClickListener {
+            /*Added by Rahul to solve the custom item not printing issue - START*/
+            prefProvider.setValueboolean(Constants.DO_PRINT_CUSTOM, true)
+            /*Added by Rahul to solve the custom item not printing issue - END*/
+
             if (cartItemsList?.isNotEmpty() == true) {
                 viewModel.getAllCartItems(
                     prefProvider.getValue(ORDER_TYPE, TAKEOUT).toString(),
@@ -842,6 +852,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         binding.btnPay.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
+
+                /*Added by Rahul to solve the custom item not printing issue - START*/
+                prefProvider.setValueboolean(Constants.DO_PRINT_CUSTOM, true)
+                /*Added by Rahul to solve the custom item not printing issue - END*/
+
                 if (cartItemsList?.isNotEmpty() == true) {
                     prefProvider.setValue(Constants.REDIRECT_FROM, Constants.MANUAL_SALE)
                     prefProvider.setValue(

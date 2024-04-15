@@ -6838,6 +6838,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                             ),
                                                                                             KITCHEN
                                                                                         )
+                                                                                    }else if (prefProvider.getValueboolean(Constants.DO_PRINT_CUSTOM, true)){
+                                                                                        initKitchenPrinter(
+                                                                                            kitchenPrinterList.get(
+                                                                                                i
+                                                                                            ),
+                                                                                            KITCHEN
+                                                                                        )
                                                                                     }
                                                                                 }
 
@@ -6859,7 +6866,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 }
                             }
 
-
+                            prefProvider.setValueboolean(Constants.DO_PRINT_CUSTOM, false)
 
 
                             pd?.dismiss()
@@ -9632,7 +9639,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-            CoroutineScope(Dispatchers.IO).launch {
+            runBlocking {
                 delay(200)
                 setService2(data, type)
             }
