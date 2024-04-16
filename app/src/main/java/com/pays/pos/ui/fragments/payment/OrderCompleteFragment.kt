@@ -6762,7 +6762,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                 if (prefProvider.getValueboolean(
                                                                                         Constants.DO_PRINT,
                                                                                         false
-                                                                                    )) {
+                                                                                    ) || /*This is added to solve the custom item printing issue when "open order" is selected.*/ prefProvider.getValueboolean(Constants.DO_PRINT_CUSTOM, false)) {
                                                                                     initKitchenPrinter(
                                                                                         kitchenPrinterList.get(
                                                                                             i
@@ -9874,11 +9874,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         printer.printAsync(commands).await()
 
-                        try {
-                            SunmiPrintHelper.getInstance().openCashBox()
-                        } catch (e: java.lang.Exception) {
-                            e.printStackTrace()
-                        }
+
 
                         Log.d("Printing", "Success")
                     } catch (e: Exception) {
@@ -12919,9 +12915,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             SunmiPrintHelper.getInstance().initPrinter()
 
 
-            if (isOrderUpdated) {
-                PrintSunmiUtils.orderIdLarge("***** UPDATED *****")
-            }
+          try{
+              if (isOrderUpdated) {
+                  PrintSunmiUtils.orderIdLarge("***** UPDATED *****")
+              }
+          }catch (e:Exception){
+
+          }
 
             if (customerSettingModel.showOrderIdTop) {
                 if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {

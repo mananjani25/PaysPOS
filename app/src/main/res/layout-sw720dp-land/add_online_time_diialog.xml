@@ -49,7 +49,7 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:layout_below="@id/divider_line"
             android:layout_marginTop="@dimen/_5sdp"
             android:fillViewport="true">
@@ -60,12 +60,11 @@
                 android:layout_gravity="center"
                 android:orientation="vertical">
 
-
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/_20sdp"
                     android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_8sdp"
                     android:gravity="center"
                     android:orientation="horizontal">
 

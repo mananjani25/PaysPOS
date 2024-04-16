@@ -1273,6 +1273,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         MainApplication.mainActivity = this
         permissionCheck()
 
+
         Log.e(TAG, "checkConsumerNullorNot  ${consumer}")
         if (consumer != null) {
             consumer = null
@@ -3358,36 +3359,42 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
         dashboardViewModel.allInventoryItems.observe(this) { it ->
-            if(it.data?.isEmpty() == true) {
+            if (it.data?.isEmpty() == true) {
 
+                try {
+                    val dialog = Dialog(this)
+                    dialog.setContentView(R.layout.new_loading)
+                    dialog.setCancelable(false)
+                    dialog.setCanceledOnTouchOutside(false)
+                    dialog.show()
 
-                val dialog = Dialog(this)
-                dialog.setContentView(R.layout.new_loading)
-                dialog.setCancelable(false)
-                dialog.setCanceledOnTouchOutside(false)
-                dialog.show()
+                    Handler().postDelayed({ dialog.dismiss() }, 15000)
 
-                Handler().postDelayed({dialog.dismiss()},15000)
+                } catch (e: Exception) {
+
+                }
+
 
                 runBlocking {
 
-                dashboardViewModel.apply {
+                    dashboardViewModel.apply {
 
-                    syncInventoryModule(true, isMigrationOn = true)
-                    syncSettingModule()
+                        syncInventoryModule(true, isMigrationOn = true)
+                        syncSettingModule()
 
 
-                    val orderTypes =
-                        CoroutineScope(Dispatchers.IO).async { fetchOrderTypesFromServer() }.await()
+                        val orderTypes =
+                            CoroutineScope(Dispatchers.IO).async { fetchOrderTypesFromServer() }
+                                .await()
 
-                    orderTypes.data?.data?.let { orderTypes ->
-                        addOrderTypesToDatabase(orderTypes)
+                        orderTypes.data?.data?.let { orderTypes ->
+                            addOrderTypesToDatabase(orderTypes)
+                        }
+
+
+                        allOrderCounts("", "")
                     }
-
-
-                    allOrderCounts("", "")
-                }
-                   // allInventoryItems.removeObserver {  }
+                    // allInventoryItems.removeObserver {  }
                 }
 
 
@@ -3469,12 +3476,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 if (lastSyncTime == 0L || System.currentTimeMillis() - lastSyncTime > 900) {
                     lastSyncTime = System.currentTimeMillis()
 
-                    if(it.asJsonObject.has("location_id"))
+                    if (it.asJsonObject.has("location_id"))
                         if (PrefProvider(baseContext).getLocationId() == it.asJsonObject.get("location_id").asInt) {
                             Log.e(TAG2, "onReceived  Inside" + Gson().toJson(it))
                             handleUpdatedData(it)
                         }
-                   // handleUpdatedData(it)
+                    // handleUpdatedData(it)
 
                 }
 
@@ -3498,7 +3505,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
-                    },25000)
+                    }, 25000)
 
                 } else {
                     sendNotification("Please check your Network Connectivity.")
@@ -3604,10 +3611,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
             // Added to refresh online orders
-            if(it.asJsonObject.has("cancelled_order") || it.asJsonObject.has("new_order")) {
+            if (it.asJsonObject.has("cancelled_order") || it.asJsonObject.has("new_order")) {
 
 
-                if(it.asJsonObject.has("new_order"))
+                if (it.asJsonObject.has("new_order"))
                     setSoundForOnlineOrder()
 
                 val intent = Intent()

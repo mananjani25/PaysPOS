@@ -3,10 +3,7 @@ package com.pays.pos.ui.fragments.dashboard.bolddashboard
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.database.sqlite.SQLiteDatabase.releaseMemory
 import android.graphics.Typeface
 import android.os.*
@@ -178,6 +175,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     @Inject
     lateinit var prefProvider: PrefProvider
+
+    var broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            allOrdersPendingCountObserver()
+        }
+    }
 
     companion object {
         private lateinit var binding: FragmentDashboardCategoryBoldPosBinding
@@ -968,10 +971,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 //        hideNavigation()
 
+        requireActivity().registerReceiver(
+            broadcastReceiver,
+            IntentFilter(Constants.ONLINE_ORDER_GET_NOTIFICATION)
+        )
         if (prefProvider.getValueboolean(Constants.IS_SYNC_MARKUP, false)) {
             viewModel.markupInventory()
         }
     }
+
+
 
     override fun onDestroy() {
         super.onDestroy()
@@ -2137,6 +2146,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onPause() {
         arguments?.clear()
         super.onPause()
+
+        requireActivity().unregisterReceiver(broadcastReceiver)
+
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onLogOutOrClockOutWithApiService(apiService)
@@ -2412,11 +2424,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                     printer.printAsync(commands).await()
 
-                    try {
+                  /*  try {
                         SunmiPrintHelper.getInstance().openCashBox()
                     } catch (e: java.lang.Exception) {
                         e.printStackTrace()
-                    }
+                    }*/
 
                     Log.d("Printing", "Success")
                 } catch (e: Exception) {
