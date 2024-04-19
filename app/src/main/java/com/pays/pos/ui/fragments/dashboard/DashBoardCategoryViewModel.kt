@@ -139,6 +139,12 @@ class DashBoardCategoryViewModel @Inject constructor(
     var currentCartItems: ArrayList<TbCartItem> = arrayListOf()
     var duplicateCurrentCartItem: ArrayList<TbCartItem> = arrayListOf()
 
+    /**
+     * Tracking main cart discount
+     */
+    var mainCartDiscount = 0.0
+    var customCartUpdateDiscount = 0.0
+
     /***
      * Added to resolve BIS 1693 - Add discount issue
      */

@@ -1554,17 +1554,14 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 {
                     viewModel.currentCartItems.clear()
                     viewModel.duplicateCurrentCartItem.clear()
-                    viewModel.deleteCartItems()
-
-                    createCart()
-
+                 //   viewModel.deleteCartItems()
+                    viewModel.deleteCart()
                     viewModel.fragmentNeedToBeUpdated.value = true
                 }
                 else viewModel.updateCart(viewModel.currentCartItems, item, DELETE, item.isManualSales)
                 //viewModel.newCartLogicModifier(cartModelsList, item, DELETE, item.isManualSales)
 
             }
-
 
             if(viewModel.currentCartItems.size==1) {
 

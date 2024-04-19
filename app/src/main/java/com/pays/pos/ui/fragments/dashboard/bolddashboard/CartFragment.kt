@@ -1102,6 +1102,12 @@ class CartFragment(
                     var latestCartModel: CartModel? = null
                     if (it.isNotEmpty() && viewModel.cartFooterNeedToBeUpdated) {
                         latestCartModel = it[0]
+
+                        if(latestCartModel.discountPrice == 0.0){
+                            latestCartModel.discountPrice = viewModel.customCartUpdateDiscount
+                            viewModel.customCartUpdateDiscount = 0.0
+                        }
+
                         viewModel.setUpdatedCartModel(latestCartModel)
                         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                             viewModel.setCartModel(it)

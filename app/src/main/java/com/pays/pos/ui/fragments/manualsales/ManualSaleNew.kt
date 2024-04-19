@@ -742,8 +742,28 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         )
 
                     }
-                    if (manualCartModel?.discountPrice != 0.00)
-                        mainCartModel.discountPrice = manualCartModel?.discountPrice ?: 0.0
+
+
+
+                  //  mainCartModel.discountPrice = 100.0
+
+                    var mainDiscount   = viewModel.mainCartDiscount
+                    var customDiscount = manualCartModel?.discountPrice!!
+
+                    mainCartModel.discountPrice = if(mainDiscount > customDiscount) mainDiscount else customDiscount
+
+                    val updatedDiscount = mainCartModel.discountPrice
+
+                    viewModel.customCartUpdateDiscount = updatedDiscount
+
+//                    mainDiscount = viewModel.mainCartDiscount
+//
+//                    if (manualCartModel?.discountPrice != 0.0)
+//                        mainCartModel.discountPrice = manualCartModel?.discountPrice ?: 0.0
+
+
+                    viewModel.discountNeedToUpdate = true
+                    viewModel.cartFooterNeedToBeUpdated = true
 
                     if (manualCartModel?.note?.isNotEmpty() == true)
                         mainCartModel.note = manualCartModel?.note ?: ""
@@ -839,6 +859,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             /*Added by Rahul to solve the custom item not printing issue - END*/
 
             if (cartItemsList?.isNotEmpty() == true) {
+
                 viewModel.getAllCartItems(
                     prefProvider.getValue(ORDER_TYPE, TAKEOUT).toString(),
                     prefProvider.getValueInt(
@@ -2299,21 +2320,19 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                             model.price,
                             result.percentage
                         )
-//
-//                        Log.e("Value of Edit Amount","Value of Percentage= ${result.percentage} and Price of item = ${model.price}")
-//
-//                        if(model.discountPrice>viewModel.currentTotalPrice){
-//                            model.discountPrice = viewModel.currentTotalPrice
-//                            Log.e("Discount Tracking Pays","Discount greater  = ${model.discountPrice} and Current price = ${viewModel.currentTotalPrice}")
-//
-//                        }
-//
-//                        if(viewModel.clickedItemQuantity>1) {
-//                            model.discountPrice = model.discountPrice / viewModel.clickedItemQuantity
-//
-//                            Log.e("Discount Tracking Pays","Item Quantity greater  = ${model.quantity} and Discount price = ${model.discountPrice}")
-//                        }
-//
+
+
+                        if(model.discountPrice>viewModel.currentTotalPrice){
+                            model.discountPrice = viewModel.currentTotalPrice
+                            Log.e("Discount Tracking Pays","Discount greater  = ${model.discountPrice} and Current price = ${viewModel.currentTotalPrice}")
+
+                        }
+
+                        if(viewModel.clickedItemQuantity>1) {
+                            model.discountPrice = model.discountPrice / viewModel.clickedItemQuantity
+
+                        }
+
                         model.discountId = result.id
                         model.discountType = result.discountType
                         model.isManualSales = true

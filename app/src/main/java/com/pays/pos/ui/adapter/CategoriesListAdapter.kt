@@ -54,8 +54,16 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
 
             if (!isChoose) {
                 if (item.name == GIFT_CARD_CATEGORY) {
-                    binding.layoutMenu.imgOrderMenu.gone()
-                    binding.imageCheck.invisible()
+
+                    //Commented this part to enable Hide gift card option
+//                    binding.layoutMenu.imgOrderMenu.gone()
+//                    binding.imageCheck.invisible()
+
+                    //remove two lines after above commented code enabled
+                    binding.layoutMenu.imgOrderMenu.visible()
+                    binding.imageCheck.visible()
+
+
                 }else if (item.name == DEFAULT_CATEGORY){
                     binding.imageCheck.invisible()
                 } else {
