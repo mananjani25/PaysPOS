@@ -3143,8 +3143,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         CoroutineScope(Dispatchers.IO).async {
             var cartListFromDb: List<CartModel> = viewModel.getAllCartModels()
             if (cartListFromDb != null) {
-                cartList = cartListFromDb.get(0)
-                viewModel.cartModel = cartList
+                try {
+                    cartList = cartListFromDb.get(0)
+                    viewModel.cartModel = cartList
+                }catch (e:Exception){}
+
             }
         }.await()
 

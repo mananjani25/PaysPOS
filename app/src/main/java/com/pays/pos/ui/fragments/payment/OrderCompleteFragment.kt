@@ -6631,6 +6631,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     removePrefrenceDinein()
                     // redirect to passcode
                     if (prefProvider.getValueboolean(LOCK_SCREEN_TRANSACTION, false)) {
+
+                        clearObserver()
                         prefProvider.setValueboolean(ORDER_COMPLETED, true)
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
                     } else {
@@ -6646,6 +6648,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     removePrefrenceDinein()
                     // redirect to passcode
                     if (prefProvider.getValueboolean(LOCK_SCREEN_TRANSACTION, false)) {
+
+                        clearObserver()
                         prefProvider.setValueboolean(ORDER_COMPLETED, true)
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
                     } else {

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pays.pos.data.entities.TbCartItem
 import com.pays.pos.data.entities.TbCustomer
 import com.pays.pos.data.model.CustomerSearchList
 import com.pays.pos.data.model.responseModel.BaseResponse
@@ -220,6 +221,36 @@ public class CustomerListViewModel @Inject constructor(
                             resource.data?.data?.let { order ->
                                 _orderResponse.value = Event(order)
                                 //_data.value = Event(createTaxResponse)
+
+
+//                                order.orderItems.forEach { orderItem ->
+//                                    val tbCartItem = TbCartItem()
+//                                    tbCartItem.let {
+//
+//                                        it.itemId = orderItem.itemId
+//                                        it.name = orderItem.itemName
+//                                        it.id = orderItem.id
+//                                        it.price = orderItem.price
+//                                        it.quantity = orderItem.quantity
+//                                        it.sort = orderItem.sort
+//                                        it.categoryId = orderItem.categoryId
+//                                        it.note = orderItem.note
+//                                        it.itemQuantity = orderItem.quantity
+//                                        it.isChecked = orderItem.isChecked
+//                                        it.discountPrice = orderItem.discountAmount
+//                                        it.singleItemPrice = orderItem.price
+//                                        it.discountId = orderItem.discountId
+//                                        it.discountType = orderItem.discountType.toString()
+//                                        it.isFired = orderItem.isFired
+//                                        it.isPaid = orderItem.isPaid
+//                                        it.reorder = true
+//                                        it.guestIndexForDineIn = orderItem.guestIndexForDineIn
+//                                        it.employeeID = orderItem.employeeId
+//                                    }
+//
+//                                    posRepository.addItemToCart(tbCartItem)
+//                                }
+
                             }
                         } else {
                             _snackbarText.value = Event(resource.message)
