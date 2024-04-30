@@ -195,9 +195,9 @@ class CartFragment(
             //presentation.show()
         }
 
-        viewModel.updateCartFooter.observe(viewLifecycleOwner){
-            it?.getContentIfNotHandled()?.let {_it->
-                if (_it){
+        viewModel.updateCartFooter.observe(viewLifecycleOwner) {
+            it?.getContentIfNotHandled()?.let { _it ->
+                if (_it) {
                     Log.d("CurrentItems::", Gson().toJson(viewModel.currentCartItems))
 
                     addObserver()
@@ -1103,7 +1103,7 @@ class CartFragment(
                     if (it.isNotEmpty() && viewModel.cartFooterNeedToBeUpdated) {
                         latestCartModel = it[0]
 
-                        if(latestCartModel.discountPrice == 0.0){
+                        if (latestCartModel.discountPrice == 0.0) {
                             latestCartModel.discountPrice = viewModel.customCartUpdateDiscount
                             viewModel.customCartUpdateDiscount = 0.0
                         }
@@ -1229,7 +1229,7 @@ class CartFragment(
                 viewModel.getAllCartItems(
                     prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT),
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                ).asLiveData().observe(viewLifecycleOwner) {
+                ).asLiveData().observe(viewLifecycleOwner) { it ->
                     Log.d("BRUNO", "addObserver: CALLED")
                     Log.d("19OCT", "addObserver: CCI 1 = ${Gson().toJson(it)}")
 
@@ -1751,21 +1751,55 @@ class CartFragment(
                 "Pay " + binding.txtTotal.text.toString()
             Log.e("totalDiscount", viewModel.totalDiscount.toString())
 
-            binding.txtDiscount.text =
-                "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
-            if (prefProvider.getValue(
-                    OPTION_TYPE, "CashDiscount"
-                ) == "CashDiscount"
-            ) {
-                binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
-                binding.txtNoncashAdj.text =
-                    "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
-            } else {
-                binding.txtNoncashAdj.text =
-                    MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
-            }
+            var cartCompletePrice = 0.0
 
-            var data: TbCustomer? = prefProvider.getCustomerData()
+    //        if (viewModel.customCartUpdateDiscount < viewModel.totalDiscount) {
+                viewModel.currentCartItems.forEach {
+                    if (!it.isDestroy) {
+                        var itemPrice = it.price
+
+                        it.modifiers.forEach { mod ->
+                            if (!mod._destroy) {
+                                itemPrice += (mod.price * mod.modifier_quantity)
+                            }
+                        }
+
+                        itemPrice *= it.itemQuantity
+                        cartCompletePrice += itemPrice
+                    }
+                }
+
+                viewModel.apply {
+                    if (cartModel?.discountPrice != 0.0 && cartModel != null) {
+                        totalDiscount =
+                            cartCompletePrice * cartModel?.discountSelectdValue!! / 100.0
+                        val remaining = cartCompletePrice - totalDiscount
+                        binding.txtSubTotal.text = MethodUtils.roundOffAmount(remaining)
+                    }
+                }
+//            }
+//
+//            else
+//            if( viewModel.customCartUpdateDiscount > viewModel.totalDiscount) {
+//                viewModel.totalDiscount = viewModel.customCartUpdateDiscount
+//                viewModel.customCartUpdateDiscount = 0.0
+//            }
+
+                    binding . txtDiscount . text =
+                "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
+                if (prefProvider.getValue(
+                        OPTION_TYPE, "CashDiscount"
+                    ) == "CashDiscount"
+                ) {
+                    binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
+                    binding.txtNoncashAdj.text =
+                        "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                } else {
+                    binding.txtNoncashAdj.text =
+                        MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                }
+
+                var data : TbCustomer ? = prefProvider.getCustomerData()
             if (data != null) {
                 if (viewModel.loyaltyPointCondition(data)) {
                     if (isOrderUpdate) {
@@ -2830,8 +2864,12 @@ class CartFragment(
                                             locationId =
                                                 prefProvider.getValueInt(Constants.LOCATION_ID, -1)
                                             orderTypeId =
-                                                prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
-                                            orderType = prefProvider.getValue(ORDER_TYPE, "").toString()
+                                                prefProvider.getValueInt(
+                                                    Constants.ORDER_TYPE_ID,
+                                                    -1
+                                                )
+                                            orderType =
+                                                prefProvider.getValue(ORDER_TYPE, "").toString()
                                             orderTypeName =
                                                 prefProvider.getValue(Constants.ORDER_TYPE_NAME, "")
                                                     .toString()
@@ -2840,11 +2878,13 @@ class CartFragment(
                                             isMaual = isManual
                                             isEdited = false
                                             customer = Gson().fromJson(
-                                                prefProvider.getValue("pref_customer", "").toString(),
+                                                prefProvider.getValue("pref_customer", "")
+                                                    .toString(),
                                                 TbCustomer::class.java
                                             )
                                             taxlistDynamic = Gson().fromJson(
-                                                prefProvider.getValue("taxlistDynamic", "").toString(),
+                                                prefProvider.getValue("taxlistDynamic", "")
+                                                    .toString(),
                                                 object : TypeToken<List<TaxData>?>() {}.getType()
                                             )
                                         }
@@ -2927,8 +2967,8 @@ class CartFragment(
 
                                     /*Removing this for now, because it was not behaving as per requirement*/
 
-                                  /*  try {
-                                        *//*This is added because: when we remove the updated values and make the item as default, then it was taking as updated*//*
+                                    /*  try {
+                                          *//*This is added because: when we remove the updated values and make the item as default, then it was taking as updated*//*
 
                                         val listType = object :
                                             TypeToken<List<OnlineOrderResponseModel.Data.OrderItem>>() {}.type
@@ -3019,16 +3059,17 @@ class CartFragment(
                 reduntantData: OnlineOrderResponseModel.Data.OrderItem
             ): Boolean {
 
-                if (orderItemAttribute.orderItemVariationAttributes!=null && reduntantData.order_item_variation!=null){
-                    if ((orderItemAttribute.orderItemVariationAttributes?.orderId==reduntantData.order_item_variation?.orderId) && (orderItemAttribute.orderItemVariationAttributes?.order_item_id==reduntantData.order_item_variation?.order_item_id) && (orderItemAttribute.orderItemVariationAttributes?.price==reduntantData.order_item_variation?.price)
-                        && (orderItemAttribute.orderItemVariationAttributes?.totalPrice==reduntantData.order_item_variation?.totalPrice)
-                        && (orderItemAttribute.orderItemVariationAttributes?.quantity==reduntantData.order_item_variation?.quantity)
-                        && (orderItemAttribute.orderItemVariationAttributes?.variationId==reduntantData.order_item_variation?.variationId)) {
+                if (orderItemAttribute.orderItemVariationAttributes != null && reduntantData.order_item_variation != null) {
+                    if ((orderItemAttribute.orderItemVariationAttributes?.orderId == reduntantData.order_item_variation?.orderId) && (orderItemAttribute.orderItemVariationAttributes?.order_item_id == reduntantData.order_item_variation?.order_item_id) && (orderItemAttribute.orderItemVariationAttributes?.price == reduntantData.order_item_variation?.price)
+                        && (orderItemAttribute.orderItemVariationAttributes?.totalPrice == reduntantData.order_item_variation?.totalPrice)
+                        && (orderItemAttribute.orderItemVariationAttributes?.quantity == reduntantData.order_item_variation?.quantity)
+                        && (orderItemAttribute.orderItemVariationAttributes?.variationId == reduntantData.order_item_variation?.variationId)
+                    ) {
                         return true
-                    }else{
+                    } else {
                         return false
                     }
-                }else{
+                } else {
                     return (orderItemAttribute.orderItemVariationAttributes == reduntantData.order_item_variation)
                 }
 
@@ -3042,8 +3083,8 @@ class CartFragment(
                 reduntantData: OnlineOrderResponseModel.Data.OrderItem
             ): Boolean {
 
-                if (orderItemAttribute.orderItemModifiersAttributes!=null && reduntantData.orderItemModifiers!=null) {
-                    if (orderItemAttribute.orderItemModifiersAttributes.isNotEmpty() && reduntantData.orderItemModifiers.isNotEmpty()){
+                if (orderItemAttribute.orderItemModifiersAttributes != null && reduntantData.orderItemModifiers != null) {
+                    if (orderItemAttribute.orderItemModifiersAttributes.isNotEmpty() && reduntantData.orderItemModifiers.isNotEmpty()) {
                         if (orderItemAttribute.orderItemModifiersAttributes.size == reduntantData.orderItemModifiers.size) {
                             orderItemAttribute.orderItemModifiersAttributes.forEach { modAttribute ->
                                 reduntantData.orderItemModifiers.forEach { modData ->
@@ -3062,10 +3103,10 @@ class CartFragment(
                         } else {
                             return false
                         }
-                }else{
+                    } else {
                         return (orderItemAttribute.orderItemModifiersAttributes == reduntantData.orderItemModifiers)
                     }
-                }else{
+                } else {
                     return (orderItemAttribute.orderItemModifiersAttributes == reduntantData.orderItemModifiers)
                 }
 
@@ -3077,7 +3118,7 @@ class CartFragment(
                 reduntantData: OnlineOrderResponseModel.Data.OrderItem
             ): Boolean {
 
-                if (orderItemAttribute.orderItemTaxesAttributes!=null && reduntantData.orderItemTax!=null){
+                if (orderItemAttribute.orderItemTaxesAttributes != null && reduntantData.orderItemTax != null) {
                     if (orderItemAttribute.orderItemTaxesAttributes.isNotEmpty() && reduntantData.orderItemTax.isNotEmpty()) {
 
                         if (orderItemAttribute.orderItemTaxesAttributes.size == reduntantData.orderItemTax.size) {
@@ -3097,12 +3138,11 @@ class CartFragment(
                         } else {
                             return false
                         }
-                    }
-                        else{
+                    } else {
                         return (orderItemAttribute.orderItemTaxesAttributes == reduntantData.orderItemTax)
 
                     }
-                }else{
+                } else {
                     return (orderItemAttribute.orderItemTaxesAttributes == reduntantData.orderItemTax)
                 }
 

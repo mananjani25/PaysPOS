@@ -248,7 +248,7 @@
                                     android:showText="true"
                                     android:checked="true"
                                     android:thumb="@drawable/custom_thumb_printer_active_switch"
-                                    android:visibility="visible"
+                                    android:visibility="gone"
                                     app:srcCompat="@drawable/ic_arrow_forward"
                                     app:thumbTint="@color/switch_thumb_selector"
                                     app:track="@drawable/custom_switch_track_printer"
