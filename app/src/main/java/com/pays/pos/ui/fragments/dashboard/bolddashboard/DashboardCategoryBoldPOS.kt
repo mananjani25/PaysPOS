@@ -1572,6 +1572,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 Log.e("CART ITEM", "CART ITEM UPDATED")
                                 runOnUiThread {
                                     runBlocking {
+
                                         viewModel.updateCart(
                                             viewModel.currentCartItems,
                                             item,

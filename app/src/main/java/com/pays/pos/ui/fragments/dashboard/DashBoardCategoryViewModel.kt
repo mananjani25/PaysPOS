@@ -4568,6 +4568,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                             taxCalculationNew(item, 0.0 / itemCount)
 
                             item.modifiers.forEach {
+
+                                if(!it._destroy)
                                 subTotalPrice += (it.price * it.itemQuantity)
 
                             }
@@ -6857,7 +6859,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     autoSyncEnabled.value = true
                 }
             }
-
+            autoSyncEnabled.value = true
         }
     }
 

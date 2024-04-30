@@ -57,27 +57,30 @@ class MainApplication : Application() {
 //            }
 //        }
 
+//
+//        Thread.setDefaultUncaughtExceptionHandler { paramThread, paramThrowable ->
+//
+//          //  Firebase.crashlytics.log("Error" + Thread.currentThread().stackTrace[2])
+//            FirebaseCrashlytics.getInstance().log(paramThrowable.message+"")
+//            FirebaseCrashlytics.getInstance().recordException(paramThrowable)
+//
+//            paramThrowable.localizedMessage?.let {
+//                Log.e(
+//                    "Error" + Thread.currentThread().stackTrace,
+//                    it
+//                )
+//            }
+//
+//            if(paramThrowable !is com.google.android.gms.dynamite.DynamiteModule.LoadingException)
+//            {
+//                mainActivity?.finish()
+//            }
+//        }
 
-        Thread.setDefaultUncaughtExceptionHandler { paramThread, paramThrowable ->
-
-          //  Firebase.crashlytics.log("Error" + Thread.currentThread().stackTrace[2])
-            FirebaseCrashlytics.getInstance().log(paramThrowable.message+"")
-            FirebaseCrashlytics.getInstance().recordException(paramThrowable)
-
-            paramThrowable.localizedMessage?.let {
-                Log.e(
-                    "Error" + Thread.currentThread().stackTrace,
-                    it
-                )
-            }
-
-            if(paramThrowable !is com.google.android.gms.dynamite.DynamiteModule.LoadingException)
-            {
-                mainActivity?.finish()
-            }
+        try {
+            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false)
+        } catch (e: Exception) {
         }
-
-        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false)
         //bhumit.bhadani@bacancy.com = 10Ce70901@
         //TestFairy.begin(this, "SDK-SrnpgIU9"); // vishal.j.patel+103@bacancy.com/Pos@2022
         instance = this

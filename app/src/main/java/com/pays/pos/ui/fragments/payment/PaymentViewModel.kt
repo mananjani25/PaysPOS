@@ -917,7 +917,7 @@ open class PaymentViewModel @Inject constructor(
 
                                 }
 
-                                if (oldItem.isItemEdited || it.orderItemId==null) {
+                               if (oldItem.isItemEdited || it.orderItemId==null || it.isDestroy) {
                                     prefProvider.setValueboolean(
                                         Constants.DO_PRINT,
                                         true
@@ -927,6 +927,10 @@ open class PaymentViewModel @Inject constructor(
                         }
                     } catch (e: Exception) {
                         oldItem.isDestroy = true
+                        prefProvider.setValueboolean(
+                            Constants.DO_PRINT,
+                            true
+                        )
                     }
 
 

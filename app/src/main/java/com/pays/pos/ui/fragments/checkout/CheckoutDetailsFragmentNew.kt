@@ -2956,6 +2956,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                     try {
                         if(oldCartItemsList.isNotEmpty()) { // Order is updated
+
+                            prefProvider.setValueboolean(Constants.DO_PRINT, true)
+
                             oldCartItemsList.forEach { oldItem ->
                                 if ((oldItem.cartItemId == item.cartItemId) &&
                                     (oldItem.categoryId == item.categoryId) &&

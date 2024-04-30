@@ -35,7 +35,7 @@ interface DBItemDao {
     val manualItems : LiveData<List<TabItem?>>?
     */
 
-    @Query("select * from TbItem where TbItem.name like :desc and (TbItem.website_hide_status ='UnHideOnWebsite' or TbItem.hide_status ='UnHide') and  TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort ASC")
+    @Query("select * from TbItem where TbItem.name like :desc and (TbItem.website_hide_status ='UnHideOnWebsite' or TbItem.hide_status ='UnHide') and  TbItem.name != 'Manual Item' and TbItem.isDeleted = 0 GROUP by TbItem.itemId ORDER BY TbItem.sort ASC")
     fun getItemSearchResults(desc: String): PagingSource<Int, TbItem>
 
 

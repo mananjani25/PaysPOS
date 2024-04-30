@@ -178,6 +178,7 @@
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:orientation="horizontal">
 
+                    <!--    Item discount removed . To enable it edit visibility                    -->
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/txtAddDiscount"
                             style="@style/CustomFontBold"
@@ -189,6 +190,7 @@
                             android:background="@color/btnColorDark"
                             android:gravity="center"
                             android:padding="@dimen/_5sdp"
+                            android:visibility="gone"
                             android:text="@string/add_discount"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_7mdpi" />

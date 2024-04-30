@@ -3348,6 +3348,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
         if (isInternetAvailable()) {
             connectActionCableSYNCSETTINGS()
+            try{
+
+                dashboardViewModel.autoSyncEnabled.value = false
+                dashboardViewModel.syncInventoryModule(false)
+            }catch (e:Exception){}
         } else {
             sendNotification("Please check your Network Connectivity.")
         }

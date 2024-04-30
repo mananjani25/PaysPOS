@@ -25,6 +25,7 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.epson.epos2.printer.Printer
 import com.epson.eposprint.BatteryStatusChangeEventListener
@@ -6871,6 +6872,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             }
 
                             prefProvider.setValueboolean(Constants.DO_PRINT_CUSTOM, false)
+                        //    prefProvider.setValueboolean(Constants.DO_PRINT, false)
 
 
                             pd?.dismiss()

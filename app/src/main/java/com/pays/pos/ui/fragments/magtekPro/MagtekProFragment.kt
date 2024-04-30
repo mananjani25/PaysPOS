@@ -82,7 +82,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(
-            LayoutInflater.from(requireContext()),
+            LayoutInflater.from(context),
             R.layout.fragment_tagtek,
             container,
             false
@@ -93,7 +93,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
 //            initPOSLink()
 //            connectBP()
 //            paxNetworkCall()
-            viewModel.initPOSLink(requireContext())
+            context?.let { it1 -> viewModel.initPOSLink(it1) }
         }
 
         binding.tvDisconnectPax.setOnClickListener {
