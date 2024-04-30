@@ -1274,6 +1274,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         permissionCheck()
 
 
+
+
         Log.e(TAG, "checkConsumerNullorNot  ${consumer}")
         if (consumer != null) {
             consumer = null
@@ -3348,11 +3350,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
         if (isInternetAvailable()) {
             connectActionCableSYNCSETTINGS()
-            try{
+            try {
 
                 dashboardViewModel.autoSyncEnabled.value = false
                 dashboardViewModel.syncInventoryModule(false)
-            }catch (e:Exception){}
+            } catch (e: Exception) {
+            }
         } else {
             sendNotification("Please check your Network Connectivity.")
         }
@@ -3626,8 +3629,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 intent.putExtra("message", "refresh")
                 intent.action = Constants.ONLINE_ORDER_GET_NOTIFICATION
                 sendBroadcast(intent)
+            } else {
+                dashboardViewModel.syncTaxes()
             }
-
         } catch (e: Exception) {
             Log.e(TAG2, "Exception ${e.message}")
         }
