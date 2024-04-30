@@ -6785,6 +6785,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             }
                                                         }
                                                     }
+
+                                                    if (kitchenPrinterList.size-1==i){
+                                                        isOrderUpdated=false
+                                                    }
+
                                                 }
                                             }else{
                                                 for (i in 0 until kitchenPrinterList.size) {
@@ -6798,6 +6803,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             ),
                                                             KITCHEN
                                                         )
+                                                    }
+
+                                                    if (kitchenPrinterList.size-1==i){
+                                                        isOrderUpdated=false
                                                     }
                                                 }
 
@@ -6861,6 +6870,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                 }
                                                             }
                                                         }
+
+                                                        if (kitchenPrinterList.size-1==i){
+                                                            isOrderUpdated=false
+                                                        }
+
                                                     }
                                                 }
                                             }
