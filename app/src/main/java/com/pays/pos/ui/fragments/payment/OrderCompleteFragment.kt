@@ -840,7 +840,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     }
 
-    /*Added By Rahul */
+    /*Added By Rahul  */
     private fun setUpdateEnabledInReceiptModel() {
         if (prefProvider.getValue(Constants.OPEN_ORDER_ITEMS_OLD, "").isNotEmpty()) {
             var oldDataModel: List<OnlineOrderResponseModel.Data.OrderItem> =
@@ -6528,9 +6528,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     override fun onStop() {
         super.onStop()
 //         Runtime.getRuntime().gc()
-        prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
-        /*Added By Rahul */
-        prefProvider.setValue(Constants.OPEN_ORDER_ITEMS_OLD, "")
+
+        /*This if condition is added by Rahul to print the "Updated" text in the kitchen receipt when split payment is done*/
+        if (!isSpilt){
+            prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
+            /*Added By Rahul */
+            prefProvider.setValue(Constants.OPEN_ORDER_ITEMS_OLD, "")
+
+        }
         if (!isSpilt) {
             removeCustomer()
         }
@@ -6786,8 +6791,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                         }
                                                     }
 
+                                                    /*IF A PROBLEM IS OCCURING WHEN "UPDATED" IS NOT GETTING PRINTED ON KITCHEN RECEIPT, THEN IT MAY BE BECAUSE THE TIME GIVEN BELOW */
                                                     if (kitchenPrinterList.size-1==i){
-                                                        isOrderUpdated=false
+                                                        Handler(Looper.getMainLooper()).postDelayed(
+                                                            Runnable {
+                                                                isOrderUpdated=false
+                                                            },4000)
                                                     }
 
                                                 }
@@ -6805,8 +6814,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                         )
                                                     }
 
+                                                    /*IF A PROBLEM IS OCCURING WHEN "UPDATED" IS NOT GETTING PRINTED ON KITCHEN RECEIPT, THEN IT MAY BE BECAUSE THE TIME GIVEN BELOW */
                                                     if (kitchenPrinterList.size-1==i){
-                                                        isOrderUpdated=false
+                                                        Handler(Looper.getMainLooper()).postDelayed(
+                                                            Runnable {
+                                                                isOrderUpdated=false
+                                                            },4000)
                                                     }
                                                 }
 
@@ -6871,10 +6884,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             }
                                                         }
 
+                                                        /*IF A PROBLEM IS OCCURING WHEN "UPDATED" IS NOT GETTING PRINTED ON KITCHEN RECEIPT, THEN IT MAY BE BECAUSE THE TIME GIVEN BELOW */
                                                         if (kitchenPrinterList.size-1==i){
-                                                            isOrderUpdated=false
+                                                            Handler(Looper.getMainLooper()).postDelayed(
+                                                                Runnable {
+                                                                    isOrderUpdated=false
+                                                                },4000)
                                                         }
-
                                                     }
                                                 }
                                             }
@@ -11788,10 +11804,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (pd != null && pd?.isShowing == true) {
             pd?.dismiss()
         }
-        prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
 
-        /*Added By Rahul */
-        prefProvider.setValue(Constants.OPEN_ORDER_ITEMS_OLD, "")
+        /*This if condition is added by Rahul to print the "Updated" text in the kitchen receipt when split payment is done*/
+        if (!isSpilt){
+            prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, "")
+
+            /*Added By Rahul */
+            prefProvider.setValue(Constants.OPEN_ORDER_ITEMS_OLD, "")
+        }
         if (this::presentation.isInitialized) {
             presentation.hide()
         }
