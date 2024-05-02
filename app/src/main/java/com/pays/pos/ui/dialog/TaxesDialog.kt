@@ -70,31 +70,37 @@ class TaxesDialog : DialogFragment(), View.OnClickListener {
         when (v?.id) {
             R.id.imgBack -> {
                 dismiss()
+                /*Removed by Rahul to save all the taxes when the item is saved from outside*/
+//                selectTaxes()
             }
             R.id.txtDone -> {
-
-                val selectedIds = ArrayList<String>()
-                var nameToDisplay = ""
-                if (adapter.taxList.isNotEmpty()) {
-                    for (taxData in adapter.taxList) {
-                        if (taxData.isChecked == true) {
-                            selectedIds.add("${taxData.id}")
-                            nameToDisplay += "${taxData.name}, "
-                        }
-                    }
-                    if (nameToDisplay.isNotEmpty()) {
-                        nameToDisplay = nameToDisplay.dropLast(2)
-                    }
-                    val result = Bundle().apply {
-                        putStringArrayList("selectedId", selectedIds)
-                        putString("nameToDisplay", nameToDisplay)
-                    }
-                    setFragmentResult("tax_request_key", result)
-                }
-                dismiss()
-                //findNavController().navigateUp()
+                selectTaxes()
             }
         }
+    }
+
+    private fun selectTaxes() {
+        val selectedIds = ArrayList<String>()
+        var nameToDisplay = ""
+        if (adapter.taxList.isNotEmpty()) {
+            for (taxData in adapter.taxList) {
+                if (taxData.isChecked == true) {
+                    selectedIds.add("${taxData.id}")
+                    nameToDisplay += "${taxData.name}, "
+                }
+            }
+            if (nameToDisplay.isNotEmpty()) {
+                nameToDisplay = nameToDisplay.dropLast(2)
+            }
+            val result = Bundle().apply {
+                putStringArrayList("selectedId", selectedIds)
+                putString("nameToDisplay", nameToDisplay)
+            }
+            setFragmentResult("tax_request_key", result)
+        }
+        dismiss()
+        //findNavController().navigateUp()
+
     }
 
     private fun initObservers() {

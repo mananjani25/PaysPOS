@@ -42,7 +42,8 @@ class ActiveTipsListAdapter() :
                 binding.txtTipValue.visible()
                 binding.txtTipTitle.visible()
 
-                txtTipTitle.text = "${String.format("%.0f", model.rate)}%"
+//                txtTipTitle.text = "${String.format("%.0f", model.rate)}%"
+                txtTipTitle.text = model.rate.toString().plus("%")
                 val tippedAmount = MethodUtils.percentageCalculation(
                     wholeTotalPrice,
                     model.rate

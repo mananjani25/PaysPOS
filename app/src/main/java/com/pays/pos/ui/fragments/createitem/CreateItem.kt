@@ -82,6 +82,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
     var dragTo = -1
     private val categoriesViewModel by viewModels<CategoriesViewModel>()
 
+    var allTaxes: List<TaxData>? = null
 
     // private lateinit var passedVariationList: ArrayList<List<VariationsAttribute>>
 
@@ -372,6 +373,17 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
 
         } else {
             viewModel.variationAttribute(variationListAdapter.selectedVariation())
+            var taxNames = viewModel.taxNameToDisplay.split(",")
+            var selectedTaxIds=ArrayList<String>()
+            allTaxes?.let {
+                it.forEach {
+                    if (it.isActive && taxNames.contains(it.name)){
+                        selectedTaxIds.add(it.id.toString())
+                    }
+                }
+            }
+
+            viewModel.selectedTaxList(selectedTaxIds)
         }
 
         var newImagePathToUpload = imagePath
@@ -425,7 +437,10 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
                 model.name = "Select Modifier Set"
                 spinnerList.add(model)
                 it.data.forEach {
-                    if (isEdit && itemObject.modifier_set_ids.contains(it.id) && it.itemIds.contains(itemObject.itemId)) {
+                    if (isEdit && itemObject.modifier_set_ids.contains(it.id) && it.itemIds.contains(
+                            itemObject.itemId
+                        )
+                    ) {
                         it.isChecked = true
 
                         checkedList.add(it)
@@ -472,7 +487,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
 
                                 mod.id?.let { it1 ->
                                     if (isEdit) {
-                                        val updatedModifiersList : ArrayList<Int> = arrayListOf()
+                                        val updatedModifiersList: ArrayList<Int> = arrayListOf()
                                         updatedModifiersList.addAll(itemObject.modifier_set_ids)
                                         updatedModifiersList.add(it1)
                                         itemObject.modifier_set_ids = updatedModifiersList
@@ -979,7 +994,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
 
         if (isEdit) {
             modifierSet.id?.let {
-                val updatedModifiersList : ArrayList<Int> = arrayListOf()
+                val updatedModifiersList: ArrayList<Int> = arrayListOf()
                 updatedModifiersList.addAll(itemObject.modifier_set_ids)
                 updatedModifiersList.remove(it)
                 itemObject.modifier_set_ids = updatedModifiersList
@@ -1018,7 +1033,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
 
                             mod.id?.let { it1 ->
                                 if (isEdit) {
-                                    val updatedModifierList : ArrayList<Int> = arrayListOf()
+                                    val updatedModifierList: ArrayList<Int> = arrayListOf()
                                     updatedModifierList.addAll(itemObject.modifier_set_ids)
                                     updatedModifierList.add(it1)
                                     itemObject.modifier_set_ids = updatedModifierList
@@ -1072,6 +1087,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
                 when (resource.status) {
                     Status.SUCCESS -> {
                         if (it.data?.isNotEmpty() == true) {
+                            allTaxes = it.data
                             for (i in 0 until it.data.size) {
                                 nameToDisplay += "${it.data[i].name}, "
                                 if (i > 4) break
