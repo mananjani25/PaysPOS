@@ -885,6 +885,11 @@ class PosRepository @Inject constructor(
         appDatabase.cartDao().deleteCartItems()//delete cart items from TbCartItem
     }
 
+    suspend fun deleteOldCartBeforeSwitch(employee_id: Int) {
+        appDatabase.cartDao().delete(employee_id)//delete cart model
+        appDatabase.cartDao().deleteCartItem(employee_id)//delete cart items from TbCartItem
+    }
+
     suspend fun deleteCartItems() {
         //  appDatabase.cartDao().delete(employee_id)//delete cart model
         appDatabase.cartDao().deleteCartItems()//delete cart items from TbCartItem

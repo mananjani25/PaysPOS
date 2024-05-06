@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
 import android.os.StrictMode
+import android.provider.Settings.Global
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
@@ -698,6 +699,12 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
         } catch (e: Exception) {
             Log.d("deleteCart", "Preference is null")
+        }
+    }
+
+    fun deleteCartBeforeSwitch(){
+        GlobalScope.launch {
+            posRepository.deleteOldCartBeforeSwitch(prefProvider.getValueInt(EMPLOYEE_ID, 0))
         }
     }
 

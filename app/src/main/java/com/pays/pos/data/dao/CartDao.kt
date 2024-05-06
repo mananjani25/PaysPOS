@@ -96,6 +96,9 @@ interface CartDao {
     @Query("DELETE FROM CartModel where CartModel.employeeID=:employee_Id")
     suspend fun delete(employee_Id: Int)
 
+    @Query("DELETE FROM TbCartItem where TbCartItem.employeeID=:employee_Id")
+    suspend fun deleteCartItem(employee_Id: Int)
+
     @Transaction
     @Query("DELETE FROM CartModel")
     suspend fun delete()

@@ -1460,6 +1460,9 @@ class AllOrdersListingFragment(
 
                 prefProvider.setValue(OLD_ITEM_BASE_CUSTOM_ITEM, Gson().toJson(order.orderItems))
 
+                dashboardViewModel.deleteCartBeforeSwitch()
+                dashboardViewModel.clearCartModelBackup()
+
                 var itemList = mutableListOf<TbCartItem>()
 
 //                order.orderItems.forEach {
