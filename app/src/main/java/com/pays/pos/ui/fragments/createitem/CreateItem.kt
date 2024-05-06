@@ -376,13 +376,18 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
             var taxNames = viewModel.taxNameToDisplay.split(",")
             var selectedTaxIds=ArrayList<String>()
             allTaxes?.let {
-                it.forEach {
-                    if (it.isActive && taxNames.contains(it.name)){
-                        selectedTaxIds.add(it.id.toString())
+                it.forEach {item->
+                    if (item.isActive){
+                        taxNames.forEach {
+                            if (it.trim().equals(item.name)){
+                                selectedTaxIds.add(item.id.toString())
+                            }
+                        }
                     }
                 }
             }
 
+            Log.e("selectedTaxIds", "selectedTaxIds  ${selectedTaxIds.toList()}")
             viewModel.selectedTaxList(selectedTaxIds)
         }
 
