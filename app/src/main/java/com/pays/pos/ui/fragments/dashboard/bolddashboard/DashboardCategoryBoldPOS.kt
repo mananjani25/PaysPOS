@@ -688,6 +688,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             val note = bundle.getString("note")
             val isOrderNote = bundle.getBoolean("isOrderNote")
             val singleItem = bundle.getParcelable<TbCartItem>("item")
+            prefProvider.getValue("BEFORE_ORDER_NOTE",Gson().toJson(viewModel.cartModel))
             // val cartList = bundle.getParcelableArrayList<CartModel>("cartList")
             var dineInArrayList: List<DineInModel>? = null
             /*if (prefProvider.getValue(

@@ -210,7 +210,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     /*Star label printer - END*/
 
     /*Added By Rahul */
-    private var isOrderUpdated = false
+    private var isOrderUpdated:Boolean = false
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -236,6 +236,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.lifecycleOwner = this
         isPrint = true
         isPrintCustomer = true
+
+        isOrderUpdated=false
 
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
@@ -865,6 +867,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             receiptModel?.order?.apply {
                 orderItems = newData!!
             }
+            Log.d("isOrderUpdated", "870 -> ${isOrderUpdated}")
             isOrderUpdated = isUpdated
         }
     }
@@ -876,6 +879,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         var isUpdated = false
 
+        Log.d("isOrderUpdated", "882 -> ${isOrderUpdated}")
         if (oldItems.size == newItems?.size) {
             for (oldIndex in 0 until oldItems.size) {
 
@@ -6779,6 +6783,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                         ),
                                                                                         KITCHEN
                                                                                     )
+                                                                                }else{
+                                                                                    var oldCartModelString=prefProvider.getValue("BEFORE_ORDER_NOTE","")
+                                                                                        if (oldCartModelString.isNotEmpty()){
+                                                                                            var oldCartModel=Gson().fromJson<CartModel>(oldCartModelString,CartModel::class.java)
+                                                                                            if (!oldCartModel.note.equals(cartList?.note)){
+                                                                                                initKitchenPrinter(
+                                                                                                    kitchenPrinterList.get(
+                                                                                                        i
+                                                                                                    ),
+                                                                                                    KITCHEN
+                                                                                                )
+                                                                                            }
+                                                                                        }
                                                                                 }
 
                                                                             }
@@ -9718,7 +9735,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             }
                         }*/
                             /*Added By Rahul */
-                            if (isOrderUpdated) {
+                            if (isOrderUpdated==true) {
                                 add(
                                     PrinterBuilder()
                                         .styleBold(true)
@@ -11253,44 +11270,47 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     ) {
         try {
 
+            runBlocking {
 
-            PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
-            SunmiPrinterApi.getInstance().printerInit()
+                delay(500)
 
-            /*Added By Rahul */
-            if (isOrderUpdated) {
-                PrintSunmiUtils.orderIdLarge("***** UPDATED *****")
-            }
+                PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
+                SunmiPrinterApi.getInstance().printerInit()
 
-            SunmiPrinterApi.getInstance().lineWrap(4)
-            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
-                PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.custom_order_id)
-            } else {
-                PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
-            }
-            SunmiPrinterApi.getInstance().lineWrap(1)
+                /*Added By Rahul */
+                if (isOrderUpdated == true) {
+                    PrintSunmiUtils.orderIdLarge("***** UPDATED *****")
+                }
 
-            if (kitchenSettingModel.showOrderType) {
-
-
-                PrintSunmiUtils.printOrderType(receiptModel?.order?.orderTypeName.toString())
+                SunmiPrinterApi.getInstance().lineWrap(4)
+                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                    PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.custom_order_id)
+                } else {
+                    PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
+                }
                 SunmiPrinterApi.getInstance().lineWrap(1)
 
-            }
+                if (kitchenSettingModel.showOrderType) {
+
+
+                    PrintSunmiUtils.printOrderType(receiptModel?.order?.orderTypeName.toString())
+                    SunmiPrinterApi.getInstance().lineWrap(1)
+
+                }
 
 
 
-            if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
-                receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
-                receiptModel?.order?.orderType.equals("Online Order", true) ||
-                receiptModel?.order?.orderType.equals("OnlineOrder", true)
-            ) {
-                PrintSunmiUtils.printOrderType(receiptModel?.order?.deliveryType.toString())
-                SunmiPrinterApi.getInstance().lineWrap(1)
-            }
+                if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
+                    receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                    receiptModel?.order?.orderType.equals("Online Order", true) ||
+                    receiptModel?.order?.orderType.equals("OnlineOrder", true)
+                ) {
+                    PrintSunmiUtils.printOrderType(receiptModel?.order?.deliveryType.toString())
+                    SunmiPrinterApi.getInstance().lineWrap(1)
+                }
 
 
-            /*  if (receiptModel?.order?.orderType.toString().lowercase() == "OpenOrder".trim()
+                /*  if (receiptModel?.order?.orderType.toString().lowercase() == "OpenOrder".trim()
                       .toString().lowercase() || receiptModel?.order?.orderType.toString()
                       .lowercase() == "Open Order".trim()
                       .toString().lowercase()
@@ -11301,148 +11321,148 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
               }*/
 
 
-            if (kitchenSettingModel.showTeamMember) {
+                if (kitchenSettingModel.showTeamMember) {
 
-                PrintSunmiUtils.employee(
+                    PrintSunmiUtils.employee(
+                        padLine(
+                            "Employee:" + receiptModel?.order?.employee?.name, "",
+                            if (kitchenSettingModel.fonts == LARGE) 23 else 48
+                        ).toString()
+                    )
+
+
+                }
+                SunmiPrinterApi.getInstance().lineWrap(1)
+                PrintSunmiUtils.orderTime(
                     padLine(
-                        "Employee:" + receiptModel?.order?.employee?.name, "",
+                        getReceiptFormatDateFromUTCServer(
+                            requireContext(),
+                            receiptModel?.order?.createdAt.toString()
+                        ),
+                        "",
                         if (kitchenSettingModel.fonts == LARGE) 23 else 48
                     ).toString()
                 )
 
 
-            }
-            SunmiPrinterApi.getInstance().lineWrap(1)
-            PrintSunmiUtils.orderTime(
-                padLine(
-                    getReceiptFormatDateFromUTCServer(
-                        requireContext(),
-                        receiptModel?.order?.createdAt.toString()
-                    ),
-                    "",
-                    if (kitchenSettingModel.fonts == LARGE) 23 else 48
-                ).toString()
-            )
+
+                PrintSunmiUtils.addHorizontal()
+                SunmiPrinterApi.getInstance().lineWrap(1)
+
+                Log.e(
+                    TAG,
+                    "getValueUpdate:  ${
+                        prefProvider.getValueboolean(
+                            OPEN_ORDER_UPDATE_FOR_PRINT,
+                            false
+                        )
+                    }"
+                )
+                if (prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false) == true) {
+                    receiptModel?.order?.orderItems?.let {
+                        var printOrderItems = checkOrderItemsForOpenORderUpdate()
+
+                        Log.e(TAG, "printeOrderItems  ${Gson().toJson(printOrderItems)}")
 
 
-
-            PrintSunmiUtils.addHorizontal()
-            SunmiPrinterApi.getInstance().lineWrap(1)
-
-            Log.e(
-                TAG,
-                "getValueUpdate:  ${
-                    prefProvider.getValueboolean(
-                        OPEN_ORDER_UPDATE_FOR_PRINT,
-                        false
-                    )
-                }"
-            )
-            if (prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false) == true) {
-                receiptModel?.order?.orderItems?.let {
-                    var printOrderItems = checkOrderItemsForOpenORderUpdate()
-
-                    Log.e(TAG, "printeOrderItems  ${Gson().toJson(printOrderItems)}")
-
-
-                    addOrdersForKitchen(
-                        if (printOrderItems.isNotEmpty()) printOrderItems else it,
-                        kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf())
-                    )
-                }
-
-
-            } else {
-
-                receiptModel?.order?.orderItems?.let {
-
-                    addOrdersForKitchen(
-                        it,
-                        kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf())
-                    )
-                }
-            }
-
-            SunmiPrinterApi.getInstance().lineWrap(1)
-            if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
-
-                PrintSunmiUtils.orderNote(receiptModel?.order?.note.toString())
-
-            }
-
-            SunmiPrinterApi.getInstance().lineWrap(1)
-            if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
-                if (receiptModel?.order?.customer != null) {
-
-                    PrintSunmiUtils.customerDetails()
-
-                    if (kitchenSettingModel.showCustomerName) {
-
-                        PrintSunmiUtils.customerName(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
-
+                        addOrdersForKitchen(
+                            if (printOrderItems.isNotEmpty()) printOrderItems else it,
+                            kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf())
+                        )
                     }
 
 
-                    if (kitchenSettingModel.showCustomerPhone) {
+                } else {
 
-                        if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
+                    receiptModel?.order?.orderItems?.let {
 
-                            receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
-                                PrintSunmiUtils.customerPhone(
-                                    MethodUtils.formatPhoneNumber(it)
-                                )
-                            }
+                        addOrdersForKitchen(
+                            it,
+                            kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf())
+                        )
+                    }
+                }
+
+                SunmiPrinterApi.getInstance().lineWrap(1)
+                if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+
+                    PrintSunmiUtils.orderNote(receiptModel?.order?.note.toString())
+
+                }
+
+                SunmiPrinterApi.getInstance().lineWrap(1)
+                if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
+                    if (receiptModel?.order?.customer != null) {
+
+                        PrintSunmiUtils.customerDetails()
+
+                        if (kitchenSettingModel.showCustomerName) {
+
+                            PrintSunmiUtils.customerName(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+
                         }
 
-                    }
 
-                    if (kitchenSettingModel.showCustomerAddress) {
-                        if (receiptModel?.order?.orderType?.trim().toString()
-                                .lowercase() == "Open Order".trim()
-                                .toString().lowercase()
-                            && receiptModel?.order?.deliveryType?.trim().toString()
-                                .lowercase() == "Pickup".trim().lowercase()
-                        ) {
+                        if (kitchenSettingModel.showCustomerPhone) {
 
-                        } else {
+                            if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
 
-                            if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
+                                receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
+                                    PrintSunmiUtils.customerPhone(
+                                        MethodUtils.formatPhoneNumber(it)
+                                    )
+                                }
+                            }
 
-                                receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
-                                    ?.forEach {
+                        }
 
-                                        if (it.typeOfAddress.equals(
-                                                BILLING_ADDRESS,
-                                                ignoreCase = true
-                                            )
-                                        ) {
-                                            PrintSunmiUtils.customerAddress(
-                                                it.fullAddress
-                                            )
+                        if (kitchenSettingModel.showCustomerAddress) {
+                            if (receiptModel?.order?.orderType?.trim().toString()
+                                    .lowercase() == "Open Order".trim()
+                                    .toString().lowercase()
+                                && receiptModel?.order?.deliveryType?.trim().toString()
+                                    .lowercase() == "Pickup".trim().lowercase()
+                            ) {
+
+                            } else {
+
+                                if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
+
+                                    receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
+                                        ?.forEach {
+
+                                            if (it.typeOfAddress.equals(
+                                                    BILLING_ADDRESS,
+                                                    ignoreCase = true
+                                                )
+                                            ) {
+                                                PrintSunmiUtils.customerAddress(
+                                                    it.fullAddress
+                                                )
+                                            }
                                         }
-                                    }
 
 //                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
 //                                    PrintSunmiUtils.customerAddress(
 //                                        it
 //                                    )
 //                                }
+                                }
                             }
                         }
+
                     }
-
                 }
+
+                SunmiPrinterApi.getInstance().lineWrap(2)
+                PrintSunmiUtils.cutPaper()
+
+                //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
             }
-
-            SunmiPrinterApi.getInstance().lineWrap(2)
-            PrintSunmiUtils.cutPaper()
-
-            //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
-
-        } catch (e: Exception) {
-            // printerDialog.dismiss()
-            e.printStackTrace()
-        }
+            } catch (e: Exception) {
+                // printerDialog.dismiss()
+                e.printStackTrace()
+            }
 
     }
 
@@ -11455,7 +11475,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             SunmiPrintHelper.getInstance().initPrinter()
             /*Added By Rahul */
             try{
-                if (isOrderUpdated || cartList!!.isEdited) {
+                if (isOrderUpdated ==true || cartList!!.isEdited ==true) {
                     PrintSunmiUtils.headerText("***** UPDATED *****")
                 }
             }catch (e:java.lang.NullPointerException){
@@ -12956,7 +12976,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
           try{
-              if (isOrderUpdated) {
+              if (isOrderUpdated ==true) {
                   PrintSunmiUtils.orderIdLarge("***** UPDATED *****")
               }
           }catch (e:Exception){
