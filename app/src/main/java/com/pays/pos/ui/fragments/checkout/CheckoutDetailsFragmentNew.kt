@@ -2873,12 +2873,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             } else if (cartModel2 != null) {
                 viewModel.cartModel = cartModel2
                 cartList = cartModel2
-            }else if(viewModel.cartModel == null){
+            } else if (viewModel.cartModel == null) {
                 runBlocking {
                     var model =
-                        CoroutineScope(Dispatchers.IO).async { viewModel.getCartModelBackup() }.await().last().data
+                        CoroutineScope(Dispatchers.IO).async { viewModel.getCartModelBackup() }
+                            .await().last().data
 
-                    viewModel.cartModel = Gson().fromJson(model,CartModel::class.java)
+                    viewModel.cartModel = Gson().fromJson(model, CartModel::class.java)
                 }
             }
         }
@@ -2888,13 +2889,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
         lateinit var oldCartItemsList: ArrayList<TbCartItem>
 
-        if(oldItems.isNotEmpty()) {
+        if (oldItems.isNotEmpty()) {
 
             val oldCartItemsJson = prefProvider.getValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
 
             oldCartItemsList = Gson().fromJson(oldCartItemsJson, listType) as ArrayList<TbCartItem>
         } else {
-            prefProvider.setValueboolean(DO_PRINT,true)
+            prefProvider.setValueboolean(DO_PRINT, true)
         }
 
 
@@ -2905,7 +2906,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 var tbItem = TbItem()
                 tbItem.apply {
 
-                    isItemEdited=item.isItemEdited
+                    isItemEdited = item.isItemEdited
 
                     itemQuantity = item.itemQuantity
                     id = item.id
@@ -2955,7 +2956,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     orderItemId = item.orderItemId
 
                     try {
-                        if(oldCartItemsList.isNotEmpty()) { // Order is updated
+                        if (oldCartItemsList.isNotEmpty()) { // Order is updated
 
                             prefProvider.setValueboolean(Constants.DO_PRINT, true)
 
@@ -2964,18 +2965,19 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     (oldItem.categoryId == item.categoryId) &&
                                     (oldItem.employeeID == item.employeeID) &&
                                     (oldItem.itemId == item.itemId) &&
-                                    (oldItem.name.equals(item.name))) {
+                                    (oldItem.name.equals(item.name))
+                                ) {
 
-                                    if (item.itemQuantity!=oldItem.itemQuantity){
-                                        isItemEdited=true
+                                    if (item.itemQuantity != oldItem.itemQuantity) {
+                                        isItemEdited = true
                                     }
 
                                 }
                             }
                         }
-                    }catch (e:Exception){
+                    } catch (e: Exception) {
                         //order is not updated , its new order
-                     }
+                    }
                 }
 
                 items!!.add(tbItem)
@@ -2995,18 +2997,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             if (true) {
                                 var isFound = false
 
-                                for(notPresentData in oldCartItemsList) {
+                                for (notPresentData in oldCartItemsList) {
                                     if (items != null) {
-                                        for(it in items ) {
+                                        for (it in items) {
                                             if (it.cartItemId == notPresentData.cartItemId) {
                                                 isFound = true
                                                 break
-                                            }else isFound = false
+                                            } else isFound = false
                                         }
                                     }
                                     if (!isFound) {
 
-                                        prefProvider.setValueboolean(DO_PRINT,true)
+                                        prefProvider.setValueboolean(DO_PRINT, true)
 //                                        Not found
                                         isFound = false
 
@@ -3098,6 +3100,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
         prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
 
+
         val myRequest = cartList?.let {
             paymentviewModel.createOrderRequestForCard(
                 it,
@@ -3149,7 +3152,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 try {
                     cartList = cartListFromDb.get(0)
                     viewModel.cartModel = cartList
-                }catch (e:Exception){}
+                } catch (e: Exception) {
+                }
 
             }
         }.await()

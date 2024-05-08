@@ -11831,6 +11831,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             /*Added By Rahul */
             prefProvider.setValue(Constants.OPEN_ORDER_ITEMS_OLD, "")
+
+            prefProvider.setValue("BEFORE_ORDER_NOTE","")
         }
         if (this::presentation.isInitialized) {
             presentation.hide()

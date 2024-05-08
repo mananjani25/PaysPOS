@@ -9,9 +9,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
+import com.pax.poslink.*
 import com.pays.pos.R
 import com.pays.pos.data.entities.TbCardReader
-import com.pays.pos.data.model.responseModel.GetTransactionListResponse
 import com.pays.pos.data.model.responseModel.PosLinkResult
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.repositories.PosRepository
@@ -24,8 +25,6 @@ import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.paxUtils.AppThreadPool
 import com.pays.pos.utils.paxUtils.POSLinkCreatorWrapper
 import com.pays.pos.utils.paxUtils.SettingINI
-import com.google.gson.Gson
-import com.pax.poslink.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
@@ -78,39 +77,42 @@ class MagtekViewModel @Inject constructor(
 
     private fun checkBroadPOSVersion() {
         GlobalScope.launch {
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+            try{
 
-            val manageRequest = ManageRequest()
-            manageRequest.TransType = manageRequest.ParseTransType("INIT")
-            posLink.ManageRequest = manageRequest
-            val result = posLink.ProcessTrans()
-            Log.d("result: ", result.Code.toString() + " " + result.Msg)
-            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
-                val msg = Message()
-                msg.what = Constants.TRANSACTION_SUCCESSED
-                msg.obj = posLink.ManageResponse
+                posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
 
-                val response = msg.obj as ManageResponse
-                response.ResultCode
-                response.resultTxt
+                val manageRequest = ManageRequest()
+                manageRequest.TransType = manageRequest.ParseTransType("INIT")
+                posLink.ManageRequest = manageRequest
+                val result = posLink.ProcessTrans()
+                Log.d("result: ", result.Code.toString() + " " + result.Msg)
+                if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                    val msg = Message()
+                    msg.what = Constants.TRANSACTION_SUCCESSED
+                    msg.obj = posLink.ManageResponse
 
-                val response11 = response.ExtData
-                Log.d("response11: ","response11-${Gson().toJson(response11)}")
-                val regex = Regex("<AppName>(.*?)</AppName>")
-                val matchResult = regex.find(response11)
-                val versionName = matchResult?.groupValues?.getOrNull(1)
+                    val response = msg.obj as ManageResponse
+                    response.ResultCode
+                    response.resultTxt
 
-                if (versionName != null) {
-                    println("versionName value: $versionName")
-                    prefProvider.setValue(
-                        Constants.BROADPOS_VERSION,
-                        versionName
-                    )
-                } else {
-                    println("versionName value not found")
+                    val response11 = response.ExtData
+                    Log.d("response11: ", "response11-${Gson().toJson(response11)}")
+                    val regex = Regex("<AppName>(.*?)</AppName>")
+                    val matchResult = regex.find(response11)
+                    val versionName = matchResult?.groupValues?.getOrNull(1)
+
+                    if (versionName != null) {
+                        println("versionName value: $versionName")
+                        prefProvider.setValue(
+                            Constants.BROADPOS_VERSION,
+                            versionName
+                        )
+                    } else {
+                        println("versionName value not found")
+                    }
+
                 }
-
-            }
+            }catch (e:Exception){e.printStackTrace()}
         }
     }
 
