@@ -1009,12 +1009,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                         }
 
-                        R.id.menu_order_discount -> {
+                        /*R.id.menu_order_discount -> {
                             viewModel.currentTotalPrice = binding.txtSubTotal.text.toString().subTotalToDouble()
                             runBlocking {
                                 addOrderDiscount()
                             }
-                        }
+                        }*/
                     }
                     return true
                 }

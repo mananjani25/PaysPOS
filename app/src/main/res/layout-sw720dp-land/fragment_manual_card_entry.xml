@@ -70,7 +70,6 @@
                 android:textSize="@dimen/_7mdpi"
                 app:met_mask="####  ####  ####  ####" />
 
-
             <com.santalu.maskedittext.MaskEditText
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"

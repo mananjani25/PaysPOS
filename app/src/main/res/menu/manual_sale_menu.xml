@@ -2,10 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <item
+   <!-- <item
         android:id="@+id/menu_order_discount"
         android:title="@string/add_order_discount"
-        tools:ignore="HardcodedText" />
+        tools:ignore="HardcodedText" />-->
     <item
         android:id="@+id/menu_remove_customer"
         android:title="Remove Customer"
