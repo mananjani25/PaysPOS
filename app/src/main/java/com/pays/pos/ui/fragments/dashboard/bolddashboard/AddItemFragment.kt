@@ -1174,7 +1174,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 for(it in viewModel.currentCartItems){
                     if(it.cartItemId!=item.cartItemId)
                     {
-                        if (it.name == item.name) {
+                        if (it.name == item.name && !it.name.contains("Custom")) {
                             if (viewModel.checkModifierNew(it, item)) {
                                 Log.e(
                                     "Tracking Cart",
@@ -1355,11 +1355,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                             Log.e("Tracking Cart","Each Item ${it.name}")
 
-                            if(it.name == item.name)
+                            if(it.name == item.name && it.cartItemId == item.cartItemId)
                             {
                                 Log.e("Tracking Cart","SAME ITEM")
                                 if(viewModel.checkModifierNew(it,item)){
-                                    it.itemQuantity=item.itemQuantity
+                                   // it.itemQuantity=item.itemQuantity
                                     newFound = true
 //                                    it.isItemEdited=true
                                     return@forEach

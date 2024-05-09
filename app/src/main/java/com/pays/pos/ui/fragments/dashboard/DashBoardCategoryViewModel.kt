@@ -2540,10 +2540,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     for (i in list.indices) {
                         if (item != null) {
-                            if (item.isManualSales) {
+                            if (item.isManualSales || item.itemId ==1) {
 
 
-                                if (list[i].manualSaleId == item.manualSaleId) {
+                                if (list[i].manualSaleId == item.manualSaleId && list[i].cartItemId == item.cartItemId) {
                                     Log.d(TAG, "cartLogic: " + i)
                                     index = i
                                     break
@@ -2695,7 +2695,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     for (i in list.indices) {
                         if (item != null) {
-                            if (!item.isManualSales) {
+                            if (!item.isManualSales && item.itemId != 1) {
                                 if (cartModel?.reorder == false && list[i].itemId == item.itemId && item.modifiers.isEmpty() && checkVariationNew(
                                         list[i], item
                                     ) && item.id == list[i].id
@@ -2729,7 +2729,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
 
                             } else {
-                                if (list[i].manualSaleId == item.manualSaleId) {
+                                if (list[i].manualSaleId == item.manualSaleId && list[i].cartItemId == item.cartItemId) {
                                     index = i
                                     break
                                 } else if (cartModel?.reorder == true) {
