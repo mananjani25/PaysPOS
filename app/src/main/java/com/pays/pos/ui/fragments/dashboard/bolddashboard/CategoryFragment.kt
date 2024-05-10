@@ -336,42 +336,57 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
     }
 
     private fun searchCategory() {
-        runOnUiThread(Runnable {
-            searchList = arrayListOf()
-            categoryList1.forEach { categories ->
-                val itemList = categories.inventoryLists
-                itemList?.filter { it?.isHide == true }?.forEach { tbItem ->
-                    searchList.add(
-                        CategorySearchData(
-                            tbItem?.itemId ?: 0,
-                            tbItem?.name ?: "",
-                            tbItem?.imageUrl.toString(),
-                            categories.category.name ?: "",
-                            categories.category.id
+        if (activity!=null && isAdded){
+            runOnUiThread(Runnable {
+                searchList = arrayListOf()
+                categoryList1.forEach { categories ->
+                    val itemList = categories.inventoryLists
+                    itemList?.filter { it?.isHide == true }?.forEach { tbItem ->
+                        searchList.add(
+                            CategorySearchData(
+                                tbItem?.itemId ?: 0,
+                                tbItem?.name ?: "",
+                                tbItem?.imageUrl.toString(),
+                                categories.category.name ?: "",
+                                categories.category.id
+                            )
                         )
-                    )
+                    }
                 }
-            }
-            searchAdapter =
-                CategorySearchAdapter(
-                    requireActivity() as AppCompatActivity,
-                    requireContext(),
-                    R.layout.search_category_item,
-                    searchList
-                )
-            edtSearch?.threshold = 2
-            edtSearch?.setAdapter(searchAdapter)
-            edtSearch?.setOnItemClickListener { parent, _, position, _ ->
-                val model: CategorySearchData =
-                    parent.getItemAtPosition(position) as CategorySearchData
-                edtSearch.setText(model.title)
-                edtSearch.setSelection(model.title.length)
-                MethodUtils.hideKeyboard(requireActivity())
-                resetTabbySearch(model)
+
+                try {
+                    searchAdapter =
+                        CategorySearchAdapter(
+                            requireActivity() as AppCompatActivity,
+                            requireContext(),
+                            R.layout.search_category_item,
+                            searchList
+                        )
+                } catch (e: Exception) {
+                    searchAdapter =
+                        CategorySearchAdapter(
+                            activity as AppCompatActivity,
+                            requireContext(),
+                            R.layout.search_category_item,
+                            searchList
+                        )
+                }
+                edtSearch?.threshold = 2
+                edtSearch?.setAdapter(searchAdapter)
+                edtSearch?.setOnItemClickListener { parent, _, position, _ ->
+                    val model: CategorySearchData =
+                        parent.getItemAtPosition(position) as CategorySearchData
+                    edtSearch.setText(model.title)
+                    edtSearch.setSelection(model.title.length)
+                    MethodUtils.hideKeyboard(requireActivity())
+                    resetTabbySearch(model)
 
 
-            }
-        })
+                }
+            })
+
+        }
+
     }
 
     private fun resetTabbySearch(model: CategorySearchData) {

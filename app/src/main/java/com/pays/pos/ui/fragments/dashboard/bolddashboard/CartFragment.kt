@@ -58,6 +58,7 @@ import com.pays.pos.data.remote.Constants.OPTION_TYPE
 import com.pays.pos.data.remote.Constants.ORDER_TYPE
 import com.pays.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.pays.pos.data.remote.Constants.ORDER_TYPE_NAME
+import com.pays.pos.data.remote.Constants.PERCENTAGE
 import com.pays.pos.data.remote.Constants.PHONE_ORDER
 import com.pays.pos.data.remote.Constants.PICK_UP
 import com.pays.pos.data.remote.Constants.REDIRECT_FROM
@@ -1725,6 +1726,7 @@ class CartFragment(
 
     private fun updateCartFooter(it: List<TbCartItem>) {
         if (it.isNotEmpty()) {
+
             viewModel.itemCalculationCartModelNew(
                 it,
                 binding.txtTotal,
@@ -1770,13 +1772,20 @@ class CartFragment(
                 }
 
                 viewModel.apply {
-                    if (cartModel?.discountPrice != 0.0 && cartModel != null) {
+                    if (cartModel?.discountSelectdValue != 0.0 && cartModel != null) {
                         totalDiscount =
                             cartCompletePrice * cartModel?.discountSelectdValue!! / 100.0
                         val remaining = cartCompletePrice - totalDiscount
+
+                        cartModel?.discountPrice = totalDiscount
+
                         binding.txtSubTotal.text = MethodUtils.roundOffAmount(remaining)
+                        subTotalPrice = remaining
                     }
+                        binding.txtDiscount.text = MethodUtils.roundOffAmount(cartModel?.discountPrice?:0.0)
                 }
+
+
 //            }
 //
 //            else
@@ -1787,6 +1796,13 @@ class CartFragment(
 
                     binding . txtDiscount . text =
                 "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
+
+            viewModel.itemCalculationCartModelNew(
+                it,
+                binding.txtTotal,
+                requireContext()
+            )
+
                 if (prefProvider.getValue(
                         OPTION_TYPE, "CashDiscount"
                     ) == "CashDiscount"
@@ -2606,6 +2622,12 @@ class CartFragment(
                                 "Discount Tracking",
                                 "Subtotal Cart Price = ${viewModel.currentTotalPrice}"
                             )
+
+                            viewModel.cartModel?.let {
+                                if (it.discountType.isEmpty()){
+                                    viewModel.cartModel?.discountType= PERCENTAGE
+                                }
+                            }
 
                             if (viewModel.cartModel != null) {
                                 bundle.putDouble(

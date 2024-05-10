@@ -1462,63 +1462,6 @@ class AllOrdersListingFragment(
 
                 dashboardViewModel.deleteCartBeforeSwitch()
                 dashboardViewModel.clearCartModelBackup()
-
-                var itemList = mutableListOf<TbCartItem>()
-
-//                order.orderItems.forEach {
-//                    TbCartItem().apply {
-//
-//                        var modifierList = mutableListOf<Modifier>()
-//
-//                        it.orderItemModifiers.forEach { orderModifier ->
-//                            Modifier().apply {
-//
-//                                this.id = orderModifier.id
-//                                this.modifierSetId = orderModifier.modifierSetId
-//                                this.name = orderModifier.name
-//                                this.price = orderModifier.price
-//                                this.sort = 0
-//                                this._destroy = false
-//                                this.isDeleted = false
-//                                this.isChecked = false
-//                                this.itemQuantity = orderModifier.quantity
-//                                this.modifier_quantity =
-//                                this.orderModifierId =
-//                                this.orderItemTaxes =
-//
-//
-//                            }
-//
-//                        }
-//
-//                        this.itemOriginalModifiersList = it.orderItemModifiers as List<Modifier>
-//                        this.modifiers = it.modifiers
-//                        this.isDestroy = it.isDestroy
-//                        this.timeStamp = it.timeStamp
-//                        this.orderType = it.orderType
-//                        this.note = it.note
-//                        this.name = it.name
-//                        this.website_hide_status = it.website_hide_status
-//                        this.categoryId = it.categoryId
-//                        this.isEdited = it.isEdited
-//                        this.discountId = it.discountId
-//                        this.discountPrice = it.discountPrice
-//                        this.discountType = it.discountType
-//                        this.employeeID = it.employeeID
-//                        this.isHide = it.isHide
-//                        this.quantity = it.quantity
-//                        if (this.itemQuantity != it.itemQuantity) {
-//                            this.isItemEdited = true
-//                        } else {
-//                            this.isItemEdited = it.isItemEdited
-//                        }
-//                        this.itemQuantity = it.itemQuantity
-//                        this.variationsAttributes = it.variationsAttributes
-//                        this.taxes = it.taxes
-//                    }
-//                }
-
-
                 prefProvider.setValue(Constants.OLD_ITEM, "")
                 var itemDiscountTotal: Double = 0.0
                 var itemPassDis: Double = 0.0
@@ -1659,6 +1602,8 @@ class AllOrdersListingFragment(
             }
 
             "PAY" -> {
+
+                prefProvider.setValue(OLD_ITEM_BASE_CUSTOM_ITEM, Gson().toJson(order.orderItems))
 
                 prefProvider.setValue("PaidAmount", "")
                 prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
