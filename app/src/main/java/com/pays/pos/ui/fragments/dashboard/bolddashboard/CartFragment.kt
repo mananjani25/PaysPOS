@@ -1749,54 +1749,24 @@ class CartFragment(
                 MethodUtils.roundOffAmount(viewModel.totalTax)
             binding.txtServiceCharge.text =
                 MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
-            binding.tvPayNow.text =
-                "Pay " + binding.txtTotal.text.toString()
+
             Log.e("totalDiscount", viewModel.totalDiscount.toString())
 
             var cartCompletePrice = getCompleteCartPrice()
 
-            //        if (viewModel.customCartUpdateDiscount < viewModel.totalDiscount) {
-            /*   viewModel.currentCartItems.forEach {
-                   if (!it.isDestroy) {
-                       var itemPrice = it.price
-
-                       it.modifiers.forEach { mod ->
-                           if (!mod._destroy) {
-                               itemPrice += (mod.price * mod.modifier_quantity)
-                           }
-                       }
-
-                       itemPrice *= it.itemQuantity
-                       cartCompletePrice += itemPrice
-                   }
-               }*/
-
-                            binding.txtDiscount.text =
-                    MethodUtils.roundOffAmount(viewModel.cartModel?.discountPrice ?: 0.0)
-
             viewModel.apply {
-                if (cartModel?.discountSelectdValue != 0.0 && cartModel != null) {
-                totalDiscount =
-                    cartCompletePrice * cartModel?.discountSelectdValue!! / 100.0
-                val remaining = cartCompletePrice - totalDiscount
+                if (cartModel?.discountSelectdValue != 0.0 && cartModel != null ) {
+                    totalDiscount =
+                        cartCompletePrice * cartModel?.discountSelectdValue!! / 100.0
+                    val remaining = cartCompletePrice - totalDiscount
 
-                cartModel?.discountPrice = totalDiscount
+                    cartModel?.discountPrice = totalDiscount
 
-                binding.txtSubTotal.text = MethodUtils.roundOffAmount(remaining)
-                subTotalPrice = remaining
+                    binding.txtSubTotal.text = MethodUtils.roundOffAmount(remaining)
+                    subTotalPrice = remaining
                 }
-//                binding.txtDiscount.text =
-//                    MethodUtils.roundOffAmount(cartModel?.discountPrice ?: 0.0)
             }
 
-
-//            }
-//
-//            else
-//            if( viewModel.customCartUpdateDiscount > viewModel.totalDiscount) {
-//                viewModel.totalDiscount = viewModel.customCartUpdateDiscount
-//                viewModel.customCartUpdateDiscount = 0.0
-//            }
 
             binding.txtDiscount.text =
                 "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
@@ -1806,6 +1776,8 @@ class CartFragment(
                 binding.txtTotal,
                 requireContext()
             )
+            binding.tvPayNow.text =
+                "Pay " + binding.txtTotal.text.toString()
 
             if (prefProvider.getValue(
                     OPTION_TYPE, "CashDiscount"
