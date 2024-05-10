@@ -288,6 +288,7 @@ class CreateTax : Fragment() {
            viewModel.setTaxData(taxDataTmp)
    */
 
+        alertAlreadyShown=false
         val navController = findNavController()
         navController.previousBackStackEntry?.savedStateHandle?.set(
             KEY,
@@ -349,9 +350,9 @@ class CreateTax : Fragment() {
 
                     message = createTaxResponse.message
                     runBlocking {
-                        lifecycleScope.launch {
+                        lifecycleScope.async  {
                             dashViewModel.syncTaxes()
-                        }.join()
+                        }.await()
 
                     }
 
@@ -363,48 +364,53 @@ class CreateTax : Fragment() {
 
     }
 
+    var alertAlreadyShown:Boolean=false
+
     private fun setSyncObserver() {
         dashViewModel.taxSyncDone.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     viewModel.setItemIds(ArrayList())
+                    CoroutineScope(Dispatchers.Main).launch {
+                        if (message.isNotEmpty() && !alertAlreadyShown) {
+                            alertAlreadyShown=true
+                            activity?.let {
+                                AlertUtils.showCustomAlertWithListenerWithOK(
+                                    it, message
+                                ) { _, _ ->
 
-                    if (message.isNotEmpty()) {
-                        activity?.let {
-                            AlertUtils.showCustomAlertWithListenerWithOK(
-                                it, message
-                            ) { _, _ ->
 
+                                    try{
+                                        message=""
 
-                                try{
-                                    message=""
-                                    backPressManage()
-                                }catch (e:Exception){
+                                        backPressManage()
+                                    }catch (e:Exception){
+
+                                    }
+
+                                    Log.e(
+                                        TAG,
+                                        "checkDeviceToken:  ${
+                                            prefProvider?.getValue(
+                                                "device_token",
+                                                ""
+                                            )
+                                        }"
+                                    )
+                                    /*  if (prefProvider?.getValue("device_token", "")?.trim()?.isEmpty() == true) {
+                                      val intent = Intent()
+                                      intent.action = Constants.SYNC_SETTING_NOTIFICATION
+                                      requireContext().sendBroadcast(intent)
+
+                                      val intent2 = Intent()
+                                      intent2.action = Constants.SYNC_NOTIFICATION
+                                      requireContext().sendBroadcast(intent2)
+                                  }*/
+                                    //  dashViewModel.syncInventoryModule(false)
+
+                                    //callSyncAPI()
 
                                 }
-
-                                Log.e(
-                                    TAG,
-                                    "checkDeviceToken:  ${
-                                        prefProvider?.getValue(
-                                            "device_token",
-                                            ""
-                                        )
-                                    }"
-                                )
-                                /*  if (prefProvider?.getValue("device_token", "")?.trim()?.isEmpty() == true) {
-                                  val intent = Intent()
-                                  intent.action = Constants.SYNC_SETTING_NOTIFICATION
-                                  requireContext().sendBroadcast(intent)
-
-                                  val intent2 = Intent()
-                                  intent2.action = Constants.SYNC_NOTIFICATION
-                                  requireContext().sendBroadcast(intent2)
-                              }*/
-                                //  dashViewModel.syncInventoryModule(false)
-
-                                //callSyncAPI()
-
                             }
                         }
                     }
