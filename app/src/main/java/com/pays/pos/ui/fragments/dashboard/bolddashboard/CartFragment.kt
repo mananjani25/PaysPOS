@@ -1755,35 +1755,36 @@ class CartFragment(
 
             var cartCompletePrice = 0.0
 
-    //        if (viewModel.customCartUpdateDiscount < viewModel.totalDiscount) {
-                viewModel.currentCartItems.forEach {
-                    if (!it.isDestroy) {
-                        var itemPrice = it.price
+            //        if (viewModel.customCartUpdateDiscount < viewModel.totalDiscount) {
+            viewModel.currentCartItems.forEach {
+                if (!it.isDestroy) {
+                    var itemPrice = it.price
 
-                        it.modifiers.forEach { mod ->
-                            if (!mod._destroy) {
-                                itemPrice += (mod.price * mod.modifier_quantity)
-                            }
+                    it.modifiers.forEach { mod ->
+                        if (!mod._destroy) {
+                            itemPrice += (mod.price * mod.modifier_quantity)
                         }
-
-                        itemPrice *= it.itemQuantity
-                        cartCompletePrice += itemPrice
                     }
+
+                    itemPrice *= it.itemQuantity
+                    cartCompletePrice += itemPrice
                 }
+            }
 
-                viewModel.apply {
-                    if (cartModel?.discountSelectdValue != 0.0 && cartModel != null) {
-                        totalDiscount =
-                            cartCompletePrice * cartModel?.discountSelectdValue!! / 100.0
-                        val remaining = cartCompletePrice - totalDiscount
+            viewModel.apply {
+                if (cartModel?.discountSelectdValue != 0.0 && cartModel != null) {
+                    totalDiscount =
+                        cartCompletePrice * cartModel?.discountSelectdValue!! / 100.0
+                    val remaining = cartCompletePrice - totalDiscount
 
-                        cartModel?.discountPrice = totalDiscount
+                    cartModel?.discountPrice = totalDiscount
 
-                        binding.txtSubTotal.text = MethodUtils.roundOffAmount(remaining)
-                        subTotalPrice = remaining
-                    }
-                        binding.txtDiscount.text = MethodUtils.roundOffAmount(cartModel?.discountPrice?:0.0)
+                    binding.txtSubTotal.text = MethodUtils.roundOffAmount(remaining)
+                    subTotalPrice = remaining
                 }
+                binding.txtDiscount.text =
+                    MethodUtils.roundOffAmount(cartModel?.discountPrice ?: 0.0)
+            }
 
 
 //            }
@@ -1794,7 +1795,7 @@ class CartFragment(
 //                viewModel.customCartUpdateDiscount = 0.0
 //            }
 
-                    binding . txtDiscount . text =
+            binding.txtDiscount.text =
                 "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
 
             viewModel.itemCalculationCartModelNew(
@@ -1803,19 +1804,19 @@ class CartFragment(
                 requireContext()
             )
 
-                if (prefProvider.getValue(
-                        OPTION_TYPE, "CashDiscount"
-                    ) == "CashDiscount"
-                ) {
-                    binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
-                    binding.txtNoncashAdj.text =
-                        "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
-                } else {
-                    binding.txtNoncashAdj.text =
-                        MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
-                }
+            if (prefProvider.getValue(
+                    OPTION_TYPE, "CashDiscount"
+                ) == "CashDiscount"
+            ) {
+                binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
+                binding.txtNoncashAdj.text =
+                    "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+            } else {
+                binding.txtNoncashAdj.text =
+                    MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+            }
 
-                var data : TbCustomer ? = prefProvider.getCustomerData()
+            var data: TbCustomer? = prefProvider.getCustomerData()
             if (data != null) {
                 if (viewModel.loyaltyPointCondition(data)) {
                     if (isOrderUpdate) {
@@ -2624,9 +2625,13 @@ class CartFragment(
                             )
 
                             viewModel.cartModel?.let {
-                                if (it.discountType.isEmpty()){
-                                    viewModel.cartModel?.discountType= PERCENTAGE
+                                if (it.discountType.isEmpty()) {
+                                    viewModel.cartModel?.discountType = PERCENTAGE
                                 }
+                            }
+
+                            viewModel.cartModel?.let {
+                                calculateDiscount()
                             }
 
                             if (viewModel.cartModel != null) {
@@ -3172,6 +3177,16 @@ class CartFragment(
             }
 
         })
+    }
+
+    private fun calculateDiscount() {
+        var total = 0.0
+        viewModel.currentCartItems.forEach {
+            total += it.price.toDouble()
+        }
+
+        viewModel.cartModel?.discountSelectdValue=(viewModel.totalDiscount/total)*100
+
     }
 
     private fun checkUpdation() {
