@@ -1753,37 +1753,40 @@ class CartFragment(
                 "Pay " + binding.txtTotal.text.toString()
             Log.e("totalDiscount", viewModel.totalDiscount.toString())
 
-            var cartCompletePrice = 0.0
+            var cartCompletePrice = getCompleteCartPrice()
 
             //        if (viewModel.customCartUpdateDiscount < viewModel.totalDiscount) {
-            viewModel.currentCartItems.forEach {
-                if (!it.isDestroy) {
-                    var itemPrice = it.price
+            /*   viewModel.currentCartItems.forEach {
+                   if (!it.isDestroy) {
+                       var itemPrice = it.price
 
-                    it.modifiers.forEach { mod ->
-                        if (!mod._destroy) {
-                            itemPrice += (mod.price * mod.modifier_quantity)
-                        }
-                    }
+                       it.modifiers.forEach { mod ->
+                           if (!mod._destroy) {
+                               itemPrice += (mod.price * mod.modifier_quantity)
+                           }
+                       }
 
-                    itemPrice *= it.itemQuantity
-                    cartCompletePrice += itemPrice
-                }
-            }
+                       itemPrice *= it.itemQuantity
+                       cartCompletePrice += itemPrice
+                   }
+               }*/
+
+                            binding.txtDiscount.text =
+                    MethodUtils.roundOffAmount(viewModel.cartModel?.discountPrice ?: 0.0)
 
             viewModel.apply {
                 if (cartModel?.discountSelectdValue != 0.0 && cartModel != null) {
-                    totalDiscount =
-                        cartCompletePrice * cartModel?.discountSelectdValue!! / 100.0
-                    val remaining = cartCompletePrice - totalDiscount
+                totalDiscount =
+                    cartCompletePrice * cartModel?.discountSelectdValue!! / 100.0
+                val remaining = cartCompletePrice - totalDiscount
 
-                    cartModel?.discountPrice = totalDiscount
+                cartModel?.discountPrice = totalDiscount
 
-                    binding.txtSubTotal.text = MethodUtils.roundOffAmount(remaining)
-                    subTotalPrice = remaining
+                binding.txtSubTotal.text = MethodUtils.roundOffAmount(remaining)
+                subTotalPrice = remaining
                 }
-                binding.txtDiscount.text =
-                    MethodUtils.roundOffAmount(cartModel?.discountPrice ?: 0.0)
+//                binding.txtDiscount.text =
+//                    MethodUtils.roundOffAmount(cartModel?.discountPrice ?: 0.0)
             }
 
 
@@ -3180,13 +3183,32 @@ class CartFragment(
     }
 
     private fun calculateDiscount() {
-        var total = 0.0
-        viewModel.currentCartItems.forEach {
-            total += it.price.toDouble()
+
+        viewModel.cartModel?.let {
+            if (it.discountSelectdValue == null || it.discountSelectdValue == 0.0) {
+                it.discountSelectdValue = (viewModel.totalDiscount / getCompleteCartPrice()) * 100
+            }
         }
 
-        viewModel.cartModel?.discountSelectdValue=(viewModel.totalDiscount/total)*100
+    }
 
+    private fun getCompleteCartPrice(): Double {
+        var cartCompletePrice: Double = 0.0
+        viewModel.currentCartItems.forEach {
+            if (!it.isDestroy) {
+                var itemPrice = it.price
+
+                it.modifiers.forEach { mod ->
+                    if (!mod._destroy) {
+                        itemPrice += (mod.price * mod.modifier_quantity)
+                    }
+                }
+
+                itemPrice *= it.itemQuantity
+                cartCompletePrice += itemPrice
+            }
+        }
+        return cartCompletePrice
     }
 
     private fun checkUpdation() {
