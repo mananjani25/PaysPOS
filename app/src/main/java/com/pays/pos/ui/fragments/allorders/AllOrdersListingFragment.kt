@@ -1523,8 +1523,13 @@ class AllOrdersListingFragment(
                 /*we are using this to check whether the note is updated or not, if yes then we will print the *****Updated***** on the kitchen receipt*/
                 prefProvider.setValue(Constants.orderNoteOld, order.note)
 
-
                 val updatedCartModel = generateCartModelFromOrderModel(order)
+
+
+                val completePrice = order.subTotal + updatedCartModel.discountPrice
+
+                updatedCartModel.discountSelectdValue =  order.totalDiscount / completePrice * 100
+
                 dashboardViewModel.addCart(updatedCartModel)
                 dashboardViewModel.setUpdatedCartModel(updatedCartModel)
                 generateCartItemsListFromOrderModel(order)?.let {
