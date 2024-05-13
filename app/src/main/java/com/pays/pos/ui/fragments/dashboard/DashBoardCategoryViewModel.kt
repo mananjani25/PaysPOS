@@ -7217,7 +7217,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     }
 
                                 } catch (e: Exception) {
-                                    e.printStackTrace()
+//                                    e.printStackTrace()
                                 }
 
                                 prefProvider.setValue(
