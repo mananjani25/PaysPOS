@@ -4491,6 +4491,18 @@ class AllOrdersListingFragment(
 
                         actionFeedLine(1)
 
+                        if(orderData.orderType == Constants.PHONE_ORDER_) {
+                            add(
+                                PrinterBuilder()
+                                    .styleBold(true)
+                                    .actionPrintText(
+                                        orderData.deliveryType
+                                    )
+                            )
+
+                            actionFeedLine(1)
+                        }
+
                         add(
                             PrinterBuilder()
                                 .actionPrintText(
