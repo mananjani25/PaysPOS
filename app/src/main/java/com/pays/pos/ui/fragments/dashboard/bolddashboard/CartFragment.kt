@@ -1764,6 +1764,9 @@ class CartFragment(
 
                     binding.txtSubTotal.text = MethodUtils.roundOffAmount(remaining)
                     subTotalPrice = remaining
+                } else {
+                    viewModel.totalDiscount = 0.0
+                    cartModel?.discountPrice = 0.0
                 }
             }
 
@@ -2755,7 +2758,7 @@ class CartFragment(
 
         })
 
-        binding.tvSave.setOnClickListener(object : View.OnClickListener {
+        binding.tvSave.setOnSingleClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 runBlocking {
                     try {
