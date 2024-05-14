@@ -6644,10 +6644,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         clearObserver()
                         prefProvider.setValueboolean(ORDER_COMPLETED, true)
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM,"")
+                        prefProvider.setValue(Constants.OLD_ITEM,"")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE,"")
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
                     } else {
 
                         clearObserver()
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM,"")
+                        prefProvider.setValue(Constants.OLD_ITEM,"")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE,"")
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                     }
 
@@ -6659,10 +6665,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     // redirect to passcode
                     if (prefProvider.getValueboolean(LOCK_SCREEN_TRANSACTION, false)) {
 
+
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM,"")
+                        prefProvider.setValue(Constants.OLD_ITEM,"")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE,"")
+
                         clearObserver()
                         prefProvider.setValueboolean(ORDER_COMPLETED, true)
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
                     } else {
+
+
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM,"")
+                        prefProvider.setValue(Constants.OLD_ITEM,"")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE,"")
 
                         clearObserver()
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
