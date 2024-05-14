@@ -9774,7 +9774,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     PrinterBuilder()
                                         .styleBold(true)
                                         .actionPrintText(
-                                            "***** 4 UPDATED *****"
+                                            "***** UPDATED *****"
                                         )
                                 )
                             }
@@ -11313,7 +11313,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 /*Added By Rahul */
                 if (isOrderUpdated == true) {
-                    PrintSunmiUtils.orderIdLarge("***** 5 UPDATED *****")
+                    PrintSunmiUtils.orderIdLarge("***** UPDATED *****")
                 }
 
                 SunmiPrinterApi.getInstance().lineWrap(4)
@@ -11510,7 +11510,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             /*Added By Rahul */
             try {
                 if (isOrderUpdated == true || cartList!!.isEdited == true) {
-                    PrintSunmiUtils.headerText("***** 6 UPDATED *****")
+                    PrintSunmiUtils.headerText("***** UPDATED *****")
                 }
             } catch (e: java.lang.NullPointerException) {
 
