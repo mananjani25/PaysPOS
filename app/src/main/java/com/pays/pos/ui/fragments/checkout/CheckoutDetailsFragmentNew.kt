@@ -2,8 +2,11 @@ package com.pays.pos.ui.fragments.checkout
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
+import android.content.Context
 import android.content.DialogInterface
+import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
 import android.os.Message
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
@@ -1799,68 +1803,74 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         binding.llCreditCard.setOnSingleClickListener {
 
-            val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
-            subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
-            totalServiceCharge =
-                String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
-            totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
-            totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
-            cashDiscountSurcharge = if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
-                0.0
-            } else {
-                MethodUtils.getLatestCashDiscountOrSurCharge(
-                    WholetotalPrice,
-                    prefProvider,
-                    requireContext()
-                ) / isSelectedCount
-            }
-            paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
-            Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
-            Log.d(TAG, "paymentClick: paymentAmount  " + paymentAmount)
-            if (cashDiscountType == "SurCharge") {
-                paymentAmount =
-                    String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
-            }
-            paymentAmount += tipAmount
+            if(InternetUtils.isInternetAvailable(applicationContext = requireActivity().applicationContext)) {
 
-            if (paymentAmount != 0.0) {
-                if (mSessionManager.isConnected) {
-                    magtekModule.stopListner(false)
-                    if (device == 0) {
-                        magtekPaymentCall()
+                restrictTvCashClicks()
+
+                val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
+                subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
+                totalServiceCharge =
+                    String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
+                totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
+                totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
+                cashDiscountSurcharge =
+                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+                        0.0
                     } else {
-                        magtekProPaymentCall()
+                        MethodUtils.getLatestCashDiscountOrSurCharge(
+                            WholetotalPrice,
+                            prefProvider,
+                            requireContext()
+                        ) / isSelectedCount
                     }
-                    prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, false)
-                } else if (prefProvider.getValueboolean(
-                        Constants.IS_PAX_CONNECTED,
-                        false
-                    ) && !mSessionManager.isConnected
-                ) {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        var paxData: PAXData? = paymentviewModel.getPaxPaymentData()
-                        if (paxData != null) {
-                            prefProvider.setValueboolean(IS_PAX_PAYMENT_FAILED, true)
-                            // Retry api call if we have unsuccessful pending payment stored
-                            GlobalUID = paxData.globalUid
-                            ExtData = paxData.extData
-                            RefNumber = paxData.refNumber
-                            ECRRefNumber = paxData.eCRRefNumber
-                            PAXtoken = paxData.paxToken
-                            EDCType = paxData.EDCType
-                            cardLastDigits = paxData.cardLastDigits
-                            makePaymentCreditCard()
+                paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+                Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
+                Log.d(TAG, "paymentClick: paymentAmount  " + paymentAmount)
+                if (cashDiscountType == "SurCharge") {
+                    paymentAmount =
+                        String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
+                }
+                paymentAmount += tipAmount
+
+                if (paymentAmount != 0.0) {
+                    if (mSessionManager.isConnected) {
+                        magtekModule.stopListner(false)
+                        if (device == 0) {
+                            magtekPaymentCall()
                         } else {
-                            makePaxPaymentRequest()
+                            magtekProPaymentCall()
                         }
+                        prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, false)
+                    } else if (prefProvider.getValueboolean(
+                            Constants.IS_PAX_CONNECTED,
+                            false
+                        ) && !mSessionManager.isConnected
+                    ) {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            var paxData: PAXData? = paymentviewModel.getPaxPaymentData()
+                            if (paxData != null) {
+                                prefProvider.setValueboolean(IS_PAX_PAYMENT_FAILED, true)
+                                // Retry api call if we have unsuccessful pending payment stored
+                                GlobalUID = paxData.globalUid
+                                ExtData = paxData.extData
+                                RefNumber = paxData.refNumber
+                                ECRRefNumber = paxData.eCRRefNumber
+                                PAXtoken = paxData.paxToken
+                                EDCType = paxData.EDCType
+                                cardLastDigits = paxData.cardLastDigits
+                                makePaymentCreditCard()
+                            } else {
+                                makePaxPaymentRequest()
+                            }
+                        }
+                    } else {
+                        errorDisplay("Please connect a payment device.")
                     }
                 } else {
-                    errorDisplay("Please connect a payment device.")
+                    errorDisplay("Payment Amount is zero.")
                 }
-            } else {
-                errorDisplay("Payment Amount is zero.")
-            }
-
+            }else
+                errorDisplay("Please check your Network Connectivity.")
             //  makePaymentCreditCard()
         }
 
@@ -1889,42 +1899,57 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         binding.tvCash0.setOnSingleClickListener {
 
-            restrictTvCashClicks()
+            if(InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
 
-            custom_paymentAmount = 0.0
+                restrictTvCashClicks()
 
-            paymentviewModel.totalPayAmount(
-                binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
-            )
-            paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
-            cashPaymentWithVariation()
+                custom_paymentAmount = 0.0
+
+                paymentviewModel.totalPayAmount(
+                    binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                )
+                paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                cashPaymentWithVariation()
+            } else
+                errorDisplay("Please check your Network Connectivity.")
         }
         binding.tvCash1.setOnSingleClickListener {
 
-            restrictTvCashClicks()
+            if(InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
 
-            custom_paymentAmount =
-                binding.tvCash1.text.toString().replace("$", "").trim().toDouble()
-            cashPaymentWithVariation()
+                restrictTvCashClicks()
+
+                custom_paymentAmount =
+                    binding.tvCash1.text.toString().replace("$", "").trim().toDouble()
+                cashPaymentWithVariation()
+            }else
+                errorDisplay("Please check your Network Connectivity.")
         }
         binding.tvCash2.setOnSingleClickListener {
+            if(InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
 
-            restrictTvCashClicks()
+                restrictTvCashClicks()
 
-            custom_paymentAmount =
-                binding.tvCash2.text.toString().replace("$", "").trim().toDouble()
-            cashPaymentWithVariation()
+                custom_paymentAmount =
+                    binding.tvCash2.text.toString().replace("$", "").trim().toDouble()
+                cashPaymentWithVariation()
+            }else
+                errorDisplay("Please check your Network Connectivity.")
         }
         binding.tvCash3.setOnSingleClickListener {
 
-            restrictTvCashClicks()
+            if(InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
 
-            custom_paymentAmount =
-                binding.tvCash3.text.toString().replace("$", "").trim().toDouble()
-            cashPaymentWithVariation()
+                restrictTvCashClicks()
+
+                custom_paymentAmount =
+                    binding.tvCash3.text.toString().replace("$", "").trim().toDouble()
+                cashPaymentWithVariation()
+            }else
+                errorDisplay("Please check your Network Connectivity.")
         }
         binding.tvCustomAmount.setOnSingleClickListener {
-
+            if(InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
             paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
             val bundleVal = Bundle().apply {
                 putDouble("totalprice", ((paymentAmount)))
@@ -1933,7 +1958,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 R.id.action_paymentBoldPosFragment_to_customAmountFragment,
                 bundleVal
             )
-
+        }else
+        errorDisplay("Please check your Network Connectivity.")
         }
         binding.tvPaymentLink.setOnSingleClickListener {
             textToPay = true
@@ -2052,8 +2078,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             tvCash1.isEnabled = false
             tvCash2.isEnabled = false
             tvCash3.isEnabled = false
-
         }
+
+        Handler().postDelayed({
+            binding.apply {
+                tvCash0.isEnabled = true
+                tvCash1.isEnabled = true
+                tvCash2.isEnabled = true
+                tvCash3.isEnabled = true
+            }
+        },5000)
+
     }
 
     private fun showProgressObserver() {
