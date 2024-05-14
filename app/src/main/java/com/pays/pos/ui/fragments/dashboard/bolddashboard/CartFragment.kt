@@ -74,14 +74,9 @@ import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
-import com.pays.pos.utils.AlertUtils
-import com.pays.pos.utils.LogUtil
-import com.pays.pos.utils.MethodUtils
-import com.pays.pos.utils.ProgressUtils
+import com.pays.pos.utils.*
 import com.pays.pos.utils.callback.*
 import com.pays.pos.utils.extensions.*
-import com.pays.pos.utils.getCustomerDisplay
-import com.pays.pos.utils.subTotalToDouble
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -2663,6 +2658,8 @@ class CartFragment(
         binding.tvPayNow.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
 
+                if(InternetUtils.isInternetAvailable(requireContext().applicationContext)) {
+
                 runBlocking {
 
                     lifecycleScope.launch {
@@ -2753,6 +2750,9 @@ class CartFragment(
                     }
 
                 }
+                }else {
+                    AlertUtils.showCustomAlert(requireContext(), "Please check your Network Connectivity.")
+                }
 
             }
 
@@ -2760,6 +2760,7 @@ class CartFragment(
 
         binding.tvSave.setOnSingleClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
+                if(InternetUtils.isInternetAvailable(requireContext().applicationContext)) {
                 runBlocking {
                     try {
                         prefProvider.setValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)
@@ -3057,6 +3058,9 @@ class CartFragment(
                         e.printStackTrace()
                     }
                 }
+            }else {
+                AlertUtils.showCustomAlert(requireContext(), "Please check your Network Connectivity.")
+            }
             }
 
             private fun areVariationsEqual(
