@@ -2251,7 +2251,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 PrinterBuilder()
                                     .styleBold(true)
                                     .actionPrintText(
-                                        "***** UPDATED *****"
+                                        "***** 1 UPDATED *****"
                                     )
                             )
                         }
@@ -4797,7 +4797,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             * */
             cartModel?.let {
                 if (it.isEdited || isOrderUpdate)
-                    PrintSunmiUtils.orderIdLarge("***** UPDATED *****")
+                    PrintSunmiUtils.orderIdLarge("***** 2 UPDATED *****")
             }
 
             SunmiPrinterApi.getInstance().lineWrap(4)
@@ -4970,7 +4970,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             SunmiPrintHelper.getInstance().lineWrap(4)
             cartModel?.let {
                 if (it.isEdited || isOrderUpdate) {
-                    PrintSunmiUtils.headerText("***** UPDATED *****")
+                    PrintSunmiUtils.headerText("***** 3 UPDATED *****")
 
                 }
             }
