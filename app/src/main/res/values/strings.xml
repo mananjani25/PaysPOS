@@ -926,6 +926,7 @@
     <string name="items_will_be_appear_here">Items will appear here</string>
     <string name="printerseries_l100">TM-L100 Series</string>
     <string name="cancelled">Cancelled</string>
+    <string name="network_error">Network Error</string>
 
 
 </resources>

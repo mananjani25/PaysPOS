@@ -13,6 +13,7 @@ import android.view.*
 import android.widget.Toast
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -142,6 +143,20 @@ class CustomDisplay(
         observeServiceCharge()
         setupTaxAdapter()
         initPOSLink()
+
+        initDiscountLiveData()
+    }
+
+    private fun initDiscountLiveData(){
+        dashBoardCategoryViewModel.latestDiscount.observe(lifecycleOwner,object:Observer<Double>{
+            override fun onChanged(t: Double?) {
+                lifecycleOwner.lifecycleScope.launch{
+                    binding.txtDiscountCard?.text = "-${t}"
+                    binding.txtDiscountCash?.text = "-${t}"
+                }
+            }
+
+        })
     }
 
 

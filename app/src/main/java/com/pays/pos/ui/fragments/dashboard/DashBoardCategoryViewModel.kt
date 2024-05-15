@@ -180,6 +180,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _removeGuestSuccess = MutableLiveData<Event<String>>()
     val removeGuestSuccess: LiveData<Event<String>> = _removeGuestSuccess
 
+
+    private val _latestDiscount = MutableLiveData<Double>()
+    val latestDiscount: LiveData<Double> = _latestDiscount
+
     var isUpdatedOnce = false
 
     /**
@@ -561,34 +565,34 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun addOrderItemsToCartItems(tbCartItem: List<TbCartItem>) {
 
-       // runBlocking {
-            CoroutineScope(Dispatchers.IO).launch {
-                posRepository.addCartItemsList(tbCartItem)
+        // runBlocking {
+        CoroutineScope(Dispatchers.IO).launch {
+            posRepository.addCartItemsList(tbCartItem)
+
+            prefProvider.setValue(
+                Constants.OLD_ITEM_BASE,
+                Gson().toJson(appDatabase.cartDao().getAllCartItems())
+            )
+
+
+            if (isUpdatedOnce) {
+
+                isUpdatedOnce = false
+
 
                 prefProvider.setValue(
-                    Constants.OLD_ITEM_BASE,
+                    Constants.OLD_ITEM_BASE_CUSTOM_ITEM,
                     Gson().toJson(appDatabase.cartDao().getAllCartItems())
                 )
 
-
-                if (isUpdatedOnce) {
-
-                    isUpdatedOnce = false
-
-
-                    prefProvider.setValue(
-                        Constants.OLD_ITEM_BASE_CUSTOM_ITEM,
-                        Gson().toJson(appDatabase.cartDao().getAllCartItems())
-                    )
-
-                }
-
-
-                destroyedCartItemsList.clear()
             }
 
-            //delay(2000)
-       // }
+
+            destroyedCartItemsList.clear()
+        }
+
+        //delay(2000)
+        // }
     }
 
     private fun deleteItemFromCartItem(tbCartItem: TbCartItem) {
@@ -702,7 +706,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    fun deleteCartBeforeSwitch(){
+    fun deleteCartBeforeSwitch() {
         GlobalScope.launch {
             posRepository.deleteOldCartBeforeSwitch(prefProvider.getValueInt(EMPLOYEE_ID, 0))
         }
@@ -2540,7 +2544,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     for (i in list.indices) {
                         if (item != null) {
-                            if (item.isManualSales || item.itemId ==1) {
+                            if (item.isManualSales || item.itemId == 1) {
 
 
                                 if (list[i].manualSaleId == item.manualSaleId && list[i].cartItemId == item.cartItemId) {
@@ -4487,11 +4491,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         runBlocking {
 
-            if (cartModel==null) {
+            if (cartModel == null) {
 
                 CoroutineScope(Dispatchers.IO).async {
                     cartModel = getManualSaleFromCart(prefProvider.getValueInt(EMPLOYEE_ID, -1))
-            }.await()
+                }.await()
             }
 
             if (cartItems.isNotEmpty()) {
@@ -4576,8 +4580,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                             item.modifiers.forEach {
 
-                                if(!it._destroy)
-                                subTotalPrice += (it.price * it.itemQuantity)
+                                if (!it._destroy)
+                                    subTotalPrice += (it.price * it.itemQuantity)
 
                             }
                         }
@@ -5493,12 +5497,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
                     prefProvider.setValueboolean(Constants.IS_CLOCKOUT, true)
-                    Handler(Looper.getMainLooper()).postDelayed(object :java.lang.Runnable{
+                    Handler(Looper.getMainLooper()).postDelayed(object : java.lang.Runnable {
                         override fun run() {
-                            prefProvider?.setValueboolean(Constants.IS_PAX_CONNECTED,false)
+                            prefProvider?.setValueboolean(Constants.IS_PAX_CONNECTED, false)
                         }
 
-                    },500)
+                    }, 500)
 
                     resourceClockout.data.let {
                         if (it?.status == 200) {
@@ -6874,7 +6878,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 //        _taxSyncDone.value = Event(false)
         viewModelScope.launch {
 
-            CoroutineScope(Dispatchers.Main).launch{
+            CoroutineScope(Dispatchers.Main).launch {
                 _syncProgressDialog.value = Event(true)
             }
             val resource = posRepository.syncInventory(
@@ -7039,10 +7043,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     appDatabase.itemDao().addAllItem(listInventory)
                                 }
 
-                                CoroutineScope(Dispatchers.Main).launch{
+                                CoroutineScope(Dispatchers.Main).launch {
                                     delay(1000)
                                     _syncProgressDialog.postValue(Event(false))
-                                    _taxSyncDone.value=Event(true)
+                                    _taxSyncDone.value = Event(true)
                                 }
 
                             }
@@ -7903,6 +7907,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun unableToRemoveGuest(message: String = "") {
         _removeGuestSuccess.value = Event(message)
+    }
+
+
+    public fun addCashDiscountForCustomerDisplay(cashDiscount: Double = 0.0) {
+        _latestDiscount.value = cashDiscount
     }
 
     // To clear gift-card cart

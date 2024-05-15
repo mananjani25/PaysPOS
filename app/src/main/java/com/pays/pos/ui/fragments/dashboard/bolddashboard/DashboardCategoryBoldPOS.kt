@@ -546,7 +546,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         if (result.id != -1) {
                             viewModel.cartModel!!.discountId = result.id
                         }
+
                         viewModel.updateCartModel(viewModel.cartModel!!)
+
+                        lifecycleScope.launch{
+                            viewModel.addCashDiscountForCustomerDisplay(orderDiscount)
+                        }
                     }
                     Log.d(TAG, "resultListener: " + Gson().toJson(viewModel.cartModel!!))
                 } catch (e: Exception) {
