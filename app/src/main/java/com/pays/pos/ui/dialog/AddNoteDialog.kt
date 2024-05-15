@@ -23,6 +23,7 @@ import com.pays.pos.databinding.DailogAddNoteBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.adapter.NotesListAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.pays.pos.ui.fragments.dashboard.bolddashboard.AddItemFragment
 import com.pays.pos.ui.fragments.settings.notes.NoteListViewModel
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.LogUtil
@@ -80,6 +81,18 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
 
         item = requireArguments().getParcelable("item")
         isOrderNote = requireArguments().getBoolean("isOrderNote")
+
+        if ((requireArguments().getString("from")
+                .toString()).equals(AddItemFragment.javaClass.name)
+        ) {
+
+            with(binding) {
+                tvTitle?.text = getString(R.string.add_item_note)
+                edtNote?.setHint(getString(R.string.add_item_note))
+
+            }
+        }
+
         if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) == Constants.DINE_IN) {
             headerItemPosition = requireArguments().getInt("headerPos")
             LogUtil.logE(TAG, "headerItemPosition:  ${headerItemPosition}")
@@ -107,7 +120,9 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
 
         binding.txtSave.setOnClickListener {
 
-            if (binding.edtNote.text!!.toString().trim().isNotEmpty() && binding.edtNote.text!!.toString().trim().isNotBlank()) {
+            if (binding.edtNote.text!!.toString().trim()
+                    .isNotEmpty() && binding.edtNote.text!!.toString().trim().isNotBlank()
+            ) {
                 addNote()
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
@@ -124,13 +139,13 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
         binding.imgBack.setOnClickListener {
             dismiss()
         }
-        binding.txtRemovenote?.setOnClickListener(object:View.OnClickListener{
+        binding.txtRemovenote?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 val result = Bundle().apply {
                     putString("note", "")
                     item?.let {
-                        if (!it.note.equals("")){
-                            it.isItemEdited=true
+                        if (!it.note.equals("")) {
+                            it.isItemEdited = true
                             prefProvider.setValueboolean(
                                 Constants.DO_PRINT,
                                 true
@@ -154,8 +169,11 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
         val result = Bundle().apply {
             putString("note", binding.edtNote.text.toString().trim())
             item?.let {
-                if (!it.note.equals(binding.edtNote.text.toString().trim()) && prefProvider.getValue(Constants.OPEN_ORDER_ITEMS,"").isNotEmpty()){
-                    it.isItemEdited=true
+                if (!it.note.equals(
+                        binding.edtNote.text.toString().trim()
+                    ) && prefProvider.getValue(Constants.OPEN_ORDER_ITEMS, "").isNotEmpty()
+                ) {
+                    it.isItemEdited = true
 
                     prefProvider.setValueboolean(
                         Constants.DO_PRINT,

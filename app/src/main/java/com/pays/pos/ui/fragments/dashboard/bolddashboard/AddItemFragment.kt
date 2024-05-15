@@ -1519,6 +1519,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                 putParcelableArrayList("cartList", cartModelsList)
                 putInt("headerPos", viewModel.dineInHeaderPosition)
+                putString("from", AddItemFragment.javaClass.name)
             }
 
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
