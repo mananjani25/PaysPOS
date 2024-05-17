@@ -198,7 +198,7 @@ class CreateTaxViewModel @Inject constructor(
 
                 when (resource.status) {
                     Status.SUCCESS -> {
-                        _showProgress.value = Event(false)
+//                        _showProgress.value = Event(false)
                         resource.data.let { logInResponse ->
                             if (logInResponse?.status == 200) {
 
