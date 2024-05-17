@@ -3,6 +3,8 @@ package com.pays.pos.ui.fragments.settings.business
 import android.R
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -150,51 +152,9 @@ class BusinessDetailsFragment : Fragment() {
             }
 
         }
-        binding.edtAddress.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
 
+        binding.edtAddress.onItemSelectedListener = itemSelectedListener
 
-                if (parent?.selectedItem.toString() == "United States") {
-                    adapter1?.setCountry("US")
-                } else if (parent?.selectedItem.toString() == "Canada") {
-                    adapter1?.setCountry("CA")
-                }
-
-
-                if (Build.VERSION.SDK_INT < 23) {
-                    (parent?.getChildAt(0) as TextView).setTextAppearance(
-                        view?.context,
-                        com.pays.pos.R.style.SpinnerTheme
-                    )
-                    binding.edtStreet.setText("")
-                    binding.edtSuite.setText("")
-                    binding.edtCity.setText("")
-                    binding.edtState.setText("")
-                    binding.edtZip.setText("")
-
-                } else {
-                    (parent?.getChildAt(0) as TextView).setTextAppearance(com.pays.pos.R.style.SpinnerTheme);
-
-                    binding.edtStreet.setText("")
-                    binding.edtSuite.setText("")
-                    binding.edtCity.setText("")
-                    binding.edtState.setText("")
-                    binding.edtZip.setText("")
-                }
-
-
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-
-            }
-
-        }
         binding.edtStreet.setOnFocusChangeListener { _, _ ->
             binding.edtStreet.dismissDropDown()
         }
@@ -203,41 +163,41 @@ class BusinessDetailsFragment : Fragment() {
         binding.btnUpdate.setOnClickListener {
 
 
-            val address =   if (businessAddress == null && binding.edtStreet.text.trim().isNotEmpty()) {
+            val address =
+                if (businessAddress == null && binding.edtStreet.text.trim().isNotEmpty()) {
 
-                  BusinessAddress(
-                    address1 = binding.edtStreet.text.toString().trim(),
-                    address2 = binding.edtSuite.text.toString().trim(),
-                    city = binding.edtCity.text.toString().trim(),
-                    state = binding.edtState.text.toString().trim(),
-                    country = binding.edtAddress.selectedItem.toString(),
-                    postcode = binding.edtZip.text.toString().trim(),
-
-
-                )
-            }
-            else{
-              businessAddress?.let { it1 ->
                     BusinessAddress(
-                        bid = addressID!!,
                         address1 = binding.edtStreet.text.toString().trim(),
                         address2 = binding.edtSuite.text.toString().trim(),
                         city = binding.edtCity.text.toString().trim(),
                         state = binding.edtState.text.toString().trim(),
                         country = binding.edtAddress.selectedItem.toString(),
                         postcode = binding.edtZip.text.toString().trim(),
-                        addressableType = it1.addressableType ?: "",
-                        addressableId = businessAddress!!.addressableId,
-                        createdAt = businessAddress!!.createdAt,
-                        updatedAt = businessAddress!!.updatedAt,
-                        latitude = businessAddress!!.latitude,
-                        longitude = businessAddress!!.longitude,
-                        typeOfAddress = businessAddress!!.typeOfAddress
 
-                    )
+
+                        )
+                } else {
+                    businessAddress?.let { it1 ->
+                        BusinessAddress(
+                            bid = addressID!!,
+                            address1 = binding.edtStreet.text.toString().trim(),
+                            address2 = binding.edtSuite.text.toString().trim(),
+                            city = binding.edtCity.text.toString().trim(),
+                            state = binding.edtState.text.toString().trim(),
+                            country = binding.edtAddress.selectedItem.toString(),
+                            postcode = binding.edtZip.text.toString().trim(),
+                            addressableType = it1.addressableType ?: "",
+                            addressableId = businessAddress!!.addressableId,
+                            createdAt = businessAddress!!.createdAt,
+                            updatedAt = businessAddress!!.updatedAt,
+                            latitude = businessAddress!!.latitude,
+                            longitude = businessAddress!!.longitude,
+                            typeOfAddress = businessAddress!!.typeOfAddress
+
+                        )
+                    }
+
                 }
-
-            }
             val model = TbBusinessDetails()
             model.id = prefProvider.getLocationId()
             model.business_name =
@@ -257,6 +217,52 @@ class BusinessDetailsFragment : Fragment() {
             }
             MethodUtils.hideKeyboard(requireActivity())
             viewModel.submit(model)
+        }
+
+    }
+
+    var itemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        override fun onItemSelected(
+            parent: AdapterView<*>?,
+            view: View?,
+            position: Int,
+            id: Long
+        ) {
+
+
+            if (parent?.selectedItem.toString() == "United States") {
+                adapter1?.setCountry("US")
+            } else if (parent?.selectedItem.toString() == "Canada") {
+                adapter1?.setCountry("CA")
+            }
+
+
+            if (Build.VERSION.SDK_INT < 23) {
+                (parent?.getChildAt(0) as TextView).setTextAppearance(
+                    view?.context,
+                    com.pays.pos.R.style.SpinnerTheme
+                )
+                binding.edtStreet.setText("")
+                binding.edtSuite.setText("")
+                binding.edtCity.setText("")
+                binding.edtState.setText("")
+                binding.edtZip.setText("")
+
+            } else {
+                (parent?.getChildAt(0) as TextView).setTextAppearance(com.pays.pos.R.style.SpinnerTheme);
+
+                binding.edtStreet.setText("")
+                binding.edtSuite.setText("")
+                binding.edtCity.setText("")
+                binding.edtState.setText("")
+                binding.edtZip.setText("")
+            }
+
+
+        }
+
+        override fun onNothingSelected(parent: AdapterView<*>?) {
+
         }
 
     }
@@ -315,7 +321,7 @@ class BusinessDetailsFragment : Fragment() {
                         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
                         binding.spTimeZone.adapter = adapter
 
-                        getDeatils()
+                        getDetails()
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
@@ -330,13 +336,14 @@ class BusinessDetailsFragment : Fragment() {
         }
     }
 
-    private fun getDeatils() {
+    private fun getDetails() {
 
         viewModel.getBusinessData.observe(viewLifecycleOwner) { it ->
 
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
+                        binding.edtAddress.onItemSelectedListener = null
 
                         ProgressUtils.dismissProgressDialog()
 
@@ -379,7 +386,7 @@ class BusinessDetailsFragment : Fragment() {
                             }
                         }
 
-
+                        Handler(Looper.getMainLooper()).postDelayed({ binding.edtAddress.onItemSelectedListener = itemSelectedListener }, 500)
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
