@@ -2284,6 +2284,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                         actionFeedLine(1)
 
+                        if(createOrderResponse.data.order.orderType == Constants.PHONE_ORDER_) {
+                            add(
+                                PrinterBuilder()
+                                    .styleBold(true)
+                                    .actionPrintText(
+                                        createOrderResponse.data.order.deliveryType
+                                    )
+                            )
+                            actionFeedLine(1)
+                        }
+
                         add(
                             PrinterBuilder()
                                 .actionPrintText(

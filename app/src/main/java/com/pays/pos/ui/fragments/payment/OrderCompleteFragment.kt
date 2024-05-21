@@ -9819,6 +9819,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             actionFeedLine(1)
 
+                            if(receiptModel!!.order.orderTypeName == Constants.PHONE_ORDER_) {
+                                add(
+                                    PrinterBuilder()
+                                        .styleBold(true)
+                                        .actionPrintText(
+                                            receiptModel!!.order.deliveryType
+                                        )
+                                )
+                                actionFeedLine(1)
+                            }
+
                             add(
                                 PrinterBuilder()
                                     .actionPrintText(
