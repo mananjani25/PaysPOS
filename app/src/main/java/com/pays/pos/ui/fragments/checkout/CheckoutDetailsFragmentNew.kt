@@ -2874,8 +2874,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         paymentAmount -= tipAmount
         paymentAmount = MethodUtils.roundOffAmountDouble(paymentAmount)
         paymentType = "Card"
-        LogUtil.logE(TAG, "cartList:  ${Gson().toJson(cartList)}")
-        LogUtil.logE(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
+//        LogUtil.logE(TAG, "cartList:  ${Gson().toJson(cartList)}")
+//        LogUtil.logE(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
         if (orderId != -1 && orderId != 0) {
             paymentviewModel.updateOrder(
                 true,
