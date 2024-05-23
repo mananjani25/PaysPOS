@@ -2,10 +2,7 @@ package com.pays.pos.ui.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Dialog
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.ProgressDialog
+import android.app.*
 import android.content.*
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
@@ -13,11 +10,7 @@ import android.media.RingtoneManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.StrictMode
+import android.os.*
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
@@ -82,6 +75,7 @@ import com.pays.pos.di.ApiModule.BASE_URL
 import com.pays.pos.di.HostSelectionInterceptor
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
+import com.pays.pos.service.KioskService
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
@@ -91,6 +85,7 @@ import com.pays.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.pays.pos.ui.fragments.settings.hardware.Hardware
 import com.pays.pos.ui.fragments.settings.hardware.printer.UpdatePrinters
 import com.pays.pos.utils.*
+import com.pays.pos.utils.FileUtils
 import com.pays.pos.utils.extensions.alert
 import com.pays.pos.utils.statusUtils.Status
 import com.pays.pos.utils.workmanager.ThreadPoolManager
@@ -1274,7 +1269,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         permissionCheck()
 
 
-
+        if (!checkServiceRunning(applicationContext,KioskService::class.java)){
+            startForegroundService(Intent(this,KioskService::class.java))
+        }
 
         Log.e(TAG, "checkConsumerNullorNot  ${consumer}")
         if (consumer != null) {
@@ -1527,6 +1524,16 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
         observeShowProgress()
 
+    }
+
+    fun checkServiceRunning(context: Context, serviceClass: Class<*>): Boolean {
+        val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (service in manager.getRunningServices(Int.MAX_VALUE)) {
+            if (serviceClass.name == service.service.className) {
+                return true
+            }
+        }
+        return false
     }
 
     private fun permissionCheck() {
