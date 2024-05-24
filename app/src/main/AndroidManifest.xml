@@ -55,16 +55,16 @@
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup">
 
-        <service
-            android:name=".service.KioskService"
-            android:exported="false"
-            android:foregroundServiceType="dataSync"></service>
-
-        <receiver android:name="com.pays.pos.utils.KioskServiceStarter">
+        <receiver android:name="com.pays.pos.utils.KioskServiceStarterBroadcast">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
+
+        <service
+            android:name="com.pays.pos.service.KioskService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync"></service>
 
         <uses-library
             android:name="org.apache.http.legacy"
