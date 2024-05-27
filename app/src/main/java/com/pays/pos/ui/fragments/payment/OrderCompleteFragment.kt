@@ -7493,7 +7493,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 builder.addText("ReceiptID:" + receiptModel?.order?.offlineId)
 
-                if (customerSettingModel.showTeam) {
+                if (customerSettingModel.showTeam && receiptModel?.order?.employee?.name != null) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addTextFont(Builder.FONT_E)
@@ -7612,7 +7612,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     builder.addText(
                         padLine(
-                            if (customerSettingModel.showTeam) {
+                            if (customerSettingModel.showTeam && receiptModel?.order?.employee?.name != null) {
                                 "Employee:" + receiptModel?.order?.employee?.name
                             } else {
                                 ""
