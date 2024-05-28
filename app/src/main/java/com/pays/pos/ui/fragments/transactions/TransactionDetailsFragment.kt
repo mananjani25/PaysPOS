@@ -1199,7 +1199,11 @@ class TransactionDetailsFragment : Fragment() {
                     val total = String.format("%.2f",paymentDetailsResponse.data.amount)
                     val refundedAmount =String.format("%.2f", paymentDetailsResponse.data.order.refund_detail.refunded_amount - paymentDetailsResponse.data.tips)
 
-                    if (total == refundedAmount
+                    /*
+                    * "total == refundedAmount" This is commented so that a transaction can be refunded only once even if it was refunded partially.
+                     */
+
+                    if ( /*total == refundedAmount*/ refundedAmount.toDouble() > 0.0
                         || paymentDetailsResponse.data.order.payment_status == "Cancelled"
                     ) {
                         binding.tvIssueRefund.visibility = View.GONE
