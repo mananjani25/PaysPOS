@@ -10,17 +10,8 @@ import androidx.annotation.Nullable
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.pays.pos.data.entities.TbCartItem
-import com.pays.pos.data.entities.TbItem
 import com.pays.pos.data.entities.TbServiceCharge
-import com.pays.pos.data.model.GetPaymentOrderDetailsResponse
 import com.pays.pos.data.model.GuestAttrQueue
-import com.pays.pos.data.model.responseModel.CreateOrderResponse
-import com.pays.pos.data.model.responseModel.EodReportResponse
-import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
-import com.pays.pos.data.model.responseModel.GetTipReponse
-import com.pays.pos.data.model.responseModel.OnlineOrderResponseModel
-import com.pays.pos.data.model.responseModel.OpenOrderResponse
-import com.pays.pos.data.model.responseModel.PrinterResponse
 import com.pays.pos.data.model.responseModel.employeeTipSummary.EmployeeTipSummaryResponse
 import com.pays.pos.data.model.responseModel.report.KeyValue
 import com.pays.pos.data.remote.Constants
@@ -28,6 +19,7 @@ import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
+import com.pays.pos.data.model.responseModel.*
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
 
@@ -879,12 +871,12 @@ fun addCreditCardBreakDownEODP(builder: Printer): Printer {
 fun addCreditCardBreakDown() {
 
 
-try{
-    PrintSunmiUtils.orderTime("CardName" + repeat(" ", 20) + "Tip" + repeat(" ", 11) + "Amount")
+    try {
+        PrintSunmiUtils.orderTime("CardName" + repeat(" ", 20) + "Tip" + repeat(" ", 11) + "Amount")
 
-}catch (e:java.lang.Exception){
+    } catch (e: java.lang.Exception) {
 
-}
+    }
 }
 
 fun addCreditCardBreakDownInner() {
@@ -2324,6 +2316,92 @@ fun addOrdersForKitchenOnlineOrder(
 }
 
 
+fun addOrdersForKitchenOnlineOrderKiosk(
+    builder: Builder,
+    list: List<KioskOrderResponse.Data.OrderItems>,
+    fontSizeH: Int = 1,
+    fontSizeW: Int = 1,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
+): Builder {
+    for (i in 0 until list.size) {
+        printerCat?.forEach {
+            if (it.id == list[i].categoryId && it.printerEnable && it.categoryActive) {
+
+                val obj = list.get(i)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_C)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(obj.quantity.toString() + " " + obj.itemName?.uppercase())
+
+                if (obj.orderItemModifiers.isNotEmpty()) {
+                    for (j in 0 until obj.orderItemModifiers.size) {
+                        val modifierObj = obj.orderItemModifiers.get(j)
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_C)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_2
+                        )
+                        //builder.addTextPosition(1)
+/*
+Modifiers are not coming from server, once Urmit adds the modifiers then we will uncomment the below code
+                        builder.addText(
+                            "  " + if (modifierObj.modifier_quantity == 1) {
+                                "   "
+                            } else {
+                                "" + modifierObj.modifier_quantity + "x "
+                            } + modifierObj.name.uppercase()
+                        )
+*/
+
+
+                    }
+                }
+                if (obj.note?.isNotEmpty() ?: false) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_C)
+                    //builder.addTextLineSpace(20)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText("  Note:" + obj.note)
+
+                }
+
+
+            }
+        }
+    }
+
+
+    return builder
+}
+
+
 fun addOrdersForKitchenOnlineOrderU220(
     builder: Printer,
     list: List<OnlineOrderResponseModel.Data.OrderItem>,
@@ -2401,6 +2479,85 @@ fun addOrdersForKitchenOnlineOrderU220(
     return builder
 }
 
+
+fun addOrdersForKitchenOnlineOrderU220Kiosk(
+    builder: Printer,
+    list: List<KioskOrderResponse.Data.OrderItems>,
+    fontSizeH: Int = 1,
+    fontSizeW: Int = 1,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
+): Printer {
+    for (i in 0 until list.size) {
+        printerCat?.forEach {
+            if (it.id == list[i].categoryId && it.printerEnable && it.categoryActive) {
+
+                val obj = list.get(i)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_C)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(obj.quantity.toString() + " " + obj.itemName?.uppercase())
+
+                if (obj.orderItemModifiers.isNotEmpty()) {
+                    for (j in 0 until obj.orderItemModifiers.size) {
+                        val modifierObj = obj.orderItemModifiers.get(j)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_C)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_2
+                        )
+                        //builder.addTextPosition(1)
+
+/*
+Modifiers are not coming from server, Once Urmit send's it, then we will uncomment the below code
+                        builder.addText(
+                            "  " + if (modifierObj.modifier_quantity == 1) {
+                                "   "
+                            } else {
+                                "" + modifierObj.modifier_quantity + "x "
+                            } + modifierObj.name.uppercase()
+                        )*/
+
+                    }
+                }
+                if (obj.note?.isNotEmpty()?:false) {
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_C)
+                    //builder.addTextLineSpace(20)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText("  Note:" + obj.note)
+                }
+            }
+        }
+    }
+
+
+    return builder
+}
+
 fun addOrdersForKitchenOnlineOrderSunmi(
     list: List<OnlineOrderResponseModel.Data.OrderItem>,
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
@@ -2424,6 +2581,37 @@ fun addOrdersForKitchenOnlineOrderSunmi(
                     }
                 }
                 if (obj.note.isNotEmpty()) {
+                    PrintSunmiUtils.orderTime("  Note:" + obj.note)
+                }
+            }
+        }
+    }
+}
+
+fun addOrdersForKitchenOnlineOrderSunmiKiosk(
+    list: List<KioskOrderResponse.Data.OrderItems>,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
+) {
+    for (i in 0 until list.size) {
+        printerCat?.forEach {
+            if (it.id == list[i].categoryId && it.printerEnable && it.categoryActive) {
+                val obj = list.get(i)
+                PrintSunmiUtils.orderTime(obj.quantity.toString() + " " + obj.itemName?.uppercase())
+/*
+Modifiers are not coming from server, Once Urmit send's it, then we will uncomment the below code
+                if (obj.orderItemModifiers.isNotEmpty()) {
+                    for (j in 0 until obj.orderItemModifiers.size) {
+                        val modifierObj = obj.orderItemModifiers.get(j)
+                        PrintSunmiUtils.orderTime(
+                            "  " + if (modifierObj.modifier_quantity == 1) {
+                                "   "
+                            } else {
+                                "" + modifierObj.modifier_quantity + "x "
+                            } + modifierObj.name.uppercase()
+                        )
+                    }
+                }*/
+                if (obj.note?.isNotEmpty()?:false) {
                     PrintSunmiUtils.orderTime("  Note:" + obj.note)
                 }
             }
@@ -2456,6 +2644,38 @@ fun addOrdersForKitchenOnlineOrderSunmiInner(
                     }
                 }
                 if (obj.note.isNotEmpty()) {
+                    PrintSunmiUtils.normalTextLarge("  Note:" + obj.note)
+                }
+            }
+        }
+    }
+}
+
+fun addOrdersForKitchenOnlineOrderSunmiInnerKiosk(
+    list: ArrayList<KioskOrderResponse.Data.OrderItems>,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
+) {
+
+    for (i in 0 until list.size) {
+        printerCat?.forEach {
+            if (it.id == list[i].categoryId && it.printerEnable && it.categoryActive) {
+                val obj = list.get(i)
+                PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName?.uppercase())
+
+                if (obj.orderItemModifiers.isNotEmpty()) {
+                    for (j in 0 until obj.orderItemModifiers.size) {
+                        val modifierObj = obj.orderItemModifiers.get(j)
+                        /* Modifiers are not coming from server, Once Urmit send's it, then we will uncomment the below code
+                         PrintSunmiUtils.normalTextLarge(
+                             "  " + if (modifierObj.modifier_quantity == 1) {
+                                 "   "
+                             } else {
+                                 "" + modifierObj.modifier_quantity + "x "
+                             } + modifierObj.name.uppercase()
+                         )*/
+                    }
+                }
+                if (obj.note?.isNotEmpty() ?: false) {
                     PrintSunmiUtils.normalTextLarge("  Note:" + obj.note)
                 }
             }
@@ -2842,9 +3062,9 @@ fun addOrdersForKitchen(
                         Builder.COLOR_1
                     )
 
-                    if (obj.isEdited){
-                        builder.addText("(U) "+obj.quantity.toString() + " " + obj.itemName.uppercase())
-                    }else{
+                    if (obj.isEdited) {
+                        builder.addText("(U) " + obj.quantity.toString() + " " + obj.itemName.uppercase())
+                    } else {
                         builder.addText(obj.quantity.toString() + " " + obj.itemName.uppercase())
                     }
 
@@ -2913,13 +3133,14 @@ fun addOrdersForKitchen(
 }
 
 
-fun addOrdersForStarKitchen(isEdited:Boolean, isOrderUpdate:Boolean,
+fun addOrdersForStarKitchen(
+    isEdited: Boolean, isOrderUpdate: Boolean,
     list: List<CreateOrderResponse.Data.Order.OrderItem>,
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null
 ): String {
 
     var items: String = ""
-    if (list.isNullOrEmpty()){
+    if (list.isNullOrEmpty()) {
         return items
     }
     for (i in 0 until list.size) {
@@ -2929,9 +3150,9 @@ fun addOrdersForStarKitchen(isEdited:Boolean, isOrderUpdate:Boolean,
                 if (it.categoryActive && it.printerEnable) {
 
                     val obj = list.get(i)
-                    if ((obj.isItemEdited && isEdited) || (obj.isItemEdited && isOrderUpdate)){
-                        items += "(U) "+obj.quantity.toString() + " " + obj.itemName.uppercase()
-                    }else{
+                    if ((obj.isItemEdited && isEdited) || (obj.isItemEdited && isOrderUpdate)) {
+                        items += "(U) " + obj.quantity.toString() + " " + obj.itemName.uppercase()
+                    } else {
                         items += obj.quantity.toString() + " " + obj.itemName.uppercase()
                     }
 
@@ -2970,14 +3191,13 @@ fun addOrdersForStarKitchen(isEdited:Boolean, isOrderUpdate:Boolean,
 }
 
 
-
 fun addOrdersForStarKitchen(
     list: List<CreateOrderResponse.Data.Order.OrderItem>,
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null
 ): String {
 
     var items: String = ""
-    if (list.isNullOrEmpty()){
+    if (list.isNullOrEmpty()) {
         return items
     }
     for (i in 0 until list.size) {
@@ -2987,9 +3207,9 @@ fun addOrdersForStarKitchen(
                 if (it.categoryActive && it.printerEnable) {
 
                     val obj = list.get(i)
-                    if (obj.isItemEdited){
-                        items += "(U) "+obj.quantity.toString() + " " + obj.itemName.uppercase()
-                    }else{
+                    if (obj.isItemEdited) {
+                        items += "(U) " + obj.quantity.toString() + " " + obj.itemName.uppercase()
+                    } else {
                         items += obj.quantity.toString() + " " + obj.itemName.uppercase()
                     }
 
@@ -3033,7 +3253,7 @@ fun addReprintOrdersForStarKitchen(
 ): String {
 
     var items: String = ""
-    if (list.isNullOrEmpty()){
+    if (list.isNullOrEmpty()) {
         return items
     }
     for (i in 0 until list.size) {
@@ -3060,6 +3280,61 @@ fun addReprintOrdersForStarKitchen(
                     }
 
                     if (obj.note.isNotEmpty()) {
+//                        builder.addTextLineSpace(30)
+                        items += " "
+                        items += "  Note:${obj.note}"
+                        items += "\n"
+                    }
+
+
+                }
+            }
+        }
+
+
+    }
+
+
+    return items
+}
+
+
+fun addReprintOrdersForStarKitchenKiosk(
+    list: List<KioskOrderResponse.Data.OrderItems>,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null
+): String {
+
+    var items: String = ""
+    if (list.isNullOrEmpty()) {
+        return items
+    }
+    for (i in 0 until list.size) {
+        printerCat?.forEach {
+            Log.e("PrinterReceipt", "checkPrinterItemN:   ${list.get(i).itemName}")
+            if (it?.id == list[i].categoryId) {
+                if (it?.categoryActive?:false && it?.printerEnable?:false) {
+
+                    val obj = list.get(i)
+                    items += obj.quantity.toString() + " " + obj.itemName?.uppercase()
+                    items += "\n"
+                    /*
+                    Modifiers are not coming from server, once Urmit adds the modifiers then we will uncomment the below code
+
+                    if (obj.orderItemModifiers.isNotEmpty()) {
+                        for (j in 0 until obj.orderItemModifiers.size) {
+                            val modifierObj = obj.orderItemModifiers.get(j)
+                            items += " "
+                            items += " " + if (modifierObj.modifier_quantity == 1) {
+                                " "
+                            } else {
+                                "" + modifierObj.modifier_quantity + "x "
+                            } + modifierObj.name.uppercase()
+
+                            items += "\n"
+                        }
+                    }
+*/
+                    if (obj.note?.isNotEmpty() ?: false) {
 //                        builder.addTextLineSpace(30)
                         items += " "
                         items += "  Note:${obj.note}"
@@ -3106,9 +3381,9 @@ fun addOrdersForKitchenU220(
                         Builder.COLOR_1
                     )
 
-                    if (obj.isEdited){
-                        builder.addText("(U) "+obj.quantity.toString() + " " + obj.itemName.uppercase())
-                    }else{
+                    if (obj.isEdited) {
+                        builder.addText("(U) " + obj.quantity.toString() + " " + obj.itemName.uppercase())
+                    } else {
                         builder.addText(obj.quantity.toString() + " " + obj.itemName.uppercase())
                     }
 
@@ -3174,7 +3449,7 @@ fun addOrdersForKitchenU220(
 
 
 fun addOrdersForKitchen(
-    isEdited:Boolean,isOrderUpdate:Boolean,
+    isEdited: Boolean, isOrderUpdate: Boolean,
     list: List<CreateOrderResponse.Data.Order.OrderItem>,
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
 ) {
@@ -3186,10 +3461,9 @@ fun addOrdersForKitchen(
                 val obj = list.get(i)
 
 
-                if ((obj.isItemEdited && isEdited) || (obj.isItemEdited && isOrderUpdate)){
-                    PrintSunmiUtils.orderTime("(U)"+obj.quantity.toString() + " " + obj.itemName.uppercase())
-                }
-                else{
+                if ((obj.isItemEdited && isEdited) || (obj.isItemEdited && isOrderUpdate)) {
+                    PrintSunmiUtils.orderTime("(U)" + obj.quantity.toString() + " " + obj.itemName.uppercase())
+                } else {
                     PrintSunmiUtils.orderTime(obj.quantity.toString() + " " + obj.itemName.uppercase())
                 }
 
@@ -3233,10 +3507,9 @@ fun addOrdersForKitchen(
                 val obj = list.get(i)
 
 
-                if (obj.isItemEdited){
-                    PrintSunmiUtils.orderTime("(U)"+obj.quantity.toString() + " " + obj.itemName.uppercase())
-                }
-                else{
+                if (obj.isItemEdited) {
+                    PrintSunmiUtils.orderTime("(U)" + obj.quantity.toString() + " " + obj.itemName.uppercase())
+                } else {
                     PrintSunmiUtils.orderTime(obj.quantity.toString() + " " + obj.itemName.uppercase())
                 }
 
@@ -3503,9 +3776,9 @@ fun addOrdersForKitchenInner(
 
                 val obj = list.get(i)
 
-                if (obj.isItemEdited){
-                    PrintSunmiUtils.normalTextLarge("(U)"+obj.quantity.toString() + " " + obj.itemName.uppercase())
-                }else{
+                if (obj.isItemEdited) {
+                    PrintSunmiUtils.normalTextLarge("(U)" + obj.quantity.toString() + " " + obj.itemName.uppercase())
+                } else {
                     PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName.uppercase())
                 }
 
@@ -3537,7 +3810,7 @@ fun addOrdersForKitchenInner(
 
 
 fun addOrdersForKitchenInner(
-    isEdited: Boolean,isOrderUpdate: Boolean,
+    isEdited: Boolean, isOrderUpdate: Boolean,
     list: List<CreateOrderResponse.Data.Order.OrderItem>,
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
 ) {
@@ -3548,9 +3821,9 @@ fun addOrdersForKitchenInner(
 
                 val obj = list.get(i)
 
-                if ((obj.isItemEdited && isEdited) || (obj.isItemEdited && isOrderUpdate)){
-                    PrintSunmiUtils.normalTextLarge("(U)"+obj.quantity.toString() + " " + obj.itemName.uppercase())
-                }else{
+                if ((obj.isItemEdited && isEdited) || (obj.isItemEdited && isOrderUpdate)) {
+                    PrintSunmiUtils.normalTextLarge("(U)" + obj.quantity.toString() + " " + obj.itemName.uppercase())
+                } else {
                     PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName.uppercase())
                 }
 

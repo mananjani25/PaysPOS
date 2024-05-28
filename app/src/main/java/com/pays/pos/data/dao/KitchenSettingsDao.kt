@@ -16,6 +16,9 @@ interface KitchenSettingsDao {
     @get:Query("select * from TbKitchenSettings")
     val getKitchenSettings: LiveData<GetKitchenReceiptSettingsResponse.Data>
 
+    @Query("select * from TbKitchenSettings")
+    suspend fun getKitchenSettingsNormalData(): GetKitchenReceiptSettingsResponse.Data
+
     @Query("DELETE FROM TbKitchenSettings")
     suspend fun delete()
 }
