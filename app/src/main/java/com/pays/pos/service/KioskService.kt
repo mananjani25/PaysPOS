@@ -191,7 +191,6 @@ class KioskService : Service(), StatusChangeEventListener {
                                     KioskOrderResponse::class.java
                                 )
                             )
-
                         }
                     },
                     object : com.android.volley.Response.ErrorListener {
@@ -249,9 +248,7 @@ class KioskService : Service(), StatusChangeEventListener {
                 }
             }
 
-            pos.inc()
-
-            printKitchenReceipt(kitchenList, createOrderResponse, pos)
+            printKitchenReceipt(kitchenList, createOrderResponse, pos.inc())
         }
     }
 
@@ -259,6 +256,7 @@ class KioskService : Service(), StatusChangeEventListener {
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         orderData: KioskOrderResponse
     ) {
+        Log.d("initKitchenPrinter","initKitchenPrinter")
         if (data.name.startsWith(Constants.SUNMI_PRINTER, true)) {
 
             try {
@@ -300,14 +298,16 @@ class KioskService : Service(), StatusChangeEventListener {
                 generateKitchenReceiptSunmi(data, orderData)
             }
 
-        } else if (data.name.startsWith(Constants.SUNMI_INNER_PRINTER, true)) {
+        }
+        else if (data.name.startsWith(Constants.SUNMI_INNER_PRINTER, true)) {
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(applicationContext)
             CoroutineScope(Dispatchers.IO).launch {
                 delay(100)
                 setServiceForKitchen(data, orderData)
             }
-        } else if (data.name.contains("TSP", ignoreCase = true)) {
+        }
+        else if (data.name.contains("TSP", ignoreCase = true)) {
             settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
             printer = StarPrinter(settings, applicationContext)
 
@@ -509,7 +509,7 @@ class KioskService : Service(), StatusChangeEventListener {
 
                     printer.openAsync().await()
                     printer.printAsync(commands).await()
-                    
+
 
 //                val jobSettings = StarSpoolJobSettings(true, 30, "Print from Android")
 
@@ -524,7 +524,8 @@ class KioskService : Service(), StatusChangeEventListener {
                 }
             }
 
-        } else {
+        }
+        else {
 
             if (!data.name.substring(0, 6).toString().lowercase()
                     .contains("TM-m".lowercase())
@@ -588,8 +589,8 @@ class KioskService : Service(), StatusChangeEventListener {
                     /* if (printer != null) {
                          printer.setStatusChangeEventCallback(this)
                          printer.setBatteryStatusChangeEventCallback(this)
-                     }*/
-
+                     }
+*/
 
                     val enabled = Print.FALSE
 
@@ -629,7 +630,6 @@ class KioskService : Service(), StatusChangeEventListener {
             }
 
         }
-
     }
 
 
