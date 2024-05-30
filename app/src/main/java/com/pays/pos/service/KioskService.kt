@@ -137,12 +137,26 @@ class KioskService : Service(), StatusChangeEventListener {
 
             }?.onReceived {
                 Log.e("KioskService", "onReceived")
-                if (it.asJsonObject.has("location_id")) {
+                /*if (it.asJsonObject.has("location_id")) {
                     if ((PrefProvider(baseContext).getLocationId() == it.asJsonObject.get("location_id").asInt) && (it.asJsonObject.get(
                             "new_order"
                         ).toString().equals("true", ignoreCase = true))
                     ) {
                         getOrderFromServer(it.asJsonObject.get("order_id").asInt)
+                    }
+                }*/
+                if (PrefProvider(applicationContext).getValueboolean(
+                        Constants.IS_MASTER_TERMINAL,
+                        false
+                    )
+                ) {
+                    if (it.asJsonObject.has("location_id")) {
+                        if ((PrefProvider(baseContext).getLocationId() == it.asJsonObject.get("location_id").asInt) && (it.asJsonObject.get(
+                                "new_order"
+                            ).toString().equals("true", ignoreCase = true))
+                        ) {
+                            getOrderFromServer(it.asJsonObject.get("order_id").asInt)
+                        }
                     }
                 }
 
