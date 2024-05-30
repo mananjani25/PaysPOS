@@ -39,6 +39,7 @@ import com.pays.pos.utils.*
 import com.pays.pos.utils.InternetUtils.isInternetAvailable
 import com.pays.pos.utils.printer.PrinterClass
 import com.starmicronics.stario10.InterfaceType
+import com.starmicronics.stario10.PrinterDelegate
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
 import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
@@ -2097,11 +2098,11 @@ class KioskService : Service(), StatusChangeEventListener {
                     if (orderData.data?.customer?.addresses?.isNotEmpty() == true) {
 
 
-                        /*   PrintSunmiUtils.customerAddress(
+                           PrintSunmiUtils.customerAddress(
                                orderData.data?.customer?.addresses?.get(
                                    orderData.data?.customer?.addresses?.size?.minus(1)?:0
-                               )
-                           )*/
+                               )?:""
+                           )
                     }
                 }
 

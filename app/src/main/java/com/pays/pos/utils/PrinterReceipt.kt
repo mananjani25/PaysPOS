@@ -2360,16 +2360,14 @@ fun addOrdersForKitchenOnlineOrderKiosk(
                             Builder.COLOR_2
                         )
                         //builder.addTextPosition(1)
-/*
-Modifiers are not coming from server, once Urmit adds the modifiers then we will uncomment the below code
+//Modifiers are not coming from server, once Urmit adds the modifiers then we will uncomment the below code
                         builder.addText(
-                            "  " + if (modifierObj.modifier_quantity == 1) {
+                            "  " + if (modifierObj.modifierQuantity == 1) {
                                 "   "
                             } else {
-                                "" + modifierObj.modifier_quantity + "x "
-                            } + modifierObj.name.uppercase()
+                                "" + modifierObj.modifierQuantity + "x "
+                            } + modifierObj.name?.uppercase()
                         )
-*/
 
 
                     }
@@ -2523,15 +2521,14 @@ fun addOrdersForKitchenOnlineOrderU220Kiosk(
                         )
                         //builder.addTextPosition(1)
 
-/*
-Modifiers are not coming from server, Once Urmit send's it, then we will uncomment the below code
+//Modifiers are not coming from server, Once Urmit send's it, then we will uncomment the below code
                         builder.addText(
-                            "  " + if (modifierObj.modifier_quantity == 1) {
+                            "  " + if (modifierObj.modifierQuantity == 1) {
                                 "   "
                             } else {
-                                "" + modifierObj.modifier_quantity + "x "
-                            } + modifierObj.name.uppercase()
-                        )*/
+                                "" + modifierObj.modifierQuantity + "x "
+                            } + modifierObj.name?.uppercase()
+                        )
 
                     }
                 }
@@ -2597,20 +2594,19 @@ fun addOrdersForKitchenOnlineOrderSunmiKiosk(
             if (it.id == list[i].categoryId && it.printerEnable && it.categoryActive) {
                 val obj = list.get(i)
                 PrintSunmiUtils.orderTime(obj.quantity.toString() + " " + obj.itemName?.uppercase())
-/*
-Modifiers are not coming from server, Once Urmit send's it, then we will uncomment the below code
+//Modifiers are not coming from server, Once Urmit send's it, then we will uncomment the below code
                 if (obj.orderItemModifiers.isNotEmpty()) {
                     for (j in 0 until obj.orderItemModifiers.size) {
                         val modifierObj = obj.orderItemModifiers.get(j)
                         PrintSunmiUtils.orderTime(
-                            "  " + if (modifierObj.modifier_quantity == 1) {
+                            "  " + if (modifierObj.modifierQuantity == 1) {
                                 "   "
                             } else {
-                                "" + modifierObj.modifier_quantity + "x "
-                            } + modifierObj.name.uppercase()
+                                "" + modifierObj.modifierQuantity + "x "
+                            } + modifierObj.name?.uppercase()
                         )
                     }
-                }*/
+                }
                 if (obj.note?.isNotEmpty()?:false) {
                     PrintSunmiUtils.orderTime("  Note:" + obj.note)
                 }
@@ -2665,14 +2661,14 @@ fun addOrdersForKitchenOnlineOrderSunmiInnerKiosk(
                 if (obj.orderItemModifiers.isNotEmpty()) {
                     for (j in 0 until obj.orderItemModifiers.size) {
                         val modifierObj = obj.orderItemModifiers.get(j)
-                        /* Modifiers are not coming from server, Once Urmit send's it, then we will uncomment the below code
+//                         Modifiers are not coming from server, Once Urmit send's it, then we will uncomment the below code
                          PrintSunmiUtils.normalTextLarge(
-                             "  " + if (modifierObj.modifier_quantity == 1) {
+                             "  " + if (modifierObj.modifierQuantity == 1) {
                                  "   "
                              } else {
-                                 "" + modifierObj.modifier_quantity + "x "
-                             } + modifierObj.name.uppercase()
-                         )*/
+                                 "" + modifierObj.modifierQuantity + "x "
+                             } + modifierObj.name?.uppercase()
+                         )
                     }
                 }
                 if (obj.note?.isNotEmpty() ?: false) {
@@ -3317,23 +3313,21 @@ fun addReprintOrdersForStarKitchenKiosk(
                     val obj = list.get(i)
                     items += obj.quantity.toString() + " " + obj.itemName?.uppercase()
                     items += "\n"
-                    /*
-                    Modifiers are not coming from server, once Urmit adds the modifiers then we will uncomment the below code
+//                    Modifiers are not coming from server, once Urmit adds the modifiers then we will uncomment the below code
 
                     if (obj.orderItemModifiers.isNotEmpty()) {
                         for (j in 0 until obj.orderItemModifiers.size) {
                             val modifierObj = obj.orderItemModifiers.get(j)
                             items += " "
-                            items += " " + if (modifierObj.modifier_quantity == 1) {
+                            items += " " + if (modifierObj.modifierQuantity == 1) {
                                 " "
                             } else {
-                                "" + modifierObj.modifier_quantity + "x "
-                            } + modifierObj.name.uppercase()
+                                "" + modifierObj.modifierQuantity + "x "
+                            } + modifierObj.name?.uppercase()
 
                             items += "\n"
                         }
                     }
-*/
                     if (obj.note?.isNotEmpty() ?: false) {
 //                        builder.addTextLineSpace(30)
                         items += " "
