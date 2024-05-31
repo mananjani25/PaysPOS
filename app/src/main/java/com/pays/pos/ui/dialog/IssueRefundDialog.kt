@@ -348,7 +348,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             AlertUtils.showCustomAlertWithListenerWithOKCancel(
                 requireContext(),
                 "Transaction can be refunded once.",
-                "Refund"
+                getString(android.R.string.ok)
             ) { _, _ ->
                 if (isItem) {
                     if (TextUtils.isEmpty(binding.edtAmount.text.toString())) {
