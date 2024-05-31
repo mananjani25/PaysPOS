@@ -363,13 +363,13 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                             searchList
                         )
                 } catch (e: Exception) {
-                    searchAdapter =
+                    /*searchAdapter =
                         CategorySearchAdapter(
                             activity as AppCompatActivity,
                             requireContext(),
                             R.layout.search_category_item,
                             searchList
-                        )
+                        )*/
                 }
                 edtSearch?.threshold = 2
                 edtSearch?.setAdapter(searchAdapter)

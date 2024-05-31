@@ -2655,26 +2655,127 @@ class CartFragment(
 
         }
 
+//        binding.tvPayNow.setOnClickListener(object : View.OnClickListener {
+//            override fun onClick(p0: View?) {
+//
+//                if(InternetUtils.isInternetAvailable(requireContext().applicationContext)) {
+//
+//                runBlocking {
+//
+//                    lifecycleScope.launch {
+//                        viewModel.addCartModelBackup(Gson().toJson(viewModel.cartModel).toString())
+//                    }
+//
+//                    delay(500)
+//                    if (prefProvider.getValue(ORDER_TYPE, "") == OPEN_ORDER) {
+//
+//                        prefProvider.setValueboolean(OPEN_ORDER_DIRECT_PAY, true)
+//                    }
+//                    prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+//
+////
+////
+////                /*Added By Rahul - Move the current items to the new preference key - START*/
+//                    prefProvider.setValue(
+//                        Constants.OPEN_ORDER_ITEMS_OLD,
+//                        prefProvider.getValue(Constants.OPEN_ORDER_ITEMS, "")
+//                    )
+////                /*Move the current items to the new preference key - END*/
+//
+//                    if (prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false)) {
+//                        prefProvider.setValue(
+//                            Constants.OPEN_ORDER_ITEMS,
+//                            Gson().toJson(cartItemsAdapter.currentList)
+//                        )
+//                    }
+//
+//                    /*insert into db if the cart model is not present in the db*/
+//                    var cartJob = CoroutineScope(Dispatchers.IO).launch {
+//                        delay(1000)
+//                        try {
+//                            var currentCartModel: CartModel? =
+//                                viewModel.getCartModelFromID(viewModel.cartModel!!.cartId)
+//                            if (currentCartModel == null) {
+//                                viewModel.createEmptyCart(viewModel.cartModel!!)
+//                            }
+//                        } catch (e: Exception) {
+//
+//                        }
+//                    }
+//                    cartJob.join()
+//                    if (cartItemsAdapter.currentList.isNotEmpty()) {
+//                        prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
+//                        prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+//                        prefProvider.setValue("PaidAmount", "")
+//                        prefProvider.setValue(WHOLE_AMOUNT, "")
+//                        prefProvider.setValueInt("cardCount", 0)
+//                        prefProvider.setValue(Constants.SUB_TOTAL, "")
+//                        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+//                        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+//                        prefProvider.setValue(Constants.TIP, "")
+//                        prefProvider.setValue(Constants.TAX_CHARGE, "")
+//                        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+//                        viewModel.setTipAmount(0.0)
+//                        if (isOrderUpdate) {
+//                            var bundle: Bundle = Bundle()
+//                            bundle.putInt("orderId", orderId!!)
+//                            bundle.putInt("paymentId", paymentId!!)
+//                            bundle.putString("paymentOfflineId", paymentOfflineId)
+//                            bundle.putString("orderOfflineId", orderOfflineId)
+//                            bundle.putString(
+//                                Constants.OLD_ITEM,
+//                                prefProvider.getValue(Constants.OLD_ITEM, "")
+//                            )
+//                            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+//                                prefProvider.setValueboolean(IS_FROM_ALL_ORDER, false)
+//                                clearObserver()
+//                                findNavController().navigate(
+//                                    R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment,
+//                                    bundle
+//                                )
+//                            }
+//                        } else {
+//                            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+//                                prefProvider.setValueboolean(IS_FROM_ALL_ORDER, false)
+//                                clearObserver()
+//                                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
+//                            }
+//                        }
+//                    } else {
+//                        AlertUtils.showCustomAlertWithListenerWithOK(
+//                            requireContext(),
+//                            resources.getString(R.string.please_add_Atleast_one_item_in_cart)
+//                        ) { _, _ ->
+//                        }
+//                    }
+//
+//                }
+//                }else {
+//                    AlertUtils.showCustomAlert(requireContext(), "Please check your Network Connectivity.")
+//                }
+//
+//            }
+//
+//        })
+
         binding.tvPayNow.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
 
-                if(InternetUtils.isInternetAvailable(requireContext().applicationContext)) {
-
-                runBlocking {
+                if (InternetUtils.isInternetAvailable(requireContext().applicationContext)) {
 
                     lifecycleScope.launch {
                         viewModel.addCartModelBackup(Gson().toJson(viewModel.cartModel).toString())
                     }
 
-                    delay(500)
+//                    runBlocking {
+
+//                    delay(500)
                     if (prefProvider.getValue(ORDER_TYPE, "") == OPEN_ORDER) {
 
                         prefProvider.setValueboolean(OPEN_ORDER_DIRECT_PAY, true)
                     }
                     prefProvider.setValueboolean(Constants.TIP_ADDED, false)
 
-//
-//
 //                /*Added By Rahul - Move the current items to the new preference key - START*/
                     prefProvider.setValue(
                         Constants.OPEN_ORDER_ITEMS_OLD,
@@ -2690,8 +2791,7 @@ class CartFragment(
                     }
 
                     /*insert into db if the cart model is not present in the db*/
-                    var cartJob = CoroutineScope(Dispatchers.IO).launch {
-                        delay(1000)
+                    CoroutineScope(Dispatchers.IO).launch {
                         try {
                             var currentCartModel: CartModel? =
                                 viewModel.getCartModelFromID(viewModel.cartModel!!.cartId)
@@ -2702,7 +2802,7 @@ class CartFragment(
 
                         }
                     }
-                    cartJob.join()
+
                     if (cartItemsAdapter.currentList.isNotEmpty()) {
                         prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
                         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
@@ -2749,9 +2849,12 @@ class CartFragment(
                         }
                     }
 
-                }
-                }else {
-                    AlertUtils.showCustomAlert(requireContext(), "Please check your Network Connectivity.")
+//                    }
+                } else {
+                    AlertUtils.showCustomAlert(
+                        requireContext(),
+                        "Please check your Network Connectivity."
+                    )
                 }
 
             }

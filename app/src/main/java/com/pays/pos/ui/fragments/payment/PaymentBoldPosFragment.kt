@@ -408,6 +408,11 @@ class PaymentBoldPosFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         LogUtil.logE(TAG, "onPause")
+
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
         if (!prefProvider.getValueboolean(SPLIT_ENABLE, false)) {
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 removeCustomer()
@@ -423,7 +428,6 @@ class PaymentBoldPosFragment : Fragment() {
                 }
             }
         }
-
 
     }
 
