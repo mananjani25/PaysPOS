@@ -3741,8 +3741,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
                     binding.drawerLayout.closeDrawer(GravityCompat.START)
                 } else {
-                    super.onBackPressed()
-
                     if (navController!!.currentDestination?.id?.equals(R.id.dashboardCategoryBoldPOS) == true) {
                         if (doubleBackToExitPressedOnce) {
                             super.onBackPressed()
