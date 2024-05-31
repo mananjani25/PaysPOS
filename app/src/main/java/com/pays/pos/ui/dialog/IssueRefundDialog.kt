@@ -345,159 +345,189 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         }
 
         binding.txtDone.setOnClickListener {
-            if (isItem) {
-                if (TextUtils.isEmpty(binding.edtAmount.text.toString())) {
-                    AlertUtils.showCustomAlert(
-                        requireActivity(),
-                        getString(R.string.msg_amount_refund)
-                    )
-                } else {
-
-                  //  val totalAmountRefund = binding.edtAmount.text.toString().toDouble()
-
-                    refundData = RefundRequestModel().apply {
-                        paymentRefund = RefundRequestModel.PaymentRefund().apply {
-                            amount = subTotalPrice
-                            orderId = paymentOrderDetailsResponse.data.order_id
-                            paymentId = payment_id
-                            employeeId = paymentOrderDetailsResponse.data.employee_id
-                            terminalId = paymentOrderDetailsResponse.data.terminal_id
-                            taxRefunded = paymentOrderDetailsResponse.data.tax_amount
-                            tipsRefunded =
-                                if (paymentOrderDetailsResponse.data.payment_type == "Cash") 0.0 else paymentOrderDetailsResponse.data.tips
-                            serviceChargeRefunded =
-                                paymentOrderDetailsResponse.data.service_charge_amount
-                            cash_discount_or_surcharge_refunded =
-                                paymentOrderDetailsResponse.data.cash_discount_or_surcharge
-                            subtotal_refunded = paymentOrderDetailsResponse.data.sub_total
-                        }
-                    }
-
-
-                    transactionViewModel.orderItemAttribututes = null
-
-                    val refundAmount = binding.edtAmount.text.toString().toDouble()
-
-                    val bundle = Bundle().apply {
-                        putParcelable("refundData", refundData)
-                        putDouble("refundAmount", refundAmount)
-                        putString("pax_ref_num", paymentOrderDetailsResponse.data.ref_num)
-                        putString("pax_ecrref_num", paymentOrderDetailsResponse.data.ecr_ref_num)
-                        putString("pax_token", paymentOrderDetailsResponse.data.pax_transaction_token)
-                        putString("pax_ext_data", paymentOrderDetailsResponse.data.ext_data)
-                        putString("paymentType", paymentOrderDetailsResponse.data.payment_type)
-                        putString(
-                            "magensa_response_data",
-                            paymentOrderDetailsResponse.data.magensa_response_data
+            AlertUtils.showCustomAlertWithListenerWithOKCancel(
+                requireContext(),
+                "Transaction can be refunded once.",
+                "Refund"
+            ) { _, _ ->
+                if (isItem) {
+                    if (TextUtils.isEmpty(binding.edtAmount.text.toString())) {
+                        AlertUtils.showCustomAlert(
+                            requireActivity(),
+                            getString(R.string.msg_amount_refund)
                         )
+                    } else {
 
-                        if (paymentOrderDetailsResponse.data.order.order_type == "OnlineOrder" && paymentOrderDetailsResponse.data.pax_data!=null)  {
-                            /*Online order refund should pass a new parameter so that the next screen will detect the parameter and process the operation accordingly, because there are two processes
-                            * 1. PAX Gateway refund
-                            * 2. NAB Server POST API Call */
-                            putString("pax_data",paxData)
-                            putBoolean("requiredNABServerPostAPICall", requiredNABServerPostAPICall)
-                        }
+                        //  val totalAmountRefund = binding.edtAmount.text.toString().toDouble()
 
-                    }
-
-                    findNavController().navigate(
-                        R.id.action_issueRefundFragment_to_reasonForRefundDialog,
-                        bundle
-                    )
-                }
-            } else {
-
-                if (!checkIfSelectedItems()) {
-                    AlertUtils.showCustomAlert(requireActivity(), "Please Select Item To Refund")
-                } else {
-
-                    val ordersItemList =
-                        mutableListOf<RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute>()
-
-
-                    refundData = RefundRequestModel().apply {
-                        paymentRefund = RefundRequestModel.PaymentRefund().apply {
-                        refundItemListAdapter.selectedItemList().forEach { it ->
-
-                            amount = subTotalPrice
-                            orderId = paymentOrderDetailsResponse.data.order_id
-                            paymentId = payment_id
-                            employeeId = paymentOrderDetailsResponse.data.employee_id
-                            terminalId = paymentOrderDetailsResponse.data.terminal_id
-                            taxRefunded = paymentOrderDetailsResponse.data.tax_amount
-                            tipsRefunded =
-                                if (paymentOrderDetailsResponse.data.payment_type == "Cash") 0.0 else paymentOrderDetailsResponse.data.tips
-                            serviceChargeRefunded =
-                                paymentOrderDetailsResponse.data.service_charge_amount
-                            cash_discount_or_surcharge_refunded =
-                                paymentOrderDetailsResponse.data.cash_discount_or_surcharge
-                            subtotal_refunded = paymentOrderDetailsResponse.data.sub_total
-
-                            if (it.isChecked) {
-
-                                val order =
-                                    RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute()
-                                        .apply {
-
-                                            orderId = it.orderId
-                                            orderItemId = it.id
-                                            paymentId = payment_id
-                                            amount = it.totalPrice
-                                            quantity = it.quantity
-                                            refundType = 0
-                                            employeeId =
-                                                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                                        }
-
-                                ordersItemList.add(order)
-
-                                return@forEach
+                        refundData = RefundRequestModel().apply {
+                            paymentRefund = RefundRequestModel.PaymentRefund().apply {
+                                amount = subTotalPrice
+                                orderId = paymentOrderDetailsResponse.data.order_id
+                                paymentId = payment_id
+                                employeeId = paymentOrderDetailsResponse.data.employee_id
+                                terminalId = paymentOrderDetailsResponse.data.terminal_id
+                                taxRefunded = paymentOrderDetailsResponse.data.tax_amount
+                                tipsRefunded =
+                                    if (paymentOrderDetailsResponse.data.payment_type == "Cash") 0.0 else paymentOrderDetailsResponse.data.tips
+                                serviceChargeRefunded =
+                                    paymentOrderDetailsResponse.data.service_charge_amount
+                                cash_discount_or_surcharge_refunded =
+                                    paymentOrderDetailsResponse.data.cash_discount_or_surcharge
+                                subtotal_refunded = paymentOrderDetailsResponse.data.sub_total
                             }
                         }
-                    }
-                }
-                    refundData.paymentRefund?.orderItemRefundsAttributes = ordersItemList
-                    transactionViewModel.orderItemAttribututes = ordersItemList
 
 
-                    calculationOfItems()
-                    val bundle = Bundle().apply {
-                        putParcelable("refundData", refundData)
-                        //putString("orderItemRefundsAttributes", Gson().toJson(ordersItemList))
-                        putDouble("refundAmount", totalItemPrice)
-                        putString("pax_ref_num", paymentOrderDetailsResponse.data.ref_num)
-                        putString("pax_ecrref_num", paymentOrderDetailsResponse.data.ecr_ref_num)
-                        putString("pax_token", paymentOrderDetailsResponse.data.pax_transaction_token)
-                        putString("pax_ext_data", paymentOrderDetailsResponse.data.ext_data)
-                        putString("paymentType", paymentOrderDetailsResponse.data.payment_type)
-                        putString(
-                            "magensa_response_data",
-                            paymentOrderDetailsResponse.data.magensa_response_data
-                        )
-                        Log.d("subTotalPriceRefund", "::$totalItemPrice")
+                        transactionViewModel.orderItemAttribututes = null
 
+                        val refundAmount = binding.edtAmount.text.toString().toDouble()
 
-                        if (paymentOrderDetailsResponse.data.order.order_type == "OnlineOrder" && paymentOrderDetailsResponse.data.pax_data!=null)  {
-                            /*Online order refund should pass a new parameter so that the next screen will detect the parameter and process the operation accordingly, because there are two processes
-                            * 1. PAX Gateway refund
-                            * 2. NAB Server POST API Call */
-                            putString("pax_data",paxData)
-                            putBoolean("requiredNABServerPostAPICall", requiredNABServerPostAPICall)
+                        val bundle = Bundle().apply {
+                            putParcelable("refundData", refundData)
+                            putDouble("refundAmount", refundAmount)
+                            putString("pax_ref_num", paymentOrderDetailsResponse.data.ref_num)
+                            putString(
+                                "pax_ecrref_num",
+                                paymentOrderDetailsResponse.data.ecr_ref_num
+                            )
+                            putString(
+                                "pax_token",
+                                paymentOrderDetailsResponse.data.pax_transaction_token
+                            )
+                            putString("pax_ext_data", paymentOrderDetailsResponse.data.ext_data)
+                            putString("paymentType", paymentOrderDetailsResponse.data.payment_type)
+                            putString(
+                                "magensa_response_data",
+                                paymentOrderDetailsResponse.data.magensa_response_data
+                            )
+
+                            if (paymentOrderDetailsResponse.data.order.order_type == "OnlineOrder" && paymentOrderDetailsResponse.data.pax_data != null) {
+                                /*Online order refund should pass a new parameter so that the next screen will detect the parameter and process the operation accordingly, because there are two processes
+                                * 1. PAX Gateway refund
+                                * 2. NAB Server POST API Call */
+                                putString("pax_data", paxData)
+                                putBoolean(
+                                    "requiredNABServerPostAPICall",
+                                    requiredNABServerPostAPICall
+                                )
+                            }
+
                         }
+
+                        findNavController().navigate(
+                            R.id.action_issueRefundFragment_to_reasonForRefundDialog,
+                            bundle
+                        )
                     }
+                } else {
+
+                    if (!checkIfSelectedItems()) {
+                        AlertUtils.showCustomAlert(
+                            requireActivity(),
+                            "Please Select Item To Refund"
+                        )
+                    } else {
+
+                        val ordersItemList =
+                            mutableListOf<RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute>()
+
+
+                        refundData = RefundRequestModel().apply {
+                            paymentRefund = RefundRequestModel.PaymentRefund().apply {
+                                refundItemListAdapter.selectedItemList().forEach { it ->
+
+                                    amount = subTotalPrice
+                                    orderId = paymentOrderDetailsResponse.data.order_id
+                                    paymentId = payment_id
+                                    employeeId = paymentOrderDetailsResponse.data.employee_id
+                                    terminalId = paymentOrderDetailsResponse.data.terminal_id
+                                    taxRefunded = paymentOrderDetailsResponse.data.tax_amount
+                                    tipsRefunded =
+                                        if (paymentOrderDetailsResponse.data.payment_type == "Cash") 0.0 else paymentOrderDetailsResponse.data.tips
+                                    serviceChargeRefunded =
+                                        paymentOrderDetailsResponse.data.service_charge_amount
+                                    cash_discount_or_surcharge_refunded =
+                                        paymentOrderDetailsResponse.data.cash_discount_or_surcharge
+                                    subtotal_refunded = paymentOrderDetailsResponse.data.sub_total
+
+                                    if (it.isChecked) {
+
+                                        val order =
+                                            RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute()
+                                                .apply {
+
+                                                    orderId = it.orderId
+                                                    orderItemId = it.id
+                                                    paymentId = payment_id
+                                                    amount = it.totalPrice
+                                                    quantity = it.quantity
+                                                    refundType = 0
+                                                    employeeId =
+                                                        prefProvider.getValueInt(
+                                                            Constants.EMPLOYEE_ID,
+                                                            0
+                                                        )
+                                                }
+
+                                        ordersItemList.add(order)
+
+                                        return@forEach
+                                    }
+                                }
+                            }
+                        }
+                        refundData.paymentRefund?.orderItemRefundsAttributes = ordersItemList
+                        transactionViewModel.orderItemAttribututes = ordersItemList
+
+
+                        calculationOfItems()
+                        val bundle = Bundle().apply {
+                            putParcelable("refundData", refundData)
+                            //putString("orderItemRefundsAttributes", Gson().toJson(ordersItemList))
+                            putDouble("refundAmount", totalItemPrice)
+                            putString("pax_ref_num", paymentOrderDetailsResponse.data.ref_num)
+                            putString(
+                                "pax_ecrref_num",
+                                paymentOrderDetailsResponse.data.ecr_ref_num
+                            )
+                            putString(
+                                "pax_token",
+                                paymentOrderDetailsResponse.data.pax_transaction_token
+                            )
+                            putString("pax_ext_data", paymentOrderDetailsResponse.data.ext_data)
+                            putString("paymentType", paymentOrderDetailsResponse.data.payment_type)
+                            putString(
+                                "magensa_response_data",
+                                paymentOrderDetailsResponse.data.magensa_response_data
+                            )
+                            Log.d("subTotalPriceRefund", "::$totalItemPrice")
+
+
+                            if (paymentOrderDetailsResponse.data.order.order_type == "OnlineOrder" && paymentOrderDetailsResponse.data.pax_data != null) {
+                                /*Online order refund should pass a new parameter so that the next screen will detect the parameter and process the operation accordingly, because there are two processes
+                                * 1. PAX Gateway refund
+                                * 2. NAB Server POST API Call */
+                                putString("pax_data", paxData)
+                                putBoolean(
+                                    "requiredNABServerPostAPICall",
+                                    requiredNABServerPostAPICall
+                                )
+                            }
+                        }
 
 
 
 
 
-                    findNavController().navigate(
-                        R.id.action_issueRefundFragment_to_reasonForRefundDialog,
-                        bundle
-                    )
+                        findNavController().navigate(
+                            R.id.action_issueRefundFragment_to_reasonForRefundDialog,
+                            bundle
+                        )
+                    }
                 }
-            }
 
+            }
         }
 
         binding.imgBack.setOnClickListener {

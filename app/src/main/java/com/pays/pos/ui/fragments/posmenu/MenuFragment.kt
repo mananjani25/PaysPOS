@@ -320,6 +320,13 @@ class MenuFragment : DialogFragment() {
             alert("", "Are you sure you want to Logout?") {
                 this.positiveButton("Logout") {
 
+                    dashboardViewModel.apply {
+                        clearCartModelBackup()
+                        deleteCart()
+                        currentCartItems = arrayListOf()
+                        duplicateCurrentCartItem = arrayListOf()
+                    }
+
                     if (prefProvider.getValue(Constants.ORDER_TYPE, "").isNotEmpty()) {
                         viewLifecycleOwner.lifecycleScope.launch {
                             viewModel.decreaseOnGoingOrderCounter(true)

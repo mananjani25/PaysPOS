@@ -1886,7 +1886,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             cloudPrinter.setBoldMode(false)
             cloudPrinter.setCharacterSize(1, 1)
             cloudPrinter.setAlignment(AlignStyle.LEFT)
-            cloudPrinter.printText("Employee:" + obj.employeeName)
+            if (obj.employeeName != null) {
+                cloudPrinter.printText("Employee:" + obj.employeeName)
+            }
 
             cloudPrinter.setCharacterSize(1, 1)
 
