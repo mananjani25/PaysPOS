@@ -16,6 +16,7 @@ import com.pays.pos.R
 import com.pays.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.ALL_ORDER_TAB
+import com.pays.pos.data.remote.Constants.KIOSK_OPEN_ORDER
 import com.pays.pos.data.remote.Constants.ONLINE_ORDER_TAB
 import com.pays.pos.data.remote.Constants.OPEN_ORDER_TAB
 import com.pays.pos.data.remote.Constants.PHONE_ORDER_TAB
@@ -271,7 +272,7 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
 
                 if (orderedTab == OPEN_ORDER_TAB || orderedTab == PHONE_ORDER_TAB
                     || item.orderType == OPEN_ORDER_TAB || item.orderType == PHONE_ORDER_TAB
-                ) {
+                    || item.orderType == KIOSK_OPEN_ORDER) {
                     if (item.paymentStatus == "Paid" || item.paymentStatus == "Cancelled") {
                         binding.lnrPhoneAndOnlineButtons.gone()
                     } else {

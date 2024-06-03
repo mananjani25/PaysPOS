@@ -121,6 +121,7 @@ import com.pays.pos.utils.statusUtils.Status
 import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
+import com.starmicronics.stario10.StarSpoolJobSettings
 import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
 import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
 import com.starmicronics.stario10.starxpandcommand.StarXpandCommandBuilder
@@ -6644,16 +6645,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         clearObserver()
                         prefProvider.setValueboolean(ORDER_COMPLETED, true)
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM,"")
-                        prefProvider.setValue(Constants.OLD_ITEM,"")
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE,"")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
+                        prefProvider.setValue(Constants.OLD_ITEM, "")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
                     } else {
 
                         clearObserver()
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM,"")
-                        prefProvider.setValue(Constants.OLD_ITEM,"")
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE,"")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
+                        prefProvider.setValue(Constants.OLD_ITEM, "")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                     }
 
@@ -6666,9 +6667,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (prefProvider.getValueboolean(LOCK_SCREEN_TRANSACTION, false)) {
 
 
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM,"")
-                        prefProvider.setValue(Constants.OLD_ITEM,"")
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE,"")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
+                        prefProvider.setValue(Constants.OLD_ITEM, "")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
 
                         clearObserver()
                         prefProvider.setValueboolean(ORDER_COMPLETED, true)
@@ -6676,9 +6677,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     } else {
 
 
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM,"")
-                        prefProvider.setValue(Constants.OLD_ITEM,"")
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE,"")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
+                        prefProvider.setValue(Constants.OLD_ITEM, "")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
 
                         clearObserver()
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
@@ -9819,7 +9820,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             actionFeedLine(1)
 
-                            if(receiptModel!!.order.orderTypeName == Constants.PHONE_ORDER_) {
+                            if (receiptModel!!.order.orderTypeName == Constants.PHONE_ORDER_) {
                                 add(
                                     PrinterBuilder()
                                         .styleBold(true)
@@ -9984,7 +9985,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         printer.openAsync().await()
 
-//                val jobSettings = StarSpoolJobSettings(true, 30, "Print from Android")
+//                        val jobSettings = StarSpoolJobSettings(true, 30, "Print from Android")
 
                         printer.printAsync(commands).await()
 

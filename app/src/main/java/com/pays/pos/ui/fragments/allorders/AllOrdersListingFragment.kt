@@ -74,6 +74,7 @@ import com.pays.pos.utils.statusUtils.Status
 import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
+import com.starmicronics.stario10.StarSpoolJobSettings
 import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
 import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
 import com.starmicronics.stario10.starxpandcommand.StarXpandCommandBuilder
@@ -163,7 +164,7 @@ class AllOrdersListingFragment(
 
                 adapter.orderList.clear()
                 adapter.filterList.clear()
-                    getAllOrders()
+                getAllOrders()
             }
 
         }
@@ -204,7 +205,7 @@ class AllOrdersListingFragment(
         ) { requestKey: String, bundle: Bundle ->
             var time = bundle.getInt("time")
             var order_id = bundle.getInt("order_id")
-            removedPos=order_id
+            removedPos = order_id
             acceptedAndDeclineOrder("", time, order_id, true)
         }
 
@@ -294,7 +295,7 @@ class AllOrdersListingFragment(
         is_accepted: Boolean
     ) {
         if (is_accepted) {
-                makeAcceptedDeclinedServerCall(time, orderId, is_accepted)
+            makeAcceptedDeclinedServerCall(time, orderId, is_accepted)
         } else {
             if (pax_data.isNotEmpty()) {
                 var CUST_NBR = ""
@@ -483,22 +484,22 @@ class AllOrdersListingFragment(
                     Status.SUCCESS -> {
                         getAllOrders()
 //                        if (!is_accepted) {
-                            if (removedPos > 0) {
-                             /*   val orderListIndex = adapter.orderList.indexOfFirst{
-                                    it.id == removedPos
-                                }
+                        if (removedPos > 0) {
+                            /*   val orderListIndex = adapter.orderList.indexOfFirst{
+                                   it.id == removedPos
+                               }
 */
 
-                                ordersViewModel.refreshOrderCount.value = true
+                            ordersViewModel.refreshOrderCount.value = true
 
-                                val filterListIndex = adapter.filterList.indexOfFirst{
-                                    it.id == removedPos
-                                }
-                                adapter.filterList.removeAt(filterListIndex)
-
-                                adapter.notifyDataSetChanged()
-                                removedPos = 0
+                            val filterListIndex = adapter.filterList.indexOfFirst {
+                                it.id == removedPos
                             }
+                            adapter.filterList.removeAt(filterListIndex)
+
+                            adapter.notifyDataSetChanged()
+                            removedPos = 0
+                        }
 //                        }
 
                         ProgressUtils.dismissProgressDialog()
@@ -512,7 +513,7 @@ class AllOrdersListingFragment(
                     }
 
                     Status.ERROR -> {
-                        removedPos=0
+                        removedPos = 0
                         ProgressUtils.dismissProgressDialog()
                         binding.root.showAlert(resource.message)
 
@@ -713,7 +714,7 @@ class AllOrdersListingFragment(
                         ordersViewModel.refreshOrderCount.value = true
 
                         // Remove Completed order from list
-                        adapter.filterList.removeIf{ it.id == orderId }
+                        adapter.filterList.removeIf { it.id == orderId }
                         adapter.notifyDataSetChanged()
                     }
 
@@ -889,7 +890,8 @@ class AllOrdersListingFragment(
                     }
                 }
             }
-        }catch (e:Exception){}
+        } catch (e: Exception) {
+        }
     }
 
     private fun observeShowProgress() {
@@ -1025,13 +1027,15 @@ class AllOrdersListingFragment(
         return binding.root
     }
 
-    fun cancelOrderObserver(){
-        onlineDetailViewModel.cancelOnlineWebOrderLiveData.observe(viewLifecycleOwner){
-            if(it.isRefunded){
+    fun cancelOrderObserver() {
+        onlineDetailViewModel.cancelOnlineWebOrderLiveData.observe(viewLifecycleOwner) {
+            if (it.isRefunded) {
 
-                makeAcceptedDeclinedServerCall(0,
+                makeAcceptedDeclinedServerCall(
+                    0,
                     it.orderId,
-                    false)
+                    false
+                )
             }
 
             onlineDetailViewModel.cancelOnlineWebOrderLiveData.value?.isRefunded = false
@@ -1044,18 +1048,18 @@ class AllOrdersListingFragment(
                         it, createTaxResponse.message
                     ) { _, _ ->
 
-                            val result = Bundle().apply {
-                                refundData.paymentRefund?.orderId?.let { it1 ->
-                                    putInt(
-                                        "order_id", it1
-                                    )
-                                }
+                        val result = Bundle().apply {
+                            refundData.paymentRefund?.orderId?.let { it1 ->
+                                putInt(
+                                    "order_id", it1
+                                )
                             }
-                            requireActivity().supportFragmentManager.setFragmentResult(
-                                "request_for_rejectOrder", result
-                            )
-                            findNavController().navigateUp()
                         }
+                        requireActivity().supportFragmentManager.setFragmentResult(
+                            "request_for_rejectOrder", result
+                        )
+                        findNavController().navigateUp()
+                    }
                 }
             }
         }
@@ -1332,7 +1336,7 @@ class AllOrdersListingFragment(
                     alert("", "Are you sure, you want to reject this order ?") {
 
                         this.positiveButton("YES") {
-                            removedPos=order.id
+                            removedPos = order.id
                             var employeeIdtemp =
                                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                             var terminal_id =
@@ -1528,7 +1532,7 @@ class AllOrdersListingFragment(
 
                 val completePrice = order.subTotal + updatedCartModel.discountPrice
 
-                updatedCartModel.discountSelectdValue =  order.totalDiscount / completePrice * 100
+                updatedCartModel.discountSelectdValue = order.totalDiscount / completePrice * 100
 
                 dashboardViewModel.addCart(updatedCartModel)
                 dashboardViewModel.setUpdatedCartModel(updatedCartModel)
@@ -4152,7 +4156,11 @@ class AllOrdersListingFragment(
                 modifier_set_ids = modifiersIds(it.orderItemModifiers)
                 modifiers = modifierSets(it.orderItemModifiers)
                 discountPrice = it.discountAmount
-                discountType = it.discountType
+                if (it.discountType==null){
+                    discountType = ""
+                }else{
+                    discountType = it.discountType
+                }
                 if (it.discountId != null)
                     discountId = it.discountId
                 if (it.order_item_variation != null)
@@ -4327,8 +4335,8 @@ class AllOrdersListingFragment(
 
     // To get connected kitchen printers
     private fun getKitchenPrinters(data: OnlineOrderResponseModel.Data) {
-        CoroutineScope(Dispatchers.IO).launch{
-           var it = viewModel.getKitchenPrinterList()
+        CoroutineScope(Dispatchers.IO).launch {
+            var it = viewModel.getKitchenPrinterList()
 
             if (isPrint) {
 
@@ -4491,7 +4499,7 @@ class AllOrdersListingFragment(
 
                         actionFeedLine(1)
 
-                        if(orderData.orderType == Constants.PHONE_ORDER_) {
+                        if (orderData.orderType == Constants.PHONE_ORDER_) {
                             add(
                                 PrinterBuilder()
                                     .styleBold(true)
@@ -4656,7 +4664,7 @@ class AllOrdersListingFragment(
 
                     printer.openAsync().await()
 
-//                val jobSettings = StarSpoolJobSettings(true, 30, "Print from Android")
+//                    val jobSettings = StarSpoolJobSettings(true, 30, "Print from Android")
 
                     printer.printAsync(commands).await()
 

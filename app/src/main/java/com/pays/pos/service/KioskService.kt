@@ -38,10 +38,7 @@ import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.utils.*
 import com.pays.pos.utils.InternetUtils.isInternetAvailable
 import com.pays.pos.utils.printer.PrinterClass
-import com.starmicronics.stario10.InterfaceType
-import com.starmicronics.stario10.PrinterDelegate
-import com.starmicronics.stario10.StarConnectionSettings
-import com.starmicronics.stario10.StarPrinter
+import com.starmicronics.stario10.*
 import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
 import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
 import com.starmicronics.stario10.starxpandcommand.StarXpandCommandBuilder
@@ -200,12 +197,19 @@ class KioskService : Service(), StatusChangeEventListener {
                         override fun onResponse(response: String?) {
                             // response
                             Log.d("HEY", "ONResponse")
-                            getKitchenPrinters(
-                                Gson().fromJson<KioskOrderResponse>(
-                                    response,
-                                    KioskOrderResponse::class.java
-                                )
-                            )
+                            response?.let {
+                                try {
+                                    getKitchenPrinters(
+                                        Gson().fromJson<KioskOrderResponse>(
+                                            it,
+                                            KioskOrderResponse::class.java
+                                        )
+                                    )
+                                } catch (e: Exception) {
+
+                                }
+
+                            }
                         }
                     },
                     object : com.android.volley.Response.ErrorListener {
@@ -238,14 +242,16 @@ class KioskService : Service(), StatusChangeEventListener {
             AppDatabase.getDatabase(applicationContext)
         )
         response?.let {
-            CoroutineScope(Dispatchers.IO).launch {
-                var kitchenList = kioskRepository.getKitchenPrintersList()
+            if (it.data?.paymentStatus.equals("paid",ignoreCase = true)) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    var kitchenList = kioskRepository.getKitchenPrintersList()
 
-                async {
-                    kitchenSettingModel = kioskRepository.getKitchenSettingsNormalData()
-                }.await()
+                    async {
+                        kitchenSettingModel = kioskRepository.getKitchenSettingsNormalData()
+                    }.await()
 
-                printKitchenReceipt(kitchenList, it, 0)
+                    printKitchenReceipt(kitchenList, it, 0)
+                }
             }
         }
     }
@@ -271,7 +277,7 @@ class KioskService : Service(), StatusChangeEventListener {
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         orderData: KioskOrderResponse
     ) {
-        Log.d("initKitchenPrinter","initKitchenPrinter")
+        Log.d("initKitchenPrinter", "initKitchenPrinter")
         if (data.name.startsWith(Constants.SUNMI_PRINTER, true)) {
 
             try {
@@ -313,16 +319,14 @@ class KioskService : Service(), StatusChangeEventListener {
                 generateKitchenReceiptSunmi(data, orderData)
             }
 
-        }
-        else if (data.name.startsWith(Constants.SUNMI_INNER_PRINTER, true)) {
+        } else if (data.name.startsWith(Constants.SUNMI_INNER_PRINTER, true)) {
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(applicationContext)
             CoroutineScope(Dispatchers.IO).launch {
                 delay(100)
                 setServiceForKitchen(data, orderData)
             }
-        }
-        else if (data.name.contains("TSP", ignoreCase = true)) {
+        } else if (data.name.contains("TSP", ignoreCase = true)) {
             settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
             printer = StarPrinter(settings, applicationContext)
 
@@ -521,12 +525,13 @@ class KioskService : Service(), StatusChangeEventListener {
                     )
 
                     val commands = builder.getCommands()
+//                    val jobSettings = StarSpoolJobSettings(true, 30, "Print from Android")
 
                     printer.openAsync().await()
                     printer.printAsync(commands).await()
 
 
-//                val jobSettings = StarSpoolJobSettings(true, 30, "Print from Android")
+
 
 
                     Log.d("Printing", "Success")
@@ -539,8 +544,7 @@ class KioskService : Service(), StatusChangeEventListener {
                 }
             }
 
-        }
-        else {
+        } else {
 
             if (!data.name.substring(0, 6).toString().lowercase()
                     .contains("TM-m".lowercase())
@@ -2112,11 +2116,11 @@ class KioskService : Service(), StatusChangeEventListener {
                     if (orderData.data?.customer?.addresses?.isNotEmpty() == true) {
 
 
-                           PrintSunmiUtils.customerAddress(
-                               orderData.data?.customer?.addresses?.get(
-                                   orderData.data?.customer?.addresses?.size?.minus(1)?:0
-                               )?:""
-                           )
+                        PrintSunmiUtils.customerAddress(
+                            orderData.data?.customer?.addresses?.get(
+                                orderData.data?.customer?.addresses?.size?.minus(1) ?: 0
+                            ) ?: ""
+                        )
                     }
                 }
 
