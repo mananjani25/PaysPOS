@@ -1184,8 +1184,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         MainApplication.mainActivity = this
         permissionCheck()
 
-        if (!checkServiceRunning(applicationContext,KioskService::class.java)){
-            startForegroundService(Intent(this,KioskService::class.java))
+        if (!checkServiceRunning(applicationContext, KioskService::class.java)) {
+            startForegroundService(Intent(this, KioskService::class.java))
         }
 
         Log.e(TAG, "checkConsumerNullorNot  ${consumer}")
@@ -3319,13 +3319,13 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
                     if (it.asJsonObject.has("location_id"))
                         if (!it.asJsonObject.has("new_order"))
-                        if (PrefProvider(baseContext).getLocationId() == it.asJsonObject.get(
-                            "location_id"
-                        ).asInt
-                    ) {
-                        Log.e(TAG2, "onReceived  Inside" + Gson().toJson(it))
-                        handleUpdatedData(it)
-                    }
+                            if (PrefProvider(baseContext).getLocationId() == it.asJsonObject.get(
+                                    "location_id"
+                                ).asInt
+                            ) {
+                                Log.e(TAG2, "onReceived  Inside" + Gson().toJson(it))
+                                handleUpdatedData(it)
+                            }
                     // handleUpdatedData(it)
 
                 }

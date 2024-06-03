@@ -1803,7 +1803,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         binding.llCreditCard.setOnSingleClickListener {
 
-            if(InternetUtils.isInternetAvailable(applicationContext = requireActivity().applicationContext)) {
+            if (InternetUtils.isInternetAvailable(applicationContext = requireActivity().applicationContext)) {
 
                 restrictTvCashClicks()
 
@@ -1869,7 +1869,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 } else {
                     errorDisplay("Payment Amount is zero.")
                 }
-            }else
+            } else
                 errorDisplay("Please check your Network Connectivity.")
             //  makePaymentCreditCard()
         }
@@ -1899,7 +1899,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         binding.tvCash0.setOnSingleClickListener {
 
-            if(InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
+            if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
 
                 restrictTvCashClicks()
 
@@ -1915,51 +1915,51 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
         binding.tvCash1.setOnSingleClickListener {
 
-            if(InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
+            if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
 
                 restrictTvCashClicks()
 
                 custom_paymentAmount =
                     binding.tvCash1.text.toString().replace("$", "").trim().toDouble()
                 cashPaymentWithVariation()
-            }else
+            } else
                 errorDisplay("Please check your Network Connectivity.")
         }
         binding.tvCash2.setOnSingleClickListener {
-            if(InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
+            if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
 
                 restrictTvCashClicks()
 
                 custom_paymentAmount =
                     binding.tvCash2.text.toString().replace("$", "").trim().toDouble()
                 cashPaymentWithVariation()
-            }else
+            } else
                 errorDisplay("Please check your Network Connectivity.")
         }
         binding.tvCash3.setOnSingleClickListener {
 
-            if(InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
+            if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
 
                 restrictTvCashClicks()
 
                 custom_paymentAmount =
                     binding.tvCash3.text.toString().replace("$", "").trim().toDouble()
                 cashPaymentWithVariation()
-            }else
+            } else
                 errorDisplay("Please check your Network Connectivity.")
         }
         binding.tvCustomAmount.setOnSingleClickListener {
-            if(InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
-            paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
-            val bundleVal = Bundle().apply {
-                putDouble("totalprice", ((paymentAmount)))
-            }
-            findNavController().navigate(
-                R.id.action_paymentBoldPosFragment_to_customAmountFragment,
-                bundleVal
-            )
-        }else
-        errorDisplay("Please check your Network Connectivity.")
+            if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
+                paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                val bundleVal = Bundle().apply {
+                    putDouble("totalprice", ((paymentAmount)))
+                }
+                findNavController().navigate(
+                    R.id.action_paymentBoldPosFragment_to_customAmountFragment,
+                    bundleVal
+                )
+            } else
+                errorDisplay("Please check your Network Connectivity.")
         }
         binding.tvPaymentLink.setOnSingleClickListener {
             textToPay = true
@@ -2087,7 +2087,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 tvCash2.isEnabled = true
                 tvCash3.isEnabled = true
             }
-        },5000)
+        }, 5000)
 
     }
 
@@ -2198,6 +2198,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             } else if (broadPOS_version.contains("Rapid")) {
                 mPaymentRequest.ExtData = "<Force>T</Force><TokenRequest>1</TokenRequest>"
             }
+
 
             Log.d("ECRRefNum", "ECRRefNum: $ECRRefNumber")
 
