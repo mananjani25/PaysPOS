@@ -45,7 +45,9 @@ import com.pays.pos.utils.workmanager.UploadWorker2
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -321,14 +323,20 @@ class MenuFragment : DialogFragment() {
             alert("", "Are you sure you want to Logout?") {
                 this.positiveButton("Logout") {
 
+
                     dashboardViewModel.apply {
-                        clearCartModelBackup()
-                        deleteCart()
-                        currentCartItems = arrayListOf()
-                        duplicateCurrentCartItem = arrayListOf()
-                        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                            AppDatabase.getDatabase(requireActivity().applicationContext).clearAllTables()
+                        runBlocking {
+                            clearCartModelBackup()
+                            deleteCart()
+                            currentCartItems = arrayListOf()
+                            duplicateCurrentCartItem = arrayListOf()
+
+                            viewLifecycleOwner.lifecycleScope.async(Dispatchers.IO) {
+                                AppDatabase.getDatabase(requireActivity().applicationContext)
+                                    .clearAllTables()
+                            }.await()
                         }
+
                     }
 
                     if (prefProvider.getValue(Constants.ORDER_TYPE, "").isNotEmpty()) {
