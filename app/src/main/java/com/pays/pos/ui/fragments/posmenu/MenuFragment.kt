@@ -22,6 +22,7 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.pays.pos.BuildConfig
 import com.pays.pos.R
+import com.pays.pos.data.db.AppDatabase
 import com.pays.pos.data.remote.ApiService
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.IS_MASTER_TERMINAL
@@ -325,6 +326,9 @@ class MenuFragment : DialogFragment() {
                         deleteCart()
                         currentCartItems = arrayListOf()
                         duplicateCurrentCartItem = arrayListOf()
+                        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                            AppDatabase.getDatabase(requireActivity().applicationContext).clearAllTables()
+                        }
                     }
 
                     if (prefProvider.getValue(Constants.ORDER_TYPE, "").isNotEmpty()) {
