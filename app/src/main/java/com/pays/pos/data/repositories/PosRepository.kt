@@ -1331,7 +1331,7 @@ class PosRepository @Inject constructor(
         appDatabase.customerSettingsDao().delete()
         appDatabase.cancelOrderReasonDao().delete()
         appDatabase.cashDiscountDao().delete()
-
+        appDatabase.loyaltyProgramsDao().delete()
     }
 
     fun orderCounts(startDate: String?, endDate: String?, isOpenOrder: Boolean) =
