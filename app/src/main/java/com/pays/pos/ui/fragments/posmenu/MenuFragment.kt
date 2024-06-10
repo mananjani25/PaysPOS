@@ -325,17 +325,10 @@ class MenuFragment : DialogFragment() {
 
 
                     dashboardViewModel.apply {
-                        runBlocking {
-                            clearCartModelBackup()
-                            deleteCart()
-                            currentCartItems = arrayListOf()
-                            duplicateCurrentCartItem = arrayListOf()
-
-                            viewLifecycleOwner.lifecycleScope.async(Dispatchers.IO) {
-                                AppDatabase.getDatabase(requireActivity().applicationContext)
-                                    .clearAllTables()
-                            }.await()
-                        }
+                        clearCartModelBackup()
+                        deleteCart()
+                        currentCartItems = arrayListOf()
+                        duplicateCurrentCartItem = arrayListOf()
 
                     }
 

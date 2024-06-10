@@ -42,8 +42,12 @@ import com.pays.pos.utils.getCustomerDisplay
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
+import com.pays.pos.data.db.AppDatabase
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -81,6 +85,13 @@ class LoginFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        runBlocking {
+            viewLifecycleOwner.lifecycleScope.async(Dispatchers.IO) {
+                AppDatabase.getDatabase(requireActivity().applicationContext)
+                    .clearAllTables()
+            }.await()
+        }
 
 //       determineAdvertisingInfo()
 //        paxNetworkCall()

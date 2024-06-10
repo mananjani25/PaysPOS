@@ -3380,7 +3380,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     dialog.setCanceledOnTouchOutside(false)
                     dialog.show()
 
-                    Handler().postDelayed({ dialog.dismiss() }, 15000)
+                        Handler(mainLooper).postDelayed({ dialog.dismiss() }, 15000)
 
                 } catch (e: Exception) {
 
