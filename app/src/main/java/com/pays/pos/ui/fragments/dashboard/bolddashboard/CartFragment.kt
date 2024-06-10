@@ -1761,7 +1761,11 @@ class CartFragment(
                     subTotalPrice = remaining
                 } else {
                     viewModel.totalDiscount = 0.0
-                    cartModel?.discountPrice = 0.0
+                    try {
+                        cartModel?.discountPrice = 0.0
+                    } catch (e:Exception) {
+
+                    }
                 }
             }
 
