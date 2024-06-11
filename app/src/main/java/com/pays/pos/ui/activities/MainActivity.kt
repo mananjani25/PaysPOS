@@ -3371,7 +3371,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
         dashboardViewModel.allInventoryItems.observe(this) { it ->
-            if (it.data?.isEmpty() == true) {
+            if (it.data?.isEmpty() == true && navController?.currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
 
                 try {
                     val dialog = Dialog(this)
@@ -3380,7 +3380,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     dialog.setCanceledOnTouchOutside(false)
                     dialog.show()
 
-                    Handler().postDelayed({ dialog.dismiss() }, 15000)
+                        Handler(mainLooper).postDelayed({ dialog.dismiss() }, 15000)
 
                 } catch (e: Exception) {
 
