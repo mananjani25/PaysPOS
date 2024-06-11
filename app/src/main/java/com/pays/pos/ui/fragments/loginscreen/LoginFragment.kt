@@ -43,9 +43,12 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
 import com.pays.pos.data.db.AppDatabase
+import com.pays.pos.utils.Event
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import retrofit2.Call
@@ -80,22 +83,23 @@ class LoginFragment : Fragment() {
     @set:Inject
     var hostSelectionInterceptor: HostSelectionInterceptor? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
+
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        runBlocking {
-            viewLifecycleOwner.lifecycleScope.async(Dispatchers.IO) {
-                AppDatabase.getDatabase(requireActivity().applicationContext)
-                    .clearAllTables()
-            }.await()
-        }
+
 
 //       determineAdvertisingInfo()
 //        paxNetworkCall()
-
        /* if (prefProvider?.getValue(AUTH_TOKEN, "").toString().isNotEmpty()) {
             if (!prefProvider?.getValueboolean(IS_CLOCKOUT, false)!!) {
                 findNavController().navigate(R.id.action_login_to_passcode)
@@ -118,6 +122,9 @@ class LoginFragment : Fragment() {
 
         binding.lifecycleOwner = this
         binding.loginViewModel = viewModel
+
+
+        binding.txtSignIn.isEnabled = false
 
        /* getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
@@ -229,6 +236,26 @@ class LoginFragment : Fragment() {
         if (this::presentation.isInitialized) {
             presentation.show()
             presentation.onLogOutOrClockOut()
+        }
+
+        CoroutineScope(Dispatchers.Main).launch{
+            binding.txtSignIn.apply {
+                isClickable = false
+                isEnabled = false
+
+                setBackgroundColor(resources.getColor(R.color.view))
+
+                viewLifecycleOwner.lifecycleScope.async(Dispatchers.IO) {
+                    AppDatabase.getDatabase(requireActivity().applicationContext)
+                        .clearAllTables()
+                }.await()
+
+                dashboardViewModel._showProgress.value = (Event(false))
+                isEnabled = true
+                isClickable = true
+
+                setBackgroundColor(resources.getColor(R.color.btnColor))
+            }
         }
     }
 
