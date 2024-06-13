@@ -160,7 +160,7 @@ class LoginFragment : Fragment() {
         binding.loginViewModel = viewModel
 
 
-        binding.txtSignIn.isEnabled = false
+//        binding.txtSignIn.isEnabled = false
 
        /* getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
@@ -322,32 +322,32 @@ class LoginFragment : Fragment() {
             presentation.onLogOutOrClockOut()
         }
 
-        CoroutineScope(Dispatchers.Main).launch{
-            binding.txtSignIn.apply {
-                isClickable = false
-                isEnabled = false
-
-                setBackgroundColor(resources.getColor(R.color.view))
-
-                try {
-                    viewLifecycleOwner.lifecycleScope.async(Dispatchers.IO) {
-                        try {
-                            AppDatabase.getDatabase(requireActivity().applicationContext)
-                                .clearAllTables()
-                        }catch (e:Exception){Log.e("ClearDataLogoutCrash", e.toString())}
-                    }.await()
-                } catch (e:Exception) {
-                    Log.e("ClearDataLogoutCrash", e.toString())
-                }
-
-
-//                dashboardViewModel._showProgress.value = (Event(false))
-                isEnabled = true
-                isClickable = true
-
-                setBackgroundColor(resources.getColor(R.color.btnColor))
-            }
-        }
+//        CoroutineScope(Dispatchers.Main).launch{
+//            binding.txtSignIn.apply {
+//                isClickable = false
+//                isEnabled = false
+//
+//                setBackgroundColor(resources.getColor(R.color.view))
+//
+//                try {
+//                    viewLifecycleOwner.lifecycleScope.async(Dispatchers.IO) {
+//                        try {
+//                            AppDatabase.getDatabase(requireActivity().applicationContext)
+//                                .itemDao().delete()
+//                        }catch (e:Exception){Log.e("ClearDataLogoutCrash", e.toString())}
+//                    }.await()
+//                } catch (e:Exception) {
+//                    Log.e("ClearDataLogoutCrash", e.toString())
+//                }
+//
+//
+////                dashboardViewModel._showProgress.value = (Event(false))
+//                isEnabled = true
+//                isClickable = true
+//
+//                setBackgroundColor(resources.getColor(R.color.btnColor))
+//            }
+//        }
     }
 
     private fun versionDisplay() {

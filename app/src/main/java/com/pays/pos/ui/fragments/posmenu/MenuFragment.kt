@@ -329,7 +329,16 @@ class MenuFragment : DialogFragment() {
                         deleteCart()
                         currentCartItems = arrayListOf()
                         duplicateCurrentCartItem = arrayListOf()
-
+                        CoroutineScope(Dispatchers.IO).launch{
+                            viewLifecycleOwner.lifecycleScope.async(Dispatchers.IO) {
+                                try {
+                                    AppDatabase.getDatabase(requireActivity().applicationContext)
+                                        .itemDao().delete()
+                                }catch (e:Exception){
+                                    e.printStackTrace()
+                                }
+                            }.await()
+                        }
                     }
 
                     if (prefProvider.getValue(Constants.ORDER_TYPE, "").isNotEmpty()) {
