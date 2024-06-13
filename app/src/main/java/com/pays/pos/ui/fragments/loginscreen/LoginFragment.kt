@@ -1,7 +1,10 @@
 package com.pays.pos.ui.fragments.loginscreen
 
+import android.Manifest
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,6 +14,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -87,6 +93,36 @@ class LoginFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
     }
+
+    private val PERMISSION_REQUEST_CODE = 123
+
+    private val permissions = arrayOf(
+        Manifest.permission.READ_PHONE_STATE,
+        Manifest.permission.ACCESS_NETWORK_STATE,
+        Manifest.permission.BLUETOOTH_CONNECT,
+        Manifest.permission.INTERNET,
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_WIFI_STATE,
+        Manifest.permission.BLUETOOTH,
+        Manifest.permission.BLUETOOTH_ADMIN,
+        Manifest.permission.BLUETOOTH_SCAN,
+        Manifest.permission.CAMERA,
+        Manifest.permission.VIBRATE,
+        Manifest.permission.FOREGROUND_SERVICE,
+        Manifest.permission.SYSTEM_ALERT_WINDOW,
+        Manifest.permission.USE_FULL_SCREEN_INTENT,
+        Manifest.permission.MANAGE_EXTERNAL_STORAGE
+    )
+
+    private val requestMultiplePermissions =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            permissions.entries.forEach {
+                showToast()
+            }
+        }
 
 
 
@@ -193,6 +229,54 @@ class LoginFragment : Fragment() {
 
         });
         return binding.root
+        syncDevices()
+    }
+
+    private fun checkAndRequestPermissions() {
+        val permissionsNeeded = permissions.filter {
+            ContextCompat.checkSelfPermission(requireContext(), it) != PackageManager.PERMISSION_GRANTED
+        }
+
+        if (permissionsNeeded.isNotEmpty()) {
+            ActivityCompat.requestPermissions(requireActivity(), permissionsNeeded.toTypedArray(), PERMISSION_REQUEST_CODE)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            val deniedPermissions = permissions.zip(grantResults.toTypedArray())
+                .filter { it.second != PackageManager.PERMISSION_GRANTED }
+                .map { it.first }
+
+            if (deniedPermissions.isNotEmpty()) {
+                checkAndRequestPermissions()
+            }
+        }
+    }
+
+    private fun syncDevices() {
+
+        if (Build.VERSION.SDK_INT >= 23) {
+            requestMultiplePermissions.launch(
+                arrayOf(
+                    Manifest.permission.BLUETOOTH_ADMIN,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+            )
+        } else {
+            showToast()
+        }
+    }
+
+    private fun showToast() {
+        Toast.makeText(context, "Permission granted", Toast.LENGTH_SHORT).show()
     }
 
     private fun paxNetworkCall() {
@@ -245,12 +329,19 @@ class LoginFragment : Fragment() {
 
                 setBackgroundColor(resources.getColor(R.color.view))
 
-                viewLifecycleOwner.lifecycleScope.async(Dispatchers.IO) {
-                    AppDatabase.getDatabase(requireActivity().applicationContext)
-                        .clearAllTables()
-                }.await()
+                try {
+                    viewLifecycleOwner.lifecycleScope.async(Dispatchers.IO) {
+                        try {
+                            AppDatabase.getDatabase(requireActivity().applicationContext)
+                                .clearAllTables()
+                        }catch (e:Exception){Log.e("ClearDataLogoutCrash", e.toString())}
+                    }.await()
+                } catch (e:Exception) {
+                    Log.e("ClearDataLogoutCrash", e.toString())
+                }
 
-                dashboardViewModel._showProgress.value = (Event(false))
+
+//                dashboardViewModel._showProgress.value = (Event(false))
                 isEnabled = true
                 isClickable = true
 

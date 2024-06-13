@@ -3705,9 +3705,13 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                             LogUtil.logE(TAG, "terminalListSize  2")
                             binding.spTerminals.setSelection(0, false)
                         }else {
-                            LogUtil.logE(TAG, "terminalListSize  3")
-                            val selection = defaultEmployeePos-1
-                            binding.spTerminals.setSelection(selection, false)
+                            try {
+                                LogUtil.logE(TAG, "terminalListSize  3")
+                                val selection = defaultEmployeePos - 1
+                                binding.spTerminals.setSelection(selection, false)
+                            }catch (e:Exception) {
+                                Log.e("ClearDataLogoutCrash", e.toString())
+                            }
                         }
 
 
