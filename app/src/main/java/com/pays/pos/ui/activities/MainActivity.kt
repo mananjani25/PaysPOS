@@ -3691,7 +3691,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
         if (this::presentation.isInitialized) {
-            presentation.hide()
+//            presentation.hide()
             presentation.onDisplayChanged()
         }
         navController?.removeOnDestinationChangedListener(listner)
