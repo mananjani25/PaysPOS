@@ -76,7 +76,8 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
     private var refundAmount: Double = 0.0
     private lateinit var binding: DialogRefundReasonBinding
     private lateinit var refundData: RefundRequestModel
-   // private lateinit var orderItemRefundsAttributes:String
+
+    // private lateinit var orderItemRefundsAttributes:String
     private val viewModel by viewModels<TransactionDetailsViewModel>()
     private val transactionViewModel by activityViewModels<TransactionDetailsViewModel>()
     private val magtekProViewModel by viewModels<MagtekViewModel>()
@@ -115,7 +116,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         refundData = arguments?.getParcelable("refundData")!!
-    //    orderItemRefundsAttributes = arguments?.getString("orderItemRefundsAttributes").toString()
+        //    orderItemRefundsAttributes = arguments?.getString("orderItemRefundsAttributes").toString()
         refundAmount = arguments?.getDouble("refundAmount")!!
         magensa_response_data = arguments?.getString("magensa_response_data").toString()
         paymentType = arguments?.getString("paymentType").toString()
@@ -125,10 +126,11 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
         paxECRreferenceNo = arguments?.getString("pax_ecrref_num").toString()
 
         requiredNABServerPostAPICall = arguments?.getBoolean("requiredNABServerPostAPICall")!!
-        paxData = arguments?.getString("pax_data")+""
+        paxData = arguments?.getString("pax_data") + ""
 
 
-        refundData.paymentRefund?.orderItemRefundsAttributes = transactionViewModel.orderItemAttribututes
+        refundData.paymentRefund?.orderItemRefundsAttributes =
+            transactionViewModel.orderItemAttribututes
         Log.d(
             "PAX params:",
             "pax params: paxToken-$paxToken paxECRreferenceNo-$paxECRreferenceNo referenceNo-$referenceNo paxExtData-${
@@ -160,31 +162,31 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             }*/
 
 
-           if (requiredNABServerPostAPICall && paxData.isNotEmpty()){
-               runBlocking {
-                   proceedWithServerPostApiRefund()
-               }
-           }else{
-               if (referenceNo.isNullOrEmpty()) {
-                   doneClick()
-               } else if (!referenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
-                       Constants.IS_PAX_CONNECTED,
-                       false
-                   )
-               ) {
+            if (requiredNABServerPostAPICall && paxData.isNotEmpty()) {
+                runBlocking {
+                    proceedWithServerPostApiRefund()
+                }
+            } else {
+                if (referenceNo.isNullOrEmpty()) {
+                    doneClick()
+                } else if (!referenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
+                        Constants.IS_PAX_CONNECTED,
+                        false
+                    )
+                ) {
 //                refundViaPAX()
-                   getBatchLocalReport()
-               } else if (!referenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
-                       Constants.IS_PAX_CONNECTED,
-                       false
-                   )
-               ) {
-                   AlertUtils.showCustomAlert(
-                       requireContext(),
-                       "Please connect to PAX device"
-                   )
-               }
-           }
+                    getBatchLocalReport()
+                } else if (!referenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                        Constants.IS_PAX_CONNECTED,
+                        false
+                    )
+                ) {
+                    AlertUtils.showCustomAlert(
+                        requireContext(),
+                        "Please connect to PAX device"
+                    )
+                }
+            }
         }
 
         setupSnackbar()
@@ -322,9 +324,9 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                             } else if (AUTH_RESP_TEXT.contains("APPROVAL")) {
                                 /*Make our server call*/
 
-                                    refundCall()
+                                refundCall()
 
-                                Handler(Looper.getMainLooper()).post(object:java.lang.Runnable{
+                                Handler(Looper.getMainLooper()).post(object : java.lang.Runnable {
                                     override fun run() {
                                         ProgressUtils.dismissProgressDialog()
                                     }
@@ -371,7 +373,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                 }
                 queue.add(getRequest)
 
-                Handler(Looper.getMainLooper()).post(object:java.lang.Runnable{
+                Handler(Looper.getMainLooper()).post(object : java.lang.Runnable {
                     override fun run() {
                         ProgressUtils.showProgressDialog(requireActivity())
                     }
@@ -458,34 +460,32 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                                 }
                             }
                         }*/
-                            refundCall()
+                        refundCall()
 
-                        Handler(Looper.getMainLooper()).post(object:java.lang.Runnable{
+                        Handler(Looper.getMainLooper()).post(object : java.lang.Runnable {
                             override fun run() {
                                 ProgressUtils.showProgressDialog(requireActivity())
                             }
                         })
 
-                    }else{
+                    } else {
                         Handler(Looper.getMainLooper()).post(object :
                             java.lang.Runnable {
                             override fun run() {
                                 ProgressUtils.dismissProgressDialog()
                             }
                         })
-                        try{
-                            AlertUtils.showCustomAlert(requireActivity(),AUTH_RESP_TEXT)
+                        try {
+                            AlertUtils.showCustomAlert(requireActivity(), AUTH_RESP_TEXT)
 
-                        }catch (e:Exception){
-                            try{
-                                AlertUtils.showCustomAlert(requireContext(),AUTH_RESP_TEXT)
-                            }catch (e:Exception){
+                        } catch (e: Exception) {
+                            try {
+                                AlertUtils.showCustomAlert(requireContext(), AUTH_RESP_TEXT)
+                            } catch (e: Exception) {
 
                             }
                         }
                     }
-
-
 
 
                 }
@@ -610,14 +610,19 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 
     private fun getBatchLocalReport() {
         GlobalScope.launch {
+            withContext(Dispatchers.Main) {
+
+            }
             posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
 
             Log.d("paxRefNo: ", "paxRefNo: ${referenceNo}")
-            try{
-                CoroutineScope(Dispatchers.Main).launch {
-                    ProgressUtils.showProgressDialog(requireActivity())
-                }
-            }catch (e:Exception){}
+            requireActivity().let {
+                it.runOnUiThread(object : java.lang.Runnable {
+                    override fun run() {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
+                })
+            }
 
 
             val report = ReportRequest()
@@ -639,7 +644,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                 val resultTxt = response.ResultTxt
 
                 if (resultCode == "000000") {
-                    voidViaPAX()
+                    showConfirmationAlertDialog()
                 } else if (resultCode == "100023") {
                     //Transaction not found in current batch
                     //refundViaPAX()
@@ -668,6 +673,18 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                     "Params:",
                     "Report $resultCode $resultTxt ${response.ExtData}  ${Gson().toJson(response)}"
                 )
+            }
+        }
+    }
+
+    private fun showConfirmationAlertDialog() {
+        CoroutineScope(Dispatchers.Main).launch {
+            AlertUtils.showCustomAlertWithListenerWithOKCancel(
+                requireContext(),
+                getString(R.string.single_void_message),
+                getString(android.R.string.ok)
+            ) { _, _ ->
+                voidViaPAX()
             }
         }
     }
@@ -743,7 +760,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 
     }
 
-    private fun refundViaPAX(processor:String) {
+    private fun refundViaPAX(processor: String) {
         if (refundAmount != 0.0 || refundAmount > 0.0) {
             if (paymentType == "Card") {
                 GlobalScope.launch {
@@ -764,7 +781,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                         println("ExpDate value not found")
                     }
 
-                    if (processor.equals("rapid",ignoreCase = true)) {
+                    if (processor.equals("rapid", ignoreCase = true)) {
                         val amt = (refundAmount * 100).toInt()
                         val refund = PaymentRequest()
                         refund.TenderType = refund.ParseTenderType("CREDIT")
@@ -799,9 +816,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                             }
                         }
 
-                    }
-
-                    else if (processor.equals("epx", ignoreCase = true)) {
+                    } else if (processor.equals("epx", ignoreCase = true)) {
                         val amt = (refundAmount * 100).toInt()
                         val refund = PaymentRequest()
                         refund.ECRRefNum = posLink.ReportRequest.ECRRefNum
@@ -839,14 +854,13 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                                 }
                             }
                         }
-                    }
-
-                    else {
+                    } else {
                         CoroutineScope(Dispatchers.Main).launch {
                             ProgressUtils.dismissProgressDialog()
                             AlertUtils.showCustomAlertWithListenerWithOKCancel(
                                 requireContext(),
-                                getString(R.string.pax_connect_error), getString(R.string.reconnect),
+                                getString(R.string.pax_connect_error),
+                                getString(R.string.reconnect),
                             )
                             { _, _ ->
                                 // Add connect to PAX logic
@@ -915,10 +929,12 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                         val resultCode = response.ResultCode
                         val resultTxt = response.ResultTxt
 
-                        if (resultCode == "000000") {
+                        if (resultCode.equals("000000")) {
                             CoroutineScope(Dispatchers.Main).launch {
                                 refundCall()
                             }
+                        } else if (resultCode.equals("100021")) {
+                            checkBroadPOSVersion()
                         } else {
                             CoroutineScope(Dispatchers.Main).launch {
                                 ProgressUtils.dismissProgressDialog()
