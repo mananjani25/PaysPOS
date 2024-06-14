@@ -25,6 +25,7 @@ import com.pax.poslink.CommSetting
 import com.pax.poslink.LogSetting
 import com.pax.poslink.POSLinkAndroid
 import com.pays.pos.ui.activities.MainActivity
+import com.pays.pos.utils.TAG
 import com.zebra.scannercontrol.DCSScannerInfo
 import com.zebra.scannercontrol.SDKHandler
 import dagger.hilt.android.HiltAndroidApp
@@ -73,6 +74,8 @@ class MainApplication : Application() {
 
             if(paramThrowable !is com.google.android.gms.dynamite.DynamiteModule.LoadingException)
             {
+
+                paramThrowable.printStackTrace()
                 mainActivity?.finish()
             }
         }
