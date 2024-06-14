@@ -24,7 +24,6 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -1650,7 +1649,6 @@ class AllOrdersListingFragment(
 
                 order.totalDiscount = order.totalDiscount - itemDiscountTotal
 
-
                 if (order.customer != null) {
                     prefProvider.setValue(
                         Constants.CUSTOMER_NAME,
@@ -1667,6 +1665,11 @@ class AllOrdersListingFragment(
 
                 LogUtil.logE(TAG, "getOrder  ${Gson().toJson(order)}")
                 val updatedCartModel = generateCartModelFromOrderModel(order)
+
+                val completePrice = order.subTotal + updatedCartModel.discountPrice
+
+                updatedCartModel.discountSelectdValue =  order.totalDiscount / completePrice * 100
+
                 dashboardViewModel.addCart(updatedCartModel)
                 dashboardViewModel.setUpdatedCartModel(updatedCartModel)
                 generateCartItemsListFromOrderModel(order)?.let {
