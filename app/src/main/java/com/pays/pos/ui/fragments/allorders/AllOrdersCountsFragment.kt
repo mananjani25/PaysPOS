@@ -478,8 +478,15 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
     }
 
     private fun loadFragment(frag: Fragment) {
-        val fm: FragmentManager = requireActivity().supportFragmentManager
-        fm.beginTransaction().replace(binding.frameLayout.id, frag).commit()
+       try{
+           activity?.let {
+               val fm: FragmentManager = it.supportFragmentManager
+               fm.beginTransaction().replace(binding.frameLayout.id, frag).commit()
+           }
+
+       }catch (e:Exception){
+            Log.e("AllOrdersCrashException", e.printStackTrace().toString())
+       }
     }
 
     private fun setAdapter(pos: Int) {

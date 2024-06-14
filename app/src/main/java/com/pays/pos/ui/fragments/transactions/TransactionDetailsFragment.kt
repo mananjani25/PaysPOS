@@ -1199,7 +1199,11 @@ class TransactionDetailsFragment : Fragment() {
                     val total = String.format("%.2f",paymentDetailsResponse.data.amount)
                     val refundedAmount =String.format("%.2f", paymentDetailsResponse.data.order.refund_detail.refunded_amount - paymentDetailsResponse.data.tips)
 
-                    if (total == refundedAmount
+                    /*
+                    * "total == refundedAmount" This is commented so that a transaction can be refunded only once even if it was refunded partially.
+                     */
+
+                    if ( /*total == refundedAmount*/ refundedAmount.toDouble() > 0.0
                         || paymentDetailsResponse.data.order.payment_status == "Cancelled"
                     ) {
                         binding.tvIssueRefund.visibility = View.GONE
@@ -1887,7 +1891,7 @@ class TransactionDetailsFragment : Fragment() {
                     )
                 }
 
-                if (kitchenSettingModel.showTeamMember) {
+                if (kitchenSettingModel.showTeamMember && paymentDetailsResponse.data.order.employee != null) {
 
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
@@ -2542,7 +2546,7 @@ class TransactionDetailsFragment : Fragment() {
               }*/
 
 
-            if (kitchenSettingModel.showTeamMember) {
+            if (kitchenSettingModel.showTeamMember && paymentDetailsResponse.data.order.employee != null) {
                 PrintSunmiUtils.employee(
                     padLine(
                         "Employee:" + paymentDetailsResponse.data.order.employee, "",
@@ -3110,7 +3114,7 @@ class TransactionDetailsFragment : Fragment() {
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
-            if (kitchenSettingModel.showTeamMember) {
+            if (kitchenSettingModel.showTeamMember && paymentDetailsResponse.data.order.employee != null) {
                 PrintSunmiUtils.normalTextLarge("Employee:" + paymentDetailsResponse.data.order.employee)
             }
             PrintSunmiUtils.normalTextLarge(
@@ -3466,7 +3470,7 @@ class TransactionDetailsFragment : Fragment() {
 
                 builder.addText("ReceiptID:" + paymentDetailsResponse.data.order.offline_id)
 
-                if (customerSettingModel.showTeam) {
+                if (customerSettingModel.showTeam && paymentDetailsResponse.data.order.employee != null) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addTextFont(Builder.FONT_E)
@@ -3582,7 +3586,7 @@ class TransactionDetailsFragment : Fragment() {
 
                     builder.addText(
                         padLine(
-                            if (customerSettingModel.showTeam) {
+                            if (customerSettingModel.showTeam && paymentDetailsResponse.data.order.employee != null) {
                                 "Employee:" + paymentDetailsResponse?.data?.order.employee
                             } else {
                                 ""
@@ -4590,7 +4594,7 @@ class TransactionDetailsFragment : Fragment() {
 
                 PrintSunmiUtils.receiptID("ReceiptID:" + paymentDetailsResponse.data.order.offline_id)
 
-                if (customerSettingModel.showTeam) {
+                if (customerSettingModel.showTeam && paymentDetailsResponse.data.order.employee != null) {
                     PrintSunmiUtils.employee("Employee:" + paymentDetailsResponse?.data.order.employee)
                 }
 
@@ -4636,7 +4640,7 @@ class TransactionDetailsFragment : Fragment() {
 
 
                     val empName = padLine(
-                        if (customerSettingModel.showTeam) {
+                        if (customerSettingModel.showTeam && paymentDetailsResponse.data.order.employee != null) {
                             "Employee:" + paymentDetailsResponse?.data?.order.employee
                         } else {
                             ""
@@ -5103,7 +5107,7 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.normalText("ReceiptID:" + paymentDetailsResponse.data.order.offline_id)
 
 
-                if (customerSettingModel.showTeam) {
+                if (customerSettingModel.showTeam && paymentDetailsResponse.data.order.employee != null) {
                     PrintSunmiUtils.normalText("Employee:" + paymentDetailsResponse?.data.order.employee)
                 }
 
@@ -5138,7 +5142,7 @@ class TransactionDetailsFragment : Fragment() {
 
 
                     val empName = padLine(
-                        if (customerSettingModel.showTeam) {
+                        if (customerSettingModel.showTeam && paymentDetailsResponse.data.order.employee != null) {
                             "Employee:" + paymentDetailsResponse?.data?.order.employee
                         } else {
                             ""

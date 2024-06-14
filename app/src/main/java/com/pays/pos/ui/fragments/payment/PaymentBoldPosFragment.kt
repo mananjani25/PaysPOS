@@ -11,6 +11,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.*
 import androidx.navigation.fragment.findNavController
+import com.google.gson.Gson
 import com.pays.pos.R
 import com.pays.pos.data.model.CheckOutDineInDataModel
 import com.pays.pos.data.model.DineinCartPaymentModel
@@ -48,7 +49,6 @@ import com.pays.pos.utils.TAG
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.getCustomerDisplay
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -214,6 +214,7 @@ class PaymentBoldPosFragment : Fragment() {
                         temp_model.guestId,
                         temp_model.model
                     )
+
                     Log.d(TAG, "loadCartFragmentCalled 216: ")
                     loadCartFragment(CartFragment(null, null, true, model, true))
                 } else {
@@ -408,6 +409,11 @@ class PaymentBoldPosFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         LogUtil.logE(TAG, "onPause")
+
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
         if (!prefProvider.getValueboolean(SPLIT_ENABLE, false)) {
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 removeCustomer()
@@ -423,7 +429,6 @@ class PaymentBoldPosFragment : Fragment() {
                 }
             }
         }
-
 
     }
 

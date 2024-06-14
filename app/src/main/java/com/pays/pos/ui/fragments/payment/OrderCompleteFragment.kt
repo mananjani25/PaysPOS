@@ -6645,16 +6645,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         clearObserver()
                         prefProvider.setValueboolean(ORDER_COMPLETED, true)
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
-                        prefProvider.setValue(Constants.OLD_ITEM, "")
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
-                        findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM,"")
+                        prefProvider.setValue(Constants.OLD_ITEM,"")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE,"")
+                        if(viewModelDashBoard.boldPosNeedToRefresh)
+                            findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+                        else
+                            findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
                     } else {
 
                         clearObserver()
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
-                        prefProvider.setValue(Constants.OLD_ITEM, "")
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM,"")
+                        prefProvider.setValue(Constants.OLD_ITEM,"")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE,"")
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                     }
 
@@ -6667,19 +6670,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (prefProvider.getValueboolean(LOCK_SCREEN_TRANSACTION, false)) {
 
 
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
-                        prefProvider.setValue(Constants.OLD_ITEM, "")
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM,"")
+                        prefProvider.setValue(Constants.OLD_ITEM,"")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE,"")
 
                         clearObserver()
                         prefProvider.setValueboolean(ORDER_COMPLETED, true)
-                        findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
+                        if(viewModelDashBoard.boldPosNeedToRefresh)
+                            findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+                        else
+                            findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
                     } else {
 
 
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
-                        prefProvider.setValue(Constants.OLD_ITEM, "")
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM,"")
+                        prefProvider.setValue(Constants.OLD_ITEM,"")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE,"")
 
                         clearObserver()
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
@@ -7494,7 +7500,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 builder.addText("ReceiptID:" + receiptModel?.order?.offlineId)
 
-                if (customerSettingModel.showTeam) {
+                if (customerSettingModel.showTeam && receiptModel?.order?.employee?.name != null) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addTextFont(Builder.FONT_E)
@@ -7613,7 +7619,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     builder.addText(
                         padLine(
-                            if (customerSettingModel.showTeam) {
+                            if (customerSettingModel.showTeam && receiptModel?.order?.employee?.name != null) {
                                 "Employee:" + receiptModel?.order?.employee?.name
                             } else {
                                 ""
@@ -9820,7 +9826,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             actionFeedLine(1)
 
-                            if (receiptModel!!.order.orderTypeName == Constants.PHONE_ORDER_) {
+                            if(receiptModel!!.order.orderTypeName == Constants.PHONE_ORDER_) {
                                 add(
                                     PrinterBuilder()
                                         .styleBold(true)
@@ -9985,7 +9991,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         printer.openAsync().await()
 
-//                        val jobSettings = StarSpoolJobSettings(true, 30, "Print from Android")
+//                val jobSettings = StarSpoolJobSettings(true, 30, "Print from Android")
 
                         printer.printAsync(commands).await()
 
@@ -11898,7 +11904,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             prefProvider.setValue("BEFORE_ORDER_NOTE", "")
         }
         if (this::presentation.isInitialized) {
-            presentation.hide()
+//            presentation.hide()
         }
     }
 

@@ -22,6 +22,7 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.pays.pos.BuildConfig
 import com.pays.pos.R
+import com.pays.pos.data.db.AppDatabase
 import com.pays.pos.data.remote.ApiService
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.IS_MASTER_TERMINAL
@@ -44,7 +45,9 @@ import com.pays.pos.utils.workmanager.UploadWorker2
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -319,6 +322,24 @@ class MenuFragment : DialogFragment() {
         binding.header.txtLogout?.setOnClickListener {
             alert("", "Are you sure you want to Logout?") {
                 this.positiveButton("Logout") {
+
+
+                    dashboardViewModel.apply {
+                        clearCartModelBackup()
+                        deleteCart()
+                        currentCartItems = arrayListOf()
+                        duplicateCurrentCartItem = arrayListOf()
+                        CoroutineScope(Dispatchers.IO).launch{
+                            viewLifecycleOwner.lifecycleScope.async(Dispatchers.IO) {
+                                try {
+                                    AppDatabase.getDatabase(requireActivity().applicationContext)
+                                        .itemDao().delete()
+                                }catch (e:Exception){
+                                    e.printStackTrace()
+                                }
+                            }.await()
+                        }
+                    }
 
                     if (prefProvider.getValue(Constants.ORDER_TYPE, "").isNotEmpty()) {
                         viewLifecycleOwner.lifecycleScope.launch {

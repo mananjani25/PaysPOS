@@ -24,7 +24,6 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -1654,7 +1653,6 @@ class AllOrdersListingFragment(
 
                 order.totalDiscount = order.totalDiscount - itemDiscountTotal
 
-
                 if (order.customer != null) {
                     prefProvider.setValue(
                         Constants.CUSTOMER_NAME,
@@ -1671,6 +1669,11 @@ class AllOrdersListingFragment(
 
                 LogUtil.logE(TAG, "getOrder  ${Gson().toJson(order)}")
                 val updatedCartModel = generateCartModelFromOrderModel(order)
+
+                val completePrice = order.subTotal + updatedCartModel.discountPrice
+
+                updatedCartModel.discountSelectdValue =  order.totalDiscount / completePrice * 100
+
                 dashboardViewModel.addCart(updatedCartModel)
                 dashboardViewModel.setUpdatedCartModel(updatedCartModel)
                 generateCartItemsListFromOrderModel(order)?.let {
@@ -2210,7 +2213,7 @@ class AllOrdersListingFragment(
 
                 builder.addText("ReceiptID:" + receiptModel?.offlineId)
 
-                if (customerSettingModel.showTeam) {
+                if (customerSettingModel.showTeam && receiptModel?.employee?.name != null) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addTextFont(Builder.FONT_E)
@@ -2323,7 +2326,7 @@ class AllOrdersListingFragment(
 
                     builder.addText(
                         padLine(
-                            if (customerSettingModel.showTeam) {
+                            if (customerSettingModel.showTeam && receiptModel?.employee?.name != null) {
                                 "Employee:" + receiptModel.employee?.name
                             } else {
                                 ""
@@ -3367,7 +3370,7 @@ class AllOrdersListingFragment(
                 PrintSunmiUtils.receiptID("ReceiptID:" + receiptModel?.offlineId)
 
 
-                if (customerSettingModel.showTeam) {
+                if (customerSettingModel.showTeam && receiptModel?.employee?.name != null) {
 
                     PrintSunmiUtils.employee("Employee:" + receiptModel?.employee?.name)
 
@@ -3419,7 +3422,7 @@ class AllOrdersListingFragment(
 
 
                     val empName = padLine(
-                        if (customerSettingModel.showTeam) {
+                        if (customerSettingModel.showTeam && receiptModel?.employee?.name != null) {
                             "Employee:" + receiptModel.employee?.name
                         } else {
                             ""
@@ -6420,7 +6423,7 @@ class AllOrdersListingFragment(
                 PrintSunmiUtils.normalText("ReceiptID:" + receiptModel?.offlineId)
 
 
-                if (customerSettingModel.showTeam) {
+                if (customerSettingModel.showTeam && receiptModel?.employee?.name != null) {
 
                     PrintSunmiUtils.normalText("Employee:" + receiptModel?.employee?.name)
 
@@ -6460,7 +6463,7 @@ class AllOrdersListingFragment(
 
 
                     val empName = padLine(
-                        if (customerSettingModel.showTeam) {
+                        if (customerSettingModel.showTeam && receiptModel?.employee?.name != null) {
                             "Employee:" + receiptModel.employee?.name
                         } else {
                             ""

@@ -161,6 +161,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     @set:Inject
     internal var prefProvider: PrefProvider? = null
 
+    private var doubleBackToExitPressedOnce:Boolean = false
+
     @set:Inject
     var hostSelectionInterceptor: HostSelectionInterceptor? = null
 
@@ -1772,7 +1774,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             cloudPrinter.setBoldMode(false)
             cloudPrinter.setCharacterSize(1, 1)
             cloudPrinter.setAlignment(AlignStyle.LEFT)
-            cloudPrinter.printText("Employee:" + obj.employeeName)
+            if (obj.employeeName != null) {
+                cloudPrinter.printText("Employee:" + obj.employeeName)
+            }
 
             cloudPrinter.setCharacterSize(1, 1)
 
@@ -3206,7 +3210,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
         dashboardViewModel.allInventoryItems.observe(this) { it ->
-            if (it.data?.isEmpty() == true) {
+            if (it.data?.isEmpty() == true && navController?.currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
 
                 try {
                     val dialog = Dialog(this)
@@ -3215,7 +3219,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     dialog.setCanceledOnTouchOutside(false)
                     dialog.show()
 
-                    Handler().postDelayed({ dialog.dismiss() }, 15000)
+                        Handler(mainLooper).postDelayed({ dialog.dismiss() }, 15000)
 
                 } catch (e: Exception) {
 
@@ -3523,7 +3527,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
         if (this::presentation.isInitialized) {
-            presentation.hide()
+//            presentation.hide()
             presentation.onDisplayChanged()
         }
         navController?.removeOnDestinationChangedListener(listner)
@@ -3538,11 +3542,65 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         binding.drawerLayout.closeDrawer(GravityCompat.START)
     }
 
-    override fun onBackPressed() {
+   /* override fun onBackPressed() {
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
+        }
+    }*/
+
+    override fun onBackPressed() {
+        /*if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }*/
+
+        try {
+            if (navController?.backStack?.last?.destination?.displayName?.contains("phoneOrderFragment") as Boolean) {
+                prefProvider!!.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                prefProvider!!.setValue(Constants.REDIRECT_FROM, "")
+                prefProvider!!.setValue(Constants.ORDER_TYPE, "")
+                prefProvider!!.setValue(Constants.ORDER_TYPE_NAME, "")
+                prefProvider!!.setValue(Constants.CUSTOMER_NAME, "")
+                prefProvider!!.setValueboolean(Constants.LOYALTY_ADDED, false)
+
+                //                navController?.popBackStack()
+                try {
+                    navController?.popBackStack()
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+
+            } else {
+                if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+                } else {
+                    if (navController!!.currentDestination?.id?.equals(R.id.dashboardCategoryBoldPOS) == true) {
+                        if (doubleBackToExitPressedOnce) {
+                            super.onBackPressed()
+                            return
+                        }
+
+                        this.doubleBackToExitPressedOnce = true
+                        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT)
+                            .show()
+
+                        Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                            doubleBackToExitPressedOnce = false
+                        }, 2000)
+                    } else {
+                        super.onBackPressed()
+                    }
+                }
+            }
+        } catch (e: java.lang.Exception) {
+            if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                binding.drawerLayout.closeDrawer(GravityCompat.START)
+            } else {
+                super.onBackPressed()
+            }
         }
     }
 
