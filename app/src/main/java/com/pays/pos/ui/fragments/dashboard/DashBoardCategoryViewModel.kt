@@ -134,6 +134,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var cashdiscountAmount = 0.0
     var cashDiscountType = ""
     var totalDiscount = 0.0
+    var wholetotalPrice = 0.0
     var tip = 0.0
     var order_note = ""
     var cartModel: CartModel? = null

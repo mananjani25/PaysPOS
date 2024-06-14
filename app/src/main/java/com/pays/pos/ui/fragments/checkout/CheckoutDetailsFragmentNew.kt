@@ -620,7 +620,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val bundle = Bundle()
             bundle.putDouble("totalPrice", WholetotalPrice)
             bundle.putInt("splitValue", isSelectedCount)
-
+            viewModel.wholetotalPrice=WholetotalPrice
             findNavController().navigate(R.id.action_splitFragment_to_splitdialog)
         }
     }
@@ -2409,7 +2409,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
         } else {
             WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
-            viewModel.totalPrice = WholetotalPrice
+                viewModel.totalPrice = WholetotalPrice
         }
 
         WholetotalPrice = getTwoDecimal(WholetotalPrice)
@@ -2581,9 +2581,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         )
         if (this::presentation.isInitialized) {
             presentation.show()
-            presentation.updateTotals(
+            /*presentation.updateTotals(
                 binding.tvCash.text.toString(),
                 binding.tvCard.text.toString()
+            )*/
+            presentation.updateTotals(
+                String.format("%.3f", (viewModel.subTotalPrice+viewModel.totalTax+viewModel.totalServiceCharge)).toDouble().toString(),
+                String.format("%.3f", (viewModel.subTotalPrice+viewModel.totalTax+viewModel.totalServiceCharge+viewModel.cashdiscountAmount)).toDouble().toString()
             )
         }
         binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"

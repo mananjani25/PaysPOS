@@ -11903,7 +11903,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             prefProvider.setValue("BEFORE_ORDER_NOTE", "")
         }
         if (this::presentation.isInitialized) {
-            presentation.hide()
+//            presentation.hide()
         }
     }
 

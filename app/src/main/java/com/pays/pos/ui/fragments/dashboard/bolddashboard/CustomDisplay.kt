@@ -396,7 +396,7 @@ class CustomDisplay(
 
                     binding.txtServiceChargeCash?.text = MethodUtils.roundOffAmount(totalServiceCharge)
                     binding.txtServiceChargeCard?.text = getSurchargedPrice(totalServiceCharge)
-
+//This is being called again, and hence the old value is getting reset
                     binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
                     binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
 
@@ -1783,20 +1783,20 @@ class CustomDisplay(
                 signLinearLayout.gravity = Gravity.CENTER_VERTICAL
             }
 
-            binding.clearSignLayout.setOnClickListener {
+            clearSignLayout.setOnClickListener {
                 binding.signaturePad.clear()
             }
 
-            binding.otherRootLayout.setOnClickListener {
+            otherRootLayout.setOnClickListener {
                 activeTipsListAdapter?.clearSelectedItem()
                 showTipKeypad(wholeTotalPrice)
             }
 
-            binding.noTipRootLayout.setOnClickListener {
+            noTipRootLayout.setOnClickListener {
                 showThankYou(mWholeTotalPrice)
             }
 
-            binding.tvContinue.setOnSingleClickListener {
+            tvContinue.setOnSingleClickListener {
 
                 signatureInBase64 = bitmapToBase64(signaturePad.signatureBitmap)
 
@@ -2269,7 +2269,7 @@ class CustomDisplay(
 
     fun updateTotals(cashTotal: String, cardTotal: String) {
 
-        if (MethodUtils.isEnableCashDiscount(context) && !showCashCreditPrice) {
+       /* if (MethodUtils.isEnableCashDiscount(context) && !showCashCreditPrice) {
             if (prefProvider.getValue(
                     Constants.OPTION_TYPE,
                     "CashDiscount"
@@ -2280,8 +2280,11 @@ class CustomDisplay(
                 binding.txtOrderTotal?.text = cardTotal
             }
         } else {
-            binding.txtTotalCash?.text = cashTotal
-            binding.txtTotalCard?.text = cardTotal
-        }
+            dashBoardCategoryViewModel.totalPrice=cashTotal.substring(1).toDouble()
+            binding.txtTotalCash?.setText(cashTotal)
+            binding.txtTotalCard?.setText(cardTotal)
+            this.onDisplayChanged()
+            this.onContentChanged()
+        }*/
     }
 }
