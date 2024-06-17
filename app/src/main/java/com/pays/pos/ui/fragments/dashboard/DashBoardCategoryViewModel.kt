@@ -4605,7 +4605,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                         LOYALTY_ADDED, false
                     )
                     totalPrice = finalTotal
+                    try {
+                        if (finalTotal >= prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0")
+                                .toDouble()
+                        ) {
+                            wholetotalPrice = finalTotal
+                        }
+                    }catch (e:Exception){
 
+                    }
 
 
                     cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
