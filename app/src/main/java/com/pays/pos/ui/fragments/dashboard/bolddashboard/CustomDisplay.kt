@@ -383,6 +383,7 @@ class CustomDisplay(
 
                     binding.txtServiceChargeCash?.text = getCashDiscountedPrice(totalServiceCharge)
                     binding.txtServiceChargeCard?.text = MethodUtils.roundOffAmount(totalServiceCharge)
+                    Log.v("CustomerScreen Amount_2:", totalPrice.toString())
 
                     binding.txtTotalCash?.text = getCashDiscountedPrice(totalPrice)
                     binding.txtTotalCard?.text = MethodUtils.roundOffAmount(totalPrice)
@@ -397,8 +398,19 @@ class CustomDisplay(
                     binding.txtServiceChargeCash?.text = MethodUtils.roundOffAmount(totalServiceCharge)
                     binding.txtServiceChargeCard?.text = getSurchargedPrice(totalServiceCharge)
 //This is being called again, and hence the old value is getting reset
-                    binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
-                    binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
+//                    Log.v("CustomerScreen Amount_1:", totalPrice.toString())
+//                    Log.v("CustomerScreen Amount_BACKUP_1:", mWholeTotalPrice.toString())
+//                    Log.v("CustomerScreen Amount_BACKUP_2:", dashBoardCategoryViewModel.wholetotalPrice.toString())
+                    if (totalPrice<dashBoardCategoryViewModel.wholetotalPrice){
+                        binding.txtTotalCash?.text = MethodUtils.roundOffAmount(dashBoardCategoryViewModel.wholetotalPrice)
+                        binding.txtTotalCard?.text = getSurchargedPrice(dashBoardCategoryViewModel.wholetotalPrice)
+                        Log.v("CustomerScreen:", "1")
+                    }else{
+                        binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
+                        binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
+                        Log.v("CustomerScreen:", "0")
+
+                    }
 
                 }
 
