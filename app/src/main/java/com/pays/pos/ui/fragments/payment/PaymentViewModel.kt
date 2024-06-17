@@ -1036,6 +1036,10 @@ open class PaymentViewModel @Inject constructor(
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
         }
 
+        if (order_type_id==-1 && cartModel.orderTypeId==7){
+            order_type_id=cartModel.orderTypeId
+        }
+
         orderAttributeRequestModel.orderTypeId = order_type_id
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
         if (future_delivery_date.isNotEmpty())
@@ -1295,7 +1299,7 @@ open class PaymentViewModel @Inject constructor(
         cashdiscountType: String
     ): OrderRequestModel {
 
-        val orderAttributeRequestModel = OrderAttributeRequestModel()
+        var orderAttributeRequestModel = OrderAttributeRequestModel()
 
 
         if (isUpdateOrder)
@@ -1320,26 +1324,52 @@ open class PaymentViewModel @Inject constructor(
                 prefProvider.getValue(Constants.DELIVERY_TYPE, PICK_UP)
         }
 
-        orderAttributeRequestModel.employeeId = cartModel.employeeID
-        orderAttributeRequestModel.locationId = cartModel.locationId
-        orderAttributeRequestModel.terminalId = cartModel.terminalId
-        orderAttributeRequestModel.note = cartModel.note
-        orderAttributeRequestModel.offlineId =
-            if (isUpdateOrder) orderOfflineId.toString() else MethodUtils.randomOfflineId(
-                prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
-            )
+       orderAttributeRequestModel= orderAttributeRequestModel.apply {
+            employeeId=cartModel.employeeID
+            locationId=cartModel.locationId
+            terminalId = cartModel.terminalId
+            note = cartModel.note
+            offlineId =
+                if (isUpdateOrder) orderOfflineId.toString() else MethodUtils.randomOfflineId(
+                    prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+                )
+            LogUtil.logE(TAG, "openOrderType: " + cartModel.orderType)
+            openOrderType = cartModel.orderType
+            orderTypeId = cartModel.orderTypeId
+            orderTypeName = cartModel.orderTypeName
+            paymentStatus = if (isPaid) 1 else 0
+            serviceChargeEnabled = true
+            taxEnabled = true
+            subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
+            totalAmount =
+                MethodUtils.roundOffAmountDouble(totalPrice) - MethodUtils.roundOffAmountDouble(
+                    tipAmount
+                )
+            terminalId = cartModel.terminalId
+            note = cartModel.note
+            offlineId =
+                if (isUpdateOrder) orderOfflineId.toString() else MethodUtils.randomOfflineId(
+                    prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+                )
+
+            openOrderType = cartModel.orderType
+            orderTypeId = cartModel.orderTypeId
+            orderTypeName = cartModel.orderTypeName
+            paymentStatus = if (isPaid) 1 else 0
+            serviceChargeEnabled = true
+            taxEnabled = true
+            subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
+            totalAmount =
+                MethodUtils.roundOffAmountDouble(totalPrice) - MethodUtils.roundOffAmountDouble(
+                    tipAmount
+                )
+
+        }
+//        orderAttributeRequestModel.employeeId = cartModel.employeeID
+//        orderAttributeRequestModel.locationId = cartModel.locationId
+
         LogUtil.logE(TAG, "openOrderType: " + cartModel.orderType)
-        orderAttributeRequestModel.openOrderType = cartModel.orderType
-        orderAttributeRequestModel.orderTypeId = cartModel.orderTypeId
-        orderAttributeRequestModel.orderTypeName = cartModel.orderTypeName
-        orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
-        orderAttributeRequestModel.serviceChargeEnabled = true
-        orderAttributeRequestModel.taxEnabled = true
-        orderAttributeRequestModel.subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)
-        orderAttributeRequestModel.totalAmount =
-            MethodUtils.roundOffAmountDouble(totalPrice) - MethodUtils.roundOffAmountDouble(
-                tipAmount
-            )
+
 
 
         if (cartModel.discountId != null && cartModel.discountId != -1)

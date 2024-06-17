@@ -104,7 +104,10 @@ import java.io.IOException
 import java.net.URI
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 @AndroidEntryPoint
@@ -161,7 +164,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     @set:Inject
     internal var prefProvider: PrefProvider? = null
 
-    private var doubleBackToExitPressedOnce:Boolean = false
+    private var doubleBackToExitPressedOnce: Boolean = false
 
     @set:Inject
     var hostSelectionInterceptor: HostSelectionInterceptor? = null
@@ -3219,7 +3222,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     dialog.setCanceledOnTouchOutside(false)
                     dialog.show()
 
-                        Handler(mainLooper).postDelayed({ dialog.dismiss() }, 15000)
+                    Handler(mainLooper).postDelayed({ dialog.dismiss() }, 15000)
 
                 } catch (e: Exception) {
 
@@ -3542,13 +3545,13 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         binding.drawerLayout.closeDrawer(GravityCompat.START)
     }
 
-   /* override fun onBackPressed() {
-        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            binding.drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
-    }*/
+    /* override fun onBackPressed() {
+         if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+             binding.drawerLayout.closeDrawer(GravityCompat.START)
+         } else {
+             super.onBackPressed()
+         }
+     }*/
 
     override fun onBackPressed() {
         /*if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
