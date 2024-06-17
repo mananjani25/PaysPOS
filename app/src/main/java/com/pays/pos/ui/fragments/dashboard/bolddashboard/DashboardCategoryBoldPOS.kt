@@ -280,7 +280,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         savedInstanceState: Bundle?
     ): View? {
 
-        generateRandomDigits()
 
         if (viewModel.boldPosNeedToRefresh) {
 
@@ -375,107 +374,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
         }
         return binding.root
-    }
-
-
-    private fun generateRandomDigits() {
-        var counter = 0
-
-        while (true) {
-            counter++
-
-            val numbers: IntArray = intArrayOf(
-                6,
-                (0..9).random(),
-                (0..9).random(),
-                (0..9).random(),
-                (0..9).random(),
-                (0..9).random(),
-                (0..9).random(),
-                (0..9).random(),
-                (0..9).random(),
-                (0..9).random()
-            )
-            if (numbers.contains(7))
-                continue
-            if (!numbers.contains(5))
-                continue
-            if (!numbers.contains(8))
-                continue
-
-            var sumSum=sumOfDigits(numbers.sum().toString()).toString()
-            if (!sumSum.equals("4")){
-                continue
-            }
-
-            if (!checkForRepeat(numbers))
-                continue
-
-            Log.v("AZ: ", Gson().toJson(numbers))
-            Log.v(" AZ Sum: ", numbers.sum().toString())
-            if (numbers.sum() > 10) {
-                Log.v("  AZ Sum Sum: ", sumSum)
-            }
-            println("\n")
-
-            if (counter > 10)
-                break
-        }
-
-    }
-
-    private fun checkForRepeat(numbers: IntArray):Boolean {
-
-        var eligible=false
-
-        numbers.distinct().forEach {item->
-            numbers.forEach {
-                var itemCount=numbers.count{it==item}
-
-                if (itemCount>3) {
-                    eligible=false
-                    return@forEach
-                }else{
-                    eligible=true
-                }
-
-                if (item==0 && itemCount>1){
-                    eligible=false
-                    return@forEach
-                }else{
-                    eligible=true
-                }
-
-                if (item==2 && itemCount>1)
-                {
-                    eligible=false
-                    return@forEach
-                }else{
-                    eligible=true
-                }
-
-                if (item==9 && itemCount>1) {
-                    eligible=false
-                    return@forEach
-                }else{
-                    eligible=true
-                }
-
-            }
-        }
-
-        return eligible
-    }
-
-    fun sumOfDigits(str: String): Int {
-        val strArray = str.toList()
-        var sum = 0
-
-        for (i in strArray) {
-            sum += i.toString().toInt()
-        }
-
-        return sum
     }
 
 
