@@ -1436,6 +1436,7 @@ class CustomDisplay(
                     data.isChecked = false
                 }
                 binding.rvActiveTipsList.layoutManager = GridLayoutManager(context, it.data.size)
+//                activeTipsListAdapter?.setList(it.data, wholeTotalPrice)
                 activeTipsListAdapter?.setList(it.data, wholeTotalPrice)
                 activeTipsListAdapter?.setListner(this)
                 lifecycleOwner.lifecycleScope.launch {
