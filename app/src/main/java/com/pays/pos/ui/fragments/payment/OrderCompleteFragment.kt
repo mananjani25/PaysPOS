@@ -35,6 +35,7 @@ import com.epson.eposprint.StatusChangeEventListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.pax.poslink.log.LogFilter.Const
 import com.pays.pos.MainApplication
 import com.pays.pos.R
 import com.pays.pos.aidl.ICallback
@@ -6945,6 +6946,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                                 ),
                                                                                                 KITCHEN
                                                                                             )
+                                                                                        } else {
+                                                                                            try{
+                                                                                                if (receiptModel!!.order.orderType.equals("KioskOpenorder",ignoreCase = true)){
+                                                                                                    initKitchenPrinter(
+                                                                                                        kitchenPrinterList.get(
+                                                                                                            i
+                                                                                                        ),
+                                                                                                        KITCHEN
+                                                                                                    )
+                                                                                                }
+                                                                                            }catch (e:java.lang.Exception){
+
+                                                                                            }
                                                                                         }
                                                                                     }
 
@@ -6972,6 +6986,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                                         }
+                                    } else{
+                                       /* if (prefProvider.getValue(Constants.ORDER_TYPE,"").equals(Constants.KIOSK_OPEN_ORDER)){
+//                                            Print the receipt here
+                                            initKitchenPrinter(kitchenPrinterList.get(
+                                                i
+                                            ), KITCHEN)
+                                        }*/
                                     }
                                 }
 

@@ -53,6 +53,7 @@ import com.pays.pos.data.remote.Constants.OLD_ITEM_BASE_CUSTOM_ITEM
 import com.pays.pos.data.remote.Constants.ONLINE_ORDER_TAB
 import com.pays.pos.data.remote.Constants.OPEN_ORDER_TAB
 import com.pays.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
+import com.pays.pos.data.remote.Constants.ORDER_TYPE
 import com.pays.pos.data.remote.Constants.PHONE_ORDER_TAB
 import com.pays.pos.data.remote.Constants.SUNMI_PRINTER
 import com.pays.pos.data.remote.Constants.THIRD_PARTY_ORDER_TAB
@@ -1460,7 +1461,6 @@ class AllOrdersListingFragment(
             }
 
             "UPDATE" -> {
-
                 prefProvider.setValue(OLD_ITEM_BASE_CUSTOM_ITEM, Gson().toJson(order.orderItems))
 
                 dashboardViewModel.deleteCartBeforeSwitch()
@@ -1496,6 +1496,9 @@ class AllOrdersListingFragment(
                 } else if (order.orderType == PHONE_ORDER_TAB) {
                     prefProvider.setValue(Constants.ORDER_TYPE, Constants.PHONE_ORDER)
                     prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.PHONE_ORDER_)
+                }else if (order.orderType.equals("KioskOpenorder")){
+                    prefProvider.setValue(Constants.ORDER_TYPE,order.orderType)
+                    prefProvider.setValue(Constants.ORDER_TYPE_NAME,order.orderTypeName)
                 }
 
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, order.orderTypeId)

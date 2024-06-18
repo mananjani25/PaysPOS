@@ -1324,6 +1324,7 @@ open class PaymentViewModel @Inject constructor(
                 prefProvider.getValue(Constants.DELIVERY_TYPE, PICK_UP)
         }
 
+        /* The orderAttributeRequestModel is written inside apply because the object was not getting assigned value, i.e. it was loosing the assigned value*/
        orderAttributeRequestModel= orderAttributeRequestModel.apply {
             employeeId=cartModel.employeeID
             locationId=cartModel.locationId
@@ -1363,7 +1364,10 @@ open class PaymentViewModel @Inject constructor(
                 MethodUtils.roundOffAmountDouble(totalPrice) - MethodUtils.roundOffAmountDouble(
                     tipAmount
                 )
-
+           totalServiceCharges =
+               MethodUtils.roundOffAmountDouble(totalServiceCharge)
+           totalTaxAmount = MethodUtils.roundOffAmountDouble(totalTax)
+           totalTips = MethodUtils.roundOffAmountDouble(tipAmount)
         }
 //        orderAttributeRequestModel.employeeId = cartModel.employeeID
 //        orderAttributeRequestModel.locationId = cartModel.locationId
@@ -1375,10 +1379,7 @@ open class PaymentViewModel @Inject constructor(
         if (cartModel.discountId != null && cartModel.discountId != -1)
             orderAttributeRequestModel.discount_id = cartModel.discountId
         orderAttributeRequestModel.totalDiscount = totalDiscount
-        orderAttributeRequestModel.totalServiceCharges =
-            MethodUtils.roundOffAmountDouble(totalServiceCharge)
-        orderAttributeRequestModel.totalTaxAmount = MethodUtils.roundOffAmountDouble(totalTax)
-        orderAttributeRequestModel.totalTips = MethodUtils.roundOffAmountDouble(tipAmount)
+
         cartModel.taxlistDynamic?.forEach { taxData ->
             if (taxData.taxType == "Percentage") {
                 taxData.percentage_value =
@@ -1388,6 +1389,7 @@ open class PaymentViewModel @Inject constructor(
                     MethodUtils.roundOffAmountDouble((100 * taxData.totalTaxTypePrice) / taxData.subTotalAmount!!)
             }
         }
+
         if (cartModel.taxlistDynamic?.isNotEmpty() == true) {
             try {
                 orderAttributeRequestModel.tax_bifurcation_data =
