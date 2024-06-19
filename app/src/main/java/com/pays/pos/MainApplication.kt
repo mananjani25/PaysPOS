@@ -49,7 +49,7 @@ class MainApplication : Application() {
 //        }
 
 //
-//        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false)
+        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
 
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
 

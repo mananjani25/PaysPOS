@@ -1769,7 +1769,8 @@ class CustomDisplay(
         binding.apply {
             askForTipLayout.visible()
             setupActiveTipsList(mTipListViewModel)
-            observeActiveTipsList(wholeTotalPrice)
+//            observeActiveTipsList(wholeTotalPrice)
+            observeActiveTipsList(mPaymentViewModel.actual_Total)
 
             mainCartLayout.gone()
             splashLayout.gone()
