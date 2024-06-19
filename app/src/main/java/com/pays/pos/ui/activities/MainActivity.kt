@@ -3629,7 +3629,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 val orderTypeName = it.asJsonObject.get("order_type").toString()
 
                 if (it.asJsonObject.has("new_order")) {
-                    if (orderTypeName.equals("\"KioskOpenorder\"")  || orderTypeName.equals("\"OnlineWebOrder\"") || orderTypeName.equals("\"OnlineOrder\"")){
+                    if (orderTypeName.equals("\"KioskOpenorder\"", true)  || orderTypeName.equals("\"OnlineWebOrder\"", true) || orderTypeName.equals("\"Online Order\"",true)){
                         setSoundForOnlineOrder()
                     }
                 }
