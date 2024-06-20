@@ -5,35 +5,25 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import android.os.Debug
 import android.os.Handler
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import com.pays.pos.R
+import com.google.firebase.FirebaseApp
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.pax.poslink.CommSetting
+import com.pax.poslink.LogSetting
+import com.pax.poslink.POSLinkAndroid
+import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.utils.paxUtils.Convenience
 import com.pays.pos.utils.paxUtils.SettingINI
 import com.pays.pos.utils.scanner.helpers.AvailableScanner
 import com.pays.pos.utils.scanner.helpers.Barcode
 import com.pays.pos.utils.scanner.helpers.Foreground
 import com.pays.pos.utils.scanner.helpers.ScannerAppEngine
-import com.google.firebase.FirebaseApp
-import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.google.firebase.crashlytics.ktx.crashlytics
-import com.google.firebase.ktx.Firebase
-import com.pax.poslink.CommSetting
-import com.pax.poslink.LogSetting
-import com.pax.poslink.POSLinkAndroid
-import com.pays.pos.ui.activities.MainActivity
-import com.pays.pos.utils.TAG
 import com.zebra.scannercontrol.DCSScannerInfo
 import com.zebra.scannercontrol.SDKHandler
 import dagger.hilt.android.HiltAndroidApp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.io.File
-import kotlin.system.exitProcess
 
 @HiltAndroidApp
 class MainApplication : Application() {
@@ -59,11 +49,16 @@ class MainApplication : Application() {
 //        }
 
 //
+        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
+
+        val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
+
         Thread.setDefaultUncaughtExceptionHandler { paramThread, paramThrowable ->
 
           //  Firebase.crashlytics.log("Error" + Thread.currentThread().stackTrace[2])
             FirebaseCrashlytics.getInstance().log(paramThrowable.message+"")
             FirebaseCrashlytics.getInstance().recordException(paramThrowable)
+            Log.e(getString(R.string.app_name), "Uncaught exception in thread " + paramThread.getName(), paramThrowable);
 
             paramThrowable.localizedMessage?.let {
                 Log.e(
@@ -72,18 +67,21 @@ class MainApplication : Application() {
                 )
             }
 
+            if (defaultHandler != null) {
+                defaultHandler.uncaughtException(paramThread, paramThrowable);
+            }
+
             if(paramThrowable !is com.google.android.gms.dynamite.DynamiteModule.LoadingException)
             {
-
                 paramThrowable.printStackTrace()
                 mainActivity?.finish()
             }
-        }
 
-        try {
+        }
+        /*try {
             FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false)
         } catch (e: Exception) {
-        }
+        }*/
         //bhumit.bhadani@bacancy.com = 10Ce70901@
         //TestFairy.begin(this, "SDK-SrnpgIU9"); // vishal.j.patel+103@bacancy.com/Pos@2022
         instance = this

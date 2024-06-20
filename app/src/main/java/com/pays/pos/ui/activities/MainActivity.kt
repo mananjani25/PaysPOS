@@ -1269,15 +1269,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     }
 
+//    lateinit var time_2_32:DashboardCategoryBoldPOS
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MainApplication.mainActivity = this
         permissionCheck()
 
-
-
-
+//        var b=time_2_32.isOrderUpdate.toString()
         Log.e(TAG, "checkConsumerNullorNot  ${consumer}")
         if (consumer != null) {
             consumer = null

@@ -1436,6 +1436,7 @@ class CustomDisplay(
                     data.isChecked = false
                 }
                 binding.rvActiveTipsList.layoutManager = GridLayoutManager(context, it.data.size)
+//                activeTipsListAdapter?.setList(it.data, wholeTotalPrice)
                 activeTipsListAdapter?.setList(it.data, wholeTotalPrice)
                 activeTipsListAdapter?.setListner(this)
                 lifecycleOwner.lifecycleScope.launch {
@@ -1768,7 +1769,8 @@ class CustomDisplay(
         binding.apply {
             askForTipLayout.visible()
             setupActiveTipsList(mTipListViewModel)
-            observeActiveTipsList(wholeTotalPrice)
+//            observeActiveTipsList(wholeTotalPrice)
+            observeActiveTipsList(mPaymentViewModel.tipOnAmount)
 
             mainCartLayout.gone()
             splashLayout.gone()
