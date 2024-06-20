@@ -1737,6 +1737,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             "checkPaymentAmount",
             "checkPrice   ${paymentAmount}"
         )
+        paymentviewModel.tipOnAmount=paymentAmount
+
         subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
         totalServiceCharge =
             String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
@@ -1832,6 +1834,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     paymentAmount =
                         String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
                 }
+                paymentviewModel.tipOnAmount=paymentAmount
                 paymentAmount += tipAmount
 
                 if (paymentAmount != 0.0) {
