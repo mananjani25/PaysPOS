@@ -26,6 +26,7 @@ import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.callback.ItemCallback
 import com.pays.pos.utils.extensions.alert
 import com.pays.pos.utils.extensions.gone
+import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
@@ -156,7 +157,7 @@ class HideItemWebSiteListing(val clickedPosition: Int) : Fragment(), ItemCallbac
     }
 
     private fun onClick() {
-        binding.txtCreateItem.setOnClickListener {
+        binding.txtCreateItem.setOnSingleClickListener {
             findNavController().navigate(R.id.action_inventory_to_createItem)
         }
 

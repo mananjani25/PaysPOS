@@ -3626,8 +3626,13 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             if (it.asJsonObject.has("cancelled_order") || it.asJsonObject.has("new_order")) {
 
 
-                if (it.asJsonObject.has("new_order"))
-                    setSoundForOnlineOrder()
+                val orderTypeName = it.asJsonObject.get("order_type").toString()
+
+                if (it.asJsonObject.has("new_order")) {
+                    if (orderTypeName.equals("\"KioskOpenorder\"", true)  || orderTypeName.equals("\"OnlineWebOrder\"", true) || orderTypeName.equals("\"Online Order\"",true)){
+                        setSoundForOnlineOrder()
+                    }
+                }
 
                 val intent = Intent()
                 intent.putExtra("message", "refresh")

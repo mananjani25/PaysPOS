@@ -34,6 +34,7 @@ import com.pays.pos.utils.extensions.showAlert
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
+import com.pays.pos.utils.extensions.setOnSingleClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import javax.inject.Inject
@@ -364,7 +365,7 @@ class Customer : Fragment(), ItemCallback {
     private fun configureToolbar() {
         binding.layoutTool.txtTitle.text = "Customers"
 
-        binding.layoutTool.imgDrawer.setOnClickListener {
+        binding.layoutTool.imgDrawer.setOnSingleClickListener {
             findNavController().navigate(R.id.action_customer_to_menuFragment2)
         }
         binding.layoutTool.txtHome.setOnClickListener {

@@ -60,6 +60,7 @@ import com.google.gson.JsonArray
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
+import com.pays.pos.utils.extensions.setOnSingleClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import retrofit2.Call
@@ -247,7 +248,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
         //   viewModel.setCurrentDate(myCalendar)
 
-        binding.includeView.imgDrawer.setOnClickListener {
+        binding.includeView.imgDrawer.setOnSingleClickListener {
             findNavController().navigate(R.id.action_transactionFragment_to_menfragment)
         }
 

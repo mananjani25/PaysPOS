@@ -45,6 +45,7 @@ import com.pays.pos.utils.extensions.toDp
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
+import com.pays.pos.utils.extensions.setOnSingleClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -192,7 +193,7 @@ class DineInFragment : Fragment() {
 //            prefProvider.setValue(Constants.ORDER_TYPE_NAME, "")
             findNavController().popBackStack()
         }
-        binding.layoutHeader.imgDrawer.setOnClickListener {
+        binding.layoutHeader.imgDrawer.setOnSingleClickListener {
             if (findNavController()?.currentDestination?.id == R.id.dineInFragment) {
                 findNavController().navigate(
                     R.id.action_dineInFragment_to_menuFragment
