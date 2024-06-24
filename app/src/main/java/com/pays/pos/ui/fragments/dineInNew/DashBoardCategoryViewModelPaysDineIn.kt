@@ -1,4 +1,4 @@
-package com.pays.pos.ui.fragments.dashboard
+package com.pays.pos.ui.fragments.dineInNew
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -107,7 +107,7 @@ import kotlin.math.ceil
 
 
 @HiltViewModel
-class DashBoardCategoryViewModel @Inject constructor(
+class DashBoardCategoryViewModelPaysDineIn @Inject constructor(
     private val posRepository: PosRepository,
     private val appDatabase: AppDatabase,
     private val prefProvider: PrefProvider,
@@ -139,9 +139,6 @@ class DashBoardCategoryViewModel @Inject constructor(
     var cartModel: CartModel? = null
     var currentCartItems: ArrayList<TbCartItem> = arrayListOf()
     var duplicateCurrentCartItem: ArrayList<TbCartItem> = arrayListOf()
-
-    var oldDineInItems: ArrayList<TbCartItem>  = arrayListOf()
-    var isDineInUpdate = false
 
     /**
      * Tracking main cart discount
@@ -3475,15 +3472,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                             "newUpdatedItem:: " + Gson().toJson(newUpdatedItem)
                         )
                         newUpdatedItem.guestIndexForDineIn = this.dineInHeaderPosition
+                        newUpdatedItem.orderType = prefProvider.getOrderTypeName("order_type_name","")
                         if (addNewEntry) {
                             viewModelScope.launch {
                                 newUpdatedItem.cartItemId =
-                                    this@DashBoardCategoryViewModel.getLatestPrimaryKey() + 1
+                                    this@DashBoardCategoryViewModelPaysDineIn.getLatestPrimaryKey() + 1
                             }
-                         //   currentCartItems.add(newUpdatedItem)
+                           // currentCartItems.add(newUpdatedItem)
                             addItemToCartItems(newUpdatedItem)
                         } else {
-                        //    currentCartItems.add(newUpdatedItem)
+                          //  currentCartItems.add(newUpdatedItem)
                             addItemToCartItems(newUpdatedItem)
                         }
                         cartModel?.let { addCart(it) }
@@ -3507,12 +3505,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                             if (addNewEntry) {
                                 viewModelScope.launch {
                                     newUpdatedItem.cartItemId =
-                                        this@DashBoardCategoryViewModel.getLatestPrimaryKey() + 1
+                                        this@DashBoardCategoryViewModelPaysDineIn.getLatestPrimaryKey() + 1
                                 }
-                            //    currentCartItems.add(newUpdatedItem)
-                             //   addItemToCartItems(newUpdatedItem)
+                           //     currentCartItems.add(newUpdatedItem)
+                                addItemToCartItems(newUpdatedItem)
                             } else {
-                             //   currentCartItems.add(newUpdatedItem)
+                          //      currentCartItems.add(newUpdatedItem)
                                 addItemToCartItems(newUpdatedItem)
                             }
                             cartModel?.let { addCart(it) }
@@ -3544,7 +3542,6 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
         }
-     //   oldDineInItems.clear()
     }
 
     private fun combineItem(list: ArrayList<TbItem>, item: TbItem, index: Int): List<TbItem> {
@@ -6381,13 +6378,6 @@ class DashBoardCategoryViewModel @Inject constructor(
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
             note = cartModel.note
             openOrderType = "DineIn"
-
-            val isDineInUpdate = prefProvider.getValueboolean(DINE_IN_UPDATE,false)
-
-            if(prefProvider.getValueboolean(DINE_IN_UPDATE,false)){
-                orderId =  prefProvider.getValueInt("DINE_IN_ORDER_UPDATE",0)
-                cartModel.orderId = orderId
-            }
             orderTypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 2)
             orderTypeName = prefProvider.getValue(ORDER_TYPE_NAME, DINE_IN)
             tax_bifurcation_data = Gson().toJson(cartModel.taxlistDynamic)

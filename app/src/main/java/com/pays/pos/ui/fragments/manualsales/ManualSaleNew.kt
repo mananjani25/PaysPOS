@@ -341,7 +341,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         binding.layoutHeader.txtDineIn.setOnClickListener {
             try {
                 prefProvider.setValue(Constants.REDIRECT_FROM, "")
-                findNavController().navigate(R.id.action_manualSalesNew_to_dineInFragment)
+                findNavController().navigate(R.id.action_manualSalesNew_to_dineInFragmentPays)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

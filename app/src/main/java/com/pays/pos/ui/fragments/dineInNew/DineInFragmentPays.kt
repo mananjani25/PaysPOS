@@ -1,4 +1,4 @@
-package com.pays.pos.ui.fragments.dinein
+package com.pays.pos.ui.fragments.dineInNew
 
 import android.graphics.Color
 import android.os.Bundle
@@ -33,7 +33,6 @@ import com.pays.pos.data.remote.Constants.OCCUPIED
 import com.pays.pos.databinding.FragmentDineInBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
-import com.pays.pos.ui.adapter.DineInFloorNameListAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.LogUtil
@@ -45,17 +44,18 @@ import com.pays.pos.utils.extensions.toDp
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
-import com.pays.pos.ui.fragments.dineInNew.DashBoardCategoryViewModelPaysDineIn
+import com.pays.pos.data.remote.Constants.DINE_IN_UPDATE
+import com.pays.pos.ui.fragments.dineInNew.adapter.DineInFloorNameListAdapterPays
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DineInFragment : Fragment() {
+class DineInFragmentPays : Fragment() {
 
     private lateinit var binding: FragmentDineInBinding
-    private lateinit var dineInFloorNameListAdapter: DineInFloorNameListAdapter
-    private val viewModel by viewModels<DineInViewModel>()
+    private lateinit var dineInFloorNameListAdapter: DineInFloorNameListAdapterPays
+    private val viewModel by viewModels<DineInViewModelPays>()
     private var dineInFloorNameList = ArrayList<GetFloorPlanResponse.Data>()
     private var dineInFloorTablesList = ArrayList<GetFloorPlanResponse.Data.FloorPlanTable>()
     private val TAG = this.javaClass.name.toString()
@@ -70,6 +70,9 @@ class DineInFragment : Fragment() {
     lateinit var prefProvider: PrefProvider
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //set dine in update false
+        prefProvider.setValueboolean(DINE_IN_UPDATE,false)
 
     }
 
@@ -224,7 +227,7 @@ class DineInFragment : Fragment() {
 
 
     private fun setUpRecyclerView() {
-        dineInFloorNameListAdapter = DineInFloorNameListAdapter(viewModel)
+        dineInFloorNameListAdapter = DineInFloorNameListAdapterPays(viewModel)
         binding.rvFloorName.layoutManager =
             LinearLayoutManager(requireActivity(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvFloorName.adapter = dineInFloorNameListAdapter
@@ -509,7 +512,6 @@ class DineInFragment : Fragment() {
                             llMainParentSquare.background =
                                 resources.getDrawable(R.drawable.background_free_table)
                         }
-
 
                         binding.flFloorPlan.addView(llMainParentSquare, paramsSquare)
 

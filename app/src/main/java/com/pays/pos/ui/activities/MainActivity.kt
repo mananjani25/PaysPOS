@@ -567,10 +567,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private var syncFloorPlan = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
             Log.e("SyncFloorPlan", "onReceiveSync")
-            if (findNavController(R.id.navHostFrag).currentDestination?.id == R.id.dineInFragment) {
+            if (findNavController(R.id.navHostFrag).currentDestination?.id == R.id.dineInFragmentPays) {
 
-                navController?.popBackStack(R.id.dineInFragment, true)
-                navController?.navigate(R.id.dineInFragment)
+                navController?.popBackStack(R.id.dineInFragmentPays, true)
+                navController?.navigate(R.id.dineInFragmentPays)
 
             }
         }

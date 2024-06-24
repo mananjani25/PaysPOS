@@ -1562,9 +1562,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                             )
                                         )
                                         Log.d(TAG, "dineintest item: " + Gson().toJson(item))
+
+                                        val finalList = viewModel.currentCartItems + viewModel.oldDineInItems
+
+
                                         //insert dine in
                                         viewModel.updateDineInCart(
-                                            viewModel.currentCartItems,
+                                            finalList,
                                             item,
                                             Constants.ADD,
                                             false,
@@ -5386,11 +5390,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             )
                         }
                         prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
-                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
+                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragmentPays)
                     }
                 } else {
                     prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragmentPays)
                 }
             }
         } else {
@@ -5399,7 +5403,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 // prefProvider.setValue(ORDER_TYPE, DINE_IN)
                 prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragmentPays)
             }
         }
     }

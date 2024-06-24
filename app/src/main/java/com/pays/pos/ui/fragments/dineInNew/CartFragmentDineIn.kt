@@ -1,4 +1,4 @@
-package com.pays.pos.ui.fragments.dashboard.bolddashboard
+package com.pays.pos.ui.fragments.dineInNew
 
 import android.os.Bundle
 import android.text.SpannableString
@@ -16,7 +16,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -72,8 +71,8 @@ import com.pays.pos.ui.adapter.OrderTypeAdapter
 import com.pays.pos.ui.adapter.boldpos.CartItemsAdapter
 import com.pays.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.pays.pos.ui.fragments.dineInNew.DashBoardCategoryViewModelPaysDineIn
-import com.pays.pos.ui.fragments.dineInNew.DineInOrderTableViewModelPays
+import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
+import com.pays.pos.ui.fragments.dineInNew.customerDisplay.CustomDisplayPays
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
@@ -95,11 +94,10 @@ import java.lang.System
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
-class CartFragment(
+class CartFragmentDineIn(
     val itemClickListner: ItemClickListner?,
     val itemListner: ItemListner?,
     val isFromPaymentDinein: Boolean = false,
@@ -117,7 +115,7 @@ class CartFragment(
     lateinit var apiService: ApiService
 
 
-    private lateinit var presentation: CustomDisplay
+    private lateinit var presentation: CustomDisplayPays
     private var isSaveOrder: Boolean = false
     private lateinit var binding: FragmentCartBinding
     var fragmentId: Int? = null
@@ -133,14 +131,14 @@ class CartFragment(
     private var paymentId: Int? = null
     private var future_delivery_time: String = ""
     lateinit var cashDiscountModel: CashDiscountModel
-    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
+    private val dineInViewModel by viewModels<DineInOrderTableViewModelPays>()
     var cashDiscountType = ""
     var cartlist: ArrayList<CartModel> = arrayListOf()
     var tempList: JSONArray? = null
     private var tempStored: Boolean = false
     var itemModified = false
     var cartModelsList: ArrayList<CartModel> = arrayListOf()
-    private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val viewModel by activityViewModels<DashBoardCategoryViewModelPaysDineIn>()
     private val viewModelPayment by activityViewModels<PaymentViewModel>()
     var updateBundle: Bundle? = null
     var isFromPayment: Boolean = false
@@ -183,7 +181,7 @@ class CartFragment(
         LogUtil.logE("bundleData", arguments.toString())
 
         getCustomerDisplay(requireContext())?.let { display ->
-            presentation = CustomDisplay(
+            presentation = CustomDisplayPays(
                 display,
                 requireContext(),
                 viewLifecycleOwner,
@@ -771,7 +769,7 @@ class CartFragment(
     }
 
     private fun checkDineInEditOrder() {
-        if (/*arguments?.getBoolean("is_dine_in_edit") == */true) {
+        if (arguments?.getBoolean("is_dine_in_edit") == true) {
             val dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
             val dineInItemsList =
                 arguments?.getParcelableArrayList<TbCartItem>("dine_in_cart_items")
@@ -1103,12 +1101,7 @@ class CartFragment(
 
                 viewModel.observeLatestCartModel().observe(viewLifecycleOwner) {
                     var latestCartModel: CartModel? = null
-
-                    if(it.isNotEmpty())
-                        cartModelsList = ArrayList(it)
-
-                    if(it!=null)
-                    if (it.isNotEmpty() && (viewModel.cartFooterNeedToBeUpdated || prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN)) {
+                    if (it.isNotEmpty() && viewModel.cartFooterNeedToBeUpdated) {
                         latestCartModel = it[0]
 
                         if (latestCartModel.discountPrice == 0.0) {
@@ -1253,7 +1246,7 @@ class CartFragment(
                             if (it.isEmpty()) {
                                 // Flag is used to update cart if last item from the cart will be deleted
                                 try {
-                                    if (this@CartFragment::prefProvider.isInitialized && prefProvider.getValueboolean(
+                                    if (this@CartFragmentDineIn::prefProvider.isInitialized && prefProvider.getValueboolean(
                                             IS_LAST_ITEM_DELETE,
                                             false
                                         )
@@ -1409,8 +1402,7 @@ class CartFragment(
 
 
                                         viewModel.currentCartItems.clear()
-                                        viewModel.currentCartItems.addAll(it+viewModel.oldDineInItems)
-                                        //viewModel.oldDineInItems.clear()
+                                        viewModel.currentCartItems.addAll(it)
                                         Log.e(
                                             TAG,
                                             "getDineInListSize  ${viewModel.currentCartItems.size}"
@@ -1624,7 +1616,7 @@ class CartFragment(
                             }
 
                             runOnUiThread(Runnable {
-                                if (this@CartFragment::presentation.isInitialized) {
+                                if (this@CartFragmentDineIn::presentation.isInitialized) {
                                     if (!presentation.isShowing)
                                         presentation.show()
                                     if (it.isNotEmpty()) {
@@ -1659,7 +1651,7 @@ class CartFragment(
                     } else {
                         Log.e("Cart Blank Tracked", "Cart Going BLANK ->>>>>>")
 
-                        viewModel.setCurrentCartItems(viewModel.duplicateCurrentCartItem+viewModel.oldDineInItems )
+                        viewModel.setCurrentCartItems(viewModel.duplicateCurrentCartItem)
 
 //                        CoroutineScope(Dispatchers.IO).launch {
 //
@@ -2404,7 +2396,7 @@ class CartFragment(
                 //cartModelsList[0] = viewModel.generateCombinedItems(viewModel.cartModel!!)
 
                 if (cartModelsList.isNotEmpty()) {
-                    if (prefProvider.getValueboolean(DINE_IN_UPDATE, true)) {
+                    if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
                         var itemCount = 0
                         /*for (i in cartlist.indices) {
                             for (j in cartlist[i].dineInList?.indices!!) {
@@ -2456,9 +2448,9 @@ class CartFragment(
                                 orderId?.let { it1 -> viewModel.updateOrderCall(it1, request) }
                             }
 
-//                            prefProvider.setValueboolean(DINE_IN_UPDATE, false)
-//                            prefProvider.setValueboolean(DINE_IN_LIST_EDIT, false)
-//                            prefProvider.setValueboolean(DINE_IN_UPDATE, false)
+                            prefProvider.setValueboolean(DINE_IN_UPDATE, false)
+                            prefProvider.setValueboolean(DINE_IN_LIST_EDIT, false)
+                            prefProvider.setValueboolean(DINE_IN_UPDATE, false)
 
 
                         }

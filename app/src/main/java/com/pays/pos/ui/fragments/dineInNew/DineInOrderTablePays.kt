@@ -1,4 +1,4 @@
-package com.pays.pos.ui.fragments.dinein
+package com.pays.pos.ui.fragments.dineInNew
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -84,6 +84,8 @@ import com.epson.eposprint.Print
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.pays.pos.ui.fragments.dineInNew.customerDisplay.CustomDisplayPays
+import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
@@ -99,7 +101,7 @@ import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
-class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
+class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
     private lateinit var presentation: CustomDisplay
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
@@ -168,7 +170,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     @Inject
     lateinit var prefProvider: PrefProvider
-    private val viewModel by viewModels<DineInOrderTableViewModel>()
+    private val viewModel by viewModels<DineInOrderTableViewModelPays>()
     private val viewModelPayment by activityViewModels<CheckoutDineInPaymentViewModel>()
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -188,16 +190,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         progressDialog()
         optionType = prefProvider.getValue(Constants.OPTION_TYPE, "")
-        getCustomerDisplay(requireContext())?.let { display ->
-            presentation = CustomDisplay(
-                display,
-                requireContext(),
-                viewLifecycleOwner,
-                dashboardViewModel,
-                passcodeViewModel,
-                viewModel
-            )
-        }
+//        getCustomerDisplay(requireContext())?.let { display ->
+//            presentation = CustomDisplay(
+//                display,
+//                requireContext(),
+//                viewLifecycleOwner,
+//                dashboardViewModel,
+//                passcodeViewModel,
+//                viewModel
+//            )
+//        }
         observeShowProgress()
         setupSnackbar()
         getCustomerList()
@@ -928,6 +930,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             val newList: ArrayList<DineInModel> = arrayListOf()
 
             dashboardViewModel.dineInHeaderPosition = 0
+            dashboardViewModel.isDineInUpdate = true
             for (i in 0 until list.size) {
                 val model = DineInModel()
                 if (list[i].isHeader == 0) {
@@ -1008,6 +1011,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
             bundle.putParcelableArrayList("dine_in_cart_items", dashboardViewModel.currentCartItems)
 
+           // dashboardViewModel.oldDineInItems = dashboardViewModel.currentCartItems
+
             LogUtil.logE(
                 "OrderFre",
                 "APIDISc  ${getOrderDetailsResponse?.totalDiscount?.toDouble()}"
@@ -1028,6 +1033,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 "dineIndorderId:   ${orderId}  >> ${getOrderDetailsResponse?.orderTypeName ?: DINE_IN}"
             )
 
+            prefProvider.setValueInt("DINE_IN_ORDER_UPDATE",orderId?:0)
             prefProvider.setValueboolean(DINE_IN_UPDATE, true)
             prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
             prefProvider.setValueInt(
