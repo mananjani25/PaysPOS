@@ -92,6 +92,7 @@ import java.lang.System
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -3500,7 +3501,27 @@ class CartFragment(
 
         viewModel.orderTypes().observe(requireActivity()) {
 
-            it.data?.let { it1 -> orderTypeAdapter?.addAll(it1.filter { it.primaryOrderType }) }
+            val orderTypesToShow= it?.data?.let { it1 -> ArrayList(it1) }
+
+            /**
+             * List contains order types that we don't want to show on POS order types
+             *
+             */
+            val orderTypesToRemove = listOf("OnlineWebOrder","OnlineOrder","KioskTakeout","OnlineWebOrder","KioskOpenorder")
+
+            orderTypesToRemove.forEach { orderTypeToRemove ->
+
+                val found = orderTypesToShow?.filter { it.orderType.equals(orderTypeToRemove,true) }
+
+                if(found?.isNotEmpty() == true)
+                    orderTypesToShow.remove(found.first())
+            }
+
+            orderTypesToShow?.removeIf { orderType ->
+                orderTypesToRemove.contains(orderType.orderType)
+            }
+
+            orderTypesToShow?.let { it1 -> orderTypeAdapter?.addAll(it1.filter { it.primaryOrderType }) }
         }
 
     }
