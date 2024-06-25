@@ -64,6 +64,7 @@ import com.pax.poslink.ProcessTransResult
 import com.google.gson.reflect.TypeToken
 import com.pax.poslink.ReportRequest
 import com.pays.pos.data.model.requestModel.RefundRequestModel
+import com.pays.pos.ui.activities.MainActivity
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
@@ -328,6 +329,9 @@ class TransactionDetailsFragment : Fragment() {
                 mLastClickTime = SystemClock.elapsedRealtime()
                 if (!paymentDetailsResponse.data.ext_data.isNullOrEmpty()) {
 //                    Check if the transaction is void or not
+                    CoroutineScope(Dispatchers.Main).launch {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
                     checkIfTransactionIsVoided()
                 } else {
                     startRefund()
@@ -503,6 +507,9 @@ class TransactionDetailsFragment : Fragment() {
                 val resultTxt = response.ResultTxt
 
                 if (resultCode == "000000") {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        ProgressUtils.dismissProgressDialog()
+                    }
                     showConfirmationAlertDialog()
                     Log.d("Data::", "void transaction")
                 } else if (resultCode == "100023") {
@@ -627,24 +634,48 @@ class TransactionDetailsFragment : Fragment() {
     }
 
     private fun refundCall(refundAmount: Double) {
+        val ordersItemList =
+            mutableListOf<RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute>()
 
-       var refundData = RefundRequestModel().apply {
-            paymentRefund = RefundRequestModel.PaymentRefund().apply {
-                amount = paymentDetailsResponse.data.sub_total
-                orderId = paymentDetailsResponse.data.order_id
-                paymentId = paymentId
-                employeeId = paymentDetailsResponse.data.employee_id
-                terminalId = paymentDetailsResponse.data.terminal_id
-                taxRefunded = paymentDetailsResponse.data.tax_amount
-                tipsRefunded =
-                    if (paymentDetailsResponse.data.payment_type == "Cash") 0.0 else paymentDetailsResponse.data.tips
-                serviceChargeRefunded =
-                    paymentDetailsResponse.data.service_charge_amount
-                cash_discount_or_surcharge_refunded =
-                    paymentDetailsResponse.data.cash_discount_or_surcharge
-                subtotal_refunded = paymentDetailsResponse.data.sub_total
-            }
+        paymentDetailsResponse.data.order.order_items.forEach {
+            val order =
+                RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute()
+
+            order.orderId = it.orderId
+            order.orderItemId = it.id
+            order.paymentId = paymentId
+            order.amount = it.totalPrice
+            order.quantity = it.quantity
+            order.refundType = 0
+            order.employeeId =
+                prefProvider.getValueInt(
+                    Constants.EMPLOYEE_ID,
+                    0
+                )
+            ordersItemList.add(order)
+
         }
+
+        var refundData = RefundRequestModel()
+        var paymentRefund = RefundRequestModel.PaymentRefund()
+        refundData.paymentRefund = paymentRefund
+
+
+        paymentRefund.amount = paymentDetailsResponse.data.sub_total
+        paymentRefund.orderId = paymentDetailsResponse.data.order_id
+        paymentRefund.paymentId = paymentId
+        paymentRefund.employeeId = paymentDetailsResponse.data.employee_id
+        paymentRefund.terminalId = paymentDetailsResponse.data.terminal_id
+        paymentRefund.taxRefunded = paymentDetailsResponse.data.tax_amount
+        paymentRefund.orderItemRefundsAttributes = ordersItemList
+        paymentRefund.tipsRefunded =
+            if (paymentDetailsResponse.data.payment_type == "Cash") 0.0 else paymentDetailsResponse.data.tips
+        paymentRefund.serviceChargeRefunded =
+            paymentDetailsResponse.data.service_charge_amount
+        paymentRefund.cash_discount_or_surcharge_refunded =
+            paymentDetailsResponse.data.cash_discount_or_surcharge
+        paymentRefund.subtotal_refunded = 0.0
+
 
         viewModel.refundPaymentApiCall(
             refundAmount,
@@ -1133,9 +1164,43 @@ class TransactionDetailsFragment : Fragment() {
         )
     }
 
+
+    private fun reloadScreen() {
+        val bundle = Bundle().apply {
+            putInt("orderId", orderId)
+            putInt("paymentId", paymentId)
+        }
+
+        val id = findNavController().currentDestination?.id
+        findNavController().popBackStack(id!!,true)
+        findNavController().navigate(id,bundle)
+    }
+
+
+
+
     @SuppressLint("SetTextI18n")
     private fun navigate() {
         ProgressUtils.showProgressDialog(requireActivity())
+
+        viewModel.dataRefundDone.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { createTaxResponse ->
+                activity?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(it,createTaxResponse.message,object:
+                        DialogInterface.OnClickListener{
+                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                            try {
+                                reloadScreen()
+                                p0?.dismiss()
+                            } catch (e: Exception) {
+                            }
+                        }
+                    })
+
+                }
+            }
+        }
+
         viewModel.dataPayment.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 paymentDetailsResponse = it
