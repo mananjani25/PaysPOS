@@ -920,7 +920,12 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                         binding.root.showAlert(resource.message)
                     }
                     Status.LOADING -> {
-                        ProgressUtils.showProgressDialog(requireActivity())
+                        try {
+                            ProgressUtils.showProgressDialog(requireActivity())
+                        }catch (e:Exception) {
+                            e.printStackTrace()
+                        }
+
                     }
                 }
             }
@@ -975,7 +980,11 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
                     }
                     Status.LOADING -> {
-                        ProgressUtils.showProgressDialog(requireActivity())
+                        try{
+                            ProgressUtils.showProgressDialog(requireActivity())
+                        }catch (e:Exception) {
+                            e.printStackTrace()
+                        }
                     }
                 }
             }
@@ -1023,7 +1032,12 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
                     }
                     Status.LOADING -> {
-                        ProgressUtils.showProgressDialog(requireActivity())
+
+                        try{
+                            ProgressUtils.showProgressDialog(requireActivity())
+                        }catch (e:Exception) {
+                            e.printStackTrace()
+                        }
                     }
                 }
             }
@@ -1062,7 +1076,11 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
                     }
                     Status.LOADING -> {
-                        ProgressUtils.showProgressDialog(requireActivity())
+                        try{
+                            ProgressUtils.showProgressDialog(requireActivity())
+                        }catch (e:Exception) {
+                            e.printStackTrace()
+                        }
                     }
                 }
             }

@@ -1283,9 +1283,14 @@ class TransactionDetailsFragment : Fragment() {
                 }
 
                 if (paymentDetailsResponse.data.tips > 0) {
+                    val amount = if (paymentDetailsResponse.data.payment_type.equals(
+                            "cash",
+                            true
+                        )
+                    ) (paymentDetailsResponse.data.amount + paymentDetailsResponse.data.cash_discount_or_surcharge) else (paymentDetailsResponse.data.amount - paymentDetailsResponse.data.cash_discount_or_surcharge)
                     val percentageTip = MethodUtils.calculatePercentageFromAmount(
                         paymentDetailsResponse.data.tips,
-                        paymentDetailsResponse.data.amount
+                        amount
                     )
                     binding.tvTipLabel.text = "Tip (${
                         String.format(
