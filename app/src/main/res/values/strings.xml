@@ -929,7 +929,7 @@
     <string name="network_error">Network Error</string>
     <string name="add_item_note">Add Item Note</string>
     <string name="single_void_message">"Batch is not closed for this transaction. It can be refunded only once."</string>
-    <string name="single_void_message_1">"Please confirm you want to void"</string>
+    <string name="single_void_message_1">"Please confirm if you want to void this transaction."</string>
 
 
 </resources>
