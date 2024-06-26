@@ -350,15 +350,18 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                 categoryList1.forEach { categories ->
                     val itemList = categories.inventoryLists
                     itemList?.filter { it?.isHide == true }?.forEach { tbItem ->
-                        searchList.add(
-                            CategorySearchData(
-                                tbItem?.itemId ?: 0,
-                                tbItem?.name ?: "",
-                                tbItem?.imageUrl.toString(),
-                                categories.category.name ?: "",
-                                categories.category.id
+
+                        if(tbItem?.isDeleted == false) {
+                            searchList.add(
+                                CategorySearchData(
+                                    tbItem?.itemId ?: 0,
+                                    tbItem?.name ?: "",
+                                    tbItem?.imageUrl.toString(),
+                                    categories.category.name ?: "",
+                                    categories.category.id
+                                )
                             )
-                        )
+                        }
                     }
                 }
 
