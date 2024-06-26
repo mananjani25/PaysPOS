@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.ProgressDialog
 import android.content.*
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
@@ -13,11 +12,7 @@ import android.media.RingtoneManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.StrictMode
+import android.os.*
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
@@ -91,6 +86,7 @@ import com.pays.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.pays.pos.ui.fragments.settings.hardware.Hardware
 import com.pays.pos.ui.fragments.settings.hardware.printer.UpdatePrinters
 import com.pays.pos.utils.*
+import com.pays.pos.utils.FileUtils
 import com.pays.pos.utils.extensions.alert
 import com.pays.pos.utils.statusUtils.Status
 import com.pays.pos.utils.workmanager.ThreadPoolManager
@@ -1269,14 +1265,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     }
 
-//    lateinit var time_2_32:DashboardCategoryBoldPOS
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MainApplication.mainActivity = this
         permissionCheck()
 
-//        var b=time_2_32.isOrderUpdate.toString()
         Log.e(TAG, "checkConsumerNullorNot  ${consumer}")
         if (consumer != null) {
             consumer = null

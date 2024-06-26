@@ -7,38 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.pays.pos.data.dao.BusinessDetailsDao
-import com.pays.pos.data.dao.CancelOrderReasonsDao
-import com.pays.pos.data.dao.CartDao
-import com.pays.pos.data.dao.CashDiscountsDao
-import com.pays.pos.data.dao.CategoryDao
-import com.pays.pos.data.dao.CountryListDao
-import com.pays.pos.data.dao.CustomerDao
-import com.pays.pos.data.dao.CustomerSettingsDao
-import com.pays.pos.data.dao.DBItemDao
-import com.pays.pos.data.dao.DiscountDao
-import com.pays.pos.data.dao.EODReportDao
-import com.pays.pos.data.dao.EmployeeDao
-import com.pays.pos.data.dao.ItemModifierSetsDao
-import com.pays.pos.data.dao.KitchenSettingsDao
-import com.pays.pos.data.dao.LoyaltyProgramsDao
-import com.pays.pos.data.dao.ModifierSetDao
-import com.pays.pos.data.dao.ModuleDao
-import com.pays.pos.data.dao.NotesDao
-import com.pays.pos.data.dao.OptionSetDao
-import com.pays.pos.data.dao.OrderTypeDao
-import com.pays.pos.data.dao.PAXDao
-import com.pays.pos.data.dao.PrinterDao
-import com.pays.pos.data.dao.PrinterQueueDao
-import com.pays.pos.data.dao.ServiceChargeDao
-import com.pays.pos.data.dao.SplitListDao
-import com.pays.pos.data.dao.TaxDao
-import com.pays.pos.data.dao.TeamRoleDao
-import com.pays.pos.data.dao.TerminalsDao
-import com.pays.pos.data.dao.TimeZonesDao
-import com.pays.pos.data.dao.TipsDao
-import com.pays.pos.data.dao.WastageReasonsDao
-import com.pays.pos.data.dao.cardReaderDao
+import com.pays.pos.data.dao.*
 import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.CharacterModel
 import com.pays.pos.data.model.PrinterQueueModel
@@ -88,8 +57,8 @@ import com.pays.pos.data.typeconvert.TypeConvertorPhone
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, PAXData::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class,
-        VenueDetailsResponse.Data.WastageReason::class, TbCartItem::class, CartModelBackup::class],
-    version = 17
+        VenueDetailsResponse.Data.WastageReason::class, TbCartItem::class, CartModelBackup::class, OrderTypeBackup::class],
+    version = 18
 )
 @TypeConverters(
     TypeConvertersItems::class,
@@ -155,6 +124,7 @@ public abstract class AppDatabase : RoomDatabase() {
     abstract fun timeZonesDao(): TimeZonesDao
     abstract fun printerQueueDao(): PrinterQueueDao
     abstract fun wastageReasonsDao(): WastageReasonsDao
+    abstract fun orderTypeBackupDao(): OrderTypeBackupDao
 
     companion object {
 

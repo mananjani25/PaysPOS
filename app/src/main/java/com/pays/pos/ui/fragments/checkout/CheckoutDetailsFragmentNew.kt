@@ -617,19 +617,30 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val bundle = Bundle()
             bundle.putDouble("totalPrice", WholetotalPrice)
             bundle.putInt("splitValue", isSelectedCount)
-            viewModel.wholetotalPrice=WholetotalPrice
+            viewModel.wholetotalPrice = WholetotalPrice
             findNavController().navigate(R.id.action_splitFragment_to_splitdialog)
         }
     }
 
     private fun observeData() {
+        paymentviewModel.orderCreate.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                viewModel.activeOrderTypeName=""
+                viewModel.activeOrderTypeId=0
+                viewModel.activeOrderTypeText=""
+                viewModel.deleteOrderTypeBackupByName(
+                   prefProvider.employeeId()
+                )
+            }
+        }
+
+
         paymentviewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 LogUtil.logE(TAG, "receiptData: ${Gson().toJson(it.data)}")
                 viewModel.redeemLoyaltyInfo = RedeemLoyaltyInfo()
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
                 viewModel.updateActiveOrderFlagClear()
-
                 prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, false)
                 prefProvider.setValueboolean(IS_ORDER_REDEEMABLE_WITH_GIFT_CARD, false)
                 prefProvider.setValue(GIFT_CARD_NUMBER, "")
@@ -1737,7 +1748,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             "checkPaymentAmount",
             "checkPrice   ${paymentAmount}"
         )
-        paymentviewModel.tipOnAmount=paymentAmount
+        paymentviewModel.tipOnAmount = paymentAmount
 
         subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
         totalServiceCharge =
@@ -1807,7 +1818,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         binding.llCreditCard.setOnSingleClickListener {
 
-            if(InternetUtils.isInternetAvailable(applicationContext = requireActivity().applicationContext)) {
+            if (InternetUtils.isInternetAvailable(applicationContext = requireActivity().applicationContext)) {
 
                 restrictTvCashClicks()
 
@@ -1834,7 +1845,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     paymentAmount =
                         String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
                 }
-                paymentviewModel.tipOnAmount=paymentAmount
+                paymentviewModel.tipOnAmount = paymentAmount
                 paymentAmount += tipAmount
 
                 if (paymentAmount != 0.0) {
@@ -1874,7 +1885,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 } else {
                     errorDisplay("Payment Amount is zero.")
                 }
-            }else
+            } else
                 errorDisplay("Please check your Network Connectivity.")
             //  makePaymentCreditCard()
         }
@@ -1904,7 +1915,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         binding.tvCash0.setOnSingleClickListener {
 
-            if(InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
+            if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
 
                 restrictTvCashClicks()
 
@@ -1920,51 +1931,51 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
         binding.tvCash1.setOnSingleClickListener {
 
-            if(InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
+            if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
 
                 restrictTvCashClicks()
 
                 custom_paymentAmount =
                     binding.tvCash1.text.toString().replace("$", "").trim().toDouble()
                 cashPaymentWithVariation()
-            }else
+            } else
                 errorDisplay("Please check your Network Connectivity.")
         }
         binding.tvCash2.setOnSingleClickListener {
-            if(InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
+            if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
 
                 restrictTvCashClicks()
 
                 custom_paymentAmount =
                     binding.tvCash2.text.toString().replace("$", "").trim().toDouble()
                 cashPaymentWithVariation()
-            }else
+            } else
                 errorDisplay("Please check your Network Connectivity.")
         }
         binding.tvCash3.setOnSingleClickListener {
 
-            if(InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
+            if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
 
                 restrictTvCashClicks()
 
                 custom_paymentAmount =
                     binding.tvCash3.text.toString().replace("$", "").trim().toDouble()
                 cashPaymentWithVariation()
-            }else
+            } else
                 errorDisplay("Please check your Network Connectivity.")
         }
         binding.tvCustomAmount.setOnSingleClickListener {
-            if(InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
-            paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
-            val bundleVal = Bundle().apply {
-                putDouble("totalprice", ((paymentAmount)))
-            }
-            findNavController().navigate(
-                R.id.action_paymentBoldPosFragment_to_customAmountFragment,
-                bundleVal
-            )
-        }else
-        errorDisplay("Please check your Network Connectivity.")
+            if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
+                paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                val bundleVal = Bundle().apply {
+                    putDouble("totalprice", ((paymentAmount)))
+                }
+                findNavController().navigate(
+                    R.id.action_paymentBoldPosFragment_to_customAmountFragment,
+                    bundleVal
+                )
+            } else
+                errorDisplay("Please check your Network Connectivity.")
         }
         binding.tvPaymentLink.setOnSingleClickListener {
             textToPay = true
@@ -2092,7 +2103,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 tvCash2.isEnabled = true
                 tvCash3.isEnabled = true
             }
-        },5000)
+        }, 5000)
 
     }
 
@@ -2414,7 +2425,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
         } else {
             WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
-                viewModel.totalPrice = WholetotalPrice
+            viewModel.totalPrice = WholetotalPrice
         }
 
         WholetotalPrice = getTwoDecimal(WholetotalPrice)
@@ -2591,8 +2602,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 binding.tvCard.text.toString()
             )*/
             presentation.updateTotals(
-                String.format("%.3f", (viewModel.subTotalPrice+viewModel.totalTax+viewModel.totalServiceCharge)).toDouble().toString(),
-                String.format("%.3f", (viewModel.subTotalPrice+viewModel.totalTax+viewModel.totalServiceCharge+viewModel.cashdiscountAmount)).toDouble().toString()
+                String.format(
+                    "%.3f",
+                    (viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge)
+                ).toDouble().toString(),
+                String.format(
+                    "%.3f",
+                    (viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge + viewModel.cashdiscountAmount)
+                ).toDouble().toString()
             )
         }
         binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
@@ -3228,13 +3245,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         paymentviewModel.saveOrder(false)
         paymentviewModel.textPay(textToPay)
-        Log.d("yash", "makeCashPayment: total Price : " + paymentAmount)
-        Log.d("yash", "makeCashPayment: sub_total   : " + subTotalPrice)
-        Log.d("yash", "makeCashPayment: totaltax    : " + totalTax)
-        Log.d("yash", "makeCashPayment: total disc  : " + totalDiscount)
-        Log.d("yash", "makeCashPayment: total serv  : " + totalServiceCharge)
-        Log.e("checkCartList", "cartList:  ${Gson().toJson(cartList)}")
-        Log.e("checkCartList", "cartList:  ${Gson().toJson(viewModel.cartModel)}")
+
         /*val myRequest = cartList?.let {
             paymentviewModel.createOrderRequest(
                 it,
@@ -3364,6 +3375,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         prefProvider.getValue("taxlistDynamic", "").toString(),
                         object : TypeToken<List<TaxData>?>() {}.getType()
                     )
+                    if (orderTypeId == -1) {
+                        runBlocking {
+                            async {
+                                dashboardViewModel.getOrderTypeBackupList(employeeID)?.let {
+                                    orderTypeId = (it.get(0).orderType) ?: -1
+                                }
+                            }.await()
+                        }
+                    }
                 }
 
                 dashboardViewModel.addCart(viewModel.cartModel!!)

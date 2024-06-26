@@ -363,7 +363,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     prefProvider.employeeName() + ", Are you sure, you want to clockout?"
                 ) {
                     positiveButton(getString(android.R.string.ok)) {
+
                         viewModel.clockOut()
+                        viewModel.deleteOrderTypeBackupByName(
+                            prefProvider.employeeId()
+                        )
 
 
                     }

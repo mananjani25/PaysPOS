@@ -38,9 +38,7 @@ import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.Request
 import com.squareup.okhttp.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -841,6 +839,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
             item.itemQuantity = item.itemQuantity
             inventoryModelList.add(item)
             items = inventoryModelList
+
         }
     }
 

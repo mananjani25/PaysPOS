@@ -173,6 +173,7 @@ open class PaymentViewModel @Inject constructor(
                         if (response?.status == 200) {
 
                             resource.data?.let { createOrderResponse ->
+
                                 if (createOrderResponse.data.order.customer != null) {
                                     posRepository.updateFinalRewards(
                                         createOrderResponse.data.order.customer.final_reward.toInt(),
