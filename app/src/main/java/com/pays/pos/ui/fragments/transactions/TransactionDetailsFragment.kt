@@ -10,7 +10,6 @@ import android.os.*
 import android.util.Base64
 import android.util.Log
 import android.view.*
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -28,13 +27,11 @@ import com.pays.pos.data.model.responseModel.*
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.DINE_IN
 import com.pays.pos.data.remote.Constants.KEY
-import com.pays.pos.data.remote.Constants.OPEN_ORDER
 import com.pays.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.pays.pos.data.remote.Constants.PHONE_ORDER
 import com.pays.pos.data.remote.Constants.SHIPPING_ADDRESS
 import com.pays.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.SUNMI_PRINTER
-import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.pays.pos.databinding.FragmentTransactionDetailsBinding
 import com.pays.pos.di.ApiModule1
@@ -58,7 +55,6 @@ import com.pays.pos.utils.statusUtils.Status
 import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
-import com.epson.eposprint.StatusChangeEventListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -66,6 +62,9 @@ import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
 import com.google.gson.reflect.TypeToken
+import com.pax.poslink.ReportRequest
+import com.pays.pos.data.model.requestModel.RefundRequestModel
+import com.pays.pos.ui.activities.MainActivity
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
@@ -321,145 +320,22 @@ class TransactionDetailsFragment : Fragment() {
 
 
         }
-        binding.tvIssueRefund.setOnClickListener(object:View.OnClickListener{
+        binding.tvIssueRefund.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
 
                 if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
                     return
                 }
-                mLastClickTime = SystemClock.elapsedRealtime();
-                if (paymentDetailsResponse.data.order.order_type == "OnlineWebOrder") {
-                    lateinit var refundData: RefundRequestModelOnlineOrder
-                    var employeeIdtemp = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                    var terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
-                    var orderItemRefundsAttributesList =
-                        ArrayList<RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute>()
-                    paymentDetailsResponse.data.order.order_items.forEach { item ->
-                        val orderItemRefundsAttributeModel =
-                            RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute()
-                        orderItemRefundsAttributeModel.amount = item.totalPrice
-                        orderItemRefundsAttributeModel.employeeId = employeeIdtemp
-                        orderItemRefundsAttributeModel.orderId = item.orderId
-                        orderItemRefundsAttributeModel.refundType = 0
-                        orderItemRefundsAttributeModel.paymentId = paymentDetailsResponse.data.id
-                        orderItemRefundsAttributeModel.orderItemId = item.id
-                        orderItemRefundsAttributeModel.quantity = item.quantity
-                        orderItemRefundsAttributesList.add(orderItemRefundsAttributeModel)
+                mLastClickTime = SystemClock.elapsedRealtime()
+                if (!paymentDetailsResponse.data.ext_data.isNullOrEmpty()) {
+//                    Check if the transaction is void or not
+                    CoroutineScope(Dispatchers.Main).launch {
+                        ProgressUtils.showProgressDialog(requireActivity())
                     }
-
-                    refundData = RefundRequestModelOnlineOrder().apply {
-                        paymentRefund = RefundRequestModelOnlineOrder.PaymentRefund().apply {
-                            amount =
-                                paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips
-                            refunded_amount = amount
-                            orderId = paymentDetailsResponse.data.order_id
-                            paymentId = paymentDetailsResponse.data.id
-                            employeeId = employeeIdtemp
-                            taxRefunded = paymentDetailsResponse.data.tax_amount
-                            tipsRefunded = paymentDetailsResponse.data.tips
-                            terminalId = terminal_id
-                            serviceChargeRefunded =
-                                paymentDetailsResponse.data.service_charge_amount
-                            cash_discount_or_surcharge_refunded =
-                                paymentDetailsResponse.data.cash_discount_or_surcharge
-                            subtotal_refunded = paymentDetailsResponse.data.sub_total
-                            orderItemRefundsAttributes = orderItemRefundsAttributesList
-                        }
-                    }
-
-
-
-                    val bundle = Bundle().apply {
-
-                        if (paymentDetailsResponse.data.pax_data!=null)  {
-                            /*Online order refund should pass a new parameter so that the next screen will detect the parameter and process the operation accordingly, because there are two processes
-                            * 1. PAX Gateway refund
-                            * 2. NAB Server POST API Call */
-                            putString("pax_data",paymentDetailsResponse.data.pax_data)
-                            putBoolean("requiredNABServerPostAPICall", true)
-                        }
-
-                        putParcelable("refundData", refundData)
-                        putDouble(
-                            "refundAmount",
-                            paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips
-                        )
-                        putString("paymentType", paymentDetailsResponse.data.payment_type)
-                        putBoolean("isfromTransaction", true)
-                        putString(
-                            "magensa_response_data",
-                            paymentDetailsResponse.data.magensa_response_data
-                        )
-                        putInt("guestCount", paymentDetailsResponse.data.guestCount ?: 0)
-
-                    }
-                    bundle.putString("isFrom", "refundOnline")
-                    if (prefProvider.isManager() || prefProvider.isAdmin()) {
-                        findNavController().navigate(
-                            R.id.action_transaction_to_reasonForrefundonline,
-                            bundle
-                        )
-
-                    } else {
-                        findNavController().navigate(
-                            R.id.action_transactionDetailsFragment_to_pascodeManagerDailog,
-                            bundle
-                        )
-                    }
-
+                    checkIfTransactionIsVoided()
+                } else {
+                    startRefund()
                 }
-                else {
-
-                    var isItemRefund = false
-                    var isAmountRefund = false
-
-                    paymentDetailsResponse.data.order.order_items.forEach {
-                        if(it.refundedAmount != 0.0)
-                            isItemRefund = true
-                    }
-
-                    if(!isItemRefund) {
-                        if(paymentDetailsResponse.data.order.refund_detail.refunded_amount !=0.0){
-                            isAmountRefund = true
-                        }
-                    }
-
-                    val bundle = Bundle().apply {
-                        paymentDetailsResponse.data.order.order_items.forEach {
-                            it.isChecked = true
-                        }
-                        putInt("paymentId", paymentId)
-                        putParcelable("orderDetailsResponse", paymentDetailsResponse)
-                        putBoolean("isSplitPayment", isSplitPayment)
-                        if (paymentDetailsResponse.data.order.order_type == "OnlineOrder" && paymentDetailsResponse.data.pax_data!=null)  {
-                            /*Online order refund should pass a new parameter so that the next screen will detect the parameter and process the operation accordingly, because there are two processes
-                            * 1. PAX Gateway refund
-                            * 2. NAB Server POST API Call */
-                            putString("pax_data",paymentDetailsResponse.data.pax_data)
-                            putBoolean("requiredNABServerPostAPICall", true)
-                        }
-                        putParcelableArrayList("serviceChargesList", serviceChargesList)
-                        putInt("guestCount", paymentDetailsResponse.data.guestCount ?: 0)
-
-                        putBoolean("isItemRefund",isItemRefund)
-                        putBoolean("isAmountRefund",isAmountRefund)
-                    }
-                    bundle.putString("isFrom", "refund")
-                    if (prefProvider.isManager() || prefProvider.isAdmin()) {
-                        findNavController().navigate(
-                            R.id.action_transactionDetailsFragment_to_issueRefundFragment,
-                            bundle
-                        )
-                    } else {
-                        findNavController().navigate(
-                            R.id.action_transactionDetailsFragment_to_pascodeManagerDailog,
-                            bundle
-                        )
-                    }
-
-                }
-
-
             }
         })
 
@@ -474,6 +350,341 @@ class TransactionDetailsFragment : Fragment() {
             openReceiptDialog(2)
 
         }
+    }
+
+    private fun startRefund() {
+        CoroutineScope(Dispatchers.Main).launch {
+            if (paymentDetailsResponse.data.order.order_type.equals("OnlineWebOrder")) {
+                lateinit var refundData: RefundRequestModelOnlineOrder
+                var employeeIdtemp = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                var terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+                var orderItemRefundsAttributesList =
+                    ArrayList<RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute>()
+                paymentDetailsResponse.data.order.order_items.forEach { item ->
+                    val orderItemRefundsAttributeModel =
+                        RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute()
+                    orderItemRefundsAttributeModel.amount = item.totalPrice
+                    orderItemRefundsAttributeModel.employeeId = employeeIdtemp
+                    orderItemRefundsAttributeModel.orderId = item.orderId
+                    orderItemRefundsAttributeModel.refundType = 0
+                    orderItemRefundsAttributeModel.paymentId =
+                        paymentDetailsResponse.data.id
+                    orderItemRefundsAttributeModel.orderItemId = item.id
+                    orderItemRefundsAttributeModel.quantity = item.quantity
+                    orderItemRefundsAttributesList.add(orderItemRefundsAttributeModel)
+                }
+
+                refundData = RefundRequestModelOnlineOrder().apply {
+                    paymentRefund = RefundRequestModelOnlineOrder.PaymentRefund().apply {
+                        amount =
+                            paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips
+                        refunded_amount = amount
+                        orderId = paymentDetailsResponse.data.order_id
+                        paymentId = paymentDetailsResponse.data.id
+                        employeeId = employeeIdtemp
+                        taxRefunded = paymentDetailsResponse.data.tax_amount
+                        tipsRefunded = paymentDetailsResponse.data.tips
+                        terminalId = terminal_id
+                        serviceChargeRefunded =
+                            paymentDetailsResponse.data.service_charge_amount
+                        cash_discount_or_surcharge_refunded =
+                            paymentDetailsResponse.data.cash_discount_or_surcharge
+                        subtotal_refunded = paymentDetailsResponse.data.sub_total
+                        orderItemRefundsAttributes = orderItemRefundsAttributesList
+                    }
+                }
+
+
+                val bundle = Bundle().apply {
+
+                    if (paymentDetailsResponse.data.pax_data != null) {
+                        /*Online order refund should pass a new parameter so that the next screen will detect the parameter and process the operation accordingly, because there are two processes
+                        * 1. PAX Gateway refund
+                        * 2. NAB Server POST API Call */
+                        putString("pax_data", paymentDetailsResponse.data.pax_data)
+                        putBoolean("requiredNABServerPostAPICall", true)
+                    }
+
+                    putParcelable("refundData", refundData)
+                    putDouble(
+                        "refundAmount",
+                        paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips
+                    )
+                    putString("paymentType", paymentDetailsResponse.data.payment_type)
+                    putBoolean("isfromTransaction", true)
+                    putString(
+                        "magensa_response_data",
+                        paymentDetailsResponse.data.magensa_response_data
+                    )
+                    putInt("guestCount", paymentDetailsResponse.data.guestCount ?: 0)
+
+                }
+                bundle.putString("isFrom", "refundOnline")
+                if (prefProvider.isManager() || prefProvider.isAdmin()) {
+                    findNavController().navigate(
+                        R.id.action_transaction_to_reasonForrefundonline,
+                        bundle
+                    )
+
+                } else {
+                    findNavController().navigate(
+                        R.id.action_transactionDetailsFragment_to_pascodeManagerDailog,
+                        bundle
+                    )
+                }
+
+            } else {
+
+                var isItemRefund = false
+                var isAmountRefund = false
+
+                paymentDetailsResponse.data.order.order_items.forEach {
+                    if (it.refundedAmount != 0.0)
+                        isItemRefund = true
+                }
+
+                if (!isItemRefund) {
+                    if (paymentDetailsResponse.data.order.refund_detail.refunded_amount != 0.0) {
+                        isAmountRefund = true
+                    }
+                }
+
+                val bundle = Bundle().apply {
+                    paymentDetailsResponse.data.order.order_items.forEach {
+                        it.isChecked = true
+                    }
+                    putInt("paymentId", paymentId)
+                    putParcelable("orderDetailsResponse", paymentDetailsResponse)
+                    putBoolean("isSplitPayment", isSplitPayment)
+                    if (paymentDetailsResponse.data.order.order_type == "OnlineOrder" && paymentDetailsResponse.data.pax_data != null) {
+                        /*Online order refund should pass a new parameter so that the next screen will detect the parameter and process the operation accordingly, because there are two processes
+                        * 1. PAX Gateway refund
+                        * 2. NAB Server POST API Call */
+                        putString("pax_data", paymentDetailsResponse.data.pax_data)
+                        putBoolean("requiredNABServerPostAPICall", true)
+                    }
+                    putParcelableArrayList("serviceChargesList", serviceChargesList)
+                    putInt("guestCount", paymentDetailsResponse.data.guestCount ?: 0)
+
+                    putBoolean("isItemRefund", isItemRefund)
+                    putBoolean("isAmountRefund", isAmountRefund)
+                }
+                bundle.putString("isFrom", "refund")
+                if (prefProvider.isManager() || prefProvider.isAdmin()) {
+                    findNavController().navigate(
+                        R.id.action_transactionDetailsFragment_to_issueRefundFragment,
+                        bundle
+                    )
+                } else {
+                    findNavController().navigate(
+                        R.id.action_transactionDetailsFragment_to_pascodeManagerDailog,
+                        bundle
+                    )
+                }
+
+            }
+        }
+    }
+
+    private fun checkIfTransactionIsVoided() {
+        GlobalScope.launch {
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+
+            val report = ReportRequest()
+            report.TransType = report.ParseTransType("LOCALDETAILREPORT") //recommend
+            report.EDCType = report.ParseEDCType("CREDIT")
+            report.RefNum = paymentDetailsResponse.data.ref_num
+            report.ECRRefNum = paymentDetailsResponse.data.ecr_ref_num
+
+            posLink.ReportRequest = report
+            val result = posLink.ProcessTrans()
+            Log.d("result batch: ", result.Code.toString() + " " + result.Msg)
+            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                val msg = Message()
+                msg.what = Constants.TRANSACTION_SUCCESSED
+                msg.obj = posLink.ReportResponse
+
+                val response = msg.obj as com.pax.poslink.ReportResponse
+                val resultCode = response.ResultCode
+                val resultTxt = response.ResultTxt
+
+                if (resultCode == "000000") {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        ProgressUtils.dismissProgressDialog()
+                    }
+                    showConfirmationAlertDialog()
+                    Log.d("Data::", "void transaction")
+                } else if (resultCode == "100023") {
+                    //Transaction not found in current batch
+                    //refundViaPAX()
+                    startRefund()
+                } else {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        ProgressUtils.dismissProgressDialog()
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(),
+                            resultTxt,
+                            object :
+                                DialogInterface.OnClickListener {
+                                override fun onClick(p0: DialogInterface?, p1: Int) {
+                                    try {
+                                        p0?.dismiss()
+                                    } catch (e: Exception) {
+                                    }
+                                }
+                            })
+
+//                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+                    }
+                }
+
+                Log.d(
+                    "Params:",
+                    "Report $resultCode $resultTxt ${response.ExtData}  ${Gson().toJson(response)}"
+                )
+            }
+        }
+    }
+
+    private fun showConfirmationAlertDialog() {
+        CoroutineScope(Dispatchers.Main).launch {
+            AlertUtils.showCustomAlertWithListenerWithOKCancel(
+                requireContext(),
+                getString(R.string.single_void_message_1),
+                getString(android.R.string.ok)
+            ) { _, _ ->
+                voidViaPAX()
+            }
+        }
+    }
+
+    private fun voidViaPAX() {
+        var refundAmount = paymentDetailsResponse.data.amount
+        if (refundAmount != 0.0) {
+            if (paymentDetailsResponse.data.payment_type.equals("Card", ignoreCase = true)) {
+                GlobalScope.launch {
+                    posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+
+                    CoroutineScope(Dispatchers.Main).launch {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
+                    val amt = (refundAmount * 100).toInt()
+                    Log.d("amt: ", "amtxx $amt")
+                    val refund = PaymentRequest()
+                    refund.TenderType = refund.ParseTenderType("CREDIT")
+                    refund.TransType = refund.ParseTransType("VOID")
+                    refund.ECRRefNum = System.currentTimeMillis().toString()
+                    refund.OrigRefNum = paymentDetailsResponse.data.ref_num
+
+//                    refund.Amount = amt.toString()
+                    posLink.PaymentRequest = refund
+                    val result = posLink.ProcessTrans()
+                    Log.d("result void: ", result.Code.toString() + " " + result.Msg)
+                    if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                        val msg = Message()
+                        msg.what = Constants.TRANSACTION_SUCCESSED
+                        msg.obj = posLink.PaymentResponse
+
+                        val response = msg.obj as com.pax.poslink.PaymentResponse
+                        val resultCode = response.ResultCode
+                        val resultTxt = response.ResultTxt
+
+                        if (resultCode.equals("000000")) {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                refundCall(refundAmount)
+                            }
+                        } else if (resultCode.equals("100021")) {
+                        } else {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                ProgressUtils.dismissProgressDialog()
+                                AlertUtils.showCustomAlertWithListenerWithOK(
+                                    requireContext(),
+                                    resultTxt,
+                                    object : DialogInterface.OnClickListener {
+                                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                                            try {
+                                                p0?.dismiss()
+                                            } catch (e: Exception) {
+                                            }
+                                        }
+                                    })
+//                                requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+                            }
+                        }
+                    } else {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            ProgressUtils.dismissProgressDialog()
+                            AlertUtils.showCustomAlertWithListenerWithOKCancel(
+                                requireContext(),
+                                getString(R.string.pax_connect_error),
+                                getString(R.string.reconnect),
+                            )
+                            { _, _ ->
+                                // Add connect to PAX logic
+                                magtekProViewModel.initPOSLink(requireContext())
+                            }
+                        }
+                    }
+                }
+            } else {
+                refundCall(refundAmount)
+            }
+        } else {
+            AlertUtils.showCustomAlert(requireActivity(), getString(R.string.msg_amount_refund))
+        }
+
+    }
+
+    private fun refundCall(refundAmount: Double) {
+        val ordersItemList =
+            mutableListOf<RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute>()
+
+        paymentDetailsResponse.data.order.order_items.forEach {
+            val order =
+                RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute()
+
+            order.orderId = it.orderId
+            order.orderItemId = it.id
+            order.paymentId = paymentId
+            order.amount = it.totalPrice
+            order.quantity = it.quantity
+            order.refundType = 0
+            order.employeeId =
+                prefProvider.getValueInt(
+                    Constants.EMPLOYEE_ID,
+                    0
+                )
+            ordersItemList.add(order)
+
+        }
+
+        var refundData = RefundRequestModel()
+        var paymentRefund = RefundRequestModel.PaymentRefund()
+        refundData.paymentRefund = paymentRefund
+
+
+        paymentRefund.amount = paymentDetailsResponse.data.sub_total
+        paymentRefund.orderId = paymentDetailsResponse.data.order_id
+        paymentRefund.paymentId = paymentId
+        paymentRefund.employeeId = paymentDetailsResponse.data.employee_id
+        paymentRefund.terminalId = paymentDetailsResponse.data.terminal_id
+        paymentRefund.taxRefunded = paymentDetailsResponse.data.tax_amount
+        paymentRefund.orderItemRefundsAttributes = ordersItemList
+        paymentRefund.tipsRefunded =
+            if (paymentDetailsResponse.data.payment_type == "Cash") 0.0 else paymentDetailsResponse.data.tips
+        paymentRefund.serviceChargeRefunded =
+            paymentDetailsResponse.data.service_charge_amount
+        paymentRefund.cash_discount_or_surcharge_refunded =
+            paymentDetailsResponse.data.cash_discount_or_surcharge
+        paymentRefund.subtotal_refunded = 0.0
+
+
+        viewModel.refundPaymentApiCall(
+            refundAmount,
+            refundData,
+            "Void Transaction",
+            paymentDetailsResponse.data.payment_type
+        )
     }
 
     private fun initPOSLink() {
@@ -955,9 +1166,43 @@ class TransactionDetailsFragment : Fragment() {
         )
     }
 
+
+    private fun reloadScreen() {
+        val bundle = Bundle().apply {
+            putInt("orderId", orderId)
+            putInt("paymentId", paymentId)
+        }
+
+        val id = findNavController().currentDestination?.id
+        findNavController().popBackStack(id!!,true)
+        findNavController().navigate(id,bundle)
+    }
+
+
+
+
     @SuppressLint("SetTextI18n")
     private fun navigate() {
         ProgressUtils.showProgressDialog(requireActivity())
+
+        viewModel.dataRefundDone.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { createTaxResponse ->
+                activity?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(it,createTaxResponse.message,object:
+                        DialogInterface.OnClickListener{
+                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                            try {
+                                reloadScreen()
+                                p0?.dismiss()
+                            } catch (e: Exception) {
+                            }
+                        }
+                    })
+
+                }
+            }
+        }
+
         viewModel.dataPayment.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 paymentDetailsResponse = it
@@ -1188,22 +1433,25 @@ class TransactionDetailsFragment : Fragment() {
                     binding.llLoyaltyPoints.visibility = View.VISIBLE
                 }
 
-                if (!paymentDetailsResponse.data.order.refund_detail.refunded_amount.equals(0.0) && paymentDetailsResponse.data.order.payment_status !="Cancelled") {
+                if (!paymentDetailsResponse.data.order.refund_detail.refunded_amount.equals(0.0) && paymentDetailsResponse.data.order.payment_status != "Cancelled") {
                     binding.llRefundAmount.visibility = View.VISIBLE
                     binding.tvtipadd.visibility = View.GONE
                     binding.tvIssueRefund.visibility = View.VISIBLE
                 }
 
 
-                if(paymentDetailsResponse.data.payment_type == "Card") {
-                    val total = String.format("%.2f",paymentDetailsResponse.data.amount)
-                    val refundedAmount =String.format("%.2f", paymentDetailsResponse.data.order.refund_detail.refunded_amount - paymentDetailsResponse.data.tips)
+                if (paymentDetailsResponse.data.payment_type.equals("Card")) {
+                    val total = String.format("%.2f", paymentDetailsResponse.data.amount)
+                    val refundedAmount = String.format(
+                        "%.2f",
+                        paymentDetailsResponse.data.order.refund_detail.refunded_amount - paymentDetailsResponse.data.tips
+                    )
 
                     /*
-                    * "total == refundedAmount" This is commented so that a transaction can be refunded only once even if it was refunded partially.
+                    * "total <= refundedAmount" This is commented so that a transaction can be refunded only once even if it was refunded partially.
                      */
 
-                    if ( total == refundedAmount /*refundedAmount.toDouble() > 0.0*/
+                    if (total <= refundedAmount /*refundedAmount.toDouble() > 0.0*/
                         || paymentDetailsResponse.data.order.payment_status == "Cancelled"
                     ) {
                         binding.tvIssueRefund.visibility = View.GONE
@@ -1212,9 +1460,13 @@ class TransactionDetailsFragment : Fragment() {
                 }
 
                 //Tips can't be refunded in CASH , added this logic to check amount without tip
-                if(paymentDetailsResponse.data.payment_type == "Cash"){
-                    if(String.format("%.2f",paymentDetailsResponse.data.order.refund_detail.refunded_amount) ==
-                        String.format("%.2f",paymentDetailsResponse.data.amount)) {
+                if (paymentDetailsResponse.data.payment_type.equals("Cash")) {
+                    if (String.format(
+                            "%.2f",
+                            paymentDetailsResponse.data.order.refund_detail.refunded_amount
+                        ) ==
+                        String.format("%.2f", paymentDetailsResponse.data.amount)
+                    ) {
                         binding.tvIssueRefund.visibility = View.GONE
                         binding.tvtipadd.visibility = View.GONE
                     }
@@ -1698,15 +1950,13 @@ class TransactionDetailsFragment : Fragment() {
                     generateKitchenReceiptSunmi(data, type)
                 }
             }
-        }
-        else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
+        } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(200)
                 setService2(data, type)
             }
-        }
-        else {
+        } else {
             if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
 
                 var mPrinter = if (data.name.substring(0, 6).toString().lowercase()
@@ -5410,15 +5660,17 @@ class TransactionDetailsFragment : Fragment() {
 
                 PrintSunmiUtils.normalTextTest(tranType)
 
-                try{
+                try {
 
                     PrintSunmiUtils.cardDetailsInner(
                         paymentDetailsResponse.data.card_name,
-                        /*paymentDetailsResponse.data.card_type ?: ""*/MethodUtils.getCardType(paymentDetailsResponse.data.ext_data),
-                        paymentDetailsResponse.data.card_number, customerSettingModel.fonts
+                        /*paymentDetailsResponse.data.card_type ?: ""*/
+                        MethodUtils.getCardType(paymentDetailsResponse.data.ext_data),
+                        paymentDetailsResponse.data.card_number,
+                        customerSettingModel.fonts
                     )
 
-                }catch (e:Exception){
+                } catch (e: Exception) {
 
                 }
 
