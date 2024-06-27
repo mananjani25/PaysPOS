@@ -22,20 +22,17 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
-        android:usesPermissionFlags="neverForLocation"/>
-
-    <uses-permission android:name="android.permission.CAMERA" />
-    <!--For usb connection with PAX-->
-<!--    <uses-feature android:name="android.hardware.usb.host"/>-->
-
-
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation" />
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- For usb connection with PAX -->
+    <!-- <uses-feature android:name="android.hardware.usb.host"/> -->
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <uses-permission
         android:name="android.permission.READ_LOGS"
@@ -43,8 +40,6 @@
     <uses-permission
         android:name="android.permission.BATTERY_STATS"
         tools:ignore="ProtectedPermissions" />
-
-
 
     <application
         android:name=".MainApplication"
@@ -59,7 +54,21 @@
         android:theme="@style/Theme.POSAndroid"
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup">
-        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+
+        <receiver android:name="com.pays.pos.utils.KioskServiceStarterBroadcast">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="com.pays.pos.service.KioskService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync"></service>
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
 
         <service
             android:name=".ui.firebase.MyFirebaseMessagingService"
@@ -72,18 +81,20 @@
         <meta-data
             android:name="firebase_crashlytics_collection_enabled"
             android:value="false" />
-
-        <!-- Set custom default icon. This is used when no icon is set for incoming notification messages.
-     See README(https://goo.gl/l4GJaQ) for more. -->
+        <!--
+ Set custom default icon. This is used when no icon is set for incoming notification messages.
+     See README(https://goo.gl/l4GJaQ) for more.
+        -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_baseline_notifications_24" />
-        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
-             notification message. See README(https://goo.gl/6BKBk7) for more. -->
+        <!--
+ Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more.
+        -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/white" />
-
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/default_notification_channel_id" />
@@ -97,19 +108,21 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
+
         <activity
             android:name="com.pays.pos.ui.activities.MainActivity"
+            android:exported="true"
             android:screenOrientation="landscape"
+            android:theme="@style/noAnimTheme"
             android:windowSoftInputMode="stateUnspecified|adjustPan"
             android:windowTranslucentNavigation="true"
-            android:windowTranslucentStatus="true"
-            android:theme="@style/noAnimTheme"
-            android:exported="true">
+            android:windowTranslucentStatus="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
@@ -131,7 +144,6 @@
                 <action android:name="com.pays.pos.video.received" />
             </intent-filter>
         </receiver>
-
     </application>
 
 </manifest>

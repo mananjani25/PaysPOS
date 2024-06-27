@@ -68,6 +68,7 @@ data class PrinterResponse(
             @SerializedName("is_cash_drawer_open") var isCashDrawerOpen: Boolean,
             @SerializedName("printer_type") var printer_type: String? = null,
             @SerializedName("location_id") var locationId: Int,
+            @SerializedName("isPrinted") var isPrinted: Int=0,
             @SerializedName("created_at") var createdAt: String,
             @SerializedName("updated_at") var updatedAt: String,
             @SerializedName("ip_address") var ipAddress: String? = null,

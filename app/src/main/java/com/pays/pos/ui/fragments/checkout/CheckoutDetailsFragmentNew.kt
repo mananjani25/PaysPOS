@@ -2264,6 +2264,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 mPaymentRequest.ExtData = "<Force>T</Force><TokenRequest>1</TokenRequest>"
             }
 
+
             Log.d("ECRRefNum", "ECRRefNum: $ECRRefNumber")
 
             posLink.PaymentRequest = mPaymentRequest

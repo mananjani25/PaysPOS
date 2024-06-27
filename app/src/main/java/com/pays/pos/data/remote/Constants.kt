@@ -448,6 +448,7 @@ object Constants {
 
     const val ALL_ORDER_TAB = "ALL"
     const val OPEN_ORDER_TAB = "OpenOrder"
+    const val KIOSK_OPEN_ORDER = "KioskOpenorder"
     const val PHONE_ORDER_TAB = "PhoneOrder"
     const val ONLINE_ORDER_TAB = "OnlineWebOrder"
     const val THIRD_PARTY_ORDER_TAB = "OnlineOrder"

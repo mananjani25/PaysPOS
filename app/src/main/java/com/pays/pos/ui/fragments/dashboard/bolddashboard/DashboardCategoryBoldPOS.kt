@@ -102,6 +102,7 @@ import com.pays.pos.utils.statusUtils.Status
 import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
+import com.starmicronics.stario10.StarSpoolJobSettings
 import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
 import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
 import com.starmicronics.stario10.starxpandcommand.StarXpandCommandBuilder
@@ -280,16 +281,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         savedInstanceState: Bundle?
     ): View? {
 
-        if(viewModel.boldPosNeedToRefresh){
+
+        if (viewModel.boldPosNeedToRefresh) {
 
             viewModel.boldPosNeedToRefresh = false
 
-            var intent=Intent(requireActivity(),MainActivity::class.java)
+            var intent = Intent(requireActivity(), MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             requireActivity().startActivity(intent)
             requireActivity().finish()
-        }
-        else {
+        } else {
             syncDataCallback = this
             Binding()// putting method in onviewcreated due to UI glitch issue
             checkCashDrawerObserver() // putting method in onviewcreated due to UI glitch issue
@@ -554,7 +555,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                         viewModel.updateCartModel(viewModel.cartModel!!)
 
-                        lifecycleScope.launch{
+                        lifecycleScope.launch {
                             viewModel.addCashDiscountForCustomerDisplay(orderDiscount)
                         }
                     }
@@ -698,7 +699,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             val note = bundle.getString("note")
             val isOrderNote = bundle.getBoolean("isOrderNote")
             val singleItem = bundle.getParcelable<TbCartItem>("item")
-            prefProvider.setValue("BEFORE_ORDER_NOTE",Gson().toJson(viewModel.cartModel))
+            prefProvider.setValue("BEFORE_ORDER_NOTE", Gson().toJson(viewModel.cartModel))
             // val cartList = bundle.getParcelableArrayList<CartModel>("cartList")
             var dineInArrayList: List<DineInModel>? = null
             /*if (prefProvider.getValue(
@@ -992,7 +993,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
 
-
     override fun onDestroy() {
         super.onDestroy()
         syncDataCallback = null
@@ -1070,7 +1070,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     }, 1000)
 
                 }
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
@@ -1630,7 +1630,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
         }
         viewModel.syncProgressDialog.observe(requireActivity()) { event ->
-            try{
+            try {
                 event.getContentIfNotHandled()?.let {
 
                     if (it) {
@@ -1639,8 +1639,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         ProgressUtils.dismissProgressDialog()
                     }
                 }
-            }catch (e:Exception){
-                    e.printStackTrace()
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
 
@@ -2245,7 +2245,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
             printer = StarPrinter(settings, requireContext())
 
-            runBlocking{
+            runBlocking {
                 try {
                     val builder = StarXpandCommandBuilder()
 
@@ -2289,7 +2289,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                         actionFeedLine(1)
 
-                        if(createOrderResponse.data.order.orderType == Constants.PHONE_ORDER_) {
+                        if (createOrderResponse.data.order.orderType == Constants.PHONE_ORDER_) {
                             add(
                                 PrinterBuilder()
                                     .styleBold(true)
@@ -2448,15 +2448,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                     printer.openAsync().await()
 
-//                val jobSettings = StarSpoolJobSettings(true, 30, "Print from Android")
+//                    val jobSettings = StarSpoolJobSettings(true, 30, "Print from Android")
 
                     printer.printAsync(commands).await()
 
-                  /*  try {
-                        SunmiPrintHelper.getInstance().openCashBox()
-                    } catch (e: java.lang.Exception) {
-                        e.printStackTrace()
-                    }*/
+                    /*  try {
+                          SunmiPrintHelper.getInstance().openCashBox()
+                      } catch (e: java.lang.Exception) {
+                          e.printStackTrace()
+                      }*/
 
                     Log.d("Printing", "Success")
                 } catch (e: Exception) {
@@ -2473,7 +2473,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
             }
 
-        }  else {
+        } else {
 
             if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
 
@@ -3181,13 +3181,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                                     var oldDataModel: List<TbCartItem> =
                                         Gson().fromJson(
-                                            prefProvider.getValue(Constants.OLD_ITEM_BASE,""),
+                                            prefProvider.getValue(Constants.OLD_ITEM_BASE, ""),
                                             token.type
                                         )
 
-                                    if (oldDataModel.size!=createOrderResponse.data.order.orderItems.size){
+                                    if (oldDataModel.size != createOrderResponse.data.order.orderItems.size) {
                                         isOrderUpdate = true
-                                    }else {
+                                    } else {
                                         for (item in createOrderResponse.data.order.orderItems) {
                                             if (item.isItemEdited) {
                                                 isOrderUpdate = true
@@ -3754,25 +3754,25 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     }  /*Added By Rahul */
                     else {
 
-                        isUpdated=true
+                        isUpdated = true
 
                         for (oldIndex in 0 until oldItems.size) {
 
                             for (indexNew in 0 until newItems.size) {
 
                                 if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId) {
-                                    if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity){
+                                    if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity) {
                                         newItems.get(indexNew).isEdited = true
-                                        isUpdated=true
+                                        isUpdated = true
                                     }
-                                    if (oldItems.get(oldIndex).price != newItems.get(indexNew).price){
+                                    if (oldItems.get(oldIndex).price != newItems.get(indexNew).price) {
                                         newItems.get(indexNew).isEdited = true
-                                        isUpdated=true
+                                        isUpdated = true
                                     }
 
                                     if (!oldItems.get(oldIndex).note.equals(newItems.get(indexNew).note)) {
                                         newItems.get(indexNew).isEdited = true
-                                        isUpdated=true
+                                        isUpdated = true
 
                                     }
                                 }
@@ -3782,7 +3782,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     ).orderItemModifiers.size != newItems.get(indexNew).orderItemModifiers.size
                                 ) {
                                     newItems.get(indexNew).isEdited = true
-                                    isUpdated=true
+                                    isUpdated = true
 
                                 } else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(
                                         oldIndex
@@ -3796,7 +3796,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         ).orderItemModifiers
                                     ) {
                                         newItems.get(indexNew).isEdited = true
-                                        isUpdated=true
+                                        isUpdated = true
 
                                     }
 
@@ -3819,7 +3819,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                     ).modifierQuantity
                                                 ) {
                                                     newItems.get(indexNew).isEdited = true
-                                                    isUpdated=true
+                                                    isUpdated = true
 
 
                                                 } else if (oldItems.get(oldIndex).orderItemModifiers.get(
@@ -3829,7 +3829,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                     ).price
                                                 ) {
                                                     newItems.get(indexNew).isEdited = true
-                                                    isUpdated=true
+                                                    isUpdated = true
 
 
                                                 } else if (oldItems.get(oldIndex).orderItemModifiers.get(
@@ -3839,7 +3839,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                     ).totalPrice
                                                 ) {
                                                     newItems.get(indexNew).isEdited = true
-                                                    isUpdated=true
+                                                    isUpdated = true
 
 
                                                 } else if (!oldItems.get(oldIndex).orderItemModifiers.get(
@@ -3851,7 +3851,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                     )
                                                 ) {
                                                     newItems.get(indexNew).isEdited = true
-                                                    isUpdated=true
+                                                    isUpdated = true
 
 
                                                 }
@@ -3874,9 +3874,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 }
                                 *//* Modifiers are equal, i.e. the quantity of modifiers may change*//*
                             }*/ else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId) {
-                                    if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity ) {
+                                    if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity) {
                                         newItems.get(indexNew).isEdited = true
-                                        isUpdated=true
+                                        isUpdated = true
 
 
                                     }
@@ -3886,7 +3886,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         ).orderItemModifiers) && (oldIndex == indexNew)
                                     ) {
                                         newItems.get(indexNew).isEdited = true
-                                        isUpdated=true
+                                        isUpdated = true
 
                                     }
                                     /*Added By Rahul */
@@ -3911,7 +3911,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                         ).modifierQuantity
                                                     ) {
                                                         newItems.get(indexNew).isEdited = true
-                                                        isUpdated=true
+                                                        isUpdated = true
 
                                                     } else if (oldItems.get(oldIndex).orderItemModifiers.get(
                                                             oldModifiersIndex
@@ -3920,7 +3920,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                         ).price
                                                     ) {
                                                         newItems.get(indexNew).isEdited = true
-                                                        isUpdated=true
+                                                        isUpdated = true
 
                                                     } else if (oldItems.get(oldIndex).orderItemModifiers.get(
                                                             oldModifiersIndex
@@ -3929,7 +3929,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                         ).totalPrice
                                                     ) {
                                                         newItems.get(indexNew).isEdited = true
-                                                        isUpdated=true
+                                                        isUpdated = true
 
                                                     } else if (!oldItems.get(oldIndex).orderItemModifiers.get(
                                                             oldModifiersIndex
@@ -3940,7 +3940,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                         )
                                                     ) {
                                                         newItems.get(indexNew).isEdited = true
-                                                        isUpdated=true
+                                                        isUpdated = true
 
                                                     }
 
