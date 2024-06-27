@@ -3915,7 +3915,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                 CoroutineScope(Dispatchers.IO).launch {
                     var job = launch {
                         posRepository.getOrderTypeBackupList(employeeID)?.let {
-                            orderTypeId = (it.get(0).orderType) ?: -1
+                            try{
+                                orderTypeId = (it.get(0).orderType) ?: -1
+                            }catch (e:Exception){}
                         }
                     }
                     job.join()

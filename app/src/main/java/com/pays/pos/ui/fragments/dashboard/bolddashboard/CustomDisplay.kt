@@ -1426,7 +1426,7 @@ class CustomDisplay(
     private fun observeActiveTipsList(wholeTotalPrice: Double) {
         tipsListViewModel.getTipActiveList.observe(lifecycleOwner) {
 
-            LogUtil.logE(TAG, "ActiveTipsList ${Gson().toJson(it)}")
+            Log.d("C_Disp_2::", wholeTotalPrice.toString())
 
             if (it.data?.isNotEmpty() == true) {
 
@@ -1770,6 +1770,7 @@ class CustomDisplay(
             askForTipLayout.visible()
             setupActiveTipsList(mTipListViewModel)
 //            observeActiveTipsList(wholeTotalPrice)
+            Log.d("C_Disp_3::", mPaymentViewModel.tipOnAmount.toString())
             observeActiveTipsList(mPaymentViewModel.tipOnAmount)
 
             mainCartLayout.gone()

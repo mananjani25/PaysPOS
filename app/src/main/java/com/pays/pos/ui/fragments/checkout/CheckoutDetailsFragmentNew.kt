@@ -1748,7 +1748,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             "checkPaymentAmount",
             "checkPrice   ${paymentAmount}"
         )
-        paymentviewModel.tipOnAmount = paymentAmount
+
+//        paymentviewModel.tipOnAmount = paymentAmount
+        //        Above code is commented, because the split amount was not changing, below code is the solution
+        paymentviewModel.tipOnAmount = viewModel.totalPrice.toString().substring(0,viewModel.totalPrice.toString().indexOf(".")+3).toDouble()
 
         subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
         totalServiceCharge =
@@ -1845,7 +1848,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     paymentAmount =
                         String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
                 }
-                paymentviewModel.tipOnAmount = paymentAmount
+
+//        paymentviewModel.tipOnAmount = paymentAmount
+                //        Above code is commented, because the split amount was not changing, below code is the solution
+                paymentviewModel.tipOnAmount = viewModel.totalPrice.toString().substring(0,viewModel.totalPrice.toString().indexOf(".")+3).toDouble()
+
                 paymentAmount += tipAmount
 
                 if (paymentAmount != 0.0) {
