@@ -328,11 +328,19 @@ class TransactionDetailsFragment : Fragment() {
                 }
                 mLastClickTime = SystemClock.elapsedRealtime()
                 if (!paymentDetailsResponse.data.ext_data.isNullOrEmpty()) {
+//                    Check if the the PAX is connected or not then perform the void checking
+                    if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
 //                    Check if the transaction is void or not
-                    CoroutineScope(Dispatchers.Main).launch {
-                        ProgressUtils.showProgressDialog(requireActivity())
+                        CoroutineScope(Dispatchers.Main).launch {
+                            ProgressUtils.showProgressDialog(requireActivity())
+                        }
+                        checkIfTransactionIsVoided()
+                    }else{
+                        activity?.let {
+                            AlertUtils.showCustomAlertWithListenerWithOK(it,getString(R.string.pax_connect_error),null)
+                        }
                     }
-                    checkIfTransactionIsVoided()
+
                 } else {
                     startRefund()
                 }
@@ -419,6 +427,9 @@ class TransactionDetailsFragment : Fragment() {
                     putInt("guestCount", paymentDetailsResponse.data.guestCount ?: 0)
 
                 }
+
+                ProgressUtils.dismissProgressDialog()
+
                 bundle.putString("isFrom", "refundOnline")
                 if (prefProvider.isManager() || prefProvider.isAdmin()) {
                     findNavController().navigate(
@@ -470,6 +481,9 @@ class TransactionDetailsFragment : Fragment() {
                     putBoolean("isAmountRefund", isAmountRefund)
                 }
                 bundle.putString("isFrom", "refund")
+
+                ProgressUtils.dismissProgressDialog()
+
                 if (prefProvider.isManager() || prefProvider.isAdmin()) {
                     findNavController().navigate(
                         R.id.action_transactionDetailsFragment_to_issueRefundFragment,
