@@ -1463,6 +1463,21 @@ class AllOrdersListingFragment(
             "UPDATE" -> {
                 prefProvider.setValue(OLD_ITEM_BASE_CUSTOM_ITEM, Gson().toJson(order.orderItems))
 
+                dashboardViewModel.activeOrderTypeName = order.orderType
+                dashboardViewModel.activeOrderTypeText = order.orderTypeName
+                dashboardViewModel.activeOrderTypeId = order.id
+
+                CoroutineScope(Dispatchers.IO).async {
+                    try {
+                        var orderTypebackup = OrderTypeBackup()
+                        orderTypebackup.orderType = order.orderTypeId
+                        orderTypebackup.employeeId = prefProvider.employeeId()
+                        orderTypebackup.orderTypeName = order.orderTypeName
+                        dashboardViewModel.insertOrderTypeBackup(orderTypebackup)
+                    } catch (e: Exception) {
+                    }
+                }
+
                 dashboardViewModel.deleteCartBeforeSwitch()
                 dashboardViewModel.clearCartModelBackup()
                 prefProvider.setValue(Constants.OLD_ITEM, "")
@@ -1502,6 +1517,17 @@ class AllOrdersListingFragment(
                 }
 
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, order.orderTypeId)
+
+                dashboardViewModel.activeOrderTypeName = order.orderType
+                dashboardViewModel.activeOrderTypeText = order.orderTypeName
+                dashboardViewModel.activeOrderTypeId = order.id
+                CoroutineScope(Dispatchers.IO).launch {
+                    dashboardViewModel.updateOrderTypeBackup(
+                        order.orderTypeId,
+                        order.orderTypeName,
+                        prefProvider.employeeId()
+                    )
+                }
 
                 if (order.customer != null) {
                     prefProvider.setValue(
@@ -1614,6 +1640,26 @@ class AllOrdersListingFragment(
 
             "PAY" -> {
 
+                try {
+                    dashboardViewModel.activeOrderTypeName = order.orderType
+                    dashboardViewModel.activeOrderTypeText = order.orderTypeName
+                    dashboardViewModel.activeOrderTypeId = order.orderTypeId
+
+                    lifecycleScope.launch {
+                        try {
+                            var orderTypebackup = OrderTypeBackup()
+                            orderTypebackup.orderType = order.orderTypeId
+                            orderTypebackup.employeeId = prefProvider.employeeId()
+                            orderTypebackup.orderTypeName = order.orderTypeName
+                            dashboardViewModel.insertOrderTypeBackup(orderTypebackup)
+                        } catch (e: Exception) {
+                        }
+                    }
+
+
+                } catch (e: Exception) {
+
+                }
                 prefProvider.setValue(OLD_ITEM_BASE_CUSTOM_ITEM, Gson().toJson(order.orderItems))
 
                 prefProvider.setValue("PaidAmount", "")
@@ -1637,6 +1683,7 @@ class AllOrdersListingFragment(
                 }
 
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, order.orderTypeId)
+
 
                 var itemDiscountTotal: Double = 0.0
                 var itemPassDis: Double = 0.0
@@ -1675,7 +1722,7 @@ class AllOrdersListingFragment(
 
                 val completePrice = order.subTotal + updatedCartModel.discountPrice
 
-                updatedCartModel.discountSelectdValue =  order.totalDiscount / completePrice * 100
+                updatedCartModel.discountSelectdValue = order.totalDiscount / completePrice * 100
 
                 dashboardViewModel.addCart(updatedCartModel)
                 dashboardViewModel.setUpdatedCartModel(updatedCartModel)
@@ -1756,7 +1803,6 @@ class AllOrdersListingFragment(
                     R.id.action_allOrder_to_paymentBoldPosFragment,
                     bundle
                 )
-
 
             }
 

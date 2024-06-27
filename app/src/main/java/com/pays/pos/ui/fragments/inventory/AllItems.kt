@@ -38,6 +38,7 @@ import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.callback.ItemCallback
+import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -207,8 +208,9 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
     }
 
     private fun onClick() {
-        binding.txtCreateItem.setOnClickListener {
-            findNavController().navigate(R.id.action_inventory_to_createItem)
+        binding.txtCreateItem.setOnSingleClickListener {
+                findNavController().navigate(R.id.action_inventory_to_createItem)
+
         }
 
     }

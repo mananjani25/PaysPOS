@@ -3,6 +3,9 @@ package com.pays.pos.ui.activities
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.*
+import android.app.Dialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.*
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
@@ -3466,7 +3469,13 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             if (it.asJsonObject.has("cancelled_order") || it.asJsonObject.has("new_order")) {
 
 
-                if (it.asJsonObject.has("new_order")) setSoundForOnlineOrder()
+                val orderTypeName = it.asJsonObject.get("order_type").toString()
+
+                if (it.asJsonObject.has("new_order")) {
+                    if (orderTypeName.equals("\"KioskOpenorder\"", true)  || orderTypeName.equals("\"Online Web Order\"", true) || orderTypeName.equals("\"Online Order\"",true)){
+                        setSoundForOnlineOrder()
+                    }
+                }
 
                 val intent = Intent()
                 intent.putExtra("message", "refresh")

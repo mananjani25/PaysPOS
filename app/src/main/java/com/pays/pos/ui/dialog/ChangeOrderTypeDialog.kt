@@ -32,6 +32,9 @@ import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
@@ -116,6 +119,14 @@ class ChangeOrderTypeDialog : DialogFragment(), ItemCallback {
         prefProvider.setValue(Constants.ORDER_TYPE, model?.orderType!!)
         prefProvider.setValue(Constants.ORDER_TYPE_NAME, model.name)
         prefProvider.setValueInt(Constants.ORDER_TYPE_ID, model.id)
+
+        viewModel.activeOrderTypeName=model.orderType
+        viewModel.activeOrderTypeText=model.name
+        viewModel.activeOrderTypeId=model.id
+        CoroutineScope(Dispatchers.IO).launch {
+            viewModel.updateOrderTypeBackup(model.id,model.name,prefProvider.employeeId())
+        }
+
         val result = Bundle().apply {
             putParcelable("orderData", model)
         }

@@ -383,6 +383,7 @@ class CustomDisplay(
 
                     binding.txtServiceChargeCash?.text = getCashDiscountedPrice(totalServiceCharge)
                     binding.txtServiceChargeCard?.text = MethodUtils.roundOffAmount(totalServiceCharge)
+                    Log.v("CustomerScreen Amount_2:", totalPrice.toString())
 
                     binding.txtTotalCash?.text = getCashDiscountedPrice(totalPrice)
                     binding.txtTotalCard?.text = MethodUtils.roundOffAmount(totalPrice)
@@ -397,8 +398,19 @@ class CustomDisplay(
                     binding.txtServiceChargeCash?.text = MethodUtils.roundOffAmount(totalServiceCharge)
                     binding.txtServiceChargeCard?.text = getSurchargedPrice(totalServiceCharge)
 //This is being called again, and hence the old value is getting reset
-                    binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
-                    binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
+//                    Log.v("CustomerScreen Amount_1:", totalPrice.toString())
+//                    Log.v("CustomerScreen Amount_BACKUP_1:", mWholeTotalPrice.toString())
+//                    Log.v("CustomerScreen Amount_BACKUP_2:", dashBoardCategoryViewModel.wholetotalPrice.toString())
+                    if (totalPrice<dashBoardCategoryViewModel.wholetotalPrice){
+                        binding.txtTotalCash?.text = MethodUtils.roundOffAmount(dashBoardCategoryViewModel.wholetotalPrice)
+                        binding.txtTotalCard?.text = getSurchargedPrice(dashBoardCategoryViewModel.wholetotalPrice)
+                        Log.v("CustomerScreen:", "1")
+                    }else{
+                        binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
+                        binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
+                        Log.v("CustomerScreen:", "0")
+
+                    }
 
                 }
 
@@ -1414,7 +1426,7 @@ class CustomDisplay(
     private fun observeActiveTipsList(wholeTotalPrice: Double) {
         tipsListViewModel.getTipActiveList.observe(lifecycleOwner) {
 
-            LogUtil.logE(TAG, "ActiveTipsList ${Gson().toJson(it)}")
+            Log.d("C_Disp_2::", wholeTotalPrice.toString())
 
             if (it.data?.isNotEmpty() == true) {
 
@@ -1424,6 +1436,7 @@ class CustomDisplay(
                     data.isChecked = false
                 }
                 binding.rvActiveTipsList.layoutManager = GridLayoutManager(context, it.data.size)
+//                activeTipsListAdapter?.setList(it.data, wholeTotalPrice)
                 activeTipsListAdapter?.setList(it.data, wholeTotalPrice)
                 activeTipsListAdapter?.setListner(this)
                 lifecycleOwner.lifecycleScope.launch {
@@ -1756,7 +1769,9 @@ class CustomDisplay(
         binding.apply {
             askForTipLayout.visible()
             setupActiveTipsList(mTipListViewModel)
-            observeActiveTipsList(wholeTotalPrice)
+//            observeActiveTipsList(wholeTotalPrice)
+            Log.d("C_Disp_3::", mPaymentViewModel.tipOnAmount.toString())
+            observeActiveTipsList(mPaymentViewModel.tipOnAmount)
 
             mainCartLayout.gone()
             splashLayout.gone()

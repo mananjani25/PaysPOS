@@ -24,6 +24,7 @@ import com.pays.pos.utils.*
 import com.pays.pos.utils.callback.CustomCallback
 import com.pays.pos.utils.callback.OperationCallback
 import com.pays.pos.utils.extensions.alert
+import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.extensions.showAlert
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.statusUtils.Status
@@ -219,7 +220,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
     private fun configureToolbar() {
         binding.layoutTool.txtTitle.text = "Employees"
         binding.layoutTool.txtSubTitle.text = ""
-        binding.layoutTool.imgDrawer.setOnClickListener {
+        binding.layoutTool.imgDrawer.setOnSingleClickListener {
             findNavController().navigate(R.id.action_teamList_to_menupos)
         }
         binding.layoutTool.imgOptionMenu.setImageResource(R.drawable.ic_add)

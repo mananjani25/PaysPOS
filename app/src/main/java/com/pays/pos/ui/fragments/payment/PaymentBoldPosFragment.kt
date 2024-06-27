@@ -47,6 +47,7 @@ import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.TAG
 import com.pays.pos.utils.extensions.gone
+import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.getCustomerDisplay
 import dagger.hilt.android.AndroidEntryPoint
@@ -311,7 +312,7 @@ class PaymentBoldPosFragment : Fragment() {
             }, 100)
 
         }
-        binding.layoutHeaderCheckout.imgDrawer.setOnClickListener {
+        binding.layoutHeaderCheckout.imgDrawer.setOnSingleClickListener {
             onBackPress()
         }
 

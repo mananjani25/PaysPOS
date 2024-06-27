@@ -17,6 +17,7 @@ import com.pays.pos.ui.fragments.employeeTipSummary.EmployeeTipSummary
 import com.pays.pos.ui.fragments.report.ReportEODFragment
 import com.pays.pos.ui.fragments.report.ReportSummaryFragment
 import com.pays.pos.utils.extensions.gone
+import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.extensions.visible
 import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.EventBus
@@ -103,7 +104,7 @@ class Reports : Fragment() {
 
     private fun configureToolbar() {
         binding.commonToolbar.txtTitle.setText("Reports")
-        binding.commonToolbar.imgDrawer.setOnClickListener {
+        binding.commonToolbar.imgDrawer.setOnSingleClickListener {
             // (requireActivity() as MainActivity).enableDrawer()
             findNavController().navigate(R.id.action_reports_to_menuFragment)
         }
