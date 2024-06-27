@@ -1470,7 +1470,7 @@ class TransactionDetailsFragment : Fragment() {
                     * "total <= refundedAmount" This is commented so that a transaction can be refunded only once even if it was refunded partially.
                      */
 
-                    if (total <= refundedAmount /*refundedAmount.toDouble() > 0.0*/
+                    if (total.toDouble() <= refundedAmount.toDouble() /*refundedAmount.toDouble() > 0.0*/
                         || paymentDetailsResponse.data.order.payment_status == "Cancelled"
                     ) {
                         binding.tvIssueRefund.visibility = View.GONE
