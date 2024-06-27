@@ -625,11 +625,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun observeData() {
         paymentviewModel.orderCreate.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                viewModel.activeOrderTypeName=""
-                viewModel.activeOrderTypeId=0
-                viewModel.activeOrderTypeText=""
+                viewModel.activeOrderTypeName = ""
+                viewModel.activeOrderTypeId = 0
+                viewModel.activeOrderTypeText = ""
                 viewModel.deleteOrderTypeBackupByName(
-                   prefProvider.employeeId()
+                    prefProvider.employeeId()
                 )
             }
         }
@@ -1751,8 +1751,26 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 //        paymentviewModel.tipOnAmount = paymentAmount
         //        Above code is commented, because the split amount was not changing, below code is the solution
-        paymentviewModel.tipOnAmount = viewModel.totalPrice.toString().substring(0,viewModel.totalPrice.toString().indexOf(".")+3).toDouble()
-
+        try {
+            paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
+                .substring(0, viewModel.totalPrice.toString().indexOf(".") + 3).toDouble()
+        } catch (e: Exception) {
+            try {
+                paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
+                    .substring(0, viewModel.totalPrice.toString().indexOf(".") + 2).toDouble()
+            } catch (e: Exception) {
+                try {
+                    paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
+                        .substring(0, viewModel.totalPrice.toString().indexOf(".") + 1).toDouble()
+                } catch (e: Exception) {
+                    try {
+                        paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
+                            .substring(0, viewModel.totalPrice.toString().indexOf(".")).toDouble()
+                    } catch (e: Exception) {
+                    }
+                }
+            }
+        }
         subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
         totalServiceCharge =
             String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
@@ -1851,7 +1869,31 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 //        paymentviewModel.tipOnAmount = paymentAmount
                 //        Above code is commented, because the split amount was not changing, below code is the solution
-                paymentviewModel.tipOnAmount = viewModel.totalPrice.toString().substring(0,viewModel.totalPrice.toString().indexOf(".")+3).toDouble()
+                try {
+                    paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
+                        .substring(0, viewModel.totalPrice.toString().indexOf(".") + 3).toDouble()
+                } catch (e: Exception) {
+                    try {
+                        paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
+                            .substring(0, viewModel.totalPrice.toString().indexOf(".") + 2)
+                            .toDouble()
+                    } catch (e: Exception) {
+                        try {
+                            paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
+                                .substring(0, viewModel.totalPrice.toString().indexOf(".") + 1)
+                                .toDouble()
+                        } catch (e: Exception) {
+                            try {
+                                paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
+                                    .substring(0, viewModel.totalPrice.toString().indexOf("."))
+                                    .toDouble()
+                            } catch (e: Exception) {
+                            }
+                        }
+                    }
+                }
+//                paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
+//                    .substring(0, viewModel.totalPrice.toString().indexOf(".") + 3).toDouble()
 
                 paymentAmount += tipAmount
 
