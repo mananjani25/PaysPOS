@@ -27,6 +27,7 @@ import com.pays.pos.ui.adapter.InventoryAdapter
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
+import com.pays.pos.utils.extensions.setOnSingleClickListener
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -121,11 +122,11 @@ class Inventory : Fragment() {
     }
 
     private fun configureToolbar() {
-        binding.commonToolbar.imgDrawer.setOnClickListener {
+        binding.commonToolbar.imgDrawer.setOnSingleClickListener {
             // (requireActivity() as MainActivity).enableDrawer()
             findNavController().navigate(R.id.action_inventory_to_menuFragment)
         }
-        binding.commonToolbar.txtHome.setOnClickListener {
+        binding.commonToolbar.txtHome.setOnSingleClickListener {
             findNavController().navigate(R.id.action_inventory_to_dashboardCategory)
         }
 

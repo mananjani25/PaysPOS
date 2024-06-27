@@ -134,6 +134,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var cashdiscountAmount = 0.0
     var cashDiscountType = ""
     var totalDiscount = 0.0
+    var wholetotalPrice = 0.0
     var tip = 0.0
     var order_note = ""
     var cartModel: CartModel? = null
@@ -178,6 +179,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _itemQuantityCheck = MutableLiveData<Event<Boolean?>>()
     val itemQuantityCheck: LiveData<Event<Boolean?>> = _itemQuantityCheck
     var orderId: Int? = 0
+
+    var activeOrderTypeText: String = ""
+    var activeOrderTypeName: String = ""
+    var activeOrderTypeId: Int? = 0
 
     var openOrderUpdate: Boolean? = false
     private val _removeGuestSuccess = MutableLiveData<Event<String>>()
@@ -698,6 +703,9 @@ class DashBoardCategoryViewModel @Inject constructor(
             prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
             cartModel = null
             GlobalScope.launch {
+                deleteOrderTypeBackupByName(
+                    prefProvider.employeeId()
+                )
                 posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
                 destroyedList.clear()
 
@@ -3907,6 +3915,18 @@ class DashBoardCategoryViewModel @Inject constructor(
             ) {
                 deliveryType = ""
             }
+            if (orderTypeId == -1) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    var job = launch {
+                        posRepository.getOrderTypeBackupList(employeeID)?.let {
+                            try{
+                                orderTypeId = (it.get(0).orderType) ?: -1
+                            }catch (e:Exception){}
+                        }
+                    }
+                    job.join()
+                }
+            }
             orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
             isMaual = isManualSales
             serviceCharge = serviceChargesList
@@ -3916,6 +3936,10 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
         }
+    }
+
+    suspend fun getOrderTypeBackupList(employeeId: Int): List<OrderTypeBackup> {
+        return posRepository.getOrderTypeBackupList(employeeId)
     }
 
     fun getCashDiscountDetails(active: Int): LiveData<CashDiscountModel>? {
@@ -4608,7 +4632,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                         LOYALTY_ADDED, false
                     )
                     totalPrice = finalTotal
+                    try {
+                        if (finalTotal >= prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0")
+                                .toDouble()
+                        ) {
+                            wholetotalPrice = finalTotal
+                        }
+                    } catch (e: Exception) {
 
+                    }
 
 
                     cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
@@ -7562,7 +7594,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         mPosition = position
     }
 
-
     fun createCart(cartList: ArrayList<CartModel>): ArrayList<CartModel> {
         if (cartList.isEmpty()) {
             val model = CartModel()
@@ -7578,6 +7609,37 @@ class DashBoardCategoryViewModel @Inject constructor(
                     ).lowercase()
                 ) {
                     model.orderTypeId = it.id
+
+                    activeOrderTypeText = it.name
+                    activeOrderTypeName = it.orderType
+                    activeOrderTypeId = it.id
+                    var foundedList: List<OrderTypeBackup>? = null
+                    CoroutineScope(Dispatchers.IO).async {
+                        async {
+                            foundedList = findOrderTypeBackup(
+                                it.id,
+                                activeOrderTypeText,
+                                model.employeeID.toInt()
+                            )
+                        }.await()
+
+                        async {
+                            try {
+                                foundedList?.let { founded ->
+                                    if (founded.isNullOrEmpty()) {
+                                        var orderTypebackup = OrderTypeBackup()
+                                        orderTypebackup.orderType = it.id
+                                        orderTypebackup.employeeId = model.employeeID
+                                        orderTypebackup.orderTypeName = activeOrderTypeText
+                                        insertOrderTypeBackup(orderTypebackup)
+                                    }
+                                }
+
+                            } catch (e: Exception) {
+                            }
+                        }.await()
+                    }
+
                 }
             }
             model.items = null
@@ -7988,4 +8050,33 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.getCartModelFromID(cartId)
     }
 
+    suspend fun insertOrderTypeBackup(orderTypeBackup: OrderTypeBackup): Long? {
+        return posRepository.addOrderTypeBackup(orderTypeBackup)
+    }
+
+    suspend fun findOrderTypeBackup(
+        orderType: Int,
+        orderTypeName: String,
+        employeeId: Int
+    ): List<OrderTypeBackup> {
+        return posRepository.findOrderTypeBackup(orderType, employeeId, orderTypeName)
+    }
+
+    suspend fun deleteOrderTypeBackup(orderType: Int, employeeId: Int) {
+        viewModelScope.launch {
+            posRepository.deleteOrderTypeBackup(orderType, employeeId)
+        }
+    }
+
+    fun deleteOrderTypeBackupByName(employeeId: Int) {
+        viewModelScope.launch {
+            posRepository.deleteOrderTypeBackupByName(employeeId)
+        }
+    }
+
+    suspend fun updateOrderTypeBackup(orderType: Int, orderTypeName:String,employeeId: Int) {
+        viewModelScope.launch {
+            posRepository.updateOrderTypeBackup(orderType,orderTypeName, employeeId)
+        }
+    }
 }

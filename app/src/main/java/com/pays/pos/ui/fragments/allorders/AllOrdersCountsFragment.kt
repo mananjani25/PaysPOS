@@ -485,7 +485,7 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
            }
 
        }catch (e:Exception){
-
+            Log.e("AllOrdersCrashException", e.printStackTrace().toString())
        }
     }
 

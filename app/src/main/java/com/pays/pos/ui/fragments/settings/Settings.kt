@@ -39,6 +39,7 @@ import com.pays.pos.ui.fragments.settings.tax.TaxesList
 import com.pays.pos.ui.fragments.settings.teamrole.TeamMemberSettings
 import com.pays.pos.ui.fragments.settings.tip.TipsList
 import com.pays.pos.utils.LogUtil
+import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.extensions.styleBold
 import com.pays.pos.utils.extensions.styleNormal
 import dagger.hilt.android.AndroidEntryPoint
@@ -81,7 +82,7 @@ class Settings : Fragment() {
         binding.txtEmployee.styleNormal()
         binding.txtReports.styleNormal()
 
-        binding.commonToolbar.imgDrawer.setOnClickListener {
+        binding.commonToolbar.imgDrawer.setOnSingleClickListener {
             findNavController().navigate(R.id.action_settings_to_menuFragment)
 
         }

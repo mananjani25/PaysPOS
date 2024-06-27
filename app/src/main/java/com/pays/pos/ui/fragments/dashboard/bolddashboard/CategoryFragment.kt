@@ -1,5 +1,7 @@
 package com.pays.pos.ui.fragments.dashboard.bolddashboard
 
+import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -61,6 +63,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
     private lateinit var categoryTabAdapter: CategoryTabAdapter
     lateinit var itemListner: ItemListner
     private val TAG = "CategoryFragment"
+    lateinit var activityContext:AppCompatActivity
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -72,6 +75,11 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
         }
 
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        activityContext=context as AppCompatActivity
     }
 
     override fun onCreateView(
@@ -342,15 +350,18 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                 categoryList1.forEach { categories ->
                     val itemList = categories.inventoryLists
                     itemList?.filter { it?.isHide == true }?.forEach { tbItem ->
-                        searchList.add(
-                            CategorySearchData(
-                                tbItem?.itemId ?: 0,
-                                tbItem?.name ?: "",
-                                tbItem?.imageUrl.toString(),
-                                categories.category.name ?: "",
-                                categories.category.id
+
+                        if(tbItem?.isDeleted == false) {
+                            searchList.add(
+                                CategorySearchData(
+                                    tbItem?.itemId ?: 0,
+                                    tbItem?.name ?: "",
+                                    tbItem?.imageUrl.toString(),
+                                    categories.category.name ?: "",
+                                    categories.category.id
+                                )
                             )
-                        )
+                        }
                     }
                 }
 
@@ -362,17 +373,38 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                             R.layout.search_category_item,
                             searchList
                         )
+                    edtSearch?.setAdapter(searchAdapter)
+                    Log.e("CategorySearchAdapter","1")
                 } catch (e: Exception) {
-                    /*searchAdapter =
-                        CategorySearchAdapter(
-                            activity as AppCompatActivity,
-                            requireContext(),
-                            R.layout.search_category_item,
-                            searchList
-                        )*/
+                    try{
+                        searchAdapter =
+                       CategorySearchAdapter(
+                           activity as AppCompatActivity,
+                           requireContext(),
+                           R.layout.search_category_item,
+                           searchList
+                       )
+                        edtSearch?.setAdapter(searchAdapter)
+                        Log.e("CategorySearchAdapter","2")
+
+                    }catch (e:Exception){
+                        try{
+                            searchAdapter =
+                                CategorySearchAdapter(
+                                    activityContext,
+                                    requireContext(),
+                                    R.layout.search_category_item,
+                                    searchList
+                                )
+                            edtSearch?.setAdapter(searchAdapter)
+                            Log.e("CategorySearchAdapter","3")
+                        }catch (e:Exception){
+                            Log.e("CategorySearchAdapter","4")
+                        }
+                    }
+
                 }
                 edtSearch?.threshold = 2
-                edtSearch?.setAdapter(searchAdapter)
                 edtSearch?.setOnItemClickListener { parent, _, position, _ ->
                     val model: CategorySearchData =
                         parent.getItemAtPosition(position) as CategorySearchData

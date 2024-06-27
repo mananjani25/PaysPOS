@@ -34,7 +34,6 @@ import com.pays.pos.databinding.FragmentDineInBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
 import com.pays.pos.ui.adapter.DineInFloorNameListAdapter
-import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
@@ -45,6 +44,7 @@ import com.pays.pos.utils.extensions.toDp
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
+import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.ui.fragments.dineInNew.DashBoardCategoryViewModelPaysDineIn
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch

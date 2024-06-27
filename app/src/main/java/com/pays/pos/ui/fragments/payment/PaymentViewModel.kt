@@ -128,6 +128,7 @@ open class PaymentViewModel @Inject constructor(
     public var actual_TotalDiscount: Double = 0.0
     public var actual_CashDiscountSurCharge: Double = 0.0
     public var actual_CardAmount: Double = 0.0
+    public var tipOnAmount: Double = 0.0
 
     public var magensaResponse: String? = null
     var paxReferenceNo: String? = null
@@ -172,6 +173,7 @@ open class PaymentViewModel @Inject constructor(
                         if (response?.status == 200) {
 
                             resource.data?.let { createOrderResponse ->
+
                                 if (createOrderResponse.data.order.customer != null) {
                                     posRepository.updateFinalRewards(
                                         createOrderResponse.data.order.customer.final_reward.toInt(),

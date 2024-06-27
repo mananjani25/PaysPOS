@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.ProgressDialog
 import android.content.*
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
@@ -13,11 +12,7 @@ import android.media.RingtoneManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.StrictMode
+import android.os.*
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
@@ -91,6 +86,7 @@ import com.pays.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.pays.pos.ui.fragments.settings.hardware.Hardware
 import com.pays.pos.ui.fragments.settings.hardware.printer.UpdatePrinters
 import com.pays.pos.utils.*
+import com.pays.pos.utils.FileUtils
 import com.pays.pos.utils.extensions.alert
 import com.pays.pos.utils.statusUtils.Status
 import com.pays.pos.utils.workmanager.ThreadPoolManager
@@ -1274,9 +1270,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         super.onCreate(savedInstanceState)
         MainApplication.mainActivity = this
         permissionCheck()
-
-
-
 
         Log.e(TAG, "checkConsumerNullorNot  ${consumer}")
         if (consumer != null) {
@@ -3371,7 +3364,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
         dashboardViewModel.allInventoryItems.observe(this) { it ->
-            if (it.data?.isEmpty() == true) {
+            if (it.data?.isEmpty() == true && navController?.currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
 
                 try {
                     val dialog = Dialog(this)
@@ -3380,7 +3373,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     dialog.setCanceledOnTouchOutside(false)
                     dialog.show()
 
-                    Handler().postDelayed({ dialog.dismiss() }, 15000)
+                        Handler(mainLooper).postDelayed({ dialog.dismiss() }, 15000)
 
                 } catch (e: Exception) {
 
@@ -3626,8 +3619,13 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             if (it.asJsonObject.has("cancelled_order") || it.asJsonObject.has("new_order")) {
 
 
-                if (it.asJsonObject.has("new_order"))
-                    setSoundForOnlineOrder()
+                val orderTypeName = it.asJsonObject.get("order_type").toString()
+
+                if (it.asJsonObject.has("new_order")) {
+                    if (orderTypeName.equals("\"KioskOpenorder\"", true)  || orderTypeName.equals("\"Online Web Order\"", true) || orderTypeName.equals("\"Online Order\"",true)){
+                        setSoundForOnlineOrder()
+                    }
+                }
 
                 val intent = Intent()
                 intent.putExtra("message", "refresh")
@@ -3691,7 +3689,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
         if (this::presentation.isInitialized) {
-            presentation.hide()
+//            presentation.hide()
             presentation.onDisplayChanged()
         }
         navController?.removeOnDestinationChangedListener(listner)

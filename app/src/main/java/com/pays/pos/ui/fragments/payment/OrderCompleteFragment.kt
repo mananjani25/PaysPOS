@@ -6647,7 +6647,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM,"")
                         prefProvider.setValue(Constants.OLD_ITEM,"")
                         prefProvider.setValue(Constants.OLD_ITEM_BASE,"")
-                        findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
+                        if(viewModelDashBoard.boldPosNeedToRefresh)
+                            findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+                        else
+                            findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
                     } else {
 
                         clearObserver()
@@ -6672,7 +6675,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         clearObserver()
                         prefProvider.setValueboolean(ORDER_COMPLETED, true)
-                        findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
+                        if(viewModelDashBoard.boldPosNeedToRefresh)
+                            findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+                        else
+                            findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
                     } else {
 
 
@@ -11897,7 +11903,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             prefProvider.setValue("BEFORE_ORDER_NOTE", "")
         }
         if (this::presentation.isInitialized) {
-            presentation.hide()
+//            presentation.hide()
         }
     }
 

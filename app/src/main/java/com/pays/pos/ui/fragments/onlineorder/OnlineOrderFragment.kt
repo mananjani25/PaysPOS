@@ -26,6 +26,7 @@ import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.TAG
+import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.getCustomerDisplay
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
@@ -150,7 +151,7 @@ class OnlineOrderFragment : Fragment() {
     }
 
     private fun configureToolbar() {
-        binding.commonToolbar?.imgDrawer.setOnClickListener {
+        binding.commonToolbar?.imgDrawer.setOnSingleClickListener {
             findNavController().navigate(R.id.action_onlineOrder_to_menuposbold)
         }
         binding.commonToolbar?.txtHome.setOnClickListener {

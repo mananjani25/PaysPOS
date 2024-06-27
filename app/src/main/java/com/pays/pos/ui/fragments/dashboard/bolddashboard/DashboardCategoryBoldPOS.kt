@@ -93,6 +93,7 @@ import com.pays.pos.utils.callback.SyncDataCallback
 import com.pays.pos.utils.extensions.alert
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.runOnUiThread
+import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.scanner.helpers.ScannerAppEngine
@@ -362,7 +363,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     prefProvider.employeeName() + ", Are you sure, you want to clockout?"
                 ) {
                     positiveButton(getString(android.R.string.ok)) {
+
                         viewModel.clockOut()
+                        viewModel.deleteOrderTypeBackupByName(
+                            prefProvider.employeeId()
+                        )
 
 
                     }
@@ -1074,7 +1079,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
         }*/
-        binding.layoutHeader.imgDrawer.setOnClickListener {
+        binding.layoutHeader.imgDrawer.setOnSingleClickListener {
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_menuFragment)
@@ -1143,7 +1148,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 //                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_reportEODFragment)
 //            }
 //        }
-        binding.layoutHeaderCheckout.imgDrawer.setOnClickListener {
+        binding.layoutHeaderCheckout.imgDrawer.setOnSingleClickListener {
             prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
             binding.layoutHeaderCheckout.rlRoot.visibility = View.GONE
             binding.layoutHeader.rlRoot.visibility = View.VISIBLE

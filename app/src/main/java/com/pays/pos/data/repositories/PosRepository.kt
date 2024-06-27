@@ -122,7 +122,8 @@ class PosRepository @Inject constructor(
         performGetOperationDatabase { appDatabase.printerDao().kitchenPrintList }
 
     suspend fun getKitchenPrintersList() = appDatabase.printerDao().getKitchenPrinterList()
-    suspend fun getKitchenPrinterForPrint() = appDatabase.printerDao().getKitchenPrinterForPrinting()
+    suspend fun getKitchenPrinterForPrint() =
+        appDatabase.printerDao().getKitchenPrinterForPrinting()
 
     suspend fun addWastageReasonInDb(wastageReasonsList: List<VenueDetailsResponse.Data.WastageReason>) {
         appDatabase.wastageReasonsDao().addAllWastageReasons(wastageReasonsList)
@@ -398,6 +399,7 @@ class PosRepository @Inject constructor(
         networkCall = { apiHelperNew.getNoteList() },
         saveCallResult = { appDatabase.notesDao().addAllNotes(it.data) }
     )
+
     fun getNoteList() = performGetOperationDatabase(
         databaseQuery = { appDatabase.notesDao().alllNotes },
     )
@@ -770,12 +772,12 @@ class PosRepository @Inject constructor(
     }
 
     fun getManualSaleCartItems(orderType: String, employee_Id: Int): LiveData<List<TbCartItem>> {
-        var data=appDatabase.cartDao().getManualSaleCartItems(orderType, employee_Id)
+        var data = appDatabase.cartDao().getManualSaleCartItems(orderType, employee_Id)
         return data
     }
 
     suspend fun getManualSaleCartItemsList(orderType: String, employee_Id: Int): List<TbCartItem> {
-        var data=appDatabase.cartDao().getManualSaleCartItemsList(orderType, employee_Id)
+        var data = appDatabase.cartDao().getManualSaleCartItemsList(orderType, employee_Id)
         return data
     }
 
@@ -831,7 +833,7 @@ class PosRepository @Inject constructor(
         Log.d("InsertTime", "Time taken to insert: $timeTaken ms")
     }
 
-     fun getCartModelBackup():List<CartModelBackup> {
+    fun getCartModelBackup(): List<CartModelBackup> {
         return appDatabase.cartDao().getCartModelBackup()
     }
 
@@ -879,7 +881,6 @@ class PosRepository @Inject constructor(
     }
 
 
-
     suspend fun deleteCart(employee_id: Int) {
         appDatabase.cartDao().delete(employee_id)//delete cart model
         appDatabase.cartDao().deleteCartItems()//delete cart items from TbCartItem
@@ -900,7 +901,7 @@ class PosRepository @Inject constructor(
         appDatabase.cartDao().clearCartModelBackup()//delete cart items from TbCartItem
     }
 
-    suspend fun deleteCartItems(cartItemId:Int) {
+    suspend fun deleteCartItems(cartItemId: Int) {
         //  appDatabase.cartDao().delete(employee_id)//delete cart model
         appDatabase.cartDao().deleteCartItems(cartItemId)//delete cart items from TbCartItem
     }
@@ -1331,7 +1332,7 @@ class PosRepository @Inject constructor(
         appDatabase.customerSettingsDao().delete()
         appDatabase.cancelOrderReasonDao().delete()
         appDatabase.cashDiscountDao().delete()
-
+        appDatabase.loyaltyProgramsDao().delete()
     }
 
     fun orderCounts(startDate: String?, endDate: String?, isOpenOrder: Boolean) =
@@ -1446,14 +1447,37 @@ class PosRepository @Inject constructor(
         return appDatabase.cartDao().getAllCartModels()
     }
 
+    suspend fun getOrderTypeBackupList(employeeId: Int): List<OrderTypeBackup> {
+        return appDatabase.orderTypeBackupDao().getOrderTypeBackupList(employeeId)
+    }
 
     suspend fun updateModifierJSON(modId: Int?, modifiersJson: String) {
         appDatabase.modifierSetDao().updateModifierJSON(modId!!, modifiersJson)
     }
 
-
     suspend fun updateOptionsJSON(modId: Int?, modifiersJson: String) {
         appDatabase.optionSetDao().updateOptionsJSON(modId!!, modifiersJson)
     }
+
+    suspend fun updateOrderTypeBackup(orderType: Int,orderTypeName:String,  employeeId: Int) {
+        appDatabase.orderTypeBackupDao().updateOrderTypeBackup(orderType,orderTypeName, employeeId)
+    }
+
+    suspend fun findOrderTypeBackup(orderType: Int, employeeId: Int,orderTypeName: String):List<OrderTypeBackup> {
+        return appDatabase.orderTypeBackupDao().findOrderTypeBackup(orderType,orderTypeName, employeeId)
+    }
+
+    suspend fun deleteOrderTypeBackup(orderType: Int, employeeId: Int) {
+        appDatabase.orderTypeBackupDao().deleteOrderTypeBackup(orderType, employeeId)
+    }
+
+    suspend fun deleteOrderTypeBackupByName(employeeId: Int) {
+        appDatabase.orderTypeBackupDao().deleteOrderTypeBackupByName(employeeId)
+    }
+
+    suspend fun addOrderTypeBackup(orderType: OrderTypeBackup) =
+        appDatabase.orderTypeBackupDao().add(orderType)
+
+
 }
 

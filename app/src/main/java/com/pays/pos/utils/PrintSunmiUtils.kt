@@ -84,10 +84,14 @@ class PrintSunmiUtils {
                 normalTextCenter(value1)
             if (value2.isNotEmpty()) {
 //                normalTextCenter(MethodUtils.getUSFormatNumber(value2))
-                normalTextCenter(
-                    value2.addCharAtIndex('(', 0).addCharAtIndex(')', 4).addCharAtIndex(' ', 5)
-                        .addCharAtIndex('-', 10)
-                )
+                if(value2.contains("(") && value2.contains(")") && value2.contains("-")){
+                    normalTextCenter(value2)
+                }else {
+                    normalTextCenter(
+                        value2.addCharAtIndex('(', 0).addCharAtIndex(')', 4).addCharAtIndex(' ', 5)
+                            .addCharAtIndex('-', 10)
+                    )
+                }
             }
 
         }

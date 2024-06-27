@@ -16,8 +16,8 @@ android {
         applicationId "com.pays.pos"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 11
-        versionName "1.11"
+        versionCode 12
+        versionName "1.12"
 
 
         sourceSets { main { jniLibs.srcDirs = ['src/main/jniLibs/'] } }
@@ -229,6 +229,8 @@ dependencies {
 
 
     implementation 'com.android.volley:volley:1.2.1'
+
+
 
 
 }
