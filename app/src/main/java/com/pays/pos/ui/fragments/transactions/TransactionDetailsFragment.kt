@@ -574,6 +574,10 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun voidViaPAX() {
         var refundAmount = paymentDetailsResponse.data.amount
+        paymentDetailsResponse.data.order.total_tips?.let{
+            refundAmount+=it
+        }
+
         if (refundAmount != 0.0) {
             if (paymentDetailsResponse.data.payment_type.equals("Card", ignoreCase = true)) {
                 GlobalScope.launch {
