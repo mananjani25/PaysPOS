@@ -15,22 +15,23 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.FragmentActivity
 import androidx.work.WorkManager
+import com.google.gson.Gson
+import com.google.i18n.phonenumbers.PhoneNumberUtil
+import com.google.i18n.phonenumbers.Phonenumber
 import com.pays.pos.MainApplication
 import com.pays.pos.R
 import com.pays.pos.data.entities.ModifierSet
 import com.pays.pos.data.model.requestModel.CreateCategoryRequestModel
 import com.pays.pos.data.model.requestModel.CreateItemRequestModel
 import com.pays.pos.data.remote.Constants
+import com.pays.pos.di.ApiModule.BASE_URL
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.utils.extensions.toMultiPartRequestBody
 import com.pays.pos.utils.workmanager.UploadWorker2
-import com.google.gson.Gson
-import com.google.i18n.phonenumbers.PhoneNumberUtil
-import com.google.i18n.phonenumbers.Phonenumber
-import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
+import java.net.InetAddress
 import java.text.DecimalFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -730,6 +731,7 @@ class MethodUtils {
             }
         }
     }
+
 
 }
 

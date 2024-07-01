@@ -7,6 +7,7 @@ import android.content.Context
 import android.os.Build
 import android.os.Handler
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -14,6 +15,8 @@ import com.pax.poslink.CommSetting
 import com.pax.poslink.LogSetting
 import com.pax.poslink.POSLinkAndroid
 import com.pays.pos.ui.activities.MainActivity
+import com.pays.pos.utils.InternetUtils
+import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.paxUtils.Convenience
 import com.pays.pos.utils.paxUtils.SettingINI
 import com.pays.pos.utils.scanner.helpers.AvailableScanner
@@ -23,6 +26,7 @@ import com.pays.pos.utils.scanner.helpers.ScannerAppEngine
 import com.zebra.scannercontrol.DCSScannerInfo
 import com.zebra.scannercontrol.SDKHandler
 import dagger.hilt.android.HiltAndroidApp
+import retrofit2.HttpException
 import java.io.File
 
 @HiltAndroidApp
@@ -31,7 +35,6 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
-
 
 
 //        CoroutineScope(Dispatchers.IO).launch {
@@ -55,10 +58,14 @@ class MainApplication : Application() {
 
         Thread.setDefaultUncaughtExceptionHandler { paramThread, paramThrowable ->
 
-          //  Firebase.crashlytics.log("Error" + Thread.currentThread().stackTrace[2])
-            FirebaseCrashlytics.getInstance().log(paramThrowable.message+"")
+            //  Firebase.crashlytics.log("Error" + Thread.currentThread().stackTrace[2])
+            FirebaseCrashlytics.getInstance().log(paramThrowable.message + "")
             FirebaseCrashlytics.getInstance().recordException(paramThrowable)
-            Log.e(getString(R.string.app_name), "Uncaught exception in thread " + paramThread.getName(), paramThrowable);
+            Log.e(
+                getString(R.string.app_name),
+                "Uncaught exception in thread " + paramThread.getName(),
+                paramThrowable
+            );
 
             paramThrowable.localizedMessage?.let {
                 Log.e(
@@ -71,10 +78,15 @@ class MainApplication : Application() {
                 defaultHandler.uncaughtException(paramThread, paramThrowable);
             }
 
-            if(paramThrowable !is com.google.android.gms.dynamite.DynamiteModule.LoadingException)
-            {
+            if (paramThrowable !is com.google.android.gms.dynamite.DynamiteModule.LoadingException && paramThrowable !is HttpException) {
                 paramThrowable.printStackTrace()
                 mainActivity?.finish()
+            } else {
+                if (paramThrowable is HttpException) {
+                    if (!InternetUtils.isServerReachable()){
+                        Toast.makeText(applicationContext, getString(R.string.server_not_reachable), Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
 
         }
@@ -93,7 +105,7 @@ class MainApplication : Application() {
         init()
     }
 
-    fun init(){
+    fun init() {
         val commSetting: CommSetting = setupSetting(applicationContext)
         POSLinkAndroid.init(applicationContext, commSetting)
         Log.i("DEBUG", "Start Application")
@@ -102,7 +114,7 @@ class MainApplication : Application() {
 
     companion object {
         private var instance: MainApplication? = null
-        var mainActivity:MainActivity? = null
+        var mainActivity: MainActivity? = null
         fun getInstance(): MainApplication? {
             if (instance == null) {
                 synchronized(MainApplication::class.java) {
