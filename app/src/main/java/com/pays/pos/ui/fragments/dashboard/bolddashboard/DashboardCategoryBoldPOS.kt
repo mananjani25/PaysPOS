@@ -3413,6 +3413,30 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         }
 
                                     } else {
+//                                        Check for Custom items
+                                        var notPrinted=printingData.filter { it.isPrinted==false }
+
+                                        try{
+                                            if (notPrinted.isNotEmpty()){
+                                                for (i in 0..notPrinted.size){
+                                                    initKitchenPrinter(
+                                                        it.data!!.get(i),
+                                                        Constants.KITCHEN,
+                                                        createOrderResponse,
+                                                        cartModel
+                                                    )
+                                                }
+                                            }
+                                        }catch (e:java.lang.NullPointerException){
+
+                                        }
+
+                                        for (data in printingData) {
+                                            if (!data.isPrinted) {
+                                                break
+                                            }
+//                                            check all the items for isPrinted flags, if false found the print the whole kitchen receipt
+                                        }
                                         viewModel.downloadFinished(false)
                                         if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                                             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
