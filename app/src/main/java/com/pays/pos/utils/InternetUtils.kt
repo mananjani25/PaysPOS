@@ -5,9 +5,20 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import com.pays.pos.MainApplication
+import com.pays.pos.di.ApiModule
 import java.net.InetAddress
 
 object InternetUtils {
+
+    fun isServerReachable(): Boolean // To check if server is reachable
+    {
+        return try {
+            InetAddress.getByName(ApiModule.BASE_URL).isReachable(3000) //Replace with your name
+            true
+        } catch (e: java.lang.Exception) {
+            false
+        }
+    }
 
     fun isInternetAvailable(applicationContext: Context): Boolean {
         var result: Boolean
