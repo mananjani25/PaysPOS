@@ -3328,7 +3328,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     lastSyncTime = System.currentTimeMillis()
 
                     if (it.asJsonObject.has("location_id"))
-                        if (!it.asJsonObject.has("new_order"))
+//                        if (!it.asJsonObject.has("new_order"))
                             if (PrefProvider(baseContext).getLocationId() == it.asJsonObject.get(
                                     "location_id"
                                 ).asInt
