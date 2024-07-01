@@ -3329,13 +3329,13 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
                     if (it.asJsonObject.has("location_id"))
 //                        if (!it.asJsonObject.has("new_order"))
-                            if (PrefProvider(baseContext).getLocationId() == it.asJsonObject.get(
-                                    "location_id"
-                                ).asInt
-                            ) {
-                                Log.e(TAG2, "onReceived  Inside" + Gson().toJson(it))
-                                handleUpdatedData(it)
-                            }
+                        if (PrefProvider(baseContext).getLocationId() == it.asJsonObject.get(
+                                "location_id"
+                            ).asInt
+                        ) {
+                            Log.e(TAG2, "onReceived  Inside" + Gson().toJson(it))
+                            handleUpdatedData(it)
+                        }
                     // handleUpdatedData(it)
 
                 }
@@ -3472,7 +3472,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 val orderTypeName = it.asJsonObject.get("order_type").toString()
 
                 if (it.asJsonObject.has("new_order")) {
-                    if (orderTypeName.equals("\"KioskOpenorder\"", true)  || orderTypeName.equals("\"Online Web Order\"", true) || orderTypeName.equals("\"Online Order\"",true)){
+                    if (orderTypeName.equals(
+                            "\"KioskOpenorder\"",
+                            true
+                        ) || orderTypeName.equals(
+                            "\"Online Web Order\"",
+                            true
+                        ) || orderTypeName.equals("\"Online Order\"", true)
+                    ) {
                         setSoundForOnlineOrder()
                     }
                 }
