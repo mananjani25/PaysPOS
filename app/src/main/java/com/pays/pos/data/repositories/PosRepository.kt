@@ -184,7 +184,7 @@ class PosRepository @Inject constructor(
         prefProvider.getValueInt(
             TERMINAL_ID, 0
         ),
-        prefProvider.getValue(SYNC_SETTING_TIME_STAMP, "")
+       /* prefProvider.getValue(SYNC_SETTING_TIME_STAMP, "")*/""
     )
 
     suspend fun getOnlineOrderNotificationCount() = apiHelperNew.getOnlineOrderCountNoti()
