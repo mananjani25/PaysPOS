@@ -205,13 +205,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         fun writeToFile(data: String, fileName: String, filesDir: File?, context: Context) {
             try {
 
-              /*  val folder = filesDir
+                val folder = filesDir
                 val f = File(folder, "Order_logs")
                 f.mkdir()
                 val file = File(folder, "$fileName.txt")
 
                 file.appendText(Gson().toJson(data))
-*/
             } catch (e: IOException) {
                 Log.e("Exception", "File write failed: $e")
             }
