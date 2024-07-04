@@ -214,6 +214,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     /*Added By Rahul */
     private var isOrderUpdated: Boolean = false
 
+    private var orderTypeToCheckKiosk: String = ""
+
     @Inject
     lateinit var prefProvider: PrefProvider
     private lateinit var binding: FragmentOrderCompletBinding
@@ -240,6 +242,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         isPrintCustomer = true
 
         isOrderUpdated = false
+
 
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
@@ -393,6 +396,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         Binding()
         setupSnackbar()
         observeShowProgress()
+
+        arguments?.let {
+            orderTypeToCheckKiosk=it.getString("orderType_to_check_kiosk","")
+        }
+
         prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)
         tipAmount = requireArguments().getDouble("TipAmount")
         isDineIn = requireArguments().getBoolean("isDineIn")
@@ -6987,6 +6995,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                         }
                                     } else{
+                                        Log.d("Kiosk","Kiosk")
                                        /* if (prefProvider.getValue(Constants.ORDER_TYPE,"").equals(Constants.KIOSK_OPEN_ORDER)){
 //                                            Print the receipt here
                                             initKitchenPrinter(kitchenPrinterList.get(
@@ -6998,7 +7007,98 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                 prefProvider.setValueboolean(Constants.DO_PRINT_CUSTOM, false)
                                 //    prefProvider.setValueboolean(Constants.DO_PRINT, false)
+                                if(orderTypeToCheckKiosk.equals("KioskOpenorder",ignoreCase = true)){
+                                    for (i in 0 until kitchenPrinterList.size) {
+                                        if (kitchenPrinterList[i].status) {
+                                            kitchenPrinterList[i].orderTypes.forEach {
 
+                                                if (it.orderTypeId == receiptModel?.order?.orderTypeId
+
+                                                ) {
+
+                                                    it.printerSettings.forEach {
+                                                        if ((it.printType.lowercase()
+                                                                .equals(KITCHEN.lowercase()) || it.printType.lowercase()
+                                                                .equals(
+                                                                    KITCHENANDCUSTOMER.lowercase()
+                                                                )) && it.autoPrinting
+                                                        ) {
+
+
+                                                            if (checkItemsforPrinter(
+                                                                    receiptModel?.order?.orderItems
+                                                                        ?: arrayListOf(),
+                                                                    kitchenPrinterList[i].printerCategories.toCollection(
+                                                                        arrayListOf()
+                                                                    )
+                                                                )
+                                                            ) {
+                                                                if (!prefProvider.getValueboolean(
+                                                                        Constants.NO_NEED_TO_PRINT,
+                                                                        false
+                                                                    )
+                                                                ) {
+                                                                    if (prefProvider.getValueboolean(
+                                                                            Constants.DO_PRINT,
+                                                                            false
+                                                                        ) || /*This is added to solve the custom item printing issue when "open order" is selected.*/ prefProvider.getValueboolean(
+                                                                            Constants.DO_PRINT_CUSTOM,
+                                                                            false
+                                                                        )
+                                                                    ) {
+                                                                        initKitchenPrinter(
+                                                                            kitchenPrinterList.get(
+                                                                                i
+                                                                            ),
+                                                                            KITCHEN
+                                                                        )
+                                                                    } else {
+                                                                        var oldCartModelString =
+                                                                            prefProvider.getValue(
+                                                                                "BEFORE_ORDER_NOTE",
+                                                                                ""
+                                                                            )
+                                                                        if (oldCartModelString.isNotEmpty()) {
+                                                                            var oldCartModel =
+                                                                                Gson().fromJson<CartModel>(
+                                                                                    oldCartModelString,
+                                                                                    CartModel::class.java
+                                                                                )
+                                                                            if (!oldCartModel.note.equals(
+                                                                                    cartList?.note
+                                                                                )
+                                                                            ) {
+                                                                                initKitchenPrinter(
+                                                                                    kitchenPrinterList.get(
+                                                                                        i
+                                                                                    ),
+                                                                                    KITCHEN
+                                                                                )
+                                                                            }
+                                                                        }
+                                                                    }
+
+                                                                }
+                                                            }
+
+                                                        }
+                                                    }
+
+                                                }
+                                            }
+                                        }
+
+                                        /*IF A PROBLEM IS OCCURING WHEN "UPDATED" IS NOT GETTING PRINTED ON KITCHEN RECEIPT, THEN IT MAY BE BECAUSE THE TIME GIVEN BELOW */
+                                        if (kitchenPrinterList.size - 1 == i) {
+                                            Handler(Looper.getMainLooper()).postDelayed(
+                                                Runnable {
+                                                    isOrderUpdated = false
+                                                }, 4000
+                                            )
+                                        }
+
+                                    }
+                                }
 
                                 pd?.dismiss()
 

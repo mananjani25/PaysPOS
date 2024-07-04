@@ -55,6 +55,7 @@ import com.pays.pos.databinding.FragmentCheckoutDetailsNewBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.MagtekModule
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
@@ -179,6 +180,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private var splitAfterAmount: Double = 0.0
     private var custom_paymentAmount = 0.0
 
+    private var orderTypeToCheckKioskOrder: String = ""
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -226,6 +229,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             paymentOfflineId = arguments?.getString("paymentOfflineId").toString()
             orderOfflineId = arguments?.getString("orderOfflineId").toString()
         }
+
+        orderTypeToCheckKioskOrder = arguments?.getString("orderType_to_check_kiosk") ?: ""
 
         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) != GIFT_CARD) {
             binding.tvOther.visible()
@@ -1664,6 +1669,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         bundle.putDouble("noCashAdj", cashDiscountSurcharge)
         bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
 
+        try {
+            bundle.putString(
+                "orderType_to_check_kiosk",
+                arguments?.getString("orderType_to_check_kiosk")
+            )
+        } catch (e: Exception) {
+
+        }
 
         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
             clearObserver()
@@ -3252,6 +3265,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 myRequest.order.orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
             }
 
+
+            //FILE ASSERTION
+            MainActivity.writeToFile(
+                Gson().toJson(myRequest),
+                "Pay_".plus(myRequest.order.offlineId.toString()),
+                activity?.filesDir,
+                activity!!
+            )
+
             paymentAttributesRequest(myRequest)
         }
     }
@@ -3389,6 +3411,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 if (custom_paymentAmount != 0.0) {
                     paymentviewModel.totalPayAmount(custom_paymentAmount)
                 }
+
+                //FILE ASSERTION
+                MainActivity.writeToFile(
+                    Gson().toJson(myRequest),
+                    "Pay_".plus(myRequest.order.offlineId.toString()),
+                    activity?.filesDir,
+                    activity!!
+                )
+
                 paymentAttributesRequest(myRequest)
             }
         } else {
@@ -3476,6 +3507,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 if (custom_paymentAmount != 0.0) {
                     paymentviewModel.totalPayAmount(custom_paymentAmount)
                 }
+
+                //FILE ASSERTION
+                MainActivity.writeToFile(
+                    Gson().toJson(myRequest),
+                    "Pay_".plus(myRequest.order.offlineId.toString()),
+                    activity?.filesDir,
+                    activity!!
+                )
+
                 paymentAttributesRequest(myRequest)
             }
         }

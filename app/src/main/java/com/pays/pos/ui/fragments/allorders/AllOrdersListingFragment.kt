@@ -1788,6 +1788,11 @@ class AllOrdersListingFragment(
                     "redeemLoyalty",
                     Gson().toJson(redeemLoyaltyInfo)
                 )
+
+                bundle.putString(
+                    "orderType_to_check_kiosk",
+                    order.orderType
+                )
                 bundle.putBoolean("isFromActiveOrder", true)
                 bundle.putBoolean("isLoyaltyApplied", order.isLoyaltyApplied)
                 prefProvider.setValueboolean(

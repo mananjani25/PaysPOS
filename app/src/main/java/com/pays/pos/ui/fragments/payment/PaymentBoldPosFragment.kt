@@ -106,7 +106,7 @@ class PaymentBoldPosFragment : Fragment() {
         binding.lifecycleOwner = this
         isFromActiveOrder = arguments?.getBoolean("isFromActiveOrder") ?: false
         orderId = arguments?.getInt("orderId")
-        oldItems = arguments?.getString(Constants.OLD_ITEM)+""
+        oldItems = arguments?.getString(Constants.OLD_ITEM) + ""
         viewModel.setSplitCount(1)
         LogUtil.logE("orderId :: ", orderId.toString())
         getCustomerDisplay(requireContext())?.let { display ->
@@ -454,15 +454,26 @@ class PaymentBoldPosFragment : Fragment() {
         try {
             val fm: FragmentManager = requireActivity().supportFragmentManager
 
+
+
             LogUtil.logE("orderId :: ", orderId.toString())
             val bundle = Bundle().apply {
                 orderId?.let { putInt("orderId", it) }
                 putInt("paymentId", paymentId)
                 putString("orderOfflineId", orderOfflineId)
                 putString("paymentOfflineId", paymentOfflineId)
+
                 putString(Constants.OLD_ITEM, oldItems)
                 putString(REDIRECT_FROM, prefProvider.getValue(REDIRECT_FROM, ""))
 
+            }
+
+            try {
+                bundle.putString(
+                    "orderType_to_check_kiosk",
+                    arguments?.get("orderType_to_check_kiosk").toString()
+                )
+            } catch (e: Exception) {
             }
             fragment.arguments = bundle
             // fragment.arguments = arguments
