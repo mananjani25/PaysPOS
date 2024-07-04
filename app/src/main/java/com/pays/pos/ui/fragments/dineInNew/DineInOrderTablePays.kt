@@ -509,9 +509,47 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
         binding.btnPayNew.setOnClickListener {
             try {
+
+//                dashboardViewModel.currentCartItems = arrayListOf()
+//                dashboardViewModel.deleteCartItems()
+
                 //new Calculation for total Discount
                 var listWT: ArrayList<TbCartItem> = arrayListOf()
                 var list = dineInTableAdapter.getList()
+
+
+                /**
+                 * Adding guestDineInPosition for Each Item
+                 */
+
+                var headerPositionCounter = -1
+                var k=0
+                while(k < list.size) {
+                    if( list[k].isHeader == 0) {
+                        headerPositionCounter++
+
+                        var innerCounter = k+1
+
+                        while(true){
+                            if (innerCounter == list.size)
+                                break
+
+                            if(list[innerCounter].isHeader == 1){
+                                list[innerCounter].item?.apply{
+                                    guestIndexForDineIn = headerPositionCounter
+                                    employeeID = getOrderDetailsResponse?.employeeId?:0
+                                    orderType = "DineIn"
+                                }
+                            }else
+                                break
+
+                            innerCounter++
+
+                        }
+                    }
+                    k++
+                }
+
 
                 for (i in 0 until list.size) {
                     if (list.get(i).title.equals("Whole Table", true) && i + 1 <= list.size) {
@@ -527,6 +565,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
                     }
                 }
+
                 LogUtil.logE(TAG, "listWTItems ${Gson().toJson(listWT)}")
                 prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
 
@@ -683,16 +722,21 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         concatenate(cartList?.taxlistDynamic!!, listOf(remainingdata))
                 }
 
-
+                var alreadyDone = false
                 viewModelPayment.addCart(cartList!!)
                 CoroutineScope(Dispatchers.IO).launch {
-                    listWT.forEach {
+                    if(listWT.isNotEmpty()) {
+
                         viewModelPayment.addItemToCart(
                             dashboardViewModel.currentCartItems,
-                            it,
+                            listWT.first(),
                             ADD,
                             false
                         )
+//
+//
+//                        dashboardViewModel.addItemToCartItems(it)
+
                     }
                 }
 
@@ -710,6 +754,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
                 if (totalItem.isNotEmpty()) {
                     totalItem.forEach {
+
+                        it.orderType = "DineIn"
+                         it.employeeID = getOrderDetailsResponse?.employeeId ?:0
+
                         if (!it.isPaid) {
                             subTotal += (it.price * it.itemQuantity) - it.discountPrice
                             if (it.modifiers.isNotEmpty()) {
@@ -931,9 +979,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             dashboardViewModel.dineInHeaderPosition = 0
             dashboardViewModel.isDineInUpdate = true
+
+            var headerPositionCounter = -1
+
             for (i in 0 until list.size) {
                 val model = DineInModel()
                 if (list[i].isHeader == 0) {
+                    headerPositionCounter++
                     val listTbItem: ArrayList<TbCartItem> = arrayListOf()
                     model.id = list[i].id
                     model.isPaid = list[i].isPaid
@@ -977,11 +1029,18 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 //                    dashboardViewModel.currentCartItems = listTbItem
                     // IMPORTANT - remove this as this is just for logs
                     listTbItem.forEach {
-                        it.guestIndexForDineIn = i
-                        dashboardViewModel.currentCartItems.add(it)
+                        it.guestIndexForDineIn = headerPositionCounter
                         it.taxes = arrayListOf()
+
+                        it.employeeID = getOrderDetailsResponse?.employeeId?:0
+
+                        it.orderType = "DineIn"
+
+
+                        dashboardViewModel.currentCartItems.add(it)
                         Log.d(TAG, "testDineInUpdate onClick: " + Gson().toJson(it))
                     }
+
                     newList.add(model)
 
 
@@ -1055,6 +1114,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
                prefProvider.setValueInt(ORDER_TYPE_ID, 2)*/
 
+
+            prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, true)
 
             findNavController().navigate(
                 R.id.action_dineInOrderTable_to_dashboardCategoryNew,

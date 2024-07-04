@@ -1172,7 +1172,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
 
                 for(it in viewModel.currentCartItems){
-                    if(it.cartItemId!=item.cartItemId)
+                    if(it.cartItemId!=item.cartItemId ||
+                        (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN && it.itemId == item.itemId))
                     {
                         if (it.name == item.name && !it.name.contains("Custom")) {
                             if (viewModel.checkModifierNew(it, item)) {
@@ -1229,6 +1230,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         Log.d(TAG, "398 dineintest currentCartItems: " + viewModel.currentCartItems)
                         Log.d(TAG, "dineintest item: " + item)
                         Log.d(TAG, "dineintest dineInList: " + dineInList)
+
+                        item.itemQuantity = qty
                         viewModel.updateDineInCart(
                             viewModel.currentCartItems,
                             item,
@@ -1334,6 +1337,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             Log.d(TAG, "448 dineintest currentCartItems: " + viewModel.currentCartItems)
                             Log.d(TAG, "dineintest item: " + item)
                             Log.d(TAG, "dineintest dineInList: " + dineInList)
+                            item.itemQuantity = qty
                             viewModel.updateDineInCart(
                                 viewModel.currentCartItems,
                                 item,
