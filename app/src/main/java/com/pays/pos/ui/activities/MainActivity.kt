@@ -1223,9 +1223,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         MainApplication.mainActivity = this
         permissionCheck()
 
-           if (!checkServiceRunning(applicationContext, KioskService::class.java) && !android.os.Build.MODEL.contains("MINI")) {
-               startForegroundService(Intent(this, KioskService::class.java))
-           }
+       if (!checkServiceRunning(applicationContext, KioskService::class.java) && !android.os.Build.MODEL.contains("MINI")) {
+           startForegroundService(Intent(this, KioskService::class.java))
+       }
         Log.e(TAG, "checkConsumerNullorNot  ${consumer}")
         if (consumer != null) {
             consumer = null

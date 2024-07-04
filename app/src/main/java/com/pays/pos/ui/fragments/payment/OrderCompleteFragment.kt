@@ -7033,52 +7033,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                     )
                                                                 )
                                                             ) {
-                                                                if (!prefProvider.getValueboolean(
-                                                                        Constants.NO_NEED_TO_PRINT,
-                                                                        false
-                                                                    )
-                                                                ) {
-                                                                    if (prefProvider.getValueboolean(
-                                                                            Constants.DO_PRINT,
-                                                                            false
-                                                                        ) || /*This is added to solve the custom item printing issue when "open order" is selected.*/ prefProvider.getValueboolean(
-                                                                            Constants.DO_PRINT_CUSTOM,
-                                                                            false
-                                                                        )
-                                                                    ) {
-                                                                        initKitchenPrinter(
-                                                                            kitchenPrinterList.get(
-                                                                                i
-                                                                            ),
-                                                                            KITCHEN
-                                                                        )
-                                                                    } else {
-                                                                        var oldCartModelString =
-                                                                            prefProvider.getValue(
-                                                                                "BEFORE_ORDER_NOTE",
-                                                                                ""
-                                                                            )
-                                                                        if (oldCartModelString.isNotEmpty()) {
-                                                                            var oldCartModel =
-                                                                                Gson().fromJson<CartModel>(
-                                                                                    oldCartModelString,
-                                                                                    CartModel::class.java
-                                                                                )
-                                                                            if (!oldCartModel.note.equals(
-                                                                                    cartList?.note
-                                                                                )
-                                                                            ) {
-                                                                                initKitchenPrinter(
-                                                                                    kitchenPrinterList.get(
-                                                                                        i
-                                                                                    ),
-                                                                                    KITCHEN
-                                                                                )
-                                                                            }
-                                                                        }
-                                                                    }
-
-                                                                }
+                                                                initKitchenPrinter(
+                                                                    kitchenPrinterList.get(
+                                                                        i
+                                                                    ),
+                                                                    KITCHEN
+                                                                )
                                                             }
 
                                                         }
