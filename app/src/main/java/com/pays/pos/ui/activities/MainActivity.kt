@@ -3,9 +3,6 @@ package com.pays.pos.ui.activities
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.*
-import android.app.Dialog
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.*
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
@@ -58,10 +55,7 @@ import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
 import com.pays.pos.MainApplication
 import com.pays.pos.R
-import com.pays.pos.data.model.GuestAttrQueue
-import com.pays.pos.data.model.PrinterJSONElementData
-import com.pays.pos.data.model.PrinterQueueModel
-import com.pays.pos.data.model.TmpPrinterModel
+import com.pays.pos.data.model.*
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.pays.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.pays.pos.data.model.responseModel.PrinterResponse
@@ -103,14 +97,14 @@ import com.sunmi.externalprinterlibrary2.style.UnderlineStyle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
+import java.io.OutputStreamWriter
 import java.net.URI
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 
 @AndroidEntryPoint
@@ -207,6 +201,42 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 e.printStackTrace()
             }
         }
+
+        fun writeToFile(data: String, fileName: String, filesDir: File?, context: Context) {
+            try {
+
+                val folder = filesDir
+                val f = File(folder, "Order_logs")
+                f.mkdir()
+                val file = File(folder, "$fileName.txt")
+
+                file.appendText(Gson().toJson(data))
+            } catch (e: IOException) {
+                Log.e("Exception", "File write failed: $e")
+            }
+        }
+
+        /* fun writeToFile(
+             data: String,
+             folder: File?,
+             fileName: String,
+             folderName: String,
+             context: Context
+         ) {
+             try {
+                 val f = File(folder, folderName)
+                 f.mkdir()
+                 val file = File(
+                     folder.toString().plus("/").plus(folderName).plus("/").plus(fileName),
+                     fileName
+                 )
+                 val fos = FileOutputStream(file)
+                 fos.write(data.toByteArray())
+                 fos.close()
+             } catch (e: IOException) {
+                 Log.e("Exception", "File write failed: $e")
+             }
+         }*/
     }
 
     @Inject
@@ -1192,10 +1222,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         MainApplication.mainActivity = this
         permissionCheck()
 
-        if (!checkServiceRunning(applicationContext, KioskService::class.java)) {
-            startForegroundService(Intent(this, KioskService::class.java))
-        }
-
+       if (!checkServiceRunning(applicationContext, KioskService::class.java) && !android.os.Build.MODEL.contains("MINI")) {
+           startForegroundService(Intent(this, KioskService::class.java))
+       }
         Log.e(TAG, "checkConsumerNullorNot  ${consumer}")
         if (consumer != null) {
             consumer = null
@@ -1243,7 +1272,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
             //   connectActionCable()
         }
-
 
         // connectionActionCable()
         val intentFilter = IntentFilter("PrinterQueue")
@@ -3328,14 +3356,13 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     lastSyncTime = System.currentTimeMillis()
 
                     if (it.asJsonObject.has("location_id"))
-//                        if (!it.asJsonObject.has("new_order"))
-                        if (PrefProvider(baseContext).getLocationId() == it.asJsonObject.get(
-                                "location_id"
-                            ).asInt
-                        ) {
-                            Log.e(TAG2, "onReceived  Inside" + Gson().toJson(it))
-                            handleUpdatedData(it)
-                        }
+                            if (PrefProvider(baseContext).getLocationId() == it.asJsonObject.get(
+                                    "location_id"
+                                ).asInt
+                            ) {
+                                Log.e(TAG2, "onReceived  Inside" + Gson().toJson(it))
+                                handleUpdatedData(it)
+                            }
                     // handleUpdatedData(it)
 
                 }

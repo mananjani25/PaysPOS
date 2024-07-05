@@ -66,6 +66,7 @@ import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.remote.Constants.WHOLE_AMOUNT
 import com.pays.pos.databinding.FragmentCartBinding
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.adapter.DineInAdapter
 import com.pays.pos.ui.adapter.OrderTypeAdapter
 import com.pays.pos.ui.adapter.boldpos.CartItemsAdapter
@@ -3045,7 +3046,9 @@ class CartFragment(
                                     } catch (e: Exception) {
                                     }
 */
-                                            //
+                                            //FILE ASSERTION
+                                            MainActivity.writeToFile(Gson().toJson(request),"Save_".plus(request?.order?.offlineId),activity?.filesDir,activity!!)
+
                                             viewModel.fromAllOrderFragment = false
                                             request?.let { it1 -> viewModelPayment.submit(it1) }
                                             if (!prefProvider.getValueboolean(

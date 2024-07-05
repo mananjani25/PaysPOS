@@ -25,6 +25,7 @@ import com.pays.pos.data.remote.Constants.PICK_UP
 import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.repositories.PosRepository
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.fragments.magtek.PaymentResponse
 import com.pays.pos.utils.Event
 import com.pays.pos.utils.LogUtil
