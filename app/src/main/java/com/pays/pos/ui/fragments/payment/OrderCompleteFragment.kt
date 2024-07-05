@@ -7007,7 +7007,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                 prefProvider.setValueboolean(Constants.DO_PRINT_CUSTOM, false)
                                 //    prefProvider.setValueboolean(Constants.DO_PRINT, false)
-                                if(orderTypeToCheckKiosk.equals("KioskOpenorder",ignoreCase = true)){
+                                if(orderTypeToCheckKiosk.equals("KioskOpenorder",ignoreCase = true) && !isSpilt){
                                     for (i in 0 until kitchenPrinterList.size) {
                                         if (kitchenPrinterList[i].status) {
                                             kitchenPrinterList[i].orderTypes.forEach {
