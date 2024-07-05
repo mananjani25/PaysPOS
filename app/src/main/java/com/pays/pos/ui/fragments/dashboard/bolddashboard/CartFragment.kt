@@ -2382,54 +2382,58 @@ class CartFragment(
         }
 
         binding.txtAddCustomer.setOnSingleClickListener {
-            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
-                if (isFromPayment) {
-                    findNavController().navigate(R.id.action_paymentBoldPosFragment_to_addCustomerToGiftCard)
-                } else {
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_addCustomerToGiftCard)
-                }
-                return@setOnSingleClickListener
-            }
-            if (isFromPayment) {
-                if (prefProvider.getValueboolean(
-                        Constants.LOYALTY_ADDED, false
-                    ) || prefProvider.getValueboolean(
-                        Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false
-                    )
-                ) {
-                    AlertUtils.showCustomAlertWithListenerWithOK(
-                        requireActivity(),
-                        "You can not change customer from checkout when loyalty points added. Please go back and change customer."
-                    ) { _, _ ->
-                    }
-                } else if (viewModel.getSplitCount() > 1 || splitValue > 1) {
-                    AlertUtils.showCustomAlertWithListenerWithOK(
-                        requireActivity(), "Customer can not be changed during split payment."
-                    ) { _, _ ->
-                    }
-                } else {
-                    viewModel.setIsFromAddCustomer(true)
-                    findNavController().navigate(R.id.action_paymentBoldPosFragment_to_assignCustomerOrderFragment)
-                }
-            } else {
-                if (isOrderUpdate) {
-                    var bundle: Bundle = Bundle()
-                    bundle.putInt("orderId", orderId!!)
-                    bundle.putInt("paymentId", paymentId!!)
-                    bundle.putString("paymentOfflineId", paymentOfflineId)
-                    bundle.putString("orderOfflineId", orderOfflineId)
-                    bundle.putBoolean(
-                        "isLoyaltyApplied", viewModel.redeemLoyaltyInfo.needToApplyLoyalty
-                    )
-                    bundle.putBoolean("update", isOrderUpdate)
-                    findNavController().navigate(
-                        R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
-                    )
-                } else {
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment)
-                }
+           try{
+               if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+                   if (isFromPayment) {
+                       findNavController().navigate(R.id.action_paymentBoldPosFragment_to_addCustomerToGiftCard)
+                   } else {
+                       findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_addCustomerToGiftCard)
+                   }
+                   return@setOnSingleClickListener
+               }
+               if (isFromPayment) {
+                   if (prefProvider.getValueboolean(
+                           Constants.LOYALTY_ADDED, false
+                       ) || prefProvider.getValueboolean(
+                           Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false
+                       )
+                   ) {
+                       AlertUtils.showCustomAlertWithListenerWithOK(
+                           requireActivity(),
+                           "You can not change customer from checkout when loyalty points added. Please go back and change customer."
+                       ) { _, _ ->
+                       }
+                   } else if (viewModel.getSplitCount() > 1 || splitValue > 1) {
+                       AlertUtils.showCustomAlertWithListenerWithOK(
+                           requireActivity(), "Customer can not be changed during split payment."
+                       ) { _, _ ->
+                       }
+                   } else {
+                       viewModel.setIsFromAddCustomer(true)
+                       findNavController().navigate(R.id.action_paymentBoldPosFragment_to_assignCustomerOrderFragment)
+                   }
+               } else {
+                   if (isOrderUpdate) {
+                       var bundle: Bundle = Bundle()
+                       bundle.putInt("orderId", orderId!!)
+                       bundle.putInt("paymentId", paymentId!!)
+                       bundle.putString("paymentOfflineId", paymentOfflineId)
+                       bundle.putString("orderOfflineId", orderOfflineId)
+                       bundle.putBoolean(
+                           "isLoyaltyApplied", viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+                       )
+                       bundle.putBoolean("update", isOrderUpdate)
+                       findNavController().navigate(
+                           R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
+                       )
+                   } else {
+                       findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment)
+                   }
 
-            }
+               }
+           }catch (e:Exception){
+
+           }
         }
 
         binding.imgOrderMenu.setOnSingleClickListener {
