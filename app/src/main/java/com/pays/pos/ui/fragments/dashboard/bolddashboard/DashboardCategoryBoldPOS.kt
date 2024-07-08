@@ -74,6 +74,7 @@ import com.pays.pos.data.remote.Constants.UPDATE
 import com.pays.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.fragments.allorders.AllOrdersViewModel
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
@@ -115,6 +116,7 @@ import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import com.zebra.scannercontrol.FirmwareUpdateEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
 import java.io.IOException
 import java.lang.Runnable
 import java.util.*
@@ -234,6 +236,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private fun addFragmentReplaceObserver() {
         viewModel.fragmentNeedToBeUpdated.observe(viewLifecycleOwner) {
             if (it) {
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} addFragmentReplaceObserver"))
 
                 viewModel.fragmentNeedToBeUpdated.value = false
                 Log.e("Fragment Restarted", "Restarted")
@@ -323,6 +326,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             val callback: OnBackPressedCallback =
                 object : OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {
+                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} handleOnBackPressed()"))
                         requireActivity().finish()
                     }
                 }

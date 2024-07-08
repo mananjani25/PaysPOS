@@ -65,8 +65,10 @@ import com.magtek.mobile.android.mtusdk.*
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
+import com.pays.pos.logger.MessageEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -403,6 +405,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             "request_for_customAmount",
             viewLifecycleOwner
         ) { _: String, bundle: Bundle ->
+            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt_ request_for_customAmount_1"))
+
             val amount = bundle.getDouble("amount")
             val totalPrice = bundle.getDouble("totalAmount")
             MethodUtils.setPriceTextView(binding.tvCustomAmount, amount)
@@ -1965,6 +1969,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     // generate payment attributes request
     private fun paymentAttributesRequest(myRequest: OrderRequestModel) {
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel), myRequest=${Gson().toJson(myRequest)}_7"))
         val orderId = prefProvider.getValueInt("ORDER_ID", -1)
         if (orderId == -1) {
             if (myRequest.order.totalAmount!=0.0){
@@ -1974,6 +1979,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             }
             paymentviewModel.submit(myRequest)
         } else {
+            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_else_7"))
+
             val paymentReq = myRequest.order.paymentAttributes
             if (paymentReq != null) {
                 paymentReq.order_id = orderId
@@ -1991,8 +1998,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     orderId, isSelectedCount <= 1,
                     SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
                 )
-
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_paymentviewModel.splitByOrder(aa, true)_Before_7"))
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_paymentviewModel.splitByOrder(aa, true), aa -> ${Gson().toJson(aa)} _7"))
                 paymentviewModel.splitByOrder(aa, true)
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_paymentviewModel.splitByOrder(aa, true)_After_7"))
+
             } else {
                 if (myRequest.order.totalAmount!=0.0){
                     myRequest.completed_all_payments = isSelectedCount <= 1

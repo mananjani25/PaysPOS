@@ -86,6 +86,7 @@ import com.pays.pos.data.repositories.TaxServiceChargeRepository
 import com.pays.pos.data.repositories.TipDiscountRepository
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.utils.*
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
@@ -93,6 +94,7 @@ import com.pays.pos.utils.workmanager.ThreadPoolManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
+import org.greenrobot.eventbus.EventBus
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -633,6 +635,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun addCartModelBackup(cartModelBackup: String) {
         viewModelScope.launch {
+            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} addCartModelBackup(cartModelBackup: String)"))
             posRepository.addCartModelBackup(cartModelBackup)
         }
     }
@@ -6310,6 +6313,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
+            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} DashboardCategoryViewModel.kt_submit, orderRequestModel= ${Gson().toJson(orderRequestModel)}"))
 
             val resource: Resource<CreateOrderResponse> =
 
@@ -6332,11 +6336,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                     }
 
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} DashboardCategoryViewModel.kt_submit_SUCCESS"))
+
                 }
 
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message)
                     _showProgress.value = Event(false)
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} DashboardCategoryViewModel.kt_submit_ERROR"))
+
                 }
 
                 Status.LOADING -> {

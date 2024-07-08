@@ -39,7 +39,9 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.google.gson.Gson
+import com.pays.pos.logger.MessageEvent
 import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.EventBus
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -723,6 +725,8 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                     viewModel.setAddressList(addressListNew)
 
                 }
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} OpenOrderCustomerFragmentNew.kt, R.id.txtSave"))
+
                 viewModel.submit()
 
 /*

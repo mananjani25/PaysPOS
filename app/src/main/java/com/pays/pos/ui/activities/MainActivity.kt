@@ -72,6 +72,7 @@ import com.pays.pos.di.ApiModule.BASE_URL
 import com.pays.pos.di.HostSelectionInterceptor
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.service.KioskService
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
@@ -79,6 +80,7 @@ import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPO
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.payment.OrderCompleteViewModel
+import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.Hardware
 import com.pays.pos.ui.fragments.settings.hardware.printer.UpdatePrinters
 import com.pays.pos.utils.*
@@ -96,10 +98,12 @@ import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
 import com.sunmi.externalprinterlibrary2.style.UnderlineStyle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.io.OutputStreamWriter
 import java.net.URI
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -145,6 +149,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     var activityResultCallBack: ActivityResultCallBack? = null
     private val TAG = "MainActivity"
     private val viewModelPrinter by viewModels<OrderCompleteViewModel>()
+    private val paymentViewModel by viewModels<PaymentViewModel>()
     private var customerSettingModel = GetKitchenReceiptSettingsResponse.Data()
     private var subscription: Subscription? = null
     private var consumer: Consumer? = null
@@ -204,13 +209,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
         fun writeToFile(data: String, fileName: String, filesDir: File?, context: Context) {
             try {
-
+/*
                 val folder = filesDir
                 val f = File(folder, "Order_logs")
                 f.mkdir()
                 val file = File(folder, "$fileName.txt")
 
-                file.appendText(Gson().toJson(data))
+                file.appendText(Gson().toJson(data))*/
+
             } catch (e: IOException) {
                 Log.e("Exception", "File write failed: $e")
             }
@@ -237,6 +243,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                  Log.e("Exception", "File write failed: $e")
              }
          }*/
+    }
+
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
     }
 
     @Inject
@@ -1203,6 +1214,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     override fun onStop() {
         super.onStop()
+
+        EventBus.getDefault().unregister(this)
+
         try {
             if (consumer != null) {
                 consumer?.disconnect()
@@ -1217,14 +1231,26 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     }
 
 
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    fun onMessageEvent(event: MessageEvent?) {
+        log(event?.data.toString())
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MainApplication.mainActivity = this
         permissionCheck()
 
-       if (!checkServiceRunning(applicationContext, KioskService::class.java) && !android.os.Build.MODEL.contains("MINI")) {
-           startForegroundService(Intent(this, KioskService::class.java))
-       }
+        attachFileLogger()
+
+
+        if (!checkServiceRunning(
+                applicationContext,
+                KioskService::class.java
+            ) && !android.os.Build.MODEL.contains("MINI")
+        ) {
+            startForegroundService(Intent(this, KioskService::class.java))
+        }
         Log.e(TAG, "checkConsumerNullorNot  ${consumer}")
         if (consumer != null) {
             consumer = null
@@ -1463,6 +1489,32 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         observeShowProgress()
 
     }
+
+    private fun attachFileLogger() {
+        log("\n \n ${System.currentTimeMillis()} - ${Calendar.getInstance().time} ::")
+    }
+
+
+    public fun log(text: String) {
+        /* This function will log the data to a file*/
+        try {
+
+            val folder = externalCacheDir
+            val file = File(folder, "log_steps.txt")
+
+            val stream = FileOutputStream(file,true)
+            try {
+                stream.write(text.toByteArray())
+            } finally {
+                stream.close()
+            }
+
+
+        } catch (e: IOException) {
+            Log.e("Exception", "File write failed: $e")
+        }
+    }
+
 
     fun checkServiceRunning(context: Context, serviceClass: Class<*>): Boolean {
         val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
@@ -3356,13 +3408,13 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     lastSyncTime = System.currentTimeMillis()
 
                     if (it.asJsonObject.has("location_id"))
-                            if (PrefProvider(baseContext).getLocationId() == it.asJsonObject.get(
-                                    "location_id"
-                                ).asInt
-                            ) {
-                                Log.e(TAG2, "onReceived  Inside" + Gson().toJson(it))
-                                handleUpdatedData(it)
-                            }
+                        if (PrefProvider(baseContext).getLocationId() == it.asJsonObject.get(
+                                "location_id"
+                            ).asInt
+                        ) {
+                            Log.e(TAG2, "onReceived  Inside" + Gson().toJson(it))
+                            handleUpdatedData(it)
+                        }
                     // handleUpdatedData(it)
 
                 }

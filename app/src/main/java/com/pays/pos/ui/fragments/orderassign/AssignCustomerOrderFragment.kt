@@ -35,7 +35,9 @@ import com.pays.pos.utils.callback.ItemCallback
 import com.pays.pos.utils.callback.PaginationScrollListener
 import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
+import com.pays.pos.logger.MessageEvent
 import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -103,6 +105,8 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
 
             }
         }
+
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AssignCustomerOrderFragment.kt onCreateView"))
 
         return binding.root
     }
@@ -186,6 +190,9 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
                 bundle.putInt("paymentId", arguments?.getInt("paymentId")!!)
                 bundle.putString("paymentOfflineId", arguments?.getString("paymentOfflineId"))
                 bundle.putString("orderOfflineId", arguments?.getString("orderOfflineId"))
+
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AssignCustomerOrderFragment.kt  binding.txtHome bundle -> ${Gson().toJson(bundle)}"))
+
                 findNavController().navigate(
                     R.id.action_assignCustomerOrderFragment_to_dashboard_category_new,
                     bundle

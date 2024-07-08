@@ -66,6 +66,7 @@ import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.remote.Constants.WHOLE_AMOUNT
 import com.pays.pos.databinding.FragmentCartBinding
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.adapter.DineInAdapter
 import com.pays.pos.ui.adapter.OrderTypeAdapter
@@ -80,6 +81,7 @@ import com.pays.pos.utils.callback.*
 import com.pays.pos.utils.extensions.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.json.JSONArray
@@ -2424,6 +2426,9 @@ class CartFragment(
                            "isLoyaltyApplied", viewModel.redeemLoyaltyInfo.needToApplyLoyalty
                        )
                        bundle.putBoolean("update", isOrderUpdate)
+
+                       EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment.kt binding.txtAddCustomer.setOnSingleClickListener ${bundle}"))
+
                        findNavController().navigate(
                            R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
                        )
@@ -2678,6 +2683,7 @@ class CartFragment(
         binding.tvPayNow.setOnClickListener(
             object : View.OnClickListener {
                 override fun onClick(p0: View?) {
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvPayNow()"))
 
                     if (InternetUtils.isInternetAvailable(requireContext().applicationContext)) {
 
@@ -2719,7 +2725,7 @@ class CartFragment(
                                     viewModel.createEmptyCart(viewModel.cartModel!!)
                                 }
                             } catch (e: Exception) {
-
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment.kt tvPayNow ${e.printStackTrace()}"))
                             }
                         }
 
@@ -2746,6 +2752,9 @@ class CartFragment(
                                     Constants.OLD_ITEM,
                                     prefProvider.getValue(Constants.OLD_ITEM, "")
                                 )
+
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment.kt-> binding.tvPayNow.setOnClickListener_if (isOrderUpdate) -> bundle = ${Gson().toJson(bundle)}"))
+
                                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                                     prefProvider.setValueboolean(IS_FROM_ALL_ORDER, false)
                                     clearObserver()
@@ -2783,6 +2792,8 @@ class CartFragment(
         binding.tvSave.setOnSingleClickListener(
             object : View.OnClickListener {
                 override fun onClick(p0: View?) {
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvSave()"))
+
                     if (InternetUtils.isInternetAvailable(requireContext().applicationContext)) {
                         runBlocking {
                             try {
@@ -3046,8 +3057,11 @@ class CartFragment(
                                     } catch (e: Exception) {
                                     }
 */
+                                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment.kt_binding.tvSave.setOnSingleClickListener , request?.order?.offlineId -> ${request?.order?.offlineId} _2"))
+                                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment.kt_binding.tvSave.setOnSingleClickListener , request -> ${Gson().toJson(request)} _2"))
+
                                             //FILE ASSERTION
-                                            MainActivity.writeToFile(Gson().toJson(request),"Save_".plus(request?.order?.offlineId),activity?.filesDir,activity!!)
+//                                            MainActivity.writeToFile(Gson().toJson(request),"Save_".plus(request?.order?.offlineId),activity?.filesDir,activity!!)
 
                                             viewModel.fromAllOrderFragment = false
                                             request?.let { it1 -> viewModelPayment.submit(it1) }

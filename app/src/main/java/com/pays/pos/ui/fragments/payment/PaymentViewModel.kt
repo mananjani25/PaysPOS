@@ -1,7 +1,5 @@
 package com.pays.pos.ui.fragments.payment
 
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -25,7 +23,7 @@ import com.pays.pos.data.remote.Constants.PICK_UP
 import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.repositories.PosRepository
 import com.pays.pos.di.PrefProvider
-import com.pays.pos.ui.activities.MainActivity
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.magtek.PaymentResponse
 import com.pays.pos.utils.Event
 import com.pays.pos.utils.LogUtil
@@ -35,15 +33,15 @@ import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
-import kotlinx.coroutines.Runnable
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
+
 
 @HiltViewModel
 open class PaymentViewModel @Inject constructor(
     private val posRepository: PosRepository,
     private val appDatabase: AppDatabase,
-    private val prefProvider: PrefProvider
-) : ViewModel() {
+    private val prefProvider: PrefProvider) : ViewModel() {
 
     private var textToPay: Boolean = false
     private var cardNumberLast4: String = ""
@@ -136,6 +134,9 @@ open class PaymentViewModel @Inject constructor(
     var paxGlobalID: String? = null
     public var magensaResponseDataClass: MagensaResponse? = null
 
+    public val _steps = MutableLiveData<String>()
+
+
     fun cardReaderList() = posRepository.cardReaderActiveList()
 
     fun setOrderTypeId(order_typeId: Int) {
@@ -159,6 +160,7 @@ open class PaymentViewModel @Inject constructor(
                     orderRequestModel
                 ) as Resource<CreateOrderResponse>
             } else {
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_submit, orderRequestModel= ${Gson().toJson(orderRequestModel)}"))
 
                 posRepository.createOrder(orderRequestModel)
             }
@@ -271,6 +273,8 @@ open class PaymentViewModel @Inject constructor(
                         }
                     }
 
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_submit_SUCCESS"))
+
                 }
 
                 Status.ERROR -> {
@@ -282,6 +286,8 @@ open class PaymentViewModel @Inject constructor(
                         _showProgress.value = Event(false)
 
 //                    _showProgress.value = Event(false)
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_submit_ERROR"))
+
                 }
 
                 Status.LOADING -> {
@@ -3014,7 +3020,7 @@ open class PaymentViewModel @Inject constructor(
 
 
     fun splitByOrder(myRequest: SpitByOrderRequestModel, isDineIn: Boolean) {
-
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} splitByOrder(myRequest: SpitByOrderRequestModel, isDineIn: Boolean)_PaymentViewModel"))
         if (cashPaymentTypeSplit(myRequest)) {
             _showProgressCash.value = Event(true)
         } else
@@ -3023,13 +3029,19 @@ open class PaymentViewModel @Inject constructor(
 //        _showProgress.value = Event(true)
 
         viewModelScope.launch {
+            EventBus.getDefault().post(MessageEvent("myRequest= ${Gson().toJson(myRequest)} isDineId= ${isDineIn} _PaymentViewModel"))
 
-
+            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} splitByOrder(myRequest: SpitByOrderRequestModel, isDineIn: Boolean)_Before_posRepository.splitByOrder(myRequest)_PaymentViewModel"))
             val resource = posRepository.splitByOrder(myRequest)
+            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} splitByOrder(myRequest: SpitByOrderRequestModel, isDineIn: Boolean)_After_posRepository.splitByOrder(myRequest)_PaymentViewModel"))
+
 
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
+
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} splitByOrder(myRequest: SpitByOrderRequestModel, isDineIn: Boolean)_Status.SUCCESS_PaymentViewModel"))
+
                     resource.data.let { response ->
                         if (response?.status == 200) {
 
@@ -3078,6 +3090,7 @@ open class PaymentViewModel @Inject constructor(
                 }
 
                 Status.ERROR -> {
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} splitByOrder(myRequest: SpitByOrderRequestModel, isDineIn: Boolean)_Status.ERROR_PaymentViewModel"))
                     _transactionErrorText.value = Event(resource.message)
                     if (cashPaymentTypeSplit(myRequest)) {
                         _showProgressCash.value = Event(true)
