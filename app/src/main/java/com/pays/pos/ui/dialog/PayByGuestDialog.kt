@@ -1695,6 +1695,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             offlineId = orderOfflineId
 
         }
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PayByGuestDialog.kt, createRequestForCreditCardTotalAmount() orderModel=${Gson().toJson(orderModel)}"))
 
         return OrderRequestModel(
             completed_all_payments = false,
@@ -2330,6 +2331,8 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             cash_discount_or_surcharge = paymentViewModel.actual_CashDiscountSurCharge
             offlineId = orderOfflineId
         }
+
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PayByGuestDialog.kt, createRequestForTotalAmount() orderModel=${Gson().toJson(orderModel)}"))
 
         return OrderRequestModel(
             completed_all_payments = true,

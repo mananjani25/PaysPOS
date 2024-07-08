@@ -649,6 +649,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
                             splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
                             splitAllAmounts(Constants.TIP, 0.0)
+
+                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _12"))
+
                         } else {
                             if (custom_paymentAmount != 0.0 && isSelectedCount != 1) {
                                 prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true)
@@ -667,6 +670,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 //                                }
 
                                 splitAllAmounts(Constants.TIP, 0.0)
+
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _12"))
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ remainingValue -> ${remainingValue} _12"))
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ custom_paymentAmount -> ${custom_paymentAmount} _12"))
+
                             } else if (custom_paymentAmount != 0.0) {
                                 bundle.putBoolean("isSpilt", false)
                                 prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false)
@@ -684,6 +692,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 //                                }
 
                                 splitAllAmounts(Constants.TIP, 0.0)
+
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _13"))
+
                             } else {
                                 bundle.putBoolean("isSpilt", true)
                                 bundle.putBoolean("isSplitByNo", true)
@@ -701,6 +712,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 //                                }
 
                                 splitAllAmounts(Constants.TIP, 0.0)
+
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _13"))
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ custom_paymentAmount -> ${custom_paymentAmount} _13"))
+
                             }
 
                         }
@@ -787,6 +802,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
                             splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
                             splitAllAmounts(Constants.TIP, 0.0)
+
+                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _14"))
+
                         } else {
                             bundle.putBoolean("isSpilt", true)
                             bundle.putBoolean("isSplitByNo", true)
@@ -801,6 +819,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 cashDiscountSurcharge
                             )
                             splitAllAmounts(Constants.TIP, 0.0)
+
+                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _14"))
+                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ remainingValue -> ${remainingValue} _14"))
+
                         }
 
 
@@ -1992,6 +2014,18 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 ) && prefProvider.getValueInt("ORDER_ID", -1) != -1
             ) {
 
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_ if (prefProvider.getValueboolean(\n" +
+                        "                    Constants.SPLIT_ENABLE,\n" +
+                        "                    false\n" +
+                        "                ) && prefProvider.getValueInt(\"ORDER_ID\", -1) != -1\n" +
+                        "            ) -> ${ prefProvider.getValueboolean(
+                                Constants.SPLIT_ENABLE,
+                                false
+                            ) && prefProvider.getValueInt("ORDER_ID", -1) != -1
+                        }_7"))
+
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_ prefProvider.getValueboolean(Constants.SPLIT_ENABLE,false) -> ${prefProvider.getValueboolean(Constants.SPLIT_ENABLE,false)} _7"))
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_ prefProvider.getValueInt(\"ORDER_ID\", -1) -> ${prefProvider.getValueInt("ORDER_ID", -1)} _7"))
 
                 // total amount - (hal pay amoutn + alredy pay )
                 val aa = SpitByOrderRequestModel(
@@ -2009,6 +2043,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 }else{
                     myRequest.completed_all_payments = true
                 }
+
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_else, myRequest = ${myRequest} _7"))
+
                 paymentviewModel.submit(myRequest)
             }
 
@@ -2566,6 +2603,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
                     splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
                     splitAllAmounts(Constants.TIP, 0.0)
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _1"))
+
                 } else {
                     if (custom_paymentAmount != 0.0 && isSelectedCount != 1) {
                         prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true)
@@ -2581,6 +2620,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             cashDiscountSurcharge
                         )
                         splitAllAmounts(Constants.TIP, 0.0)
+
+                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _1"))
+                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt_ custom_paymentAmount -> ${custom_paymentAmount} _1"))
+
                     } else if (custom_paymentAmount != 0.0) {
                         bundle.putBoolean("isSpilt", false)
                         prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false)
@@ -2595,6 +2638,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             cashDiscountSurcharge
                         )
                         splitAllAmounts(Constants.TIP, 0.0)
+
+                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _2"))
+                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt_ custom_paymentAmount -> ${custom_paymentAmount} _2"))
+
                     } else {
                         bundle.putBoolean("isSpilt", true)
                         bundle.putBoolean("isSplitByNo", true)
@@ -2610,6 +2657,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                         )
 
                         splitAllAmounts(Constants.TIP, 0.0)
+
+                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _3"))
+                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt_ custom_paymentAmount -> ${custom_paymentAmount} _3"))
+
                     }
 
                 }
@@ -2696,6 +2747,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
                     splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
                     splitAllAmounts(Constants.TIP, 0.0)
+
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _4"))
+
                 } else {
                     bundle.putBoolean("isSpilt", true)
                     bundle.putBoolean("isSplitByNo", true)
@@ -2710,6 +2764,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                         cashDiscountSurcharge
                     )
                     splitAllAmounts(Constants.TIP, 0.0)
+
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _4"))
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt_ remainingValue -> ${remainingValue} _4"))
+
                 }
 
 

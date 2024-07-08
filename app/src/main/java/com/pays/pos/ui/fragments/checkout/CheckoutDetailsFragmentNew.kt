@@ -734,6 +734,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
                             splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
                             splitAllAmounts(Constants.TIP, 0.0)
+                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _1"))
+
                         } else {
                             bundle.putBoolean("isSpilt", true)
                             bundle.putBoolean("isSplitByNo", true)
@@ -748,6 +750,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 cashDiscountSurcharge
                             )
                             splitAllAmounts(Constants.TIP, 0.0)
+                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _2"))
+                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ remainingValue -> ${remainingValue} _2"))
+
                         }
 
 
@@ -818,6 +823,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
                             splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
                             splitAllAmounts(Constants.TIP, 0.0)
+                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _3"))
+
                         } else {
                             bundle.putBoolean("isSpilt", true)
                             bundle.putBoolean("isSplitByNo", true)
@@ -833,6 +840,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             )
 
                             splitAllAmounts(Constants.TIP, 0.0)
+                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _3"))
+                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ remainingValue -> ${remainingValue} _3"))
+
                         }
 
 
@@ -983,6 +993,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
                                 splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
                                 splitAllAmounts(Constants.TIP, 0.0)
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _4"))
+
                             } else {
                                 if (custom_paymentAmount != 0.0 && isSelectedCount != 1) {
                                     prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true)
@@ -1001,6 +1013,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     //                                }
 
                                     splitAllAmounts(Constants.TIP, 0.0)
+
+                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _4"))
+                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ remainingValue -> ${remainingValue} _4"))
+
                                 } else if (custom_paymentAmount != 0.0) {
                                     bundle.putBoolean("isSpilt", false)
                                     prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false)
@@ -1018,6 +1034,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     //                                }
 
                                     splitAllAmounts(Constants.TIP, 0.0)
+                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _5"))
+
                                 } else {
                                     bundle.putBoolean("isSpilt", true)
                                     bundle.putBoolean("isSplitByNo", true)
@@ -1035,6 +1053,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     //                                }
 
                                     splitAllAmounts(Constants.TIP, 0.0)
+
+                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _5"))
+                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ custom_paymentAmount -> ${custom_paymentAmount} _5"))
+
                                 }
 
                             }
@@ -1139,6 +1161,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
                                 splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
                                 splitAllAmounts(Constants.TIP, 0.0)
+
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _6"))
                             } else {
                                 bundle.putBoolean("isSpilt", true)
                                 bundle.putBoolean("isSplitByNo", true)
@@ -1153,6 +1177,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     cashDiscountSurcharge
                                 )
                                 splitAllAmounts(Constants.TIP, 0.0)
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _6"))
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ remainingValue -> ${remainingValue} _6"))
                             }
 
 
@@ -1299,6 +1325,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
                                 splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
                                 splitAllAmounts(Constants.TIP, 0.0)
+
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _7"))
+
                             } else {
                                 if (custom_paymentAmount != 0.0 && isSelectedCount != 1) {
                                     prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true)
@@ -1317,6 +1346,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     //                                }
 
                                     splitAllAmounts(Constants.TIP, 0.0)
+
+                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _7"))
+                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ remainingValue = ${remainingValue} _7"))
+
                                 } else if (custom_paymentAmount != 0.0) {
                                     bundle.putBoolean("isSpilt", false)
                                     prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false)
@@ -1334,6 +1367,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     //                                }
 
                                     splitAllAmounts(Constants.TIP, 0.0)
+
+                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _8"))
+
                                 } else {
                                     bundle.putBoolean("isSpilt", true)
                                     bundle.putBoolean("isSplitByNo", true)
@@ -1351,6 +1387,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     //                                }
 
                                     splitAllAmounts(Constants.TIP, 0.0)
+
+                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _8"))
+                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ custom_paymentAmount = ${custom_paymentAmount} _8"))
+
                                 }
 
                             }
@@ -1455,6 +1495,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
                                 splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
                                 splitAllAmounts(Constants.TIP, 0.0)
+
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _9"))
+
                             } else {
                                 bundle.putBoolean("isSpilt", true)
                                 bundle.putBoolean("isSplitByNo", true)
@@ -1469,6 +1512,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     cashDiscountSurcharge
                                 )
                                 splitAllAmounts(Constants.TIP, 0.0)
+
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _9"))
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ remainingValue -. ${remainingValue} _9"))
+
                             }
 
 
@@ -1605,6 +1652,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
             splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
             splitAllAmounts(Constants.TIP, 0.0)
+
+            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _10"))
+
         } else {
             if (custom_paymentAmount != 0.0 && isSelectedCount != 1) {
                 prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true)
@@ -1623,6 +1673,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //                                }
 
                 splitAllAmounts(Constants.TIP, 0.0)
+
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _10"))
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ custom_paymentAmount -> ${custom_paymentAmount} _10"))
+
             } else if (custom_paymentAmount != 0.0) {
                 bundle.putBoolean("isSpilt", false)
                 prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false)
@@ -1640,6 +1694,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //                                }
 
                 splitAllAmounts(Constants.TIP, 0.0)
+
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _11"))
+
             } else {
                 bundle.putBoolean("isSpilt", true)
                 bundle.putBoolean("isSplitByNo", true)
@@ -1657,6 +1714,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //                                }
 
                 splitAllAmounts(Constants.TIP, 0.0)
+
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _11"))
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ custom_paymentAmount -> ${custom_paymentAmount} _11"))
+
             }
 
         }
@@ -3667,16 +3728,21 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel), if (orderId == -1) _6"))
 
             if (textToPay) {
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel), if (textToPay) = ${textToPay} _6"))
                 myRequest.completed_all_payments = false
             } else if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel), else if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) = ${prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)} _6"))
                 myRequest.completed_all_payments = prefProvider.getValueboolean(
                     Constants.IS_ORDER_REDEEMABLE_WITH_GIFT_CARD,
                     false
                 ) && isSelectedCount <= 1
             } else {
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel), else  _6"))
                 if (myRequest.order.totalAmount != 0.0) {
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel), myRequest.order.totalAmount= ${myRequest.order.totalAmount}  _6"))
                     myRequest.completed_all_payments = isSelectedCount <= 1
                 } else {
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel), else else  _6"))
                     myRequest.completed_all_payments = true
                 }
             }
