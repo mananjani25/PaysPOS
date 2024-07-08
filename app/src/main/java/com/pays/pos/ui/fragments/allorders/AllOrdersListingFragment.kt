@@ -1628,11 +1628,8 @@ class AllOrdersListingFragment(
                 EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  UPDATE -> bundle -> ${Gson().toJson(bundle)}"))
 
                 try{
-                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  UPDATE -> IS_UPDATE_ORDER_OFFLINE_ID -> ${prefProvider.getValue(Constants.IS_UPDATE_ORDER_OFFLINE_ID, order.offlineId)}, " +
-                            "IS_UPDATE_ORDER_OFFLINE_ID->  ${prefProvider.getValue(
-                                Constants.IS_UPDATE_ORDER_PAY_OFFLINE_ID,
-                                "null"
-                            )}, " +
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  UPDATE -> IS_UPDATE_ORDER_OFFLINE_ID -> ${prefProvider.getValue(Constants.IS_UPDATE_ORDER_OFFLINE_ID, "null")}, " +
+
                             "IS_UPDATE_ORDER_PAYMENT_ID-> ${prefProvider.getValueInt(
                                 Constants.IS_UPDATE_ORDER_PAYMENT_ID,
                                 -99
