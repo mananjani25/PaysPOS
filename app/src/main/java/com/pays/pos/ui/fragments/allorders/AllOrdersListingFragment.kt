@@ -60,6 +60,7 @@ import com.pays.pos.data.remote.Constants.THIRD_PARTY_ORDER_TAB
 import com.pays.pos.databinding.AllOrdersListingFragmentBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.adapter.AllOrderAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.onlineorder.OnlineDetailViewModel
@@ -86,6 +87,7 @@ import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.StringReader
@@ -1623,6 +1625,67 @@ class AllOrdersListingFragment(
                 }
                 prefProvider.setValue(Constants.IS_UPDATE_ORDER_OFFLINE_ID, order.offlineId)
 
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  UPDATE -> bundle -> ${Gson().toJson(bundle)}"))
+
+                try{
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  UPDATE -> IS_UPDATE_ORDER_OFFLINE_ID -> ${prefProvider.getValue(Constants.IS_UPDATE_ORDER_OFFLINE_ID, order.offlineId)}, " +
+                            "IS_UPDATE_ORDER_OFFLINE_ID->  ${prefProvider.getValue(
+                                Constants.IS_UPDATE_ORDER_PAY_OFFLINE_ID,
+                                "null"
+                            )}, " +
+                            "IS_UPDATE_ORDER_PAYMENT_ID-> ${prefProvider.getValueInt(
+                                Constants.IS_UPDATE_ORDER_PAYMENT_ID,
+                                -99
+                            )}, " +
+                            "IS_UPDATE_ORDER_PAY_OFFLINE_ID-> ${prefProvider.getValue(
+                                Constants.IS_UPDATE_ORDER_PAY_OFFLINE_ID,
+                                "null"
+                            )}, " +
+                            "IS_UPDATE_ORDER-> ${ prefProvider.getValueboolean(Constants.IS_UPDATE_ORDER, true)}, " +
+                            "IS_UPDATE_ORDER_LOYALTY_APPLIED-> ${prefProvider.getValueboolean(
+                                Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED,
+                                false
+                            )}, " +
+                            "LOYALTY_ADDED-> ${prefProvider.getValueboolean(
+                                Constants.LOYALTY_ADDED,
+                                false
+                            )}, " +
+                            "IS_UPDATE_ORDER_FROM_ACTIVE_ORDER-> ${prefProvider.getValueboolean(
+                                Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                true
+                            )}, " +
+                            "IS_UPDATE_ORDER_ID-> ${prefProvider.getValueInt(Constants.IS_UPDATE_ORDER_ID, -99)}, " +
+                            "orderNoteOld-> ${prefProvider.getValue(Constants.orderNoteOld, "null")}, " +
+                            "OPEN_ORDER_UPDATE_FOR_PRINT-> ${prefProvider.getValueboolean(Constants.OPEN_ORDER_UPDATE_FOR_PRINT, true)}," +
+                            "OPEN_ORDER_ITEMS-> ${ prefProvider.getValue(
+                                Constants.OPEN_ORDER_ITEMS,
+                                "null"
+                            )}, " +
+                            "CUSTOMER_NAME-> ${prefProvider.getValue(
+                                Constants.CUSTOMER_NAME,
+                                "null"
+                            )}, " +
+                            "RECEIPT_CUSTOMER_NAME-> ${prefProvider.getValue(
+                                Constants.RECEIPT_CUSTOMER_NAME,
+                                "null"
+                            )}, " +
+                            "CUSTOMER_ID-> ${prefProvider.getValueInt(Constants.CUSTOMER_ID, -99)}, " +
+                            "Customer_Data-> ${prefProvider.getCustomerData()
+                                    }, " +
+                            "ORDER_TYPE_ID-> ${prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -99)}, " +
+                            "ORDER_TYPE-> ${prefProvider.getValue(Constants.ORDER_TYPE, "null")}, " +
+                            "ORDER_TYPE_NAME-> ${prefProvider.getValue(Constants.ORDER_TYPE_NAME,"null")}, " +
+                            "ORDER_TYPE-> ${prefProvider.getValue(Constants.ORDER_TYPE, "null")}, " +
+                            "ORDER_TYPE_NAME-> ${prefProvider.getValue(Constants.ORDER_TYPE_NAME, "null")}, " +
+                            "ORDER_TYPE-> ${prefProvider.getValue(Constants.ORDER_TYPE,"null")}, " +
+                            "ORDER_TYPE_NAME-> ${prefProvider.getValue(Constants.ORDER_TYPE_NAME,"null")}, " +
+                            "OLD_ITEM_BASE_CUSTOM_ITEM-> ${prefProvider.getValue(OLD_ITEM_BASE_CUSTOM_ITEM, "null")}"))
+
+
+                }catch (e:Exception){
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  UPDATE -> prefException -> ${e.printStackTrace()}"))
+
+                }
 
                 if (findNavController().currentDestination?.id == R.id.allOrdersFragment) {
 
@@ -1804,6 +1867,51 @@ class AllOrdersListingFragment(
                     order.isLoyaltyApplied
                 )
                 prefProvider.setValueboolean(IS_FROM_ALL_ORDER, true)
+
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  PAY bundle -> ${Gson().toJson(bundle)}"))
+
+                try{
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  PAY preferences, " +
+                            "OLD_ITEM_BASE_CUSTOM_ITEM -> ${Gson().toJson(prefProvider.getValue(OLD_ITEM_BASE_CUSTOM_ITEM, "null"))}, " +
+                            "PaidAmount -> ${prefProvider.getValue("PaidAmount", "null")}, " +
+                            "Constants.WHOLE_AMOUNT -> ${prefProvider.getValue(Constants.WHOLE_AMOUNT, "null")}, " +
+                            "cardCount -> ${prefProvider.getValueInt("cardCount", -99)}, " +
+                            "Constants.SUB_TOTAL -> ${prefProvider.getValue(Constants.SUB_TOTAL, "null")}, " +
+                            "Constants.CASH_DISCOUNT_SURCHARGE -> ${prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "null")}, " +
+                            "Constants.TOTAL_DISCOUNT -> ${prefProvider.getValue(Constants.TOTAL_DISCOUNT, "null")}, " +
+                            "Constants.TIP -> ${prefProvider.getValue(Constants.TIP, "null")}, " +
+                            "Constants.TAX_CHARGE -> ${prefProvider.getValue(Constants.TAX_CHARGE, "null")}, " +
+                            "Constants.SERVICE_CHARGE -> ${prefProvider.getValue(Constants.SERVICE_CHARGE, "null")}, " +
+                            "Constants.ORDER_TYPE -> ${prefProvider.getValue(Constants.ORDER_TYPE, "null")}, " +
+                            "Constants.ORDER_TYPE_NAME -> ${prefProvider.getValue(Constants.ORDER_TYPE_NAME, "null")}, " +
+                            "Constants.ORDER_TYPE -> ${prefProvider.getValue(Constants.ORDER_TYPE, "null")}, " +
+                            "Constants.ORDER_TYPE_NAME -> ${prefProvider.getValue(Constants.ORDER_TYPE_NAME, "null")}, " +
+                            "Constants.ORDER_TYPE_ID -> ${prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -99)}, " +
+                            "Constants.CUSTOMER_ID -> ${prefProvider.getValueInt(Constants.CUSTOMER_ID, -99)}, " +
+                            "getCustomerData() -> ${prefProvider.getCustomerData()}, " +
+                            "IS_FROM_ALL_ORDER -> ${prefProvider.getValueboolean(IS_FROM_ALL_ORDER, true)}, " +
+                            "Constants.LOYALTY_ADDED -> ${prefProvider.getValueboolean(
+                                Constants.LOYALTY_ADDED,
+                                false
+                            )}, " +
+                            "Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED -> ${prefProvider.getValueboolean(
+                                Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED,
+                                false
+                            )}, " +
+                            "Constants.RECEIPT_CUSTOMER_NAME -> ${prefProvider.getValue(
+                                Constants.RECEIPT_CUSTOMER_NAME,
+                               "null"
+                            )}, " +
+                            "Constants.CUSTOMER_NAME -> ${prefProvider.getValue(
+                                Constants.CUSTOMER_NAME,
+                                "null"
+                            )}, " +
+                            ""))
+                }catch (e:Exception){
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  PAY -> prefException -> ${e.printStackTrace()}"))
+                }
+
+
                 findNavController().navigate(
                     R.id.action_allOrder_to_paymentBoldPosFragment,
                     bundle

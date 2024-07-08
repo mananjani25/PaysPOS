@@ -2426,6 +2426,9 @@ class CartFragment(
                            "isLoyaltyApplied", viewModel.redeemLoyaltyInfo.needToApplyLoyalty
                        )
                        bundle.putBoolean("update", isOrderUpdate)
+
+                       EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment.kt binding.txtAddCustomer.setOnSingleClickListener ${bundle}"))
+
                        findNavController().navigate(
                            R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
                        )
@@ -2722,7 +2725,7 @@ class CartFragment(
                                     viewModel.createEmptyCart(viewModel.cartModel!!)
                                 }
                             } catch (e: Exception) {
-                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} tvPayNow ${e.printStackTrace()}"))
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment.kt tvPayNow ${e.printStackTrace()}"))
                             }
                         }
 
@@ -2749,6 +2752,9 @@ class CartFragment(
                                     Constants.OLD_ITEM,
                                     prefProvider.getValue(Constants.OLD_ITEM, "")
                                 )
+
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment.kt-> binding.tvPayNow.setOnClickListener_if (isOrderUpdate) -> bundle = ${Gson().toJson(bundle)}"))
+
                                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                                     prefProvider.setValueboolean(IS_FROM_ALL_ORDER, false)
                                     clearObserver()
