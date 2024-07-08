@@ -461,6 +461,8 @@ object Constants {
     const val orderNoteOld = "orderNoteOld"
     const val orderNoteNew = "orderNoteNew"
 
+    const val LINE_BREAK_TAB = "\n \t"
+
     //PAX
     const val TRANSACTION_SUCCESSED = 100 //transaction success
     const val TRANSACTION_FAILURE = 101 //transaction failure

@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.pays.pos.data.db.AppDatabase
 import com.pays.pos.data.model.PrinterListModel
 import com.pays.pos.data.model.requestModel.CreatePrinterRequestModel
@@ -15,11 +16,13 @@ import com.pays.pos.data.model.responseModel.PrinterResponse
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.repositories.PosRepository
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.utils.Event
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 
@@ -82,6 +85,8 @@ class PrinterViewModel @Inject constructor(
 
         _showProgress.value = Event(true)
         viewModelScope.launch {
+            EventBus.getDefault()
+                .post(MessageEvent("${Constants.LINE_BREAK_TAB} PrinterViewModel.kt_createPrinterQueueTestOrder ${Gson().toJson(orderRequest)}"))
 
             val resource: com.pays.pos.utils.statusUtils.Resource<CreateOrderResponse> =
                 posRepository.createOrder(orderRequest)
@@ -92,6 +97,9 @@ class PrinterViewModel @Inject constructor(
                     _showProgress.value = Event(true)
                 }
                 Status.ERROR -> {
+                    EventBus.getDefault()
+                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} PrinterViewModel.kt_createPrinterQueueTestOrder_ERROR"))
+
                     _snackbarText.value = Event(resource.message)
                     _showProgress.value = Event(false)
 
@@ -99,6 +107,9 @@ class PrinterViewModel @Inject constructor(
                 Status.SUCCESS -> {
 
                     _showProgress.value = Event(false)
+                    EventBus.getDefault()
+                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} PrinterViewModel.kt_createPrinterQueueTestOrder_SUCCESS"))
+
                 }
             }
 

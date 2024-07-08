@@ -12,10 +12,13 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.pays.pos.R
+import com.pays.pos.data.remote.Constants
 import com.pays.pos.databinding.DailogCustomAmountBinding
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.AmountTextWatcher
 import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.EventBus
 
 
 @AndroidEntryPoint
@@ -54,6 +57,7 @@ class CustomAmountFragment : DialogFragment() {
             dismiss()
         }
         binding.txtSend.setOnClickListener {
+            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CustomAmountFragment.kt_ binding.txtSend.setOnClickListener"))
             if (binding.edtAmount.text.toString().isNotEmpty()) {
                 var custom_amount = binding.edtAmount.text.toString().replace("$", "").toDouble()
                 if (custom_amount > totalprice) {
@@ -61,6 +65,8 @@ class CustomAmountFragment : DialogFragment() {
                         putDouble("amount", custom_amount)
                         putDouble("totalAmount", totalprice)
                     }
+
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CustomAmountFragment.kt_ Before_request_for_customAmount"))
                     requireActivity().supportFragmentManager.setFragmentResult(
                         "request_for_customAmount",
                         result

@@ -55,6 +55,7 @@ import com.pays.pos.databinding.FragmentCheckoutDetailsNewBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.MagtekModule
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
@@ -80,6 +81,7 @@ import com.pays.pos.utils.paxUtils.SettingINI
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -444,6 +446,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             "request_for_customAmount",
             viewLifecycleOwner
         ) { _: String, bundle: Bundle ->
+
+            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ request_for_customAmount_1"))
+
             val amount = bundle.getDouble("amount")
             val totalPrice = bundle.getDouble("totalAmount")
             MethodUtils.setPriceTextView(binding.tvCustomAmount, amount)
@@ -3265,14 +3270,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 myRequest.order.orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
             }
 
+            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_makePaymentCreditCard() , myRequest -> ${Gson().toJson(myRequest)} _1"))
 
-            //FILE ASSERTION
+           /* //FILE ASSERTION
             MainActivity.writeToFile(
                 Gson().toJson(myRequest),
                 "Pay_".plus(myRequest.order.offlineId.toString()),
                 activity?.filesDir,
                 activity!!
-            )
+            )*/
 
             paymentAttributesRequest(myRequest)
         }
@@ -3348,6 +3354,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             CartModel::class.java
         )
         if (cartModel != null) {
+            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (cartModel != null)_1"))
+
             viewModel.cartModel = cartModel
             val myRequest = cartModel.let {
                 paymentviewModel.createOrderRequestNew(
@@ -3381,6 +3389,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 paymentAttributesRequest(myRequest)
             }
         } else if (cartModel2 != null) {
+            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, else if (cartModel2 != null)_1"))
+
             viewModel.cartModel = cartModel2
             val myRequest = cartModel2.let {
                 paymentviewModel.createOrderRequestNew(
@@ -3412,6 +3422,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     paymentviewModel.totalPayAmount(custom_paymentAmount)
                 }
 
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_makeCashPayment() , myRequest -> ${Gson().toJson(myRequest)} _1"))
+/*
+
                 //FILE ASSERTION
                 MainActivity.writeToFile(
                     Gson().toJson(myRequest),
@@ -3419,6 +3432,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     activity?.filesDir,
                     activity!!
                 )
+*/
 
                 paymentAttributesRequest(myRequest)
             }
@@ -3427,6 +3441,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             /* Added by Rahul to solve the cartModel crash issue, i.e. cartModel is getting null - START*/
 
             if (viewModel.cartModel == null) {
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (viewModel.cartModel == null)_1"))
+
                 var currentCartItems = arrayListOf<TbItem>()
                 for (tbItem in viewModel.currentCartItems) {
                     currentCartItems.add(TbItem().convertCartToItem(tbItem, tbItem))
@@ -3468,6 +3484,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
 
                 dashboardViewModel.addCart(viewModel.cartModel!!)
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (viewModel.cartModel == null)_2"))
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (viewModel.cartModel == null) -> ${Gson().toJson(viewModel.cartModel)}"))
 
             }
 
@@ -3500,13 +3518,19 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
             LogUtil.logE("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, ""))
             if (myRequest != null) {
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (myRequest != null)_1"))
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (myRequest != null) -> ${Gson().toJson(myRequest)}"))
 
                 prefProvider.setValue("CART_MODEL1", "")
                 prefProvider.setValue("CART_MODEL2", "")
 
                 if (custom_paymentAmount != 0.0) {
                     paymentviewModel.totalPayAmount(custom_paymentAmount)
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (custom_paymentAmount != 0.0) -> ${Gson().toJson(custom_paymentAmount)}"))
                 }
+
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_makeCashPayment()_if (myRequest != null) , myRequest -> ${Gson().toJson(myRequest)} _2"))
+/*
 
                 //FILE ASSERTION
                 MainActivity.writeToFile(
@@ -3515,6 +3539,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     activity?.filesDir,
                     activity!!
                 )
+*/
 
                 paymentAttributesRequest(myRequest)
             }
@@ -3634,7 +3659,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         val orderId = prefProvider.getValueInt("ORDER_ID", -1)
         LogUtil.logE(TAG, "orderIdmyRequestOriginal ${orderId}")
         Log.e("textToPay", textToPay.toString())
+
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel), myRequest=${Gson().toJson(myRequest)} _6"))
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel), orderId=${Gson().toJson(orderId)} _6"))
+
         if (orderId == -1) {
+            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel), if (orderId == -1) _6"))
+
             if (textToPay) {
                 myRequest.completed_all_payments = false
             } else if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
@@ -3650,14 +3681,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
             }
             println("submit request in case of order id -1")
+            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_Before_paymentviewModel.submit(myRequest), myRequest=${Gson().toJson(myRequest)} _6"))
             paymentviewModel.submit(myRequest)
         } else {
+            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_else_before_if(textToPay)_6"))
 
             if (textToPay) {
 
                 paymentviewModel.textPaySplit(orderId)
 
             } else {
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_else_6"))
 
                 val paymentReq = myRequest.order.paymentAttributes
                 if (paymentReq != null) {
@@ -3684,7 +3718,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     gift_card_redeem = prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false),
                     gift_card = giftCardRedeem
                 )
+
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_paymentviewModel.splitByOrder(aa, false)_Before_6"))
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_paymentviewModel.splitByOrder(aa, false), , aa -> ${Gson().toJson(aa)}  _6"))
                 paymentviewModel.splitByOrder(aa, false)
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_paymentviewModel.splitByOrder(aa, false)_After_6"))
+
             }
         }
     }

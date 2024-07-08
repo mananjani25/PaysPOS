@@ -34,7 +34,10 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
+import com.pays.pos.logger.MessageEvent
 import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.EventBus
 
 @AndroidEntryPoint
 class CreateCategory : Fragment() {
@@ -107,12 +110,14 @@ class CreateCategory : Fragment() {
                 //send image if its altered.
                 newImagePathToUpload = ""
 
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CreateCategory_onClick_binding.header.txtSave, isEdit=${Gson().toJson(isEdit)}, imagePath.equals(categoryData?.thumbImgUrl, true)= ${imagePath.equals(categoryData?.thumbImgUrl, true)}"))
                 viewModel.submit(
                     adapter.getIds(), newImagePathToUpload,
                     adapter.getTbItemsList(),
                     defaultCategoryData
                 )
             } else {
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CreateCategory_onClick_binding.header.txtSave, else"))
                 viewModel.submit(adapter.getIds(), newImagePathToUpload,  adapter.getTbItemsList(),
                 defaultCategoryData)
             }

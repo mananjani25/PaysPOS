@@ -26,7 +26,9 @@ import com.pays.pos.utils.*
 import com.pays.pos.utils.extensions.getNavigationResultLiveData
 import com.pays.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
+import com.pays.pos.logger.MessageEvent
 import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.EventBus
 import java.text.NumberFormat
 import java.util.*
 
@@ -116,9 +118,12 @@ class CreateModifierSet : Fragment(), TextWatcher {
                 }else{
                     viewModel.setModifiers(adapter.getAll())
                     viewModel.setDeleteModifiers(adapter.getDelete())
+
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CreateModifierSet, binding.header.txtSave.setOnClic.._else_1"))
                     viewModel.submit()
                 }
             } else {
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CreateModifierSet, binding.header.txtSave.setOnClic.._else_2"))
                 viewModel.setDeleteModifiers(adapter.getDelete())
                 viewModel.submit()
             }
