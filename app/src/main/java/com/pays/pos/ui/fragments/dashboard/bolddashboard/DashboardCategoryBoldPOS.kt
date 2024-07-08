@@ -3423,12 +3423,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         try{
                                             if (notPrinted.isNotEmpty()){
                                                 for (i in 0..notPrinted.size){
-                                                    initKitchenPrinter(
-                                                        it.data!!.get(i),
-                                                        Constants.KITCHEN,
-                                                        createOrderResponse,
-                                                        cartModel
-                                                    )
+                                                    try {
+                                                        initKitchenPrinter(
+                                                            it.data!!.get(i),
+                                                            Constants.KITCHEN,
+                                                            createOrderResponse,
+                                                            cartModel
+                                                        )
+                                                    }catch (e:Exception){}
+
                                                 }
                                             }
                                         }catch (e:java.lang.NullPointerException){
