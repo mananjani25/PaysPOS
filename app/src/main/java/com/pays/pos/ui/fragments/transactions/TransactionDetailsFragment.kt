@@ -513,49 +513,59 @@ class TransactionDetailsFragment : Fragment() {
             posLink.ReportRequest = report
             val result = posLink.ProcessTrans()
             Log.d("result batch: ", result.Code.toString() + " " + result.Msg)
-            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
-                val msg = Message()
-                msg.what = Constants.TRANSACTION_SUCCESSED
-                msg.obj = posLink.ReportResponse
-
-                val response = msg.obj as com.pax.poslink.ReportResponse
-                val resultCode = response.ResultCode
-                val resultTxt = response.ResultTxt
-
-                if (resultCode == "000000") {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        ProgressUtils.dismissProgressDialog()
-                    }
-                    showConfirmationAlertDialog()
-                    Log.d("Data::", "void transaction")
-                } else if (resultCode == "100023") {
-                    //Transaction not found in current batch
-                    //refundViaPAX()
-                    startRefund()
-                } else {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        ProgressUtils.dismissProgressDialog()
-                        AlertUtils.showCustomAlertWithListenerWithOK(
-                            requireContext(),
-                            resultTxt,
-                            object :
-                                DialogInterface.OnClickListener {
-                                override fun onClick(p0: DialogInterface?, p1: Int) {
-                                    try {
-                                        p0?.dismiss()
-                                    } catch (e: Exception) {
-                                    }
-                                }
-                            })
+            try {
+                if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                    val msg = Message()
+                    msg.what = Constants.TRANSACTION_SUCCESSED
+                    msg.obj = posLink.ReportResponse
+                    if (posLink.ReportResponse==null){
+                        CoroutineScope(Dispatchers.Main).launch {
+                            ProgressUtils.dismissProgressDialog()
+                        }
+                        showConfirmationAlertDialog()
+                        Log.d("Data::", "void transaction")
+                    }else{
+                        val response = msg.obj as com.pax.poslink.ReportResponse
+                        val resultCode = response.ResultCode
+                        val resultTxt = response.ResultTxt
+                        if (resultCode == "000000") {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                ProgressUtils.dismissProgressDialog()
+                            }
+                            showConfirmationAlertDialog()
+                            Log.d("Data::", "void transaction")
+                        } else if (resultCode == "100023") {
+                            //Transaction not found in current batch
+                            //refundViaPAX()
+                            startRefund()
+                        } else {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                ProgressUtils.dismissProgressDialog()
+                                AlertUtils.showCustomAlertWithListenerWithOK(
+                                    requireContext(),
+                                    resultTxt,
+                                    object :
+                                        DialogInterface.OnClickListener {
+                                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                                            try {
+                                                p0?.dismiss()
+                                            } catch (e: Exception) {
+                                            }
+                                        }
+                                    })
 
 //                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+                            }
+                        }
+
+                        Log.d(
+                            "Params:",
+                            "Report $resultCode $resultTxt ${response.ExtData}  ${Gson().toJson(response)}"
+                        )
                     }
                 }
-
-                Log.d(
-                    "Params:",
-                    "Report $resultCode $resultTxt ${response.ExtData}  ${Gson().toJson(response)}"
-                )
+            }catch (e:Exception){
+//                posLink.s
             }
         }
     }
