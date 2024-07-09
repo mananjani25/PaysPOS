@@ -241,6 +241,8 @@ open class PaymentViewModel @Inject constructor(
                                                 if (order.payments.isNotEmpty()) {
                                                     if (order.payments[order.payments.size - 1].amount + order.payments[order.payments.size - 1].tips == totalPayAmounts) {
                                                         _data.value = Event(createOrderResponse)
+                                                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_244 createOrderResponse -> ${Gson().toJson(createOrderResponse)}"))
+
                                                     } else {
                                                         cashOutApi(createOrderResponse, "out")
                                                     }
@@ -248,6 +250,7 @@ open class PaymentViewModel @Inject constructor(
                                             }
                                         } else {
                                             _data.value = Event(createOrderResponse)
+                                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_253 createOrderResponse -> ${Gson().toJson(createOrderResponse)}"))
                                             LogUtil.logE("QueueCheck", "CreateOrderData")
                                         }
                                     }
@@ -398,6 +401,7 @@ open class PaymentViewModel @Inject constructor(
 
                                 if (onlySave) {
                                     _data.value = Event(createOrderResponse)
+                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_404 createOrderResponse -> ${Gson().toJson(createOrderResponse)}"))
                                 }
                                 cashLogApi(createOrderResponse, "in")
 
@@ -469,6 +473,7 @@ open class PaymentViewModel @Inject constructor(
                             if (order.payments.isNotEmpty()) {
                                 if (order.payments[order.payments.size - 1].amount + order.payments[order.payments.size - 1].tips == totalPayAmounts) {
                                     _data.value = Event(createOrderResponse)
+                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_476 createOrderResponse -> ${Gson().toJson(createOrderResponse)}"))
                                 } else {
                                     cashOutApi(createOrderResponse, "out")
                                 }
@@ -531,6 +536,7 @@ open class PaymentViewModel @Inject constructor(
 
                             resource.data?.let {
                                 _data.value = Event(createOrderResponse)
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_535 createOrderResponse -> ${Gson().toJson(createOrderResponse)}"))
                             }
 
                         } else {
@@ -551,6 +557,7 @@ open class PaymentViewModel @Inject constructor(
             }
         } else {
             _data.value = Event(createOrderResponse)
+            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_556 createOrderResponse -> ${Gson().toJson(createOrderResponse)}"))
         }
     }
 
@@ -3065,11 +3072,14 @@ open class PaymentViewModel @Inject constructor(
                                 println("onlySave : $onlySave")
                                 if (onlySave) {
                                     _data.value = Event(createOrderResponse)
+                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_3070 createOrderResponse -> ${Gson().toJson(createOrderResponse)}"))
                                 } else {
                                     if (response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
                                         cashLogApi(createOrderResponse, "in")
                                     } else {
                                         _data.value = Event(createOrderResponse)
+                                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_3075 createOrderResponse -> ${Gson().toJson(createOrderResponse)}"))
+
                                     }
                                 }
                                 deletePaxPaymentData()
