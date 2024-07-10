@@ -56,9 +56,6 @@ class TransactionDetailsViewModel @Inject constructor(
 
     val startDate = MutableLiveData<String>()
 
-    /* This variable is added to solve the BIS-3846 issue, the variable will be used to track if the tip is clicked or not*/
-    var tipClickedInTransaction=false
-
     var orderItemAttribututes :MutableList<RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute>? = null
 
     // get added tips of any transaction
