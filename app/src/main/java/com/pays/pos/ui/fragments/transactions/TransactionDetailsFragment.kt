@@ -173,6 +173,10 @@ class TransactionDetailsFragment : Fragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.tipClickedInTransaction=false
+    }
 
     private fun setUpRecyclerView() {
         orderDetailsItemAdapter = OrderDetailsItemListAdapter()
@@ -260,6 +264,9 @@ class TransactionDetailsFragment : Fragment() {
         }
 
         binding.tvtipadd.setOnClickListener {
+
+            viewModel.tipClickedInTransaction=true
+
             if (!paymentDetailsResponse.data.payable_type.equals(
                     "GiftCard",
                     true
@@ -327,7 +334,7 @@ class TransactionDetailsFragment : Fragment() {
                     return
                 }
                 mLastClickTime = SystemClock.elapsedRealtime()
-                if (!paymentDetailsResponse.data.ext_data.isNullOrEmpty()) {
+                if (!paymentDetailsResponse.data.ext_data.isNullOrEmpty() && !viewModel.tipClickedInTransaction) {
 //                    Check if the the PAX is connected or not then perform the void checking
                     if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
 //                    Check if the transaction is void or not
