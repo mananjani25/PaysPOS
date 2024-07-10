@@ -335,9 +335,13 @@ class TransactionDetailsFragment : Fragment() {
                             ProgressUtils.showProgressDialog(requireActivity())
                         }
                         checkIfTransactionIsVoided()
-                    }else{
+                    } else {
                         activity?.let {
-                            AlertUtils.showCustomAlertWithListenerWithOK(it,getString(R.string.pax_connect_error),null)
+                            AlertUtils.showCustomAlertWithListenerWithOK(
+                                it,
+                                getString(R.string.pax_connect_error),
+                                null
+                            )
                         }
                     }
 
@@ -358,6 +362,7 @@ class TransactionDetailsFragment : Fragment() {
             openReceiptDialog(2)
 
         }
+
     }
 
     private fun startRefund() {
@@ -518,13 +523,13 @@ class TransactionDetailsFragment : Fragment() {
                     val msg = Message()
                     msg.what = Constants.TRANSACTION_SUCCESSED
                     msg.obj = posLink.ReportResponse
-                    if (posLink.ReportResponse==null){
+                    if (posLink.ReportResponse == null) {
                         CoroutineScope(Dispatchers.Main).launch {
                             ProgressUtils.dismissProgressDialog()
                         }
                         showConfirmationAlertDialog()
                         Log.d("Data::", "void transaction")
-                    }else{
+                    } else {
                         val response = msg.obj as com.pax.poslink.ReportResponse
                         val resultCode = response.ResultCode
                         val resultTxt = response.ResultTxt
@@ -560,12 +565,63 @@ class TransactionDetailsFragment : Fragment() {
 
                         Log.d(
                             "Params:",
-                            "Report $resultCode $resultTxt ${response.ExtData}  ${Gson().toJson(response)}"
+                            "Report $resultCode $resultTxt ${response.ExtData}  ${
+                                Gson().toJson(
+                                    response
+                                )
+                            }"
                         )
                     }
                 }
-            }catch (e:Exception){
+            } catch (e: Exception) {
 //                posLink.s
+            }
+        }
+    }
+
+    private fun enableDisableTipButton() {
+        if (paymentDetailsResponse.data.ref_num.isNotEmpty()) {
+            GlobalScope.launch {
+                posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+
+                val report = ReportRequest()
+                report.TransType = report.ParseTransType("LOCALDETAILREPORT") //recommend
+                report.EDCType = report.ParseEDCType("CREDIT")
+                report.RefNum = paymentDetailsResponse.data.ref_num
+                report.ECRRefNum = paymentDetailsResponse.data.ecr_ref_num
+
+                posLink.ReportRequest = report
+                val result = posLink.ProcessTrans()
+                Log.d("result batch: ", result.Code.toString() + " " + result.Msg)
+                try {
+                    if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                        val msg = Message()
+                        msg.what = Constants.TRANSACTION_SUCCESSED
+                        msg.obj = posLink.ReportResponse
+                        if (posLink.ReportResponse == null) {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                binding.tvtipadd.visibility = View.GONE
+                            }
+                            Log.d("Data::", "void transaction")
+                        } else {
+                            val response = msg.obj as com.pax.poslink.ReportResponse
+                            val resultCode = response.ResultCode
+                            val resultTxt = response.ResultTxt
+                            if (resultCode == "000000") {
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    binding.tvtipadd.visibility = View.VISIBLE
+                                }
+
+                            } else if (resultCode == "100023") {
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    binding.tvtipadd.visibility = View.GONE
+                                }
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+//                posLink.s
+                }
             }
         }
     }
@@ -584,8 +640,8 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun voidViaPAX() {
         var refundAmount = paymentDetailsResponse.data.amount
-        paymentDetailsResponse.data.order.total_tips?.let{
-            refundAmount+=it
+        paymentDetailsResponse.data.order.total_tips?.let {
+            refundAmount += it
         }
 
         if (refundAmount != 0.0) {
@@ -1202,11 +1258,9 @@ class TransactionDetailsFragment : Fragment() {
         }
 
         val id = findNavController().currentDestination?.id
-        findNavController().popBackStack(id!!,true)
-        findNavController().navigate(id,bundle)
+        findNavController().popBackStack(id!!, true)
+        findNavController().navigate(id, bundle)
     }
-
-
 
 
     @SuppressLint("SetTextI18n")
@@ -1216,16 +1270,19 @@ class TransactionDetailsFragment : Fragment() {
         viewModel.dataRefundDone.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { createTaxResponse ->
                 activity?.let {
-                    AlertUtils.showCustomAlertWithListenerWithOK(it,createTaxResponse.message,object:
-                        DialogInterface.OnClickListener{
-                        override fun onClick(p0: DialogInterface?, p1: Int) {
-                            try {
-                                reloadScreen()
-                                p0?.dismiss()
-                            } catch (e: Exception) {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        it,
+                        createTaxResponse.message,
+                        object :
+                            DialogInterface.OnClickListener {
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                try {
+                                    reloadScreen()
+                                    p0?.dismiss()
+                                } catch (e: Exception) {
+                                }
                             }
-                        }
-                    })
+                        })
 
                 }
             }
@@ -1234,6 +1291,7 @@ class TransactionDetailsFragment : Fragment() {
         viewModel.dataPayment.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 paymentDetailsResponse = it
+                enableDisableTipButton()
                 val jsonString = Gson().toJson(paymentDetailsResponse)
                 Log.e("paymentDetailsResponse", "paymentDetailsResponse result = $jsonString")
 
