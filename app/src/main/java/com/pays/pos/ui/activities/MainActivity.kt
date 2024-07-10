@@ -3296,7 +3296,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
         dashboardViewModel.allInventoryItems.observe(this) { it ->
-            if (it.data?.isEmpty() == true /*&& navController?.currentDestination?.id == R.id.dashboardCategoryBoldPOS*/) {
+            if (it.data?.isEmpty() == true && (navController?.currentDestination?.id == R.id.dashboardCategoryBoldPOS || navController?.currentDestination?.id == R.id.passcodeView || navController?.currentDestination?.id == R.id.passcode)) {
 
                 try {
                     val dialog = Dialog(this)
