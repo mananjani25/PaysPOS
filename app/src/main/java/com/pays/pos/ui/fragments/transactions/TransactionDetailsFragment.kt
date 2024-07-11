@@ -580,49 +580,53 @@ class TransactionDetailsFragment : Fragment() {
     }
 
     private fun enableDisableTipButton() {
-        if (paymentDetailsResponse.data.ref_num.isNotEmpty()) {
-            GlobalScope.launch {
-                posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+        try{
+            if (paymentDetailsResponse.data.ref_num.isNotEmpty()) {
+                GlobalScope.launch {
+                    posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
 
-                val report = ReportRequest()
-                report.TransType = report.ParseTransType("LOCALDETAILREPORT") //recommend
-                report.EDCType = report.ParseEDCType("CREDIT")
-                report.RefNum = paymentDetailsResponse.data.ref_num
-                report.ECRRefNum = paymentDetailsResponse.data.ecr_ref_num
+                    val report = ReportRequest()
+                    report.TransType = report.ParseTransType("LOCALDETAILREPORT") //recommend
+                    report.EDCType = report.ParseEDCType("CREDIT")
+                    report.RefNum = paymentDetailsResponse.data.ref_num
+                    report.ECRRefNum = paymentDetailsResponse.data.ecr_ref_num
 
-                posLink.ReportRequest = report
-                val result = posLink.ProcessTrans()
-                Log.d("result batch: ", result.Code.toString() + " " + result.Msg)
-                try {
-                    if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
-                        val msg = Message()
-                        msg.what = Constants.TRANSACTION_SUCCESSED
-                        msg.obj = posLink.ReportResponse
-                        if (posLink.ReportResponse == null) {
-                            CoroutineScope(Dispatchers.Main).launch {
-                                binding.tvtipadd.visibility = View.GONE
-                            }
-                            Log.d("Data::", "void transaction")
-                        } else {
-                            val response = msg.obj as com.pax.poslink.ReportResponse
-                            val resultCode = response.ResultCode
-                            val resultTxt = response.ResultTxt
-                            if (resultCode == "000000") {
-                                CoroutineScope(Dispatchers.Main).launch {
-                                    binding.tvtipadd.visibility = View.VISIBLE
-                                }
-
-                            } else if (resultCode == "100023") {
+                    posLink.ReportRequest = report
+                    val result = posLink.ProcessTrans()
+                    Log.d("result batch: ", result.Code.toString() + " " + result.Msg)
+                    try {
+                        if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                            val msg = Message()
+                            msg.what = Constants.TRANSACTION_SUCCESSED
+                            msg.obj = posLink.ReportResponse
+                            if (posLink.ReportResponse == null) {
                                 CoroutineScope(Dispatchers.Main).launch {
                                     binding.tvtipadd.visibility = View.GONE
                                 }
+                                Log.d("Data::", "void transaction")
+                            } else {
+                                val response = msg.obj as com.pax.poslink.ReportResponse
+                                val resultCode = response.ResultCode
+                                val resultTxt = response.ResultTxt
+                                if (resultCode == "000000") {
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        binding.tvtipadd.visibility = View.VISIBLE
+                                    }
+
+                                } else if (resultCode == "100023") {
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        binding.tvtipadd.visibility = View.GONE
+                                    }
+                                }
                             }
                         }
-                    }
-                } catch (e: Exception) {
+                    } catch (e: Exception) {
 //                posLink.s
+                    }
                 }
             }
+        }catch (e:Exception){
+
         }
     }
 
