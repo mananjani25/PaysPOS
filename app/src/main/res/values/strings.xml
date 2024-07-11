@@ -294,8 +294,8 @@
     <string name="tv_address">Address</string>
     <string name="tv_show_tip_suggestion">SHOW TIP SUGGESTION</string>
     <string name="tv_tip_suggestion">Tip Suggestion</string>
-    <string name="tv_show_tip_line_for_cash">SHOW TIP LINE FOR CASH</string>
-    <string name="tv_tip_line_for_cash">Tip Line for Cash</string>
+    <string name="tv_show_tip_line_for_cash">SHOW TIP LINE<!-- FOR CASH--></string>
+    <string name="tv_tip_line_for_cash">Tip Line<!-- for Cash--></string>
     <string name="tv_show_qr_code">SHOW QR CODE</string>
     <string name="tv_show_cash_or_surcharge">SHOW CASH DISCOUNT OR SURCHARGE</string>
     <string name="tv_qr_code">QR Code</string>
