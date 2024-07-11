@@ -332,7 +332,11 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
                             for (j in i + 1 until list.size) {
                                 if (list.get(j).isHeader == 1) {
-                                    list.get(j).item?.let { it1 -> listItemWT.add(it1) }
+                                    list.get(j).item?.let { it1 ->
+
+                                        var itemToAdd = it1
+                                        itemToAdd.guestIndexForDineIn = list[i].item?.guestIndexForDineIn
+                                        listItemWT.add(itemToAdd) }
                                 } else {
                                     break
                                 }
@@ -341,8 +345,14 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     }
                     for (i in bindingAdapterPosition + 1 until list.size) {
                         if (list.get(i).isHeader == 1) {
+                            list[i].item?.apply {
+                                orderType = "DineIn"
+                                guestIndexForDineIn = list[i].item?.guestIndexForDineIn
+                            }
+                            list[i].item?.let { it1 ->
+                                listItem.add(it1)
 
-                            list[i].item?.let { it1 -> listItem.add(it1) }
+                            }
                         } else {
                             break;
                         }
@@ -362,7 +372,6 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
                     }
 
-
                     LogUtil.logE(TAG, "listItemWTGuestPay:  ${Gson().toJson(listItemWT)}")
                     listner.onGuestPay(
                         list[position],
@@ -374,8 +383,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         guestOrderDisShare,
                         list[0].guestDividedAmt,
                         listItemWT,
-                        listItem
-
+                        listItem,
+                        list[position].item?.guestIndexForDineIn?:0
                     )
                 }
             }
@@ -764,7 +773,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             discount: Double,
             guestDividedAmt: Double,
             listItemWT: ArrayList<TbCartItem>,
-            listItemGuestSelected: ArrayList<TbCartItem>
+            listItemGuestSelected: ArrayList<TbCartItem>,
+            guestIndexForDineIn: Int
         )
 
         fun onSendItemToKitchen(item: TbCartItem)

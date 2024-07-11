@@ -242,6 +242,15 @@ class DineInOrderTableViewModelPays @Inject constructor(
                         if (logInResponse?.status == 200) {
 
                             resource.data?.let { createTaxResponse ->
+
+                                createTaxResponse.data.guestAttributes.forEachIndexed { index, guestAttributes ->
+
+                                    guestAttributes.guestItemAttributes.forEach { singleGuestItem ->
+
+                                        singleGuestItem.guest_index_for_dine_in = index
+
+                                    }
+                                }
                                 _Basedata.value = Event(createTaxResponse.data)
                                 //_data.value = Event(createTaxResponse)
                             }

@@ -511,7 +511,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             try {
 
 //                dashboardViewModel.currentCartItems = arrayListOf()
-//                dashboardViewModel.deleteCartItems()
+                dashboardViewModel.deleteCartItems()
 
                 //new Calculation for total Discount
                 var listWT: ArrayList<TbCartItem> = arrayListOf()
@@ -979,6 +979,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             dashboardViewModel.dineInHeaderPosition = 0
             dashboardViewModel.isDineInUpdate = true
+            dashboardViewModel.deleteCartItems()
+            dashboardViewModel.deleteCart()
 
             var headerPositionCounter = -1
 
@@ -1037,7 +1039,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         it.orderType = "DineIn"
 
 
-                        dashboardViewModel.currentCartItems.add(it)
+                       // if(!it.isPaid)
+                            dashboardViewModel.currentCartItems.add(it)
                         Log.d(TAG, "testDineInUpdate onClick: " + Gson().toJson(it))
                     }
 
@@ -1567,11 +1570,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         divideDiscount2: Double,
         dividedGuestAmt: Double,
         listItemWT: ArrayList<TbCartItem>,
-        listItemGuestSelected: ArrayList<TbCartItem>
+        listItemGuestSelected: ArrayList<TbCartItem>,
+        guestIndexForDineIn: Int
     ) {
 
         //New Drag and Drop
 
+        dashboardViewModel.deleteCartItems()
+        dashboardViewModel.deleteCart()
 
         Log.e(TAG, "divideDiscount2:  ${divideDiscount2}")
         var divideDiscount = divideDiscount2
@@ -2022,15 +2028,20 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             wholetableitems.taxes?.forEachIndexed { index, taxData ->
                 var modifierPrice: Double = 0.0
                 var totaltaxtemp: Double = 0.0
-                val price =
+                var price =
                     (wholetableitems.price * wholetableitems.itemQuantity) - (wholetableitems.discountPrice * wholetableitems.itemQuantity)
 
+                price /= totalGuestCount
+
                 wholetableitems.modifiers.forEach {
-                    modifierPrice += (it.price * it.itemQuantity)
+                    modifierPrice += ((it.price * it.itemQuantity)/totalGuestCount)
                 }
 
-                val totalPrice =
+                var totalPrice =
                     price + modifierPrice
+
+                totalPrice /= totalGuestCount
+
                 totaltaxtemp += if (taxData.taxType == "Percentage") {
                     if (totalPrice < 0.0) {
 
@@ -2056,9 +2067,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 }
 
+                totaltaxtemp /= totalGuestCount
 
                 var found = -1
-                totaltaxtemp /= (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
+               // totaltaxtemp /= (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
                 var temp_remaining = totaltaxtemp
                 var temp_subtotal =
                     totalPrice / (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
@@ -2127,6 +2139,21 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.d(TAG, "onGuestPay: onlywholetable birfurcation" + Gson().toJson(listTaxBirfucaWholeTb))
         Log.d(TAG, "getcartListAfterAdd: remaining : ${Gson().toJson(remaining_list)}")
         LogUtil.logE(TAG, "getcartListAfterAdd  ${Gson().toJson(cartList?.taxlistDynamic)}")
+
+
+        listItemWT.forEach {
+
+            it.price /= totalGuestCount
+
+            it.guestIndexForDineIn = 0
+            it.orderType = "DineIn"
+            dashboardViewModel.addItemToCartItems(it)
+        }
+
+        listItemGuestSelected.forEach {
+            dashboardViewModel.addItemToCartItems(it)
+        }
+
 
         viewModelPayment.addCart(cartList!!)
         findNavController().navigate(
@@ -2397,6 +2424,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         }
     }
 
+
     private fun navigateDineInOrderNew(isFromWastage: Boolean = false) {
 
         viewModel.Basedata.observe(viewLifecycleOwner) { event ->
@@ -2547,6 +2575,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                             item.itemId = it.itemId
                                             item.categoryId = it.categoryId
                                             item.guestItemId = guestItem[j].id
+                                            item.guestIndexForDineIn = it.guestIndexForDineIn
 
                                             var listTaxes: ArrayList<TaxData> = arrayListOf()
                                             it.orderItemTaxes.forEach {
@@ -2618,11 +2647,19 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 item.variationsAttributes =
                                                     variationAtt(it.order_item_variation!!)
                                             }
+
+                                            item.guestIndexForDineIn = it.guestIndexForDineIn
+                                            item.orderType = "DineIn"
+                                            item.employeeID = prefProvider.employeeId()
+
+
                                             itemDineIn.isHeader = 1
                                             itemDineIn.item = item
                                             itemDineIn.sort = item.sort
                                             itemDineIn.empName =
                                                 baseResponse.floorPlanTable.lockByName.toString()
+
+
 
                                             dineInList.add(itemDineIn)
 
@@ -3045,7 +3082,12 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     if (notPayAnyAmount) {
                         binding.txtAddguest.visibility = View.GONE
-                        binding.txtEditOrder.visibility = View.GONE
+
+                        /**
+                         * Display Edit Order / Update order everytime even though half paid
+                         */
+
+                          binding.txtEditOrder.visibility = View.GONE
                     } else {
                         binding.txtAddguest.visibility = View.VISIBLE
                         binding.txtEditOrder.visibility = View.VISIBLE

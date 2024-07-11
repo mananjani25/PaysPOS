@@ -6119,6 +6119,8 @@ class DashBoardCategoryViewModel @Inject constructor(
             orderItemsAttribute.quantity = item.itemQuantity
             orderItemsAttribute.terminalId = cartModel.terminalId
             orderItemsAttribute.isFired = cartModel.isFired
+            orderItemsAttribute.guestIndexForDineIn = item.guestIndexForDineIn
+
             item.dineInSort = if (item.dineInSort == 0) {
                 orderItemsAttributeList.size + 1
             } else {

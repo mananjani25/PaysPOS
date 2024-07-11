@@ -1500,7 +1500,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         divideDiscount2: Double,
         dividedGuestAmt: Double,
         listItemWT: ArrayList<TbCartItem>,
-        listItemGuestSelected: ArrayList<TbCartItem>
+        listItemGuestSelected: ArrayList<TbCartItem>,
+        guestIndexForDineIn:Int
     ) {
 
         //New Drag and Drop
