@@ -136,9 +136,16 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
             }
         }
 
-        binding.imgBack.setOnClickListener {
+        binding.imgBack.setOnClickListener(object:View.OnClickListener{
+            override fun onClick(p0: View?) {
+                item?.note=""
+                var it=item
+                dismiss()
+            }
+        })
+        /*binding.imgBack.setOnClickListener {
             dismiss()
-        }
+        }*/
         binding.txtRemovenote?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 val result = Bundle().apply {
@@ -237,6 +244,6 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
 
         val note = noteListadapter.getItem(pos)
         binding.edtNote.setText(note.name)
-        addNote()
+//        addNote()
     }
 }
