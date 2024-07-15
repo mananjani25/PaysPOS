@@ -187,6 +187,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _removeGuestSuccess = MutableLiveData<Event<String>>()
     val removeGuestSuccess: LiveData<Event<String>> = _removeGuestSuccess
 
+    val noteTbCartItem: MutableLiveData<TbCartItem> = MutableLiveData<TbCartItem>()
 
     private val _latestDiscount = MutableLiveData<Double>()
     val latestDiscount: LiveData<Double> = _latestDiscount

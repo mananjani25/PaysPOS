@@ -236,7 +236,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private fun addFragmentReplaceObserver() {
         viewModel.fragmentNeedToBeUpdated.observe(viewLifecycleOwner) {
             if (it) {
-                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} addFragmentReplaceObserver"))
+                EventBus.getDefault()
+                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} addFragmentReplaceObserver"))
 
                 viewModel.fragmentNeedToBeUpdated.value = false
                 Log.e("Fragment Restarted", "Restarted")
@@ -326,7 +327,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             val callback: OnBackPressedCallback =
                 object : OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {
-                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} handleOnBackPressed()"))
+                        EventBus.getDefault()
+                            .post(MessageEvent("${Constants.LINE_BREAK_TAB} handleOnBackPressed()"))
                         requireActivity().finish()
                     }
                 }
@@ -731,13 +733,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     }
                 } else {
                     singleItem?.let {
-                        viewModel.updateCart(
+                        viewModel.noteTbCartItem.value = it
+
+                        /*viewModel.updateCart(
                             viewModel.currentCartItems,
                             it,
                             UPDATE,
                             false,
                             isFromDetail = true
-                        )
+                        )*/
                     }
                 }
 
@@ -3418,11 +3422,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                                     } else {
 //                                        Check for Custom items
-                                        var notPrinted=printingData.filter { it.isPrinted==false }
+                                        var notPrinted =
+                                            printingData.filter { it.isPrinted == false }
 
-                                        try{
-                                            if (notPrinted.isNotEmpty()){
-                                                for (i in 0..notPrinted.size){
+                                        try {
+                                            if (notPrinted.isNotEmpty()) {
+                                                for (i in 0..notPrinted.size) {
                                                     try {
                                                         initKitchenPrinter(
                                                             it.data!!.get(i),
@@ -3430,11 +3435,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                             createOrderResponse,
                                                             cartModel
                                                         )
-                                                    }catch (e:Exception){}
+                                                    } catch (e: Exception) {
+                                                    }
 
                                                 }
                                             }
-                                        }catch (e:java.lang.NullPointerException){
+                                        } catch (e: java.lang.NullPointerException) {
 
                                         }
 
