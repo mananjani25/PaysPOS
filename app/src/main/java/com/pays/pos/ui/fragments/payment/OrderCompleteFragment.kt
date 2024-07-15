@@ -353,7 +353,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private fun getKitchenReceiptSettings() {
         viewModel.getKitchenReceiptSettings().observe(viewLifecycleOwner) {
 
+            EventBus.getDefault()
+                .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getKitchenReceiptSettings()  it -> ${Gson().toJson(it)}"))
+
             if (it != null) {
+                EventBus.getDefault()
+                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getKitchenReceiptSettings()  it -> ${Gson().toJson(it)}"))
+
                 kitchenSettingModel = it
                 LogUtil.logE(TAG, "isFromCustomer:  ${isFromCustomer}")
                 Log.e(
@@ -361,6 +367,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     "size of kitchen print list ${Gson().toJson(receiptModel)}"
                 )
                 if (!isFromCustomer) {
+
+                    EventBus.getDefault()
+                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getKitchenReceiptSettings()  isFromCustomer -> ${Gson().toJson(!isFromCustomer)}"))
+
                     getKitchenPrinters()
                 }
             }
@@ -400,7 +410,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         observeShowProgress()
 
         arguments?.let {
-            orderTypeToCheckKiosk=it.getString("orderType_to_check_kiosk","")
+            orderTypeToCheckKiosk = it.getString("orderType_to_check_kiosk", "")
         }
 
         prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)
@@ -1461,7 +1471,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
             R.id.txtSend -> {
-                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt, R.id.txtSend"))
+                EventBus.getDefault()
+                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt, R.id.txtSend"))
 
                 MethodUtils.hideKeyboard(requireActivity())
                 viewModel.submit(
@@ -6657,19 +6668,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         clearObserver()
                         prefProvider.setValueboolean(ORDER_COMPLETED, true)
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM,"")
-                        prefProvider.setValue(Constants.OLD_ITEM,"")
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE,"")
-                        if(viewModelDashBoard.boldPosNeedToRefresh)
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
+                        prefProvider.setValue(Constants.OLD_ITEM, "")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
+                        if (viewModelDashBoard.boldPosNeedToRefresh)
                             findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                         else
                             findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
                     } else {
 
                         clearObserver()
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM,"")
-                        prefProvider.setValue(Constants.OLD_ITEM,"")
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE,"")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
+                        prefProvider.setValue(Constants.OLD_ITEM, "")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                     }
 
@@ -6682,22 +6693,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (prefProvider.getValueboolean(LOCK_SCREEN_TRANSACTION, false)) {
 
 
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM,"")
-                        prefProvider.setValue(Constants.OLD_ITEM,"")
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE,"")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
+                        prefProvider.setValue(Constants.OLD_ITEM, "")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
 
                         clearObserver()
                         prefProvider.setValueboolean(ORDER_COMPLETED, true)
-                        if(viewModelDashBoard.boldPosNeedToRefresh)
+                        if (viewModelDashBoard.boldPosNeedToRefresh)
                             findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                         else
                             findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
                     } else {
 
 
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM,"")
-                        prefProvider.setValue(Constants.OLD_ITEM,"")
-                        prefProvider.setValue(Constants.OLD_ITEM_BASE,"")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
+                        prefProvider.setValue(Constants.OLD_ITEM, "")
+                        prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
 
                         clearObserver()
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
@@ -6958,8 +6969,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                                 KITCHEN
                                                                                             )
                                                                                         } else {
-                                                                                            try{
-                                                                                                if (receiptModel!!.order.orderType.equals("KioskOpenorder",ignoreCase = true)){
+                                                                                            try {
+                                                                                                if (receiptModel!!.order.orderType.equals(
+                                                                                                        "KioskOpenorder",
+                                                                                                        ignoreCase = true
+                                                                                                    )
+                                                                                                ) {
                                                                                                     initKitchenPrinter(
                                                                                                         kitchenPrinterList.get(
                                                                                                             i
@@ -6967,7 +6982,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                                         KITCHEN
                                                                                                     )
                                                                                                 }
-                                                                                            }catch (e:java.lang.Exception){
+                                                                                            } catch (e: java.lang.Exception) {
 
                                                                                             }
                                                                                         }
@@ -6997,20 +7012,24 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                                         }
-                                    } else{
-                                        Log.d("Kiosk","Kiosk")
-                                       /* if (prefProvider.getValue(Constants.ORDER_TYPE,"").equals(Constants.KIOSK_OPEN_ORDER)){
-//                                            Print the receipt here
-                                            initKitchenPrinter(kitchenPrinterList.get(
-                                                i
-                                            ), KITCHEN)
-                                        }*/
+                                    } else {
+                                        Log.d("Kiosk", "Kiosk")
+                                        /* if (prefProvider.getValue(Constants.ORDER_TYPE,"").equals(Constants.KIOSK_OPEN_ORDER)){
+ //                                            Print the receipt here
+                                             initKitchenPrinter(kitchenPrinterList.get(
+                                                 i
+                                             ), KITCHEN)
+                                         }*/
                                     }
                                 }
 
                                 prefProvider.setValueboolean(Constants.DO_PRINT_CUSTOM, false)
                                 //    prefProvider.setValueboolean(Constants.DO_PRINT, false)
-                                if(orderTypeToCheckKiosk.equals("KioskOpenorder",ignoreCase = true) && !isSpilt){
+                                if (orderTypeToCheckKiosk.equals(
+                                        "KioskOpenorder",
+                                        ignoreCase = true
+                                    ) && !isSpilt
+                                ) {
                                     for (i in 0 until kitchenPrinterList.size) {
                                         if (kitchenPrinterList[i].status) {
                                             kitchenPrinterList[i].orderTypes.forEach {
@@ -7228,30 +7247,79 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun getCustomerPrinters(autoPrintCheck: Boolean) {
 
+        EventBus.getDefault()
+            .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrin...)  autoCheckPrint -> ${Gson().toJson(autoPrintCheck)}"))
+
         viewModel.getCustomerPrinterList().observe(viewLifecycleOwner) {
+
+            EventBus.getDefault()
+                .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  it -> ${Gson().toJson(it)}"))
+
             when (it.status) {
                 Status.SUCCESS -> {
+                    EventBus.getDefault()
+                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  it.status -> Success"))
                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null && isPrintCustomer) {
+
+                        EventBus.getDefault()
+                            .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  it.data -> ${Gson().toJson(it.data)}"))
+                          EventBus.getDefault()
+                            .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  isPrintCustomer -> ${Gson().toJson(isPrintCustomer)}"))
+
                         isPrintCustomer = false
                         isPrint = false
                         val customerList = it.data
 
                         if (IS_GIFT_CARD_TYPE) {
+                            EventBus.getDefault()
+                                .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  IS_GIFT_CARD_TYPE -> ${Gson().toJson(IS_GIFT_CARD_TYPE)}"))
+
                             customerList.forEach {
                                 if (it.status) {
                                     initPrinter(it, CUSTOMER, autoPrintCheck)
                                 }
                             }
                         } else {
+                            EventBus.getDefault()
+                                .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  IS_GIFT_CARD_TYPE -> ${Gson().toJson(IS_GIFT_CARD_TYPE)}"))
+
                             if (autoPrintCheck) {
+                                EventBus.getDefault()
+                                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  autoPrintCheck -> ${Gson().toJson(autoPrintCheck)}"))
+
+                                EventBus.getDefault()
+                                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  customerList -> ${Gson().toJson(customerList)}"))
+
                                 customerList.forEach { cus ->
                                     if (cus.status) {
+                                        EventBus.getDefault()
+                                            .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  customerList.forEach { cus -> ${Gson().toJson(cus.status)}"))
+
                                         cus.orderTypes.forEach {
+                                            EventBus.getDefault()
+                                                .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  customerList.forEach_cus.orderTypes { cus -> ${Gson().toJson(cus.orderTypes)}"))
+
 
                                             if (it.orderTypeId == receiptModel?.order?.orderTypeId) {
 
+                                                EventBus.getDefault()
+                                                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  if (it.orderTypeId == receiptModel?.order?.orderTypeId) _ it.orderTypeId -> ${Gson().toJson(it.orderTypeId)}"))
+
+                                                EventBus.getDefault()
+                                                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  if (it.orderTypeId == receiptModel?.order?.orderTypeId) _ receiptModel?.order?.orderTypeId -> ${Gson().toJson(receiptModel?.order?.orderTypeId)}"))
+
+                                                EventBus.getDefault()
+                                                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  if (it.orderTypeId == receiptModel?.order?.orderTypeId) _ it.printerSettings -> ${Gson().toJson(it.printerSettings)}"))
+
                                                 it.printerSettings.forEach {
+
+                                                    EventBus.getDefault()
+                                                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  it.printerSettings.forEach _ it.printType.lowercase() -> ${Gson().toJson(it.printType.lowercase())}"))
+
+                                                    EventBus.getDefault()
+                                                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  it.printerSettings.forEach _ it.autoPrinting -> ${Gson().toJson(it.autoPrinting)}"))
+
                                                     if (it.printType.lowercase()
                                                             .equals(CUSTOMER.lowercase()) && it.autoPrinting
                                                     ) {
@@ -7268,6 +7336,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 }
 
                             } else {
+                                EventBus.getDefault()
+                                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  autoPrintCheck_ else"))
+
                                 customerList.forEach {
                                     if (it.status) {
                                         initPrinter(it, CUSTOMER, autoPrintCheck)
@@ -7279,12 +7350,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         isPrintCustomer = false
 
                     } else {
+                        EventBus.getDefault()
+                            .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  else _1"))
                         Log.d("getCustomerPrinterList", " data isPrint = $isPrint")
                     }
 
                 }
 
                 Status.ERROR -> {
+                    EventBus.getDefault()
+                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  it.status -> Error"))
+
                     ProgressUtils.dismissProgressDialog()
                 }
 
@@ -7303,12 +7379,24 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         Log.e(TAG, "checkAutoPrint  ${isAutoPrint}")
         pd?.show()
 
+        EventBus.getDefault()
+            .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _initPrinter(customerRecei..."))
+
+        EventBus.getDefault()
+            .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _initPrinter(customerRecei... -> ${Gson().toJson(customerReceiptPrinters.name)}"))
+
 
         if (customerReceiptPrinters.name.startsWith(SUNMI_PRINTER, true)) {
+            EventBus.getDefault()
+                .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _initPrinter(customerRecei... _ customerReceiptPrinters.name.startsWith(SUNMI_PRINTER"))
 
             customerReceiptPrinters.ipAddress?.let { sunmiPrinterInit(it, isAutoPrint) }
 
         } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
+
+            EventBus.getDefault()
+                .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _initPrinter(customerRecei... _ else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER"))
+
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(100)
@@ -7317,6 +7405,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
         } else {
+
 
             PrinterClass.closePrinter()
             if (PrinterClass.getPrinter() == null) {
@@ -9910,7 +9999,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             actionFeedLine(1)
 
-                            if(receiptModel!!.order.orderTypeName == Constants.PHONE_ORDER_) {
+                            if (receiptModel!!.order.orderTypeName == Constants.PHONE_ORDER_) {
                                 add(
                                     PrinterBuilder()
                                         .styleBold(true)
@@ -13124,7 +13213,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun sunmiPrintInner(isAutoPrint: Boolean) {
 
+        EventBus.getDefault()
+            .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _sunmiPrintInner(isAutoPrint: Boolean) -> Here_2"))
+
         try {
+
+            EventBus.getDefault()
+                .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _sunmiPrintInner(isAutoPrint: Boolean) _ try entered-> Here_3"))
+
             PrintSunmiUtils.fontSizeInner(customerSettingModel.fonts)
 
             SunmiPrintHelper.getInstance().initPrinter()
@@ -13850,14 +13946,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     try {
                         SunmiPrinterApi.getInstance().sendRawData(aa)
                     } catch (e: java.lang.Exception) {
+                        EventBus.getDefault()
+                            .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _sunmiPrintInner(isAutoPrint: Boolean) _ catch (e: Exception)_2 -> ${Gson().toJson(e.printStackTrace())}"))
                         e.printStackTrace()
+
                     }
                     try {
                         if (isAutoPrint) {
                             SunmiPrintHelper.getInstance().openCashBox()
                         }
                     } catch (e: java.lang.Exception) {
+                        EventBus.getDefault()
+                            .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _sunmiPrintInner(isAutoPrint: Boolean) _ catch (e: Exception)_3 -> ${Gson().toJson(e.printStackTrace())}"))
                         e.printStackTrace()
+
                     }
 
 
@@ -13872,6 +13974,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         } catch (e: Exception) {
             pd?.dismiss()
+
+            EventBus.getDefault()
+                .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _sunmiPrintInner(isAutoPrint: Boolean) _ catch (e: Exception) -> ${Gson().toJson(e.printStackTrace())}"))
+
             e.printStackTrace()
         }
 
@@ -14282,8 +14388,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     private fun setService1(isAutoPrint: Boolean) {
+        EventBus.getDefault()
+            .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _setService1(isAutoPrint) -> Here"))
+
+        EventBus.getDefault()
+            .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _setService1(isAutoPrint) -> SunmiPrintHelper.getIns..().sunmiPrinter -> ${Gson().toJson(SunmiPrintHelper.getInstance().sunmiPrinter)}"))
+
+        EventBus.getDefault()
+            .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _setService1(isAutoPrint) -> SunmiPrintHelper.FoundSunmiPrinter -> ${Gson().toJson(SunmiPrintHelper.FoundSunmiPrinter)}"))
 
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
+
+            EventBus.getDefault()
+                .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _setService1(isAutoPrint) -> Here_2"))
 
             if (!BluetoothUtil.isBlueToothPrinter) {
 
@@ -14296,10 +14413,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
+            EventBus.getDefault()
+                .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _setService1(isAutoPrint) -> Here_3"))
+
             Handler(Looper.getMainLooper()).postDelayed({
                 setService1(isAutoPrint)
             }, 2000)
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
+            EventBus.getDefault()
+                .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _setService1(isAutoPrint) -> Here_4"))
+
+            EventBus.getDefault()
+                .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _setService1(isAutoPrint) -> SunmiPrintHelper.LostSunmi... -> ${Gson().toJson(SunmiPrintHelper.LostSunmiPrinter)}"))
 
         }
     }
