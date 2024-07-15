@@ -1492,6 +1492,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     private fun attachFileLogger() {
         log("\n \n ${System.currentTimeMillis()} - ${Calendar.getInstance().time} ::")
+
+        /* Logging the shared preferences values */
+        try{
+            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} MainActivity.kt -> attachFileLogger() ORDER_ID -> ${Gson().toJson(prefProvider?.getValueInt("ORDER_ID",-2))}"))
+        }catch (e:Exception){
+
+        }
+
     }
 
 

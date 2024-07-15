@@ -556,6 +556,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             event.getContentIfNotHandled()?.let {
                 viewModel.redeemLoyaltyInfo = RedeemLoyaltyInfo()
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
+                EventBus.getDefault()
+                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragment.kt _ observeData() _ prefProvider.setValueInt(ORDER_ID) _ it.data.order.id -> ${Gson().toJson(it.data.order.id)}"))
+
                 when {
                     paymentType == "Cash" -> {
                         LogUtil.logE("TipAmount 4:: ", tipAmount.toString())
@@ -1977,6 +1980,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         prefProvider.setValue(Constants.TAX_CHARGE, "")
         prefProvider.setValue(Constants.SERVICE_CHARGE, "")
         prefProvider.setValueInt("ORDER_ID", -1)
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt -> removeCustomer()_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _1"))
+
         prefProvider.setValueInt(Constants.PAYMENT_ID, 0)
         prefProvider.setValue(Constants.TOTAL_PRICE_ACTUAL, "0.0")
         prefProvider.setValue(Constants.SUB_TOTAL_ACTUAL, "0.0")

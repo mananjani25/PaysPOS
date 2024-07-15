@@ -2685,6 +2685,8 @@ class CartFragment(
                 override fun onClick(p0: View?) {
                     EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvPayNow()"))
 
+                    prefProvider.setValueInt("ORDER_ID", -1)
+
                     if (InternetUtils.isInternetAvailable(requireContext().applicationContext)) {
 
                         lifecycleScope.launch {
@@ -2793,6 +2795,9 @@ class CartFragment(
             object : View.OnClickListener {
                 override fun onClick(p0: View?) {
                     EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvSave()"))
+                    if (!binding.tvSave.text.toString().trim().equals("update",ignoreCase = true)){
+                        prefProvider.setValueInt("ORDER_ID", -1)
+                    }
 
                     if (InternetUtils.isInternetAvailable(requireContext().applicationContext)) {
                         runBlocking {

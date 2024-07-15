@@ -35,6 +35,7 @@ import com.pays.pos.data.remote.Constants.SPLIT_IS_GUESTPAY
 import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.databinding.FragmentPaymentBoldPosBinding
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.pays.pos.ui.fragments.checkout.CheckoutDineInFragmentNew
 import com.pays.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
@@ -51,6 +52,7 @@ import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.getCustomerDisplay
 import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -499,6 +501,9 @@ class PaymentBoldPosFragment : Fragment() {
         prefProvider.setValue(Constants.TAX_CHARGE, "")
         prefProvider.setValue(Constants.SERVICE_CHARGE, "")
         prefProvider.setValueInt("ORDER_ID", -1)
+
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentBoldPosFragment.kt -> removeCustomer()_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _1"))
+
         prefProvider.setValueInt(Constants.PAYMENT_ID, 0)
         prefProvider.setValue(Constants.TOTAL_PRICE_ACTUAL, "0.0")
         prefProvider.setValue(Constants.SUB_TOTAL_ACTUAL, "0.0")

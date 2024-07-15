@@ -1465,6 +1465,8 @@ class AllOrdersListingFragment(
             "UPDATE" -> {
                 prefProvider.setValue(OLD_ITEM_BASE_CUSTOM_ITEM, Gson().toJson(order.orderItems))
 
+                prefProvider.setValueInt("ORDER_ID",-1)
+
                 dashboardViewModel.activeOrderTypeName = order.orderType
                 dashboardViewModel.activeOrderTypeText = order.orderTypeName
                 dashboardViewModel.activeOrderTypeId = order.id
@@ -1701,6 +1703,8 @@ class AllOrdersListingFragment(
             "PAY" -> {
 
                 try {
+                    prefProvider.setValueInt("ORDER_ID",-1)
+
                     dashboardViewModel.activeOrderTypeName = order.orderType
                     dashboardViewModel.activeOrderTypeText = order.orderTypeName
                     dashboardViewModel.activeOrderTypeId = order.orderTypeId
