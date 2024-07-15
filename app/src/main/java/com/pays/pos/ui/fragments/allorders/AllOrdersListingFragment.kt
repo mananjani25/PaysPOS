@@ -363,7 +363,12 @@ class AllOrdersListingFragment(
 
                 CoroutineScope(Dispatchers.IO).launch {
                     val queue = Volley.newRequestQueue(requireContext())
-                    val url = "https://secure.epxuap.com/"
+                    var url=""
+                    if (Constants.isPaxInDebugMode){
+                        url=Constants.paxDebug
+                    }else{
+                        url=Constants.paxLive
+                    }
                     val getRequest: StringRequest = object : StringRequest(
                         Request.Method.POST, url,
                         object : Response.Listener<String?> {
@@ -545,7 +550,12 @@ class AllOrdersListingFragment(
         ORIG_AUTH_GUID: String
     ) {
         val queue = Volley.newRequestQueue(requireContext())
-        val url = "https://secure.epxuap.com/"
+        var url=""
+        if (Constants.isPaxInDebugMode){
+            url=Constants.paxDebug
+        }else{
+            url=Constants.paxLive
+        }
         val getRequest: StringRequest = object : StringRequest(
             Request.Method.POST, url,
             object : Response.Listener<String?> {

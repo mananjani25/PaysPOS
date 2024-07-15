@@ -1,6 +1,7 @@
 package com.pays.pos.data.remote
 
 import android.content.Context
+import android.os.Debug
 import android.util.Log
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -20,6 +21,9 @@ import java.util.concurrent.ExecutionException
 
 object Constants {
 
+    const val isPaxInDebugMode: Boolean = false
+    const val paxLive="https://secure.epx.com/"
+    const val paxDebug="https://secure.epxuap.com/"
 
     const val DO_PRINT: String = "DO_PRINT"
     const val DO_PRINT_CUSTOM: String = "DO_PRINT_CUSTOM"

@@ -334,7 +334,12 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
 
         CoroutineScope(Dispatchers.IO).async {
             val queue = Volley.newRequestQueue(requireContext())
-            val url = "https://secure.epxuap.com/"
+            var url=""
+            if (Constants.isPaxInDebugMode){
+                url=Constants.paxDebug
+            }else{
+                url=Constants.paxLive
+            }
             val getRequest: StringRequest = object : StringRequest(
                 Request.Method.POST, url,
                 object : com.android.volley.Response.Listener<String?> {
@@ -459,7 +464,12 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
         ORIG_AUTH_GUID: String
     ) {
         val queue = Volley.newRequestQueue(requireContext())
-        val url = "https://secure.epxuap.com/"
+        var url=""
+        if (Constants.isPaxInDebugMode){
+            url=Constants.paxDebug
+        }else{
+            url=Constants.paxLive
+        }
         val getRequest: StringRequest = object : StringRequest(
             Request.Method.POST, url,
             object : com.android.volley.Response.Listener<String?> {
