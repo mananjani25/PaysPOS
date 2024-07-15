@@ -1844,6 +1844,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 LogUtil.logE("observe : splitValue", splitValue.toString())
 
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
+                EventBus.getDefault()
+                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentFragment.kt _ viewModel.data.observe(.. _ prefProvider.setValueInt(ORDER_ID) _ it.data.order.id -> ${Gson().toJson(it.data.order.id)}"))
+
 
                 viewModel.updateActiveOrderFlagClear()
 
@@ -1895,6 +1898,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                         prefProvider.setValue(TIP, "")
                                         prefProvider.setValue(TAX_CHARGE, "")
                                         prefProvider.setValue(SERVICE_CHARGE, "")
+                                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentFragment.kt -> observeData()_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _1"))
+
                                     } else {
                                         bundle.putBoolean("isSpilt", true)
                                         setPaymentAttriButes(SUB_TOTAL, splitValue)
@@ -1907,6 +1912,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                     bundle.putBoolean("isSpilt", false)
                                     prefProvider.setValue(SUB_TOTAL, "")
                                     prefProvider.setValueInt("ORDER_ID", -1)
+
+                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentFragment.kt -> observeData()_else_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _2"))
+
                                     prefProvider.setValue(TOTAL_DISCOUNT, "")
                                     prefProvider.setValue(TIP, "")
                                     prefProvider.setValue(TAX_CHARGE, "")
@@ -1967,6 +1975,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                     if (WholetotalPrice <= cardPaymentAmount) {
                                         bundle.putBoolean("isSpilt", false)
                                         prefProvider.setValueInt("ORDER_ID", -1)
+                                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentFragment.kt -> observeData()_ if (splitValue!=-1) ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _2"))
+
                                     } else {
                                         bundle.putBoolean("isSpilt", true)
                                     }
@@ -2021,6 +2031,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                     bundle
                                 )
                                 prefProvider.setValueInt("ORDER_ID", -1)
+
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentFragment.kt -> observeData()_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _3"))
+
                             }
                         }
 
@@ -2067,6 +2080,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                         prefProvider.setValue(TAX_CHARGE, "")
                                         prefProvider.setValue(SERVICE_CHARGE, "")
                                         prefProvider.setValueInt("ORDER_ID", -1)
+
+                                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentFragment.kt -> observeData()_ if(splitValue!=-1) ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _4"))
+
                                     } else {
                                         bundle.putBoolean("isSpilt", true)
                                         setPaymentAttriButes(SUB_TOTAL, splitValue)
@@ -2079,6 +2095,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                     bundle.putBoolean("isSpilt", false)
                                     prefProvider.setValue(SUB_TOTAL, "")
                                     prefProvider.setValueInt("ORDER_ID", -1)
+
+                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentFragment.kt -> observeData()_else_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _6"))
+
                                     prefProvider.setValue(TOTAL_DISCOUNT, "")
                                     prefProvider.setValue(TIP, "")
                                     prefProvider.setValue(TAX_CHARGE, "")
@@ -2133,6 +2152,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                         prefProvider.setValue(TAX_CHARGE, "")
                                         prefProvider.setValue(SERVICE_CHARGE, "")
                                         prefProvider.setValueInt("ORDER_ID", -1)
+                                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentFragment.kt -> observeData()_ cash_isSplitByNo_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _1"))
+
                                     } else {
                                         bundle.putBoolean("isSpilt", true)
                                         setPaymentAttriButes(SUB_TOTAL, splitValue)
@@ -2145,6 +2166,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                     bundle.putBoolean("isSpilt", false)
                                     prefProvider.setValue(SUB_TOTAL, "")
                                     prefProvider.setValueInt("ORDER_ID", -1)
+
+                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentFragment.kt -> observeData()_ cash_isSplitByNo_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _2"))
+
                                     prefProvider.setValue(TOTAL_DISCOUNT, "")
                                     prefProvider.setValue(TIP, "")
                                     prefProvider.setValue(TAX_CHARGE, "")
@@ -2199,6 +2223,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 if (remainingAmount == 0.0) {
                                     bundle.putBoolean("isSpilt", false)
                                     prefProvider.setValueInt("ORDER_ID", -1)
+                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentFragment.kt -> observeData()_ cash_isSplitByAmount_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _4"))
+
                                 } else {
                                     bundle.putBoolean("isSpilt", true)
                                 }
@@ -2257,6 +2283,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 )
 
                                 prefProvider.setValueInt("ORDER_ID", -1)
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentFragment.kt -> observeData()_ cash_isCustomCash_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _4"))
+
                             }
                             else -> {
 
@@ -2297,6 +2325,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                     )
 
                                     prefProvider.setValueInt("ORDER_ID", -1)
+
+                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentFragment.kt -> observeData()_ cash_isCustomCash_else ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _1"))
+
                                 }
                             }
                         }

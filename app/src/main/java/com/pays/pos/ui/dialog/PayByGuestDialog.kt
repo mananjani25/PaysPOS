@@ -556,7 +556,11 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
         LogUtil.logE(TAG, "HEREGOTOPAY")
 
 
-        orderId?.let { prefProvider.setValueInt("ORDER_ID", it) }
+        orderId?.let {
+            EventBus.getDefault()
+                .post(MessageEvent("${Constants.LINE_BREAK_TAB} PayByGuestDialog.kt _ gotoPay() _ prefProvider.setValueInt(ORDER_ID) _ orderId -> ${Gson().toJson(it)}"))
+
+            prefProvider.setValueInt("ORDER_ID", it) }
 
         when {
             paymentType == "Card" -> {
@@ -610,6 +614,9 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                             prefProvider.setValue(TAX_CHARGE_DINEIN, "")
                             prefProvider.setValue(SERVICE_CHARGE_DINEIN, "")
                             prefProvider.setValueInt("ORDER_ID", -1)
+
+                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PayByGuestDialog.kt -> goToPay()_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))}"))
+
                         } else {
                             bundle.putBoolean("isSpilt", true)
                             setPaymentAttriButes(SUB_TOTAL_DINEIN, splitValue)
@@ -695,6 +702,8 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         ) {
                             bundle.putBoolean("isSpilt", false)
                             prefProvider.setValueInt("ORDER_ID", -1)
+                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PayByGuestDialog.kt -> goToPay()_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _2"))
+
                         } else {
                             bundle.putBoolean("isSpilt", true)
                         }
@@ -747,8 +756,12 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                     bundle.putInt("orderID", orderIDNew ?: 0)
                     if (isGuestPaymentTotal && isLastPayment) {
                         prefProvider.setValueInt("ORDER_ID", -1)
+                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PayByGuestDialog.kt -> goToPay()_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _3"))
+
                     } else if (isLastPayment && isTotalPayment) {
                         prefProvider.setValueInt("ORDER_ID", -1)
+                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PayByGuestDialog.kt -> goToPay()_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _4"))
+
                     }
                     isGuestPaymentTotal = true
                     bundle.putBoolean("isGuestPaymentTotal", true)
@@ -767,6 +780,8 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle
                     )
                     prefProvider.setValueInt("ORDER_ID", -1)
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PayByGuestDialog.kt -> goToPay()_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _5"))
+
                 }
             }
             paymentType == "Cash" -> {
@@ -819,6 +834,8 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                                 prefProvider.setValue(TAX_CHARGE_DINEIN, "")
                                 prefProvider.setValue(SERVICE_CHARGE_DINEIN, "")
                                 prefProvider.setValueInt("ORDER_ID", -1)
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PayByGuestDialog.kt -> goToPay()_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _6"))
+
                             } else {
                                 bundle.putBoolean("isSpilt", true)
                                 setPaymentAttriButes(SUB_TOTAL_DINEIN, splitValue)
@@ -904,6 +921,8 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                                 prefProvider.setValue(TAX_CHARGE_DINEIN, "")
                                 prefProvider.setValue(SERVICE_CHARGE_DINEIN, "")
                                 prefProvider.setValueInt("ORDER_ID", -1)
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PayByGuestDialog.kt -> goToPay()_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _7"))
+
                             } else {
                                 bundle.putBoolean("isSpilt", true)
                                 setPaymentAttriButes(SUB_TOTAL_DINEIN, splitValue)
@@ -975,6 +994,8 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         if (remainingAmount == 0.0) {
                             bundle.putBoolean("isSpilt", false)
                             prefProvider.setValueInt("ORDER_ID", -1)
+                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PayByGuestDialog.kt -> goToPay()_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _8"))
+
                         } else {
                             bundle.putBoolean("isSpilt", true)
                         }
@@ -1074,6 +1095,8 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         )
 
                         prefProvider.setValueInt("ORDER_ID", -1)
+                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PayByGuestDialog.kt -> goToPay()_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _9"))
+
                     }
                     else -> {
                         val bundle = Bundle()
@@ -1107,8 +1130,10 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                         bundle.putDouble("TipAmount", tipAmount)
                         if (isGuestPaymentTotal && isLastPayment) {
                             prefProvider.setValueInt("ORDER_ID", -1)
+                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PayByGuestDialog.kt -> goToPay()_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _10"))
                         } else if (isLastPayment && isTotalPayment) {
                             prefProvider.setValueInt("ORDER_ID", -1)
+                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PayByGuestDialog.kt -> goToPay()_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _11"))
                         }
                         isGuestPaymentTotal = true
                         bundle.putBoolean("isGuestPaymentTotal", true)

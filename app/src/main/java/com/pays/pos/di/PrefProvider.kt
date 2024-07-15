@@ -16,7 +16,9 @@ import com.pays.pos.data.remote.Constants.ROLE_OWNER
 import com.pays.pos.data.remote.Constants.UNIQUE_ID
 import com.pays.pos.di.ApiModule.BASE_URL
 import com.google.gson.Gson
+import com.pays.pos.logger.MessageEvent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -109,7 +111,9 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         prefsPrivateEditor!!.putInt(key, value)
         prefsPrivateEditor.commit()
         sharedPreferences = null
-        }catch (_:Exception){}
+        }catch (_e:Exception){
+            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PrefProvider.kt -> setValueInt(_ key-> ${Gson().toJson(key)} _ \n _ catch -> ${Gson().toJson(_e.printStackTrace())}"))
+        }
     }
 
 

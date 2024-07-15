@@ -654,6 +654,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 LogUtil.logE(TAG, "receiptData: ${Gson().toJson(it.data)}")
                 viewModel.redeemLoyaltyInfo = RedeemLoyaltyInfo()
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
+                EventBus.getDefault()
+                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt _ paymentviewModel.data..observe(.. _ prefProvider.setValueInt(ORDER_ID) _ id.data.order.id -> ${Gson().toJson(it)}"))
+
                 viewModel.updateActiveOrderFlagClear()
                 prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, false)
                 prefProvider.setValueboolean(IS_ORDER_REDEEMABLE_WITH_GIFT_CARD, false)
@@ -900,6 +903,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     Log.d(TAG, "observeData: SellGiftCardResponse = $it")
                     LogUtil.logE(TAG, "receiptData: ${Gson().toJson(it.data)}")
                     prefProvider.setValueInt("ORDER_ID", it.data.gift_card.id)
+                    EventBus.getDefault()
+                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt _ giftcardViewModel.giftCard.observe(.. _ prefProvider.setValueInt(ORDER_ID) _ id.data.gift_card.id -> ${Gson().toJson(it.data.gift_card.id)}"))
 
                     isInsert = false
                     isCardRev = false
@@ -1241,6 +1246,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     Log.d(TAG, "observeData: SellGiftCardResponse = $it")
                     LogUtil.logE(TAG, "receiptData: ${Gson().toJson(it.data)}")
                     prefProvider.setValueInt("ORDER_ID", it.data.gift_card.id)
+
+                    EventBus.getDefault()
+                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt _ giftCardViewModel.addValueInGiftCardData.observe(.. _ prefProvider.setValueInt(ORDER_ID) _ it.data.gift_card.id -> ${Gson().toJson(it.data.gift_card.id)}"))
 
                     isInsert = false
                     isCardRev = false
@@ -3792,7 +3800,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 */
     // generate payment attributes request
     private fun paymentAttributesRequest(myRequest: OrderRequestModel) {
-        val orderId = prefProvider.getValueInt("ORDER_ID", -1)
+        val orderId = prefProvider.getValueInt("ORDER_ID", -1) //Here
         LogUtil.logE(TAG, "orderIdmyRequestOriginal ${orderId}")
         Log.e("textToPay", textToPay.toString())
 
