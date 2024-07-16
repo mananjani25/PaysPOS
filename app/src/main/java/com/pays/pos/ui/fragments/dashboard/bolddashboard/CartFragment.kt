@@ -2427,8 +2427,6 @@ class CartFragment(
                        )
                        bundle.putBoolean("update", isOrderUpdate)
 
-                       EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment.kt binding.txtAddCustomer.setOnSingleClickListener ${bundle}"))
-
                        findNavController().navigate(
                            R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
                        )
@@ -2685,6 +2683,7 @@ class CartFragment(
                 override fun onClick(p0: View?) {
                     EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvPayNow()"))
 
+                    prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
                     prefProvider.setValueInt("ORDER_ID", -1)
 
                     if (InternetUtils.isInternetAvailable(requireContext().applicationContext)) {
@@ -2794,6 +2793,8 @@ class CartFragment(
         binding.tvSave.setOnSingleClickListener(
             object : View.OnClickListener {
                 override fun onClick(p0: View?) {
+                    prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+
                     EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvSave()"))
                     if (!binding.tvSave.text.toString().trim().equals("update",ignoreCase = true)){
                         prefProvider.setValueInt("ORDER_ID", -1)
@@ -3062,8 +3063,7 @@ class CartFragment(
                                     } catch (e: Exception) {
                                     }
 */
-                                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment.kt_binding.tvSave.setOnSingleClickListener , request?.order?.offlineId -> ${request?.order?.offlineId} _2"))
-                                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment.kt_binding.tvSave.setOnSingleClickListener , request -> ${Gson().toJson(request)} _2"))
+                                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment.kt_binding.tvSave.setOnSingleClickListener , request?.order?.offlineId -> ${request?.order?.offlineId} , request -> ${Gson().toJson(request)} _2"))
 
                                             //FILE ASSERTION
 //                                            MainActivity.writeToFile(Gson().toJson(request),"Save_".plus(request?.order?.offlineId),activity?.filesDir,activity!!)

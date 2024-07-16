@@ -655,7 +655,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 viewModel.redeemLoyaltyInfo = RedeemLoyaltyInfo()
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
                 EventBus.getDefault()
-                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt _ paymentviewModel.data..observe(.. _ prefProvider.setValueInt(ORDER_ID) _ id.data.order.id -> ${Gson().toJson(it)}"))
+                    .post(
+                        MessageEvent(
+                            "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt _ paymentviewModel.data..observe(.. _ prefProvider.setValueInt(ORDER_ID) _ id.data.order.id -> ${
+                                Gson().toJson(
+                                    it
+                                )
+                            }"
+                        )
+                    )
 
                 viewModel.updateActiveOrderFlagClear()
                 prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, false)
@@ -759,9 +767,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             )
                             splitAllAmounts(Constants.TIP, 0.0)
                             EventBus.getDefault()
-                                .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _2"))
-                            EventBus.getDefault()
-                                .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ remainingValue -> ${remainingValue} _2"))
+                                .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) remainingValue -> ${remainingValue} _2"))
 
                         }
 
@@ -904,7 +910,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     LogUtil.logE(TAG, "receiptData: ${Gson().toJson(it.data)}")
                     prefProvider.setValueInt("ORDER_ID", it.data.gift_card.id)
                     EventBus.getDefault()
-                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt _ giftcardViewModel.giftCard.observe(.. _ prefProvider.setValueInt(ORDER_ID) _ id.data.gift_card.id -> ${Gson().toJson(it.data.gift_card.id)}"))
+                        .post(
+                            MessageEvent(
+                                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt _ giftcardViewModel.giftCard.observe(.. _ prefProvider.setValueInt(ORDER_ID) _ id.data.gift_card.id -> ${
+                                    Gson().toJson(
+                                        it.data.gift_card.id
+                                    )
+                                }"
+                            )
+                        )
 
                     isInsert = false
                     isCardRev = false
@@ -1248,7 +1262,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     prefProvider.setValueInt("ORDER_ID", it.data.gift_card.id)
 
                     EventBus.getDefault()
-                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt _ giftCardViewModel.addValueInGiftCardData.observe(.. _ prefProvider.setValueInt(ORDER_ID) _ it.data.gift_card.id -> ${Gson().toJson(it.data.gift_card.id)}"))
+                        .post(
+                            MessageEvent(
+                                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt _ giftCardViewModel.addValueInGiftCardData.observe(.. _ prefProvider.setValueInt(ORDER_ID) _ it.data.gift_card.id -> ${
+                                    Gson().toJson(
+                                        it.data.gift_card.id
+                                    )
+                                }"
+                            )
+                        )
 
                     isInsert = false
                     isCardRev = false
@@ -2571,11 +2593,54 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             Log.e("AmtviewModeltotalPrice", "totalPrice  ${viewModel.totalPrice}")
             viewModel.totalServiceCharge =
                 String.format("%.2f", viewModel.totalServiceCharge).toDouble()
+
+            EventBus.getDefault().post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_getDataFromPref()_before_new_calc viewModel.subTotalPrice-> ${
+                        Gson().toJson(viewModel.subTotalPrice)
+                    }"
+                )
+            )
+
+            var subTotal = 0.0
+            viewModel.currentCartItems.forEach {
+                subTotal += (if (it.price != 0.0) it.price else it.singleItemPrice) * it.itemQuantity
+            }
+            viewModel.subTotalPrice = subTotal
+
+            EventBus.getDefault().post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_getDataFromPref()_after_new_calc viewModel.subTotalPrice-> ${
+                        Gson().toJson(viewModel.subTotalPrice)
+                    }"
+                )
+            )
+
+            EventBus.getDefault().post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_getDataFromPref() viewModel.totalTax-> ${
+                        Gson().toJson(viewModel.totalTax)
+                    }"
+                )
+            )
+
+            EventBus.getDefault().post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_getDataFromPref() viewModel.totalServiceCharge-> ${
+                        Gson().toJson(viewModel.totalServiceCharge)
+                    }"
+                )
+            )
+
             WholetotalPrice = MethodUtils.getTwoDecimal(viewModel.subTotalPrice).toPrecision(2)
                 .toDouble() + viewModel.totalTax + String.format(
                 "%.2f",
                 viewModel.totalServiceCharge
             ).toDouble()
+
+
+
+
             if (redeemLoyaltyInfo?.needToApplyLoyalty == true) {
                 WholetotalPrice -= redeemLoyaltyInfo?.usedLoyaltyAmount!!
                 viewModel.totalPrice = WholetotalPrice
@@ -2596,6 +2661,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
         } else {
             WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
+
+            EventBus.getDefault().post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_getDataFromPref()_WHOLE_AMOUNT in Preference viewModel.subTotalPrice-> ${
+                        Gson().toJson(WholetotalPrice)
+                    }"
+                )
+            )
+
             viewModel.totalPrice = WholetotalPrice
         }
 
