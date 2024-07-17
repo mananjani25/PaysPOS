@@ -30,6 +30,7 @@ import com.pays.pos.databinding.FragmentMenuBinding
 import com.pays.pos.di.ApiModule.BASE_URL
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
@@ -48,6 +49,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -244,6 +246,8 @@ class MenuFragment : DialogFragment() {
                     dashboardViewModel.deleteCartItem(it.cartItemId)
                 }
                 dashboardViewModel.deleteManualCartModel()
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} manualSaleNew.kt_MANUAL_CART_MODEL_CLEARED: dashboardViewModel.deleteManualCartModel()"))
+
 
             }
         }

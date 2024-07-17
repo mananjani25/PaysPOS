@@ -222,6 +222,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
     }
 
     fun deleteDineInCart() {
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_ Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         viewModelScope.launch {
             posRepository.deleteDineInCart()
             destroyedList.clear()
