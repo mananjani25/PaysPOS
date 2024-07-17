@@ -1536,20 +1536,20 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             Log.d("AddItemFragment.kt","txtDone_before_item = newItem: ${Gson().toJson(newItem)}")
 
                             item = newItem
-
-                            /*Added by Rahul and Aman to solve the quantity increment decrement issue - BIS-3874: START*/
-                            var updatedIndex=-1
-                            viewModel.currentCartItems.forEachIndexed {index, it ->
-                                if (it.itemId==newItem.itemId && it.cartItemId==newItem.cartItemId){
-                                    updatedIndex=index
-                                    return@forEachIndexed
-                                }
-                            }
-                            if (updatedIndex!=-1){
-                                viewModel.currentCartItems.set(updatedIndex,newItem)
-                            }
-
-                            /*Added by Rahul and Aman to solve the quantity increment decrement issue - BIS-3874: END*/
+//
+//                            /*Added by Rahul and Aman to solve the quantity increment decrement issue - BIS-3874: START*/
+//                            var updatedIndex=-1
+//                            viewModel.currentCartItems.forEachIndexed {index, it ->
+//                                if (it.itemId==newItem.itemId && it.cartItemId==newItem.cartItemId){
+//                                    updatedIndex=index
+//                                    return@forEachIndexed
+//                                }
+//                            }
+//                            if (updatedIndex!=-1){
+//                                viewModel.currentCartItems.set(updatedIndex,newItem)
+//                            }
+//
+//                            /*Added by Rahul and Aman to solve the quantity increment decrement issue - BIS-3874: END*/
 
                         }else{
                             Log.d("AddItemFragment.kt","txtDone_else_of_isUpdateItem")
