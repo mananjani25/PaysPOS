@@ -35,6 +35,9 @@ class OnlineDetailViewModel @Inject constructor(
     private val _dataRefundDone = MutableLiveData<Event<BaseResponse?>>()
     val dataRefundDone: LiveData<Event<BaseResponse?>> = _dataRefundDone
 
+    private val _refresh = MutableLiveData<Boolean>()
+    public val refresh: LiveData<Boolean> = _refresh
+
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -71,10 +74,20 @@ class OnlineDetailViewModel @Inject constructor(
             _endDateSelection.value = Event(Unit)
         }
     }
-    fun onLineorderCounts(startDate: String?, endDate: String?): LiveData<Resource<OnlineOrderCountResponse>> =
+
+    fun toggleRefresh(value:Boolean){
+        _refresh.value=value
+    }
+    fun onLineorderCounts(
+        startDate: String?,
+        endDate: String?
+    ): LiveData<Resource<OnlineOrderCountResponse>> =
         posRepository.onlineOrderCounts(startDate, endDate)
 
-    fun allOrderCounts(startDate: String?, endDate: String?): LiveData<Resource<AllOrdersCountResponse>> =
+    fun allOrderCounts(
+        startDate: String?,
+        endDate: String?
+    ): LiveData<Resource<AllOrdersCountResponse>> =
         posRepository.allOrderCounts(startDate, endDate)
 
 
@@ -123,8 +136,10 @@ class OnlineDetailViewModel @Inject constructor(
                 Status.SUCCESS -> {
 
                     cancelOnlineWebOrderLiveData.postValue(refundData.paymentRefund?.orderId?.let {
-                        CancelOnlineWebOrderModel(0,
-                            it,false, isRefunded = true)
+                        CancelOnlineWebOrderModel(
+                            0,
+                            it, false, isRefunded = true
+                        )
                     })
 
                     _showProgress.value = Event(false)
@@ -153,6 +168,7 @@ class OnlineDetailViewModel @Inject constructor(
             }
         }
     }
+
     fun updateOnlineOrder(
         order_id: Int,
         order_status: String
@@ -189,10 +205,10 @@ class OnlineDetailViewModel @Inject constructor(
             }
             if (endTime.isNotEmpty()) {
                 var temp_calender = Calendar.getInstance()
-                if (status=="4"){
-                    temp_calender.add(Calendar.DATE,7)
+                if (status == "4") {
+                    temp_calender.add(Calendar.DATE, 7)
                     endDate.value = sdf.format(temp_calender.time) + " " + endTime
-                }else{
+                } else {
                     endDate.value = sdf.format(temp_calender.time) + " " + endTime
                 }
             } else {

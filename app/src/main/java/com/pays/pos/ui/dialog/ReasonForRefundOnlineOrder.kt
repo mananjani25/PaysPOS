@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.volley.AuthFailureError
@@ -98,9 +99,9 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
         magensa_response_data = arguments?.getString("magensa_response_data").toString()
 
         requiredNABServerPostAPICall = arguments?.getBoolean("requiredNABServerPostAPICall")!!
-        if (arguments?.containsKey("pax_response_data")==true){
+        if (arguments?.containsKey("pax_response_data") == true) {
             paxData = arguments?.getString("pax_response_data") + ""
-        }else{
+        } else {
             paxData = arguments?.getString("pax_data") + ""
         }
 
@@ -130,7 +131,7 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
         binding.imgBack.setOnClickListener {
             findNavController().popBackStack()
         }
-        binding.txtDone.setOnClickListener(object:View.OnClickListener{
+        binding.txtDone.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 MethodUtils.hideSoftKeyboard(requireActivity())
                 if (refundAmount != 0.0 || refundAmount > 0.0) {
@@ -138,14 +139,17 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
                         runBlocking {
                             startServerPOSTRefund()
                         }
-                    } else if (magensa_response_data.isNotEmpty() && !magensa_response_data.contains("null")) {
+                    } else if (magensa_response_data.isNotEmpty() && !magensa_response_data.contains(
+                            "null"
+                        )
+                    ) {
 //                Magensa implementation
                         val jsonParser = JsonParser()
                         var jsonObject: JsonObject? = null
                         try {
                             jsonObject = jsonParser.parse(magensa_response_data).asJsonObject
                         } catch (e: Exception) {
-                            val a =0
+                            val a = 0
                         }
 
                         val model = Gson().fromJson(
@@ -259,7 +263,10 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
                 checkBroadPOSVersion()
 */
                 } else {
-                    AlertUtils.showCustomAlert(requireActivity(), getString(R.string.msg_amount_refund))
+                    AlertUtils.showCustomAlert(
+                        requireActivity(),
+                        getString(R.string.msg_amount_refund)
+                    )
                 }
 
 
@@ -267,6 +274,7 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
         })
 
     }
+
 
     private suspend fun startServerPOSTRefund() {
 
@@ -334,11 +342,11 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
 
         CoroutineScope(Dispatchers.IO).async {
             val queue = Volley.newRequestQueue(requireContext())
-            var url=""
-            if (Constants.isPaxInDebugMode){
-                url=Constants.paxDebug
-            }else{
-                url=Constants.paxLive
+            var url = ""
+            if (Constants.isPaxInDebugMode) {
+                url = Constants.paxDebug
+            } else {
+                url = Constants.paxLive
             }
             val getRequest: StringRequest = object : StringRequest(
                 Request.Method.POST, url,
@@ -464,11 +472,11 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
         ORIG_AUTH_GUID: String
     ) {
         val queue = Volley.newRequestQueue(requireContext())
-        var url=""
-        if (Constants.isPaxInDebugMode){
-            url=Constants.paxDebug
-        }else{
-            url=Constants.paxLive
+        var url = ""
+        if (Constants.isPaxInDebugMode) {
+            url = Constants.paxDebug
+        } else {
+            url = Constants.paxLive
         }
         val getRequest: StringRequest = object : StringRequest(
             Request.Method.POST, url,
@@ -1101,4 +1109,32 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
         }
 
     }
+
+
+    override fun onDismiss(dialog: DialogInterface) {
+        Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_1")
+        super.onDismiss(dialog)
+
+        viewModel.toggleRefresh(true)
+
+        Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_2")
+
+        val result = Bundle().apply {
+            putString("RESULT_KEY", "Your data here")
+        }
+        setFragmentResult("RESULT_KEY", result)
+    }
+
+    override fun onDestroy() {
+        Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_3")
+        super.onDestroy()
+        Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_4")
+    }
+
+    override fun onDestroyView() {
+        Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_5")
+        super.onDestroyView()
+        Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_6")
+    }
+
 }
