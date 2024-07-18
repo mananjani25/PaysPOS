@@ -3633,7 +3633,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     activity!!
                 )
 */
-
+                viewModel.cartModel?.let {
+                    if (it.orderTypeId==9)
+                    {
+                        myRequest.order.orderTypeId=it.orderTypeId
+                    }
+                }
                 paymentAttributesRequest(myRequest)
             }
         } else {
@@ -3767,7 +3772,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     activity!!
                 )
 */
-
+                viewModel.cartModel?.let {
+                    if (it.orderTypeId==9)
+                    {
+                        myRequest.order.orderTypeId=it.orderTypeId
+                    }
+                }
                 paymentAttributesRequest(myRequest)
             }
         }
