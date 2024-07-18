@@ -889,53 +889,44 @@ class PosRepository @Inject constructor(
 
 
     suspend fun deleteCart(employee_id: Int) {
-        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         appDatabase.cartDao().delete(employee_id)//delete cart model
         appDatabase.cartDao().deleteCartItems()//delete cart items from TbCartItem
     }
 
     suspend fun deleteOldCartBeforeSwitch(employee_id: Int) {
-        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         appDatabase.cartDao().delete(employee_id)//delete cart model
         appDatabase.cartDao().deleteCartItem(employee_id)//delete cart items from TbCartItem
     }
 
     suspend fun deleteCartItems() {
-        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         //  appDatabase.cartDao().delete(employee_id)//delete cart model
         appDatabase.cartDao().deleteCartItems()//delete cart items from TbCartItem
     }
 
     suspend fun clearCartModelBackup() {
-        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         //  appDatabase.cartDao().delete(employee_id)//delete cart model
         appDatabase.cartDao().clearCartModelBackup()//delete cart items from TbCartItem
     }
 
     suspend fun deleteCartItems(cartItemId: Int) {
-        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         //  appDatabase.cartDao().delete(employee_id)//delete cart model
         appDatabase.cartDao().deleteCartItems(cartItemId)//delete cart items from TbCartItem
     }
 
     suspend fun deleteManualCartModel() {
-        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         //  appDatabase.cartDao().delete(employee_id)//delete cart model
         appDatabase.cartDao().deleteManualCartModel()//delete cart items from TbCartItem
     }
 
     suspend fun deleteAllCart() {
-        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         appDatabase.cartDao().delete()
     }
 
     suspend fun deleteManualSaleCart(employee_id: Int) {
-        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         appDatabase.cartDao().deleteManualSale(employee_id)
     }
 
     suspend fun deleteManualSaleItemsFromCartItem(employee_id: Int) {
-        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         appDatabase.cartDao().deleteManualSaleItemsFromCartItem(employee_id)
     }
 

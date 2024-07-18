@@ -49,10 +49,12 @@ import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import com.pax.poslink.log.LogFilter.Const
 import com.pays.pos.data.remote.Constants.UPDATE
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.settings.notes.NoteListViewModel
 import com.pays.pos.utils.Event
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -1709,6 +1711,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     viewModel.duplicateCurrentCartItem.clear()
                     //   viewModel.deleteCartItems()
                     viewModel.deleteCart()
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                     viewModel.fragmentNeedToBeUpdated.value = true
                 } else viewModel.updateCart(
                     viewModel.currentCartItems,

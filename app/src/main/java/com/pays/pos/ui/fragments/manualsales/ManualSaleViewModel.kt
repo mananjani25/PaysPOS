@@ -51,6 +51,7 @@ class ManualSaleViewModel @Inject constructor(
 
     init {
         deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0))
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
     }
 
 
@@ -140,11 +141,13 @@ class ManualSaleViewModel @Inject constructor(
                 if (list.isEmpty()) {
                     // delete carts
                     deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0))
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                 }
             } else {
 
                 if (type == DELETE) {
                     deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0))
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                 } else {
                     val cartModel = cartList?.get(0)
                     cartModel?.items = listOf(item)

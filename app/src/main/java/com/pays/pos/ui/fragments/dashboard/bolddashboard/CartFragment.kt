@@ -2190,6 +2190,7 @@ class CartFragment(
 
                                     clearCustomer()
                                     viewModel.deleteCart()
+                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                                     cartModelsList.clear()
                                     viewModel.currentCartItems.clear()
                                     viewModel.duplicateCurrentCartItem.clear()
@@ -2222,6 +2223,7 @@ class CartFragment(
                                 } else {
                                     clearCustomer()
                                     viewModel.deleteCart()
+                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                                     cartModelsList.clear()
                                     isOrderUpdate = false
                                     prefProvider.setValue(ORDER_TYPE, "")

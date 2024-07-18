@@ -332,11 +332,13 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                 if (list.isEmpty()) {
                     // delete carts
                     deleteCart()
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                 }
             } else {
 
                 if (type == Constants.DELETE) {
                     deleteCart()
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                 } else {
                     val cartModel = cartList?.get(0)
                     cartModel?.items = listOf(item)
@@ -636,11 +638,13 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                     if (list.isEmpty()) {
                         // delete carts
                         deleteCart()
+                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                     }
                 } else {
 
                     if (type == Constants.DELETE) {
                         deleteCart()
+                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                     } else {
 
                         LogUtil.logE(TAG, "AddedListNull")
@@ -780,6 +784,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
                 if (type == Constants.DELETE) {
                     deleteCart()
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInPayment.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                 } /*else {
 
                     LogUtil.logE(TAG, "AddedListNull")

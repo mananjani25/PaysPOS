@@ -1758,6 +1758,7 @@ class AllOrdersListingFragment(
                 prefProvider.setValue(Constants.SERVICE_CHARGE, "")
 
                 dashboardViewModel.deleteCart()
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
 
                 if (order.orderType == OPEN_ORDER_TAB) {
                     prefProvider.setValue(Constants.ORDER_TYPE, Constants.OPEN_ORDER)

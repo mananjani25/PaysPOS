@@ -685,12 +685,14 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     suspend fun deleteCartItem(cartItemId: Int) {
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         viewModelScope.launch {
             posRepository.deleteCartItems(cartItemId)
         }
     }
 
     suspend fun deleteManualCartModel() {
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         viewModelScope.launch {
             posRepository.deleteManualCartModel()
         }
@@ -698,6 +700,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     fun deleteCartItems() {
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         viewModelScope.launch {
             posRepository.deleteCartItems()
         }
@@ -732,6 +735,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun clearCartModelBackup() {
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         viewModelScope.launch {
             posRepository.clearCartModelBackup()
         }
@@ -747,7 +751,6 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalCount = 0
             order_note = ""
             posRepository.deleteManualSaleCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
-
         }
 
         EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR DashboardCategoryViewModel.kt_Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
@@ -771,6 +774,8 @@ class DashBoardCategoryViewModel @Inject constructor(
             )
 
         }
+
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
 
     }
 
@@ -1605,6 +1610,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     if (type == DELETE) {
                         // deletes whole cart
                         deleteCart()
+                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                     } else {
 
                         var cartModel = cartList.get(0)
@@ -2180,6 +2186,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     if (type == DELETE) {
                         deleteCart()
+                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                     } else {
 
                         var cartModel = cartList?.get(0)
@@ -2829,6 +2836,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 if (type == DELETE) {
                     deleteCart()
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                 } else {
 
                     val newCartModel: CartModel =
@@ -3544,6 +3552,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 if (type == DELETE) {
                     deleteCart()
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                 } else {
 
                     cartModel =
@@ -8026,6 +8035,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
         clearCustomer()
         deleteCart()
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+
     }
 
     // To clear customer if creating gift card

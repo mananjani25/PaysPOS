@@ -39,7 +39,10 @@ import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
+import com.pays.pos.logger.MessageEvent
 import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.EventBus
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -1326,6 +1329,8 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
         prefProvider.setValue(Constants.SERVICE_CHARGE, "")
 
         dashboardViewModel.deleteCart()
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AddEditCustomer.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+
 
         prefProvider.setValue(Constants.ORDER_TYPE, Constants.GIFT_CARD)
         prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.GIFT_CARD_NAME)
