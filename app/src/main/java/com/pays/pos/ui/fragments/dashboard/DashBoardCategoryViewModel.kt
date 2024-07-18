@@ -555,12 +555,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun addItemToCartItems(tbCartItem: TbCartItem) {
-        CoroutineScope(Dispatchers.IO).launch {
-
+        CoroutineScope(Dispatchers.Default).launch {
 
             posRepository.addItemToCart(tbCartItem)
             destroyedCartItemsList.clear()
-
 
             val currentTimeMillis = System.currentTimeMillis()
             val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
@@ -643,8 +641,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun addCartModelBackup(cartModelBackup: String) {
         viewModelScope.launch {
-            EventBus.getDefault()
-                .post(MessageEvent("${Constants.LINE_BREAK_TAB} addCartModelBackup(cartModelBackup: String)"))
             posRepository.addCartModelBackup(cartModelBackup)
         }
     }

@@ -57,7 +57,6 @@ class CustomAmountFragment : DialogFragment() {
             dismiss()
         }
         binding.txtSend.setOnClickListener {
-            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CustomAmountFragment.kt_ binding.txtSend.setOnClickListener"))
             if (binding.edtAmount.text.toString().isNotEmpty()) {
                 var custom_amount = binding.edtAmount.text.toString().replace("$", "").toDouble()
                 if (custom_amount > totalprice) {
@@ -66,7 +65,6 @@ class CustomAmountFragment : DialogFragment() {
                         putDouble("totalAmount", totalprice)
                     }
 
-                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CustomAmountFragment.kt_ Before_request_for_customAmount"))
                     requireActivity().supportFragmentManager.setFragmentResult(
                         "request_for_customAmount",
                         result

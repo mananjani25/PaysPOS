@@ -96,6 +96,7 @@ class LoyaltyPointViewModel @Inject constructor(
                 }
 
                 Status.ERROR -> {
+                    serChargeItem.isEnable = false
                     _snackbarText.value = Event(resource.message)
                     //_showProgress.value = Event(false)
                 }

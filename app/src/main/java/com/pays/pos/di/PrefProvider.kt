@@ -112,7 +112,6 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         prefsPrivateEditor.commit()
         sharedPreferences = null
         }catch (_e:Exception){
-            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PrefProvider.kt -> setValueInt(_ key-> ${Gson().toJson(key)} _ \n _ catch -> ${Gson().toJson(_e.printStackTrace())}"))
         }
     }
 

@@ -1,6 +1,7 @@
 package com.pays.pos.ui.fragments.dashboard.bolddashboard
 
 import android.os.Bundle
+import android.os.Handler
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
@@ -2385,61 +2386,60 @@ class CartFragment(
         }
 
         binding.txtAddCustomer.setOnSingleClickListener {
-           try{
-               if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
-                   if (isFromPayment) {
-                       findNavController().navigate(R.id.action_paymentBoldPosFragment_to_addCustomerToGiftCard)
-                   } else {
-                       findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_addCustomerToGiftCard)
-                   }
-                   return@setOnSingleClickListener
-               }
-               if (isFromPayment) {
-                   if (prefProvider.getValueboolean(
-                           Constants.LOYALTY_ADDED, false
-                       ) || prefProvider.getValueboolean(
-                           Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false
-                       )
-                   ) {
-                       AlertUtils.showCustomAlertWithListenerWithOK(
-                           requireActivity(),
-                           "You can not change customer from checkout when loyalty points added. Please go back and change customer."
-                       ) { _, _ ->
-                       }
-                   } else if (viewModel.getSplitCount() > 1 || splitValue > 1) {
-                       AlertUtils.showCustomAlertWithListenerWithOK(
-                           requireActivity(), "Customer can not be changed during split payment."
-                       ) { _, _ ->
-                       }
-                   } else {
-                       viewModel.setIsFromAddCustomer(true)
-                       findNavController().navigate(R.id.action_paymentBoldPosFragment_to_assignCustomerOrderFragment)
-                   }
-               } else {
-                   if (isOrderUpdate) {
-                       var bundle: Bundle = Bundle()
-                       bundle.putInt("orderId", orderId!!)
-                       bundle.putInt("paymentId", paymentId!!)
-                       bundle.putString("paymentOfflineId", paymentOfflineId)
-                       bundle.putString("orderOfflineId", orderOfflineId)
-                       bundle.putBoolean(
-                           "isLoyaltyApplied", viewModel.redeemLoyaltyInfo.needToApplyLoyalty
-                       )
-                       bundle.putBoolean("update", isOrderUpdate)
+            try {
+                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+                    if (isFromPayment) {
+                        findNavController().navigate(R.id.action_paymentBoldPosFragment_to_addCustomerToGiftCard)
+                    } else {
+                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_addCustomerToGiftCard)
+                    }
+                    return@setOnSingleClickListener
+                }
+                if (isFromPayment) {
+                    if (prefProvider.getValueboolean(
+                            Constants.LOYALTY_ADDED, false
+                        ) || prefProvider.getValueboolean(
+                            Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false
+                        )
+                    ) {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireActivity(),
+                            "You can not change customer from checkout when loyalty points added. Please go back and change customer."
+                        ) { _, _ ->
+                        }
+                    } else if (viewModel.getSplitCount() > 1 || splitValue > 1) {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireActivity(), "Customer can not be changed during split payment."
+                        ) { _, _ ->
+                        }
+                    } else {
+                        viewModel.setIsFromAddCustomer(true)
+                        findNavController().navigate(R.id.action_paymentBoldPosFragment_to_assignCustomerOrderFragment)
+                    }
+                } else {
+                    if (isOrderUpdate) {
+                        var bundle: Bundle = Bundle()
+                        bundle.putInt("orderId", orderId!!)
+                        bundle.putInt("paymentId", paymentId!!)
+                        bundle.putString("paymentOfflineId", paymentOfflineId)
+                        bundle.putString("orderOfflineId", orderOfflineId)
+                        bundle.putBoolean(
+                            "isLoyaltyApplied", viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+                        )
+                        bundle.putBoolean("update", isOrderUpdate)
 
-                       EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment.kt binding.txtAddCustomer.setOnSingleClickListener ${bundle}"))
+                        findNavController().navigate(
+                            R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment,
+                            bundle
+                        )
+                    } else {
+                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment)
+                    }
 
-                       findNavController().navigate(
-                           R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
-                       )
-                   } else {
-                       findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment)
-                   }
+                }
+            } catch (e: Exception) {
 
-               }
-           }catch (e:Exception){
-
-           }
+            }
         }
 
         binding.imgOrderMenu.setOnSingleClickListener {
@@ -2683,8 +2683,10 @@ class CartFragment(
         binding.tvPayNow.setOnClickListener(
             object : View.OnClickListener {
                 override fun onClick(p0: View?) {
-                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvPayNow()"))
+                    EventBus.getDefault()
+                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvPayNow()"))
 
+                    prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
                     prefProvider.setValueInt("ORDER_ID", -1)
 
                     if (InternetUtils.isInternetAvailable(requireContext().applicationContext)) {
@@ -2727,7 +2729,8 @@ class CartFragment(
                                     viewModel.createEmptyCart(viewModel.cartModel!!)
                                 }
                             } catch (e: Exception) {
-                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment.kt tvPayNow ${e.printStackTrace()}"))
+                                EventBus.getDefault()
+                                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment.kt tvPayNow ${e.printStackTrace()}"))
                             }
                         }
 
@@ -2755,7 +2758,13 @@ class CartFragment(
                                     prefProvider.getValue(Constants.OLD_ITEM, "")
                                 )
 
-                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment.kt-> binding.tvPayNow.setOnClickListener_if (isOrderUpdate) -> bundle = ${Gson().toJson(bundle)}"))
+                                EventBus.getDefault().post(
+                                    MessageEvent(
+                                        "${Constants.LINE_BREAK_TAB} CartFragment.kt-> binding.tvPayNow.setOnClickListener_if (isOrderUpdate) -> bundle = ${
+                                            Gson().toJson(bundle)
+                                        }"
+                                    )
+                                )
 
                                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                                     prefProvider.setValueboolean(IS_FROM_ALL_ORDER, false)
@@ -2794,8 +2803,16 @@ class CartFragment(
         binding.tvSave.setOnSingleClickListener(
             object : View.OnClickListener {
                 override fun onClick(p0: View?) {
-                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvSave()"))
-                    if (!binding.tvSave.text.toString().trim().equals("update",ignoreCase = true)){
+
+                    restrictButtonClick()
+
+                    prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+
+                    EventBus.getDefault()
+                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvSave()"))
+                    if (!binding.tvSave.text.toString().trim()
+                            .equals("update", ignoreCase = true)
+                    ) {
                         prefProvider.setValueInt("ORDER_ID", -1)
                     }
 
@@ -3062,8 +3079,13 @@ class CartFragment(
                                     } catch (e: Exception) {
                                     }
 */
-                                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment.kt_binding.tvSave.setOnSingleClickListener , request?.order?.offlineId -> ${request?.order?.offlineId} _2"))
-                                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment.kt_binding.tvSave.setOnSingleClickListener , request -> ${Gson().toJson(request)} _2"))
+                                            EventBus.getDefault().post(
+                                                MessageEvent(
+                                                    "${Constants.LINE_BREAK_TAB} CartFragment.kt_binding.tvSave.setOnSingleClickListener , request?.order?.offlineId -> ${request?.order?.offlineId} , request -> ${
+                                                        Gson().toJson(request)
+                                                    } _2"
+                                                )
+                                            )
 
                                             //FILE ASSERTION
 //                                            MainActivity.writeToFile(Gson().toJson(request),"Save_".plus(request?.order?.offlineId),activity?.filesDir,activity!!)
@@ -3217,6 +3239,15 @@ class CartFragment(
                 }
 
             })
+    }
+
+    private fun restrictButtonClick() {
+        binding.tvSave.isEnabled = false
+
+        Handler().postDelayed({
+            binding.tvSave.isEnabled = false
+        }, 2000)
+
     }
 
     private fun calculateDiscount() {
@@ -3448,19 +3479,26 @@ class CartFragment(
 
         viewModel.orderTypes().observe(requireActivity()) {
 
-            val orderTypesToShow= it?.data?.let { it1 -> ArrayList(it1) }
+            val orderTypesToShow = it?.data?.let { it1 -> ArrayList(it1) }
 
             /**
              * List contains order types that we don't want to show on POS order types
              *
              */
-            val orderTypesToRemove = listOf("OnlineWebOrder","OnlineOrder","KioskTakeout","OnlineWebOrder","KioskOpenorder")
+            val orderTypesToRemove = listOf(
+                "OnlineWebOrder",
+                "OnlineOrder",
+                "KioskTakeout",
+                "OnlineWebOrder",
+                "KioskOpenorder"
+            )
 
             orderTypesToRemove.forEach { orderTypeToRemove ->
 
-                val found = orderTypesToShow?.filter { it.orderType.equals(orderTypeToRemove,true) }
+                val found =
+                    orderTypesToShow?.filter { it.orderType.equals(orderTypeToRemove, true) }
 
-                if(found?.isNotEmpty() == true)
+                if (found?.isNotEmpty() == true)
                     orderTypesToShow.remove(found.first())
             }
 

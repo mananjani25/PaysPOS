@@ -18,6 +18,7 @@ import android.text.TextWatcher
 import android.util.Base64
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
@@ -181,6 +182,16 @@ class AllOrdersListingFragment(
         super.onViewCreated(view, savedInstanceState)
         setupAdapter()
 
+        onlineDetailViewModel.refresh.observe(viewLifecycleOwner,object:androidx.lifecycle.Observer<Boolean>{
+            override fun onChanged(t: Boolean?) {
+                t?.let {
+                    if (it){
+                        refreshCurrentFragment()
+                    }
+                }
+
+            }
+        })
         adapter.enableReprintKitchenReceiptButton()
 
         observeShowProgress()
@@ -7294,6 +7305,11 @@ class AllOrdersListingFragment(
 
     override fun onStatusChangeEvent(p0: String?, p1: Int) {
 
+    }
+
+
+    private fun refreshCurrentFragment(){
+        getAllOrders()
     }
 
 }
