@@ -222,6 +222,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
     }
 
     fun deleteDineInCart() {
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         viewModelScope.launch {
             posRepository.deleteDineInCart()
             destroyedList.clear()
@@ -231,6 +232,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
     // to delete cart from database
     fun deleteCart() {
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         viewModelScope.launch {
             posRepository.deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0))
             destroyedList.clear()
@@ -250,6 +252,8 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
             posRepository.deleteManualSaleCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0))
 
         }
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR CheckoutDineInPaymentViewModel.kt_Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+
     }
 
     // To update dine cart

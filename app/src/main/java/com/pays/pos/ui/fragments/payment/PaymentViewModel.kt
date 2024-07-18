@@ -197,6 +197,7 @@ open class PaymentViewModel @Inject constructor(
                                 }
 
                                 if (onlySave || orderRequestModel.completed_all_payments) {
+                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                                     posRepository.deleteCart(
                                         prefProvider.getValueInt(
                                             Constants.EMPLOYEE_ID,
@@ -313,6 +314,7 @@ open class PaymentViewModel @Inject constructor(
 
 
     fun noUpdatesFound() {
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         viewModelScope.launch {
             posRepository.deleteCart(
                 prefProvider.getValueInt(
@@ -384,6 +386,7 @@ open class PaymentViewModel @Inject constructor(
                         if (response?.status == 200) {
 
                             if (splitValue != -1) {
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                                 posRepository.deleteCart(
                                     prefProvider.getValueInt(
                                         Constants.EMPLOYEE_ID,
@@ -3061,6 +3064,7 @@ open class PaymentViewModel @Inject constructor(
                                 }
 
                                 if (myRequest.completed_all_payments) {
+                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                                     posRepository.deleteCart(
                                         prefProvider.getValueInt(
                                             Constants.EMPLOYEE_ID,
