@@ -13,6 +13,7 @@ import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
 import android.provider.Settings
+import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
@@ -249,6 +250,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         super.onStart()
         EventBus.getDefault().register(this)
     }
+
 
     @Inject
     lateinit var repo: UserRepository

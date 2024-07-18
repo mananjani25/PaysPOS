@@ -33,7 +33,7 @@ data class KioskOrderResponse(
         @SerializedName("discount_type_id") var discountTypeId: String? = null,
         @SerializedName("payment_status") var paymentStatus: String? = null,
         @SerializedName("order_status") var orderStatus: String? = null,
-        @SerializedName("total_tips") var totalTips: Int? = null,
+        @SerializedName("total_tips") var totalTips: Double? = null,
         @SerializedName("total_tax_amount") var totalTaxAmount: Double? = null,
         @SerializedName("future_delivery_date") var futureDeliveryDate: String? = null,
         @SerializedName("is_edited") var isEdited: Boolean? = null,
@@ -118,7 +118,7 @@ data class KioskOrderResponse(
             @SerializedName("payable_type") var payableType: String? = null,
             @SerializedName("payable_id") var payableId: Int? = null,
             @SerializedName("amount") var amount: Double? = null,
-            @SerializedName("tips") var tips: Int? = null,
+            @SerializedName("tips") var tips: Double? = null,
             @SerializedName("offline_id") var offlineId: String? = null,
             @SerializedName("order_id") var orderId: Int? = null,
             @SerializedName("transaction_id") var transactionId: String? = null,
@@ -191,9 +191,24 @@ data class KioskOrderResponse(
             @SerializedName("note") var note: String? = null,
             @SerializedName("order_item_modifiers") var orderItemModifiers: ArrayList<OrderItemModifiers> = arrayListOf(),
             @SerializedName("order_item_taxes") var orderItemTaxes: ArrayList<OrderItemTaxes> = arrayListOf(),
-            @SerializedName("order_item_variation") var orderItemVariation: String? = null
+            @SerializedName("order_item_variation") var orderItemVariation: OrderItemVariation? = null
 
         ) {
+
+            data class OrderItemVariation (
+
+                @SerializedName("id"            ) var id          : Int?    = null,
+                @SerializedName("order_item_id" ) var orderItemId : Int?    = null,
+                @SerializedName("order_id"      ) var orderId     : String? = null,
+                @SerializedName("variation_id"  ) var variationId : Int?    = null,
+                @SerializedName("name"          ) var name        : String? = null,
+                @SerializedName("unit_price"    ) var unitPrice   : Double? = null,
+                @SerializedName("total_price"   ) var totalPrice  : Double? = null,
+                @SerializedName("quantity"      ) var quantity    : Int?    = null,
+                @SerializedName("created_at"    ) var createdAt   : String? = null,
+                @SerializedName("updated_at"    ) var updatedAt   : String? = null
+
+            )
 
             data class OrderItemModifiers(
                 @SerializedName("id") var id: Int? = null,
