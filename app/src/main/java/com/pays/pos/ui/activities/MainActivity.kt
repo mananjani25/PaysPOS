@@ -3565,7 +3565,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         ) || orderTypeName.equals(
                             "\"OnlineWebOrder\"",
                             true
-                        ) || orderTypeName.equals("\"Online Order\"", true)
+                        ) || orderTypeName.equals("\"OnlineOrder\"", true)
                     ) {
                         setSoundForOnlineOrder()
                     }
