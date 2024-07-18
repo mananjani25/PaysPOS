@@ -2604,18 +2604,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             var subTotal = 0.0
             viewModel.currentCartItems.forEach {
-                subTotal += (if (it.price != 0.0) it.price else it.singleItemPrice) * it.itemQuantity
-                if (it.modifiers.isNotEmpty()){
-                    it.modifiers.forEach { modifier->
-                        subTotal+=(modifier.price*modifier.itemQuantity)
-                    }
-                }
-
-                if (it.variationsAttributes.isNotEmpty()){
-                    it.variationsAttributes.forEach { variationsAttribute ->
-                        variationsAttribute.price?.let {
-                            subTotal+=it
-                        }
+                subTotal += it.price * it.itemQuantity
+                if (it.modifiers.isNotEmpty()) {
+                    it.modifiers.forEach { modifier ->
+                        subTotal += (modifier.price * modifier.modifier_quantity) * it.itemQuantity
                     }
                 }
             }
