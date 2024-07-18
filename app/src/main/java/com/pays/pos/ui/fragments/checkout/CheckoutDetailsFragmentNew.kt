@@ -2603,6 +2603,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
 
             var subTotal = 0.0
+            var loyaltyAmt = 0.0
             viewModel.currentCartItems.forEach {
                 subTotal += it.price * it.itemQuantity
                 if (it.modifiers.isNotEmpty()) {
@@ -2611,7 +2612,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     }
                 }
             }
-            viewModel.subTotalPrice = subTotal
+            viewModel.redeemLoyaltyInfo?.let { loyalty ->
+                if(loyalty.isLoyaltyApplied == true) loyaltyAmt  = loyalty.usedLoyaltyAmount
+            }
+            viewModel.subTotalPrice = subTotal - viewModel.totalDiscount - loyaltyAmt
 
             EventBus.getDefault().post(
                 MessageEvent(
