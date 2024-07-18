@@ -17,8 +17,10 @@ import com.pays.pos.di.PrefProvider
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
 import com.google.gson.Gson
+import com.pays.pos.logger.MessageEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 import kotlin.math.ceil
 
@@ -72,9 +74,10 @@ class ManualSaleViewModel @Inject constructor(
             totalServiceCharge = 0.0
             totalCount = 0
             posRepository.deleteManualSaleCart(employee_id)
-
-
         }
+
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR manualSaleViewModel.kt_Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+
     }
 
     fun saveManualSaleData(cartList: List<CartModel>) {

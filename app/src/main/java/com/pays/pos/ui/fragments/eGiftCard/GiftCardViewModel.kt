@@ -23,8 +23,10 @@ import com.pays.pos.utils.MethodUtils.Companion.generateRandomNumbers
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
+import com.pays.pos.logger.MessageEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 @HiltViewModel
@@ -218,7 +220,7 @@ class GiftCardViewModel @Inject constructor(
                                         sellGiftCardResponse.data.gift_card.payments[0].id
                                     )
                                 }
-
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                                 posRepository.deleteCart(
                                     prefProvider.getValueInt(
                                         Constants.EMPLOYEE_ID,
@@ -426,7 +428,7 @@ class GiftCardViewModel @Inject constructor(
                                         addValueInGiftCardResponse.data.gift_card.payments[0].id
                                     )
                                 }
-
+                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                                 posRepository.deleteCart(
                                     prefProvider.getValueInt(
                                         Constants.EMPLOYEE_ID,
