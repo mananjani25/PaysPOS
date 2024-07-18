@@ -3186,12 +3186,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     val token: TypeToken<List<TbCartItem>> =
                                         object :
                                             TypeToken<List<TbCartItem>>() {}
+                                    var oldDataModel: List<TbCartItem> = arrayListOf()
+                                    if (prefProvider.getValue(Constants.OLD_ITEM_BASE, "").isNotEmpty()){
+                                        oldDataModel =
+                                            Gson().fromJson(
+                                                prefProvider.getValue(Constants.OLD_ITEM_BASE, ""),
+                                                token.type
+                                            )
+                                    }else{
+                                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} DashboardCategoryBoldPOS.kt_ OLD_ITEM_BASE is Empty"))
+                                    }
 
-                                    var oldDataModel: List<TbCartItem> =
-                                        Gson().fromJson(
-                                            prefProvider.getValue(Constants.OLD_ITEM_BASE, ""),
-                                            token.type
-                                        )
 
                                     if (oldDataModel.size != createOrderResponse.data.order.orderItems.size) {
                                         isOrderUpdate = true
