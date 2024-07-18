@@ -1695,10 +1695,6 @@ class AllOrdersListingFragment(
                             "ORDER_TYPE_ID-> ${prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -99)}, " +
                             "ORDER_TYPE-> ${prefProvider.getValue(Constants.ORDER_TYPE, "null")}, " +
                             "ORDER_TYPE_NAME-> ${prefProvider.getValue(Constants.ORDER_TYPE_NAME,"null")}, " +
-                            "ORDER_TYPE-> ${prefProvider.getValue(Constants.ORDER_TYPE, "null")}, " +
-                            "ORDER_TYPE_NAME-> ${prefProvider.getValue(Constants.ORDER_TYPE_NAME, "null")}, " +
-                            "ORDER_TYPE-> ${prefProvider.getValue(Constants.ORDER_TYPE,"null")}, " +
-                            "ORDER_TYPE_NAME-> ${prefProvider.getValue(Constants.ORDER_TYPE_NAME,"null")}, " +
                             "OLD_ITEM_BASE_CUSTOM_ITEM-> ${prefProvider.getValue(OLD_ITEM_BASE_CUSTOM_ITEM, "null")}"))
 
 

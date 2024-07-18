@@ -267,7 +267,7 @@ class KioskService : Service(), StatusChangeEventListener {
     ) {
         if (pos < kitchenList.size) {
             kitchenList.get(pos).let {
-                if (it.receiptPrintType.equals("Kitchen", ignoreCase = true)) {
+                if (it.receiptPrintType.equals("Kitchen", ignoreCase = true) && it.status) {
                     Log.d("Hey", Gson().toJson(it))
                     initKitchenPrinter(it, createOrderResponse)
                 }
