@@ -636,7 +636,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun addCartModelBackup(cartModelBackup: String) {
         viewModelScope.launch {
-            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} addCartModelBackup(cartModelBackup: String)"))
             posRepository.addCartModelBackup(cartModelBackup)
         }
     }

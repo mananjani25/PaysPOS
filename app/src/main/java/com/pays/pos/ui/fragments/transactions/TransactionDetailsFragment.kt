@@ -10,6 +10,7 @@ import android.os.*
 import android.util.Base64
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -169,7 +170,6 @@ class TransactionDetailsFragment : Fragment() {
         initPOSLink()
         getMerchantDataObserver()
 
-
         return binding.root
     }
 
@@ -327,26 +327,32 @@ class TransactionDetailsFragment : Fragment() {
                     return
                 }
                 mLastClickTime = SystemClock.elapsedRealtime()
-                if (!paymentDetailsResponse.data.ext_data.isNullOrEmpty()) {
+                try {
+                    if (!paymentDetailsResponse.data.ext_data.isNullOrEmpty()) {
 //                    Check if the the PAX is connected or not then perform the void checking
-                    if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
+                        if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
 //                    Check if the transaction is void or not
-                        CoroutineScope(Dispatchers.Main).launch {
-                            ProgressUtils.showProgressDialog(requireActivity())
+                            CoroutineScope(Dispatchers.Main).launch {
+                                ProgressUtils.showProgressDialog(requireActivity())
+                            }
+                            checkIfTransactionIsVoided()
+                        } else {
+                            activity?.let {
+                                AlertUtils.showCustomAlertWithListenerWithOK(
+                                    it,
+                                    getString(R.string.pax_connect_error),
+                                    null
+                                )
+                            }
                         }
-                        checkIfTransactionIsVoided()
-                    } else {
-                        activity?.let {
-                            AlertUtils.showCustomAlertWithListenerWithOK(
-                                it,
-                                getString(R.string.pax_connect_error),
-                                null
-                            )
-                        }
-                    }
 
-                } else {
-                    startRefund()
+                    } else {
+                        startRefund()
+                    }
+                } catch (e: Exception) {
+                    activity?.let {
+                        Toast.makeText(it, "Try after sometime", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         })
@@ -580,8 +586,8 @@ class TransactionDetailsFragment : Fragment() {
     }
 
     private fun enableDisableTipButton() {
-        try{
-            if (paymentDetailsResponse.data.ref_num!=null){
+        try {
+            if (paymentDetailsResponse.data.ref_num != null) {
                 if (paymentDetailsResponse.data.ref_num.isNotEmpty()) {
                     GlobalScope.launch {
                         posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
@@ -627,7 +633,7 @@ class TransactionDetailsFragment : Fragment() {
                     }
                 }
             }
-        }catch (e:Exception){
+        } catch (e: Exception) {
 
         }
     }
