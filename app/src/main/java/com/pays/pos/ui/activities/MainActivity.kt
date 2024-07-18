@@ -3563,7 +3563,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                             "\"KioskOpenorder\"",
                             true
                         ) || orderTypeName.equals(
-                            "\"Online Web Order\"",
+                            "\"OnlineWebOrder\"",
                             true
                         ) || orderTypeName.equals("\"Online Order\"", true)
                     ) {
