@@ -53,6 +53,9 @@ import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.settings.notes.NoteListViewModel
 import com.pays.pos.utils.Event
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
@@ -1687,6 +1690,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
         }
 
         binding.txtRemoveItem.setOnClickListener {
+            viewModel.cartFooterNeedToBeUpdated = true
             Log.e(TAG, "getDeleteItem  ${Gson().toJson(item)}")
             makeItemEditedNew(item)
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
@@ -1713,12 +1717,21 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     viewModel.deleteCart()
                     EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                     viewModel.fragmentNeedToBeUpdated.value = true
-                } else viewModel.updateCart(
-                    viewModel.currentCartItems,
-                    item,
-                    DELETE,
-                    item.isManualSales
-                )
+                } else
+                {
+                    if(item.isManualSales){
+                        CoroutineScope(Dispatchers.IO).launch {
+                            viewModel.deleteCartItem(item.cartItemId)
+                        }
+                    }else
+                        viewModel.updateCart(
+                        viewModel.currentCartItems,
+                        item,
+                        DELETE,
+                            item.isManualSales
+
+                        )
+                }
                 //viewModel.newCartLogicModifier(cartModelsList, item, DELETE, item.isManualSales)
 
             }

@@ -1579,6 +1579,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     prefProvider.setValueInt(Constants.ORDER_TYPE_ID, it.id)
                     tabCartItemModel.orderType = it.orderType
                     tabCartItemModel.employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                    tabCartItemModel.isManualSales = true
                 }
             }
 
