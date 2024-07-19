@@ -2601,6 +2601,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     }"
                 )
             )
+/*
 
             var subTotal = 0.0
             var loyaltyAmt = 0.0
@@ -2616,6 +2617,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 if(loyalty.isLoyaltyApplied == true) loyaltyAmt  = loyalty.usedLoyaltyAmount
             }
             viewModel.subTotalPrice = subTotal - viewModel.totalDiscount - loyaltyAmt
+*/
 
             EventBus.getDefault().post(
                 MessageEvent(

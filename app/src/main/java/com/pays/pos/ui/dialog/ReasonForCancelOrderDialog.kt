@@ -1,6 +1,7 @@
 package com.pays.pos.ui.dialog
 
 import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Point
 import android.os.Bundle
@@ -8,6 +9,8 @@ import android.util.Log
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.pays.pos.R
@@ -24,6 +27,7 @@ import com.pays.pos.utils.extensions.liveSnackBar
 import com.pays.pos.utils.extensions.showAlert
 import com.pays.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
+import com.pays.pos.ui.fragments.onlineorder.OnlineDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -39,6 +43,8 @@ class ReasonForCancelOrderDialog : DialogFragment() {
     private lateinit var cancelOrderReasonAdapter: CancelOrderReasonAdapter
     private var itemPos: Int = 0
     var reason_id = 0
+    private val onlineDetailsViewModel by activityViewModels<OnlineDetailViewModel>()
+
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -224,4 +230,29 @@ class ReasonForCancelOrderDialog : DialogFragment() {
     }
 
 
+    override fun onDismiss(dialog: DialogInterface) {
+        Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_1")
+        super.onDismiss(dialog)
+
+        onlineDetailsViewModel.toggleRefresh(true)
+
+        Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_2")
+
+        val result = Bundle().apply {
+            putString("RESULT_KEY", "Your data here")
+        }
+        setFragmentResult("RESULT_KEY", result)
+    }
+
+    override fun onDestroy() {
+        Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_3")
+        super.onDestroy()
+        Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_4")
+    }
+
+    override fun onDestroyView() {
+        Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_5")
+        super.onDestroyView()
+        Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_6")
+    }
 }

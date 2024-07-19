@@ -1,6 +1,7 @@
 package com.pays.pos.ui.dialog
 
 import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
@@ -8,6 +9,7 @@ import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
 import android.text.InputFilter
 import android.text.Spanned
+import android.util.Log
 import android.view.*
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
@@ -20,6 +22,7 @@ import com.pays.pos.R
 import com.pays.pos.databinding.AddOnlineTimeDiialogBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.allorders.AllOrdersViewModel
+import com.pays.pos.ui.fragments.onlineorder.OnlineDetailViewModel
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.visible
@@ -45,6 +48,8 @@ class AddOnlineTimeDialog : DialogFragment() {
     var order_id: Int? = null
     var isSelected = false
     var listTextView: ArrayList<AppCompatTextView> = arrayListOf()
+    private val onlineDetailsViewModel by activityViewModels<OnlineDetailViewModel>()
+
 
     companion object {
         fun newInstance() = AddOnlineTimeDialog()
@@ -303,5 +308,30 @@ class AddOnlineTimeDialog : DialogFragment() {
         return str.substring(0, str.length - 1)
     }
 
+    override fun onDismiss(dialog: DialogInterface) {
+        Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_1")
+        super.onDismiss(dialog)
+
+        onlineDetailsViewModel.toggleRefresh(true)
+
+        Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_2")
+
+        val result = Bundle().apply {
+            putString("RESULT_KEY", "Your data here")
+        }
+        setFragmentResult("RESULT_KEY", result)
+    }
+
+    override fun onDestroy() {
+        Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_3")
+        super.onDestroy()
+        Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_4")
+    }
+
+    override fun onDestroyView() {
+        Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_5")
+        super.onDestroyView()
+        Log.d("ReasonForRefundOnlineOrder.kt", "onDismiss_6")
+    }
 
 }
