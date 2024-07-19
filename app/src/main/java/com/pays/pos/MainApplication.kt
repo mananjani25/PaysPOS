@@ -11,9 +11,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.gson.Gson
 import com.pax.poslink.CommSetting
 import com.pax.poslink.LogSetting
 import com.pax.poslink.POSLinkAndroid
+import com.pays.pos.data.remote.Constants
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.utils.InternetUtils
 import com.pays.pos.utils.MethodUtils
@@ -26,6 +29,7 @@ import com.pays.pos.utils.scanner.helpers.ScannerAppEngine
 import com.zebra.scannercontrol.DCSScannerInfo
 import com.zebra.scannercontrol.SDKHandler
 import dagger.hilt.android.HiltAndroidApp
+import org.greenrobot.eventbus.EventBus
 import retrofit2.HttpException
 import java.io.File
 
@@ -77,6 +81,7 @@ class MainApplication : Application() {
             if (defaultHandler != null) {
                 defaultHandler.uncaughtException(paramThread, paramThrowable);
             }
+            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} MainApplication.kt = ${paramThrowable.printStackTrace()}"))
 
             if (paramThrowable !is com.google.android.gms.dynamite.DynamiteModule.LoadingException && paramThrowable !is HttpException) {
                 paramThrowable.printStackTrace()
