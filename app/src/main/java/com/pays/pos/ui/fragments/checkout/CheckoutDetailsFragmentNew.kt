@@ -1887,9 +1887,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     // To make cash payment for placing order
     private fun cashPaymentWithVariation() {
         paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
-        Log.e(
-            "checkPaymentAmount",
-            "checkPrice   ${paymentAmount}"
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_cashPaymentWithVariation() paymentAmount-> ${
+                    Gson().toJson(paymentAmount)
+                }, WholetotalPrice -> ${Gson().toJson(WholetotalPrice)}, isSelectedCount -> ${Gson().toJson(isSelectedCount)}"
+                ,true)
         )
 
 //        paymentviewModel.tipOnAmount = paymentAmount
@@ -1915,6 +1918,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
         subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
+
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_cashPaymentWithVariation() viewModel.subTotalPrice-> ${
+                    Gson().toJson(viewModel.subTotalPrice)
+                } , isSelectedCount-> ${isSelectedCount}"
+                ,true)
+        )
+
         totalServiceCharge =
             String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
         totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
@@ -1945,6 +1957,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     // To purchase gift card with cash payment
     private fun redeemGiftCard() {
         subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
+
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_redeemGiftCard() viewModel.subTotalPrice-> ${
+                    Gson().toJson(viewModel.subTotalPrice)
+                } , isSelectedCount-> ${isSelectedCount}"
+                ,true)
+        )
+
         totalServiceCharge =
             String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
         totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
@@ -1988,6 +2009,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
                 subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
+
+                EventBus.getDefault().post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_binding.llCreditCard.setOnSingleClickListener viewModel.subTotalPrice-> ${
+                            Gson().toJson(viewModel.subTotalPrice)
+                        } , isSelectedCount-> ${isSelectedCount}"
+                        ,true)
+                )
+
                 totalServiceCharge =
                     String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
                 totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
@@ -2003,8 +2033,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         ) / isSelectedCount
                     }
                 paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
-                Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
-                Log.d(TAG, "paymentClick: paymentAmount  " + paymentAmount)
+
+                EventBus.getDefault().post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_paymentClick() paymentAmount-> ${
+                            Gson().toJson(paymentAmount)
+                        }, WholetotalPrice -> ${Gson().toJson(WholetotalPrice)}, isSelectedCount -> ${Gson().toJson(isSelectedCount)}"
+                        ,true)
+                )
+
                 if (cashDiscountType == "SurCharge") {
                     paymentAmount =
                         String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
@@ -2204,6 +2241,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             MethodUtils.hideKeyboard(requireActivity())
 
             subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
+
+            EventBus.getDefault().post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_binding.txtCharge.setOnSingleClickListener viewModel.subTotalPrice-> ${
+                        Gson().toJson(viewModel.subTotalPrice)
+                    } , isSelectedCount-> ${isSelectedCount}"
+                    ,true)
+            )
+
             totalServiceCharge =
                 String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
             totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
@@ -2218,6 +2264,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 )
             }
             paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+
+            EventBus.getDefault().post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.txtCharge.setOnSingleClickListener() paymentAmount-> ${
+                        Gson().toJson(paymentAmount)
+                    }, WholetotalPrice -> ${Gson().toJson(WholetotalPrice)}, isSelectedCount -> ${Gson().toJson(isSelectedCount)}"
+                    ,true)
+            )
+
             Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
             Log.d(TAG, "paymentClick: paymentAmount  " + paymentAmount)
             if (cashDiscountType == "SurCharge") {
@@ -2650,8 +2705,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             ).toDouble()
 
 
-
-
             if (redeemLoyaltyInfo?.needToApplyLoyalty == true) {
                 WholetotalPrice -= redeemLoyaltyInfo?.usedLoyaltyAmount!!
                 viewModel.totalPrice = WholetotalPrice
@@ -2691,12 +2744,26 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             ) == "0.0"
         ) {
             subTotalPrice = viewModel.subTotalPrice
+            EventBus.getDefault().post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_getDataFromPref()_1 viewModel.subTotalPrice-> ${
+                        Gson().toJson(viewModel.subTotalPrice)
+                    }"
+                ,true)
+            )
             prefProvider.setValue(
                 Constants.SUB_TOTAL,
                 String.format("%.2f", viewModel.subTotalPrice)
             )
         } else {
             subTotalPrice = prefProvider.getValue(Constants.SUB_TOTAL, "").toDouble()
+            EventBus.getDefault().post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_getDataFromPref()_2 viewModel.subTotalPrice-> ${
+                        Gson().toJson(viewModel.subTotalPrice)
+                    }"
+                    ,true)
+            )
         }
 
         if (prefProvider.getValue(Constants.TAX_CHARGE, "").isEmpty() || prefProvider.getValue(
@@ -3196,6 +3263,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         CoroutineScope(Dispatchers.IO).async { viewModel.getCartModelBackup() }
                             .await().last().data
 
+                    EventBus.getDefault().post(
+                        MessageEvent(
+                            "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_CART_BACKUP_MODEL -> model -> ${
+                                Gson().toJson(model)
+                            }"
+                        ,true)
+                    )
                     viewModel.cartModel = Gson().fromJson(model, CartModel::class.java)
                 }
             }
@@ -3583,7 +3657,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
                 paymentAttributesRequest(myRequest)
             }
-        } else if (cartModel2 != null) {
+        }
+        else if (cartModel2 != null) {
             EventBus.getDefault()
                 .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, else if (cartModel2 != null)_1"))
 
@@ -3706,7 +3781,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             /* Added by Rahul to solve the cartModel crash issue, i.e. cartModel is getting null - END*/
 
-
+            EventBus.getDefault().post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_1 ->  paymentAmount -> ${
+                        Gson().toJson(subTotalPrice) +" paymentAmount -> "+ Gson().toJson( paymentAmount)
+                    }"
+                    ,true)
+            )
             val myRequest = viewModel.cartModel?.let {
                 paymentviewModel.createOrderRequestNew(
                     oldItems,

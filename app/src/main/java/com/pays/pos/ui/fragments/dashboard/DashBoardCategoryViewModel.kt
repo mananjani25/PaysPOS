@@ -4006,6 +4006,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                             subTotalPrice += (it.price * it.itemQuantity)
                         }
                     }
+                    EventBus.getDefault().post(
+                        MessageEvent(
+                            "${Constants.LINE_BREAK_TAB} DashboardCategoryViewModel.kt_fun itemCalculation()_cartList[0].items -> ${
+                               Gson().toJson(cartList[0].items)
+                            }"
+                            ,true)
+                    )
                     calculateDineInServiceCharge(cartList[0])
                     subTotalPrice -= (cartList[0].discountPrice)
 
@@ -4087,6 +4094,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                     }
 
+                    EventBus.getDefault().post(
+                        MessageEvent(
+                            "${Constants.LINE_BREAK_TAB} DashboardCategoryViewModel.kt_fun itemCalculation()_2_cartList[0].items -> ${
+                                Gson().toJson(cartList[0].items)
+                            }"
+                            ,true)
+                    )
                     order_note = cartList[0].note
                     subTotalPrice -= cartList[0].discountPrice
 
@@ -4194,6 +4208,14 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                         }
                     }
+
+                    EventBus.getDefault().post(
+                        MessageEvent(
+                            "${Constants.LINE_BREAK_TAB} DashboardCategoryViewModel.kt_fun itemCalculation()_cartList[0].items -> ${
+                                Gson().toJson(cartList)
+                            }"
+                            ,true)
+                    )
 
                     order_note = cartModel?.note ?: ""
                     subTotalPrice -= cartModel?.discountPrice ?: 0.0
