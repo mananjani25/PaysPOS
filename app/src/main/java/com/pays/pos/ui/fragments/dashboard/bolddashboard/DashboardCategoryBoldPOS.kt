@@ -1204,10 +1204,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     var bundle: Bundle = Bundle()
                     bundle.putParcelableArrayList("carttlist", cartList)
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
-                        if ((cartList[0].dineInList?.size ?: 0) > 0) {
-                            cartList[0].dineInList?.get(0)?.selectedPosition =
-                                viewModel.dineInHeaderPosition
-                        }
+
+//                        if ((cartList[0].dineInList?.size ?: 0) > 0) {
+//                            cartList[0].dineInList?.get(0)?.selectedPosition =
+//                                viewModel.dineInHeaderPosition
+//                        }
                         bundle.putInt("selectedHeaderPosition", viewModel.dineInHeaderPosition)
                     }
                     findNavController().navigate(
@@ -1861,6 +1862,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
     override fun onItemUpdate(item: TbCartItem, position: Int) {
+
+
+        viewModel.dineInHeaderPosition = item.guestIndexForDineIn ?:-1
+
+        viewModel.isCartItemClicked = true
+
         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
         val backStateName: String = AddItemFragment.javaClass.getName()
         val fragment = AddItemFragment.newInstance(item, this, cartList, true, position)
@@ -5307,6 +5314,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             e.printStackTrace()
         }
     }
+
 
 
     override fun scannerFirmwareUpdateEvent(firmwareUpdateEvent: FirmwareUpdateEvent?) {

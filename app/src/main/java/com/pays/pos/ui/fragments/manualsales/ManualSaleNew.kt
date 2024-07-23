@@ -724,6 +724,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         val mergeItems = merge(mainItems!!, manualItems!!)
                         mainCartList[0].dineInList?.get(selectedHeaderPosition)?.items =
                             mergeItems as ArrayList<TbItem>*/
+
+
+                        val mainItems = mainCartList
+                        val mergeItems = merge(mainItems, manualItems)
+                        mainCartList = mergeItems.toCollection(arrayListOf())
                     } else {
                         val mainItems = mainCartList
                         val mergeItems = merge(mainItems, manualItems)

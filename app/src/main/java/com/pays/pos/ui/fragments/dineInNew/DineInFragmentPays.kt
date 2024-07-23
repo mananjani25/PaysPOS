@@ -71,6 +71,8 @@ class DineInFragmentPays : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        dashBoardCategoryViewModel.deleteCart()
+
         //set dine in update false
         prefProvider.setValueboolean(DINE_IN_UPDATE,false)
 
@@ -194,7 +196,13 @@ class DineInFragmentPays : Fragment() {
 //            dashBoardCategoryViewModel.cartModel = null
 //            prefProvider.setValue(Constants.ORDER_TYPE, "")
 //            prefProvider.setValue(Constants.ORDER_TYPE_NAME, "")
-            findNavController().popBackStack()
+            dashBoardCategoryViewModel.deleteCart()
+            dashBoardCategoryViewModel.currentCartItems.clear()
+            dashBoardCategoryViewModel.duplicateCurrentCartItem.clear()
+
+            try {
+                findNavController().popBackStack()
+            }catch (e:Exception){}
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {
             if (findNavController()?.currentDestination?.id == R.id.dineInFragmentPays) {

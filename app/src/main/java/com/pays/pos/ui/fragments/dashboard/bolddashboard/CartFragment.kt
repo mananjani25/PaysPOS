@@ -804,15 +804,15 @@ class CartFragment(
                 )*/
 
                 // IMPORTANT - remove this as this is just for logs
-                dineInItemsList?.forEach {
-                    it.taxes = arrayListOf()
-                    Log.d(TAG, "testDineInUpdate dineInItemsList: " + Gson().toJson(it))
-                }
+//                dineInItemsList?.forEach {
+//                    it.taxes = arrayListOf()
+//                    Log.d(TAG, "testDineInUpdate dineInItemsList: " + Gson().toJson(it))
+//                }
                 // IMPORTANT - remove this as this is just for logs
-                viewModel.currentCartItems.forEach {
-                    it.taxes = arrayListOf()
-                    Log.d(TAG, "testDineInUpdate dineInItemsList: " + viewModel.currentCartItems)
-                }
+//                viewModel.currentCartItems.forEach {
+//                    it.taxes = arrayListOf()
+//                    Log.d(TAG, "testDineInUpdate dineInItemsList: " + viewModel.currentCartItems)
+//                }
                 viewModel.updateDineInCart(viewModel.currentCartItems, null, ADD, false, dineInList)
 
 
@@ -1189,7 +1189,7 @@ class CartFragment(
                     }
                 }
 
-                viewModel.getAllCartItems(
+                viewModel.getAllDineInCartItems(
                     "DineIn",
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                 ).asLiveData().observe(viewLifecycleOwner) { it ->
@@ -1440,7 +1440,7 @@ class CartFragment(
 
 
                                         }
-
+                                        updateCartFooter(viewModel.currentCartItems)
                                     })
                                 } else {
 
@@ -1605,7 +1605,7 @@ class CartFragment(
                         } else {
                             Log.e("Cart Blank Tracked", "Cart Going BLANK ->>>>>>")
 
-                            viewModel.setCurrentCartItems(viewModel.duplicateCurrentCartItem + viewModel.oldDineInItems)
+                            viewModel.setCurrentCartItems(viewModel.duplicateCurrentCartItem )
 
                         }
                     }
@@ -2024,7 +2024,7 @@ class CartFragment(
                         } else {
                             Log.e("Cart Blank Tracked", "Cart Going BLANK ->>>>>>")
 
-                            viewModel.setCurrentCartItems(viewModel.duplicateCurrentCartItem+viewModel.oldDineInItems )
+                            viewModel.setCurrentCartItems(viewModel.duplicateCurrentCartItem )
 
                         }
                     }
@@ -3823,6 +3823,7 @@ class CartFragment(
         Log.e(
             "checkDiscount", "totalDiscountdiscountPrice:  ${cartModelsList[0].discountPrice}"
         )
+
 
          viewModel.createDineInOrderRequest(
             cartModel = cartModelsList[0],

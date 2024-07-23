@@ -247,6 +247,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        dashboardViewModel.currentCartItems.clear()
+        dashboardViewModel.deleteCart()
+        dashboardViewModel.deleteCartItems()
+    }
+
     private fun showStaticLoader() {
         if (!SunmiPrinterApi.getInstance().isConnected) {
             ProgressUtils.showProgressDialog(requireActivity())
@@ -1032,15 +1040,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     // IMPORTANT - remove this as this is just for logs
                     listTbItem.forEach {
                         it.guestIndexForDineIn = headerPositionCounter
-                        it.taxes = arrayListOf()
+                       // it.taxes = arrayListOf()
 
                         it.employeeID = getOrderDetailsResponse?.employeeId?:0
 
                         it.orderType = "DineIn"
 
-
                        // if(!it.isPaid)
-                            dashboardViewModel.currentCartItems.add(it)
+                        dashboardViewModel.currentCartItems.add(it)
                         Log.d(TAG, "testDineInUpdate onClick: " + Gson().toJson(it))
                     }
 

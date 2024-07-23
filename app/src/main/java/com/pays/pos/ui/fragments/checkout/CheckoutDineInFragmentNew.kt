@@ -1878,7 +1878,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             )
         }
         if (myRequest != null) {
-            paymentviewModel.totalPayAmount(paymentAmount)
+            if (custom_paymentAmount != 0.0) {
+                paymentviewModel.totalPayAmount(custom_paymentAmount)
+            }
             paymentAttributesRequest(myRequest)
         }
     }

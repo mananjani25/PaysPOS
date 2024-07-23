@@ -468,6 +468,10 @@ class DashBoardCategoryViewModelPaysDineIn @Inject constructor(
         return posRepository.getAllCartItems(orderType, employee_Id)
     }
 
+    fun getDineInCartItems(orderType: String, employee_Id: Int): Flow<List<TbCartItem>> {
+        return posRepository.getAllCartItems(orderType, employee_Id)
+    }
+
 
     suspend fun orderTypeByName(orderTypeName: String): Int {
         return posRepository.orderTypeByName(orderTypeName)
