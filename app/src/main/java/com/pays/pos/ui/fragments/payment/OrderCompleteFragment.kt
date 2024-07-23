@@ -7365,7 +7365,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
                 Status.LOADING -> {
-//                    ProgressUtils.showProgressDialog(requireActivity())
+                    ProgressUtils.showProgressDialog(requireActivity())
                 }
             }
         }
