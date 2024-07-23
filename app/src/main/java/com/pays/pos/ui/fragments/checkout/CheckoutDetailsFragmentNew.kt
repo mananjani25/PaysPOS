@@ -726,6 +726,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             String.format("%.2f", remainingValue)
                         )
 
+                        EventBus.getDefault().post(
+                            MessageEvent(
+                                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_WHOLE_AMOUNT _ remainingValue -> ${
+                                    Gson().toJson(remainingValue)
+                                }"
+                                ,true)
+                        )
 
                         bundle.putDouble(
                             "remainingAmount",
@@ -3216,7 +3223,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 prefProvider,
                 requireContext()
             )
+
         }
+
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_loadPaymentLayout() paymentAmount-> WholetotalPrice -> ${Gson().toJson(WholetotalPrice)}"
+                ,true)
+        )
+
     }
 
     private fun makePaymentCreditCard() {
@@ -3784,7 +3799,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             EventBus.getDefault().post(
                 MessageEvent(
                     "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_1 ->  paymentAmount -> ${
-                        Gson().toJson(subTotalPrice) +" paymentAmount -> "+ Gson().toJson( paymentAmount)
+                        Gson().toJson(subTotalPrice) +" paymentAmount -> "+ Gson().toJson(paymentAmount)
                     }"
                     ,true)
             )

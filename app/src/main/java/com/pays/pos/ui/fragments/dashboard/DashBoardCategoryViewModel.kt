@@ -19,6 +19,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.google.gson.Gson
 import com.pays.pos.MainApplication
 import com.pays.pos.data.db.AppDatabase
@@ -444,8 +445,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     ) {
         appDatabase.itemDao().getItemListByCategory(id)
 
-    }.flow
-
+    }.flow.cachedIn(viewModelScope)
+/* The above .cachedIn(viewModelScope) is added by Rahul to solve the, Attempt to collect twice from pageEventFlow issue. */
 
     /*
         fun getCartList(orderType:String,employee_Id: Int) : List<CartModel>{
