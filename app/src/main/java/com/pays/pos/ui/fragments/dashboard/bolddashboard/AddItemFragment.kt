@@ -1719,7 +1719,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     viewModel.fragmentNeedToBeUpdated.value = true
                 } else
                 {
-                    if(item.isManualSales){
+                    if(true){
                         CoroutineScope(Dispatchers.IO).launch {
                             viewModel.deleteCartItem(item.cartItemId)
                         }
