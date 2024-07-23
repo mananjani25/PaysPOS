@@ -1236,6 +1236,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     @Subscribe(threadMode = ThreadMode.ASYNC)
     fun onMessageEvent(event: MessageEvent?) {
         log(event?.data.toString())
+        event?.newTrack.let {
+            if (it == true) {
+                logNewTrack(event?.data.toString())
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -1496,9 +1501,15 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         log("\n \n ${System.currentTimeMillis()} - ${Calendar.getInstance().time} ::")
 
         /* Logging the shared preferences values */
-        try{
-            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} MainActivity.kt -> attachFileLogger() ORDER_ID -> ${Gson().toJson(prefProvider?.getValueInt("ORDER_ID",-2))}"))
-        }catch (e:Exception){
+        try {
+            EventBus.getDefault().post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} MainActivity.kt -> attachFileLogger() ORDER_ID -> ${
+                        Gson().toJson(prefProvider?.getValueInt("ORDER_ID", -2))
+                    }"
+                )
+            )
+        } catch (e: Exception) {
 
         }
 
@@ -1512,7 +1523,27 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             val folder = externalCacheDir
             val file = File(folder, "log_steps.txt")
 
-            val stream = FileOutputStream(file,true)
+            val stream = FileOutputStream(file, true)
+            try {
+                stream.write(text.toByteArray())
+            } finally {
+                stream.close()
+            }
+
+
+        } catch (e: IOException) {
+            Log.e("Exception", "File write failed: $e")
+        }
+    }
+
+    public fun logNewTrack(text: String) {
+        /* This function will log the data to a file*/
+        try {
+
+            val folder = externalCacheDir
+            val file = File(folder, "log_steps_new_track.txt")
+
+            val stream = FileOutputStream(file, true)
             try {
                 stream.write(text.toByteArray())
             } finally {

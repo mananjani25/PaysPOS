@@ -19,6 +19,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.google.gson.Gson
 import com.pays.pos.MainApplication
 import com.pays.pos.data.db.AppDatabase
@@ -444,8 +445,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     ) {
         appDatabase.itemDao().getItemListByCategory(id)
 
-    }.flow
-
+    }.flow.cachedIn(viewModelScope)
+/* The above .cachedIn(viewModelScope) is added by Rahul to solve the, Attempt to collect twice from pageEventFlow issue. */
 
     /*
         fun getCartList(orderType:String,employee_Id: Int) : List<CartModel>{
@@ -4006,6 +4007,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                             subTotalPrice += (it.price * it.itemQuantity)
                         }
                     }
+                    EventBus.getDefault().post(
+                        MessageEvent(
+                            "${Constants.LINE_BREAK_TAB} DashboardCategoryViewModel.kt_fun itemCalculation()_cartList[0].items -> ${
+                               Gson().toJson(cartList[0].items)
+                            }"
+                            ,true)
+                    )
                     calculateDineInServiceCharge(cartList[0])
                     subTotalPrice -= (cartList[0].discountPrice)
 
@@ -4087,6 +4095,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                     }
 
+                    EventBus.getDefault().post(
+                        MessageEvent(
+                            "${Constants.LINE_BREAK_TAB} DashboardCategoryViewModel.kt_fun itemCalculation()_2_cartList[0].items -> ${
+                                Gson().toJson(cartList[0].items)
+                            }"
+                            ,true)
+                    )
                     order_note = cartList[0].note
                     subTotalPrice -= cartList[0].discountPrice
 
@@ -4194,6 +4209,14 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                         }
                     }
+
+                    EventBus.getDefault().post(
+                        MessageEvent(
+                            "${Constants.LINE_BREAK_TAB} DashboardCategoryViewModel.kt_fun itemCalculation()_cartList[0].items -> ${
+                                Gson().toJson(cartList)
+                            }"
+                            ,true)
+                    )
 
                     order_note = cartModel?.note ?: ""
                     subTotalPrice -= cartModel?.discountPrice ?: 0.0

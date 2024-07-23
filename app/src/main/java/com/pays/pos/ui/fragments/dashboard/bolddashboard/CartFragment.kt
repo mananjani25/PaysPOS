@@ -357,6 +357,7 @@ class CartFragment(
         super.onViewCreated(view, savedInstanceState)
         prefProvider.setValueboolean(OPEN_ORDER_DIRECT_PAY, false)
 
+
         initListeners()
         setCartAdapter()
         getDineInData()
