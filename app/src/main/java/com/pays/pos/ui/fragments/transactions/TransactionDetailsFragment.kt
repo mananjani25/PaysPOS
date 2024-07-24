@@ -652,7 +652,7 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun voidViaPAX() {
         var refundAmount = paymentDetailsResponse.data.amount
-        paymentDetailsResponse.data.order.total_tips?.let {
+        paymentDetailsResponse.data.tips?.let {
             refundAmount += it
         }
 

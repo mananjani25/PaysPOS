@@ -295,6 +295,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             MethodUtils.roundOffAmountDouble(requireArguments().getDouble("noCashAdj"))
 
         return binding.root
+
+        ProgressUtils.showProgressDialog(requireActivity())
     }
 
     private val tipListViewModel by activityViewModels<TipListViewModel>()
