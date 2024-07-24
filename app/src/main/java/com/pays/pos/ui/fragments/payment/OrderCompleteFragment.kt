@@ -296,7 +296,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         return binding.root
 
-        ProgressUtils.showProgressDialog(requireActivity())
     }
 
     private val tipListViewModel by activityViewModels<TipListViewModel>()
@@ -410,6 +409,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         Binding()
         setupSnackbar()
         observeShowProgress()
+
+        ProgressUtils.showProgressDialog(requireActivity())
+        binding.llHome.isEnabled = false
+        Handler().postDelayed({
+            binding.llHome.isEnabled = true
+        },500)
 
         arguments?.let {
             orderTypeToCheckKiosk = it.getString("orderType_to_check_kiosk", "")
@@ -7261,7 +7266,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Status.SUCCESS -> {
                     EventBus.getDefault()
                         .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  it.status -> Success"))
-                    ProgressUtils.dismissProgressDialog()
                     if (it.data != null && isPrintCustomer) {
 
                         EventBus.getDefault()
@@ -7356,6 +7360,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  else _1"))
                         Log.d("getCustomerPrinterList", " data isPrint = $isPrint")
                     }
+
+                    ProgressUtils.dismissProgressDialog()
 
                 }
 
