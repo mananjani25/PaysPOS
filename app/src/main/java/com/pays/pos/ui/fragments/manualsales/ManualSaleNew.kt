@@ -897,6 +897,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         binding.btnPay.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
 
+                viewModel.subTotalPrice=binding.txtSubTotal.text.toString().replace('$',' ').trim().toDouble()
                 /*Added by Rahul to solve the custom item not printing issue - START*/
                 prefProvider.setValueboolean(Constants.DO_PRINT_CUSTOM, true)
                 /*Added by Rahul to solve the custom item not printing issue - END*/
