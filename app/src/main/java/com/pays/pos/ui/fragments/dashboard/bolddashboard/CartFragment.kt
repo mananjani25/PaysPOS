@@ -301,11 +301,22 @@ class CartFragment(
 
                 binding.orderTypeDisplay.setText(builder, TextView.BufferType.SPANNABLE)
 
-                binding.orderTypeDisplay.setOnClickListener {
-                    findNavController().navigate(
-                        R.id.action_dashboardCategoryBoldPOS_to_changeOrderTypeDialog,
-                    )
-                }
+                binding.orderTypeDisplay.setOnClickListener(object:View.OnClickListener{
+                    override fun onClick(p0: View?) {
+                        if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                            findNavController().navigate(
+                                R.id.action_dashboardCategoryBoldPOS_to_changeOrderTypeDialog,
+                            )
+                        }
+                    }
+                })
+                /*binding.orderTypeDisplay.setOnClickListener {
+                    if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                        findNavController().navigate(
+                            R.id.action_dashboardCategoryBoldPOS_to_changeOrderTypeDialog,
+                        )
+                    }
+                }*/
             } else {
                 runOnUiThread(object : Runnable {
                     override fun run() {
@@ -2191,7 +2202,13 @@ class CartFragment(
 
                                     clearCustomer()
                                     viewModel.deleteCart()
-                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+                                    EventBus.getDefault().post(
+                                        MessageEvent(
+                                            "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                                                Gson().toJson(Thread.currentThread().stackTrace)
+                                            }"
+                                        )
+                                    )
                                     cartModelsList.clear()
                                     viewModel.currentCartItems.clear()
                                     viewModel.duplicateCurrentCartItem.clear()
@@ -2224,7 +2241,13 @@ class CartFragment(
                                 } else {
                                     clearCustomer()
                                     viewModel.deleteCart()
-                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+                                    EventBus.getDefault().post(
+                                        MessageEvent(
+                                            "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                                                Gson().toJson(Thread.currentThread().stackTrace)
+                                            }"
+                                        )
+                                    )
                                     cartModelsList.clear()
                                     isOrderUpdate = false
                                     prefProvider.setValue(ORDER_TYPE, "")
