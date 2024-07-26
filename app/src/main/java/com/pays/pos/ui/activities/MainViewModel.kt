@@ -13,6 +13,8 @@ import com.pays.pos.di.PrefProvider
 import com.pays.pos.utils.Event
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -129,6 +131,16 @@ class MainViewModel @Inject constructor(
                                 posRepository.deleteKitchenPrinters()
                                 posRepository.addKitchenPrinter(it.settingData.data.printers.kitchenPrinterList)
                                 posRepository.addCustomerPrinter(it.settingData.data.printers.customerPrinterList)
+
+                                try {
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept)
+                                    }
+
+                                } catch (e: Exception) {
+
+                                }
+
 
                             }
                         }

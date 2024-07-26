@@ -57,8 +57,8 @@ import com.pays.pos.data.typeconvert.TypeConvertorPhone
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, PAXData::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class,
-        VenueDetailsResponse.Data.WastageReason::class, TbCartItem::class, CartModelBackup::class, OrderTypeBackup::class],
-    version = 18
+        VenueDetailsResponse.Data.WastageReason::class, TbCartItem::class, CartModelBackup::class, OrderTypeBackup::class, TbLabelPrinterSettings::class],
+    version = 19
 )
 @TypeConverters(
     TypeConvertersItems::class,
@@ -125,6 +125,7 @@ public abstract class AppDatabase : RoomDatabase() {
     abstract fun printerQueueDao(): PrinterQueueDao
     abstract fun wastageReasonsDao(): WastageReasonsDao
     abstract fun orderTypeBackupDao(): OrderTypeBackupDao
+    abstract fun labelPrinterSettings(): LabelPrinterSettingsDao
 
     companion object {
 
@@ -397,12 +398,25 @@ public abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_16_17: Migration = object : Migration(16,17) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                try {
+                    database.execSQL(
+                        "CREATE TABLE IF NOT EXISTS `TbLabelPrinterSettings` " +
+                                "(`id` Integer PRIMARY KEY NOT NULL, " +
+                                "`oneItemPerReciept` INTEGER NOT NULL DEFAULT(0))"
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
 
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
                 .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7
                     , MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11,MIGRATION_11_12,
-                    MIGRATION_12_13,MIGRATION_13_14,MIGRATION_14_15,MIGRATION_15_16
+                    MIGRATION_12_13,MIGRATION_13_14,MIGRATION_14_15,MIGRATION_15_16, MIGRATION_16_17
                 ).fallbackToDestructiveMigration()
                 .build()
     }

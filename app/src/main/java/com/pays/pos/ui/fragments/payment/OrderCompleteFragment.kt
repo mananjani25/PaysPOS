@@ -25,7 +25,6 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.epson.epos2.printer.Printer
 import com.epson.eposprint.BatteryStatusChangeEventListener
@@ -35,7 +34,6 @@ import com.epson.eposprint.StatusChangeEventListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.pax.poslink.log.LogFilter.Const
 import com.pays.pos.MainApplication
 import com.pays.pos.R
 import com.pays.pos.aidl.ICallback
@@ -123,8 +121,8 @@ import com.pays.pos.utils.statusUtils.Status
 import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
-import com.starmicronics.stario10.StarSpoolJobSettings
 import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
+import com.starmicronics.stario10.starxpandcommand.MagnificationParameter
 import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
 import com.starmicronics.stario10.starxpandcommand.StarXpandCommandBuilder
 import com.starmicronics.stario10.starxpandcommand.printer.*
@@ -212,6 +210,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     lateinit var settings: StarConnectionSettings
     lateinit var printer: StarPrinter
     /*Star label printer - END*/
+
+    private var oneItemPerReceipt: Boolean = true
 
     /*Added By Rahul */
     private var isOrderUpdated: Boolean = false
@@ -355,11 +355,27 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         viewModel.getKitchenReceiptSettings().observe(viewLifecycleOwner) {
 
             EventBus.getDefault()
-                .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getKitchenReceiptSettings()  it -> ${Gson().toJson(it)}"))
+                .post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getKitchenReceiptSettings()  it -> ${
+                            Gson().toJson(
+                                it
+                            )
+                        }"
+                    )
+                )
 
             if (it != null) {
                 EventBus.getDefault()
-                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getKitchenReceiptSettings()  it -> ${Gson().toJson(it)}"))
+                    .post(
+                        MessageEvent(
+                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getKitchenReceiptSettings()  it -> ${
+                                Gson().toJson(
+                                    it
+                                )
+                            }"
+                        )
+                    )
 
                 kitchenSettingModel = it
                 LogUtil.logE(TAG, "isFromCustomer:  ${isFromCustomer}")
@@ -370,7 +386,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (!isFromCustomer) {
 
                     EventBus.getDefault()
-                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getKitchenReceiptSettings()  isFromCustomer -> ${Gson().toJson(!isFromCustomer)}"))
+                        .post(
+                            MessageEvent(
+                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getKitchenReceiptSettings()  isFromCustomer -> ${
+                                    Gson().toJson(
+                                        !isFromCustomer
+                                    )
+                                }"
+                            )
+                        )
 
                     getKitchenPrinters()
                 }
@@ -410,11 +434,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         setupSnackbar()
         observeShowProgress()
 
+        lifecycleScope.launch {
+            oneItemPerReceipt = dashboardViewModel.getLabelPrinterSettingsData().oneItemPerReciept
+        }
+
         ProgressUtils.showProgressDialog(requireActivity())
         binding.llHome.isEnabled = false
         Handler().postDelayed({
             binding.llHome.isEnabled = true
-        },500)
+        }, 500)
 
         arguments?.let {
             orderTypeToCheckKiosk = it.getString("orderType_to_check_kiosk", "")
@@ -7255,12 +7283,28 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private fun getCustomerPrinters(autoPrintCheck: Boolean) {
 
         EventBus.getDefault()
-            .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrin...)  autoCheckPrint -> ${Gson().toJson(autoPrintCheck)}"))
+            .post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrin...)  autoCheckPrint -> ${
+                        Gson().toJson(
+                            autoPrintCheck
+                        )
+                    }"
+                )
+            )
 
         viewModel.getCustomerPrinterList().observe(viewLifecycleOwner) {
 
             EventBus.getDefault()
-                .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  it -> ${Gson().toJson(it)}"))
+                .post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  it -> ${
+                            Gson().toJson(
+                                it
+                            )
+                        }"
+                    )
+                )
 
             when (it.status) {
                 Status.SUCCESS -> {
@@ -7269,9 +7313,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (it.data != null && isPrintCustomer) {
 
                         EventBus.getDefault()
-                            .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  it.data -> ${Gson().toJson(it.data)}"))
-                          EventBus.getDefault()
-                            .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  isPrintCustomer -> ${Gson().toJson(isPrintCustomer)}"))
+                            .post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  it.data -> ${
+                                        Gson().toJson(
+                                            it.data
+                                        )
+                                    }"
+                                )
+                            )
+                        EventBus.getDefault()
+                            .post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  isPrintCustomer -> ${
+                                        Gson().toJson(
+                                            isPrintCustomer
+                                        )
+                                    }"
+                                )
+                            )
 
                         isPrintCustomer = false
                         isPrint = false
@@ -7279,7 +7339,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         if (IS_GIFT_CARD_TYPE) {
                             EventBus.getDefault()
-                                .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  IS_GIFT_CARD_TYPE -> ${Gson().toJson(IS_GIFT_CARD_TYPE)}"))
+                                .post(
+                                    MessageEvent(
+                                        "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  IS_GIFT_CARD_TYPE -> ${
+                                            Gson().toJson(
+                                                IS_GIFT_CARD_TYPE
+                                            )
+                                        }"
+                                    )
+                                )
 
                             customerList.forEach {
                                 if (it.status) {
@@ -7288,43 +7356,123 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             }
                         } else {
                             EventBus.getDefault()
-                                .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  IS_GIFT_CARD_TYPE -> ${Gson().toJson(IS_GIFT_CARD_TYPE)}"))
+                                .post(
+                                    MessageEvent(
+                                        "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  IS_GIFT_CARD_TYPE -> ${
+                                            Gson().toJson(
+                                                IS_GIFT_CARD_TYPE
+                                            )
+                                        }"
+                                    )
+                                )
 
                             if (autoPrintCheck) {
                                 EventBus.getDefault()
-                                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  autoPrintCheck -> ${Gson().toJson(autoPrintCheck)}"))
+                                    .post(
+                                        MessageEvent(
+                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  autoPrintCheck -> ${
+                                                Gson().toJson(
+                                                    autoPrintCheck
+                                                )
+                                            }"
+                                        )
+                                    )
 
                                 EventBus.getDefault()
-                                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  customerList -> ${Gson().toJson(customerList)}"))
+                                    .post(
+                                        MessageEvent(
+                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  customerList -> ${
+                                                Gson().toJson(
+                                                    customerList
+                                                )
+                                            }"
+                                        )
+                                    )
 
                                 customerList.forEach { cus ->
                                     if (cus.status) {
                                         EventBus.getDefault()
-                                            .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  customerList.forEach { cus -> ${Gson().toJson(cus.status)}"))
+                                            .post(
+                                                MessageEvent(
+                                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  customerList.forEach { cus -> ${
+                                                        Gson().toJson(
+                                                            cus.status
+                                                        )
+                                                    }"
+                                                )
+                                            )
 
                                         cus.orderTypes.forEach {
                                             EventBus.getDefault()
-                                                .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  customerList.forEach_cus.orderTypes { cus -> ${Gson().toJson(cus.orderTypes)}"))
+                                                .post(
+                                                    MessageEvent(
+                                                        "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  customerList.forEach_cus.orderTypes { cus -> ${
+                                                            Gson().toJson(
+                                                                cus.orderTypes
+                                                            )
+                                                        }"
+                                                    )
+                                                )
 
 
                                             if (it.orderTypeId == receiptModel?.order?.orderTypeId) {
 
                                                 EventBus.getDefault()
-                                                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  if (it.orderTypeId == receiptModel?.order?.orderTypeId) _ it.orderTypeId -> ${Gson().toJson(it.orderTypeId)}"))
+                                                    .post(
+                                                        MessageEvent(
+                                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  if (it.orderTypeId == receiptModel?.order?.orderTypeId) _ it.orderTypeId -> ${
+                                                                Gson().toJson(
+                                                                    it.orderTypeId
+                                                                )
+                                                            }"
+                                                        )
+                                                    )
 
                                                 EventBus.getDefault()
-                                                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  if (it.orderTypeId == receiptModel?.order?.orderTypeId) _ receiptModel?.order?.orderTypeId -> ${Gson().toJson(receiptModel?.order?.orderTypeId)}"))
+                                                    .post(
+                                                        MessageEvent(
+                                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  if (it.orderTypeId == receiptModel?.order?.orderTypeId) _ receiptModel?.order?.orderTypeId -> ${
+                                                                Gson().toJson(
+                                                                    receiptModel?.order?.orderTypeId
+                                                                )
+                                                            }"
+                                                        )
+                                                    )
 
                                                 EventBus.getDefault()
-                                                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  if (it.orderTypeId == receiptModel?.order?.orderTypeId) _ it.printerSettings -> ${Gson().toJson(it.printerSettings)}"))
+                                                    .post(
+                                                        MessageEvent(
+                                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  if (it.orderTypeId == receiptModel?.order?.orderTypeId) _ it.printerSettings -> ${
+                                                                Gson().toJson(
+                                                                    it.printerSettings
+                                                                )
+                                                            }"
+                                                        )
+                                                    )
 
                                                 it.printerSettings.forEach {
 
                                                     EventBus.getDefault()
-                                                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  it.printerSettings.forEach _ it.printType.lowercase() -> ${Gson().toJson(it.printType.lowercase())}"))
+                                                        .post(
+                                                            MessageEvent(
+                                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  it.printerSettings.forEach _ it.printType.lowercase() -> ${
+                                                                    Gson().toJson(
+                                                                        it.printType.lowercase()
+                                                                    )
+                                                                }"
+                                                            )
+                                                        )
 
                                                     EventBus.getDefault()
-                                                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  it.printerSettings.forEach _ it.autoPrinting -> ${Gson().toJson(it.autoPrinting)}"))
+                                                        .post(
+                                                            MessageEvent(
+                                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  it.printerSettings.forEach _ it.autoPrinting -> ${
+                                                                    Gson().toJson(
+                                                                        it.autoPrinting
+                                                                    )
+                                                                }"
+                                                            )
+                                                        )
 
                                                     if (it.printType.lowercase()
                                                             .equals(CUSTOMER.lowercase()) && it.autoPrinting
@@ -7391,7 +7539,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _initPrinter(customerRecei..."))
 
         EventBus.getDefault()
-            .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _initPrinter(customerRecei... -> ${Gson().toJson(customerReceiptPrinters.name)}"))
+            .post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _initPrinter(customerRecei... -> ${
+                        Gson().toJson(
+                            customerReceiptPrinters.name
+                        )
+                    }"
+                )
+            )
 
 
         if (customerReceiptPrinters.name.startsWith(SUNMI_PRINTER, true)) {
@@ -9960,6 +10116,53 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             styleInternationalCharacter(InternationalCharacterType.Usa)
                             styleCharacterSpace(0.0)
                             styleAlignment(Alignment.Center)
+                            if (!oneItemPerReceipt) {
+                                receiptModel?.order?.orderItems?.forEach {
+
+                                    add(
+                                        PrinterBuilder()
+                                            .styleBold(true)
+                                            .styleMagnification(
+                                                MagnificationParameter(3, 3)
+                                            )
+                                            .actionPrintText(
+                                                "OrderId:${receiptModel?.order?.custom_order_id}"
+                                            )
+                                    )
+
+                                    actionFeedLine(1)
+
+                                    add(
+                                        PrinterBuilder()
+                                            .styleAlignment(Alignment.Left)
+                                            .styleMagnification(
+                                                MagnificationParameter(1, 1)
+                                            )
+                                            .actionPrintText(
+                                                content = addOrderSingleItemForStarKitchen(
+                                                    it,
+                                                    data.printerCategories.toCollection(arrayListOf())
+                                                )
+                                            )
+                                    )
+
+                                    actionFeedLine(1)
+
+                                    add(
+                                        PrinterBuilder()
+                                            .actionPrintText(
+                                                getReceiptFormatDateFromUTCServer(
+                                                    requireContext(),
+                                                    receiptModel?.order?.createdAt.toString()
+                                                )
+                                            )
+                                    )
+
+                                    printerBuilder.actionFeedLine(1)
+                                    actionCut(CutType.Partial)
+
+                                }
+                            }
 
                             /* runBlocking {
                             isOrderUpdated=false
@@ -9988,6 +10191,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             add(
                                 PrinterBuilder()
                                     .styleBold(true)
+                                    .styleMagnification(
+                                        MagnificationParameter(3, 3)
+                                    )
                                     .actionPrintText(
                                         "OrderId:${receiptModel?.order?.custom_order_id}"
                                     )
@@ -10042,7 +10248,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 PrinterBuilder()
                                     .styleBold(true)
                                     .actionPrintText(
-                                        "--------------------------------------------"
+                                        "------------------------"
                                     )
                             )
 
@@ -10051,6 +10257,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             add(
                                 PrinterBuilder()
                                     .styleAlignment(Alignment.Left)
+                                    .styleMagnification(
+                                        MagnificationParameter(1, 1)
+                                    )
                                     .actionPrintText(
                                         content = addOrdersForStarKitchen(
                                             receiptModel?.order?.orderItems!!,
@@ -10158,7 +10367,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 )
                             }
                         }
-
 
                         printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
 
@@ -10325,6 +10533,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         }
     }
+
 
     private fun generateReceiptForU220(
         mPrinter: Printer,
@@ -11967,7 +12176,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.setValue(Constants.SERVICE_CHARGE, "")
         prefProvider.setValueInt("ORDER_ID", -1)
 
-        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt -> removeCustomer()_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _2"))
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt -> removeCustomer()_ ORDER_ID -> ${
+                    Gson().toJson(prefProvider.getValueInt("ORDER_ID", -2))
+                } _2"
+            )
+        )
 
         prefProvider.setValueInt(PAYMENT_ID, 0)
         prefProvider.setValue(Constants.TOTAL_PRICE_ACTUAL, "0.0")
@@ -13958,7 +14173,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         SunmiPrinterApi.getInstance().sendRawData(aa)
                     } catch (e: java.lang.Exception) {
                         EventBus.getDefault()
-                            .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _sunmiPrintInner(isAutoPrint: Boolean) _ catch (e: Exception)_2 -> ${Gson().toJson(e.printStackTrace())}"))
+                            .post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _sunmiPrintInner(isAutoPrint: Boolean) _ catch (e: Exception)_2 -> ${
+                                        Gson().toJson(
+                                            e.printStackTrace()
+                                        )
+                                    }"
+                                )
+                            )
                         e.printStackTrace()
 
                     }
@@ -13968,7 +14191,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }
                     } catch (e: java.lang.Exception) {
                         EventBus.getDefault()
-                            .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _sunmiPrintInner(isAutoPrint: Boolean) _ catch (e: Exception)_3 -> ${Gson().toJson(e.printStackTrace())}"))
+                            .post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _sunmiPrintInner(isAutoPrint: Boolean) _ catch (e: Exception)_3 -> ${
+                                        Gson().toJson(
+                                            e.printStackTrace()
+                                        )
+                                    }"
+                                )
+                            )
                         e.printStackTrace()
 
                     }
@@ -13987,7 +14218,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             pd?.dismiss()
 
             EventBus.getDefault()
-                .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _sunmiPrintInner(isAutoPrint: Boolean) _ catch (e: Exception) -> ${Gson().toJson(e.printStackTrace())}"))
+                .post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _sunmiPrintInner(isAutoPrint: Boolean) _ catch (e: Exception) -> ${
+                            Gson().toJson(
+                                e.printStackTrace()
+                            )
+                        }"
+                    )
+                )
 
             e.printStackTrace()
         }
@@ -14403,10 +14642,26 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _setService1(isAutoPrint) -> Here"))
 
         EventBus.getDefault()
-            .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _setService1(isAutoPrint) -> SunmiPrintHelper.getIns..().sunmiPrinter -> ${Gson().toJson(SunmiPrintHelper.getInstance().sunmiPrinter)}"))
+            .post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _setService1(isAutoPrint) -> SunmiPrintHelper.getIns..().sunmiPrinter -> ${
+                        Gson().toJson(
+                            SunmiPrintHelper.getInstance().sunmiPrinter
+                        )
+                    }"
+                )
+            )
 
         EventBus.getDefault()
-            .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _setService1(isAutoPrint) -> SunmiPrintHelper.FoundSunmiPrinter -> ${Gson().toJson(SunmiPrintHelper.FoundSunmiPrinter)}"))
+            .post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _setService1(isAutoPrint) -> SunmiPrintHelper.FoundSunmiPrinter -> ${
+                        Gson().toJson(
+                            SunmiPrintHelper.FoundSunmiPrinter
+                        )
+                    }"
+                )
+            )
 
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
@@ -14435,7 +14690,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _setService1(isAutoPrint) -> Here_4"))
 
             EventBus.getDefault()
-                .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _setService1(isAutoPrint) -> SunmiPrintHelper.LostSunmi... -> ${Gson().toJson(SunmiPrintHelper.LostSunmiPrinter)}"))
+                .post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _setService1(isAutoPrint) -> SunmiPrintHelper.LostSunmi... -> ${
+                            Gson().toJson(
+                                SunmiPrintHelper.LostSunmiPrinter
+                            )
+                        }"
+                    )
+                )
 
         }
     }
