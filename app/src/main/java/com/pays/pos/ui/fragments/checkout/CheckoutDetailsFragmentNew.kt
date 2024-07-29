@@ -3039,6 +3039,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     // Split total amount as per user's split choice
     private fun splitAllAmounts(TAG: String, amount: Double) {
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_splitAllAmounts(...) prefProvider.getValue(TAG...= ${prefProvider.getValue(TAG, "").toDouble()}, amount= ${amount}"))
         val remainingValue = prefProvider.getValue(TAG, "").toDouble() - amount
         prefProvider.setValue(TAG, String.format("%.2f", remainingValue))
         Log.d(TAG, "splitAllAmounts: " + prefProvider.getValue(TAG, "").toDouble())
