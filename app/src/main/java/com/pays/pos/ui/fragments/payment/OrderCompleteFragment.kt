@@ -245,7 +245,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         isOrderUpdated = false
 
-
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
                 display,
@@ -399,6 +398,27 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
+        }
+
+        viewModelDashBoard.customerGivenTip.observe(viewLifecycleOwner){
+            if(it){
+
+                binding.tipGivenLayout?.visible()
+
+                viewModelDashBoard.apply {
+                    finalAmount = MethodUtils.roundOffAmountString(totalTipAmount).toDouble() + MethodUtils.roundOffAmountString(
+                        paidAmount
+                    ).toDouble()
+
+                    binding.txtTipAmount?.setText("Tip Given: $ ${MethodUtils.roundOffAmountString(totalTipAmount)}")
+                    binding.txtTotalAmount?.setText("Total Amount: $ ${MethodUtils.roundOffAmountString(paidAmount)}")
+                    binding.txtFinalAmount?.setText("Final Amount: $ ${MethodUtils.roundOffAmountString(finalAmount)}")
+
+                    customerGivenTip.value = false
+                }
+
+            }else {
+            }
         }
     }
 

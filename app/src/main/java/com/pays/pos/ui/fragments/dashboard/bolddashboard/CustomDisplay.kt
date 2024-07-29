@@ -1481,6 +1481,11 @@ class CustomDisplay(
                 tippedAmount =
                     edtAmount.text.toString().replace("$", "").trim().toDouble()
 
+                dashBoardCategoryViewModel.apply {
+                    totalTipAmount = tippedAmount
+                    customerGivenTip.value = true
+                }
+
                 if (mIsCardPayment) {
                     if (!mIsSignatureRequired) {
                         showWouldYouLikeToAddTipScreen(
@@ -1808,6 +1813,15 @@ class CustomDisplay(
             }
 
             noTipRootLayout.setOnClickListener {
+
+                /**
+                 * Customer Clicked no Tip , so it will reflect tip as $0.0
+                 */
+                dashBoardCategoryViewModel.apply {
+                    totalTipAmount = 0.0
+                    customerGivenTip.value = true
+                }
+
                 showThankYou(mWholeTotalPrice)
             }
 
@@ -1937,6 +1951,15 @@ class CustomDisplay(
         tipRate = model.rate
         tippedAmount = MethodUtils.percentageCalculation(wholeTotalPrice, model.rate)
         Log.d("selectedItem: ","tip params $tipRate $tippedAmount")
+
+        /**
+         * Used to show Given TIPS on OrderCompleted Fragment
+         */
+        dashBoardCategoryViewModel.apply {
+            totalTipAmount = tippedAmount
+            customerGivenTip.value = true
+        }
+
         if (mIsCardPayment /*&& !mIsSignatureRequired*/) {
 //            callUpdateTip()
             if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {

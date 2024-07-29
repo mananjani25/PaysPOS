@@ -252,6 +252,51 @@
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_10mdpi" />
 
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:id="@+id/tipGivenLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            >
+
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtTotalAmount"
+                                style="@style/CustomFontBold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_2sdp"
+                                android:gravity="center"
+                                android:text="Total Amount"
+                                android:textColor="@color/btnColor"
+                                android:textSize="@dimen/_8mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtTipAmount"
+                                style="@style/CustomFontBold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_2sdp"
+                                android:gravity="center"
+                                android:text="Tip Amount"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/_8mdpi"/>
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtFinalAmount"
+                                style="@style/CustomFontBold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_2sdp"
+                                android:gravity="center"
+                                android:text="Final Amount"
+                                android:textColor="@color/colorGreen"
+                                android:textSize="@dimen/_8mdpi"/>
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
                         <RelativeLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
