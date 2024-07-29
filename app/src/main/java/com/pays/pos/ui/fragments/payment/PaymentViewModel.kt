@@ -3061,6 +3061,11 @@ open class PaymentViewModel @Inject constructor(
                                         PAYMENT_ID,
                                         createOrderResponse.data.order.payments[createOrderResponse.data.order.payments.size - 1].id
                                     )
+
+                                    prefProvider.setValueInt(
+                                        PAYMENT_ID_FOR_CUSTOMER_DISPLAY,
+                                        createOrderResponse.data.order.payments[createOrderResponse.data.order.payments.size - 1].id
+                                    )
                                 }
 
                                 if (myRequest.completed_all_payments) {
