@@ -646,6 +646,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     private fun onClick() {
         var mainCartList: ArrayList<TbCartItem>
         var mainCartModel: CartModel
+        var totalDiscount: Double = viewModel.totalDiscount
 
         nameObserver = Observer<List<TbCartItem>> {
 
@@ -662,7 +663,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 )
                 bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
                 bundle.putDouble("totalTax", viewModel.totalTax)
-                bundle.putDouble("totalDiscount", viewModel.totalDiscount)
+                bundle.putDouble("totalDiscount", totalDiscount)
                 bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
                 viewModel.cartModel?.customer = assignCustomer
                 bundle.putParcelable("cartList", viewModel.cartModel)
@@ -898,6 +899,21 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             override fun onClick(p0: View?) {
 
                 viewModel.subTotalPrice=binding.txtSubTotal.text.toString().replace('$',' ').trim().toDouble()
+                viewModel.totalTax = binding.txtTax.text.toString().replace('$',' ').trim().toDouble()
+                viewModel.totalDiscount = 0.0
+                totalDiscount = viewModel.totalDiscount
+                prefProvider.setValue(
+                    Constants.TOTAL_DISCOUNT_ACTUAL,
+                    viewModel.totalDiscount.toString()
+                )
+                prefProvider.setValue(
+                    Constants.TOTAL_DISCOUNT,
+                    viewModel.totalDiscount.toString()
+                )
+                viewModel.mainCartDiscount = viewModel.totalDiscount
+                viewModel.totalServiceCharge = binding.txtServiceCharge.text.toString().replace('$',' ').trim().toDouble()
+//                viewModel.totalPrice = (viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge) - viewModel.totalDiscount
+
                 /*Added by Rahul to solve the custom item not printing issue - START*/
                 prefProvider.setValueboolean(Constants.DO_PRINT_CUSTOM, true)
                 /*Added by Rahul to solve the custom item not printing issue - END*/
