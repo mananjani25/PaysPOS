@@ -100,6 +100,7 @@ import com.pays.pos.databinding.FragmentOrderCompletBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.logger.MessageEvent
+import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.adapter.SplitListAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
@@ -7257,7 +7258,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         EventBus.getDefault()
             .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrin...)  autoCheckPrint -> ${Gson().toJson(autoPrintCheck)}"))
 
-        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner) {
+        viewModel.getCustomerPrinterList().observe(this@OrderCompleteFragment) {
 
             EventBus.getDefault()
                 .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getCustomerPrinters(autoPrint...)  it -> ${Gson().toJson(it)}"))
