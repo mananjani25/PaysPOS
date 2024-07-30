@@ -649,7 +649,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         allPrinterlist.clear()
         addedCustomerPrinters = false
         addedKitchenPrinters = false
-        viewModel.printerList().observe(viewLifecycleOwner) {
+        viewModel.printerList().observe(parentFragment?.viewLifecycleOwner?:viewLifecycleOwner) {
             when (it.status) {
 
                 Status.SUCCESS -> {

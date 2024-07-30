@@ -106,6 +106,7 @@ import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
 import com.starmicronics.stario10.StarSpoolJobSettings
 import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
+import com.starmicronics.stario10.starxpandcommand.MagnificationParameter
 import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
 import com.starmicronics.stario10.starxpandcommand.StarXpandCommandBuilder
 import com.starmicronics.stario10.starxpandcommand.printer.Alignment
@@ -2289,6 +2290,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         add(
                             PrinterBuilder()
                                 .styleBold(true)
+                                .styleMagnification(
+                                    MagnificationParameter(3, 3)
+                                )
                                 .actionPrintText(
                                     "OrderId:${createOrderResponse.data?.order?.custom_order_id}"
                                 )
