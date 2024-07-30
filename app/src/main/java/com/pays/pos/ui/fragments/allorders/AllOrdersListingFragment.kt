@@ -78,6 +78,7 @@ import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
 import com.starmicronics.stario10.StarSpoolJobSettings
 import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
+import com.starmicronics.stario10.starxpandcommand.MagnificationParameter
 import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
 import com.starmicronics.stario10.starxpandcommand.StarXpandCommandBuilder
 import com.starmicronics.stario10.starxpandcommand.printer.Alignment
@@ -143,6 +144,8 @@ class AllOrdersListingFragment(
     lateinit var settings: StarConnectionSettings
     lateinit var printer: StarPrinter
     /*Star label printer - END*/
+
+    private var oneItemPerReceipt: Boolean = true
 
     var removedPos = 0
 
@@ -960,6 +963,11 @@ class AllOrdersListingFragment(
                 Calendar.getInstance(), startDateTime, endDateTime, orderStatus
             )
         }
+
+        lifecycleScope.launch {
+            oneItemPerReceipt = dashboardViewModel.getLabelPrinterSettingsData().oneItemPerReciept
+        }
+
 //        viewModel.setCurrentDate(Calendar.getInstance(), "", "", orderStatus)
     }
 
@@ -4661,178 +4669,229 @@ class AllOrdersListingFragment(
                         styleCharacterSpace(0.0)
                         styleAlignment(Alignment.Center)
 
-                        add(
-                            PrinterBuilder()
-                                .styleBold(true)
-                                .actionPrintText(
-                                    "OrderId:${orderData.custom_order_id}"
+                        if (!oneItemPerReceipt) {
+                            orderData.orderItems.forEach {
+                                add(
+                                    PrinterBuilder()
+                                        .styleBold(true)
+                                        .styleMagnification(
+                                            MagnificationParameter(3, 3)
+                                        )
+                                        .actionPrintText(
+                                            "OrderId: ${orderData.custom_order_id}"
+                                        )
                                 )
-                        )
 
-                        styleAlignment(Alignment.Center)
+                                actionFeedLine(1)
 
-                        add(
-                            PrinterBuilder()
-                                .styleBold(true)
-                                .actionPrintText(
-                                    if (kitchenSettingModel.showOrderType)
-                                        orderData.orderType
-                                    else ""
+                                add(
+                                    PrinterBuilder()
+                                        .styleAlignment(Alignment.Left)
+                                        .styleMagnification(
+                                            MagnificationParameter(1, 1)
+                                        )
+                                        .actionPrintText(
+                                            content = addSingleReprintOrdersForStarKitchen(
+                                                it,
+                                                data.printerCategories.toCollection(arrayListOf())
+                                            )
+                                        )
                                 )
-                        )
 
-                        actionFeedLine(1)
+                                actionFeedLine(1)
 
-                        if (orderData.orderType == Constants.PHONE_ORDER_) {
+                                add(
+                                    PrinterBuilder()
+                                        .actionPrintText(
+                                            Constants.getReceiptFormatDateFromUTCServer(
+                                                requireContext(),
+                                                orderData?.createdAt.toString()
+                                            )
+                                        )
+                                )
+
+                                printerBuilder.actionFeedLine(1)
+                                actionCut(CutType.Partial)
+
+                            }
+                        }else{
+                            add(
+                                PrinterBuilder()
+                                    .styleBold(true)
+                                    .styleMagnification(
+                                        MagnificationParameter(3, 3)
+                                    )
+                                    .actionPrintText(
+                                        "OrderId: ${orderData.custom_order_id}"
+                                    )
+                            )
+
+                            styleAlignment(Alignment.Center)
+
                             add(
                                 PrinterBuilder()
                                     .styleBold(true)
                                     .actionPrintText(
-                                        orderData.deliveryType
+                                        if (kitchenSettingModel.showOrderType)
+                                            orderData.orderType
+                                        else ""
                                     )
                             )
 
                             actionFeedLine(1)
-                        }
 
-                        add(
-                            PrinterBuilder()
-                                .actionPrintText(
-                                    "Employee:${
-                                        prefProvider.getValue(
-                                            Constants.EMPLOYEE_NAME,
-                                            ""
+                            if (orderData.orderType == Constants.PHONE_ORDER_) {
+                                add(
+                                    PrinterBuilder()
+                                        .styleBold(true)
+                                        .actionPrintText(
+                                            orderData.deliveryType
                                         )
-                                    }"
                                 )
-                        )
-                        actionFeedLine(1)
 
-                        add(
-                            PrinterBuilder()
-                                .actionPrintText(
-                                    Constants.getReceiptFormatDateFromUTCServer(
-                                        requireContext(),
-                                        orderData.createdAt.toString()
-                                    )
-                                )
-                        )
+                                actionFeedLine(1)
+                            }
 
-                        actionFeedLine(1)
-
-                        add(
-                            PrinterBuilder()
-                                .styleBold(true)
-                                .actionPrintText(
-                                    "--------------------------------------------"
-                                )
-                        )
-
-                        actionFeedLine(1)
-
-                        add(
-                            PrinterBuilder()
-                                .styleAlignment(Alignment.Left)
-                                .actionPrintText(
-                                    content = addReprintOrdersForStarKitchen(
-                                        orderData.orderItems!!,
-                                        data.printerCategories.toCollection(arrayListOf())
-                                    )
-                                )
-                        )
-
-                        actionFeedLine(1)
-                        if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
                             add(
                                 PrinterBuilder()
-                                    .styleAlignment(Alignment.Center)
+                                    .actionPrintText(
+                                        "Employee:${
+                                            prefProvider.getValue(
+                                                Constants.EMPLOYEE_NAME,
+                                                ""
+                                            )
+                                        }"
+                                    )
+                            )
+                            actionFeedLine(1)
+
+                            add(
+                                PrinterBuilder()
+                                    .actionPrintText(
+                                        Constants.getReceiptFormatDateFromUTCServer(
+                                            requireContext(),
+                                            orderData.createdAt.toString()
+                                        )
+                                    )
+                            )
+
+                            actionFeedLine(1)
+
+                            add(
+                                PrinterBuilder()
                                     .styleBold(true)
                                     .actionPrintText(
-                                        content = if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                            "--------------------------------------------\nOrder Note\n "
-                                        } else ""
+                                        "--------------------------------------------"
                                     )
                             )
-                        }
-                        if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                            add(
-                                PrinterBuilder()
-                                    .styleAlignment(Alignment.Center)
-                                    .actionPrintText(
-                                        content = if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                            orderData.note.toString()
-                                        } else ""
-                                    )
-                            )
-                        }
-                        actionFeedLine(1)
-                        if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
-                            add(
-                                PrinterBuilder()
-                                    .styleAlignment(Alignment.Left)
-                                    .styleBold(true)
-                                    .actionPrintText(
-                                        content = if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
-                                            "Customer Details\n"
-                                        } else ""
-                                    )
-                            )
-                        }
 
-                        if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
-                            add(
-                                PrinterBuilder()
-                                    .styleAlignment(Alignment.Center)
-                                    .actionPrintText(
-                                        content = if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
-                                            "--------------------------------------------"
-                                        } else ""
-                                    )
-                            )
-                        }
-                        if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
-                            add(
-                                PrinterBuilder()
-                                    .styleAlignment(Alignment.Left)
-                                    .actionPrintText(
-                                        content = if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
-                                            orderData.customer?.firstName + " " + orderData.customer?.lastName
-                                        } else ""
-                                    )
-                            )
-                        }
-                        if (kitchenSettingModel.showCustomerPhone && orderData.customer?.phones?.get(
-                                0
-                            ) != null
-                        ) {
-                            add(
-                                PrinterBuilder()
-                                    .styleAlignment(Alignment.Left)
-                                    .actionPrintText(
-                                        content = if (kitchenSettingModel.showCustomerPhone && orderData.customer?.phones?.get(
-                                                0
-                                            ) != null
-                                        ) {
+                            actionFeedLine(1)
 
-                                            var phoneNumber =
-                                                orderData.customer?.phones?.get(
+                            add(
+                                PrinterBuilder()
+                                    .styleAlignment(Alignment.Left)
+                                    .actionPrintText(
+                                        content = addReprintOrdersForStarKitchen(
+                                            orderData.orderItems!!,
+                                            data.printerCategories.toCollection(arrayListOf())
+                                        )
+                                    )
+                            )
+
+                            actionFeedLine(1)
+                            if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                add(
+                                    PrinterBuilder()
+                                        .styleAlignment(Alignment.Center)
+                                        .styleBold(true)
+                                        .actionPrintText(
+                                            content = if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                "--------------------------------------------\nOrder Note\n "
+                                            } else ""
+                                        )
+                                )
+                            }
+                            if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                add(
+                                    PrinterBuilder()
+                                        .styleAlignment(Alignment.Center)
+                                        .actionPrintText(
+                                            content = if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                orderData.note.toString()
+                                            } else ""
+                                        )
+                                )
+                            }
+                            actionFeedLine(1)
+                            if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
+                                add(
+                                    PrinterBuilder()
+                                        .styleAlignment(Alignment.Left)
+                                        .styleBold(true)
+                                        .actionPrintText(
+                                            content = if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
+                                                "Customer Details\n"
+                                            } else ""
+                                        )
+                                )
+                            }
+
+                            if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
+                                add(
+                                    PrinterBuilder()
+                                        .styleAlignment(Alignment.Center)
+                                        .actionPrintText(
+                                            content = if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
+                                                "--------------------------------------------"
+                                            } else ""
+                                        )
+                                )
+                            }
+                            if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
+                                add(
+                                    PrinterBuilder()
+                                        .styleAlignment(Alignment.Left)
+                                        .actionPrintText(
+                                            content = if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
+                                                orderData.customer?.firstName + " " + orderData.customer?.lastName
+                                            } else ""
+                                        )
+                                )
+                            }
+                            if (kitchenSettingModel.showCustomerPhone && orderData.customer?.phones?.get(
+                                    0
+                                ) != null
+                            ) {
+                                add(
+                                    PrinterBuilder()
+                                        .styleAlignment(Alignment.Left)
+                                        .actionPrintText(
+                                            content = if (kitchenSettingModel.showCustomerPhone && orderData.customer?.phones?.get(
                                                     0
-                                                )?.phoneNumber.toString()
-                                            if (phoneNumber.length != 10) {
-                                                // Handle invalid input (must be 10 digits)
-                                                "Invalid phone number"
-                                            }
+                                                ) != null
+                                            ) {
 
-                                            val areaCode = phoneNumber.substring(0, 3)
-                                            val firstPart = phoneNumber.substring(3, 6)
-                                            val secondPart = phoneNumber.substring(6)
+                                                var phoneNumber =
+                                                    orderData.customer?.phones?.get(
+                                                        0
+                                                    )?.phoneNumber.toString()
+                                                if (phoneNumber.length != 10) {
+                                                    // Handle invalid input (must be 10 digits)
+                                                    "Invalid phone number"
+                                                }
 
-                                            "($areaCode)$firstPart-$secondPart"
+                                                val areaCode = phoneNumber.substring(0, 3)
+                                                val firstPart = phoneNumber.substring(3, 6)
+                                                val secondPart = phoneNumber.substring(6)
 
-                                        } else ""
-                                    )
-                            )
+                                                "($areaCode)$firstPart-$secondPart"
+
+                                            } else ""
+                                        )
+                                )
+                            }
                         }
+
                     }
 
 
