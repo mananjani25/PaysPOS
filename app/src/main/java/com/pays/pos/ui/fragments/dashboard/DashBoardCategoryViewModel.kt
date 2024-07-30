@@ -196,6 +196,16 @@ class DashBoardCategoryViewModel @Inject constructor(
     var isUpdatedOnce = false
 
     /**
+     * Tip has been added , Either from customer display or from checkoutFragment
+     */
+    val customerGivenTip = MutableLiveData<Boolean>(false)
+    var totalTipAmount = 0.0
+    var totalAmount = 0.0
+    var finalAmount = 0.0
+
+
+
+    /**
      * Fields used to check navigation from fragments
      */
     var fromAllOrderFragment = false
