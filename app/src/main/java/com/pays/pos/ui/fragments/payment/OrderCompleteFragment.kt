@@ -2862,7 +2862,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         Builder.COLOR_1
                     )
 
-                    builder.addText(
+                    /*builder.addText(
                         padLine(
                             "",
                             receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName,
@@ -2872,7 +2872,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 48
                             }
                         )
-                    )
+                    )*/
 
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
@@ -3542,13 +3542,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType?.lowercase() == "Card".lowercase()) {
 
-                PrintSunmiUtils.normalText(
+                /*PrintSunmiUtils.normalText(
                     padLine(
                         "",
                         receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName,
                         if (customerSettingModel.fonts == LARGE) 23 else 48
                     ).toString()
-                )
+                )*/
 
                 var strCardType =
                     receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType
@@ -4015,13 +4015,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType?.lowercase() == "Card".lowercase()) {
 
-                PrintSunmiUtils.normalText(
+                /*PrintSunmiUtils.normalText(
                     padLine(
                         "",
                         receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName,
                         if (customerSettingModel.fonts == LARGE) 23 else 48
                     ).toString()
-                )
+                )*/
 
                 var strCardType =
                     receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType
@@ -5211,7 +5211,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         Builder.COLOR_1
                     )
 
-                    builder.addText(
+                    /*builder.addText(
                         padLine(
                             "",
                             receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName,
@@ -5221,7 +5221,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 48
                             }
                         )
-                    )
+                    )*/
 
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
@@ -6486,7 +6486,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
             if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType?.lowercase() == "Card".lowercase()) {
-                val str12 = padLine(
+                /*val str12 = padLine(
                     "",
                     receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString(),
                     if (customerSettingModel.fonts == LARGE) 23 else 48
@@ -6495,7 +6495,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (!str12.isNullOrBlank()) {
                     PrintSunmiUtils.normalTextTest(str12)
                     SunmiPrintHelper.getInstance().lineWrap(1)
-                }
+                }*/
 
                 var strCardType =
                     receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType.toString()
@@ -8802,7 +8802,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         Builder.COLOR_1
                     )
 
-                    builder.addText(
+                    /*builder.addText(
                         padLine(
                             "",
                             receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName,
@@ -8812,7 +8812,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 48
                             }
                         )
-                    )
+                    )*/
                 }
 
 
