@@ -819,13 +819,14 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it, createTaxResponse.message
                     ) { _, _ ->
-
-                        val navControll = findNavController()
-                        navControll.previousBackStackEntry?.savedStateHandle?.set(
-                            Constants.KEY,
-                            Constants.CREATEITEM
-                        )
-                        findNavController().popBackStack()
+                        try {
+                            val navControll = findNavController()
+                            navControll.previousBackStackEntry?.savedStateHandle?.set(
+                                Constants.KEY,
+                                Constants.CREATEITEM
+                            )
+                            findNavController().popBackStack()
+                        } catch (e:Exception){ }
                     }
                 }
 
