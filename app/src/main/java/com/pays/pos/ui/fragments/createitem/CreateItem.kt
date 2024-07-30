@@ -820,7 +820,6 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
                         it, createTaxResponse.message
                     ) { _, _ ->
                         try {
-
                             val navControll = findNavController()
                             if (findNavController().currentDestination?.id==R.id.createItem) {
                                 navControll.previousBackStackEntry?.savedStateHandle?.set(

@@ -98,6 +98,7 @@ import com.pays.pos.databinding.FragmentOrderCompletBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.logger.MessageEvent
+import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.adapter.SplitListAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
@@ -244,7 +245,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         isPrintCustomer = true
 
         isOrderUpdated = false
-
 
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
@@ -423,6 +423,27 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
+        }
+
+        viewModelDashBoard.customerGivenTip.observe(viewLifecycleOwner){
+            if(it){
+
+                binding.tipGivenLayout?.visible()
+
+                viewModelDashBoard.apply {
+                    finalAmount = MethodUtils.roundOffAmountString(totalTipAmount).toDouble() + MethodUtils.roundOffAmountString(
+                        paidAmount
+                    ).toDouble()
+
+                    binding.txtTipAmount?.setText("Tip Given: $ ${MethodUtils.roundOffAmountString(totalTipAmount)}")
+                    binding.txtTotalAmount?.setText("Total Amount: $ ${MethodUtils.roundOffAmountString(paidAmount)}")
+                    binding.txtFinalAmount?.setText("Final Amount: $ ${MethodUtils.roundOffAmountString(finalAmount)}")
+
+                    customerGivenTip.value = false
+                }
+
+            }else {
+            }
         }
     }
 
@@ -7293,7 +7314,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             )
 
-        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner) {
+        viewModel.getCustomerPrinterList().observe(this@OrderCompleteFragment) {
 
             EventBus.getDefault()
                 .post(

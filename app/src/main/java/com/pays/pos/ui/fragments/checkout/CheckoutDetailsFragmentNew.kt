@@ -420,6 +420,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             viewLifecycleOwner
         ) { _: String, bundle: Bundle ->
             tipAmount = bundle.getDouble("tipAmount")
+
+
+            /**
+             * Used to show Given TIPS on OrderCompleted Fragment
+             */
+            dashboardViewModel.apply {
+                totalTipAmount = tipAmount
+                customerGivenTip.value = true
+            }
+
             viewModel.setTipAmount(tipAmount)
             tipID = bundle.getInt("tipId")
 
