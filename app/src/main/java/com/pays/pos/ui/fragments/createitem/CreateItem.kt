@@ -821,12 +821,14 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
                     ) { _, _ ->
                         try {
                             val navControll = findNavController()
-                            navControll.previousBackStackEntry?.savedStateHandle?.set(
-                                Constants.KEY,
-                                Constants.CREATEITEM
-                            )
-                            findNavController().popBackStack()
-                        } catch (e:Exception){ }
+                            if (findNavController().currentDestination?.id==R.id.createItem) {
+                                navControll.previousBackStackEntry?.savedStateHandle?.set(
+                                    Constants.KEY,
+                                    Constants.CREATEITEM
+                                )
+                                findNavController().popBackStack()
+                            }
+                        }catch (e:Exception){}
                     }
                 }
 

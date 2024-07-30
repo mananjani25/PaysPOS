@@ -29,6 +29,8 @@ data class VenueDetailsResponse(
     data class Data(
         @SerializedName("is_master_terminal")
         val isMasterTeminal: Boolean = false,
+        @SerializedName("one_item_per_reciept")
+        var oneItemPerReciept: Boolean = false,
         @SerializedName("business_name")
         val businessName: String,
         @SerializedName("business_website")
