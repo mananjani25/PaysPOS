@@ -269,7 +269,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         viewModel.clearCartModelBackup()
 
         lifecycleScope.launch {
-            oneItemPerReceipt = viewModel.getLabelPrinterSettingsData().oneItemPerReciept
+            try {
+                oneItemPerReceipt =
+                    viewModel.getLabelPrinterSettingsData().oneItemPerReciept
+            }catch(e:Exception){
+                oneItemPerReceipt=false
+            }
         }
 
     }
