@@ -1478,6 +1478,9 @@ class CustomDisplay(
 
             txtContinue.setOnSingleClickListener  {
 
+                txtContinue.isEnabled = false
+                txtContinue.setBackgroundColor(Color.GRAY)
+
                 tippedAmount =
                     edtAmount.text.toString().replace("$", "").trim().toDouble()
 
@@ -1487,19 +1490,19 @@ class CustomDisplay(
                 }
 
                 if (mIsCardPayment) {
-                    if (!mIsSignatureRequired) {
-                        showWouldYouLikeToAddTipScreen(
-                            tipsListViewModel,
-                            mTransactionViewModel,
-                            mWholeTotalPrice,
-                            mOrderID,
-                            mIsCardPayment,
-                            mPaymentViewModel,
-                            magtekRequestUtils,
-                            apiModule1,
-                            true
-                        )
-                    } else {
+                    if (/*!mIsSignatureRequired*/ true) {
+//                       /* showWouldYouLikeToAddTipScreen(
+//                            tipsListViewModel,
+//                            mTransactionViewModel,
+//                            mWholeTotalPrice,
+//                            mOrderID,
+//                            mIsCardPayment,
+//                            mPaymentViewModel,
+//                            magtekRequestUtils,
+//                            apiModule1,
+//                            true
+//                        )
+//                    } else {*/
 //                        magtekCall(wholeTotalPrice)
 
                         /*if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
