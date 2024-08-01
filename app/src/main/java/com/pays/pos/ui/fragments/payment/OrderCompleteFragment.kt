@@ -10138,52 +10138,56 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             styleCharacterSpace(0.0)
                             styleAlignment(Alignment.Center)
                             if (!oneItemPerReceipt) {
-                                receiptModel?.order?.orderItems?.forEach {
-
-                                    add(
-                                        PrinterBuilder()
-                                            .styleBold(true)
-                                            .styleMagnification(
-                                                MagnificationParameter(3, 3)
+                                receiptModel?.order?.orderItems?.forEach { item->
+                                    data.printerCategories.forEach { category ->
+                                        if(category.id == item.categoryId && category.printerEnable) {
+                                            add(
+                                                PrinterBuilder()
+                                                    .styleBold(true)
+                                                    .styleMagnification(
+                                                        MagnificationParameter(3, 3)
+                                                    )
+                                                    .actionPrintText(
+                                                        "OrderId:${receiptModel?.order?.custom_order_id}"
+                                                    )
                                             )
-                                            .actionPrintText(
-                                                "OrderId:${receiptModel?.order?.custom_order_id}"
+
+                                            actionFeedLine(1)
+
+                                            add(
+                                                PrinterBuilder()
+                                                    .styleAlignment(Alignment.Left)
+                                                    .styleMagnification(
+                                                        MagnificationParameter(1, 1)
+                                                    )
+                                                    .actionPrintText(
+                                                        content = addOrderSingleItemForStarKitchen(
+                                                            item,
+                                                            data.printerCategories.toCollection(
+                                                                arrayListOf()
+                                                            )
+                                                        )
+                                                    )
                                             )
-                                    )
 
-                                    actionFeedLine(1)
+                                            actionFeedLine(1)
 
-                                    add(
-                                        PrinterBuilder()
-                                            .styleAlignment(Alignment.Left)
-                                            .styleMagnification(
-                                                MagnificationParameter(1, 1)
+                                            add(
+                                                PrinterBuilder()
+                                                    .actionPrintText(
+                                                        getReceiptFormatDateFromUTCServer(
+                                                            requireContext(),
+                                                            receiptModel?.order?.createdAt.toString()
+                                                        )
+                                                    )
                                             )
-                                            .actionPrintText(
-                                                content = addOrderSingleItemForStarKitchen(
-                                                    it,
-                                                    data.printerCategories.toCollection(arrayListOf())
-                                                )
-                                            )
-                                    )
 
-                                    actionFeedLine(1)
-
-                                    add(
-                                        PrinterBuilder()
-                                            .actionPrintText(
-                                                getReceiptFormatDateFromUTCServer(
-                                                    requireContext(),
-                                                    receiptModel?.order?.createdAt.toString()
-                                                )
-                                            )
-                                    )
-
-                                    printerBuilder.actionFeedLine(1)
-                                    actionCut(CutType.Partial)
+                                            printerBuilder.actionFeedLine(1)
+                                            actionCut(CutType.Partial)
+                                        }
 
                                 }
-                            }else{
+                            }}else{
                                 if (isOrderUpdated == true) {
                                     add(
                                         PrinterBuilder()
