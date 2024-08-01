@@ -167,7 +167,7 @@ class CreateCategoryViewModel @Inject constructor(
 
                 when (resource.status) {
                     SUCCESS -> {
-                        _showProgress.value = Event(false)
+//                        _showProgress.value = Event(false)
                         resource.data.let { categoryResponse ->
                             if (categoryResponse?.status == 200) {
                                 resource.data?.let {
@@ -190,8 +190,10 @@ class CreateCategoryViewModel @Inject constructor(
                                     Log.d("TAG", "responseCreateCategory sort number of default : "+prefProvider.getValueInt(Constants.DEFAULT_CATEGORY_SORT,0))
                                     Log.d("TAG", "responseCreateCategory id of gift card at first position: "+prefProvider.getValueboolean(Constants.GIFT_CARD_AT_FIRST,false))
                                     if (prefProvider.getValueboolean(Constants.GIFT_CARD_AT_FIRST,false)){
+                                        _showProgress.value = Event(false)
                                         posRepository.updateSorting(Constants.DEFAULT_CATEGORY,prefProvider.getValueInt(Constants.DEFAULT_CATEGORY_SORT,0)+1)
                                     }else{
+                                        _showProgress.value = Event(false)
                                         posRepository.updateSorting(Constants.GIFT_CARD_CATEGORY,prefProvider.getValueInt(Constants.GIFT_CARD_SORT,0)+1)
                                         posRepository.updateSorting(Constants.DEFAULT_CATEGORY,prefProvider.getValueInt(Constants.DEFAULT_CATEGORY_SORT,0)+2)
                                     }
@@ -214,11 +216,12 @@ class CreateCategoryViewModel @Inject constructor(
                                             itemId
                                         )
                                     }
-
+                                    _showProgress.value = Event(false)
                                     _data.value = Event(it.message)
 
 
                                 }
+                                _showProgress.value = Event(false)
                             } else {
                                 _snackbarText.value = Event(resource.message)
                             }
