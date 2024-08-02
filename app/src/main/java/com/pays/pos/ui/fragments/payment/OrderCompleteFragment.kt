@@ -7079,7 +7079,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     }
                                 }
 
-                                prefProvider.setValueboolean(Constants.DO_PRINT_CUSTOM, false)
+                                if(remainingAmount == 0.0)
+                                    prefProvider.setValueboolean(Constants.DO_PRINT_CUSTOM, false)
                                 //    prefProvider.setValueboolean(Constants.DO_PRINT, false)
                                 if (orderTypeToCheckKiosk.equals(
                                         "KioskOpenorder",
@@ -10136,6 +10137,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         with(printerBuilder) {
                             styleInternationalCharacter(InternationalCharacterType.Usa)
                             styleCharacterSpace(0.0)
+
                             styleAlignment(Alignment.Center)
                             if (!oneItemPerReceipt) {
                                 receiptModel?.order?.orderItems?.forEach { item->
@@ -10186,7 +10188,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 PrinterBuilder()
                                                     .styleAlignment(Alignment.Left)
                                                     .styleMagnification(
-                                                        MagnificationParameter(1, 1)
+                                                        MagnificationParameter(2, 2)
                                                     )
                                                     .actionPrintText(
                                                         content = addOrderSingleItemForStarKitchen(
