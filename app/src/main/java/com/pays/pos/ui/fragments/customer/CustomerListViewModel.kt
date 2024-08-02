@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.pays.pos.data.entities.TbCartItem
 import com.pays.pos.data.entities.TbCustomer
+import com.pays.pos.data.entities.TbLabelPrinterSettings
 import com.pays.pos.data.model.CustomerSearchList
 import com.pays.pos.data.model.responseModel.BaseResponse
 import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
@@ -170,6 +171,10 @@ public class CustomerListViewModel @Inject constructor(
         }
 
 
+    }
+
+    suspend fun getTotalCustomersCount(): Int {
+        return posRepository.getTotalCustomersCount()
     }
 
     fun getReportSummary(isFromSearch: Boolean) {

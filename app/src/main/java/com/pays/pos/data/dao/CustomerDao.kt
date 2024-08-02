@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.pays.pos.data.entities.TbCustomer
-import com.pays.pos.data.model.CustomerListResponse
 
 @Dao
 interface CustomerDao {
@@ -35,5 +34,7 @@ interface CustomerDao {
     @Query("SELECT * from TbCustomer where TbCustomer.id = :id")
     fun getCustomerDetailsByID(id: Int?): LiveData<TbCustomer>
 
+    @Query("SELECT COUNT(id) FROM TbCustomer")
+    fun getTotalCustomersCount(): Int
 
 }
