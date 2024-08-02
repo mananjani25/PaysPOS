@@ -10156,6 +10156,34 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                             add(
                                                 PrinterBuilder()
+                                                    .styleBold(true)
+                                                    .styleMagnification(
+                                                        MagnificationParameter(2, 2)
+                                                    )
+                                                    .actionPrintText(
+                                                        "${receiptModel?.order?.orderTypeName}"
+                                                    )
+                                            )
+
+                                            actionFeedLine(1)
+
+                                            if(receiptModel?.order?.orderType?.contains("Phone", true) == true){
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleBold(true)
+                                                        .styleMagnification(
+                                                            MagnificationParameter(2, 2)
+                                                        )
+                                                        .actionPrintText(
+                                                            "${receiptModel?.order?.deliveryType}"
+                                                        )
+                                                )
+
+                                                actionFeedLine(1)
+                                            }
+
+                                            add(
+                                                PrinterBuilder()
                                                     .styleAlignment(Alignment.Left)
                                                     .styleMagnification(
                                                         MagnificationParameter(1, 1)
@@ -10379,6 +10407,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             )
                                     )
                                 }
+                                printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
 
                             }
 
@@ -10406,7 +10435,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             }
                         }
 
-                        printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
+//                        printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
 
                         var document = DocumentBuilder()
                             .addPrinter(printerBuilder)
