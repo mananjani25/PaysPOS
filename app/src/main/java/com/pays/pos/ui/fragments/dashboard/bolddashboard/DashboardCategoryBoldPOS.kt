@@ -2303,9 +2303,37 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                                 add(
                                     PrinterBuilder()
+                                        .styleBold(true)
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
+                                        )
+                                        .actionPrintText(
+                                            "${createOrderResponse.data?.order?.orderTypeName}"
+                                        )
+                                )
+
+                                actionFeedLine(1)
+
+                                if(createOrderResponse.data?.order?.orderType?.contains("Phone", true) == true){
+                                    add(
+                                        PrinterBuilder()
+                                            .styleBold(true)
+                                            .styleMagnification(
+                                                MagnificationParameter(2, 2)
+                                            )
+                                            .actionPrintText(
+                                                "${createOrderResponse.data?.order?.deliveryType}"
+                                            )
+                                    )
+
+                                    actionFeedLine(1)
+                                }
+
+                                add(
+                                    PrinterBuilder()
                                         .styleAlignment(Alignment.Left)
                                         .styleMagnification(
-                                            MagnificationParameter(1, 1)
+                                            MagnificationParameter(2, 2)
                                         )
                                         .actionPrintText(
                                             content = addSingleOrdersForStarKitchen(
@@ -2512,12 +2540,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         )
                                 )
                             }
+                            printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
                         }
 
                     }
 
 
-                    printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
+//                    printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
 
                     var document = DocumentBuilder()
                         .addPrinter(printerBuilder)

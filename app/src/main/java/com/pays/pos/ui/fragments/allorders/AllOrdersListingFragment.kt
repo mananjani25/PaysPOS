@@ -4686,9 +4686,37 @@ class AllOrdersListingFragment(
 
                                 add(
                                     PrinterBuilder()
+                                        .styleBold(true)
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
+                                        )
+                                        .actionPrintText(
+                                            "${orderData.orderTypeName}"
+                                        )
+                                )
+
+                                actionFeedLine(1)
+
+                                if(orderData.orderType.contains("Phone", true)){
+                                    add(
+                                        PrinterBuilder()
+                                            .styleBold(true)
+                                            .styleMagnification(
+                                                MagnificationParameter(2, 2)
+                                            )
+                                            .actionPrintText(
+                                                "${orderData.deliveryType}"
+                                            )
+                                    )
+
+                                    actionFeedLine(1)
+                                }
+
+                                add(
+                                    PrinterBuilder()
                                         .styleAlignment(Alignment.Left)
                                         .styleMagnification(
-                                            MagnificationParameter(1, 1)
+                                            MagnificationParameter(2, 2)
                                         )
                                         .actionPrintText(
                                             content = addSingleReprintOrdersForStarKitchen(
@@ -4890,12 +4918,13 @@ class AllOrdersListingFragment(
                                         )
                                 )
                             }
+                            printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
                         }
 
                     }
 
 
-                    printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
+//                    printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
 
                     var document = DocumentBuilder()
                         .addPrinter(printerBuilder)
