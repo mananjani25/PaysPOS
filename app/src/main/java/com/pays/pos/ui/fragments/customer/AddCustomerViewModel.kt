@@ -230,7 +230,7 @@ class AddCustomerViewModel @Inject constructor(
                        last_name = value?.data?.last_name!!.replaceFirstChar { it.uppercase() }
 
                        if (first_name.isNullOrEmpty()) {
-                           first_name = "Customer${totalCustomers}"
+                           first_name = "Customer${totalCustomers.inc()}"
                        }
 
                        val phone = CreateCustomerRequestModel.Customer.Phone(
