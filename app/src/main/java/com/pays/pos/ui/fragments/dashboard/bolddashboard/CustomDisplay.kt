@@ -1478,16 +1478,18 @@ class CustomDisplay(
 
             txtContinue.setOnSingleClickListener  {
 
+                dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=true
+
                 txtContinue.isEnabled = false
                 txtContinue.setBackgroundColor(Color.GRAY)
 
                 tippedAmount =
                     edtAmount.text.toString().replace("$", "").trim().toDouble()
 
-                dashBoardCategoryViewModel.apply {
+             /*   dashBoardCategoryViewModel.apply {
                     totalTipAmount = tippedAmount
                     customerGivenTip.value = true
-                }
+                }*/
 
                 if (mIsCardPayment) {
                     if (/*!mIsSignatureRequired*/ true) {
@@ -1916,6 +1918,12 @@ class CustomDisplay(
             mTransactionViewModel.updateTipData.observe(lifecycleOwner) { event ->
                 event.getContentIfNotHandled()?.let {
                     if (it.status == 200) {
+                        dashBoardCategoryViewModel.apply {
+                            totalTipAmount = tippedAmount
+                            customerGivenTip.value = true
+                        }
+                        dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=false
+
                         prefProvider.setValueboolean(Constants.TIP_ADDED, false)
                         showThankYou(mWholeTotalPrice + tippedAmount)
                     } else {
@@ -1951,6 +1959,8 @@ class CustomDisplay(
         pos: Int,
         wholeTotalPrice: Double
     ) {
+        dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=true
+
         tipRate = model.rate
         tippedAmount = MethodUtils.percentageCalculation(wholeTotalPrice, model.rate)
         Log.d("selectedItem: ","tip params $tipRate $tippedAmount")
@@ -1958,11 +1968,11 @@ class CustomDisplay(
         /**
          * Used to show Given TIPS on OrderCompleted Fragment
          */
-        dashBoardCategoryViewModel.apply {
+      /*  dashBoardCategoryViewModel.apply {
             totalTipAmount = tippedAmount
             customerGivenTip.value = true
         }
-
+*/
         if (mIsCardPayment /*&& !mIsSignatureRequired*/) {
 //            callUpdateTip()
             if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {

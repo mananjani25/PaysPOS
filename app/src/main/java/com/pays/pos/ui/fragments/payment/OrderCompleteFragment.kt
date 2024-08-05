@@ -473,6 +473,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         Binding()
         setupSnackbar()
         observeShowProgress()
+        observeTipClicked()
 
         lifecycleScope.launch {
             oneItemPerReceipt = dashboardViewModel.getLabelPrinterSettingsData().oneItemPerReciept
@@ -937,6 +938,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
+    }
+
+    private fun observeTipClicked() {
+        dashboardViewModel.tipButtonOnCustomerDisplayClicked.observe(viewLifecycleOwner,
+            object : Observer<Boolean> {
+                override fun onChanged(t: Boolean?) {
+                    t?.let {
+                        binding.llHome.isClickable = !it
+                    }
+                }
+            })
     }
 
     /*Added By Rahul  */
@@ -10175,6 +10187,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 )
 
                                                 actionFeedLine(1)
+                                            if (receiptModel?.order?.orderType?.contains(
+                                                    "Phone",
+                                                    true
+                                                ) == true
+                                            ) {
 
                                                 add(
                                                     PrinterBuilder()
@@ -10227,7 +10244,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                                 actionFeedLine(1)
 
-
                                                 add(
                                                     PrinterBuilder()
                                                         .actionPrintText(
@@ -10241,6 +10257,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 actionCut(CutType.Partial)
                                             }
                                         }
+
                                     }
                                 }
                             } else {
