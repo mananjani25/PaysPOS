@@ -6460,6 +6460,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         _showProgress.value = Event(true)
 
+        if (orderRequestModel.order.deliveryType.equals("null")){
+            orderRequestModel.order.deliveryType=""
+        }
+
         viewModelScope.launch {
             EventBus.getDefault().post(
                 MessageEvent(

@@ -84,8 +84,12 @@ class PrinterViewModel @Inject constructor(
 
 
     fun createPrinterQueueTestOrder(orderRequest: OrderRequestModel) {
-
         _showProgress.value = Event(true)
+
+        if (orderRequest.order.deliveryType.equals("null")){
+            orderRequest.order.deliveryType=""
+        }
+
         viewModelScope.launch {
             EventBus.getDefault()
                 .post(MessageEvent("${Constants.LINE_BREAK_TAB} PrinterViewModel.kt_createPrinterQueueTestOrder ${Gson().toJson(orderRequest)}"))
