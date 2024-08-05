@@ -145,7 +145,9 @@ open class PaymentViewModel @Inject constructor(
 
     fun submit(orderRequestModel: OrderRequestModel) {
         Log.e(TAG, "checkOrderRequest:  ${Gson().toJson(orderRequestModel)}")
-
+        if (orderRequestModel.order.deliveryType.equals("null")){
+            orderRequestModel.order.deliveryType=""
+        }
 //        orderRequestModel.print_order = printOrder
         if (cashPaymentType(orderRequestModel)) {
             _showProgressCash.value = Event(true)
