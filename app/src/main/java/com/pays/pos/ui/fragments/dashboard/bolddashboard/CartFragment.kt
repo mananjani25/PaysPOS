@@ -2364,6 +2364,8 @@ class CartFragment(
                                 requireContext(),
                                 getString(R.string.please_add_Atleast_one_item_in_cart)
                             ) { _, _ ->
+                                restrictButtonClick(true)
+
                             }
                         } else {
                             Log.e(TAG, ".destroyedListRelPR:  ${viewModel.destroyedList.size}")
@@ -2812,6 +2814,7 @@ class CartFragment(
                                 requireContext(),
                                 resources.getString(R.string.please_add_Atleast_one_item_in_cart)
                             ) { _, _ ->
+                                restrictButtonClick(true)
                             }
                         }
 
@@ -2830,7 +2833,7 @@ class CartFragment(
             object : View.OnClickListener {
                 override fun onClick(p0: View?) {
 
-                    restrictButtonClick()
+                    restrictButtonClick(false)
 
                     prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
 
@@ -3159,6 +3162,7 @@ class CartFragment(
                                         requireContext(),
                                         resources.getString(R.string.please_add_Atleast_one_item_in_cart)
                                     ) { _, _ ->
+                                        restrictButtonClick(true)
                                     }
                                 }
                             } catch (e: Exception) {
@@ -3267,11 +3271,11 @@ class CartFragment(
             })
     }
 
-    private fun restrictButtonClick() {
-        binding.tvSave.isEnabled = false
+    private fun restrictButtonClick(value:Boolean) {
+        binding.tvSave.isEnabled = value
 
         Handler().postDelayed({
-            binding.tvSave.isEnabled = false
+            binding.tvSave.isEnabled = value
         }, 2000)
 
     }
@@ -3378,6 +3382,8 @@ class CartFragment(
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         requireContext(), getString(R.string.please_add_Atleast_one_item_in_cart)
                     ) { _, _ ->
+                        restrictButtonClick(true)
+
                     }
                 } else {
                     val request = viewModel.updateOrder(cartModelsList[0])
@@ -3420,6 +3426,8 @@ class CartFragment(
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         requireContext(), getString(R.string.please_add_Atleast_one_item_in_cart)
                     ) { _, _ ->
+                        restrictButtonClick(true)
+
                     }
 
                 }
