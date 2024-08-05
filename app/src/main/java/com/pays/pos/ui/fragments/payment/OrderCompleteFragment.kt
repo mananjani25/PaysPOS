@@ -10174,37 +10174,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 receiptModel?.order?.orderItems?.forEach { item ->
                                     data.printerCategories.forEach { category ->
                                         if (category.id == item.categoryId && category.printerEnable) {
-                                            add(
-                                                PrinterBuilder()
-                                                    .styleBold(true)
-                                                    .styleMagnification(
-                                                        MagnificationParameter(3, 3)
-                                                    )
-                                                    .actionPrintText(
-                                                        "OrderId:${receiptModel?.order?.custom_order_id}"
-                                                    )
-                                            )
+                                            for (singularity in 1..item.quantity) {
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleBold(true)
+                                                        .styleMagnification(
+                                                            MagnificationParameter(3, 3)
+                                                        )
+                                                        .actionPrintText(
+                                                            "OrderId:${receiptModel?.order?.custom_order_id}"
+                                                        )
+                                                )
 
-                                            actionFeedLine(1)
-
-                                            add(
-                                                PrinterBuilder()
-                                                    .styleBold(true)
-                                                    .styleMagnification(
-                                                        MagnificationParameter(2, 2)
-                                                    )
-                                                    .actionPrintText(
-                                                        "${receiptModel?.order?.orderTypeName}"
-                                                    )
-                                            )
-
-                                            actionFeedLine(1)
-
+                                                actionFeedLine(1)
                                             if (receiptModel?.order?.orderType?.contains(
                                                     "Phone",
                                                     true
                                                 ) == true
                                             ) {
+
                                                 add(
                                                     PrinterBuilder()
                                                         .styleBold(true)
@@ -10212,43 +10200,62 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             MagnificationParameter(2, 2)
                                                         )
                                                         .actionPrintText(
-                                                            "${receiptModel?.order?.deliveryType}"
+                                                            "${receiptModel?.order?.orderTypeName}"
                                                         )
                                                 )
 
                                                 actionFeedLine(1)
-                                            }
 
-                                            add(
-                                                PrinterBuilder()
-                                                    .styleAlignment(Alignment.Left)
-                                                    .styleMagnification(
-                                                        MagnificationParameter(2, 2)
+                                                if (receiptModel?.order?.orderType?.contains(
+                                                        "Phone",
+                                                        true
+                                                    ) == true
+                                                ) {
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleBold(true)
+                                                            .styleMagnification(
+                                                                MagnificationParameter(2, 2)
+                                                            )
+                                                            .actionPrintText(
+                                                                "${receiptModel?.order?.deliveryType}"
+                                                            )
                                                     )
-                                                    .actionPrintText(
-                                                        content = addOrderSingleItemForStarKitchen(
-                                                            item,
-                                                            data.printerCategories.toCollection(
-                                                                arrayListOf()
+
+                                                    actionFeedLine(1)
+                                                }
+
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleAlignment(Alignment.Left)
+                                                        .styleMagnification(
+                                                            MagnificationParameter(2, 2)
+                                                        )
+                                                        .actionPrintText(
+                                                            content = addOrderSingleItemForStarKitchen(
+                                                                1,
+                                                                item,
+                                                                data.printerCategories.toCollection(
+                                                                    arrayListOf()
+                                                                )
                                                             )
                                                         )
-                                                    )
-                                            )
+                                                )
 
-                                            actionFeedLine(1)
+                                                actionFeedLine(1)
 
-                                            add(
-                                                PrinterBuilder()
-                                                    .actionPrintText(
-                                                        getReceiptFormatDateFromUTCServer(
-                                                            requireContext(),
-                                                            receiptModel?.order?.createdAt.toString()
+                                                add(
+                                                    PrinterBuilder()
+                                                        .actionPrintText(
+                                                            getReceiptFormatDateFromUTCServer(
+                                                                requireContext(),
+                                                                receiptModel?.order?.createdAt.toString()
+                                                            )
                                                         )
-                                                    )
-                                            )
-
-                                            printerBuilder.actionFeedLine(1)
-                                            actionCut(CutType.Partial)
+                                                )
+                                                printerBuilder.actionFeedLine(1)
+                                                actionCut(CutType.Partial)
+                                            }
                                         }
 
                                     }
