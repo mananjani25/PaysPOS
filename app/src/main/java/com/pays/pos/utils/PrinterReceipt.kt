@@ -3245,46 +3245,40 @@ fun addOrdersForStarKitchen(
 
 
 fun addSingleOrdersForStarKitchen(
+    quantity: Int,
     item: CreateOrderResponse.Data.Order.OrderItem,
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null
 ): String {
 
     var items: String = ""
-    printerCat?.forEach {
-        if (it?.id == item.categoryId) {
-            if (it.categoryActive && it.printerEnable) {
 
-                if (item.isItemEdited) {
-                    items += "(U) " + item.quantity.toString() + " " + item.itemName.uppercase()
-                } else {
-                    items += item.quantity.toString() + " " + item.itemName.uppercase()
-                }
+    item.quantity = quantity
+    if (item.isItemEdited) {
+        items += "(U) " + item.quantity.toString() + " " + item.itemName.uppercase()
+    } else {
+        items += item.quantity.toString() + " " + item.itemName.uppercase()
+    }
 
-                items += "\n"
-                if (item.orderItemModifiers.isNotEmpty()) {
-                    for (j in 0 until item.orderItemModifiers.size) {
-                        val modifierObj = item.orderItemModifiers.get(j)
-                        items += " "
-                        items += " " + if (modifierObj.modifierQuantity == 1) {
-                            " "
-                        } else {
-                            "" + modifierObj.modifierQuantity + "x "
-                        } + modifierObj.name.uppercase()
+    items += "\n"
+    if (item.orderItemModifiers.isNotEmpty()) {
+        for (j in 0 until item.orderItemModifiers.size) {
+            val modifierObj = item.orderItemModifiers.get(j)
+            items += " "
+            items += " " + if (modifierObj.modifierQuantity == 1) {
+                " "
+            } else {
+                "" + modifierObj.modifierQuantity + "x "
+            } + modifierObj.name.uppercase()
 
-                        items += "\n"
-                    }
-                }
-
-                if (item.note.isNotEmpty()) {
-//                        builder.addTextLineSpace(30)
-                    items += " "
-                    items += "  Note:${item.note}"
-                    items += "\n"
-                }
-
-
-            }
+            items += "\n"
         }
+    }
+
+    if (item.note.isNotEmpty()) {
+//                        builder.addTextLineSpace(30)
+        items += " "
+        items += "  Note:${item.note}"
+        items += "\n"
     }
 
     return items
@@ -3297,7 +3291,7 @@ fun addOrderSingleItemForStarKitchen(
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null
 ): String {
 
-    item.quantity=quantity
+    item.quantity = quantity
     var items: String = ""
     items += item.quantity.toString() + " " + item.itemName.uppercase()
 
@@ -3379,44 +3373,35 @@ fun addReprintOrdersForStarKitchen(
 
 
 fun addSingleReprintOrdersForStarKitchen(
+    quantity: Int,
     item: OnlineOrderResponseModel.Data.OrderItem,
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null
 ): String {
 
+    quantity
     var items: String = ""
-    printerCat?.forEach {
-        if (it?.id == item.categoryId) {
-            if (it.categoryActive && it.printerEnable) {
+    items += quantity.toString() + " " + item.itemName.uppercase()
+    items += "\n"
+    if (item.orderItemModifiers.isNotEmpty()) {
+        for (j in 0 until item.orderItemModifiers.size) {
+            val modifierObj = item.orderItemModifiers.get(j)
+            items += " "
+            items += " " + if (modifierObj.modifier_quantity == 1) {
+                " "
+            } else {
+                "" + modifierObj.modifier_quantity + "x "
+            } + modifierObj.name.uppercase()
 
-                items += item.quantity.toString() + " " + item.itemName.uppercase()
-                items += "\n"
-                if (item.orderItemModifiers.isNotEmpty()) {
-                    for (j in 0 until item.orderItemModifiers.size) {
-                        val modifierObj = item.orderItemModifiers.get(j)
-                        items += " "
-                        items += " " + if (modifierObj.modifier_quantity == 1) {
-                            " "
-                        } else {
-                            "" + modifierObj.modifier_quantity + "x "
-                        } + modifierObj.name.uppercase()
-
-                        items += "\n"
-                    }
-                }
-
-                if (item.note.isNotEmpty()) {
-//                        builder.addTextLineSpace(30)
-                    items += " "
-                    items += "  Note:${item.note}"
-                    items += "\n"
-                }
-
-
-            }
+            items += "\n"
         }
     }
 
-
+    if (item.note.isNotEmpty()) {
+//                        builder.addTextLineSpace(30)
+        items += " "
+        items += "  Note:${item.note}"
+        items += "\n"
+    }
 
     return items
 }
@@ -3470,6 +3455,45 @@ fun addReprintOrdersForStarKitchenKiosk(
 
     }
 
+
+    return items
+}
+
+
+fun addSingleReprintOrdersForStarKitchenKiosk(
+    quantity: Int,
+    item: KioskOrderResponse.Data.OrderItems,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null
+): String {
+
+    var items: String = ""
+
+    item.quantity = quantity
+
+    val obj = item
+    items += obj.quantity.toString() + " " + obj.itemName?.uppercase()
+    items += "\n"
+//                    Modifiers are not coming from server, once Urmit adds the modifiers then we will uncomment the below code
+
+    if (obj.orderItemModifiers.isNotEmpty()) {
+        for (j in 0 until obj.orderItemModifiers.size) {
+            val modifierObj = obj.orderItemModifiers.get(j)
+            items += " "
+            items += " " + if (modifierObj.modifierQuantity == 1) {
+                " "
+            } else {
+                "" + modifierObj.modifierQuantity + "x "
+            } + modifierObj.name?.uppercase()
+
+            items += "\n"
+        }
+    }
+    if (obj.note?.isNotEmpty() ?: false) {
+//                        builder.addTextLineSpace(30)
+        items += " "
+        items += "  Note:${obj.note}"
+        items += "\n"
+    }
 
     return items
 }
