@@ -185,16 +185,17 @@ class AllOrdersListingFragment(
         super.onViewCreated(view, savedInstanceState)
         setupAdapter()
 
-        onlineDetailViewModel.refresh.observe(viewLifecycleOwner,object:androidx.lifecycle.Observer<Boolean>{
-            override fun onChanged(t: Boolean?) {
-                t?.let {
-                    if (it){
-                        refreshCurrentFragment()
+        onlineDetailViewModel.refresh.observe(viewLifecycleOwner,
+            object : androidx.lifecycle.Observer<Boolean> {
+                override fun onChanged(t: Boolean?) {
+                    t?.let {
+                        if (it) {
+                            refreshCurrentFragment()
+                        }
                     }
-                }
 
-            }
-        })
+                }
+            })
         adapter.enableReprintKitchenReceiptButton()
 
         observeShowProgress()
@@ -377,11 +378,11 @@ class AllOrdersListingFragment(
 
                 CoroutineScope(Dispatchers.IO).launch {
                     val queue = Volley.newRequestQueue(requireContext())
-                    var url=""
-                    if (Constants.isPaxInDebugMode){
-                        url=Constants.paxDebug
-                    }else{
-                        url=Constants.paxLive
+                    var url = ""
+                    if (Constants.isPaxInDebugMode) {
+                        url = Constants.paxDebug
+                    } else {
+                        url = Constants.paxLive
                     }
                     val getRequest: StringRequest = object : StringRequest(
                         Request.Method.POST, url,
@@ -564,11 +565,11 @@ class AllOrdersListingFragment(
         ORIG_AUTH_GUID: String
     ) {
         val queue = Volley.newRequestQueue(requireContext())
-        var url=""
-        if (Constants.isPaxInDebugMode){
-            url=Constants.paxDebug
-        }else{
-            url=Constants.paxLive
+        var url = ""
+        if (Constants.isPaxInDebugMode) {
+            url = Constants.paxDebug
+        } else {
+            url = Constants.paxLive
         }
         val getRequest: StringRequest = object : StringRequest(
             Request.Method.POST, url,
@@ -1494,7 +1495,7 @@ class AllOrdersListingFragment(
             "UPDATE" -> {
                 prefProvider.setValue(OLD_ITEM_BASE_CUSTOM_ITEM, Gson().toJson(order.orderItems))
 
-                prefProvider.setValueInt("ORDER_ID",-1)
+                prefProvider.setValueInt("ORDER_ID", -1)
 
                 dashboardViewModel.activeOrderTypeName = order.orderType
                 dashboardViewModel.activeOrderTypeText = order.orderTypeName
@@ -1544,9 +1545,9 @@ class AllOrdersListingFragment(
                 } else if (order.orderType == PHONE_ORDER_TAB) {
                     prefProvider.setValue(Constants.ORDER_TYPE, Constants.PHONE_ORDER)
                     prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.PHONE_ORDER_)
-                }else if (order.orderType.equals("KioskOpenorder")){
-                    prefProvider.setValue(Constants.ORDER_TYPE,order.orderType)
-                    prefProvider.setValue(Constants.ORDER_TYPE_NAME,order.orderTypeName)
+                } else if (order.orderType.equals("KioskOpenorder")) {
+                    prefProvider.setValue(Constants.ORDER_TYPE, order.orderType)
+                    prefProvider.setValue(Constants.ORDER_TYPE_NAME, order.orderTypeName)
                 }
 
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, order.orderTypeId)
@@ -1656,58 +1657,136 @@ class AllOrdersListingFragment(
                 }
                 prefProvider.setValue(Constants.IS_UPDATE_ORDER_OFFLINE_ID, order.offlineId)
 
-                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  UPDATE -> bundle -> ${Gson().toJson(bundle)}"))
+                EventBus.getDefault().post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  UPDATE -> bundle -> ${
+                            Gson().toJson(bundle)
+                        }"
+                    )
+                )
 
-                try{
-                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  UPDATE -> IS_UPDATE_ORDER_OFFLINE_ID -> ${prefProvider.getValue(Constants.IS_UPDATE_ORDER_OFFLINE_ID, "null")}, " +
+                try {
+                    EventBus.getDefault().post(
+                        MessageEvent(
+                            "${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  UPDATE -> IS_UPDATE_ORDER_OFFLINE_ID -> ${
+                                prefProvider.getValue(
+                                    Constants.IS_UPDATE_ORDER_OFFLINE_ID,
+                                    "null"
+                                )
+                            }, " +
 
-                            "IS_UPDATE_ORDER_PAYMENT_ID-> ${prefProvider.getValueInt(
-                                Constants.IS_UPDATE_ORDER_PAYMENT_ID,
-                                -99
-                            )}, " +
-                            "IS_UPDATE_ORDER_PAY_OFFLINE_ID-> ${prefProvider.getValue(
-                                Constants.IS_UPDATE_ORDER_PAY_OFFLINE_ID,
-                                "null"
-                            )}, " +
-                            "IS_UPDATE_ORDER-> ${ prefProvider.getValueboolean(Constants.IS_UPDATE_ORDER, true)}, " +
-                            "IS_UPDATE_ORDER_LOYALTY_APPLIED-> ${prefProvider.getValueboolean(
-                                Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED,
-                                false
-                            )}, " +
-                            "LOYALTY_ADDED-> ${prefProvider.getValueboolean(
-                                Constants.LOYALTY_ADDED,
-                                false
-                            )}, " +
-                            "IS_UPDATE_ORDER_FROM_ACTIVE_ORDER-> ${prefProvider.getValueboolean(
-                                Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
-                                true
-                            )}, " +
-                            "IS_UPDATE_ORDER_ID-> ${prefProvider.getValueInt(Constants.IS_UPDATE_ORDER_ID, -99)}, " +
-                            "orderNoteOld-> ${prefProvider.getValue(Constants.orderNoteOld, "null")}, " +
-                            "OPEN_ORDER_UPDATE_FOR_PRINT-> ${prefProvider.getValueboolean(Constants.OPEN_ORDER_UPDATE_FOR_PRINT, true)}," +
-                            "OPEN_ORDER_ITEMS-> ${ prefProvider.getValue(
-                                Constants.OPEN_ORDER_ITEMS,
-                                "null"
-                            )}, " +
-                            "CUSTOMER_NAME-> ${prefProvider.getValue(
-                                Constants.CUSTOMER_NAME,
-                                "null"
-                            )}, " +
-                            "RECEIPT_CUSTOMER_NAME-> ${prefProvider.getValue(
-                                Constants.RECEIPT_CUSTOMER_NAME,
-                                "null"
-                            )}, " +
-                            "CUSTOMER_ID-> ${prefProvider.getValueInt(Constants.CUSTOMER_ID, -99)}, " +
-                            "Customer_Data-> ${prefProvider.getCustomerData()
+                                    "IS_UPDATE_ORDER_PAYMENT_ID-> ${
+                                        prefProvider.getValueInt(
+                                            Constants.IS_UPDATE_ORDER_PAYMENT_ID,
+                                            -99
+                                        )
                                     }, " +
-                            "ORDER_TYPE_ID-> ${prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -99)}, " +
-                            "ORDER_TYPE-> ${prefProvider.getValue(Constants.ORDER_TYPE, "null")}, " +
-                            "ORDER_TYPE_NAME-> ${prefProvider.getValue(Constants.ORDER_TYPE_NAME,"null")}, " +
-                            "OLD_ITEM_BASE_CUSTOM_ITEM-> ${prefProvider.getValue(OLD_ITEM_BASE_CUSTOM_ITEM, "null")}"))
+                                    "IS_UPDATE_ORDER_PAY_OFFLINE_ID-> ${
+                                        prefProvider.getValue(
+                                            Constants.IS_UPDATE_ORDER_PAY_OFFLINE_ID,
+                                            "null"
+                                        )
+                                    }, " +
+                                    "IS_UPDATE_ORDER-> ${
+                                        prefProvider.getValueboolean(
+                                            Constants.IS_UPDATE_ORDER,
+                                            true
+                                        )
+                                    }, " +
+                                    "IS_UPDATE_ORDER_LOYALTY_APPLIED-> ${
+                                        prefProvider.getValueboolean(
+                                            Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED,
+                                            false
+                                        )
+                                    }, " +
+                                    "LOYALTY_ADDED-> ${
+                                        prefProvider.getValueboolean(
+                                            Constants.LOYALTY_ADDED,
+                                            false
+                                        )
+                                    }, " +
+                                    "IS_UPDATE_ORDER_FROM_ACTIVE_ORDER-> ${
+                                        prefProvider.getValueboolean(
+                                            Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                            true
+                                        )
+                                    }, " +
+                                    "IS_UPDATE_ORDER_ID-> ${
+                                        prefProvider.getValueInt(
+                                            Constants.IS_UPDATE_ORDER_ID,
+                                            -99
+                                        )
+                                    }, " +
+                                    "orderNoteOld-> ${
+                                        prefProvider.getValue(
+                                            Constants.orderNoteOld,
+                                            "null"
+                                        )
+                                    }, " +
+                                    "OPEN_ORDER_UPDATE_FOR_PRINT-> ${
+                                        prefProvider.getValueboolean(
+                                            Constants.OPEN_ORDER_UPDATE_FOR_PRINT,
+                                            true
+                                        )
+                                    }," +
+                                    "OPEN_ORDER_ITEMS-> ${
+                                        prefProvider.getValue(
+                                            Constants.OPEN_ORDER_ITEMS,
+                                            "null"
+                                        )
+                                    }, " +
+                                    "CUSTOMER_NAME-> ${
+                                        prefProvider.getValue(
+                                            Constants.CUSTOMER_NAME,
+                                            "null"
+                                        )
+                                    }, " +
+                                    "RECEIPT_CUSTOMER_NAME-> ${
+                                        prefProvider.getValue(
+                                            Constants.RECEIPT_CUSTOMER_NAME,
+                                            "null"
+                                        )
+                                    }, " +
+                                    "CUSTOMER_ID-> ${
+                                        prefProvider.getValueInt(
+                                            Constants.CUSTOMER_ID,
+                                            -99
+                                        )
+                                    }, " +
+                                    "Customer_Data-> ${
+                                        prefProvider.getCustomerData()
+                                    }, " +
+                                    "ORDER_TYPE_ID-> ${
+                                        prefProvider.getValueInt(
+                                            Constants.ORDER_TYPE_ID,
+                                            -99
+                                        )
+                                    }, " +
+                                    "ORDER_TYPE-> ${
+                                        prefProvider.getValue(
+                                            Constants.ORDER_TYPE,
+                                            "null"
+                                        )
+                                    }, " +
+                                    "ORDER_TYPE_NAME-> ${
+                                        prefProvider.getValue(
+                                            Constants.ORDER_TYPE_NAME,
+                                            "null"
+                                        )
+                                    }, " +
+                                    "OLD_ITEM_BASE_CUSTOM_ITEM-> ${
+                                        prefProvider.getValue(
+                                            OLD_ITEM_BASE_CUSTOM_ITEM,
+                                            "null"
+                                        )
+                                    }"
+                        )
+                    )
 
 
-                }catch (e:Exception){
-                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  UPDATE -> prefException -> ${e.printStackTrace()}"))
+                } catch (e: Exception) {
+                    EventBus.getDefault()
+                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  UPDATE -> prefException -> ${e.printStackTrace()}"))
 
                 }
 
@@ -1728,7 +1807,7 @@ class AllOrdersListingFragment(
             "PAY" -> {
 
                 try {
-                    prefProvider.setValueInt("ORDER_ID",-1)
+                    prefProvider.setValueInt("ORDER_ID", -1)
 
                     dashboardViewModel.activeOrderTypeName = order.orderType
                     dashboardViewModel.activeOrderTypeText = order.orderTypeName
@@ -1762,7 +1841,13 @@ class AllOrdersListingFragment(
                 prefProvider.setValue(Constants.SERVICE_CHARGE, "")
 
                 dashboardViewModel.deleteCart()
-                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+                EventBus.getDefault().post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                            Gson().toJson(Thread.currentThread().stackTrace)
+                        }"
+                    )
+                )
 
                 if (order.orderType == OPEN_ORDER_TAB) {
                     prefProvider.setValue(Constants.ORDER_TYPE, Constants.OPEN_ORDER)
@@ -1895,47 +1980,148 @@ class AllOrdersListingFragment(
                 )
                 prefProvider.setValueboolean(IS_FROM_ALL_ORDER, true)
 
-                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  PAY bundle -> ${Gson().toJson(bundle)}"))
+                EventBus.getDefault().post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  PAY bundle -> ${
+                            Gson().toJson(bundle)
+                        }"
+                    )
+                )
 
-                try{
-                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  PAY preferences, " +
-                            "OLD_ITEM_BASE_CUSTOM_ITEM -> ${Gson().toJson(prefProvider.getValue(OLD_ITEM_BASE_CUSTOM_ITEM, "null"))}, " +
-                            "PaidAmount -> ${prefProvider.getValue("PaidAmount", "null")}, " +
-                            "Constants.WHOLE_AMOUNT -> ${prefProvider.getValue(Constants.WHOLE_AMOUNT, "null")}, " +
-                            "cardCount -> ${prefProvider.getValueInt("cardCount", -99)}, " +
-                            "Constants.SUB_TOTAL -> ${prefProvider.getValue(Constants.SUB_TOTAL, "null")}, " +
-                            "Constants.CASH_DISCOUNT_SURCHARGE -> ${prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "null")}, " +
-                            "Constants.TOTAL_DISCOUNT -> ${prefProvider.getValue(Constants.TOTAL_DISCOUNT, "null")}, " +
-                            "Constants.TIP -> ${prefProvider.getValue(Constants.TIP, "null")}, " +
-                            "Constants.TAX_CHARGE -> ${prefProvider.getValue(Constants.TAX_CHARGE, "null")}, " +
-                            "Constants.SERVICE_CHARGE -> ${prefProvider.getValue(Constants.SERVICE_CHARGE, "null")}, " +
-                            "Constants.ORDER_TYPE -> ${prefProvider.getValue(Constants.ORDER_TYPE, "null")}, " +
-                            "Constants.ORDER_TYPE_NAME -> ${prefProvider.getValue(Constants.ORDER_TYPE_NAME, "null")}, " +
-                            "Constants.ORDER_TYPE -> ${prefProvider.getValue(Constants.ORDER_TYPE, "null")}, " +
-                            "Constants.ORDER_TYPE_NAME -> ${prefProvider.getValue(Constants.ORDER_TYPE_NAME, "null")}, " +
-                            "Constants.ORDER_TYPE_ID -> ${prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -99)}, " +
-                            "Constants.CUSTOMER_ID -> ${prefProvider.getValueInt(Constants.CUSTOMER_ID, -99)}, " +
-                            "getCustomerData() -> ${prefProvider.getCustomerData()}, " +
-                            "IS_FROM_ALL_ORDER -> ${prefProvider.getValueboolean(IS_FROM_ALL_ORDER, true)}, " +
-                            "Constants.LOYALTY_ADDED -> ${prefProvider.getValueboolean(
-                                Constants.LOYALTY_ADDED,
-                                false
-                            )}, " +
-                            "Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED -> ${prefProvider.getValueboolean(
-                                Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED,
-                                false
-                            )}, " +
-                            "Constants.RECEIPT_CUSTOMER_NAME -> ${prefProvider.getValue(
-                                Constants.RECEIPT_CUSTOMER_NAME,
-                               "null"
-                            )}, " +
-                            "Constants.CUSTOMER_NAME -> ${prefProvider.getValue(
-                                Constants.CUSTOMER_NAME,
-                                "null"
-                            )}, " +
-                            ""))
-                }catch (e:Exception){
-                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  PAY -> prefException -> ${e.printStackTrace()}"))
+                try {
+                    EventBus.getDefault().post(
+                        MessageEvent(
+                            "${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  PAY preferences, " +
+                                    "OLD_ITEM_BASE_CUSTOM_ITEM -> ${
+                                        Gson().toJson(
+                                            prefProvider.getValue(
+                                                OLD_ITEM_BASE_CUSTOM_ITEM,
+                                                "null"
+                                            )
+                                        )
+                                    }, " +
+                                    "PaidAmount -> ${
+                                        prefProvider.getValue(
+                                            "PaidAmount",
+                                            "null"
+                                        )
+                                    }, " +
+                                    "Constants.WHOLE_AMOUNT -> ${
+                                        prefProvider.getValue(
+                                            Constants.WHOLE_AMOUNT,
+                                            "null"
+                                        )
+                                    }, " +
+                                    "cardCount -> ${prefProvider.getValueInt("cardCount", -99)}, " +
+                                    "Constants.SUB_TOTAL -> ${
+                                        prefProvider.getValue(
+                                            Constants.SUB_TOTAL,
+                                            "null"
+                                        )
+                                    }, " +
+                                    "Constants.CASH_DISCOUNT_SURCHARGE -> ${
+                                        prefProvider.getValue(
+                                            Constants.CASH_DISCOUNT_SURCHARGE,
+                                            "null"
+                                        )
+                                    }, " +
+                                    "Constants.TOTAL_DISCOUNT -> ${
+                                        prefProvider.getValue(
+                                            Constants.TOTAL_DISCOUNT,
+                                            "null"
+                                        )
+                                    }, " +
+                                    "Constants.TIP -> ${
+                                        prefProvider.getValue(
+                                            Constants.TIP,
+                                            "null"
+                                        )
+                                    }, " +
+                                    "Constants.TAX_CHARGE -> ${
+                                        prefProvider.getValue(
+                                            Constants.TAX_CHARGE,
+                                            "null"
+                                        )
+                                    }, " +
+                                    "Constants.SERVICE_CHARGE -> ${
+                                        prefProvider.getValue(
+                                            Constants.SERVICE_CHARGE,
+                                            "null"
+                                        )
+                                    }, " +
+                                    "Constants.ORDER_TYPE -> ${
+                                        prefProvider.getValue(
+                                            Constants.ORDER_TYPE,
+                                            "null"
+                                        )
+                                    }, " +
+                                    "Constants.ORDER_TYPE_NAME -> ${
+                                        prefProvider.getValue(
+                                            Constants.ORDER_TYPE_NAME,
+                                            "null"
+                                        )
+                                    }, " +
+                                    "Constants.ORDER_TYPE -> ${
+                                        prefProvider.getValue(
+                                            Constants.ORDER_TYPE,
+                                            "null"
+                                        )
+                                    }, " +
+                                    "Constants.ORDER_TYPE_NAME -> ${
+                                        prefProvider.getValue(
+                                            Constants.ORDER_TYPE_NAME,
+                                            "null"
+                                        )
+                                    }, " +
+                                    "Constants.ORDER_TYPE_ID -> ${
+                                        prefProvider.getValueInt(
+                                            Constants.ORDER_TYPE_ID,
+                                            -99
+                                        )
+                                    }, " +
+                                    "Constants.CUSTOMER_ID -> ${
+                                        prefProvider.getValueInt(
+                                            Constants.CUSTOMER_ID,
+                                            -99
+                                        )
+                                    }, " +
+                                    "getCustomerData() -> ${prefProvider.getCustomerData()}, " +
+                                    "IS_FROM_ALL_ORDER -> ${
+                                        prefProvider.getValueboolean(
+                                            IS_FROM_ALL_ORDER,
+                                            true
+                                        )
+                                    }, " +
+                                    "Constants.LOYALTY_ADDED -> ${
+                                        prefProvider.getValueboolean(
+                                            Constants.LOYALTY_ADDED,
+                                            false
+                                        )
+                                    }, " +
+                                    "Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED -> ${
+                                        prefProvider.getValueboolean(
+                                            Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED,
+                                            false
+                                        )
+                                    }, " +
+                                    "Constants.RECEIPT_CUSTOMER_NAME -> ${
+                                        prefProvider.getValue(
+                                            Constants.RECEIPT_CUSTOMER_NAME,
+                                            "null"
+                                        )
+                                    }, " +
+                                    "Constants.CUSTOMER_NAME -> ${
+                                        prefProvider.getValue(
+                                            Constants.CUSTOMER_NAME,
+                                            "null"
+                                        )
+                                    }, " +
+                                    ""
+                        )
+                    )
+                } catch (e: Exception) {
+                    EventBus.getDefault()
+                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  PAY -> prefException -> ${e.printStackTrace()}"))
                 }
 
 
@@ -4348,9 +4534,9 @@ class AllOrdersListingFragment(
                 modifier_set_ids = modifiersIds(it.orderItemModifiers)
                 modifiers = modifierSets(it.orderItemModifiers)
                 discountPrice = it.discountAmount
-                if (it.discountType==null){
+                if (it.discountType == null) {
                     discountType = ""
-                }else{
+                } else {
                     discountType = it.discountType
                 }
                 if (it.discountId != null)
@@ -4670,79 +4856,91 @@ class AllOrdersListingFragment(
                         styleAlignment(Alignment.Center)
 
                         if (!oneItemPerReceipt) {
-                            orderData.orderItems.forEach {
-                                add(
-                                    PrinterBuilder()
-                                        .styleBold(true)
-                                        .styleMagnification(
-                                            MagnificationParameter(3, 3)
-                                        )
-                                        .actionPrintText(
-                                            "OrderId: ${orderData.custom_order_id}"
-                                        )
-                                )
+                            orderData.orderItems.forEach { item ->
+                                data.printerCategories.toCollection(arrayListOf())?.forEach {
+                                    if (it?.id == item.categoryId) {
+                                        if (it.categoryActive && it.printerEnable) {
+                                            for (singularity in 1..item.quantity) {
 
-                                actionFeedLine(1)
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleBold(true)
+                                                        .styleMagnification(
+                                                            MagnificationParameter(3, 3)
+                                                        )
+                                                        .actionPrintText(
+                                                            "OrderId: ${orderData.custom_order_id}"
+                                                        )
+                                                )
 
-                                add(
-                                    PrinterBuilder()
-                                        .styleBold(true)
-                                        .styleMagnification(
-                                            MagnificationParameter(2, 2)
-                                        )
-                                        .actionPrintText(
-                                            "${orderData.orderTypeName}"
-                                        )
-                                )
+                                                actionFeedLine(1)
 
-                                actionFeedLine(1)
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleBold(true)
+                                                        .styleMagnification(
+                                                            MagnificationParameter(2, 2)
+                                                        )
+                                                        .actionPrintText(
+                                                            "${orderData.orderTypeName}"
+                                                        )
+                                                )
 
-                                if(orderData.orderType.contains("Phone", true)){
-                                    add(
-                                        PrinterBuilder()
-                                            .styleBold(true)
-                                            .styleMagnification(
-                                                MagnificationParameter(2, 2)
-                                            )
-                                            .actionPrintText(
-                                                "${orderData.deliveryType}"
-                                            )
-                                    )
+                                                actionFeedLine(1)
 
-                                    actionFeedLine(1)
+                                                if (orderData.orderType.contains("Phone", true)) {
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleBold(true)
+                                                            .styleMagnification(
+                                                                MagnificationParameter(2, 2)
+                                                            )
+                                                            .actionPrintText(
+                                                                "${orderData.deliveryType}"
+                                                            )
+                                                    )
+
+                                                    actionFeedLine(1)
+                                                }
+
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleAlignment(Alignment.Left)
+                                                        .styleMagnification(
+                                                            MagnificationParameter(2, 2)
+                                                        )
+                                                        .actionPrintText(
+                                                            content = addSingleReprintOrdersForStarKitchen(
+                                                                1,
+                                                                item,
+                                                                data.printerCategories.toCollection(
+                                                                    arrayListOf()
+                                                                )
+                                                            )
+                                                        )
+                                                )
+
+                                                actionFeedLine(1)
+
+                                                add(
+                                                    PrinterBuilder()
+                                                        .actionPrintText(
+                                                            Constants.getReceiptFormatDateFromUTCServer(
+                                                                requireContext(),
+                                                                orderData?.createdAt.toString()
+                                                            )
+                                                        )
+                                                )
+
+                                                printerBuilder.actionFeedLine(1)
+                                                actionCut(CutType.Partial)
+
+                                            }
+                                        }
+                                    }
                                 }
-
-                                add(
-                                    PrinterBuilder()
-                                        .styleAlignment(Alignment.Left)
-                                        .styleMagnification(
-                                            MagnificationParameter(2, 2)
-                                        )
-                                        .actionPrintText(
-                                            content = addSingleReprintOrdersForStarKitchen(
-                                                it,
-                                                data.printerCategories.toCollection(arrayListOf())
-                                            )
-                                        )
-                                )
-
-                                actionFeedLine(1)
-
-                                add(
-                                    PrinterBuilder()
-                                        .actionPrintText(
-                                            Constants.getReceiptFormatDateFromUTCServer(
-                                                requireContext(),
-                                                orderData?.createdAt.toString()
-                                            )
-                                        )
-                                )
-
-                                printerBuilder.actionFeedLine(1)
-                                actionCut(CutType.Partial)
-
                             }
-                        }else{
+                        } else {
                             add(
                                 PrinterBuilder()
                                     .styleBold(true)
@@ -7393,7 +7591,7 @@ class AllOrdersListingFragment(
     }
 
 
-    private fun refreshCurrentFragment(){
+    private fun refreshCurrentFragment() {
         getAllOrders()
     }
 

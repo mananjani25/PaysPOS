@@ -743,7 +743,7 @@
     <string name="terminal_login_id_tap_to_copy_unique_id">Terminal Login ID (Tap to copy Unique id)</string>
     <string name="error_order_id_not_available">Order id is not available.</string>
 
-    <string name="please_add_Atleast_one_item_in_cart">Please add at least one item in a cart.</string>
+    <string name="please_add_Atleast_one_item_in_cart">Please add at least one item in the cart.</string>
     <string name="items_title">Items</string>
     <string name="inventory_title">Menu</string>
     <string name="categories_title">Categories</string>

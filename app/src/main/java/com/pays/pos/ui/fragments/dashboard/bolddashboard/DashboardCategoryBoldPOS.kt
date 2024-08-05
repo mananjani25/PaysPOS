@@ -272,8 +272,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             try {
                 oneItemPerReceipt =
                     viewModel.getLabelPrinterSettingsData().oneItemPerReciept
-            }catch(e:Exception){
-                oneItemPerReceipt=false
+            } catch (e: Exception) {
+                oneItemPerReceipt = false
             }
         }
 
@@ -1147,7 +1147,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         viewModel.updateActiveOrderFlagClear()
                         viewModel.clearListTax()
                         viewModel.deleteCart()
-                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+                        EventBus.getDefault().post(
+                            MessageEvent(
+                                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                                    Gson().toJson(Thread.currentThread().stackTrace)
+                                }"
+                            )
+                        )
                     }
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                 }
@@ -1163,7 +1169,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 viewModel.deleteCart()
-                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+                EventBus.getDefault().post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                            Gson().toJson(Thread.currentThread().stackTrace)
+                        }"
+                    )
+                )
                 findNavController().navigate(
                     R.id.action_dashboardCategoryBoldPOS_to_passcode,
                     bundle
@@ -1680,7 +1692,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 bundle.putBoolean("isDashboard", false)
                 bundle.putBoolean("isSwap", false)
                 viewModel.deleteCart()
-                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+                EventBus.getDefault().post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                            Gson().toJson(Thread.currentThread().stackTrace)
+                        }"
+                    )
+                )
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                     findNavController().navigate(
                         R.id.action_dashboardCategoryBoldPOS_to_passcode,
@@ -2173,7 +2191,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 prefProvider.setValue(ORDER_TYPE_NAME, "")
                 LogUtil.logE(TAG, "deleteCartDineIn")
                 viewModel.deleteCart()
-                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+                EventBus.getDefault().post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                            Gson().toJson(Thread.currentThread().stackTrace)
+                        }"
+                    )
+                )
                 clearCustomer()
 
 
@@ -2287,79 +2311,91 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         styleAlignment(Alignment.Center)
 
                         if (!oneItemPerReceipt) {
-                            createOrderResponse.data?.order.orderItems.forEach {
-                                add(
-                                    PrinterBuilder()
-                                        .styleBold(true)
-                                        .styleMagnification(
-                                            MagnificationParameter(3, 3)
-                                        )
-                                        .actionPrintText(
-                                            "OrderId: ${createOrderResponse.data?.order.custom_order_id}"
-                                        )
-                                )
-
-                                actionFeedLine(1)
-
-                                add(
-                                    PrinterBuilder()
-                                        .styleBold(true)
-                                        .styleMagnification(
-                                            MagnificationParameter(2, 2)
-                                        )
-                                        .actionPrintText(
-                                            "${createOrderResponse.data?.order?.orderTypeName}"
-                                        )
-                                )
-
-                                actionFeedLine(1)
-
-                                if(createOrderResponse.data?.order?.orderType?.contains("Phone", true) == true){
-                                    add(
-                                        PrinterBuilder()
-                                            .styleBold(true)
-                                            .styleMagnification(
-                                                MagnificationParameter(2, 2)
+                            createOrderResponse.data?.order.orderItems.forEach {item->
+                                data.printerCategories.toCollection(arrayListOf())?.forEach {
+                                    if (it?.id == item.categoryId) {
+                                        if (it.categoryActive && it.printerEnable) {
+                                            add(
+                                                PrinterBuilder()
+                                                    .styleBold(true)
+                                                    .styleMagnification(
+                                                        MagnificationParameter(3, 3)
+                                                    )
+                                                    .actionPrintText(
+                                                        "OrderId: ${createOrderResponse.data?.order.custom_order_id}"
+                                                    )
                                             )
-                                            .actionPrintText(
-                                                "${createOrderResponse.data?.order?.deliveryType}"
-                                            )
-                                    )
 
-                                    actionFeedLine(1)
+                                            actionFeedLine(1)
+
+                                            add(
+                                                PrinterBuilder()
+                                                    .styleBold(true)
+                                                    .styleMagnification(
+                                                        MagnificationParameter(2, 2)
+                                                    )
+                                                    .actionPrintText(
+                                                        "${createOrderResponse.data?.order?.orderTypeName}"
+                                                    )
+                                            )
+
+                                            actionFeedLine(1)
+
+                                            if (createOrderResponse.data?.order?.orderType?.contains(
+                                                    "Phone",
+                                                    true
+                                                ) == true
+                                            ) {
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleBold(true)
+                                                        .styleMagnification(
+                                                            MagnificationParameter(2, 2)
+                                                        )
+                                                        .actionPrintText(
+                                                            "${createOrderResponse.data?.order?.deliveryType}"
+                                                        )
+                                                )
+
+                                                actionFeedLine(1)
+                                            }
+
+                                            add(
+                                                PrinterBuilder()
+                                                    .styleAlignment(Alignment.Left)
+                                                    .styleMagnification(
+                                                        MagnificationParameter(2, 2)
+                                                    )
+                                                    .actionPrintText(
+                                                        content = addSingleOrdersForStarKitchen(
+                                                            1,
+                                                            item,
+                                                            data.printerCategories.toCollection(arrayListOf())
+                                                        )
+                                                    )
+                                            )
+
+                                            actionFeedLine(1)
+
+                                            add(
+                                                PrinterBuilder()
+                                                    .actionPrintText(
+                                                        Constants.getReceiptFormatDateFromUTCServer(
+                                                            requireContext(),
+                                                            createOrderResponse.data?.order.createdAt.toString()
+                                                        )
+                                                    )
+                                            )
+
+                                            printerBuilder.actionFeedLine(1)
+                                            actionCut(CutType.Partial)
+
+
+                                        }
+                                    }
                                 }
-
-                                add(
-                                    PrinterBuilder()
-                                        .styleAlignment(Alignment.Left)
-                                        .styleMagnification(
-                                            MagnificationParameter(2, 2)
-                                        )
-                                        .actionPrintText(
-                                            content = addSingleOrdersForStarKitchen(
-                                                it,
-                                                data.printerCategories.toCollection(arrayListOf())
-                                            )
-                                        )
-                                )
-
-                                actionFeedLine(1)
-
-                                add(
-                                    PrinterBuilder()
-                                        .actionPrintText(
-                                            Constants.getReceiptFormatDateFromUTCServer(
-                                                requireContext(),
-                                                createOrderResponse.data?.order.createdAt.toString()
-                                            )
-                                        )
-                                )
-
-                                printerBuilder.actionFeedLine(1)
-                                actionCut(CutType.Partial)
-
                             }
-                        }else{
+                        } else {
                             if (cartModel!!.isEdited || isOrderUpdate) {
                                 add(
                                     PrinterBuilder()
@@ -3154,7 +3190,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
 
                 viewModel.deleteCart()
-                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+                EventBus.getDefault().post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                            Gson().toJson(Thread.currentThread().stackTrace)
+                        }"
+                    )
+                )
                 viewModel.updateActiveOrderFlagClear()
 
                 prefProvider.setValue(ORDER_TYPE_NAME, "")
@@ -3290,14 +3332,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         object :
                                             TypeToken<List<TbCartItem>>() {}
                                     var oldDataModel: List<TbCartItem> = arrayListOf()
-                                    if (prefProvider.getValue(Constants.OLD_ITEM_BASE, "").isNotEmpty()){
+                                    if (prefProvider.getValue(Constants.OLD_ITEM_BASE, "")
+                                            .isNotEmpty()
+                                    ) {
                                         oldDataModel =
                                             Gson().fromJson(
                                                 prefProvider.getValue(Constants.OLD_ITEM_BASE, ""),
                                                 token.type
                                             )
-                                    }else{
-                                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} DashboardCategoryBoldPOS.kt_ OLD_ITEM_BASE is Empty"))
+                                    } else {
+                                        EventBus.getDefault()
+                                            .post(MessageEvent("${Constants.LINE_BREAK_TAB} DashboardCategoryBoldPOS.kt_ OLD_ITEM_BASE is Empty"))
                                     }
 
 
