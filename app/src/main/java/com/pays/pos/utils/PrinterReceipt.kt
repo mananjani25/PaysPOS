@@ -3292,41 +3292,35 @@ fun addSingleOrdersForStarKitchen(
 
 
 fun addOrderSingleItemForStarKitchen(
+    quantity: Int,
     item: CreateOrderResponse.Data.Order.OrderItem,
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null
 ): String {
 
+    item.quantity=quantity
     var items: String = ""
-    printerCat?.forEach {
-        if (it?.id == item.categoryId) {
-            if (it.categoryActive && it.printerEnable) {
-                items += item.quantity.toString() + " " + item.itemName.uppercase()
+    items += item.quantity.toString() + " " + item.itemName.uppercase()
 
-                items += "\n"
-                if (item.orderItemModifiers.isNotEmpty()) {
-                    for (j in 0 until item.orderItemModifiers.size) {
-                        val modifierObj = item.orderItemModifiers.get(j)
-                        items += " "
-                        items += " " + if (modifierObj.modifierQuantity == 1) {
-                            " "
-                        } else {
-                            "" + modifierObj.modifierQuantity + "x "
-                        } + modifierObj.name.uppercase()
+    items += "\n"
+    if (item.orderItemModifiers.isNotEmpty()) {
+        for (j in 0 until item.orderItemModifiers.size) {
+            val modifierObj = item.orderItemModifiers.get(j)
+            items += " "
+            items += " " + if (modifierObj.modifierQuantity == 1) {
+                " "
+            } else {
+                "" + modifierObj.modifierQuantity + "x "
+            } + modifierObj.name.uppercase()
 
-                        items += "\n"
-                    }
-                }
-
-                if (item.note.isNotEmpty()) {
-//                        builder.addTextLineSpace(30)
-                    items += " "
-                    items += "  Note:${item.note}"
-                    items += "\n"
-                }
-
-
-            }
+            items += "\n"
         }
+    }
+
+    if (item.note.isNotEmpty()) {
+//                        builder.addTextLineSpace(30)
+        items += " "
+        items += "  Note:${item.note}"
+        items += "\n"
     }
 
     return items

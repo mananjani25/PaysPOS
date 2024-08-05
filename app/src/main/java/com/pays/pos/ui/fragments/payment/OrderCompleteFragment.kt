@@ -425,24 +425,43 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         }
 
-        viewModelDashBoard.customerGivenTip.observe(viewLifecycleOwner){
-            if(it){
+        viewModelDashBoard.customerGivenTip.observe(viewLifecycleOwner) {
+            if (it) {
 
                 binding.tipGivenLayout?.visible()
 
                 viewModelDashBoard.apply {
-                    finalAmount = MethodUtils.roundOffAmountString(totalTipAmount).toDouble() + MethodUtils.roundOffAmountString(
+                    finalAmount = MethodUtils.roundOffAmountString(totalTipAmount)
+                        .toDouble() + MethodUtils.roundOffAmountString(
                         paidAmount
                     ).toDouble()
 
-                    binding.txtTipAmount?.setText("Tip Given: $ ${MethodUtils.roundOffAmountString(totalTipAmount)}")
-                    binding.txtTotalAmount?.setText("Total Amount: $ ${MethodUtils.roundOffAmountString(paidAmount)}")
-                    binding.txtFinalAmount?.setText("Final Amount: $ ${MethodUtils.roundOffAmountString(finalAmount)}")
+                    binding.txtTipAmount?.setText(
+                        "Tip Given: $ ${
+                            MethodUtils.roundOffAmountString(
+                                totalTipAmount
+                            )
+                        }"
+                    )
+                    binding.txtTotalAmount?.setText(
+                        "Total Amount: $ ${
+                            MethodUtils.roundOffAmountString(
+                                paidAmount
+                            )
+                        }"
+                    )
+                    binding.txtFinalAmount?.setText(
+                        "Final Amount: $ ${
+                            MethodUtils.roundOffAmountString(
+                                finalAmount
+                            )
+                        }"
+                    )
 
                     customerGivenTip.value = false
                 }
 
-            }else {
+            } else {
             }
         }
     }
@@ -7079,7 +7098,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     }
                                 }
 
-                                if(remainingAmount == 0.0)
+                                if (remainingAmount == 0.0)
                                     prefProvider.setValueboolean(Constants.DO_PRINT_CUSTOM, false)
                                 //    prefProvider.setValueboolean(Constants.DO_PRINT, false)
                                 if (orderTypeToCheckKiosk.equals(
@@ -10140,36 +10159,23 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             styleAlignment(Alignment.Center)
                             if (!oneItemPerReceipt) {
-                                receiptModel?.order?.orderItems?.forEach { item->
+                                receiptModel?.order?.orderItems?.forEach { item ->
                                     data.printerCategories.forEach { category ->
-                                        if(category.id == item.categoryId && category.printerEnable) {
-                                            add(
-                                                PrinterBuilder()
-                                                    .styleBold(true)
-                                                    .styleMagnification(
-                                                        MagnificationParameter(3, 3)
-                                                    )
-                                                    .actionPrintText(
-                                                        "OrderId:${receiptModel?.order?.custom_order_id}"
-                                                    )
-                                            )
+                                        if (category.id == item.categoryId && category.printerEnable) {
+                                            for (singularity in 1..item.quantity) {
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleBold(true)
+                                                        .styleMagnification(
+                                                            MagnificationParameter(3, 3)
+                                                        )
+                                                        .actionPrintText(
+                                                            "OrderId:${receiptModel?.order?.custom_order_id}"
+                                                        )
+                                                )
 
-                                            actionFeedLine(1)
+                                                actionFeedLine(1)
 
-                                            add(
-                                                PrinterBuilder()
-                                                    .styleBold(true)
-                                                    .styleMagnification(
-                                                        MagnificationParameter(2, 2)
-                                                    )
-                                                    .actionPrintText(
-                                                        "${receiptModel?.order?.orderTypeName}"
-                                                    )
-                                            )
-
-                                            actionFeedLine(1)
-
-                                            if(receiptModel?.order?.orderType?.contains("Phone", true) == true){
                                                 add(
                                                     PrinterBuilder()
                                                         .styleBold(true)
@@ -10177,47 +10183,67 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             MagnificationParameter(2, 2)
                                                         )
                                                         .actionPrintText(
-                                                            "${receiptModel?.order?.deliveryType}"
+                                                            "${receiptModel?.order?.orderTypeName}"
                                                         )
                                                 )
 
                                                 actionFeedLine(1)
-                                            }
 
-                                            add(
-                                                PrinterBuilder()
-                                                    .styleAlignment(Alignment.Left)
-                                                    .styleMagnification(
-                                                        MagnificationParameter(2, 2)
+                                                if (receiptModel?.order?.orderType?.contains(
+                                                        "Phone",
+                                                        true
+                                                    ) == true
+                                                ) {
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleBold(true)
+                                                            .styleMagnification(
+                                                                MagnificationParameter(2, 2)
+                                                            )
+                                                            .actionPrintText(
+                                                                "${receiptModel?.order?.deliveryType}"
+                                                            )
                                                     )
-                                                    .actionPrintText(
-                                                        content = addOrderSingleItemForStarKitchen(
-                                                            item,
-                                                            data.printerCategories.toCollection(
-                                                                arrayListOf()
+
+                                                    actionFeedLine(1)
+                                                }
+
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleAlignment(Alignment.Left)
+                                                        .styleMagnification(
+                                                            MagnificationParameter(2, 2)
+                                                        )
+                                                        .actionPrintText(
+                                                            content = addOrderSingleItemForStarKitchen(
+                                                                1,
+                                                                item,
+                                                                data.printerCategories.toCollection(
+                                                                    arrayListOf()
+                                                                )
                                                             )
                                                         )
-                                                    )
-                                            )
+                                                )
 
-                                            actionFeedLine(1)
+                                                actionFeedLine(1)
 
-                                            add(
-                                                PrinterBuilder()
-                                                    .actionPrintText(
-                                                        getReceiptFormatDateFromUTCServer(
-                                                            requireContext(),
-                                                            receiptModel?.order?.createdAt.toString()
+
+                                                add(
+                                                    PrinterBuilder()
+                                                        .actionPrintText(
+                                                            getReceiptFormatDateFromUTCServer(
+                                                                requireContext(),
+                                                                receiptModel?.order?.createdAt.toString()
+                                                            )
                                                         )
-                                                    )
-                                            )
-
-                                            printerBuilder.actionFeedLine(1)
-                                            actionCut(CutType.Partial)
+                                                )
+                                                printerBuilder.actionFeedLine(1)
+                                                actionCut(CutType.Partial)
+                                            }
                                         }
-
+                                    }
                                 }
-                            }}else{
+                            } else {
                                 if (isOrderUpdated == true) {
                                     add(
                                         PrinterBuilder()
