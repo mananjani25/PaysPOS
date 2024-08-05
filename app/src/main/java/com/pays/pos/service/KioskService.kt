@@ -27,6 +27,7 @@ import com.hosopy.actioncable.Subscription
 import com.pays.pos.MainApplication
 import com.pays.pos.R
 import com.pays.pos.data.db.AppDatabase
+import com.pays.pos.data.entities.TbLabelPrinterSettings
 import com.pays.pos.data.model.responseModel.*
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.repositories.KioskRepository
@@ -83,7 +84,8 @@ class KioskService : Service(), StatusChangeEventListener {
         super.onCreate()
 
         CoroutineScope(Dispatchers.IO).launch {
-            oneItemPerReceipt = posRepository.getLabelPrinterSettingsData().oneItemPerReciept
+            var tbLabelPrinterSettings: TbLabelPrinterSettings? = AppDatabase.getDatabase(applicationContext).labelPrinterSettings().getLabelPrinterSettingsData()
+            oneItemPerReceipt=if (tbLabelPrinterSettings!=null) tbLabelPrinterSettings.oneItemPerReciept else true
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
