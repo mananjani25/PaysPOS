@@ -169,11 +169,13 @@ class CreateCategory : Fragment() {
                         it, createOptionResponse
                     ) { _, _ ->
                         val navControll = findNavController()
-                        navControll.previousBackStackEntry?.savedStateHandle?.set(
-                            KEY,
-                            CREATECATEGORY
-                        )
-                        navControll.popBackStack()
+                        if (navControll.currentDestination?.id==R.id.createCategory) {
+                            navControll.previousBackStackEntry?.savedStateHandle?.set(
+                                KEY,
+                                CREATECATEGORY
+                            )
+                            navControll.popBackStack()
+                        }
                     }
                 }
             }

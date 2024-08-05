@@ -193,6 +193,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _latestDiscount = MutableLiveData<Double>()
     val latestDiscount: LiveData<Double> = _latestDiscount
 
+    public val tipButtonOnCustomerDisplayClicked = MutableLiveData<Boolean>()
+
     var isUpdatedOnce = false
 
     /**

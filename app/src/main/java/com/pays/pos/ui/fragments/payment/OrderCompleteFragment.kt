@@ -425,24 +425,43 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         }
 
-        viewModelDashBoard.customerGivenTip.observe(viewLifecycleOwner){
-            if(it){
+        viewModelDashBoard.customerGivenTip.observe(viewLifecycleOwner) {
+            if (it) {
 
                 binding.tipGivenLayout?.visible()
 
                 viewModelDashBoard.apply {
-                    finalAmount = MethodUtils.roundOffAmountString(totalTipAmount).toDouble() + MethodUtils.roundOffAmountString(
+                    finalAmount = MethodUtils.roundOffAmountString(totalTipAmount)
+                        .toDouble() + MethodUtils.roundOffAmountString(
                         paidAmount
                     ).toDouble()
 
-                    binding.txtTipAmount?.setText("Tip Given: $ ${MethodUtils.roundOffAmountString(totalTipAmount)}")
-                    binding.txtTotalAmount?.setText("Total Amount: $ ${MethodUtils.roundOffAmountString(paidAmount)}")
-                    binding.txtFinalAmount?.setText("Final Amount: $ ${MethodUtils.roundOffAmountString(finalAmount)}")
+                    binding.txtTipAmount?.setText(
+                        "Tip Given: $ ${
+                            MethodUtils.roundOffAmountString(
+                                totalTipAmount
+                            )
+                        }"
+                    )
+                    binding.txtTotalAmount?.setText(
+                        "Total Amount: $ ${
+                            MethodUtils.roundOffAmountString(
+                                paidAmount
+                            )
+                        }"
+                    )
+                    binding.txtFinalAmount?.setText(
+                        "Final Amount: $ ${
+                            MethodUtils.roundOffAmountString(
+                                finalAmount
+                            )
+                        }"
+                    )
 
                     customerGivenTip.value = false
                 }
 
-            }else {
+            } else {
             }
         }
     }
@@ -454,6 +473,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         Binding()
         setupSnackbar()
         observeShowProgress()
+        observeTipClicked()
 
         lifecycleScope.launch {
             oneItemPerReceipt = dashboardViewModel.getLabelPrinterSettingsData().oneItemPerReciept
@@ -918,6 +938,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
+    }
+
+    private fun observeTipClicked() {
+        dashboardViewModel.tipButtonOnCustomerDisplayClicked.observe(viewLifecycleOwner,
+            object : Observer<Boolean> {
+                override fun onChanged(t: Boolean?) {
+                    t?.let {
+                        binding.llHome.isClickable = !it
+                    }
+                }
+            })
     }
 
     /*Added By Rahul  */
@@ -7079,7 +7110,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     }
                                 }
 
-                                if(remainingAmount == 0.0)
+                                if (remainingAmount == 0.0)
                                     prefProvider.setValueboolean(Constants.DO_PRINT_CUSTOM, false)
                                 //    prefProvider.setValueboolean(Constants.DO_PRINT, false)
                                 if (orderTypeToCheckKiosk.equals(
@@ -10140,9 +10171,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             styleAlignment(Alignment.Center)
                             if (!oneItemPerReceipt) {
-                                receiptModel?.order?.orderItems?.forEach { item->
+                                receiptModel?.order?.orderItems?.forEach { item ->
                                     data.printerCategories.forEach { category ->
-                                        if(category.id == item.categoryId && category.printerEnable) {
+                                        if (category.id == item.categoryId && category.printerEnable) {
                                             add(
                                                 PrinterBuilder()
                                                     .styleBold(true)
@@ -10169,7 +10200,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                             actionFeedLine(1)
 
-                                            if(receiptModel?.order?.orderType?.contains("Phone", true) == true){
+                                            if (receiptModel?.order?.orderType?.contains(
+                                                    "Phone",
+                                                    true
+                                                ) == true
+                                            ) {
                                                 add(
                                                     PrinterBuilder()
                                                         .styleBold(true)
@@ -10216,8 +10251,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             actionCut(CutType.Partial)
                                         }
 
+                                    }
                                 }
-                            }}else{
+                            } else {
                                 if (isOrderUpdated == true) {
                                     add(
                                         PrinterBuilder()
