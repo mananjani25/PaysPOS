@@ -10187,11 +10187,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 )
 
                                                 actionFeedLine(1)
-                                            if (receiptModel?.order?.orderType?.contains(
-                                                    "Phone",
-                                                    true
-                                                ) == true
-                                            ) {
 
                                                 add(
                                                     PrinterBuilder()
@@ -10244,6 +10239,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                                 actionFeedLine(1)
 
+
                                                 add(
                                                     PrinterBuilder()
                                                         .actionPrintText(
@@ -10257,7 +10253,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 actionCut(CutType.Partial)
                                             }
                                         }
-
                                     }
                                 }
                             } else {
@@ -10506,6 +10501,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                 }
             }
+
         } else {
 
             if (isNotPrinted) {
