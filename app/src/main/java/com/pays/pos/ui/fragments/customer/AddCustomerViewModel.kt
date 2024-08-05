@@ -27,7 +27,10 @@ import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
@@ -84,9 +87,10 @@ class AddCustomerViewModel @Inject constructor(
     var isEmptyAddress = false
 
 
-    fun sameAsAddressValueChanges(boolean: Boolean){
+    fun sameAsAddressValueChanges(boolean: Boolean) {
         this.same_as_billing_address.value = boolean
     }
+
     fun setAddress1(adr: String) {
         this.straddress1 = adr
     }
@@ -117,7 +121,10 @@ class AddCustomerViewModel @Inject constructor(
         this.customerID = id
     }
 
-    fun submit(listAddress: ArrayList<CreateCustomerRequestModel.Customer.Addresses>, isFromPhoneOrderEdit: Boolean) {
+    fun submit(
+        listAddress: ArrayList<CreateCustomerRequestModel.Customer.Addresses>,
+        isFromPhoneOrderEdit: Boolean
+    ) {
         if (phoneNo.value != null) {
             addCustomerDetails.value?.data?.phones_attributes?.add(
                 0,
@@ -164,143 +171,164 @@ class AddCustomerViewModel @Inject constructor(
 
          }
  */
-        if (TextUtils.isEmpty(value?.data?.first_name?.trim())) {
-            _snackbarText.value = Event(R.string.first_name_validate)
-        } else if (value?.data?.phones_attributes?.size != 0 && value?.data?.phones_attributes?.get(
-                0
-            )?.phone_number?.length != 10
-        ) {
-            _snackbarText.value = Event(R.string.valid_phone_no_validate)
-        }else if (!TextUtils.isEmpty(value?.data?.email?.trim()) && !Patterns.EMAIL_ADDRESS.matcher(value.data?.email?.trim())
-                .matches()
-        ) {
-            _snackbarText.value = Event(R.string.valid_email_validate)
-        } else if (isFromPhoneOrderEdit && (prefProvider.getValue(DELIVERY_TYPE, PICK_UP) == PICK_UP
-                    || prefProvider.getValue(DELIVERY_TYPE, PICK_UP) == DELIVERY)
-            && value.data?.phones_attributes?.size == 0
-        ) {
-            _snackbarText.value = Event(R.string.phone_no_validate)
-        } else if (isFromPhoneOrderEdit && (prefProvider.getValue(DELIVERY_TYPE, PICK_UP) == PICK_UP
-                    || prefProvider.getValue(DELIVERY_TYPE, PICK_UP) == DELIVERY)
-            && value.data?.phones_attributes?.get(0)?.phone_number?.length!! < 10
-        ) {
-            _snackbarText.value = Event(R.string.valid_phone_no_validate)
-        } else if (isFromPhoneOrderEdit && prefProvider.getValue(DELIVERY_TYPE, PICK_UP) == DELIVERY
-            && value.data?.addresses_attributes?.size == 0
-        ) {
-            _snackbarText.value = Event(R.string.please_enter_address)
-        } else if (isFromPhoneOrderEdit && prefProvider.getValue(DELIVERY_TYPE, PICK_UP) == DELIVERY
-            && value.data?.addresses_attributes?.get(0)?.postcode?.isEmpty() == true
-        ) {
-            _snackbarText.value = Event(R.string.please_enter_zipcode)
-        } else if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD && value.data?.phones_attributes?.size == 0) {
-            _snackbarText.value = Event(R.string.phone_no_validate)
-        } else if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD && value.data?.phones_attributes?.get(0)?.phone_number?.length!! < 10){
-            _snackbarText.value = Event(R.string.valid_phone_no_validate)
-        } else if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD && !TextUtils.isEmpty(value?.data?.email?.trim())
-            && !Patterns.EMAIL_ADDRESS.matcher(value.data?.email?.trim()).matches()) {
-            _snackbarText.value = Event(R.string.valid_email_validate)
-        } else {
-            _showProgress.value = Event(true)
-            addCustomerData = CreateCustomerRequestModel().apply {
+
+        /*    if (TextUtils.isEmpty(value?.data?.first_name?.trim())) {
+                _snackbarText.value = Event(R.string.first_name_validate)
+            } else if (value?.data?.phones_attributes?.size != 0 && value?.data?.phones_attributes?.get(
+                    0
+                )?.phone_number?.length != 10
+            ) {
+                _snackbarText.value = Event(R.string.valid_phone_no_validate)
+            }else if (!TextUtils.isEmpty(value?.data?.email?.trim()) && !Patterns.EMAIL_ADDRESS.matcher(value.data?.email?.trim())
+                    .matches()
+            ) {
+                _snackbarText.value = Event(R.string.valid_email_validate)
+            } else if (isFromPhoneOrderEdit && (prefProvider.getValue(DELIVERY_TYPE, PICK_UP) == PICK_UP
+                        || prefProvider.getValue(DELIVERY_TYPE, PICK_UP) == DELIVERY)
+                && value.data?.phones_attributes?.size == 0
+            ) {
+                _snackbarText.value = Event(R.string.phone_no_validate)
+            } else if (isFromPhoneOrderEdit && (prefProvider.getValue(DELIVERY_TYPE, PICK_UP) == PICK_UP
+                        || prefProvider.getValue(DELIVERY_TYPE, PICK_UP) == DELIVERY)
+                && value.data?.phones_attributes?.get(0)?.phone_number?.length!! < 10
+            ) {
+                _snackbarText.value = Event(R.string.valid_phone_no_validate)
+            } else if (isFromPhoneOrderEdit && prefProvider.getValue(DELIVERY_TYPE, PICK_UP) == DELIVERY
+                && value.data?.addresses_attributes?.size == 0
+            ) {
+                _snackbarText.value = Event(R.string.please_enter_address)
+            } else if (isFromPhoneOrderEdit && prefProvider.getValue(DELIVERY_TYPE, PICK_UP) == DELIVERY
+                && value.data?.addresses_attributes?.get(0)?.postcode?.isEmpty() == true
+            ) {
+                _snackbarText.value = Event(R.string.please_enter_zipcode)
+            } else if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD && value.data?.phones_attributes?.size == 0) {
+                _snackbarText.value = Event(R.string.phone_no_validate)
+            } else if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD && value.data?.phones_attributes?.get(0)?.phone_number?.length!! < 10){
+                _snackbarText.value = Event(R.string.valid_phone_no_validate)
+            } else if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD && !TextUtils.isEmpty(value?.data?.email?.trim())
+                && !Patterns.EMAIL_ADDRESS.matcher(value.data?.email?.trim()).matches()) {
+                _snackbarText.value = Event(R.string.valid_email_validate)
+            } else {*/
+        _showProgress.value = Event(true)
+
+       viewModelScope.launch {
+           runBlocking {
+               var totalCustomers=0
+               if (TextUtils.isEmpty(value?.data?.first_name?.trim())){
+                   async(Dispatchers.IO) {
+                       totalCustomers=posRepository.getTotalCustomersCount()
+                   }.await()
+
+               }
+
+               addCustomerData = CreateCustomerRequestModel().apply {
+
+                   LogUtil.logE("DaataJson", "PassData  ${Gson().toJson(value?.data)}")
+
+                   data?.apply {
+                       first_name = value?.data?.first_name!!.replaceFirstChar { it.uppercase() }
+                       last_name = value?.data?.last_name!!.replaceFirstChar { it.uppercase() }
+
+                       if (first_name.isNullOrEmpty()) {
+                           first_name = "Customer${totalCustomers.inc()}"
+                       }
+
+                       val phone = CreateCustomerRequestModel.Customer.Phone(
+                           id = phoneId,
+                           phone_number = phoneNo.value.toString().replace(
+                               ("[\\D]").toRegex(),
+                               ""
+                           )
+                       )
+                       if (isEdit) {
+                           phone.id = phoneId
+                       }
+                       phones_attributes?.add(
+                           0, phone
+                       )
+
+                       email = value.data!!.email
+                       birth_day = value.data!!.birth_day
+                       birth_month = value.data!!.birth_month
+                       birthday_year = value.data!!.birthday_year
+                       company = value.data!!.company
+                       enroll_to_loyalty = value.data!!.enroll_to_loyalty
+                       same_as_billing_address = value.data!!.same_as_billing_address
+
+                       addresses_attributes = (value.data?.addresses_attributes!!)
+
+                   }
+               }
+
+               LogUtil.logE(TAG, "addCustomerDataJson:  ${Gson().toJson(addCustomerData)}")
+               LogUtil.logE(TAG, "isEdit:  ${isEdit}")
+               LogUtil.logE(TAG, "customerID:  ${customerID}")
+               viewModelScope.launch {
+
+                   resource = if (isEdit) {
+                       posRepository.updateCustomer(customerID, addCustomerData)
+                   } else {
+
+                       posRepository.createCustomer(addCustomerData)
+                   }
+
+                   when (resource.status) {
+                       Status.SUCCESS -> {
+                           _showProgress.value = Event(false)
+
+                           resource.data.let {
+                               if (it?.status == 200) {
+
+                                   resource.data?.let { customerListReposne ->
+
+                                       val model = TbCustomer(
+                                           id = customerListReposne.data.id,
+                                           first_name = customerListReposne.data.first_name,
+                                           last_name = customerListReposne.data.last_name,
+                                           birth_date = customerListReposne.data.birth_date,
+                                           email = customerListReposne.data.email,
+                                           phones = customerListReposne.data.phones,
+                                           addresses = customerListReposne.data.addresses,
+                                           enroll_to_loyalty = customerListReposne.data.enroll_to_loyalty,
+                                           same_as_billing_address = customerListReposne.data.same_as_billing_address,
+                                           final_reward = customerListReposne.data.final_reward,
+                                           company = customerListReposne.data.company,
+                                           isSelcted = true,
+                                       )
 
 
-                LogUtil.logE("DaataJson", "PassData  ${Gson().toJson(value?.data)}")
-                data?.first_name = value?.data?.first_name!!.replaceFirstChar { it.uppercase() }
-                data?.last_name = value?.data?.last_name!!.replaceFirstChar { it.uppercase() }
+                                       posRepository.addCustomer(model)
 
-                val phone = CreateCustomerRequestModel.Customer.Phone(
-                    id = phoneId,
-                    phone_number = phoneNo.value.toString().replace(
-                        ("[\\D]").toRegex(),
-                        ""
-                    )
-                )
-                if (isEdit) {
-                    phone.id = phoneId
-                }
-                data?.phones_attributes?.add(
-                    0, phone
-                )
+                                       if (isFromPhoneOrderEdit) {
+                                           _updatedCustomer.value = Event(model)
+                                       } else {
+                                           _Basedata.value = Event(customerListReposne)
+                                           _customerModel.value = Event(model)
+                                       }
 
-                data?.email = value.data!!.email
-                data?.birth_day = value.data!!.birth_day
-                data?.birth_month = value.data!!.birth_month
-                data?.birthday_year = value.data!!.birthday_year
-                data?.company = value.data!!.company
-                data?.enroll_to_loyalty = value.data!!.enroll_to_loyalty
-                data?.same_as_billing_address = value.data!!.same_as_billing_address
+                                   }
+                               } else {
+                                   _snackbarText.value = Event(resource.message)
+                               }
+                           }
+                       }
+                       Status.ERROR -> {
+                           _snackbarText.value = Event(resource.message)
+                           _showProgress.value = Event(false)
+                       }
+                       Status.LOADING -> {
+                           _showProgress.value = Event(true)
+                       }
 
-                data?.addresses_attributes = (value.data?.addresses_attributes!!)
+                   }
 
-
-            }
-
-            LogUtil.logE(TAG, "addCustomerDataJson:  ${Gson().toJson(addCustomerData)}")
-            LogUtil.logE(TAG, "isEdit:  ${isEdit}")
-            LogUtil.logE(TAG, "customerID:  ${customerID}")
-            viewModelScope.launch {
-
-                resource = if (isEdit) {
-                    posRepository.updateCustomer(customerID, addCustomerData)
-                } else {
-
-                    posRepository.createCustomer(addCustomerData)
-                }
-
-                when (resource.status) {
-                    Status.SUCCESS -> {
-                        _showProgress.value = Event(false)
-
-                        resource.data.let {
-                            if (it?.status == 200) {
-
-                                resource.data?.let { customerListReposne ->
-
-                                    val model = TbCustomer(
-                                        id = customerListReposne.data.id,
-                                        first_name = customerListReposne.data.first_name,
-                                        last_name = customerListReposne.data.last_name,
-                                        birth_date = customerListReposne.data.birth_date,
-                                        email = customerListReposne.data.email,
-                                        phones = customerListReposne.data.phones,
-                                        addresses = customerListReposne.data.addresses,
-                                        enroll_to_loyalty = customerListReposne.data.enroll_to_loyalty,
-                                        same_as_billing_address = customerListReposne.data.same_as_billing_address,
-                                        final_reward = customerListReposne.data.final_reward,
-                                        company = customerListReposne.data.company,
-                                        isSelcted = true,
-                                    )
+               }
 
 
-                                    posRepository.addCustomer(model)
+           }
+       }
 
-                                    if(isFromPhoneOrderEdit) {
-                                        _updatedCustomer.value = Event(model)
-                                    }else {
-                                        _Basedata.value = Event(customerListReposne)
-                                        _customerModel.value = Event(model)
-                                    }
-
-                                }
-                            } else {
-                                _snackbarText.value = Event(resource.message)
-                            }
-                        }
-                    }
-                    Status.ERROR -> {
-                        _snackbarText.value = Event(resource.message)
-                        _showProgress.value = Event(false)
-                    }
-                    Status.LOADING -> {
-                        _showProgress.value = Event(true)
-                    }
-
-                }
-
-            }
-
-        }
+//        }
 
 
     }

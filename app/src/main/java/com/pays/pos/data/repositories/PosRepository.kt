@@ -602,6 +602,9 @@ class PosRepository @Inject constructor(
     suspend fun deleteCustomerDataBase(id: Int?) =
         appDatabase.customerDao().deleteCustomerByID(id)
 
+  suspend fun getTotalCustomersCount() =
+        appDatabase.customerDao().getTotalCustomersCount()
+
 
     suspend fun createCustomer(data: CreateCustomerRequestModel) =
         apiHelperNew.createCustomer(data)
