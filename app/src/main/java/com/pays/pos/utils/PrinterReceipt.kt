@@ -3252,11 +3252,10 @@ fun addSingleOrdersForStarKitchen(
 
     var items: String = ""
 
-    item.quantity = quantity
     if (item.isItemEdited) {
-        items += "(U) " + item.quantity.toString() + " " + item.itemName.uppercase()
+        items += "(U) " + quantity.toString() + " " + item.itemName.uppercase()
     } else {
-        items += item.quantity.toString() + " " + item.itemName.uppercase()
+        items += quantity.toString() + " " + item.itemName.uppercase()
     }
 
     items += "\n"
@@ -3291,9 +3290,8 @@ fun addOrderSingleItemForStarKitchen(
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null
 ): String {
 
-    item.quantity = quantity
     var items: String = ""
-    items += item.quantity.toString() + " " + item.itemName.uppercase()
+    items += quantity.toString() + " " + item.itemName.uppercase()
 
     items += "\n"
     if (item.orderItemModifiers.isNotEmpty()) {
@@ -3378,7 +3376,6 @@ fun addSingleReprintOrdersForStarKitchen(
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null
 ): String {
 
-    quantity
     var items: String = ""
     items += quantity.toString() + " " + item.itemName.uppercase()
     items += "\n"
@@ -3468,10 +3465,8 @@ fun addSingleReprintOrdersForStarKitchenKiosk(
 
     var items: String = ""
 
-    item.quantity = quantity
-
     val obj = item
-    items += obj.quantity.toString() + " " + obj.itemName?.uppercase()
+    items += quantity.toString() + " " + obj.itemName?.uppercase()
     items += "\n"
 //                    Modifiers are not coming from server, once Urmit adds the modifiers then we will uncomment the below code
 
