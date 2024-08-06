@@ -2315,37 +2315,20 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 data.printerCategories.toCollection(arrayListOf())?.forEach {
                                     if (it?.id == item.categoryId) {
                                         if (it.categoryActive && it.printerEnable) {
-                                            add(
-                                                PrinterBuilder()
-                                                    .styleBold(true)
-                                                    .styleMagnification(
-                                                        MagnificationParameter(3, 3)
-                                                    )
-                                                    .actionPrintText(
-                                                        "OrderId: ${createOrderResponse.data?.order.custom_order_id}"
-                                                    )
-                                            )
+                                            for (singularity in 1..item.quantity) {
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleBold(true)
+                                                        .styleMagnification(
+                                                            MagnificationParameter(3, 3)
+                                                        )
+                                                        .actionPrintText(
+                                                            "OrderId: ${createOrderResponse.data?.order.custom_order_id}"
+                                                        )
+                                                )
 
-                                            actionFeedLine(1)
+                                                actionFeedLine(1)
 
-                                            add(
-                                                PrinterBuilder()
-                                                    .styleBold(true)
-                                                    .styleMagnification(
-                                                        MagnificationParameter(2, 2)
-                                                    )
-                                                    .actionPrintText(
-                                                        "${createOrderResponse.data?.order?.orderTypeName}"
-                                                    )
-                                            )
-
-                                            actionFeedLine(1)
-
-                                            if (createOrderResponse.data?.order?.orderType?.contains(
-                                                    "Phone",
-                                                    true
-                                                ) == true
-                                            ) {
                                                 add(
                                                     PrinterBuilder()
                                                         .styleBold(true)
@@ -2353,44 +2336,62 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                             MagnificationParameter(2, 2)
                                                         )
                                                         .actionPrintText(
-                                                            "${createOrderResponse.data?.order?.deliveryType}"
+                                                            "${createOrderResponse.data?.order?.orderTypeName}"
                                                         )
                                                 )
 
                                                 actionFeedLine(1)
+
+                                                if (createOrderResponse.data?.order?.orderType?.contains(
+                                                        "Phone",
+                                                        true
+                                                    ) == true
+                                                ) {
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleBold(true)
+                                                            .styleMagnification(
+                                                                MagnificationParameter(2, 2)
+                                                            )
+                                                            .actionPrintText(
+                                                                "${createOrderResponse.data?.order?.deliveryType}"
+                                                            )
+                                                    )
+
+                                                    actionFeedLine(1)
+                                                }
+
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleAlignment(Alignment.Left)
+                                                        .styleMagnification(
+                                                            MagnificationParameter(2, 2)
+                                                        )
+                                                        .actionPrintText(
+                                                            content = addSingleOrdersForStarKitchen(
+                                                                1,
+                                                                item,
+                                                                data.printerCategories.toCollection(arrayListOf())
+                                                            )
+                                                        )
+                                                )
+
+                                                actionFeedLine(1)
+
+                                                add(
+                                                    PrinterBuilder()
+                                                        .actionPrintText(
+                                                            Constants.getReceiptFormatDateFromUTCServer(
+                                                                requireContext(),
+                                                                createOrderResponse.data?.order.createdAt.toString()
+                                                            )
+                                                        )
+                                                )
+
+                                                printerBuilder.actionFeedLine(1)
+                                                actionCut(CutType.Partial)
+
                                             }
-
-                                            add(
-                                                PrinterBuilder()
-                                                    .styleAlignment(Alignment.Left)
-                                                    .styleMagnification(
-                                                        MagnificationParameter(2, 2)
-                                                    )
-                                                    .actionPrintText(
-                                                        content = addSingleOrdersForStarKitchen(
-                                                            1,
-                                                            item,
-                                                            data.printerCategories.toCollection(arrayListOf())
-                                                        )
-                                                    )
-                                            )
-
-                                            actionFeedLine(1)
-
-                                            add(
-                                                PrinterBuilder()
-                                                    .actionPrintText(
-                                                        Constants.getReceiptFormatDateFromUTCServer(
-                                                            requireContext(),
-                                                            createOrderResponse.data?.order.createdAt.toString()
-                                                        )
-                                                    )
-                                            )
-
-                                            printerBuilder.actionFeedLine(1)
-                                            actionCut(CutType.Partial)
-
-
                                         }
                                     }
                                 }
