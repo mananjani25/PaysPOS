@@ -939,6 +939,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     model.isFired = list[i].isFired
                     model.guestDividerAmt = list[i].guestDividerAmt
                     model.guestDividedAmt = list[i].guestDividedAmt
+                    model.item?.employeeID = prefProvider.employeeId()
 
 
                     for (j in i + 1 until list.size) {
@@ -975,8 +976,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     // IMPORTANT - remove this as this is just for logs
                     listTbItem.forEach {
                         it.guestIndexForDineIn = i
+                        it.orderType = "DineIn"
+                        it.employeeID = prefProvider.employeeId()
                         dashboardViewModel.currentCartItems.add(it)
-                        it.taxes = arrayListOf()
                         Log.d(TAG, "testDineInUpdate onClick: " + Gson().toJson(it))
                     }
                     newList.add(model)

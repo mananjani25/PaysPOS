@@ -1042,7 +1042,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         it.guestIndexForDineIn = headerPositionCounter
                        // it.taxes = arrayListOf()
 
-                        it.employeeID = getOrderDetailsResponse?.employeeId?:0
+                        it.employeeID = prefProvider.employeeId()//getOrderDetailsResponse?.employeeId?:0
 
                         it.orderType = "DineIn"
 
