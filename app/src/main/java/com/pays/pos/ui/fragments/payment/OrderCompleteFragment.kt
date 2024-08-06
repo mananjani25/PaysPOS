@@ -10299,7 +10299,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         }
                                     }
                                 }
-                            } else {
+                            } else
+                            {
                                 if (isOrderUpdated == true) {
                                     add(
                                         PrinterBuilder()
@@ -10511,12 +10512,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                            if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
+                            /*if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
                                     0
                                 ) != null
                             ) {
 
-                            }
+                            }*/
                         }
 
 //                        printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
