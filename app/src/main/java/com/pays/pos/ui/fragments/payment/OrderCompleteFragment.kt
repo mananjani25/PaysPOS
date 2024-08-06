@@ -6737,6 +6737,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 navController.popBackStack()
             }
         } else {
+            dashboardViewModel.wholetotalPrice = 0.0
             if (isGuest) {
                 if (!isLastPayment) {
                     val bundle = Bundle()
