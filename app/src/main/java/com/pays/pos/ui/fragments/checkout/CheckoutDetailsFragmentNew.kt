@@ -2092,6 +2092,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //                paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
 //                    .substring(0, viewModel.totalPrice.toString().indexOf(".") + 3).toDouble()
 
+                /**
+                 * Added to check tip details
+                 * **/
+
+                dashboardViewModel.apply {
+                    totalAmount = paymentAmount
+                    paymentTypeForTip = "card"
+                }
+
                 paymentAmount += tipAmount
 
                 if (paymentAmount != 0.0) {
@@ -3596,6 +3605,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     // make order request with payment attributes on cash payment to reflect on server
     private fun makeCashPayment() {
+
+        /**
+         * Added to check tip details
+         * **/
+
+        dashboardViewModel.apply {
+            totalAmount = paymentAmount
+            paymentTypeForTip = "cash"
+        }
+
         paymentType = if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
             "External"
         } else {
