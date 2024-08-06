@@ -18,6 +18,7 @@ import android.util.Base64
 import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.core.text.trimmedLength
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -425,43 +426,85 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         }
 
-        viewModelDashBoard.customerGivenTip.observe(viewLifecycleOwner) {
-            if (it) {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Sample Alert")
+        builder.setMessage("This is a simple alert dialog.")
+
+        val alertDialog: AlertDialog = builder.create()
+
+
+
+        viewModelDashBoard.processingTipForCard.observe(viewLifecycleOwner) {
+            if(it) {
+
+                //viewModelDashBoard.tipButtonOnCustomerDisplayClicked.value = true
+                binding.llHome.isClickable = false
+                binding.llNoReceipt.isClickable = false
+                ProgressUtils.showProgressDialog("Processing Tip",requireActivity())
+                //alertDialog.show()
+            }else {
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    //delay(300)
+
+                }
+
+            // alertDialog.dismiss()
+            }
+        }
+
+        viewModelDashBoard.customerGivenTip.observe(viewLifecycleOwner){
+            if(it){
 
                 binding.tipGivenLayout?.visible()
 
+                var totalAmountToShow = 0.0
+                var tipToShow = 0.0
+                var finalAmountToShow = 0.0
+                var changeAmount = 0.0
+
                 viewModelDashBoard.apply {
-                    finalAmount = MethodUtils.roundOffAmountString(totalTipAmount)
-                        .toDouble() + MethodUtils.roundOffAmountString(
+                    finalAmount = MethodUtils.roundOffAmountString(totalTipAmount).toDouble() + MethodUtils.roundOffAmountString(
                         paidAmount
                     ).toDouble()
 
-                    binding.txtTipAmount?.setText(
-                        "Tip Given: $ ${
-                            MethodUtils.roundOffAmountString(
-                                totalTipAmount
-                            )
-                        }"
-                    )
-                    binding.txtTotalAmount?.setText(
-                        "Total Amount: $ ${
-                            MethodUtils.roundOffAmountString(
-                                paidAmount
-                            )
-                        }"
-                    )
-                    binding.txtFinalAmount?.setText(
-                        "Final Amount: $ ${
-                            MethodUtils.roundOffAmountString(
-                                finalAmount
-                            )
-                        }"
-                    )
+                    totalAmountToShow = totalAmount
+                    tipToShow = totalTipAmount
+                    finalAmountToShow = totalAmount + totalTipAmount
+
+                    changeAmount = MethodUtils.roundOffAmountString( paidAmount - finalAmountToShow ).toDouble()
+
+                    if(paymentTypeForTip.equals("cash",true))
+                        if(changeAmount < 0.0 || changeAmount >0.0){
+
+                            val _title = if( changeAmount < 0) "$"+Math.abs(changeAmount).toString() + " to collect more" else "$"+Math.abs(changeAmount).toString() + " Change"
+
+                            binding.txtChangeAmount.apply {
+                                visible()
+                                text = _title
+                            }
+                        } else
+                            binding.txtChangeAmount.gone()
+
+
+
+
+                    binding.txtTotalAmount?.setText("Total Amount: $ ${MethodUtils.roundOffAmountString(totalAmountToShow)}")
+                    binding.txtTipAmount?.setText("Tip Given: $ ${MethodUtils.roundOffAmountString(tipToShow)}")
+                    binding.txtFinalAmount?.setText("Final Amount: $ ${MethodUtils.roundOffAmountString(finalAmountToShow)}")
 
                     customerGivenTip.value = false
+
+                    runBlocking {
+                       // delay(1000)
+                      //  viewModelDashBoard.tipButtonOnCustomerDisplayClicked.value = false
+                        ProgressUtils.dismissProgressDialog()
+                        binding.llHome.isClickable = true
+                        binding.llNoReceipt.isClickable = true
+                    }
                 }
 
-            } else {
+            }else {
             }
         }
     }

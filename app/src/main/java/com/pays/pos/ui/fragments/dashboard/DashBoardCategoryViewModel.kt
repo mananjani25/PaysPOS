@@ -204,8 +204,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     var totalTipAmount = 0.0
     var totalAmount = 0.0
     var finalAmount = 0.0
-
-
+    var paymentTypeForTip = ""
+    val processingTipForCard = MutableLiveData(false)
 
     /**
      * Fields used to check navigation from fragments

@@ -1478,7 +1478,7 @@ class CustomDisplay(
 
             txtContinue.setOnSingleClickListener  {
 
-                dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=true
+                //dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=true
 
                 txtContinue.isEnabled = false
                 txtContinue.setBackgroundColor(Color.GRAY)
@@ -1545,6 +1545,8 @@ class CustomDisplay(
 
     private fun adjustPaxTips() {
         GlobalScope.launch {
+            dashBoardCategoryViewModel.processingTipForCard.postValue(true)
+
             posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
             val tip_amt = (tippedAmount*100).toInt()
             Log.d("Amt: ","tip $tip_amt RefNo ${mPaymentViewModel.paxReferenceNo}")
@@ -1922,12 +1924,15 @@ class CustomDisplay(
                             totalTipAmount = tippedAmount
                             customerGivenTip.value = true
                         }
-                        dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=false
+
+                        dashBoardCategoryViewModel.processingTipForCard.value = false
+                       // dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=false
 
                         prefProvider.setValueboolean(Constants.TIP_ADDED, false)
                         showThankYou(mWholeTotalPrice + tippedAmount)
                     } else {
                         showErrorLayout(it.message)
+                        dashBoardCategoryViewModel.processingTipForCard.value = false
                     }
                 }
             }
@@ -1959,7 +1964,7 @@ class CustomDisplay(
         pos: Int,
         wholeTotalPrice: Double
     ) {
-        dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=true
+       // dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=true
 
         tipRate = model.rate
         tippedAmount = MethodUtils.percentageCalculation(wholeTotalPrice, model.rate)
