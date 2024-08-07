@@ -4921,6 +4921,31 @@ class AllOrdersListingFragment(
                                                 )
 
                                                 actionFeedLine(1)
+                                                if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleAlignment(Alignment.Center)
+                                                            .styleBold(true)
+                                                            .actionPrintText(
+                                                                content = if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                    "--------------------------------------------\nOrder Note\n "
+                                                                } else ""
+                                                            )
+                                                    )
+                                                }
+                                                if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleAlignment(Alignment.Center)
+                                                            .actionPrintText(
+                                                                content = if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                    orderData.note.toString()
+                                                                } else ""
+                                                            )
+                                                    )
+                                                }
+
+                                                actionFeedLine(1)
 
                                                 add(
                                                     PrinterBuilder()

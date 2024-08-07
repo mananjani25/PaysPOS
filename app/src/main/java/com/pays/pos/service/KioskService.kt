@@ -424,6 +424,32 @@ class KioskService : Service(), StatusChangeEventListener {
 
                                             actionFeedLine(1)
 
+                                            if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleAlignment(Alignment.Center)
+                                                        .styleBold(true)
+                                                        .actionPrintText(
+                                                            content = if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                "--------------------------------------------\nOrder Note\n "
+                                                            } else ""
+                                                        )
+                                                )
+                                            }
+                                            if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleAlignment(Alignment.Center)
+                                                        .actionPrintText(
+                                                            content = if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                orderData.data?.note.toString()
+                                                            } else ""
+                                                        )
+                                                )
+                                            }
+                                            actionFeedLine(1)
+
+
                                             add(
                                                 PrinterBuilder()
                                                     .actionPrintText(
