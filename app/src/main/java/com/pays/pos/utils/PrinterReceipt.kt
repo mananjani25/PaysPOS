@@ -3251,13 +3251,7 @@ fun addSingleOrdersForStarKitchen(
 ): String {
 
     var items: String = ""
-
-    if (item.isItemEdited) {
-        items += "(U) " + quantity.toString() + " " + item.itemName.uppercase()
-    } else {
-        items += quantity.toString() + " " + item.itemName.uppercase()
-    }
-
+    items += quantity.toString() + " " + item.itemName.uppercase()
     items += "\n"
     if (item.orderItemModifiers.isNotEmpty()) {
         for (j in 0 until item.orderItemModifiers.size) {
