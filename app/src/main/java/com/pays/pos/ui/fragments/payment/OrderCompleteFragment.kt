@@ -10305,6 +10305,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                                 actionFeedLine(1)
 
+                                                if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleAlignment(Alignment.Center)
+                                                            .actionPrintText(
+                                                                content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                    receiptModel?.order?.note.toString()
+                                                                } else ""
+                                                            )
+                                                    )
                                                 var printedName = StringBuilder("")
                                                 receiptModel?.order?.customer?.firstName?.let { firstName ->
                                                     receiptModel?.order?.customer?.lastName?.let { lastName ->
@@ -10366,7 +10376,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             )
                                                         )
                                                 )
-                                                printerBuilder.actionFeedLine(1)
+
+                                                actionFeedLine(1)
+
                                                 actionCut(CutType.Partial)
                                             }
                                         }
