@@ -1783,7 +1783,7 @@ class CustomDisplay(
             setupActiveTipsList(mTipListViewModel)
 //            observeActiveTipsList(wholeTotalPrice)
             Log.d("C_Disp_3::", mPaymentViewModel.tipOnAmount.toString())
-            observeActiveTipsList(mPaymentViewModel.tipOnAmount)
+            observeActiveTipsList(mPaymentViewModel.tipOnAmount / dashBoardCategoryViewModel.getSplitCount())
 
             mainCartLayout.gone()
             splashLayout.gone()
