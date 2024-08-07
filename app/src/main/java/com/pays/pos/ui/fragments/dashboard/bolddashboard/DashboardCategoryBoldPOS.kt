@@ -2436,7 +2436,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                                         .styleAlignment(Alignment.Center)
                                                                         .actionPrintText(
                                                                             content =
-                                                                            "--------------------------------------------"
+                                                                            "-------------------------------------------"
                                                                         )
                                                                 )
 
