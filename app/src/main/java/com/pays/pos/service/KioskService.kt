@@ -84,8 +84,11 @@ class KioskService : Service(), StatusChangeEventListener {
         super.onCreate()
 
         CoroutineScope(Dispatchers.IO).launch {
-            var tbLabelPrinterSettings: TbLabelPrinterSettings? = AppDatabase.getDatabase(applicationContext).labelPrinterSettings().getLabelPrinterSettingsData()
-            oneItemPerReceipt=if (tbLabelPrinterSettings!=null) tbLabelPrinterSettings.oneItemPerReciept else true
+            var tbLabelPrinterSettings: TbLabelPrinterSettings? =
+                AppDatabase.getDatabase(applicationContext).labelPrinterSettings()
+                    .getLabelPrinterSettingsData()
+            oneItemPerReceipt =
+                if (tbLabelPrinterSettings != null) tbLabelPrinterSettings.oneItemPerReciept else true
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -157,18 +160,18 @@ class KioskService : Service(), StatusChangeEventListener {
                         false
                     )
                 ) {
-                   try{
-                       if (it.asJsonObject.has("location_id")) {
-                           if ((PrefProvider(baseContext).getLocationId() == it.asJsonObject.get("location_id").asInt) && (it.asJsonObject.get(
-                                   "new_order"
-                               ).toString().equals("true", ignoreCase = true))
-                           ) {
-                               getOrderFromServer(it.asJsonObject.get("order_id").asInt)
-                           }
-                       }
-                   }catch (e:Exception){
+                    try {
+                        if (it.asJsonObject.has("location_id")) {
+                            if ((PrefProvider(baseContext).getLocationId() == it.asJsonObject.get("location_id").asInt) && (it.asJsonObject.get(
+                                    "new_order"
+                                ).toString().equals("true", ignoreCase = true))
+                            ) {
+                                getOrderFromServer(it.asJsonObject.get("order_id").asInt)
+                            }
+                        }
+                    } catch (e: Exception) {
 
-                   }
+                    }
                 }
 
 //                {"new_order":true,"order_id":525,"location_id":386}
@@ -256,7 +259,7 @@ class KioskService : Service(), StatusChangeEventListener {
             AppDatabase.getDatabase(applicationContext)
         )
         response?.let {
-            if (it.data?.paymentStatus.equals("paid",ignoreCase = true)) {
+            if (it.data?.paymentStatus.equals("paid", ignoreCase = true)) {
                 CoroutineScope(Dispatchers.IO).launch {
                     var kitchenList = kioskRepository.getKitchenPrintersList()
 
@@ -424,6 +427,60 @@ class KioskService : Service(), StatusChangeEventListener {
 
                                             actionFeedLine(1)
 
+                                            var printedName = StringBuilder("")
+                                            orderData.data?.customer?.firstName?.let { firstName ->
+                                                orderData.data?.customer?.lastName?.let { lastName ->
+                                                    if (kitchenSettingModel.showCustomerName) {
+                                                        if (!firstName.contains(
+                                                                "customer",
+                                                                ignoreCase = true
+                                                            )
+                                                        ) {
+                                                            printedName.append(firstName)
+                                                            printedName.append(" ")
+                                                        }
+
+                                                        if (!lastName.isBlank()) {
+                                                            printedName.append(lastName)
+                                                        }
+
+                                                        if (printedName.isNotEmpty()) {
+                                                            add(
+                                                                PrinterBuilder()
+                                                                    .styleAlignment(Alignment.Left)
+                                                                    .styleBold(true)
+                                                                    .actionPrintText(
+                                                                        content = "Customer Details\n"
+                                                                    )
+                                                            )
+
+                                                            add(
+                                                                PrinterBuilder()
+                                                                    .styleAlignment(Alignment.Center)
+                                                                    .actionPrintText(
+                                                                        content =
+                                                                        "--------------------------------------------"
+                                                                    )
+                                                            )
+
+                                                            add(
+                                                                PrinterBuilder()
+                                                                    .styleAlignment(Alignment.Left)
+                                                                    .actionPrintText(
+                                                                        content = printedName.toString()
+                                                                    )
+                                                            )
+
+                                                        }
+                                                    }
+
+                                                }
+                                            }
+
+
+
+                                            actionFeedLine(1)
+
                                             add(
                                                 PrinterBuilder()
                                                     .actionPrintText(
@@ -437,8 +494,7 @@ class KioskService : Service(), StatusChangeEventListener {
                                     }
                                 }
                             }
-                        }
-                        else{
+                        } else {
 
                             add(
                                 PrinterBuilder()
@@ -581,7 +637,10 @@ class KioskService : Service(), StatusChangeEventListener {
                                 )
                             }
 
-                            if (kitchenSettingModel.showCustomerPhone && orderData.data?.customer?.phones?.get(0)!=null){
+                            if (kitchenSettingModel.showCustomerPhone && orderData.data?.customer?.phones?.get(
+                                    0
+                                ) != null
+                            ) {
                                 add(
                                     PrinterBuilder()
                                         .styleAlignment(Alignment.Left)
