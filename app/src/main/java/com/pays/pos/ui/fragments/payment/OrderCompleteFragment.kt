@@ -489,9 +489,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                    binding.txtTotalAmount?.setText("Total Amount: $ ${MethodUtils.roundOffAmountString(totalAmountToShow)}")
-                    binding.txtTipAmount?.setText("Tip Given: $ ${MethodUtils.roundOffAmountString(tipToShow)}")
-                    binding.txtFinalAmount?.setText("Final Amount: $ ${MethodUtils.roundOffAmountString(finalAmountToShow)}")
+                    binding.txtTotalAmount?.setText("$${MethodUtils.roundOffAmountString(totalAmountToShow)}")
+                    binding.txtTipAmount?.setText  ("$${MethodUtils.roundOffAmountString(tipToShow)}")
+                    binding.txtFinalAmount?.setText("$${MethodUtils.roundOffAmountString(finalAmountToShow)}")
 
                     customerGivenTip.value = false
 
