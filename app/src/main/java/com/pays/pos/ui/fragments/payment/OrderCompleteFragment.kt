@@ -435,26 +435,26 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
         viewModelDashBoard.processingTipForCard.observe(viewLifecycleOwner) {
-            if(it) {
+            if (it) {
 
                 //viewModelDashBoard.tipButtonOnCustomerDisplayClicked.value = true
                 binding.llHome.isClickable = false
                 binding.llNoReceipt.isClickable = false
-                ProgressUtils.showProgressDialog("Processing Tip",requireActivity())
+                ProgressUtils.showProgressDialog("Processing Tip", requireActivity())
                 //alertDialog.show()
-            }else {
+            } else {
 
                 CoroutineScope(Dispatchers.IO).launch {
                     //delay(300)
 
                 }
 
-            // alertDialog.dismiss()
+                // alertDialog.dismiss()
             }
         }
 
-        viewModelDashBoard.customerGivenTip.observe(viewLifecycleOwner){
-            if(it){
+        viewModelDashBoard.customerGivenTip.observe(viewLifecycleOwner) {
+            if (it) {
 
                 binding.tipGivenLayout?.visible()
 
@@ -464,7 +464,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 var changeAmount = 0.0
 
                 viewModelDashBoard.apply {
-                    finalAmount = MethodUtils.roundOffAmountString(totalTipAmount).toDouble() + MethodUtils.roundOffAmountString(
+                    finalAmount = MethodUtils.roundOffAmountString(totalTipAmount)
+                        .toDouble() + MethodUtils.roundOffAmountString(
                         paidAmount
                     ).toDouble()
 
@@ -472,12 +473,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     tipToShow = totalTipAmount
                     finalAmountToShow = totalAmount + totalTipAmount
 
-                    changeAmount = MethodUtils.roundOffAmountString( paidAmount - finalAmountToShow ).toDouble()
+                    changeAmount =
+                        MethodUtils.roundOffAmountString(paidAmount - finalAmountToShow).toDouble()
 
-                    if(paymentTypeForTip.equals("cash",true))
-                        if(changeAmount < 0.0 || changeAmount >0.0){
+                    if (paymentTypeForTip.equals("cash", true))
+                        if (changeAmount < 0.0 || changeAmount > 0.0) {
 
-                            val _title = if( changeAmount < 0) "$"+Math.abs(changeAmount).toString() + " to collect more" else "$"+Math.abs(changeAmount).toString() + " Change"
+                            val _title = if (changeAmount < 0) "$" + Math.abs(changeAmount)
+                                .toString() + " to collect more" else "$" + Math.abs(changeAmount)
+                                .toString() + " Change"
 
                             binding.txtChangeAmount.apply {
                                 visible()
@@ -489,22 +493,40 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                    binding.txtTotalAmount?.setText("Total Amount: $ ${MethodUtils.roundOffAmountString(totalAmountToShow)}")
-                    binding.txtTipAmount?.setText("Tip Given: $ ${MethodUtils.roundOffAmountString(tipToShow)}")
-                    binding.txtFinalAmount?.setText("Final Amount: $ ${MethodUtils.roundOffAmountString(finalAmountToShow)}")
+                    binding.txtTotalAmount?.setText(
+                        "Total Amount: $ ${
+                            MethodUtils.roundOffAmountString(
+                                totalAmountToShow
+                            )
+                        }"
+                    )
+                    binding.txtTipAmount?.setText(
+                        "Tip Given: $ ${
+                            MethodUtils.roundOffAmountString(
+                                tipToShow
+                            )
+                        }"
+                    )
+                    binding.txtFinalAmount?.setText(
+                        "Final Amount: $ ${
+                            MethodUtils.roundOffAmountString(
+                                finalAmountToShow
+                            )
+                        }"
+                    )
 
                     customerGivenTip.value = false
 
                     runBlocking {
-                       // delay(1000)
-                      //  viewModelDashBoard.tipButtonOnCustomerDisplayClicked.value = false
+                        // delay(1000)
+                        //  viewModelDashBoard.tipButtonOnCustomerDisplayClicked.value = false
                         ProgressUtils.dismissProgressDialog()
                         binding.llHome.isClickable = true
                         binding.llNoReceipt.isClickable = true
                     }
                 }
 
-            }else {
+            } else {
             }
         }
     }
@@ -10283,6 +10305,57 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                                 actionFeedLine(1)
 
+                                                var printedName = StringBuilder("")
+                                                receiptModel?.order?.customer?.firstName?.let { firstName ->
+                                                    receiptModel?.order?.customer?.lastName?.let { lastName ->
+                                                        if (kitchenSettingModel.showCustomerName) {
+                                                            if (!firstName.contains(
+                                                                    "customer",
+                                                                    ignoreCase = true
+                                                                )
+                                                            ) {
+                                                                printedName.append(firstName)
+                                                                printedName.append(" ")
+                                                            }
+
+                                                            if (!lastName.isBlank()) {
+                                                                printedName.append(lastName)
+                                                            }
+
+                                                            if (printedName.isNotEmpty()) {
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleAlignment(Alignment.Left)
+                                                                        .styleBold(true)
+                                                                        .actionPrintText(
+                                                                            content = "Customer Details\n"
+                                                                        )
+                                                                )
+
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleAlignment(Alignment.Center)
+                                                                        .actionPrintText(
+                                                                            content =
+                                                                            "--------------------------------------------"
+                                                                        )
+                                                                )
+
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleAlignment(Alignment.Left)
+                                                                        .actionPrintText(
+                                                                            content = printedName.toString()
+                                                                        )
+                                                                )
+
+                                                            }
+                                                        }
+
+                                                    }
+                                                }
+
+                                                actionFeedLine(1)
 
                                                 add(
                                                     PrinterBuilder()
@@ -10299,8 +10372,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         }
                                     }
                                 }
-                            } else
-                            {
+                            } else {
                                 if (isOrderUpdated == true) {
                                     add(
                                         PrinterBuilder()
@@ -10508,8 +10580,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             }
                         }*/
                             /*Added By Rahul */
-
-
 
 
                             /*if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
