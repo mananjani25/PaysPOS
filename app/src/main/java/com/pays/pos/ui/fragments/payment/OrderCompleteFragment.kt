@@ -1516,7 +1516,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.llOptions.visibility = View.GONE
                 binding.txtHome.visibility = View.GONE
                 binding.txtAddCustomer.visibility = View.GONE
-                binding.viewSplitLine.visibility = View.GONE
+//                binding.viewSplitLine.visibility = View.GONE
                 binding.tvMessage.setText(getString(R.string.please_enter_customer_contact_number))
                 MethodUtils.hideKeyboard(requireActivity())
             }
