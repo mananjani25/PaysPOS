@@ -427,6 +427,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
              */
             dashboardViewModel.apply {
                 totalTipAmount = tipAmount
+                employeeGivenTip = true
                 customerGivenTip.value = true
             }
 

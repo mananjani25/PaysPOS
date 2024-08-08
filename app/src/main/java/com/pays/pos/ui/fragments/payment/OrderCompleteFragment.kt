@@ -499,6 +499,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 var totalAmountToShow = 0.0
                 var tipToShow = 0.0
                 var finalAmountToShow = 0.0
+                var paidAmountToShow = 0.0
                 var changeAmount = 0.0
 
                 viewModelDashBoard.apply {
@@ -510,12 +511,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     totalAmountToShow = totalAmount
                     tipToShow = totalTipAmount
                     finalAmountToShow = totalAmount + totalTipAmount
+                    paidAmountToShow = MethodUtils.roundOffAmountString(paidAmount).toDouble()
+
 
                     changeAmount =
-                        MethodUtils.roundOffAmountString(paidAmount - finalAmountToShow).toDouble()
+                        MethodUtils.roundOffAmountString(paidAmountToShow - finalAmountToShow).toDouble()
 
-                    if (paymentTypeForTip.equals("cash", true))
-                        if (changeAmount < 0.0 || changeAmount > 0.0) {
+
+                    if (paymentTypeForTip.equals("cash", true)) {
+
+                        if (!employeeGivenTip && changeAmount < 0.0 || changeAmount > 0.0 ) {
+
 
                             val _title = if (changeAmount < 0) "$" + Math.abs(changeAmount)
                                 .toString() + " to collect more" else "$" + Math.abs(changeAmount)
@@ -525,9 +531,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 visible()
                                 text = _title
                             }
-                        } else
+                        } else {
+                            employeeGivenTip = false
                             binding.txtChangeAmount.gone()
-
+                        }
+                    }
 
 
                     binding.txtTotalAmount?.setText("$${MethodUtils.roundOffAmountString(totalAmountToShow)}")

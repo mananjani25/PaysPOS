@@ -1827,6 +1827,7 @@ class CustomDisplay(
                 dashBoardCategoryViewModel.apply {
                     totalTipAmount = 0.0
                     customerGivenTip.value = true
+                    employeeGivenTip = false
                 }
 
                 showThankYou(mWholeTotalPrice)
@@ -1923,6 +1924,7 @@ class CustomDisplay(
                         dashBoardCategoryViewModel.apply {
                             totalTipAmount = tippedAmount
                             customerGivenTip.value = true
+                            employeeGivenTip = false
                         }
 
                         dashBoardCategoryViewModel.processingTipForCard.value = false

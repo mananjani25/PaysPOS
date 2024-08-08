@@ -201,6 +201,7 @@ class DashBoardCategoryViewModel @Inject constructor(
      * Tip has been added , Either from customer display or from checkoutFragment
      */
     val customerGivenTip = MutableLiveData<Boolean>(false)
+    var employeeGivenTip = false
     var totalTipAmount = 0.0
     var totalAmount = 0.0
     var finalAmount = 0.0
