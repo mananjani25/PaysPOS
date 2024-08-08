@@ -990,6 +990,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             dashboardViewModel.deleteCartItems()
             dashboardViewModel.deleteCart()
 
+            dashboardViewModel.dineInItemsBeforeUpdate = arrayListOf()
+
             var headerPositionCounter = -1
 
             for (i in 0 until list.size) {
@@ -1048,6 +1050,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                        // if(!it.isPaid)
                         dashboardViewModel.currentCartItems.add(it)
+                        dashboardViewModel.dineInItemsBeforeUpdate.add(it)
                         Log.d(TAG, "testDineInUpdate onClick: " + Gson().toJson(it))
                     }
 
@@ -10313,23 +10316,81 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.e(TAG, "getListOfHash  ${Gson().toJson(listItemWithGuest)}")
         LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(list)}")
         fireItemsList = arrayListOf()
-        list.forEach {
+
+//        dashboardViewModel.apply {
+//
+//            val listSize = if(dineInItemsBeforeUpdate.size ?: 0 >= list.size) dineInItemsBeforeUpdate.size ?:0 else list.size
+//
+//            for( i in 0..listSize-1){
+//                try {
+//                    val oldItem = dineInItemsBeforeUpdate[i].item
+//                    val newItem = list[i].item
+//
+//                    if(oldItem != newItem){
+//                        if (newItem != null) {
+//                            fireItemsList.add(newItem)
+//                        }
+//                        if (newItem != null) {
+//                            listItem.add(newItem)
+//                        }
+//                    }
+//                }catch (e:Exception){
+//
+//                }
+//            }
+//        }
+
+        list.forEach { it ->
             if (it.isHeader == 1) {
                 it.item?.let {
                     if (!it.isFired) {
                         fireItemsList.add(it)
                         listItem.add(it)
+                    }else {
+
+                        if(prefProvider.getValueboolean(DINE_IN_UPDATE,false)) {
+                            val foundItemList =
+                                dashboardViewModel.dineInItemsBeforeUpdate.filter { item ->
+                                    item.cartItemId == it.cartItemId &&
+                                            item.itemId == it.itemId &&
+                                            item.guestIndexForDineIn == it.guestIndexForDineIn &&
+                                            it.isFired
+                                }
+
+                            if (foundItemList.isNotEmpty()) {
+                                val foundItem = foundItemList.first()
+
+                                if (    it.itemQuantity != foundItem.itemQuantity ||
+                                        it.note != foundItem.note ||
+                                        !dashboardViewModel.checkModifierNew(it,foundItem)
+                                ) {
+                                    fireItemsList.add(it)
+                                    listItem.add(it)
+                                } else {
+
+                                }
+                            } else {
+
+                            }
+                        }else {
+
+                        }
                     }
                 }
                 it.item?.orderItemId?.let {
                     builder.add(it.toString())
 
                 }
-                //  it.item?.isFired = true
+                  it.item?.isFired = true
 
             }
 
         }
+
+        dashboardViewModel.apply {
+            dineInItemsBeforeUpdate = arrayListOf()
+        }
+
         LogUtil.logE(TAG, "listItem:  ${Gson().toJson(listItem)}")
         val serializedObject: String =
             prefProvider.getValue(Constants.DINE_IN_UPDATE_LIST, "")

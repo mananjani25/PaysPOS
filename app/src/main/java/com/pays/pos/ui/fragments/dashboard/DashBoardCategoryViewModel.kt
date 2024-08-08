@@ -149,6 +149,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     var orderRequestModel:OrderRequestModel? = null
     var orderAttributeRequestModel = OrderAttributeRequestModel()
 
+    /**
+     * Dine In Item for Item Tracking
+     */
+    var dineInItemsBeforeUpdate  = arrayListOf<TbCartItem>()
 
     /**
      * Tracking main cart discount

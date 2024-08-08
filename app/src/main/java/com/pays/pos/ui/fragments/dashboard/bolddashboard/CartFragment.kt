@@ -2776,6 +2776,8 @@ class CartFragment(
                             }
 
 
+                            val valuess = cartModelsList[0]
+
                             val request = viewModel.updateOrder(cartModelsList[0])
 
 
