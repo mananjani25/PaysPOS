@@ -516,6 +516,9 @@ class KioskService : Service(), StatusChangeEventListener {
                                                         )
                                                     )
                                             )
+
+                                            actionFeedLine(1)
+                                            actionCut(CutType.Partial)
                                         }
                                     }
                                 }
@@ -663,48 +666,53 @@ class KioskService : Service(), StatusChangeEventListener {
                                 )
                             }
 
+                            try {
+                                if (kitchenSettingModel.showCustomerPhone && orderData.data?.customer?.phones?.get(
+                                        0
+                                    ) != null
+                                ) {
+                                    add(
+                                        PrinterBuilder()
+                                            .styleAlignment(Alignment.Left)
+                                            .actionPrintText(
+                                                content = if (kitchenSettingModel.showCustomerPhone && orderData.data?.customer?.phones?.get(
+                                                        0
+                                                    ) != null
+                                                ) {
+
+                                                    var phoneNumber =
+                                                        orderData.data?.customer?.phones?.get(
+                                                            0
+                                                        )?.phoneNumber.toString()
+                                                    if (phoneNumber.length != 10) {
+                                                        // Handle invalid input (must be 10 digits)
+                                                        "Invalid phone number"
+                                                    }
+
+                                                    val areaCode = phoneNumber.substring(0, 3)
+                                                    val firstPart = phoneNumber.substring(3, 6)
+                                                    val secondPart = phoneNumber.substring(6)
+
+                                                    "($areaCode)$firstPart-$secondPart"
+
+                                                } else ""
+                                            )
+                                    )
+                                }
+                            } catch (e: Exception) {
+
+                            }
+
+                        }
+
+                        try {
                             if (kitchenSettingModel.showCustomerPhone && orderData.data?.customer?.phones?.get(
                                     0
                                 ) != null
                             ) {
-                                add(
-                                    PrinterBuilder()
-                                        .styleAlignment(Alignment.Left)
-                                        .actionPrintText(
-                                            content = if (kitchenSettingModel.showCustomerPhone && orderData.data?.customer?.phones?.get(
-                                                    0
-                                                ) != null
-                                            ) {
 
-                                                var phoneNumber =
-                                                    orderData.data?.customer?.phones?.get(
-                                                        0
-                                                    )?.phoneNumber.toString()
-                                                if (phoneNumber.length != 10) {
-                                                    // Handle invalid input (must be 10 digits)
-                                                    "Invalid phone number"
-                                                }
-
-                                                val areaCode = phoneNumber.substring(0, 3)
-                                                val firstPart = phoneNumber.substring(3, 6)
-                                                val secondPart = phoneNumber.substring(6)
-
-                                                "($areaCode)$firstPart-$secondPart"
-
-                                            } else ""
-                                        )
-                                )
                             }
-
-
-                        }
-
-
-                        if (kitchenSettingModel.showCustomerPhone && orderData.data?.customer?.phones?.get(
-                                0
-                            ) != null
-                        ) {
-
+                        } catch (e: Exception) {
                         }
 
 
@@ -2292,32 +2300,39 @@ class KioskService : Service(), StatusChangeEventListener {
                     }
 
 
-                    if (kitchenSettingModel.showCustomerPhone) {
+                    try {
+                        if (kitchenSettingModel.showCustomerPhone) {
 
-                        if (orderData.data?.customer?.phones?.isNotEmpty() == true) {
+                            if (orderData.data?.customer?.phones?.isNotEmpty() == true) {
 
-                            PrintSunmiUtils.customerPhone(
-                                MethodUtils.getUSFormatNumber(
-                                    orderData.data?.customer?.phones?.get(
-                                        orderData.data?.customer?.phones?.size?.minus(1) ?: 0
-                                    )?.phoneNumber ?: ""
+                                PrintSunmiUtils.customerPhone(
+                                    MethodUtils.getUSFormatNumber(
+                                        orderData.data?.customer?.phones?.get(
+                                            orderData.data?.customer?.phones?.size?.minus(1) ?: 0
+                                        )?.phoneNumber ?: ""
+                                    )
+
                                 )
+                            }
 
+                        }
+                    } catch (e: Exception) {
+
+                    }
+
+                    try {
+                        if (orderData.data?.customer?.addresses?.isNotEmpty() == true) {
+
+
+                            PrintSunmiUtils.customerAddress(
+                                orderData.data?.customer?.addresses?.get(
+                                    orderData.data?.customer?.addresses?.size?.minus(1) ?: 0
+                                ) ?: ""
                             )
                         }
-
+                    } catch (e: Exception) {
                     }
 
-
-                    if (orderData.data?.customer?.addresses?.isNotEmpty() == true) {
-
-
-                        PrintSunmiUtils.customerAddress(
-                            orderData.data?.customer?.addresses?.get(
-                                orderData.data?.customer?.addresses?.size?.minus(1) ?: 0
-                            ) ?: ""
-                        )
-                    }
                 }
 
 
@@ -2419,26 +2434,24 @@ class KioskService : Service(), StatusChangeEventListener {
                     }
 
 
-                    if (kitchenSettingModel.showCustomerPhone) {
+                    try{
+                        if (kitchenSettingModel.showCustomerPhone) {
 
-                        if (orderData.data?.customer?.phones?.isNotEmpty() == true) {
+                            if (orderData.data?.customer?.phones?.isNotEmpty() == true) {
 
-                            PrintSunmiUtils.normalTextLarge(
-                                MethodUtils.getUSFormatNumber(
-                                    orderData.data?.customer?.phones?.get(
-                                        orderData.data?.customer?.phones?.size?.minus(1) ?: 0
-                                    )?.phoneNumber ?: ""
+                                PrintSunmiUtils.normalTextLarge(
+                                    MethodUtils.getUSFormatNumber(
+                                        orderData.data?.customer?.phones?.get(
+                                            orderData.data?.customer?.phones?.size?.minus(1) ?: 0
+                                        )?.phoneNumber ?: ""
+                                    )
+
                                 )
+                            }
 
-                            )
                         }
+                    }catch (e:Exception){}
 
-                    }
-
-
-                    if (orderData.data?.customer?.addresses?.isNotEmpty() == true) {
-
-                    }
                 }
 
 

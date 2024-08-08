@@ -2404,55 +2404,57 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                                                 actionFeedLine(1)
 
-                                                var printedName = StringBuilder("")
-                                                createOrderResponse.data?.order?.customer?.firstName?.let { firstName ->
-                                                    createOrderResponse.data?.order?.customer?.lastName?.let { lastName ->
-                                                        if (kitchenSettingModel.showCustomerName) {
-                                                            if (!firstName.contains(
-                                                                    "customer",
-                                                                    ignoreCase = true
-                                                                )
-                                                            ) {
-                                                                printedName.append(firstName)
-                                                                printedName.append(" ")
+                                                try{
+                                                    var printedName = StringBuilder("")
+                                                    createOrderResponse.data?.order?.customer?.firstName?.let { firstName ->
+                                                        createOrderResponse.data?.order?.customer?.lastName?.let { lastName ->
+                                                            if (kitchenSettingModel.showCustomerName) {
+                                                                if (!firstName.contains(
+                                                                        "customer",
+                                                                        ignoreCase = true
+                                                                    )
+                                                                ) {
+                                                                    printedName.append(firstName)
+                                                                    printedName.append(" ")
+                                                                }
+
+                                                                if (!lastName.isBlank()) {
+                                                                    printedName.append(lastName)
+                                                                }
+
+                                                                if (printedName.isNotEmpty()) {
+                                                                    add(
+                                                                        PrinterBuilder()
+                                                                            .styleAlignment(Alignment.Left)
+                                                                            .styleBold(true)
+                                                                            .actionPrintText(
+                                                                                content = "Customer Details\n"
+                                                                            )
+                                                                    )
+
+                                                                    add(
+                                                                        PrinterBuilder()
+                                                                            .styleAlignment(Alignment.Center)
+                                                                            .actionPrintText(
+                                                                                content =
+                                                                                "-------------------------------------------"
+                                                                            )
+                                                                    )
+
+                                                                    add(
+                                                                        PrinterBuilder()
+                                                                            .styleAlignment(Alignment.Left)
+                                                                            .actionPrintText(
+                                                                                content = printedName.toString()
+                                                                            )
+                                                                    )
+
+                                                                }
                                                             }
 
-                                                            if (!lastName.isBlank()) {
-                                                                printedName.append(lastName)
-                                                            }
-
-                                                            if (printedName.isNotEmpty()) {
-                                                                add(
-                                                                    PrinterBuilder()
-                                                                        .styleAlignment(Alignment.Left)
-                                                                        .styleBold(true)
-                                                                        .actionPrintText(
-                                                                            content = "Customer Details\n"
-                                                                        )
-                                                                )
-
-                                                                add(
-                                                                    PrinterBuilder()
-                                                                        .styleAlignment(Alignment.Center)
-                                                                        .actionPrintText(
-                                                                            content =
-                                                                            "-------------------------------------------"
-                                                                        )
-                                                                )
-
-                                                                add(
-                                                                    PrinterBuilder()
-                                                                        .styleAlignment(Alignment.Left)
-                                                                        .actionPrintText(
-                                                                            content = printedName.toString()
-                                                                        )
-                                                                )
-
-                                                            }
                                                         }
-
                                                     }
-                                                }
+                                                }catch (e:Exception){}
 
                                                 actionFeedLine(1)
 
@@ -2466,7 +2468,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                         )
                                                 )
 
-                                                printerBuilder.actionFeedLine(1)
+                                                actionFeedLine(1)
                                                 actionCut(CutType.Partial)
 
                                             }
@@ -2588,73 +2590,82 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 )
                             }
                             actionFeedLine(1)
-                            if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
-                                add(
-                                    PrinterBuilder()
-                                        .styleAlignment(Alignment.Left)
-                                        .styleBold(true)
-                                        .actionPrintText(
-                                            content = if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
-                                                "Customer Details\n"
-                                            } else ""
-                                        )
-                                )
+                            try{
+                                if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
+                                    add(
+                                        PrinterBuilder()
+                                            .styleAlignment(Alignment.Left)
+                                            .styleBold(true)
+                                            .actionPrintText(
+                                                content = if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
+                                                    "Customer Details\n"
+                                                } else ""
+                                            )
+                                    )
+                                }
+
+                                if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
+                                    add(
+                                        PrinterBuilder()
+                                            .styleAlignment(Alignment.Center)
+                                            .actionPrintText(
+                                                content = if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
+                                                    "--------------------------------------------"
+                                                } else ""
+                                            )
+                                    )
+                                }
+                                if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
+                                    add(
+                                        PrinterBuilder()
+                                            .styleAlignment(Alignment.Left)
+                                            .actionPrintText(
+                                                content = if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
+                                                    createOrderResponse.data?.order?.customer?.firstName + " " + createOrderResponse.data?.order?.customer?.lastName
+                                                } else ""
+                                            )
+                                    )
+                                }
+                            }catch (e:Exception){
+
                             }
 
-                            if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
-                                add(
-                                    PrinterBuilder()
-                                        .styleAlignment(Alignment.Center)
-                                        .actionPrintText(
-                                            content = if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
-                                                "--------------------------------------------"
-                                            } else ""
-                                        )
-                                )
-                            }
-                            if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
-                                add(
-                                    PrinterBuilder()
-                                        .styleAlignment(Alignment.Left)
-                                        .actionPrintText(
-                                            content = if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
-                                                createOrderResponse.data?.order?.customer?.firstName + " " + createOrderResponse.data?.order?.customer?.lastName
-                                            } else ""
-                                        )
-                                )
-                            }
-                            if (kitchenSettingModel.showCustomerPhone && createOrderResponse.data?.order?.customer?.phones?.get(
-                                    0
-                                ) != null
-                            ) {
-                                add(
-                                    PrinterBuilder()
-                                        .styleAlignment(Alignment.Left)
-                                        .actionPrintText(
-                                            content = if (kitchenSettingModel.showCustomerPhone && createOrderResponse.data?.order?.customer?.phones?.get(
-                                                    0
-                                                ) != null
-                                            ) {
+                         try{
+                             if (kitchenSettingModel.showCustomerPhone && createOrderResponse.data?.order?.customer?.phones?.get(
+                                     0
+                                 ) != null
+                             ) {
+                                 add(
+                                     PrinterBuilder()
+                                         .styleAlignment(Alignment.Left)
+                                         .actionPrintText(
+                                             content = if (kitchenSettingModel.showCustomerPhone && createOrderResponse.data?.order?.customer?.phones?.get(
+                                                     0
+                                                 ) != null
+                                             ) {
 
-                                                var phoneNumber =
-                                                    createOrderResponse.data.order?.customer?.phones?.get(
-                                                        0
-                                                    )?.phoneNumber.toString()
-                                                if (phoneNumber.length != 10) {
-                                                    // Handle invalid input (must be 10 digits)
-                                                    "Invalid phone number"
-                                                }
+                                                 var phoneNumber =
+                                                     createOrderResponse.data.order?.customer?.phones?.get(
+                                                         0
+                                                     )?.phoneNumber.toString()
+                                                 if (phoneNumber.length != 10) {
+                                                     // Handle invalid input (must be 10 digits)
+                                                     "Invalid phone number"
+                                                 }
 
-                                                val areaCode = phoneNumber.substring(0, 3)
-                                                val firstPart = phoneNumber.substring(3, 6)
-                                                val secondPart = phoneNumber.substring(6)
+                                                 val areaCode = phoneNumber.substring(0, 3)
+                                                 val firstPart = phoneNumber.substring(3, 6)
+                                                 val secondPart = phoneNumber.substring(6)
 
-                                                "($areaCode)$firstPart-$secondPart"
+                                                 "($areaCode)$firstPart-$secondPart"
 
-                                            } else ""
-                                        )
-                                )
-                            }
+                                             } else ""
+                                         )
+                                 )
+                             }
+                         }catch (e:Exception){
+
+                         }
                             printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
                         }
 
@@ -5320,44 +5331,44 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
             if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName) {
-                if (receiptModel?.order?.customer != null) {
+                try{
+                    if (receiptModel?.order?.customer != null) {
 
-                    PrintSunmiUtils.customerDetailsInner()
+                        PrintSunmiUtils.customerDetailsInner()
 
-
-                    if (kitchenSettingModel.showCustomerName) {
-
-                        PrintSunmiUtils.normalTextLarge(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
-
-
-                    }
-
-
-                    if (kitchenSettingModel.showCustomerPhone) {
-
-                        if (receiptModel?.order?.customer?.phones?.isNotEmpty()) {
-
-
-                            receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
-                                PrintSunmiUtils.normalTextLarge(
-                                    MethodUtils.getUSFormatNumber(it)
-                                )
+                        try{
+                            if (kitchenSettingModel.showCustomerName) {
+                                PrintSunmiUtils.normalTextLarge(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
                             }
+                        }catch (e:Exception){}
+
+                        try{
+                            if (kitchenSettingModel.showCustomerPhone) {
+
+                                if (receiptModel?.order?.customer?.phones?.isNotEmpty()) {
+
+                                    receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
+                                        PrintSunmiUtils.normalTextLarge(
+                                            MethodUtils.getUSFormatNumber(it)
+                                        )
+                                    }
+                                }
+                            }
+                        }catch (e:Exception){
+
                         }
 
-                    }
+                        try{
+                            if (kitchenSettingModel.showCustomerAddress) {
 
+                                if (receiptModel?.order?.orderType.trim()
+                                        .lowercase() == "Open Order".trim()
+                                        .lowercase() && receiptModel?.order?.deliveryType.trim()
+                                        .lowercase() == "Pickup".trim()
+                                        .lowercase()
+                                ) {
 
-                    if (kitchenSettingModel.showCustomerAddress) {
-
-                        if (receiptModel?.order?.orderType.trim()
-                                .lowercase() == "Open Order".trim()
-                                .lowercase() && receiptModel?.order?.deliveryType.trim()
-                                .lowercase() == "Pickup".trim()
-                                .lowercase()
-                        ) {
-
-                        } else if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
+                                } else if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
 
 
 //                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
@@ -5366,23 +5377,28 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 //                                )
 //                            }
 
-                            receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                ?.forEach {
+                                    receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                        ?.forEach {
 
-                                    if (it.typeOfAddress.equals(
-                                            Constants.BILLING_ADDRESS,
-                                            ignoreCase = true
-                                        )
-                                    ) {
-                                        PrintSunmiUtils.normalTextLarge(
-                                            it.fullAddress
-                                        )
-                                    }
+                                            if (it.typeOfAddress.equals(
+                                                    Constants.BILLING_ADDRESS,
+                                                    ignoreCase = true
+                                                )
+                                            ) {
+                                                PrintSunmiUtils.normalTextLarge(
+                                                    it.fullAddress
+                                                )
+                                            }
+                                        }
+
+
                                 }
-
+                            }
+                        }catch (e:Exception){
 
                         }
                     }
+                }catch (e:Exception){
 
                 }
             }
