@@ -45,6 +45,11 @@ object ProgressUtils {
      */
     @JvmOverloads
     fun showProgressDialog(context: Activity) {
+        if (context.isFinishing || context.isDestroyed) {
+            // Do not attempt to show the dialog if the Activity is not in a valid state
+            return
+        }
+
         if (builder == null)
             builder = Dialog(context)
 
@@ -70,6 +75,7 @@ object ProgressUtils {
                 try {
                     builder?.show()
                 } catch (e: Exception) {
+                    e.printStackTrace()
                 }
 
             }
