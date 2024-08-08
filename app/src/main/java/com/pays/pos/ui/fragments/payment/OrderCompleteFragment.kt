@@ -12,6 +12,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Point
+import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.os.*
 import android.util.Base64
@@ -352,6 +353,43 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
     }
 
+    private fun scrollNestedView() {
+        val nestedScrollView = binding.nestedScrollView
+        val txtSend = binding.txtSend
+        val rootLayout = binding.nestedScrollView
+
+        rootLayout?.viewTreeObserver?.addOnGlobalLayoutListener(object :
+            ViewTreeObserver.OnGlobalLayoutListener {
+            private var isKeyboardVisible = false
+
+            override fun onGlobalLayout() {
+                val rect = Rect()
+                rootLayout.getWindowVisibleDisplayFrame(rect)
+                val screenHeight = rootLayout.height
+                val keypadHeight = screenHeight - rect.bottom
+
+                if (keypadHeight > screenHeight * 0.1) {
+                    if (!isKeyboardVisible) {
+                        // Keyboard is now visible
+                        isKeyboardVisible = true
+                        nestedScrollView?.post {
+                            nestedScrollView.smoothScrollTo(0, txtSend.top)
+                        }
+                    }
+                } else {
+                    if (isKeyboardVisible) {
+                        // Keyboard is now hidden
+                        isKeyboardVisible = false
+                        nestedScrollView?.post {
+                            nestedScrollView.smoothScrollTo(0, 0)
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+
     private fun getKitchenReceiptSettings() {
         viewModel.getKitchenReceiptSettings().observe(viewLifecycleOwner) {
 
@@ -517,6 +555,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         setupSnackbar()
         observeShowProgress()
         observeTipClicked()
+        scrollNestedView()
 
         lifecycleScope.launch {
             oneItemPerReceipt = dashboardViewModel.getLabelPrinterSettingsData().oneItemPerReciept
