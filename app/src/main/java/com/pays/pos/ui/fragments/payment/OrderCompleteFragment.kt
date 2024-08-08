@@ -530,9 +530,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                    binding.txtTotalAmount?.setText("$${MethodUtils.roundOffAmountString(totalAmountToShow)}")
-                    binding.txtTipAmount?.setText  ("$${MethodUtils.roundOffAmountString(tipToShow)}")
-                    binding.txtFinalAmount?.setText("$${MethodUtils.roundOffAmountString(finalAmountToShow)}")
+                    binding.txtTotalAmount?.setText(
+                        "$${
+                            MethodUtils.roundOffAmountString(
+                                totalAmountToShow
+                            )
+                        }"
+                    )
+                    binding.txtTipAmount?.setText("$${MethodUtils.roundOffAmountString(tipToShow)}")
+                    binding.txtFinalAmount?.setText(
+                        "$${
+                            MethodUtils.roundOffAmountString(
+                                finalAmountToShow
+                            )
+                        }"
+                    )
 
 
                     customerGivenTip.value = false
@@ -10336,6 +10348,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                 } else ""
                                                             )
                                                     )
+                                                }
                                                     var printedName = StringBuilder("")
                                                     receiptModel?.order?.customer?.firstName?.let { firstName ->
                                                         receiptModel?.order?.customer?.lastName?.let { lastName ->
@@ -10389,7 +10402,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                 }
                                                             }
 
-                                                        }
                                                     }
 
                                                     actionFeedLine(1)
@@ -10404,15 +10416,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             )
                                                     )
 
-                                                    actionFeedLine(1)
-
-                                                    actionCut(CutType.Partial)
                                                 }
+
+                                                actionFeedLine(1)
+
+                                                actionCut(CutType.Partial)
                                             }
                                         }
                                     }
                                 }
-                            }else {
+                            } else {
                                 if (isOrderUpdated == true) {
                                     add(
                                         PrinterBuilder()
@@ -10531,78 +10544,90 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     )
                                 }
                                 actionFeedLine(1)
-                                if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
-                                    add(
-                                        PrinterBuilder()
-                                            .styleAlignment(Alignment.Left)
-                                            .styleBold(true)
-                                            .actionPrintText(
-                                                content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
-                                                    "\nCustomer Details\n"
-                                                } else ""
-                                            )
-                                    )
+                                try {
+                                    if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                        add(
+                                            PrinterBuilder()
+                                                .styleAlignment(Alignment.Left)
+                                                .styleBold(true)
+                                                .actionPrintText(
+                                                    content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                                        "\nCustomer Details\n"
+                                                    } else ""
+                                                )
+                                        )
+                                    }
+
+                                    if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                        add(
+                                            PrinterBuilder()
+                                                .styleAlignment(Alignment.Center)
+                                                .actionPrintText(
+                                                    content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                                        "--------------------------------------------"
+                                                    } else ""
+                                                )
+                                        )
+                                    }
+                                } catch (e: Exception) {
                                 }
 
-                                if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
-                                    add(
-                                        PrinterBuilder()
-                                            .styleAlignment(Alignment.Center)
-                                            .actionPrintText(
-                                                content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
-                                                    "--------------------------------------------"
-                                                } else ""
-                                            )
-                                    )
-                                }
-                                if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
-                                    add(
-                                        PrinterBuilder()
-                                            .styleAlignment(Alignment.Left)
-                                            .actionPrintText(
-                                                content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
-                                                    receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName
-                                                } else ""
-                                            )
-                                    )
-                                }
-                                if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
-                                        0
-                                    ) != null
-                                ) {
-                                    add(
-                                        PrinterBuilder()
-                                            .styleAlignment(Alignment.Left)
-                                            .actionPrintText(
-                                                content = if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
-                                                        0
-                                                    ) != null
-                                                ) {
+                                try {
+                                    if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                        add(
+                                            PrinterBuilder()
+                                                .styleAlignment(Alignment.Left)
+                                                .actionPrintText(
+                                                    content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                                        receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName
+                                                    } else ""
+                                                )
+                                        )
+                                    }
+                                } catch (e: Exception) {
 
-                                                    var phoneNumber =
-                                                        receiptModel?.order?.customer?.phones?.get(
+                                }
+                                try {
+                                    if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
+                                            0
+                                        ) != null
+                                    ) {
+                                        add(
+                                            PrinterBuilder()
+                                                .styleAlignment(Alignment.Left)
+                                                .actionPrintText(
+                                                    content = if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
                                                             0
-                                                        )?.phoneNumber.toString()
-                                                    if (phoneNumber.length != 10) {
-                                                        // Handle invalid input (must be 10 digits)
-                                                        "Invalid phone number"
-                                                    }
+                                                        ) != null
+                                                    ) {
 
-                                                    val areaCode = phoneNumber.substring(0, 3)
-                                                    val firstPart = phoneNumber.substring(3, 6)
-                                                    val secondPart = phoneNumber.substring(6)
+                                                        var phoneNumber =
+                                                            receiptModel?.order?.customer?.phones?.get(
+                                                                0
+                                                            )?.phoneNumber.toString()
+                                                        if (phoneNumber.length != 10) {
+                                                            // Handle invalid input (must be 10 digits)
+                                                            "Invalid phone number"
+                                                        }
 
-                                                    "($areaCode)$firstPart-$secondPart"
+                                                        val areaCode = phoneNumber.substring(0, 3)
+                                                        val firstPart = phoneNumber.substring(3, 6)
+                                                        val secondPart = phoneNumber.substring(6)
+
+                                                        "($areaCode)$firstPart-$secondPart"
 
 
-                                                    /* MethodUtils.formatPhoneNumber(
-                                                     receiptModel?.order?.customer?.phones?.get(
-                                                         0
-                                                     )?.phoneNumber.toString()
-                                                 )*/
-                                                } else ""
-                                            )
-                                    )
+                                                        /* MethodUtils.formatPhoneNumber(
+                                                         receiptModel?.order?.customer?.phones?.get(
+                                                             0
+                                                         )?.phoneNumber.toString()
+                                                     )*/
+                                                    } else ""
+                                                )
+                                        )
+                                    }
+                                } catch (e: Exception) {
+
                                 }
                                 printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
 
@@ -12265,24 +12290,28 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     PrintSunmiUtils.customerDetailsInner()
 
-                    if (kitchenSettingModel.showCustomerName) {
-
-                        PrintSunmiUtils.normalTextLarge(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
-
+                    try {
+                        if (kitchenSettingModel.showCustomerName) {
+                            PrintSunmiUtils.normalTextLarge(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+                        }
+                    } catch (e: Exception) {
                     }
 
 
-                    if (kitchenSettingModel.showCustomerPhone) {
+                    try {
+                        if (kitchenSettingModel.showCustomerPhone) {
 
-                        if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
+                            if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
 
-                            receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
-                                PrintSunmiUtils.normalTextLarge(
-                                    MethodUtils.formatPhoneNumber(it)
-                                )
+                                receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
+                                    PrintSunmiUtils.normalTextLarge(
+                                        MethodUtils.formatPhoneNumber(it)
+                                    )
+                                }
                             }
-                        }
 
+                        }
+                    } catch (e: Exception) {
                     }
 
                     if (kitchenSettingModel.showCustomerAddress) {
@@ -12294,8 +12323,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         ) {
 
                         } else {
-
-                            if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
+                            try {
+                                if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
 
 
 //                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
@@ -12304,19 +12333,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //                                    )
 //                                }
 
-                                receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
-                                    ?.forEach {
+                                    receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
+                                        ?.forEach {
 
-                                        if (it.typeOfAddress.equals(
-                                                BILLING_ADDRESS,
-                                                ignoreCase = true
-                                            )
-                                        ) {
-                                            PrintSunmiUtils.normalTextLarge(
-                                                it.fullAddress
-                                            )
+                                            if (it.typeOfAddress.equals(
+                                                    BILLING_ADDRESS,
+                                                    ignoreCase = true
+                                                )
+                                            ) {
+                                                PrintSunmiUtils.normalTextLarge(
+                                                    it.fullAddress
+                                                )
+                                            }
                                         }
-                                    }
+                                }
+                            } catch (e: Exception) {
                             }
                         }
                     }
