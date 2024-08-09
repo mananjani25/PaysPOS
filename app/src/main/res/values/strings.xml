@@ -931,6 +931,7 @@
     <string name="single_void_message">"Batch is not closed for this transaction. It can be refunded only once."</string>
     <string name="single_void_message_1">"Please confirm if you want to void this transaction."</string>
     <string name="server_not_reachable">Server not reachable</string>
+    <string name="synergy">Synergy</string>
 
 
 </resources>
