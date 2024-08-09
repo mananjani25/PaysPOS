@@ -1543,7 +1543,7 @@ class TransactionDetailsFragment : Fragment() {
                 }
 
 
-                if (paymentDetailsResponse.data.payment_type.equals("Card")) {
+                if (paymentDetailsResponse.data.payment_type.equals("Card", true) || paymentDetailsResponse.data.payment_type.equals("Cash", true)) {
                     val total = String.format("%.2f", paymentDetailsResponse.data.amount)
                     val refundedAmount = String.format(
                         "%.2f",
