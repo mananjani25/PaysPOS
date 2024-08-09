@@ -4928,7 +4928,7 @@ class AllOrdersListingFragment(
                                                             .styleBold(true)
                                                             .actionPrintText(
                                                                 content = if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                                    "--------------------------------------------\nOrder Note\n "
+                                                                    "--------------------------------------------\nOrder Note"
                                                                 } else ""
                                                             )
                                                     )
@@ -4946,11 +4946,18 @@ class AllOrdersListingFragment(
                                                 }
 
                                                 actionFeedLine(1)
+                                                actionFeedLine(1)
 
                                                 var printedName = StringBuilder("")
                                                 orderData.customer?.firstName?.let { firstName ->
                                                     orderData.customer?.lastName?.let { lastName ->
-                                                        if (kitchenSettingModel.showCustomerName) {
+                                                        if (kitchenSettingModel.showCustomerName || orderData.orderType.equals(
+                                                                "KioskOpenorder", true
+                                                            ) || orderData.orderType.equals(
+                                                                "OnlineWebOrder",
+                                                                true
+                                                            ) || orderData.orderType.equals("OnlineOrder", true)
+                                                        ) {
                                                             if (!firstName.contains(
                                                                     "customer",
                                                                     ignoreCase = true

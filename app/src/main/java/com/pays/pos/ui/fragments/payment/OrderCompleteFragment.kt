@@ -10251,6 +10251,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 setService2(data, type)
             }
 
+
         } else if (data.name.contains("TSP", ignoreCase = true)) {
             settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
             printer = StarPrinter(settings, requireContext())
@@ -10350,14 +10351,30 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                     add(
                                                         PrinterBuilder()
                                                             .styleAlignment(Alignment.Center)
+                                                            .styleBold(true)
                                                             .actionPrintText(
                                                                 content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                                    receiptModel?.order?.note.toString()
+                                                                    "--------------------------------------------\nOrder Note"
                                                                 } else ""
                                                             )
                                                     )
                                                 }
-                                                    var printedName = StringBuilder("")
+                                                if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleAlignment(Alignment.Center)
+                                                            .actionPrintText(
+                                                                content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                    receiptModel?.order?.note?:""
+                                                                } else ""
+                                                            )
+                                                    )
+                                                }
+
+                                                actionFeedLine(1)
+                                                actionFeedLine(1)
+
+                                                var printedName = StringBuilder("")
                                                     receiptModel?.order?.customer?.firstName?.let { firstName ->
                                                         receiptModel?.order?.customer?.lastName?.let { lastName ->
                                                             if (kitchenSettingModel.showCustomerName) {

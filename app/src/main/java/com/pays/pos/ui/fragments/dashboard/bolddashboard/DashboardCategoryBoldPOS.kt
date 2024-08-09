@@ -2385,7 +2385,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                             .styleBold(true)
                                                             .actionPrintText(
                                                                 content = if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                                    "--------------------------------------------\nOrder Note\n "
+                                                                    "--------------------------------------------\nOrder Note"
                                                                 } else ""
                                                             )
                                                     )
@@ -2402,6 +2402,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                     )
                                                 }
 
+                                                actionFeedLine(1)
                                                 actionFeedLine(1)
 
                                                 try{

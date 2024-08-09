@@ -434,7 +434,7 @@ class KioskService : Service(), StatusChangeEventListener {
                                                         .styleBold(true)
                                                         .actionPrintText(
                                                             content = if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                                "--------------------------------------------\nOrder Note\n "
+                                                                "--------------------------------------------\nOrder Note"
                                                             } else ""
                                                         )
                                                 )
@@ -450,8 +450,9 @@ class KioskService : Service(), StatusChangeEventListener {
                                                         )
                                                 )
                                             }
-                                            actionFeedLine(1)
 
+                                            actionFeedLine(1)
+                                            actionFeedLine(1)
 
                                             var printedName = StringBuilder("")
                                             orderData.data?.customer?.firstName?.let { firstName ->
