@@ -29,6 +29,7 @@ import com.pays.pos.utils.AmountTextWatcher
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
 import com.google.gson.Gson
+import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
@@ -43,6 +44,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
     private var totalPrice: Double = 0.0
     private lateinit var binding: DailogAddTipsBinding
     private val viewModel by activityViewModels<TipListViewModel>()
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val TAG = "AddDiscountDialog"
     private lateinit var tipsListAdapter: DialogTipsListAdapter
     private var tipModel: GetTipReponse.Data? = null
@@ -221,6 +223,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
         }
 
         binding.llKeypad.tvClear.setOnClickListener {
+            dashboardViewModel.customerGivenTip.value=false
             calculateValue("", true)
         }
         binding.llKeypad.tvDZero.setOnClickListener {
@@ -250,7 +253,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
     private fun setupData() {
 
         binding.llKeypad.txtClear.setOnClickListener {
-
+            dashboardViewModel.customerGivenTip.value=false
             binding.edtAmount.setText("0.00")
 
             tipsListAdapter.clearSelectedItem()
