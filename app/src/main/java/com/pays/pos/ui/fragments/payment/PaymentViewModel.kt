@@ -24,6 +24,7 @@ import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.repositories.PosRepository
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.logger.MessageEvent
+import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.fragments.magtek.PaymentResponse
 import com.pays.pos.utils.Event
 import com.pays.pos.utils.LogUtil
@@ -169,6 +170,8 @@ open class PaymentViewModel @Inject constructor(
 
             when (resource.status) {
                 Status.SUCCESS -> {
+                  /* Action cable will always connect automatically after payment is processed */
+
                     prefProvider.setValue(Constants.OLD_ITEM, "")
 //                    prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
                     prefProvider.setValue("CART_MODEL1", "")
@@ -284,6 +287,8 @@ open class PaymentViewModel @Inject constructor(
                 }
 
                 Status.ERROR -> {
+                    /*Action Cable will connect automatically after the transaction is processed */
+
                     _transactionErrorText.value = Event(resource.message)
 
                     if (cashPaymentType(orderRequestModel)) {

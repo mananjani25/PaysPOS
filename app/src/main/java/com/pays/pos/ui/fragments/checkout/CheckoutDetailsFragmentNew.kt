@@ -465,6 +465,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             EventBus.getDefault()
                 .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ request_for_customAmount_1"))
 
+            disconnectSyncChannel()
             val amount = bundle.getDouble("amount")
             val totalPrice = bundle.getDouble("totalAmount")
             MethodUtils.setPriceTextView(binding.tvCustomAmount, amount)
@@ -2018,13 +2019,19 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             return value
         }
 
-
     }
 
+    private fun disconnectSyncChannel(){
+        MainActivity.consumer2?.let {
+            it.disconnect()
+            Log.e("onActionConnected", "onActionConnected: Disconnected")
+        }
+    }
     // manage click of different types of payment methods visible on screen
     private fun paymentClick() {
 
         binding.llCreditCard.setOnSingleClickListener {
+         disconnectSyncChannel()
 
             if (InternetUtils.isInternetAvailable(applicationContext = requireActivity().applicationContext)) {
 
@@ -2211,7 +2218,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         binding.tvCash0.setOnSingleClickListener {
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
-
+                disconnectSyncChannel()
                 restrictTvCashClicks()
 
                 custom_paymentAmount = 0.0
@@ -2228,7 +2235,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         binding.tvCash1.setOnSingleClickListener {
 
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
-
+                disconnectSyncChannel()
                 restrictTvCashClicks()
 
                 custom_paymentAmount =
@@ -2239,7 +2246,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
         binding.tvCash2.setOnSingleClickListener {
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
-
+                disconnectSyncChannel()
                 restrictTvCashClicks()
 
                 custom_paymentAmount =
@@ -2251,7 +2258,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         binding.tvCash3.setOnSingleClickListener {
 
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
-
+                disconnectSyncChannel()
                 restrictTvCashClicks()
 
                 custom_paymentAmount =
