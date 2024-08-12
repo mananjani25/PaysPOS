@@ -10429,19 +10429,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                                     }
 
-                                                    actionFeedLine(1)
-
-                                                    add(
-                                                        PrinterBuilder()
-                                                            .actionPrintText(
-                                                                getReceiptFormatDateFromUTCServer(
-                                                                    requireContext(),
-                                                                    receiptModel?.order?.createdAt.toString()
-                                                                )
-                                                            )
-                                                    )
-
                                                 }
+
+
+                                                actionFeedLine(1)
+
+                                                add(
+                                                    PrinterBuilder()
+                                                        .actionPrintText(
+                                                            getReceiptFormatDateFromUTCServer(
+                                                                requireContext(),
+                                                                receiptModel?.order?.createdAt.toString()
+                                                            )
+                                                        )
+                                                )
 
                                                 actionFeedLine(1)
 
