@@ -38,14 +38,13 @@
                     android:tint="@color/white"/>
 
 
-
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
                     android:layout_gravity="center"
                     android:layout_weight="6"
                     android:gravity="center"
-                    android:layout_centerInParent="true"
                     android:orientation="horizontal">
 
                     <androidx.appcompat.widget.AppCompatTextView
