@@ -1904,7 +1904,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     // To make cash payment for placing order
-    private fun cashPaymentWithVariation(dynamicPaymentType: String? = "") {
+    private fun cashPaymentWithVariation(dynamicPaymentType: String = "") {
         paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
         EventBus.getDefault().post(
             MessageEvent(
@@ -1963,7 +1963,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 requireContext()
             ) / isSelectedCount
         }
-        if (cashDiscountType == "CashDiscount") {
+        if (cashDiscountType.equals("CashDiscount") && dynamicPaymentType.isEmpty()) {
             paymentAmount -= cashDiscountSurcharge
         }
         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
@@ -2203,7 +2203,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
                 }
 
-                cashPaymentWithVariation(dynamicPaymentType = getString(R.string.synergy))
+                cashPaymentWithVariation(dynamicPaymentType = getString(R.string.synergy)?:"")
             } else
                 errorDisplay("Please check your Network Connectivity.")
 
