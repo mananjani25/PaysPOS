@@ -490,6 +490,7 @@ class TransactionDetailsFragment : Fragment() {
 
                     putBoolean("isItemRefund", isItemRefund)
                     putBoolean("isAmountRefund", isAmountRefund)
+                    putString("screenTotalAmount",(paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips).toString())
                 }
                 bundle.putString("isFrom", "refund")
 
