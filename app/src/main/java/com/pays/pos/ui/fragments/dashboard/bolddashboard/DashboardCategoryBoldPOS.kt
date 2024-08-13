@@ -180,6 +180,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     private var oneItemPerReceipt: Boolean = true
 
+
+
     @Inject
     lateinit var prefProvider: PrefProvider
 

@@ -1517,10 +1517,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.txtRemainingAmountLabel.text = "Remaining Amount"
     }
 
+    private fun cleanOrderBackupDetails() {
+        dashboardViewModel.backupOrderId = null
+        dashboardViewModel.backupPaymentId = null
+        dashboardViewModel.backupPaymentOfflineId = ""
+        dashboardViewModel.backupOrderOfflineId = ""
+    }
+
     override fun onClick(v: View?) {
 
         when (v?.id) {
             R.id.txtHome -> {
+                cleanOrderBackupDetails()
                 moveToDashboard()
             }
 
@@ -1529,6 +1537,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
             R.id.llHome -> {
+                cleanOrderBackupDetails()
                 dashboardViewModel.clearCartModelBackup()
                 moveToDashboard()
             }

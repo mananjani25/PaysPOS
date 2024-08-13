@@ -301,7 +301,7 @@ class CartFragment(
 
                 binding.orderTypeDisplay.setText(builder, TextView.BufferType.SPANNABLE)
 
-                binding.orderTypeDisplay.setOnClickListener(object:View.OnClickListener{
+                binding.orderTypeDisplay.setOnClickListener(object : View.OnClickListener {
                     override fun onClick(p0: View?) {
                         if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                             findNavController().navigate(
@@ -2498,6 +2498,7 @@ class CartFragment(
                         R.id.menu_clear_cart -> {
                             popupMenu.dismiss() //For resolving BIS-273
                             clearCart()
+                            cleanOrderBackupDetails()
                         }
 
 
@@ -2711,6 +2712,7 @@ class CartFragment(
         binding.tvPayNow.setOnClickListener(
             object : View.OnClickListener {
                 override fun onClick(p0: View?) {
+                    cleanOrderBackupDetails()
                     EventBus.getDefault()
                         .post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvPayNow()"))
 
@@ -2832,7 +2834,6 @@ class CartFragment(
         binding.tvSave.setOnSingleClickListener(
             object : View.OnClickListener {
                 override fun onClick(p0: View?) {
-
                     restrictButtonClick(false)
 
                     prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
@@ -2843,6 +2844,18 @@ class CartFragment(
                             .equals("update", ignoreCase = true)
                     ) {
                         prefProvider.setValueInt("ORDER_ID", -1)
+                    }
+
+                    if (viewModel.backupOrderId != null &&
+                        viewModel.backupPaymentId != null &&
+                        viewModel.backupPaymentOfflineId?.isNotEmpty()?:false &&
+                        viewModel.backupOrderOfflineId?.isNotEmpty()?:false
+                    ) {
+                        isOrderUpdate = true
+                        orderId = viewModel.backupOrderId
+                        paymentId = viewModel.backupPaymentId
+                        paymentOfflineId = viewModel.backupPaymentOfflineId?:"Failing"
+                        orderOfflineId = viewModel.backupOrderOfflineId?:"Failing"
                     }
 
                     if (InternetUtils.isInternetAvailable(requireContext().applicationContext)) {
@@ -3271,7 +3284,14 @@ class CartFragment(
             })
     }
 
-    private fun restrictButtonClick(value:Boolean) {
+    private fun cleanOrderBackupDetails() {
+        viewModel.backupOrderId = null
+        viewModel.backupPaymentId = null
+        viewModel.backupPaymentOfflineId = ""
+        viewModel.backupOrderOfflineId = ""
+    }
+
+    private fun restrictButtonClick(value: Boolean) {
         binding.tvSave.isEnabled = value
 
         Handler().postDelayed({

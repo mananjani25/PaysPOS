@@ -49,11 +49,11 @@ open class PaymentViewModel @Inject constructor(
     var isUpdateOrder: Boolean = false
     private var onlySave: Boolean = false
     private var totalPayAmounts: Double = 0.0
-    private var orderId: Int? = null
-    private var paymentId: Int? = null
-    private var paymentOfflineId: String? = null
+    public var orderId: Int? = null
+    public var paymentId: Int? = null
+    public var paymentOfflineId: String? = null
     public var order_type_id = -1
-    private var orderOfflineId: String? = null
+    public var orderOfflineId: String? = null
     private var totalServiceChargeM: Double? = null
     private var totalDiscountM: Double? = null
     public var extData: String = ""
