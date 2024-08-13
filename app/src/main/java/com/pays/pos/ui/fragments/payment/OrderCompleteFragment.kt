@@ -1508,12 +1508,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
     private fun setLabelData() {
-        if (paymentType == "Card") {
-            binding.txtTitleCash.text = "Card"
+        var paymentTypeTitle=java.lang.StringBuilder()
+       /* if (paymentType == "Card") {
+            paymentTypeTitle = "Card"
         } else {
-            binding.txtTitleCash.text = "Cash"
+            paymentTypeTitle = "Cash"
+        }*/
+
+        receiptModelForOpenORder?.order?.let {item->
+            item.payments.forEach {
+                paymentTypeTitle.append(it.paymentType+", ")
+            }
         }
 
+
+        binding.txtTitleCash.text = paymentTypeTitle.deleteCharAt(paymentTypeTitle.length-2)
         binding.txtRemainingAmountLabel.text = "Remaining Amount"
     }
 
