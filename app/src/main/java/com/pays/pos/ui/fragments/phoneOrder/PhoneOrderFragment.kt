@@ -219,6 +219,7 @@ class PhoneOrderFragment : Fragment() {
             binding.txtPickup.setBackgroundResource(R.drawable.button_action_hover)
             binding.txtDelivery.setBackgroundResource(R.drawable.background_square_border_grey)
             binding.txtAddress.gone()
+            prefProvider!!.setValue(Constants.DELIVERY_TYPE, PICK_UP)
         }
         binding.txtDelivery.setOnSingleClickListener {
             orderType = DELIVERY
@@ -227,6 +228,7 @@ class PhoneOrderFragment : Fragment() {
             binding.txtPickup.setBackgroundResource(R.drawable.background_square_border_grey)
             binding.txtDelivery.setBackgroundResource(R.drawable.button_action_hover)
             binding.txtAddress.visible()
+            prefProvider!!.setValue(Constants.DELIVERY_TYPE, DELIVERY)
         }
 
         binding.llSearch.setOnSingleClickListener {
@@ -458,7 +460,7 @@ class PhoneOrderFragment : Fragment() {
         prefProvider!!.setValue(Constants.ORDER_TYPE, "")
         prefProvider!!.setValue(Constants.ORDER_TYPE_NAME, "")
         prefProvider!!.setValueboolean(Constants.LOYALTY_ADDED, false)
-
+        prefProvider!!.setValue(Constants.DELIVERY_TYPE, "")
 
         findNavController().navigate(R.id.action_phoneOrderFragment_to_dashboardCategoryBoldPOS)
 

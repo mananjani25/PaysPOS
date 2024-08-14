@@ -2166,6 +2166,7 @@ class CartFragment(
                                 viewModel.clearListTax()
                                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                                 prefProvider.setValue(Constants.REDIRECT_FROM, "")
+                                prefProvider.setValue(Constants.DELIVERY_TYPE, "")
 
                                 /*Remove the added tip - START*/
                                 prefProvider.setValueboolean(Constants.TIP_ADDED, false)

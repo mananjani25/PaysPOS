@@ -333,51 +333,52 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         dashboardViewModel.getDynamicPaymentRecords(true, prefProvider.getLocationId()).asLiveData()
             .observe(viewLifecycleOwner,
                 object : androidx.lifecycle.Observer<List<TbDynamicPaymentRecords>> {
-                    override fun onChanged(dynamicList: List<TbDynamicPaymentRecords>?) {
+                    override fun onChanged(list: List<TbDynamicPaymentRecords>?) {
                         Log.d("DynamicLiveData: ", "Called")
+                        list?.let {dynamicList->
+                            if (dynamicList.isNotEmpty()) {
+                                var layoutInflater = requireContext().getSystemService(
+                                    Context.LAYOUT_INFLATER_SERVICE
+                                ) as LayoutInflater
+                                layoutInflater = LayoutInflater.from(requireContext())
+                                binding.llDynamicLink.removeAllViews()
+                                /* Render the dynamic button here with the help of loop */
+                                dynamicList?.forEach {
+                                    var itemDynamicButton =
+                                        layoutInflater.inflate(R.layout.item_button, null, false)
+                                    itemDynamicButton.findViewById<LinearLayout>(R.id.llDynamicPayment)
+                                        .setPadding(
+                                            getResources().getDimensionPixelSize(R.dimen._20sdp),
+                                            getResources().getDimensionPixelSize(R.dimen._10sdp),
+                                            getResources().getDimensionPixelSize(R.dimen._20sdp),
+                                            getResources().getDimensionPixelSize(R.dimen._10sdp)
+                                        )
+                                    itemDynamicButton.id = it.id
+                                    itemDynamicButton.findViewById<AppCompatTextView>(R.id.tvDynamicPaymentName).text =
+                                        it.name
 
-                        var layoutInflater = requireContext().getSystemService(
-                            Context.LAYOUT_INFLATER_SERVICE
-                        ) as LayoutInflater
-                        layoutInflater = LayoutInflater.from(requireContext())
-                        binding.llDynamicLink.removeAllViews()
-                        /* Render the dynamic button here with the help of loop */
-                        dynamicList?.forEach {
-                            var itemDynamicButton =
-                                layoutInflater.inflate(R.layout.item_button, null, false)
-                            itemDynamicButton.findViewById<LinearLayout>(R.id.llDynamicPayment)
-                                .setPadding(
-                                    getResources().getDimensionPixelSize(R.dimen._20sdp),
-                                    getResources().getDimensionPixelSize(R.dimen._10sdp),
-                                    getResources().getDimensionPixelSize(R.dimen._20sdp),
-                                    getResources().getDimensionPixelSize(R.dimen._10sdp)
-                                )
-                            itemDynamicButton.id = it.id
-                            itemDynamicButton.findViewById<AppCompatTextView>(R.id.tvDynamicPaymentName).text =
-                                it.name
+                                    itemDynamicButton.setOnSingleClickListener { view ->
+                                        startDynamicPayment(it.name, it.id)
+                                    }
 
-                            itemDynamicButton.setOnSingleClickListener { view ->
-                                startDynamicPayment(it.name, it.id)
-                            }
-
-                            binding.llDynamicLink.addView(itemDynamicButton)
+                                    binding.llDynamicLink.addView(itemDynamicButton)
 
 
-                            /*----------- Linear Layout --------------*/
-                            /*   var linearLayout = LinearLayout(requireContext())
-                               var layoutParams = LinearLayout.LayoutParams(
-                                   LinearLayout.LayoutParams.WRAP_CONTENT,
-                                   LinearLayout.LayoutParams.WRAP_CONTENT
-                               )
-                               linearLayout.layoutParams = layoutParams
-                               if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
-                                   linearLayout.setBackgroundDrawable(getResources().getDrawable(R.drawable.background_txt_selector));
-                               else if(android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1)
-                                   linearLayout.setBackground(getResources().getDrawable(R.drawable.background_txt_selector));
-                               else
-                                   linearLayout.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.background_txt_selector));
+                                    /*----------- Linear Layout --------------*/
+                                    /*   var linearLayout = LinearLayout(requireContext())
+                                   var layoutParams = LinearLayout.LayoutParams(
+                                       LinearLayout.LayoutParams.WRAP_CONTENT,
+                                       LinearLayout.LayoutParams.WRAP_CONTENT
+                                   )
+                                   linearLayout.layoutParams = layoutParams
+                                   if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+                                       linearLayout.setBackgroundDrawable(getResources().getDrawable(R.drawable.background_txt_selector));
+                                   else if(android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1)
+                                       linearLayout.setBackground(getResources().getDrawable(R.drawable.background_txt_selector));
+                                   else
+                                       linearLayout.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.background_txt_selector));
 
-                               *//*----------- Linear Layout --------------*//*
+                                   *//*----------- Linear Layout --------------*//*
 
 
                             *//*----------- Appcompat TextView --------------*//*
@@ -394,6 +395,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                             linearLayout.addView(appCompatTextView)
                             binding.llPaymentLink.addView(linearLayout)*/
+                                }
+                            }else{
+                                binding.llDynamicLink.removeAllViews()
+                            }
                         }
 
                     }
