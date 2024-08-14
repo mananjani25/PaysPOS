@@ -6461,8 +6461,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         _showProgress.value = Event(true)
 
-        if (orderRequestModel.order.deliveryType.equals("null")){
-            orderRequestModel.order.deliveryType=""
+        if (orderRequestModel.order.deliveryType.equals("null")) {
+            orderRequestModel.order.deliveryType = ""
         }
 
         viewModelScope.launch {
@@ -7319,6 +7319,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 } catch (e: Exception) {
 
+                                }
+
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    insertDynamicPayment(it.settingData.data.dynamicPaymentRecords)
                                 }
 
                                 if (it.settingData.data.teamRoles.isNotEmpty()) {
@@ -8258,4 +8262,19 @@ class DashBoardCategoryViewModel @Inject constructor(
     suspend fun getLabelPrinterSettingsData(): TbLabelPrinterSettings {
         return posRepository.getLabelPrinterSettingsData()
     }
+
+    //    ----------------- Dynamic Payments -----------------------------
+    suspend fun insertDynamicPayment(tbDynamicPaymentRecords: TbDynamicPaymentRecords) {
+        posRepository.insertDynamicPayments(tbDynamicPaymentRecords)
+    }
+
+    suspend fun insertDynamicPayment(tbDynamicPaymentRecords: List<TbDynamicPaymentRecords>) {
+        posRepository.insertDynamicPayments(tbDynamicPaymentRecords)
+    }
+
+    fun getDynamicPaymentRecords(isActive:Boolean, locationId:Int):Flow<List<TbDynamicPaymentRecords>>{
+        return posRepository.getDynamicPaymentRecords(isActive, locationId)
+    }
+    //    ----------------- Dynamic Payments -----------------------------
+
 }

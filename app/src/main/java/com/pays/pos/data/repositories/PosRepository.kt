@@ -1328,6 +1328,7 @@ class PosRepository @Inject constructor(
         appDatabase.cashDiscountDao().delete()
         appDatabase.loyaltyProgramsDao().delete()
         appDatabase.labelPrinterSettings().delete()
+        appDatabase.dynamicPaymentDao().delete()
     }
 
     fun orderCounts(startDate: String?, endDate: String?, isOpenOrder: Boolean) =
@@ -1482,6 +1483,21 @@ class PosRepository @Inject constructor(
     /*This method will be used to check if the merchant wants */
     suspend fun getLabelPrinterSettingsData():TbLabelPrinterSettings{
         return appDatabase.labelPrinterSettings().getLabelPrinterSettingsData()
+    }
+
+    /* This method is used to manage the Dynamic payments */
+    suspend fun insertDynamicPayments(dynamicPaymentRecords: TbDynamicPaymentRecords) {
+        appDatabase.dynamicPaymentDao().add(dynamicPaymentRecords)
+    }
+
+    suspend fun insertDynamicPayments(dynamicPaymentRecords: List<TbDynamicPaymentRecords>) {
+        appDatabase.dynamicPaymentDao().addAll(dynamicPaymentRecords)
+    }
+
+    fun getDynamicPaymentRecords(isActive:Boolean, locationId:Int)=appDatabase.dynamicPaymentDao().getDynamicPaymentRecords(isActive,locationId)
+
+    fun getDynamicPaymentFromID(id:Int):TbDynamicPaymentRecords{
+        return appDatabase.dynamicPaymentDao().getDynamicPaymentFromID(id)
     }
 
 }

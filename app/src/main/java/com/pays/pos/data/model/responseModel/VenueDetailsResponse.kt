@@ -42,7 +42,7 @@ data class VenueDetailsResponse(
         @SerializedName("daily_report_sending_time")
         val dailyReportSendingTime: String,
         @SerializedName("dynamic_payment_records")
-        val dynamicPaymentRecords: List<Any>,
+        val dynamicPaymentRecords: List<TbDynamicPaymentRecords>,
         @SerializedName("end_time_for_report_summary")
         val endTimeForReportSummary: String,
         @SerializedName("id")
