@@ -459,6 +459,27 @@ class PhoneOrderFragment : Fragment() {
         prefProvider!!.setValue(Constants.ORDER_TYPE_NAME, "")
         prefProvider!!.setValueboolean(Constants.LOYALTY_ADDED, false)
 
+        /*---------Added for solving BIS-4037--------------*/
+        prefProvider!!.setValue(
+            Constants.CUSTOMER_NAME,
+            ""
+        )
+
+        prefProvider!!.setValue(
+            Constants.RECEIPT_CUSTOMER_NAME,
+            ""
+        )
+
+        prefProvider!!.setValue(
+            Constants.PREF_CUSTOMER,
+            ""
+        )
+
+        prefProvider!!.setValueboolean(Constants.LOYALTY_ADDED, false)
+        prefProvider!!.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+        prefProvider!!.setValueInt(Constants.CUSTOMER_ID, 0)
+
+        /*---------Added for solving BIS-4037--------------*/
 
         findNavController().navigate(R.id.action_phoneOrderFragment_to_dashboardCategoryBoldPOS)
 
