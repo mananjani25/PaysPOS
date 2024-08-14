@@ -357,7 +357,7 @@ class OrderItemsAttribute {
     var sort: Int? = null
 
     @SerializedName("guest_index_for_dine_in")
-    var guestIndexForDineIn : Int? = 0
+    var guestIndexForDineIn: Int? = 0
 }
 
 class OrderItemTaxesAttribute {
@@ -534,7 +534,7 @@ data class OrderServiceChargesAttribute(
 
 
 @Parcelize
-class MagensaResponse :Parcelable{
+class MagensaResponse : Parcelable {
     @SerializedName("CustomerTransactionID")
     var customerTransactionID: String = ""
 
@@ -544,9 +544,9 @@ class MagensaResponse :Parcelable{
 }
 
 @Parcelize
-class DataOutput :Parcelable{
+class DataOutput : Parcelable {
     @SerializedName("PANLast4")
-    var panLast4 :String? = ""
+    var panLast4: String? = ""
 }
 
 
@@ -591,6 +591,9 @@ class PaymentAttributes : Parcelable {
 
     @SerializedName("payment_type")
     var paymentType: String? = ""
+
+    @SerializedName("dynamic_payment_id")
+    var dynamicPaymentId: String? = ""
 
     @SerializedName("service_charge_amount")
     var serviceChargeAmount: Double = 0.0

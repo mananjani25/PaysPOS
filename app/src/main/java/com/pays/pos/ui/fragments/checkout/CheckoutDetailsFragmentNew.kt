@@ -2,6 +2,7 @@ package com.pays.pos.ui.fragments.checkout
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
+import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Handler
@@ -12,11 +13,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
@@ -56,7 +60,6 @@ import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.MagtekModule
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.logger.MessageEvent
-import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
@@ -88,7 +91,6 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 
@@ -316,6 +318,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         callback()
         setUpManualCardFocusChanged()
         showProgressObserver()
+        initDyanamicPayment()
         lifecycleScope.launch {
             delay(100)
             if (cartList == null) {
@@ -324,6 +327,107 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
 
         }
+    }
+
+    private fun initDyanamicPayment() {
+        dashboardViewModel.getDynamicPaymentRecords(true, prefProvider.getLocationId()).asLiveData()
+            .observe(viewLifecycleOwner,
+                object : androidx.lifecycle.Observer<List<TbDynamicPaymentRecords>> {
+                    override fun onChanged(dynamicList: List<TbDynamicPaymentRecords>?) {
+                        Log.d("DynamicLiveData: ", "Called")
+
+                        var layoutInflater = requireContext().getSystemService(
+                            Context.LAYOUT_INFLATER_SERVICE
+                        ) as LayoutInflater
+                        layoutInflater = LayoutInflater.from(requireContext())
+                        binding.llDynamicLink.removeAllViews()
+                        /* Render the dynamic button here with the help of loop */
+                        dynamicList?.forEach {
+                            var itemDynamicButton =
+                                layoutInflater.inflate(R.layout.item_button, null, false)
+                            itemDynamicButton.findViewById<LinearLayout>(R.id.llDynamicPayment)
+                                .setPadding(
+                                    getResources().getDimensionPixelSize(R.dimen._20sdp),
+                                    getResources().getDimensionPixelSize(R.dimen._10sdp),
+                                    getResources().getDimensionPixelSize(R.dimen._20sdp),
+                                    getResources().getDimensionPixelSize(R.dimen._10sdp)
+                                )
+                            itemDynamicButton.id = it.id
+                            itemDynamicButton.findViewById<AppCompatTextView>(R.id.tvDynamicPaymentName).text =
+                                it.name
+
+                            itemDynamicButton.setOnSingleClickListener { view ->
+                                startDynamicPayment(it.name, it.id)
+                            }
+
+                            binding.llDynamicLink.addView(itemDynamicButton)
+
+
+                            /*----------- Linear Layout --------------*/
+                            /*   var linearLayout = LinearLayout(requireContext())
+                               var layoutParams = LinearLayout.LayoutParams(
+                                   LinearLayout.LayoutParams.WRAP_CONTENT,
+                                   LinearLayout.LayoutParams.WRAP_CONTENT
+                               )
+                               linearLayout.layoutParams = layoutParams
+                               if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+                                   linearLayout.setBackgroundDrawable(getResources().getDrawable(R.drawable.background_txt_selector));
+                               else if(android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1)
+                                   linearLayout.setBackground(getResources().getDrawable(R.drawable.background_txt_selector));
+                               else
+                                   linearLayout.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.background_txt_selector));
+
+                               *//*----------- Linear Layout --------------*//*
+
+
+                            *//*----------- Appcompat TextView --------------*//*
+                            var appCompatTextView = AppCompatTextView(requireContext())
+                            var textViewLayoutParams = LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.WRAP_CONTENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                            )
+                            appCompatTextView.layoutParams = textViewLayoutParams
+
+                            appCompatTextView.text = it.name
+                            appCompatTextView.gravity=Gravity.CENTER_VERTICAL
+                            *//*----------- Appcompat TextView --------------*//*
+
+                            linearLayout.addView(appCompatTextView)
+                            binding.llPaymentLink.addView(linearLayout)*/
+                        }
+
+                    }
+                })
+    }
+
+    private fun startDynamicPayment(name: String?, id: Int) {
+        if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
+
+            restrictTvCashClicks()
+
+            custom_paymentAmount = 0.0
+
+            if (cashDiscountType.equals("CashDiscount", ignoreCase = true)) {
+                paymentviewModel.totalPayAmount(
+                    binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
+                        .replace(")", "").trim().toDouble()
+                )
+                paymentAmount =
+                    binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
+                        .replace(")", "").trim().toDouble()
+            } else {
+                paymentviewModel.totalPayAmount(
+                    binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                )
+                paymentAmount =
+                    binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+            }
+
+            cashPaymentWithVariation(dynamicPaymentName = name ?: "", dynamicPaymentId = id)
+        } else
+            errorDisplay("Please check your Network Connectivity.")
+
+
     }
 
     private fun setUpManualCardFocusChanged() {
@@ -1904,7 +2008,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     // To make cash payment for placing order
-    private fun cashPaymentWithVariation(dynamicPaymentType: String = "") {
+    private fun cashPaymentWithVariation(
+        dynamicPaymentName: String = "",
+        dynamicPaymentId: Int = -1
+    ) {
         paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
         EventBus.getDefault().post(
             MessageEvent(
@@ -1963,7 +2070,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 requireContext()
             ) / isSelectedCount
         }
-        if (cashDiscountType.equals("CashDiscount") && dynamicPaymentType.isEmpty()) {
+        if (cashDiscountType.equals("CashDiscount") && dynamicPaymentName.isEmpty()) {
             paymentAmount -= cashDiscountSurcharge
         }
         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
@@ -1973,7 +2080,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 sellGiftCardUsingCash()
             }
         } else {
-            makeCashPayment(dynamicPaymentType = dynamicPaymentType)
+            makeCashPayment(
+                dynamicPaymentType = dynamicPaymentName,
+                dynamicPaymentId = dynamicPaymentId
+            )
         }
     }
 
@@ -2178,7 +2288,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
 
-        binding.llDynamicPayment.setOnSingleClickListener {
+        /*binding.llDynamicPayment.setOnSingleClickListener {
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
 
                 restrictTvCashClicks()
@@ -2187,12 +2297,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 if (cashDiscountType.equals("CashDiscount", ignoreCase = true)) {
                     paymentviewModel.totalPayAmount(
-                        /*binding.tvCard.text.toString().replace("$", "").trim().toDouble()*/
+                        *//*binding.tvCard.text.toString().replace("$", "").trim().toDouble()*//*
                         binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
                             .replace(")", "").trim().toDouble()
                     )
                     paymentAmount =
-                            /*binding.tvCash0.text.toString().replace("$", "").trim().toDouble()*/
+                            *//*binding.tvCash0.text.toString().replace("$", "").trim().toDouble()*//*
                         binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
                             .replace(")", "").trim().toDouble()
                 } else {
@@ -2203,11 +2313,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
                 }
 
-                cashPaymentWithVariation(dynamicPaymentType = getString(R.string.synergy)?:"")
+                cashPaymentWithVariation(dynamicPaymentType = getString(R.string.synergy) ?: "")
             } else
                 errorDisplay("Please check your Network Connectivity.")
 
-        }
+        }*/
 
         binding.tvCash0.setOnSingleClickListener {
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
@@ -3666,7 +3776,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
     // make order request with payment attributes on cash payment to reflect on server
-    private fun makeCashPayment(dynamicPaymentType: String? = "") {
+    private fun makeCashPayment(dynamicPaymentType: String? = "", dynamicPaymentId: Int = -1) {
 
         /**
          * Added to check tip details
@@ -3762,7 +3872,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 if (custom_paymentAmount != 0.0) {
                     paymentviewModel.totalPayAmount(custom_paymentAmount)
                 }
-                paymentAttributesRequest(myRequest, dynamicPaymentType)
+                paymentAttributesRequest(myRequest, dynamicPaymentType, dynamicPaymentId)
             }
         } else if (cartModel2 != null) {
             EventBus.getDefault()
@@ -3821,7 +3931,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         myRequest.order.orderTypeId = it.orderTypeId
                     }
                 }
-                paymentAttributesRequest(myRequest, dynamicPaymentType)
+                paymentAttributesRequest(myRequest, dynamicPaymentType, dynamicPaymentId)
             }
         } else {
 
@@ -3967,7 +4077,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         myRequest.order.orderTypeId = it.orderTypeId
                     }
                 }
-                paymentAttributesRequest(myRequest, dynamicPaymentType)
+                paymentAttributesRequest(myRequest, dynamicPaymentType, dynamicPaymentId)
             }
         }
 
@@ -4083,12 +4193,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     // generate payment attributes request
     private fun paymentAttributesRequest(
         myRequest: OrderRequestModel,
-        dynamicPaymentType: String? = ""
+        dynamicPaymentType: String? = "",
+        dynamicPaymentId: Int = -1
     ) {
 
-        dynamicPaymentType?.let {
-            if (it.equals(getString(R.string.synergy))) {
-                myRequest.order.paymentAttributes!!.paymentType = it
+        dynamicPaymentType?.let { payment ->
+            if (payment.isNotEmpty() && dynamicPaymentId != -1) {
+                myRequest.order.paymentAttributes?.let {
+                    it.paymentType = getString(R.string.external)
+                    it.dynamicPaymentId = dynamicPaymentId.toString()
+                }
             }
         }
 

@@ -1649,7 +1649,7 @@ class TransactionDetailsFragment : Fragment() {
     }
 
     private fun enableDisableRefundButton() {
-        if (paymentDetailsResponse.data.payment_type.contains(getString(R.string.synergy),ignoreCase = true)){
+        if (paymentDetailsResponse.data.payment_type.contains(getString(R.string.external),ignoreCase = true)){
             binding.tvIssueRefund.gone()
         }
     }
