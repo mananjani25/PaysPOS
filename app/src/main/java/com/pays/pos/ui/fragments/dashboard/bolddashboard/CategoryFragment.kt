@@ -63,7 +63,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
     private lateinit var categoryTabAdapter: CategoryTabAdapter
     lateinit var itemListner: ItemListner
     private val TAG = "CategoryFragment"
-    lateinit var activityContext:AppCompatActivity
+    lateinit var activityContext: AppCompatActivity
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -79,7 +79,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        activityContext=context as AppCompatActivity
+        activityContext = context as AppCompatActivity
     }
 
     override fun onCreateView(
@@ -344,14 +344,14 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
     }
 
     private fun searchCategory() {
-        if (activity!=null && isAdded){
+        if (activity != null && isAdded) {
             runOnUiThread(Runnable {
                 searchList = arrayListOf()
                 categoryList1.forEach { categories ->
                     val itemList = categories.inventoryLists
                     itemList?.filter { it?.isHide == true }?.forEach { tbItem ->
 
-                        if(tbItem?.isDeleted == false) {
+                        if (tbItem?.isDeleted == false) {
                             searchList.add(
                                 CategorySearchData(
                                     tbItem?.itemId ?: 0,
@@ -374,21 +374,21 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                             searchList
                         )
                     edtSearch?.setAdapter(searchAdapter)
-                    Log.e("CategorySearchAdapter","1")
+                    Log.e("CategorySearchAdapter", "1")
                 } catch (e: Exception) {
-                    try{
+                    try {
                         searchAdapter =
-                       CategorySearchAdapter(
-                           activity as AppCompatActivity,
-                           requireContext(),
-                           R.layout.search_category_item,
-                           searchList
-                       )
+                            CategorySearchAdapter(
+                                activity as AppCompatActivity,
+                                requireContext(),
+                                R.layout.search_category_item,
+                                searchList
+                            )
                         edtSearch?.setAdapter(searchAdapter)
-                        Log.e("CategorySearchAdapter","2")
+                        Log.e("CategorySearchAdapter", "2")
 
-                    }catch (e:Exception){
-                        try{
+                    } catch (e: Exception) {
+                        try {
                             searchAdapter =
                                 CategorySearchAdapter(
                                     activityContext,
@@ -397,9 +397,9 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                                     searchList
                                 )
                             edtSearch?.setAdapter(searchAdapter)
-                            Log.e("CategorySearchAdapter","3")
-                        }catch (e:Exception){
-                            Log.e("CategorySearchAdapter","4")
+                            Log.e("CategorySearchAdapter", "3")
+                        } catch (e: Exception) {
+                            Log.e("CategorySearchAdapter", "4")
                         }
                     }
 
@@ -515,7 +515,13 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         val list: ArrayList<CategoryParentModel> = arrayListOf()
         val listCategories: ArrayList<CategoryTabModel> = arrayListOf()
         for (i in 0 until 8) {
-            listCategories.add(CategoryTabModel(0, "Drinks", i == 0, 0))
+            /*if (i==viewModel.selectedCatetory){
+                listCategories.add(CategoryTabModel(0, "Drinks", true, 0))
+            }else{
+                listCategories.add(CategoryTabModel(0, "Drinks", false, 0))
+            }*/
+
+            listCategories.add(CategoryTabModel(0, "Drinks", i==0, 0))
         }
         list.add(CategoryParentModel(listCategories))
         list.add(CategoryParentModel(listCategories))
@@ -598,7 +604,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
             prefProvider.setValueInt(Constants.CAT_ID_SELECTED, categoryId)
             Log.e(TAG, "cateSelectedcategoryId  ${categoryId}")
-
+            viewModel.selectedCatetory = childPosition
             getItemsByCategory(categoryId)
         }
 
