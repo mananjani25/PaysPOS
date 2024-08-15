@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
@@ -397,7 +398,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             binding.llPaymentLink.addView(linearLayout)*/
                                 }
                             } else {
-                                binding.llDynamicLink.removeAllViews()
+                                binding.llDynamicLink.children.forEach {
+                                    it.isActivated=false
+                                    it.isClickable=false
+                                    it.isEnabled=false
+                                    it.alpha=0f
+                                }
                             }
                         }
 
