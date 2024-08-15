@@ -144,6 +144,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     var currentCartItems: ArrayList<TbCartItem> = arrayListOf()
     var duplicateCurrentCartItem: ArrayList<TbCartItem> = arrayListOf()
 
+    /* This variable is used to track the selected category, if this variable is not 0 then the category will be selected, it was added to solve BIS-4045 */
+    var selectedCatetory:Int=0
     /**
      * Tracking main cart discount
      */

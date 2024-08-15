@@ -14063,7 +14063,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 } else if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
                         receiptModel?.order?.payments?.size!! - 1
-                    )?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()
+                    )?.cash_discount_type?.lowercase() == "CashDiscount".lowercase() && !receiptModel?.order?.payments?.get(
+                        receiptModel?.order?.payments?.size?.minus(1)!!)!!.paymentType.equals(getString(R.string.external),ignoreCase = true)
                 ) {
 
                     if (receiptModel?.order?.totalCashDiscountFee != null) {

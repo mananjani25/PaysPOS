@@ -3,6 +3,7 @@ package com.pays.pos.ui.adapter.boldpos
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.pays.pos.data.model.CategoryParentModel
 import com.pays.pos.databinding.ViewParentCategoryBinding
@@ -80,7 +81,6 @@ class CategoryParentAdapter(
 
     override fun onBindViewHolder(holder: CategoryParentAdapter.MyViewHolder, position: Int) {
         holder.bind(list.get(position))
-
     }
 
     override fun getItemCount(): Int {
