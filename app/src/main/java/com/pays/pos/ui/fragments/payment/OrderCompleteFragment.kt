@@ -1689,6 +1689,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
             R.id.imgBack -> {
+                binding.tvMessage.text=getString(R.string.how_would_the_customer_like_their_receipt)
                 backpress()
             }
         }
