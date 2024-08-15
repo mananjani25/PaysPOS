@@ -485,8 +485,9 @@
     <string name="add">Add</string>
     <string name="pick_up_min">Choose Min</string>
     <string name="max"> - Max </string>
-    <string name="you_can_not_add_more_then">You cannot add more then &#160;</string>
+    <string name="you_can_not_add_more_then">You cannot add more than &#160;</string>
     <string name="items"> &#160;modifiers.</string>
+    <string name="item"> &#160;modifier.</string>
     <string name="you_can_add">You must have to add minimum modifiers.</string>
     <string name="update_modifier_set">Update Modifier Set</string>
     <string name="update_option_set">Update Option Set</string>

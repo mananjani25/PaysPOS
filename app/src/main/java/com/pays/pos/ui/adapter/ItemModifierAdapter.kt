@@ -85,12 +85,20 @@ class ItemModifierAdapter(
                             LogUtil.logE("minRequired", "ture")
                         } else {
                             LogUtil.logE("minRequired", "false")
+                            var message=""
 
-                            AlertUtils.showCustomAlert(
-                                binding.root.context,
-                                binding.root.context.getString(R.string.you_can_not_add_more_then) + maxAllowed + binding.root.context.getString(
+                            if (maxAllowed==1){
+                                message=binding.root.context.getString(R.string.you_can_not_add_more_then) + maxAllowed + binding.root.context.getString(
+                                    R.string.item
+                                )
+                            }else{
+                                message=binding.root.context.getString(R.string.you_can_not_add_more_then) + maxAllowed + binding.root.context.getString(
                                     R.string.items
                                 )
+                            }
+                            AlertUtils.showCustomAlert(
+                                binding.root.context,
+                                message
                             )
 
 
