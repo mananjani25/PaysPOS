@@ -8,7 +8,6 @@ import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
 import android.os.StrictMode
-import android.provider.Settings.Global
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
@@ -105,6 +104,7 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.collections.set
 import kotlin.math.ceil
 
@@ -7029,6 +7029,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 }
 
+                                listModifierSet.forEach {modifier->
+                                    (modifier.modifiers as ArrayList<Modifier>).sortBy {it.sort }
+                                }
                                 viewModelScope.launch {
                                     appDatabase.modifierSetDao().addAll(listModifierSet)
                                 }

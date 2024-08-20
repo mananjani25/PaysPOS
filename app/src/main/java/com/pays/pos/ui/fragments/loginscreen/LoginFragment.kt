@@ -60,6 +60,7 @@ import kotlinx.coroutines.runBlocking
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.*
 import javax.inject.Inject
 
 
@@ -125,7 +126,6 @@ class LoginFragment : Fragment() {
         }
 
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -133,56 +133,62 @@ class LoginFragment : Fragment() {
     ): View? {
 
 
-
 //       determineAdvertisingInfo()
 //        paxNetworkCall()
-       /* if (prefProvider?.getValue(AUTH_TOKEN, "").toString().isNotEmpty()) {
-            if (!prefProvider?.getValueboolean(IS_CLOCKOUT, false)!!) {
-                findNavController().navigate(R.id.action_login_to_passcode)
-            } else {
-                if (prefProvider?.getValueboolean("clockOutFromNoti", false) == true) {
-                    findNavController().navigate(R.id.action_login_to_passcode, arguments)
-                } else {
-                    if (prefProvider?.getValueboolean(ORDER_COMPLETED, false)!!) {
-                        findNavController().navigate(R.id.action_login_to_passcode)
-                    } else {
-                        findNavController().navigate(R.id.action_login_to_dashboardCategoryBoldPOS)
-                    }
-                }
+        /* if (prefProvider?.getValue(AUTH_TOKEN, "").toString().isNotEmpty()) {
+             if (!prefProvider?.getValueboolean(IS_CLOCKOUT, false)!!) {
+                 findNavController().navigate(R.id.action_login_to_passcode)
+             } else {
+                 if (prefProvider?.getValueboolean("clockOutFromNoti", false) == true) {
+                     findNavController().navigate(R.id.action_login_to_passcode, arguments)
+                 } else {
+                     if (prefProvider?.getValueboolean(ORDER_COMPLETED, false)!!) {
+                         findNavController().navigate(R.id.action_login_to_passcode)
+                     } else {
+                         findNavController().navigate(R.id.action_login_to_dashboardCategoryBoldPOS)
+                     }
+                 }
 
-            }
+             }
 
-        }*/ // due to UI glitch issue put in onViewCreated
+         }*/ // due to UI glitch issue put in onViewCreated
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_login, container, false)
 
         binding.lifecycleOwner = this
         binding.loginViewModel = viewModel
 
+        try {
+            binding.txtBottom.text = resources.getString(
+                R.string.tv_pos_2021,
+                Calendar.getInstance().get(Calendar.YEAR).toString()
+            )
+        } catch (e: Exception) {
 
+        }
 //        binding.txtSignIn.isEnabled = false
 
-       /* getCustomerDisplay(requireContext())?.let { display ->
-            presentation = CustomDisplay(
-                display,
-                requireContext(),
-                viewLifecycleOwner,
-                dashboardViewModel,
-                passcodeViewModel,
-                dineInViewModel
+        /* getCustomerDisplay(requireContext())?.let { display ->
+             presentation = CustomDisplay(
+                 display,
+                 requireContext(),
+                 viewLifecycleOwner,
+                 dashboardViewModel,
+                 passcodeViewModel,
+                 dineInViewModel
 
-            )
-        }
-*/ //due to UI glitch issue put in onViewCreated
-       /* versionDisplay()
-        setupSnackbar()
-        observeShowProgress()
-        navigate()*/ //due to UI glitch issue put in onViewCreated.
+             )
+         }
+ */ //due to UI glitch issue put in onViewCreated
+        /* versionDisplay()
+         setupSnackbar()
+         observeShowProgress()
+         navigate()*/ //due to UI glitch issue put in onViewCreated.
         if (prefProvider?.getValueForLogin(LOGIN_REMEMBER, "") == LOGIN_REMEMBER) {
             var old_email = prefProvider?.getValueForLogin(LOGIN_EMAIL, "")
             var old_password = prefProvider?.getValueForLogin(LOGIN_PASSWORD, "")
-            Log.d("yash", "onCreateView: "+old_email)
-            Log.d("yash", "onCreateView: "+old_password)
+            Log.d("yash", "onCreateView: " + old_email)
+            Log.d("yash", "onCreateView: " + old_password)
             viewModel.loginDetails.value?.emailAddress = old_email
             viewModel.loginDetails.value?.password = old_password
 //            binding.edtEmail.setText(old_email.toString())
@@ -234,11 +240,18 @@ class LoginFragment : Fragment() {
 
     private fun checkAndRequestPermissions() {
         val permissionsNeeded = permissions.filter {
-            ContextCompat.checkSelfPermission(requireContext(), it) != PackageManager.PERMISSION_GRANTED
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                it
+            ) != PackageManager.PERMISSION_GRANTED
         }
 
         if (permissionsNeeded.isNotEmpty()) {
-            ActivityCompat.requestPermissions(requireActivity(), permissionsNeeded.toTypedArray(), PERMISSION_REQUEST_CODE)
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                permissionsNeeded.toTypedArray(),
+                PERMISSION_REQUEST_CODE
+            )
         }
     }
 
@@ -293,9 +306,12 @@ class LoginFragment : Fragment() {
                 ProgressUtils.dismissProgressDialog()
 
                 if (response.isSuccessful) {
-                    LogUtil.logE("onResponse", response.body().toString() + response.body()!!.ipAddress)
-                   var ipAddress = response.body()!!.ipAddress
-                   var port = response.body()!!.port
+                    LogUtil.logE(
+                        "onResponse",
+                        response.body().toString() + response.body()!!.ipAddress
+                    )
+                    var ipAddress = response.body()!!.ipAddress
+                    var port = response.body()!!.port
                     Log.d("Pax Params: ", "pax $ipAddress $port")
                 }
             }
@@ -312,7 +328,6 @@ class LoginFragment : Fragment() {
             }
         })
     }
-
 
 
     override fun onResume() {
@@ -456,13 +471,16 @@ class LoginFragment : Fragment() {
                         putBoolean("isLogin", true)
                     }
                     if (isRemember) {
-                        prefProvider?.setValueForLogin(LOGIN_EMAIL, binding.edtEmail.text.toString())
+                        prefProvider?.setValueForLogin(
+                            LOGIN_EMAIL,
+                            binding.edtEmail.text.toString()
+                        )
                         prefProvider?.setValueForLogin(
                             LOGIN_PASSWORD,
                             binding.edtPassword.text.toString()
                         )
                         prefProvider?.setValueForLogin(LOGIN_REMEMBER, LOGIN_REMEMBER)
-                    }else{
+                    } else {
                         prefProvider?.setValueForLogin(LOGIN_EMAIL, "")
                         prefProvider?.setValueForLogin(
                             LOGIN_PASSWORD,
@@ -490,8 +508,11 @@ class LoginFragment : Fragment() {
     private fun determineAdvertisingInfo() {
 
         viewLifecycleOwner.lifecycleScope.launch {
-            prefProvider?.setUniqueId(AdvertisingInfo(requireContext()).getAdvertisingId().toString())
-            binding.terminalId.text = AdvertisingInfo(requireContext()).getAdvertisingId().toString()
+            prefProvider?.setUniqueId(
+                AdvertisingInfo(requireContext()).getAdvertisingId().toString()
+            )
+            binding.terminalId.text =
+                AdvertisingInfo(requireContext()).getAdvertisingId().toString()
             Log.e("onSuccess", AdvertisingInfo(requireContext()).getAdvertisingId().toString())
 
         }
