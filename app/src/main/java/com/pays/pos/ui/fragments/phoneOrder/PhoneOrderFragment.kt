@@ -56,6 +56,7 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
+import com.pays.pos.data.remote.Constants.ORDER_TYPE
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -247,6 +248,7 @@ class PhoneOrderFragment : Fragment() {
         binding.etSearch.setOnSingleClickListener {
             val bundle = Bundle().apply {
                 putBoolean("PhoneOrder", true)
+                putString(ORDER_TYPE,orderType)
             }
             findNavController().navigate(
                 R.id.action_phoneOrderFragment_to_assignCustomerOrderFragment,
@@ -445,6 +447,19 @@ class PhoneOrderFragment : Fragment() {
                     }
 
                     data?.addresses_attributes = listAddress
+                }
+
+                addCustomerData.data?.let {
+                    prefProvider!!.setValue(
+                        Constants.RECEIPT_CUSTOMER_NAME,
+                        it.first_name + " " + it.last_name
+                    )
+
+                    prefProvider!!.setValue(
+                        Constants.CUSTOMER_NAME,
+                        it.first_name + " " + it.last_name
+                    )
+
                 }
 
                 if (customerID == null) {

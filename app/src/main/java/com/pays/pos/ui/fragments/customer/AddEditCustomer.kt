@@ -40,6 +40,7 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import com.pays.pos.data.remote.Constants.DELIVERY
 import com.pays.pos.logger.MessageEvent
 import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.EventBus
@@ -57,6 +58,7 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
 
     private lateinit var binding: FragmentAddEditCustomerBinding
     private var isEdit = false
+    private var orderType:String = ""
     private var isFromPhoneOrderEdit = false
     private val TAG = "AddEditCustomer"
     private val viewModel by viewModels<AddCustomerViewModel>()
@@ -183,6 +185,7 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
         onClick()
         setPlaceApi()
         isEdit = requireArguments().getBoolean("isEdit", false)
+        orderType = requireArguments().getString(Constants.ORDER_TYPE, "")
         isFromPhoneOrderEdit = requireArguments().getBoolean("isFromPhoneOrderEdit", false)
         LogUtil.logE(TAG, "isEdit  $isEdit")
 
@@ -1151,7 +1154,21 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
                     )
             }
 
-            viewModel.submit(listAddress, isFromPhoneOrderEdit)
+            if (orderType.equals(DELIVERY)){
+                if (listAddress.isNotEmpty()){
+                    viewModel.submit(listAddress, isFromPhoneOrderEdit)
+                }else{
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(),
+                        "Please Enter Delivery Address.",
+                    )
+                    { _, _ ->
+
+                    }
+                }
+            }else{
+                viewModel.submit(listAddress, isFromPhoneOrderEdit)
+            }
         }
         binding.chksameasbilling.setOnClickListener {
             if (binding.edtStreet.text.toString().isNotEmpty()) {

@@ -43,6 +43,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AssignCustomerOrderFragment : Fragment(), ItemCallback {
     private var isPhoneOrder: Boolean? = false
+    private var orderType: String? = ""
     private val TAG = "AssignCustomerOrderFr"
 
     companion object {
@@ -90,6 +91,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
         if (arguments != null) {
             isFromDineIn = arguments?.getBoolean("DINE_IN", false)
             isPhoneOrder = arguments?.getBoolean("PhoneOrder", false)
+            orderType = arguments?.getString(ORDER_TYPE, "")
             isFromCompletePayment = arguments?.getBoolean("fromPayment") ?: false
             dineInPosition = arguments?.getInt("position")
             selectedDate = arguments?.getString("SELECTED_DATE")
@@ -179,7 +181,11 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
         }
 
         binding.txtCreateCustomer.setOnClickListener {
-            findNavController().navigate(R.id.action_assignCustomerOrderFragment_to_addEditCustomer)
+            var bundle: Bundle = Bundle().apply {
+                putString(ORDER_TYPE, orderType)
+            }
+
+            findNavController().navigate(R.id.action_assignCustomerOrderFragment_to_addEditCustomer, bundle)
         }
         binding.txtHome.setOnClickListener {
             if (arguments != null) {
@@ -328,7 +334,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             message, getString(R.string.edit),
         )
         { _, _ ->
-            val bundle: Bundle = bundleOf("isEdit" to true, "dataModel" to customer, "isFromPhoneOrderEdit" to true)
+            val bundle: Bundle = bundleOf("isEdit" to true, "dataModel" to customer, "isFromPhoneOrderEdit" to true, ORDER_TYPE to orderType)
             findNavController().navigate(
                 R.id.action_assignCustomerOrderFragment_to_addEditCustomer_,
                 bundle
