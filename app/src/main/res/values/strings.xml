@@ -8,7 +8,7 @@
     <string name="tv_hint_password">Password <font color='#ff6000'>*</font></string>
     <string name="tv_login">Login</string>
     <string name="tv_info_provider">If you forgot password, please <font color='#00A3E0'>contact</font> your sales provider</string>
-    <string name="tv_pos_2021">&#169; PAYS POS 2023</string>
+    <string name="tv_pos_2021">&#169; PAYS POS %1$s</string>
     <string name="save">Save</string>
     <string name="category_name">Category Name <font color='#ff6000'>*</font></string>
     <string name="assign_item_to_category">Assign Item to category</string>
