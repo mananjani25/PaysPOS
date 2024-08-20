@@ -10263,7 +10263,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-        } else if (data.name.contains("TSP", ignoreCase = true)) {
+        } else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains("SP", ignoreCase = true)))) {
             settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
             printer = StarPrinter(settings, requireContext())
 
