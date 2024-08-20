@@ -404,6 +404,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     it.isEnabled=false
                                     it.alpha=0f
                                 }
+
+                                binding.tvOther.invisible()
                             }
                         }
 
