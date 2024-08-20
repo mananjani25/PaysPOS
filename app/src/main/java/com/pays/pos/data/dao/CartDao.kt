@@ -26,8 +26,8 @@ interface CartDao {
     @Query("DELETE FROM CartModelBackup")
     suspend fun clearCartModelBackup()
 
-    @Query("select * from TbCartItem where orderType = :orderType AND /*isManualSaleItem = 0 AND*/ employeeID=:employee_Id ORDER BY timeStamp")
-    fun getAllDineInCartItems(orderType: String, employee_Id: Int): Flow<List<TbCartItem>>
+    @Query("select * from TbCartItem where orderType = :orderType /*AND isManualSaleItem = 0 AND employeeID=:employee_Id */ ORDER BY timeStamp")
+    fun getAllDineInCartItems(orderType: String): Flow<List<TbCartItem>>
 
     @Query("select * from TbCartItem where orderType = :orderType AND isManualSaleItem = 0 AND employeeID=:employee_Id ORDER BY timeStamp")
     fun getCartItems(orderType: String, employee_Id: Int): Flow<List<TbCartItem>>

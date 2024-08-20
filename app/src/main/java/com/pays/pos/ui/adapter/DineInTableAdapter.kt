@@ -1,6 +1,8 @@
 package com.pays.pos.ui.adapter
 
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.Paint
 import android.os.Build
 import android.util.Log
@@ -8,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.pays.pos.R
 import com.pays.pos.data.entities.TbCartItem
@@ -439,6 +442,27 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             }
 
+            if(list[position].item?.isFired == true) {
+
+                binding.checkedForFire?.apply {
+                    isChecked = true
+                    isEnabled = false
+                }
+            }
+
+            binding.checkedForFire?.setOnClickListener {
+
+
+                if( binding.checkedForFire.isChecked  ) {
+                  //  model.item?.isChecked = true
+                    listner.guestCheckboxClicked(position,guestChecked = true)
+                }
+                else {
+                //    model.item?.isChecked = false
+                    listner.guestCheckboxClicked(position, guestChecked = false)
+                }
+            }
+
             binding.llRemoveGuest.setOnClickListener {
                 listner.onRemoveGuest(layoutPosition)
             }
@@ -532,7 +556,9 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             }
 
-
+            binding.checkedForFire?.setOnClickListener {
+                list[position].item?.isChecked = binding.checkedForFire.isChecked
+            }
             model.item?.let { totalPrice(it) }?.let {
                 MethodUtils.setPriceTextView(
                     binding.tvRate,
@@ -560,10 +586,27 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.chkIsFired.isPressed = true
                 binding.chkIsFired.isEnabled = false
                 binding.ivWastage.visibility = View.VISIBLE
+
+                binding.checkedForFire?.apply {
+                    isChecked = true
+                    isEnabled = false
+                    buttonTintList = ColorStateList.valueOf(Color.GREEN)
+                }
             } else {
                 binding.chkIsFired.isChecked = false
                 binding.chkIsFired.isEnabled = true
                 binding.ivWastage.visibility = View.GONE
+
+                binding.checkedForFire?.apply {
+                    isChecked = false
+                    isEnabled = true
+                    buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.redColor))
+                }
+            }
+
+            binding.checkedForFire?.apply {
+                if(model.item?.isFired == false)
+                isChecked = list[bindingAdapterPosition].item?.isChecked == true
             }
 
             list[bindingAdapterPosition].item?.dineInSort = bindingAdapterPosition
@@ -576,51 +619,51 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             binding.model = model.item
             binding.executePendingBindings()
 
-            binding.chkIsFired.setOnCheckedChangeListener { buttonView, isChecked ->
-
-                if (buttonView.isPressed) {
-
-                    if (isChecked) {
-                        if (list.get(layoutPosition).item != null) {
-                            var listItemWithGuest:HashMap<String,ArrayList<TbCartItem>> = hashMapOf()
-                            var itemsNew = list[bindingAdapterPosition].item
-                            var ids: String? = null
-                            itemsNew?.orderItemId?.let { ids = it.toString() }
-                            itemsNew?.isFired = true
-
-                            for (i in bindingAdapterPosition downTo  0){
-                                if (list.get(i).isHeader == 0){
-                                    var listITems:ArrayList<TbCartItem> = arrayListOf()
-                                    list[bindingAdapterPosition].item?.let { listITems.add(it) }
-                                    listItemWithGuest.set(list.get(i).title.toString(),listITems)
-
-                                    break
-
-                                }
-
-                            }
-
-
-                            ids?.let {
-                                list[bindingAdapterPosition].item?.let { it1 ->
-                                    listner.singleItemFired(
-                                        it, layoutPosition,
-                                        it1,
-                                        listItemWithGuest
-                                    )
-                                }
-                            }
-                            binding.chkIsFired.isEnabled = false
-                            list[bindingAdapterPosition].item = itemsNew
-
-                            //itemAdapter.updateCart(list[bindingAdapterPosition].items)
-
-
-                        }
-
-                    }
-                }
-            }
+//            binding.chkIsFired.setOnCheckedChangeListener { buttonView, isChecked ->
+//
+//                if (buttonView.isPressed) {
+//
+//                    if (isChecked) {
+//                        if (list.get(layoutPosition).item != null) {
+//                            var listItemWithGuest:HashMap<String,ArrayList<TbCartItem>> = hashMapOf()
+//                            var itemsNew = list[bindingAdapterPosition].item
+//                            var ids: String? = null
+//                            itemsNew?.orderItemId?.let { ids = it.toString() }
+//                            itemsNew?.isFired = true
+//
+//                            for (i in bindingAdapterPosition downTo  0){
+//                                if (list.get(i).isHeader == 0){
+//                                    var listITems:ArrayList<TbCartItem> = arrayListOf()
+//                                    list[bindingAdapterPosition].item?.let { listITems.add(it) }
+//                                    listItemWithGuest.set(list.get(i).title.toString(),listITems)
+//
+//                                    break
+//
+//                                }
+//
+//                            }
+//
+//
+//                            ids?.let {
+//                                list[bindingAdapterPosition].item?.let { it1 ->
+//                                    listner.singleItemFired(
+//                                        it, layoutPosition,
+//                                        it1,
+//                                        listItemWithGuest
+//                                    )
+//                                }
+//                            }
+//                            binding.chkIsFired.isEnabled = false
+//                            list[bindingAdapterPosition].item = itemsNew
+//
+//                            //itemAdapter.updateCart(list[bindingAdapterPosition].items)
+//
+//
+//                        }
+//
+//                    }
+//                }
+//            }
 
             binding.ivWastage.setOnClickListener {
                 listner.onAddToWastage(layoutPosition, list[bindingAdapterPosition].item!!)
@@ -793,6 +836,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         fun onAddToWastage(position: Int, item: TbCartItem)
         fun onRemoveGuest(position: Int)
+
+        fun guestCheckboxClicked(position:Int, guestChecked:Boolean)
     }
 
     fun getList(): List<DineInModel> {
@@ -841,21 +886,22 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     fun updateStatus(clickedPos: Int, isFireAll: Boolean) {
-        if (isFireAll) {
-            if(list.isNotEmpty()) {
-                list.forEach {
-                    if (it.isHeader == 1) {
-                        it.item?.isFired = true
-                    } else {
-                        it.isFired = true
-                    }
-                }
-            }
-        } else {
-            if(list.isNotEmpty() && clickedPos < list.size){
-                list[clickedPos].item?.isFired = true
-            }
-        }
+//        if (isFireAll) {
+//            if(list.isNotEmpty()) {
+//                list.forEach {
+//                    if (it.isHeader == 1) {
+//                        it.item?.isFired = true
+//                    } else {
+//                        it.isFired = true
+//                    }
+//                }
+//            }
+//        } else {
+//            if(list.isNotEmpty() && clickedPos < list.size){
+//                if(list[clickedPos].item?.isChecked == true)
+//                list[clickedPos].item?.isFired = true
+//            }
+//        }
         notifyDataSetChanged()
     }
 

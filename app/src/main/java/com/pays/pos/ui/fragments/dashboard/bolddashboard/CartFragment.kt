@@ -1190,8 +1190,8 @@ class CartFragment(
                 }
 
                 viewModel.getAllDineInCartItems(
-                    "DineIn",
-                    prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                    "DineIn"
+                    //, prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                 ).asLiveData().observe(viewLifecycleOwner) { it ->
                     val itemCount = it.size
 

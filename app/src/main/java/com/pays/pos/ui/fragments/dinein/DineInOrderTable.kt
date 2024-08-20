@@ -2214,6 +2214,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
     }
 
+    override fun guestCheckboxClicked(position: Int, isChecked: Boolean) {
+
+    }
+
     private fun guestPrint(
         paymentStatus: String,
         listGuestItem: ArrayList<TbCartItem>,

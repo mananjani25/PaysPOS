@@ -492,8 +492,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.getAllCartItems(orderType, employee_Id)
     }
 
-    fun getAllDineInCartItems(orderType: String, employee_Id: Int): Flow<List<TbCartItem>> {
-        return posRepository.getAllDineInCartItems(orderType, employee_Id)
+    fun getAllDineInCartItems(orderType: String): Flow<List<TbCartItem>> {
+        return posRepository.getAllDineInCartItems(orderType)
     }
 
 

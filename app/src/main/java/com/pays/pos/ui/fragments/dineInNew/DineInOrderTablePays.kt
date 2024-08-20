@@ -485,8 +485,15 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         }
 
         binding.txtFloorPlan.setOnClickListener {
-            findNavController().navigate(R.id.action_dineInOrderTable_to_dineInFragmentPays)
 
+            dashboardViewModel.apply {
+                currentCartItems = arrayListOf()
+                duplicateCurrentCartItem = arrayListOf()
+                deleteCartItems()
+                deleteCart()
+            }
+
+            findNavController().navigate(R.id.action_dineInOrderTable_to_dineInFragmentPays)
         }
         binding.txtAddguest.setOnClickListener {
             findNavController().navigate(
@@ -495,7 +502,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         }
         binding.txtFireAll.setOnClickListener {
 
-            checkForAutoFire(false)
+            checkForAutoFire(false,fireAll = true)
             /*val list = dineInTableAdapter.getList()
             val idsStr = java.lang.StringBuilder()
             list.forEach {
@@ -971,6 +978,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             prefProvider.setValue(ORDER_TYPE_NAME, "")
             dineInTableAdapter.setList(arrayListOf())
             dashboardViewModel.cartModel = null
+
+            dashboardViewModel.apply {
+                currentCartItems = arrayListOf()
+                duplicateCurrentCartItem = arrayListOf()
+                deleteCartItems()
+                deleteCart()
+            }
+
             findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
         }
         binding.txtHomeBottom.setOnClickListener {
@@ -1557,7 +1572,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 if (it.toString() != "null") {
                     AlertUtils.showCustomAlert(requireContext(), it)
                 }
-                dineInTableAdapter.updateStatus(clickedPos, isFireAll)
+              //  dineInTableAdapter.updateStatus(clickedPos, isFireAll)
             }
         }
 
@@ -2313,6 +2328,27 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         } else {
             viewModel.unableToRemoveGuest(getString(R.string.minimum_one_guest_is_required))
         }
+    }
+
+    override fun guestCheckboxClicked(position: Int, guestChecked: Boolean) {
+
+        var list = dineInTableAdapter.getList()
+
+        var current = position+1
+
+        while(current < list.size-1){
+
+            if(list[current].isHeader == 1){
+                list[current].item?.isChecked = guestChecked
+            }else
+            {
+                break
+            }
+
+            current++
+        }
+
+        dineInTableAdapter.setList(ArrayList(list))
     }
 
     private fun guestPrint(
@@ -3079,7 +3115,26 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             presentation.showTableDetails(baseResponse)
                         }
                         if (!isFromWastage) {
-                            checkForAutoFire(true)
+
+
+                            /**
+                             * check if any of the printer have auto printing on
+                             * */
+
+                            val kitchenDineInPrinters = kitchenPrinterList
+                                .filter { kitchenPrinter ->
+                                    kitchenPrinter.orderTypes.any { orderType ->
+                                        orderType.orderType == "DineIn" && orderType.printerSettings.any { printerSetting ->
+                                            printerSetting.autoPrinting && printerSetting.printType == "Kitchen"
+                                        }
+                                    }
+                                }
+
+
+                            if(kitchenDineInPrinters.isNotEmpty() /*&& prefProvider.employeeId() == baseResponse.employeeId*/)
+                                checkForAutoFire(true)
+//                            else
+//                                checkForAutoFire(false)
                         }
 
                         //  binding.txtTotalAmountNew.setText("${MethodUtils.roundOffAmount(totalAmtnew)}")
@@ -3214,7 +3269,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         var guestCount = 0
         var eligibleGuestsForDivision = 0
         if (dragTo != -1) {
-            oldList.get(dragTo).item?.guestItemId?.let { listOfMoveItemIds.add(it) }
+            oldList.get(dragTo).item?.guestItemId?.let {
+                listOfMoveItemIds.add(it)
+            }
             oldList.get(dragTo).item?.guestItemId = null
 
             if (oldList[dragTo].item?.itemId != 1) {
@@ -9954,6 +10011,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
 
+            if(prefProvider.getValueboolean(DINE_IN_UPDATE,false))
+                PrintSunmiUtils.addValue("*** Updated ***")
+
+            SunmiPrinterApi.getInstance().lineWrap(1)
 
             PrintSunmiUtils.addValue(getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")")
 
@@ -10026,6 +10087,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             PrintSunmiUtils.cutPaper()
+
             //ProgressUtils.dismissProgressDialog()
 
         } catch (e: Exception) {
@@ -10275,7 +10337,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
-    fun checkForAutoFire(isCheckAndFire: Boolean) {
+    fun checkForAutoFire(isCheckAndFire: Boolean, fireAll:Boolean = false) {
         Log.d("###17MAR23", "checkForAutoFire: Called - Start - $isCheckAndFire")
         var list: List<DineInModel> = arrayListOf()
         list = dineInTableAdapter.getList() ?: arrayListOf()
@@ -10317,37 +10379,29 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(list)}")
         fireItemsList = arrayListOf()
 
-//        dashboardViewModel.apply {
-//
-//            val listSize = if(dineInItemsBeforeUpdate.size ?: 0 >= list.size) dineInItemsBeforeUpdate.size ?:0 else list.size
-//
-//            for( i in 0..listSize-1){
-//                try {
-//                    val oldItem = dineInItemsBeforeUpdate[i].item
-//                    val newItem = list[i].item
-//
-//                    if(oldItem != newItem){
-//                        if (newItem != null) {
-//                            fireItemsList.add(newItem)
-//                        }
-//                        if (newItem != null) {
-//                            listItem.add(newItem)
-//                        }
-//                    }
-//                }catch (e:Exception){
-//
-//                }
-//            }
-//        }
 
-        list.forEach { it ->
+        var updatedItemIdsList = arrayListOf<Int>()
+
+        list.forEachIndexed { itemIndex, it ->
             if (it.isHeader == 1) {
                 it.item?.let {
-                    if (!it.isFired) {
+
+                    /**
+                     * First condition works for manual printing and second will work for auto printing
+                     */
+                    if ( (!it.isFired && it.isChecked) || (!it.isFired && isCheckAndFire)) {
                         fireItemsList.add(it)
                         listItem.add(it)
-                    }else {
+                       // it.isFired = true
 
+                        //add items ids for api call
+                        it.orderItemId?.let {
+                            builder.add(it.toString())
+                        }
+                    } else {
+                        /***
+                         * If Item is already fired and then it gets updated then this logic will check for updated item to print
+                         */
                         if(prefProvider.getValueboolean(DINE_IN_UPDATE,false)) {
                             val foundItemList =
                                 dashboardViewModel.dineInItemsBeforeUpdate.filter { item ->
@@ -10360,32 +10414,55 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             if (foundItemList.isNotEmpty()) {
                                 val foundItem = foundItemList.first()
 
+                                /***
+                                 * Check what changes are done in item
+                                 */
+
                                 if (    it.itemQuantity != foundItem.itemQuantity ||
                                         it.note != foundItem.note ||
                                         !dashboardViewModel.checkModifierNew(it,foundItem)
                                 ) {
+
+
+                                    if(it.itemQuantity < foundItem.itemQuantity) {
+                                        val itemToAddInWastageModule = foundItem
+                                        foundItem.itemQuantity = foundItem.itemQuantity - it.itemQuantity
+                                    }
+
+                                    updatedItemIdsList.add(it.cartItemId)
+
                                     fireItemsList.add(it)
                                     listItem.add(it)
+                                    it.isFired = true
+
+                                     //add items ids for api call
+                                    it.orderItemId?.let {
+                                        builder.add(it.toString())
+                                    }
                                 } else {
 
                                 }
                             } else {
+                                /***
+                                 * This will print checked and selected items which is not printed already
+                                 */
+                                if(fireAll &&  it.isChecked && !it.isFired ) {
+                                    fireItemsList.add(it)
+                                    listItem.add(it)
+                                    it.isFired = true
 
+                                    //add items ids for api call
+                                    it.orderItemId?.let {
+                                        builder.add(it.toString())
+                                    }
+                                } else { }
                             }
-                        }else {
-
-                        }
+                        } else { }
                     }
                 }
-                it.item?.orderItemId?.let {
-                    builder.add(it.toString())
-
-                }
-                  it.item?.isFired = true
-
             }
-
         }
+
 
         dashboardViewModel.apply {
             dineInItemsBeforeUpdate = arrayListOf()
@@ -10565,12 +10642,19 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 var fireAllIds = android.text.TextUtils.join(",", builder)
 
                 viewModel.fireItemToKitchen(orderId ?: 0, true, fireAllIds, true)
+
+                if(isCheckAndFire)
                 list.forEach {
                     if (it.isHeader == 1) {
                         it?.item?.isFired = true
                     }
                 }
-                dineInTableAdapter.updateStatus(0, true)
+              //  dineInTableAdapter
+
+//                if(isCheckAndFire)
+                    dineInTableAdapter.updateStatus(0, true)
+//                else
+ //                   dineInTableAdapter.updateStatus(0, false)
             }
         }
 

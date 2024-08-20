@@ -1847,6 +1847,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             paymentviewModel.updateOrder(false, null, null, "", "")
         }
         paymentviewModel.saveOrder(false)
+
+
         val myRequest = cartList?.let {
             paymentviewModel.createOrderRequestForCard(
                 it,
@@ -1878,7 +1880,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             )
         }
         if (myRequest != null) {
-            if (custom_paymentAmount != 0.0) {
+            if (custom_paymentAmount.toDouble() != 0.0) {
                 paymentviewModel.totalPayAmount(custom_paymentAmount)
             }
             paymentAttributesRequest(myRequest)

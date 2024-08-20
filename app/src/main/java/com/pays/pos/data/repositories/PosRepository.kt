@@ -755,8 +755,8 @@ class PosRepository @Inject constructor(
     fun getAllCartItems(orderType: String, employee_Id: Int) =
         appDatabase.cartDao().getCartItems(orderType, employee_Id)
 
-    fun getAllDineInCartItems(orderType: String, employee_Id: Int) =
-        appDatabase.cartDao().getAllDineInCartItems(orderType, employee_Id)
+    fun getAllDineInCartItems(orderType: String) =
+        appDatabase.cartDao().getAllDineInCartItems(orderType)
 
     fun getDineInCartItems(guestIndexForDineIn: Int) =
         appDatabase.cartDao().getDineInCartItems(guestIndexForDineIn)
