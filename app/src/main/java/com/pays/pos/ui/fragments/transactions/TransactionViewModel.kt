@@ -212,9 +212,10 @@ class TransactionViewModel @Inject constructor(
                     data["payment_type"] = "Card"
                 }
 
-                "Gift Card" -> {
+                "Gift Card","External" -> {
                     data["payment_type"] = "External"
                 }
+
             }
             LogUtil.logE("TransactionViewModel", "filteredData $data")
 
