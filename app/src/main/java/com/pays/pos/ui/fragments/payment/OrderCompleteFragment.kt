@@ -1526,10 +1526,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.txtRemainingAmountLabel.text = "Remaining Amount"
     }
 
+    private fun cleanOrderBackupDetails() {
+        dashboardViewModel.backupOrderId = null
+        dashboardViewModel.backupPaymentId = null
+        dashboardViewModel.backupPaymentOfflineId = ""
+        dashboardViewModel.backupOrderOfflineId = ""
+    }
+
     override fun onClick(v: View?) {
 
         when (v?.id) {
             R.id.txtHome -> {
+                cleanOrderBackupDetails()
                 moveToDashboard()
             }
 
@@ -1538,6 +1546,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
             R.id.llHome -> {
+                cleanOrderBackupDetails()
                 dashboardViewModel.clearCartModelBackup()
                 moveToDashboard()
             }
@@ -10263,7 +10272,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-        } else if (data.name.contains("TSP", ignoreCase = true)) {
+        } else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains("SP", ignoreCase = true)))) {
             settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
             printer = StarPrinter(settings, requireContext())
 

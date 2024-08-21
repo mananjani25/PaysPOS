@@ -1878,20 +1878,24 @@ class TransactionDetailsFragment : Fragment() {
                                                                         .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
                                                                 ) {
 
-                                                                    if (checkItemsforTransactionPrinter(
-                                                                            (paymentDetailsResponse.data.order.order_items
-                                                                                ?: arrayListOf()) as List<GetOrderDetailsResponse.Data.OrderItem>,
-                                                                            kitchenPrinterList[i].printerCategories.toCollection(
-                                                                                arrayListOf()
-                                                                            )
-                                                                        )
-                                                                    ) {
+                                                                   try{
+                                                                       if (checkItemsforTransactionPrinter(
+                                                                               (paymentDetailsResponse.data.order.order_items
+                                                                                   ?: arrayListOf()) as List<GetOrderDetailsResponse.Data.OrderItem>,
+                                                                               kitchenPrinterList[i].printerCategories.toCollection(
+                                                                                   arrayListOf()
+                                                                               )
+                                                                           )
+                                                                       ) {
 
-                                                                        initKitchenPrinter(
-                                                                            kitchenPrinterList.get(i),
-                                                                            Constants.KITCHEN
-                                                                        )
-                                                                    }
+                                                                           initKitchenPrinter(
+                                                                               kitchenPrinterList.get(i),
+                                                                               Constants.KITCHEN
+                                                                           )
+                                                                       }
+                                                                   }catch (e:Exception){
+
+                                                                   }
 
                                                                 }
                                                             }

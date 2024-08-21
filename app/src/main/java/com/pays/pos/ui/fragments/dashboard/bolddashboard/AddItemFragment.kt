@@ -50,13 +50,11 @@ import com.google.gson.Gson
 import com.pax.poslink.log.LogFilter.Const
 import com.pays.pos.data.remote.Constants.UPDATE
 import com.pays.pos.logger.MessageEvent
+import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.notes.NoteListViewModel
 import com.pays.pos.utils.Event
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
@@ -81,6 +79,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
     private var mainModifiersId: ArrayList<Int> = arrayListOf()
     private var mainVariationId: ArrayList<Int> = arrayListOf()
     private var originalModifiersList: List<Modifier> = arrayListOf()
+
+    private val paymentViewModel by activityViewModels<PaymentViewModel>()
+
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -169,9 +170,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             }
 
             override fun afterTextChanged(s: Editable?) {
-                Log.d("AddItemFragment.kt","afterTextChanged")
+                Log.d("AddItemFragment.kt", "afterTextChanged")
                 if (s.toString().isNotEmpty()) {
-                    Log.d("AddItemFragment.kt","afterTextChanged_2: ${s.toString()}")
+                    Log.d("AddItemFragment.kt", "afterTextChanged_2: ${s.toString()}")
                     qty = s.toString().toInt()
                     if (/*!item.isManualSales &&  */qty > MAX_ITEM_QUANTITY) {
                         qty = MAX_ITEM_QUANTITY
@@ -184,12 +185,18 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     }
                     binding.edttxtQuantity.setSelection(binding.edttxtQuantity.text!!.length)
                 } else {
-                    Log.d("AddItemFragment.kt","afterTextChanged_else")
+                    Log.d("AddItemFragment.kt", "afterTextChanged_else")
                     try {
                         qty = binding.edttxtQuantity.text!!.toString().toInt()
-                        Log.d("AddItemFragment.kt","afterTextChanged_else_qty: ${Gson().toJson(qty)}")
+                        Log.d(
+                            "AddItemFragment.kt",
+                            "afterTextChanged_else_qty: ${Gson().toJson(qty)}"
+                        )
                     } catch (e: Exception) {
-                        Log.d("AddItemFragment.kt","afterTextChanged_else_catch: ${Gson().toJson(e.printStackTrace())}")
+                        Log.d(
+                            "AddItemFragment.kt",
+                            "afterTextChanged_else_catch: ${Gson().toJson(e.printStackTrace())}"
+                        )
                         e.printStackTrace()
                     }
                     binding.edttxtQuantity.setSelection(binding.edttxtQuantity.text!!.length)
@@ -247,7 +254,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
         binding.txtCancel.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 try {
-                    Log.d("AddItemFragment.kt","txtCancel: setOnClickListener")
+                    Log.d("AddItemFragment.kt", "txtCancel: setOnClickListener")
 
                     viewModel.duplicateCurrentCartItem.forEach { duplicateCartItem ->
                         viewModel.currentCartItems.forEach { currentCartItem ->
@@ -264,7 +271,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
 
                 } catch (e: Exception) {
-                    Log.d("AddItemFragment.kt","txtCancel: catch")
+                    Log.d("AddItemFragment.kt", "txtCancel: catch")
                 }
                 MethodUtils.hideSoftKeyboard(requireActivity())
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
@@ -1083,7 +1090,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
         binding.txtDone.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
 
-                Log.d("AddItemFragment.kt","txtDone: setOnClickListener")
+                Log.d("AddItemFragment.kt", "txtDone: setOnClickListener")
 
                 /* if (item!=null){
 
@@ -1118,17 +1125,20 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     binding.edttxtQuantity.setText("1")
                 }
 
-                Log.d("AddItemFragment.kt","txtDone_qty: ${Gson().toJson(qty)}")
+                Log.d("AddItemFragment.kt", "txtDone_qty: ${Gson().toJson(qty)}")
 
                 MethodUtils.hideSoftKeyboard(requireActivity())
                 item.itemQuantity = qty
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
                 var isPriceNull = true
-                Log.d("AddItemFragment.kt","txtDone_item_qty: ${Gson().toJson(item.itemQuantity)}")
+                Log.d("AddItemFragment.kt", "txtDone_item_qty: ${Gson().toJson(item.itemQuantity)}")
                 if (prefProvider.getValue(ORDER_TYPE, "") == Constants.OPEN_ORDER) {
-                    Log.d("AddItemFragment.kt","txtDone_openOrder")
+                    Log.d("AddItemFragment.kt", "txtDone_openOrder")
                     if (cartModelsList.isEmpty()) {
-                        Log.d("AddItemFragment.kt","txtDone_cartModelList: ${Gson().toJson(cartModelsList)}")
+                        Log.d(
+                            "AddItemFragment.kt",
+                            "txtDone_cartModelList: ${Gson().toJson(cartModelsList)}"
+                        )
                         val model = CartModel()
                         model.employeeID =
                             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
@@ -1143,21 +1153,40 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         }
                         cartModelsList.add(model)
 
-                        Log.d("AddItemFragment.kt","txtDone_model: ${Gson().toJson(model)}")
+                        Log.d("AddItemFragment.kt", "txtDone_model: ${Gson().toJson(model)}")
 
-                    }else{
-                        Log.d("AddItemFragment.kt","txtDone_cartModelList_empty")
+                    } else {
+                        Log.d("AddItemFragment.kt", "txtDone_cartModelList_empty")
                     }
 
                 } else {
                     Log.d("AddItemFragment.kt","txtDone_item_cartModelList: ${Gson().toJson(cartModelsList)}")
-                    viewModel.createCart(cartModelsList)
+                   var cartModels = viewModel.createCart(cartModelsList)
+
+                    runBlocking {
+                        cartModels.forEach {
+                            CoroutineScope(Dispatchers.IO).async{
+                                var cart=null
+                                runBlocking {
+                                    viewModel.getCartModelFromID(it.cartId)
+                                }
+                                runBlocking {
+                                    if (cart==null){
+                                        viewModel.createEmptyCart(it)
+                                    }
+                                }
+                            }.await()
+                        }
+                    }
                 }
 
 
 
                 if (item.modifier_set_ids.isNotEmpty() && itemModifiersAdapter != null) {
-                    Log.d("AddItemFragment.kt","txtDone_if (item.modifier_set_ids.isNotEmpty() && itemModifiersAdapter != null)")
+                    Log.d(
+                        "AddItemFragment.kt",
+                        "txtDone_if (item.modifier_set_ids.isNotEmpty() && itemModifiersAdapter != null)"
+                    )
                     if (minMaxValidationCheck(itemModifiersAdapter)) {
 
                         val modifiers =
@@ -1228,8 +1257,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         return
                     }
 
-                }else{
-                    Log.d("AddItemFragment.kt","txtDone_else_2")
+                } else {
+                    Log.d("AddItemFragment.kt", "txtDone_else_2")
                 }
 
                 val variationList = ArrayList<VariationsAttribute>()
@@ -1266,11 +1295,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                 var found = false
 
-                Log.d("AddItemFragment.kt","txtDone_before_for (it in viewModel.currentCartItems)")
+                Log.d("AddItemFragment.kt", "txtDone_before_for (it in viewModel.currentCartItems)")
 
                 for (it in viewModel.currentCartItems) {
                     if (it.cartItemId != item.cartItemId) {
-                        Log.d("AddItemFragment.kt","txtDone_inside_cartItemId")
+                        Log.d("AddItemFragment.kt", "txtDone_inside_cartItemId")
                         if (it.name == item.name && !it.name.contains("Custom")) {
                             if (viewModel.checkModifierNew(it, item)) {
                                 Log.e(
@@ -1293,7 +1322,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
 
                 if (found) {
-                    Log.d("AddItemFragment.kt","txtDone_inside_found")
+                    Log.d("AddItemFragment.kt", "txtDone_inside_found")
 
                     // Added to resolve Add Discount issue BIS-3547
                     viewModel.cartFooterNeedToBeUpdated = true
@@ -1371,13 +1400,16 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                 }
 
                             }
-                            Log.d("AddItemFragment.kt","txtDone_found_1")
+                            Log.d("AddItemFragment.kt", "txtDone_found_1")
 
                             runBlocking {
 
                                 viewModel.deleteCartItems()
-                                Log.d("AddItemFragment.kt","txtDone_found_2")
-                                Log.d("AddItemFragment.kt","txtDone_found: ${Gson().toJson(viewModel.currentCartItems)}")
+                                Log.d("AddItemFragment.kt", "txtDone_found_2")
+                                Log.d(
+                                    "AddItemFragment.kt",
+                                    "txtDone_found: ${Gson().toJson(viewModel.currentCartItems)}"
+                                )
 
                                 viewModel.currentCartItems.forEach {
                                     viewModel.addItemToCartItems(it)
@@ -1437,9 +1469,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     }
 
 
-                }
-                else {
-                    Log.d("AddItemFragment.kt","txtDone_else_found")
+                } else {
+                    Log.d("AddItemFragment.kt", "txtDone_else_found")
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                         item.guestIndexForDineIn = viewModel.dineInHeaderPosition
                         if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
@@ -1472,7 +1503,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                         var newFound = false
 
-                        Log.d("AddItemFragment.kt","txtDone_before_currentCartItems: ${Gson().toJson(viewModel.currentCartItems)}")
+                        Log.d(
+                            "AddItemFragment.kt",
+                            "txtDone_before_currentCartItems: ${Gson().toJson(viewModel.currentCartItems)}"
+                        )
 
                         viewModel.currentCartItems.forEach {
 
@@ -1489,7 +1523,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             }
                         }
 
-                        Log.d("AddItemFragment.kt","txtDone_before_isUpdateItem: ${Gson().toJson(isUpdateItem)}")
+                        Log.d(
+                            "AddItemFragment.kt",
+                            "txtDone_before_isUpdateItem: ${Gson().toJson(isUpdateItem)}"
+                        )
 
                         if (isUpdateItem) {
 
@@ -1501,7 +1538,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             )
                             var newItem = item
 
-                            Log.d("AddItemFragment.kt","txtDone_if (prefProvider.getValue(Constants.OPEN_ORDER_ITEMS)")
+                            Log.d(
+                                "AddItemFragment.kt",
+                                "txtDone_if (prefProvider.getValue(Constants.OPEN_ORDER_ITEMS)"
+                            )
 
                             if (prefProvider.getValue(Constants.OPEN_ORDER_ITEMS, "")
                                     .isNotEmpty()
@@ -1538,32 +1578,41 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                 }
                             }
 
-                            Log.d("AddItemFragment.kt","txtDone_before_item = newItem: ${Gson().toJson(newItem)}")
+                            Log.d(
+                                "AddItemFragment.kt",
+                                "txtDone_before_item = newItem: ${Gson().toJson(newItem)}"
+                            )
 
                             item = newItem
 
                             /*Added by Rahul and Aman to solve the quantity increment decrement issue - BIS-3874: START*/
-                            var updatedIndex=-1
-                            viewModel.currentCartItems.forEachIndexed {index, it ->
-                                if (it.itemId==newItem.itemId && it.cartItemId==newItem.cartItemId){
-                                    updatedIndex=index
+                            var updatedIndex = -1
+                            viewModel.currentCartItems.forEachIndexed { index, it ->
+                                if (it.itemId == newItem.itemId && it.cartItemId == newItem.cartItemId) {
+                                    updatedIndex = index
                                     return@forEachIndexed
                                 }
                             }
-                            if (updatedIndex!=-1){
-                                viewModel.currentCartItems.set(updatedIndex,newItem)
+                            if (updatedIndex != -1) {
+                                viewModel.currentCartItems.set(updatedIndex, newItem)
                             }
 
                             /*Added by Rahul and Aman to solve the quantity increment decrement issue - BIS-3874: END*/
 
-                        }else{
-                            Log.d("AddItemFragment.kt","txtDone_else_of_isUpdateItem")
+                        } else {
+                            Log.d("AddItemFragment.kt", "txtDone_else_of_isUpdateItem")
                         }
 
-                        Log.d("AddItemFragment.kt","txtDone_before_if (!newFound) ->: ${Gson().toJson(!newFound)}")
+                        Log.d(
+                            "AddItemFragment.kt",
+                            "txtDone_before_if (!newFound) ->: ${Gson().toJson(!newFound)}"
+                        )
 
                         if (!newFound) {
-                            Log.d("AddItemFragment.kt","txtDone_before_updateCart: ${Gson().toJson(item)}")
+                            Log.d(
+                                "AddItemFragment.kt",
+                                "txtDone_before_updateCart: ${Gson().toJson(item)}"
+                            )
 
                             viewModel.updateCart(
                                 viewModel.currentCartItems,
@@ -1571,18 +1620,20 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                 Constants.ADD,
                                 false
                             )
-                            Log.d("AddItemFragment.kt","txtDone_before_updateCart: Sent")
+                            Log.d("AddItemFragment.kt", "txtDone_before_updateCart: Sent")
 
-                        }
-                        else {
+                        } else {
 
                             //viewModel.currentCartItems.remove(item)
 
                             runBlocking {
                                 viewModel.deleteCartItems()
-                                Log.d("AddItemFragment.kt","txtDone_runBlocking_1")
+                                Log.d("AddItemFragment.kt", "txtDone_runBlocking_1")
                                 viewModel.currentCartItems.forEach {
-                                    Log.d("AddItemFragment.kt","txtDone_runBlocking_item: ${Gson().toJson(it)}")
+                                    Log.d(
+                                        "AddItemFragment.kt",
+                                        "txtDone_runBlocking_item: ${Gson().toJson(it)}"
+                                    )
                                     viewModel.addItemToCartItems(it)
                                 }
                             }
@@ -1711,23 +1762,37 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 item.guestIndexForDineIn = null
 
                 if (viewModel.currentCartItems.size == 1) {
+
+                    /*Storing the data into backup variables, these data will be used to solve BIS-3973*/
+//                    ---------------------------------------
+                    viewModel.backupOrderId = paymentViewModel.orderId
+                    viewModel.backupPaymentId = paymentViewModel.paymentId
+                    viewModel.backupOrderOfflineId = paymentViewModel.orderOfflineId
+                    viewModel.backupPaymentOfflineId = paymentViewModel.paymentOfflineId
+//                    ----------------------------------------
+
                     viewModel.currentCartItems.clear()
                     viewModel.duplicateCurrentCartItem.clear()
                     //   viewModel.deleteCartItems()
                     viewModel.deleteCart()
-                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+                    EventBus.getDefault().post(
+                        MessageEvent(
+                            "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                                Gson().toJson(Thread.currentThread().stackTrace)
+                            }"
+                        )
+                    )
                     viewModel.fragmentNeedToBeUpdated.value = true
-                } else
-                {
-                    if(true){
+                } else {
+                    if (true) {
                         CoroutineScope(Dispatchers.IO).launch {
                             viewModel.deleteCartItem(item.cartItemId)
                         }
-                    }else
+                    } else
                         viewModel.updateCart(
-                        viewModel.currentCartItems,
-                        item,
-                        DELETE,
+                            viewModel.currentCartItems,
+                            item,
+                            DELETE,
                             item.isManualSales
 
                         )

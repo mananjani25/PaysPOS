@@ -860,7 +860,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                     if (kitchenData[i].name.equals(
                                             "TM-L100",
                                             ignoreCase = true
-                                        ) || kitchenData[i].name.contains("TSP", ignoreCase = true)
+                                        ) || kitchenData[i].name.contains("TSP", ignoreCase = true) || kitchenData[i].name.contains("SP", ignoreCase = true)
                                     ) {
                                         addPrinters(kitchenPrintersList, kitchenData, i)
                                     } else {
@@ -1699,7 +1699,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     ) == true
                 ) {
                     initLabelPrinter(printerListModel)
-                } else if (it?.contains("TSP", ignoreCase = true) == true) {
+                } else if (it?.contains("TSP", ignoreCase = true) == true || it?.contains("SP", ignoreCase = true) == true) {
                     initStarPrinter(printerListModel)
                 } else {
                     Log.e(TAG, "printerListModel  ${Gson().toJson(printerListModel)}")
