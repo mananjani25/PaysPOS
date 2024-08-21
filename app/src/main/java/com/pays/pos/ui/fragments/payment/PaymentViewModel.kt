@@ -41,7 +41,8 @@ import javax.inject.Inject
 open class PaymentViewModel @Inject constructor(
     private val posRepository: PosRepository,
     private val appDatabase: AppDatabase,
-    private val prefProvider: PrefProvider) : ViewModel() {
+    private val prefProvider: PrefProvider
+) : ViewModel() {
 
     private var textToPay: Boolean = false
     private var cardNumberLast4: String = ""
@@ -145,8 +146,8 @@ open class PaymentViewModel @Inject constructor(
 
     fun submit(orderRequestModel: OrderRequestModel) {
         Log.e(TAG, "checkOrderRequest:  ${Gson().toJson(orderRequestModel)}")
-        if (orderRequestModel.order.deliveryType.equals("null")){
-            orderRequestModel.order.deliveryType=""
+        if (orderRequestModel.order.deliveryType.equals("null")) {
+            orderRequestModel.order.deliveryType = ""
         }
 //        orderRequestModel.print_order = printOrder
         if (cashPaymentType(orderRequestModel)) {
@@ -162,7 +163,13 @@ open class PaymentViewModel @Inject constructor(
                     orderRequestModel
                 ) as Resource<CreateOrderResponse>
             } else {
-                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_submit, orderRequestModel= ${Gson().toJson(orderRequestModel)}"))
+                EventBus.getDefault().post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_submit, orderRequestModel= ${
+                            Gson().toJson(orderRequestModel)
+                        }"
+                    )
+                )
 
                 posRepository.createOrder(orderRequestModel)
             }
@@ -180,10 +187,15 @@ open class PaymentViewModel @Inject constructor(
                             resource.data?.let { createOrderResponse ->
 
                                 if (createOrderResponse.data.order.customer != null) {
-                                    posRepository.updateFinalRewards(
-                                        createOrderResponse.data.order.customer.final_reward.toInt(),
-                                        createOrderResponse.data.order.customer.id
-                                    )
+                                    if (!createOrderResponse.data.order.payments.last().paymentType.equals(
+                                            "External", ignoreCase = true
+                                        )
+                                    ) {
+                                        posRepository.updateFinalRewards(
+                                            createOrderResponse.data.order.customer.final_reward.toInt(),
+                                            createOrderResponse.data.order.customer.id
+                                        )
+                                    }
                                 }
 
                                 if (createOrderResponse.data.order.payments.isNotEmpty()) {
@@ -199,7 +211,13 @@ open class PaymentViewModel @Inject constructor(
                                 }
 
                                 if (onlySave || orderRequestModel.completed_all_payments) {
-                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+                                    EventBus.getDefault().post(
+                                        MessageEvent(
+                                            "${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                                                Gson().toJson(Thread.currentThread().stackTrace)
+                                            }"
+                                        )
+                                    )
                                     posRepository.deleteCart(
                                         prefProvider.getValueInt(
                                             Constants.EMPLOYEE_ID,
@@ -244,7 +262,15 @@ open class PaymentViewModel @Inject constructor(
                                                 if (order.payments.isNotEmpty()) {
                                                     if (order.payments[order.payments.size - 1].amount + order.payments[order.payments.size - 1].tips == totalPayAmounts) {
                                                         _data.value = Event(createOrderResponse)
-                                                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_244 createOrderResponse -> ${Gson().toJson(createOrderResponse)}"))
+                                                        EventBus.getDefault().post(
+                                                            MessageEvent(
+                                                                "${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_244 createOrderResponse -> ${
+                                                                    Gson().toJson(
+                                                                        createOrderResponse
+                                                                    )
+                                                                }"
+                                                            )
+                                                        )
 
                                                     } else {
                                                         cashOutApi(createOrderResponse, "out")
@@ -253,7 +279,13 @@ open class PaymentViewModel @Inject constructor(
                                             }
                                         } else {
                                             _data.value = Event(createOrderResponse)
-                                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_253 createOrderResponse -> ${Gson().toJson(createOrderResponse)}"))
+                                            EventBus.getDefault().post(
+                                                MessageEvent(
+                                                    "${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_253 createOrderResponse -> ${
+                                                        Gson().toJson(createOrderResponse)
+                                                    }"
+                                                )
+                                            )
                                             LogUtil.logE("QueueCheck", "CreateOrderData")
                                         }
                                     }
@@ -279,7 +311,8 @@ open class PaymentViewModel @Inject constructor(
                         }
                     }
 
-                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_submit_SUCCESS"))
+                    EventBus.getDefault()
+                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_submit_SUCCESS"))
 
                 }
 
@@ -292,7 +325,8 @@ open class PaymentViewModel @Inject constructor(
                         _showProgress.value = Event(false)
 
 //                    _showProgress.value = Event(false)
-                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_submit_ERROR"))
+                    EventBus.getDefault()
+                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_submit_ERROR"))
 
                 }
 
@@ -316,7 +350,13 @@ open class PaymentViewModel @Inject constructor(
 
 
     fun noUpdatesFound() {
-        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                    Gson().toJson(Thread.currentThread().stackTrace)
+                }"
+            )
+        )
         viewModelScope.launch {
             posRepository.deleteCart(
                 prefProvider.getValueInt(
@@ -388,7 +428,13 @@ open class PaymentViewModel @Inject constructor(
                         if (response?.status == 200) {
 
                             if (splitValue != -1) {
-                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+                                EventBus.getDefault().post(
+                                    MessageEvent(
+                                        "${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                                            Gson().toJson(Thread.currentThread().stackTrace)
+                                        }"
+                                    )
+                                )
                                 posRepository.deleteCart(
                                     prefProvider.getValueInt(
                                         Constants.EMPLOYEE_ID,
@@ -406,7 +452,13 @@ open class PaymentViewModel @Inject constructor(
 
                                 if (onlySave) {
                                     _data.value = Event(createOrderResponse)
-                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_404 createOrderResponse -> ${Gson().toJson(createOrderResponse)}"))
+                                    EventBus.getDefault().post(
+                                        MessageEvent(
+                                            "${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_404 createOrderResponse -> ${
+                                                Gson().toJson(createOrderResponse)
+                                            }"
+                                        )
+                                    )
                                 }
                                 cashLogApi(createOrderResponse, "in")
 
@@ -478,7 +530,13 @@ open class PaymentViewModel @Inject constructor(
                             if (order.payments.isNotEmpty()) {
                                 if (order.payments[order.payments.size - 1].amount + order.payments[order.payments.size - 1].tips == totalPayAmounts) {
                                     _data.value = Event(createOrderResponse)
-                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_476 createOrderResponse -> ${Gson().toJson(createOrderResponse)}"))
+                                    EventBus.getDefault().post(
+                                        MessageEvent(
+                                            "${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_476 createOrderResponse -> ${
+                                                Gson().toJson(createOrderResponse)
+                                            }"
+                                        )
+                                    )
                                 } else {
                                     cashOutApi(createOrderResponse, "out")
                                 }
@@ -541,7 +599,13 @@ open class PaymentViewModel @Inject constructor(
 
                             resource.data?.let {
                                 _data.value = Event(createOrderResponse)
-                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_535 createOrderResponse -> ${Gson().toJson(createOrderResponse)}"))
+                                EventBus.getDefault().post(
+                                    MessageEvent(
+                                        "${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_535 createOrderResponse -> ${
+                                            Gson().toJson(createOrderResponse)
+                                        }"
+                                    )
+                                )
                             }
 
                         } else {
@@ -562,7 +626,13 @@ open class PaymentViewModel @Inject constructor(
             }
         } else {
             _data.value = Event(createOrderResponse)
-            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_556 createOrderResponse -> ${Gson().toJson(createOrderResponse)}"))
+            EventBus.getDefault().post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_556 createOrderResponse -> ${
+                        Gson().toJson(createOrderResponse)
+                    }"
+                )
+            )
         }
     }
 
@@ -888,18 +958,20 @@ open class PaymentViewModel @Inject constructor(
                 /*Added by Rahul to solve the modifiers not removing issue*/
                 val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
 
-                val isCustomFound = cartItems.filter { it.customItemID !=0 }
+                val isCustomFound = cartItems.filter { it.customItemID != 0 }
 
-                var oldCartItemsList =if(isCustomFound.isEmpty()) {
+                var oldCartItemsList = if (isCustomFound.isEmpty()) {
 
                     Gson().fromJson<java.util.ArrayList<TbCartItem>>(
-                    oldItems,
-                    listType)
-                }else{
+                        oldItems,
+                        listType
+                    )
+                } else {
                     Gson().fromJson<java.util.ArrayList<TbCartItem>>(
                         prefProvider.getValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, ""),
-                        listType)
-                    }
+                        listType
+                    )
+                }
 
                 for (oldItem in oldCartItemsList) {
                     val found = cartItems.filter { it.cartItemId == oldItem.cartItemId }
@@ -938,7 +1010,7 @@ open class PaymentViewModel @Inject constructor(
 
                                 }
 
-                               if (oldItem.isItemEdited || it.orderItemId==null || it.isDestroy) {
+                                if (oldItem.isItemEdited || it.orderItemId == null || it.isDestroy) {
                                     prefProvider.setValueboolean(
                                         Constants.DO_PRINT,
                                         true
@@ -1006,8 +1078,8 @@ open class PaymentViewModel @Inject constructor(
                 cartItems.clear()
                 cartItems.addAll(oldCartItemsList)
 
-            }else
-                prefProvider.setValueboolean(Constants.DO_PRINT,true)
+            } else
+                prefProvider.setValueboolean(Constants.DO_PRINT, true)
 
             prefProvider.setValue(Constants.OLD_ITEM, oldItems)
         } catch (e: Exception) {
@@ -1057,8 +1129,8 @@ open class PaymentViewModel @Inject constructor(
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
         }
 
-        if (order_type_id==-1 && cartModel.orderTypeId==7){
-            order_type_id=cartModel.orderTypeId
+        if (order_type_id == -1 && cartModel.orderTypeId == 7) {
+            order_type_id = cartModel.orderTypeId
         }
 
         orderAttributeRequestModel.orderTypeId = order_type_id
@@ -1346,9 +1418,9 @@ open class PaymentViewModel @Inject constructor(
         }
 
         /* The orderAttributeRequestModel is written inside apply because the object was not getting assigned value, i.e. it was loosing the assigned value*/
-       orderAttributeRequestModel= orderAttributeRequestModel.apply {
-            employeeId=cartModel.employeeID
-            locationId=cartModel.locationId
+        orderAttributeRequestModel = orderAttributeRequestModel.apply {
+            employeeId = cartModel.employeeID
+            locationId = cartModel.locationId
             terminalId = cartModel.terminalId
             note = cartModel.note
             offlineId =
@@ -1385,10 +1457,10 @@ open class PaymentViewModel @Inject constructor(
                 MethodUtils.roundOffAmountDouble(totalPrice) - MethodUtils.roundOffAmountDouble(
                     tipAmount
                 )
-           totalServiceCharges =
-               MethodUtils.roundOffAmountDouble(totalServiceCharge)
-           totalTaxAmount = MethodUtils.roundOffAmountDouble(totalTax)
-           totalTips = MethodUtils.roundOffAmountDouble(tipAmount)
+            totalServiceCharges =
+                MethodUtils.roundOffAmountDouble(totalServiceCharge)
+            totalTaxAmount = MethodUtils.roundOffAmountDouble(totalTax)
+            totalTips = MethodUtils.roundOffAmountDouble(tipAmount)
         }
 //        orderAttributeRequestModel.employeeId = cartModel.employeeID
 //        orderAttributeRequestModel.locationId = cartModel.locationId
@@ -1513,7 +1585,10 @@ open class PaymentViewModel @Inject constructor(
 //            Added by Rahul to solve the modifiers not removing issue
             val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
 
-            val oldCartItemsList = Gson().fromJson(prefProvider.getValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, ""), listType) as ArrayList<TbCartItem>
+            val oldCartItemsList = Gson().fromJson(
+                prefProvider.getValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, ""),
+                listType
+            ) as ArrayList<TbCartItem>
 
 
             for (oldItem in oldCartItemsList) {
@@ -3032,7 +3107,8 @@ open class PaymentViewModel @Inject constructor(
 
 
     fun splitByOrder(myRequest: SpitByOrderRequestModel, isDineIn: Boolean) {
-        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} splitByOrder(myRequest: SpitByOrderRequestModel, isDineIn: Boolean)_PaymentViewModel"))
+        EventBus.getDefault()
+            .post(MessageEvent("${Constants.LINE_BREAK_TAB} splitByOrder(myRequest: SpitByOrderRequestModel, isDineIn: Boolean)_PaymentViewModel"))
         if (cashPaymentTypeSplit(myRequest)) {
             _showProgressCash.value = Event(true)
         } else
@@ -3041,18 +3117,22 @@ open class PaymentViewModel @Inject constructor(
 //        _showProgress.value = Event(true)
 
         viewModelScope.launch {
-            EventBus.getDefault().post(MessageEvent("myRequest= ${Gson().toJson(myRequest)} isDineId= ${isDineIn} _PaymentViewModel"))
+            EventBus.getDefault()
+                .post(MessageEvent("myRequest= ${Gson().toJson(myRequest)} isDineId= ${isDineIn} _PaymentViewModel"))
 
-            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} splitByOrder(myRequest: SpitByOrderRequestModel, isDineIn: Boolean)_Before_posRepository.splitByOrder(myRequest)_PaymentViewModel"))
+            EventBus.getDefault()
+                .post(MessageEvent("${Constants.LINE_BREAK_TAB} splitByOrder(myRequest: SpitByOrderRequestModel, isDineIn: Boolean)_Before_posRepository.splitByOrder(myRequest)_PaymentViewModel"))
             val resource = posRepository.splitByOrder(myRequest)
-            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} splitByOrder(myRequest: SpitByOrderRequestModel, isDineIn: Boolean)_After_posRepository.splitByOrder(myRequest)_PaymentViewModel"))
+            EventBus.getDefault()
+                .post(MessageEvent("${Constants.LINE_BREAK_TAB} splitByOrder(myRequest: SpitByOrderRequestModel, isDineIn: Boolean)_After_posRepository.splitByOrder(myRequest)_PaymentViewModel"))
 
 
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
 
-                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} splitByOrder(myRequest: SpitByOrderRequestModel, isDineIn: Boolean)_Status.SUCCESS_PaymentViewModel"))
+                    EventBus.getDefault()
+                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} splitByOrder(myRequest: SpitByOrderRequestModel, isDineIn: Boolean)_Status.SUCCESS_PaymentViewModel"))
 
                     resource.data.let { response ->
                         if (response?.status == 200) {
@@ -3071,7 +3151,13 @@ open class PaymentViewModel @Inject constructor(
                                 }
 
                                 if (myRequest.completed_all_payments) {
-                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+                                    EventBus.getDefault().post(
+                                        MessageEvent(
+                                            "${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                                                Gson().toJson(Thread.currentThread().stackTrace)
+                                            }"
+                                        )
+                                    )
                                     posRepository.deleteCart(
                                         prefProvider.getValueInt(
                                             Constants.EMPLOYEE_ID,
@@ -3083,13 +3169,25 @@ open class PaymentViewModel @Inject constructor(
                                 println("onlySave : $onlySave")
                                 if (onlySave) {
                                     _data.value = Event(createOrderResponse)
-                                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_3070 createOrderResponse -> ${Gson().toJson(createOrderResponse)}"))
+                                    EventBus.getDefault().post(
+                                        MessageEvent(
+                                            "${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_3070 createOrderResponse -> ${
+                                                Gson().toJson(createOrderResponse)
+                                            }"
+                                        )
+                                    )
                                 } else {
                                     if (response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
                                         cashLogApi(createOrderResponse, "in")
                                     } else {
                                         _data.value = Event(createOrderResponse)
-                                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_3075 createOrderResponse -> ${Gson().toJson(createOrderResponse)}"))
+                                        EventBus.getDefault().post(
+                                            MessageEvent(
+                                                "${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_line_3075 createOrderResponse -> ${
+                                                    Gson().toJson(createOrderResponse)
+                                                }"
+                                            )
+                                        )
 
                                     }
                                 }
@@ -3111,7 +3209,8 @@ open class PaymentViewModel @Inject constructor(
                 }
 
                 Status.ERROR -> {
-                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} splitByOrder(myRequest: SpitByOrderRequestModel, isDineIn: Boolean)_Status.ERROR_PaymentViewModel"))
+                    EventBus.getDefault()
+                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} splitByOrder(myRequest: SpitByOrderRequestModel, isDineIn: Boolean)_Status.ERROR_PaymentViewModel"))
                     _transactionErrorText.value = Event(resource.message)
                     if (cashPaymentTypeSplit(myRequest)) {
                         _showProgressCash.value = Event(true)
