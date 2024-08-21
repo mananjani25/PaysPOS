@@ -1976,6 +1976,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             }else{
                 myRequest.completed_all_payments = true
             }
+
             paymentviewModel.submit(myRequest)
         } else {
             val paymentReq = myRequest.order.paymentAttributes

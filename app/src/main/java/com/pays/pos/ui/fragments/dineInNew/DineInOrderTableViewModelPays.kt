@@ -50,6 +50,8 @@ class DineInOrderTableViewModelPays @Inject constructor(
     private val _updateOrder = MutableLiveData<Event<String>>()
     val updateOrder: LiveData<Event<String>> = _updateOrder
 
+    val _refreshDineInTable = MutableLiveData<Boolean>()
+
     private val _showProgressCash = MutableLiveData<Event<Boolean>>()
     val showProgressCash: LiveData<Event<Boolean>> = _showProgressCash
 
@@ -287,6 +289,7 @@ class DineInOrderTableViewModelPays @Inject constructor(
                         _reorderItemsSuccess.value = Event(resource.data?.data)
                     }
 
+                    _refreshDineInTable.value = true
                 }
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message)

@@ -452,7 +452,6 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             binding.checkedForFire?.setOnClickListener {
 
-
                 if( binding.checkedForFire.isChecked  ) {
                   //  model.item?.isChecked = true
                     listner.guestCheckboxClicked(position,guestChecked = true)
@@ -800,9 +799,11 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     fun setList(list: ArrayList<DineInModel>, isAnyPaymentDone: Boolean = false) {
-        this.isAnyPaymentDone = isAnyPaymentDone
-        this.list = list
-        notifyDataSetChanged()
+        try {
+            this.isAnyPaymentDone = isAnyPaymentDone
+            this.list = list
+            notifyDataSetChanged()
+        }catch (_:Exception){}
     }
 
     interface DineInTableListner {

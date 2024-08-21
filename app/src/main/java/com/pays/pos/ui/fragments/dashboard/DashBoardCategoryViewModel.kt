@@ -6013,9 +6013,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     private fun getGuestsAttributes(cartModel: CartModel): List<GuestsAttributes> {
         val orderItemsAttributeList: ArrayList<GuestsAttributes> = arrayListOf()
         Log.e(TAG, "dineInListData:   ${Gson().toJson(cartModel.dineInList)}")
-        CoroutineScope(Dispatchers.IO).launch {
-        cartModel.dineInList?.forEachIndexed { index, it ->
 
+
+            CoroutineScope(Dispatchers.IO).launch {
+                cartModel.dineInList?.forEachIndexed { index, it ->
 
                     var cartItems = getDineInCartItems(index) as ArrayList<TbCartItem>
                     val model = GuestsAttributes()
@@ -6115,8 +6116,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 }
 
-            dineInResult.postValue(true)
-        }
+                dineInResult.postValue(true)
+            }
 
         return orderItemsAttributeList
 

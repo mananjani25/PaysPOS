@@ -84,8 +84,6 @@ import com.epson.eposprint.Print
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.pays.pos.ui.fragments.dineInNew.customerDisplay.CustomDisplayPays
-import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
@@ -168,6 +166,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
     private var totalDiscountWO = 0.0
     private var clickedPosition: Int = -1
 
+    var dineInCartItemMoved = false
+
     @Inject
     lateinit var prefProvider: PrefProvider
     private val viewModel by viewModels<DineInOrderTableViewModelPays>()
@@ -187,6 +187,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.lifecycleOwner = this
 
 
+        dineInCartItemMoved = false
 
         progressDialog()
         optionType = prefProvider.getValue(Constants.OPTION_TYPE, "")
@@ -214,7 +215,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         observeTipsList()
         observeAddGuest()
 
-
+        observeRefresh(savedInstanceState)
 
         navigateDineInOrderNew()
         reorderedItemObserver()
@@ -253,6 +254,25 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         dashboardViewModel.currentCartItems.clear()
         dashboardViewModel.deleteCart()
         dashboardViewModel.deleteCartItems()
+    }
+
+    private fun observeRefresh(savedInstanceState: Bundle?) {
+        viewModel._refreshDineInTable.observe(viewLifecycleOwner){
+            if(it){
+                val navController = findNavController()
+                val currentArgs = arguments
+                try {
+                    navController.navigate(findNavController().currentDestination!!.id, currentArgs)
+                }catch (_:Exception) {
+                    try {
+                        navController.navigate(findNavController().currentDestination!!.id, currentArgs)
+                    }catch (_:Exception) {
+
+                    }
+                }
+
+            }
+        }
     }
 
     private fun showStaticLoader() {
@@ -3268,6 +3288,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         var WTDiscount = 0.0
         var guestCount = 0
         var eligibleGuestsForDivision = 0
+
         if (dragTo != -1) {
             oldList.get(dragTo).item?.guestItemId?.let {
                 listOfMoveItemIds.add(it)
@@ -3528,6 +3549,30 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 newList
             )
 
+            //Added to resolve , Items are not getting moved guest wise
+            if(dineInCartItemMoved) {
+                dashboardViewModel.deleteCartItems()
+                dashboardViewModel.currentCartItems = arrayListOf()
+                var guestCounter = -1
+                newList.forEach {
+                    if (it.isHeader == 1) {
+                        it.item.let {
+                            if (it != null) {
+                                val found = listOfMoveItemIds.filter { moved-> it.guestItemId == moved}
+                                if(found.isNotEmpty())
+                                    it.id = 0
+
+                                it.guestIndexForDineIn = guestCounter
+
+                                dashboardViewModel.addItemToCartItems(it)
+                            }
+                        }
+                    }else guestCounter++
+                }
+
+                dineInCartItemMoved = false
+            }
+
             updateOrderCall(isFromReorder = true)
         }
 
@@ -3629,8 +3674,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         viewHolder.layoutPosition,
                         target.layoutPosition
                     )
+                    dineInCartItemMoved = true
                     return true
                 } else {
+                    dineInCartItemMoved = false
                     return false
                 }
 
@@ -10392,7 +10439,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     if ( (!it.isFired && it.isChecked) || (!it.isFired && isCheckAndFire)) {
                         fireItemsList.add(it)
                         listItem.add(it)
-                       // it.isFired = true
+                        it.isFired = true
 
                         //add items ids for api call
                         it.orderItemId?.let {
@@ -10444,7 +10491,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                 }
                             } else {
                                 /***
-                                 * This will print checked and selected items which is not printed already
+                                 * This will print checked and selected items which are not printed already
                                  */
                                 if(fireAll &&  it.isChecked && !it.isFired ) {
                                     fireItemsList.add(it)
@@ -10587,75 +10634,99 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
             }
 
-            var autoPrintEnable = false
-            kitchenPrinterList.forEach { kit ->
-                if (kit.status) {
 
 
-                    if (isCheckAndFire) {
-                        kit.orderTypes.forEach {
-                            if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
-                                LogUtil.logE(
-                                    TAG,
-                                    "printerSettings  ${Gson().toJson(it.printerSettings)}"
-                                )
-                                it.printerSettings.forEach {
-                                    if (it.printType.lowercase()
-                                            .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
-                                    ) {
+                var autoPrintEnable = false
+                kitchenPrinterList.forEach { kit ->
+                    if (kit.status) {
 
-                                        if (checkItemsforPrinterDineIn(
-                                                listItem, kit.printerCategories.toCollection(
-                                                    arrayListOf()
-                                                )
-                                            )
+
+                        if (isCheckAndFire) {
+                            kit.orderTypes.forEach {
+                                if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
+                                    LogUtil.logE(
+                                        TAG,
+                                        "printerSettings  ${Gson().toJson(it.printerSettings)}"
+                                    )
+                                    it.printerSettings.forEach {
+                                        if (it.printType.lowercase()
+                                                .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
                                         ) {
-                                            LogUtil.logE(TAG, "printerName  ${kit.name} ")
-                                            autoPrintEnable = true
-                                            if (!prefProvider.getValueboolean(
-                                                    IS_PRINTER_QUEUE_ENABLE,
-                                                    false
+
+                                            if (checkItemsforPrinterDineIn(
+                                                    listItem, kit.printerCategories.toCollection(
+                                                        arrayListOf()
+                                                    )
                                                 )
                                             ) {
-                                                initKitchenPrinter(
-                                                    kit,
-                                                    Constants.KITCHEN,
-                                                    listItem,
-                                                    listItemWithGuest
-                                                )
+                                                LogUtil.logE(TAG, "printerName  ${kit.name} ")
+                                                autoPrintEnable = true
+                                                if (!prefProvider.getValueboolean(
+                                                        IS_PRINTER_QUEUE_ENABLE,
+                                                        false
+                                                    )
+                                                ) {
+                                                    initKitchenPrinter(
+                                                        kit,
+                                                        Constants.KITCHEN,
+                                                        listItem,
+                                                        listItemWithGuest
+                                                    )
+                                                }
                                             }
                                         }
                                     }
                                 }
+
+                            }
+                        } else {
+                            if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+                                initKitchenPrinter(
+                                    kit,
+                                    Constants.KITCHEN,
+                                    listItem,
+                                    listItemWithGuest
+                                )
                             }
 
-                        }
-                    } else {
-                        if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
-                            initKitchenPrinter(kit, Constants.KITCHEN, listItem, listItemWithGuest)
-                        }
 
+                        }
                     }
                 }
-            }
-            if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
-                var fireAllIds = android.text.TextUtils.join(",", builder)
 
-                viewModel.fireItemToKitchen(orderId ?: 0, true, fireAllIds, true)
+                if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
+                    var fireAllIds = android.text.TextUtils.join(",", builder)
 
-                if(isCheckAndFire)
-                list.forEach {
-                    if (it.isHeader == 1) {
-                        it?.item?.isFired = true
-                    }
+                    viewModel.fireItemToKitchen(orderId ?: 0, true, fireAllIds, true)
+
+
+//                    if (fireAll && !isCheckAndFire) {
+//
+//                        listItem.forEach { firedItem ->
+//                            val item = list.filter { it.item?.itemId == firedItem.itemId && it.item?.cartItemId == firedItem.cartItemId  }
+//
+//                            if( item.isNotEmpty() ) {
+//                                item.first().isFired = true
+//                            }
+//                        }
+//
+//                        dineInTableAdapter.setList(ArrayList(list))
+//                    } else if(!fireAll){
+//                        listItem.forEach { firedItem ->
+//                            val item = list.filter { it.item?.itemId == firedItem.itemId && it.item?.cartItemId == firedItem.cartItemId  }
+//
+//                            if( item.isNotEmpty() ) {
+//                                item.first().isFired = true
+//                            }
+//                        }
+//                        dineInTableAdapter.setList(ArrayList(list))
+//                    }
+
                 }
-              //  dineInTableAdapter
 
-//                if(isCheckAndFire)
-                    dineInTableAdapter.updateStatus(0, true)
-//                else
- //                   dineInTableAdapter.updateStatus(0, false)
-            }
+
+                dineInTableAdapter.updateStatus(0, true)
+
         }
 
 

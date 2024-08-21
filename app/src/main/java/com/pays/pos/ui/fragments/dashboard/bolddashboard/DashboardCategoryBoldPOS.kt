@@ -2158,10 +2158,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 clearCustomer()
 
 
-                findNavController().navigate(
-                    R.id.action_dashboardCategoryBoldPOS_to_dineInOrderTable,
-                    bundle
-                )
+                try {
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryBoldPOS_to_dineInOrderTable,
+                        bundle
+                    )
+                }catch (_e:Exception){
+                   // AlertUtils.showAlert(requireActivity(),"Something went wrong. Please try again !")
+                }
 
             }
         }
