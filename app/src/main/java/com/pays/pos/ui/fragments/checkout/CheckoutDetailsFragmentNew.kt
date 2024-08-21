@@ -61,6 +61,7 @@ import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.MagtekModule
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.logger.MessageEvent
+import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
