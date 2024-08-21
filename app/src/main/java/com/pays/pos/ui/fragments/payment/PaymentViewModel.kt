@@ -187,14 +187,16 @@ open class PaymentViewModel @Inject constructor(
                             resource.data?.let { createOrderResponse ->
 
                                 if (createOrderResponse.data.order.customer != null) {
-                                    if (!createOrderResponse.data.order.payments.last().paymentType.equals(
-                                            "External", ignoreCase = true
-                                        )
-                                    ) {
-                                        posRepository.updateFinalRewards(
-                                            createOrderResponse.data.order.customer.final_reward.toInt(),
-                                            createOrderResponse.data.order.customer.id
-                                        )
+                                    if (createOrderResponse.data.order.payments.isNotEmpty()){
+                                        if (!createOrderResponse.data.order.payments.last().paymentType.equals(
+                                                "External", ignoreCase = true
+                                            )
+                                        ) {
+                                            posRepository.updateFinalRewards(
+                                                createOrderResponse.data.order.customer.final_reward.toInt(),
+                                                createOrderResponse.data.order.customer.id
+                                            )
+                                        }
                                     }
                                 }
 
