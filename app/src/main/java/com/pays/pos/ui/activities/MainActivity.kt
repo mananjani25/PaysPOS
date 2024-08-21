@@ -196,9 +196,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         var updatePrinter: UpdatePrinters? = null
 
         private var subscription: Subscription? = null
-        private var subscription2: Subscription? = null
+        public var subscription2: Subscription? = null
         private var consumer: Consumer? = null
-        private var consumer2: Consumer? = null
+        public var consumer2: Consumer? = null
 
         fun workerDisconnect() {
             try {
@@ -3411,7 +3411,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     }
 
 
-    fun connectActionCableSYNCSETTINGS() {
+    public fun connectActionCableSYNCSETTINGS() {
         // 1. Setup
         var requestURL = baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
 

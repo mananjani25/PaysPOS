@@ -2845,8 +2845,7 @@ class CartFragment(
                     EventBus.getDefault()
                         .post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvSave()"))
                     if (!binding.tvSave.text.toString().trim()
-                            .equals("update", ignoreCase = true)
-                    ) {
+                            .equals("update", ignoreCase = true)) {
                         prefProvider.setValueInt("ORDER_ID", -1)
                     }
 
