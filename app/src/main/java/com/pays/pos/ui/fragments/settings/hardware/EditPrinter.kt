@@ -219,7 +219,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
 
                     }
                     CUSTOMER -> {
-                        if(printerModel?.printerName?.toLowerCase()?.contains("tsp") == false){
+                        if((printerModel?.printerName?.toLowerCase()?.contains("tsp") == false) || (printerModel?.printerName?.toLowerCase()?.contains("sp") == false)){
                             orderTypeList.forEach {
                             dataList = arrayListOf()
                             dataList.add(
@@ -251,7 +251,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                         }
                     }
                     KITCHENANDCUSTOMER -> {
-                       if(printerModel?.printerName?.toLowerCase()?.contains("tsp") == false){
+                       if(((printerModel?.printerName?.toLowerCase()?.contains("tsp") == false)) || ((printerModel?.printerName?.toLowerCase()?.contains("sp") == false))){
                         orderTypeList.forEach {
                             dataList = arrayListOf()
 

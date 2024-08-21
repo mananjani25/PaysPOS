@@ -54,10 +54,7 @@ import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.notes.NoteListViewModel
 import com.pays.pos.utils.Event
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
@@ -1163,11 +1160,24 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     }
 
                 } else {
-                    Log.d(
-                        "AddItemFragment.kt",
-                        "txtDone_item_cartModelList: ${Gson().toJson(cartModelsList)}"
-                    )
-                    viewModel.createCart(cartModelsList)
+                    Log.d("AddItemFragment.kt","txtDone_item_cartModelList: ${Gson().toJson(cartModelsList)}")
+                   var cartModels = viewModel.createCart(cartModelsList)
+
+                    runBlocking {
+                        cartModels.forEach {
+                            CoroutineScope(Dispatchers.IO).async{
+                                var cart=null
+                                runBlocking {
+                                    viewModel.getCartModelFromID(it.cartId)
+                                }
+                                runBlocking {
+                                    if (cart==null){
+                                        viewModel.createEmptyCart(it)
+                                    }
+                                }
+                            }.await()
+                        }
+                    }
                 }
 
 

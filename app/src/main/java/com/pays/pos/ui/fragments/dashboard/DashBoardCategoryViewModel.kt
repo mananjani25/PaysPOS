@@ -8,7 +8,6 @@ import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
 import android.os.StrictMode
-import android.provider.Settings.Global
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
@@ -105,6 +104,7 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.collections.set
 import kotlin.math.ceil
 
@@ -144,6 +144,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     var currentCartItems: ArrayList<TbCartItem> = arrayListOf()
     var duplicateCurrentCartItem: ArrayList<TbCartItem> = arrayListOf()
 
+    /* This variable is used to track the selected category, if this variable is not 0 then the category will be selected, it was added to solve BIS-4045 */
+    var selectedCatetory:Int=0
     /**
      * Tracking main cart discount
      */
@@ -6468,8 +6470,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         _showProgress.value = Event(true)
 
-        if (orderRequestModel.order.deliveryType.equals("null")){
-            orderRequestModel.order.deliveryType=""
+        if (orderRequestModel.order.deliveryType.equals("null")) {
+            orderRequestModel.order.deliveryType = ""
         }
 
         viewModelScope.launch {
@@ -7034,6 +7036,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 }
 
+                                listModifierSet.forEach {modifier->
+                                    (modifier.modifiers as ArrayList<Modifier>).sortBy {it.sort }
+                                }
                                 viewModelScope.launch {
                                     appDatabase.modifierSetDao().addAll(listModifierSet)
                                 }
@@ -7326,6 +7331,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 } catch (e: Exception) {
 
+                                }
+
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    insertDynamicPayment(it.settingData.data.dynamicPaymentRecords)
                                 }
 
                                 if (it.settingData.data.teamRoles.isNotEmpty()) {
@@ -8265,4 +8274,19 @@ class DashBoardCategoryViewModel @Inject constructor(
     suspend fun getLabelPrinterSettingsData(): TbLabelPrinterSettings {
         return posRepository.getLabelPrinterSettingsData()
     }
+
+    //    ----------------- Dynamic Payments -----------------------------
+    suspend fun insertDynamicPayment(tbDynamicPaymentRecords: TbDynamicPaymentRecords) {
+        posRepository.insertDynamicPayments(tbDynamicPaymentRecords)
+    }
+
+    suspend fun insertDynamicPayment(tbDynamicPaymentRecords: List<TbDynamicPaymentRecords>) {
+        posRepository.insertDynamicPayments(tbDynamicPaymentRecords)
+    }
+
+    fun getDynamicPaymentRecords(isActive:Boolean, locationId:Int):Flow<List<TbDynamicPaymentRecords>>{
+        return posRepository.getDynamicPaymentRecords(isActive, locationId)
+    }
+    //    ----------------- Dynamic Payments -----------------------------
+
 }

@@ -490,6 +490,7 @@ class TransactionDetailsFragment : Fragment() {
 
                     putBoolean("isItemRefund", isItemRefund)
                     putBoolean("isAmountRefund", isAmountRefund)
+                    putString("screenTotalAmount",(paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips).toString())
                 }
                 bundle.putString("isFrom", "refund")
 
@@ -1303,6 +1304,7 @@ class TransactionDetailsFragment : Fragment() {
         viewModel.dataPayment.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 paymentDetailsResponse = it
+                enableDisableRefundButton()
                 enableDisableTipButton()
                 val jsonString = Gson().toJson(paymentDetailsResponse)
                 Log.e("paymentDetailsResponse", "paymentDetailsResponse result = $jsonString")
@@ -1646,6 +1648,12 @@ class TransactionDetailsFragment : Fragment() {
 
     }
 
+    private fun enableDisableRefundButton() {
+        if (paymentDetailsResponse.data.payment_type.contains(getString(R.string.external),ignoreCase = true)){
+            binding.tvIssueRefund.gone()
+        }
+    }
+
     private fun acceptedAndDeclineOrder() {
         var employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         var terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
@@ -1870,20 +1878,24 @@ class TransactionDetailsFragment : Fragment() {
                                                                         .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
                                                                 ) {
 
-                                                                    if (checkItemsforTransactionPrinter(
-                                                                            (paymentDetailsResponse.data.order.order_items
-                                                                                ?: arrayListOf()) as List<GetOrderDetailsResponse.Data.OrderItem>,
-                                                                            kitchenPrinterList[i].printerCategories.toCollection(
-                                                                                arrayListOf()
-                                                                            )
-                                                                        )
-                                                                    ) {
+                                                                   try{
+                                                                       if (checkItemsforTransactionPrinter(
+                                                                               (paymentDetailsResponse.data.order.order_items
+                                                                                   ?: arrayListOf()) as List<GetOrderDetailsResponse.Data.OrderItem>,
+                                                                               kitchenPrinterList[i].printerCategories.toCollection(
+                                                                                   arrayListOf()
+                                                                               )
+                                                                           )
+                                                                       ) {
 
-                                                                        initKitchenPrinter(
-                                                                            kitchenPrinterList.get(i),
-                                                                            Constants.KITCHEN
-                                                                        )
-                                                                    }
+                                                                           initKitchenPrinter(
+                                                                               kitchenPrinterList.get(i),
+                                                                               Constants.KITCHEN
+                                                                           )
+                                                                       }
+                                                                   }catch (e:Exception){
+
+                                                                   }
 
                                                                 }
                                                             }

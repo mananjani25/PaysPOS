@@ -1508,12 +1508,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
     private fun setLabelData() {
-        if (paymentType == "Card") {
-            binding.txtTitleCash.text = "Card"
+        var paymentTypeTitle=java.lang.StringBuilder()
+       /* if (paymentType == "Card") {
+            paymentTypeTitle = "Card"
         } else {
-            binding.txtTitleCash.text = "Cash"
+            paymentTypeTitle = "Cash"
+        }*/
+
+        receiptModelForOpenORder?.order?.let {item->
+            item.payments.forEach {
+                paymentTypeTitle.append(it.paymentType+", ")
+            }
         }
 
+
+        binding.txtTitleCash.text = paymentTypeTitle.deleteCharAt(paymentTypeTitle.length-2)
         binding.txtRemainingAmountLabel.text = "Remaining Amount"
     }
 
@@ -1689,6 +1698,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
             R.id.imgBack -> {
+                binding.tvMessage.text=getString(R.string.how_would_the_customer_like_their_receipt)
                 backpress()
             }
         }
@@ -6807,6 +6817,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private fun moveToDashboard() {
         prefProvider.setValueboolean(Constants.TIP_ADDED, false)
         prefProvider.deleteValue(Constants.DO_PRINT)
+        prefProvider.setValue(Constants.DELIVERY_TYPE, "")
 
         if (isSpilt) {
             if (isDineIn) {
@@ -10261,7 +10272,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-        } else if (data.name.contains("TSP", ignoreCase = true)) {
+        } else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains("SP", ignoreCase = true)))) {
             settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
             printer = StarPrinter(settings, requireContext())
 
@@ -14062,7 +14073,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 } else if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
                         receiptModel?.order?.payments?.size!! - 1
-                    )?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()
+                    )?.cash_discount_type?.lowercase() == "CashDiscount".lowercase() && !receiptModel?.order?.payments?.get(
+                        receiptModel?.order?.payments?.size?.minus(1)!!)!!.paymentType.equals(getString(R.string.external),ignoreCase = true)
                 ) {
 
                     if (receiptModel?.order?.totalCashDiscountFee != null) {
@@ -14145,38 +14157,41 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
 
                     //PLZCHECK
-                    if (receiptModel?.order?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()) {
+                    if (!receiptModel?.order?.payments?.get(
+                        receiptModel?.order?.payments?.size?.minus(1)!!)!!.paymentType.equals(getString(R.string.external),ignoreCase = true)){
+                        if (receiptModel?.order?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()) {
 
-                        val str5 = padLine(
-                            "Total Price",
-                            "$" + MethodUtils.roundOffAmountString(
+                            val str5 = padLine(
+                                "Total Price",
+                                "$" + MethodUtils.roundOffAmountString(
+                                    finalAmt - (receiptModel?.order?.payments?.get(
+                                        receiptModel?.order?.payments?.size?.minus(1) ?: 0
+                                    )?.cash_discount_or_surcharge ?: 0.0)
+                                ), if (customerSettingModel.fonts == LARGE) 23 else 48
+                            ).toString()
+
+                            PrintSunmiUtils.boldText(str5)
+
+
+                            totalfamount = MethodUtils.roundOffAmountDouble(
                                 finalAmt - (receiptModel?.order?.payments?.get(
                                     receiptModel?.order?.payments?.size?.minus(1) ?: 0
                                 )?.cash_discount_or_surcharge ?: 0.0)
-                            ), if (customerSettingModel.fonts == LARGE) 23 else 48
-                        ).toString()
-
-                        PrintSunmiUtils.boldText(str5)
+                            )
+                        } else {
 
 
-                        totalfamount = MethodUtils.roundOffAmountDouble(
-                            finalAmt - (receiptModel?.order?.payments?.get(
-                                receiptModel?.order?.payments?.size?.minus(1) ?: 0
-                            )?.cash_discount_or_surcharge ?: 0.0)
-                        )
-                    } else {
+                            val str5 = padLine(
+                                "Total Price",
+                                "$" + MethodUtils.roundOffAmountString(finalAmt),
+                                if (customerSettingModel.fonts == LARGE) 23 else 48
+                            ).toString()
+                            PrintSunmiUtils.boldText(str5)
 
 
-                        val str5 = padLine(
-                            "Total Price",
-                            "$" + MethodUtils.roundOffAmountString(finalAmt),
-                            if (customerSettingModel.fonts == LARGE) 23 else 48
-                        ).toString()
-                        PrintSunmiUtils.boldText(str5)
+                            totalfamount = MethodUtils.roundOffAmountDouble(finalAmt)
 
-
-                        totalfamount = MethodUtils.roundOffAmountDouble(finalAmt)
-
+                        }
                     }
 
                 } else {

@@ -1249,6 +1249,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         permissionCheck()
 
         attachFileLogger()
+        prefProvider!!.setValue(Constants.DELIVERY_TYPE, "")
 
 
         if (!checkServiceRunning(

@@ -2159,6 +2159,7 @@ class CartFragment(
                     supervisorScope {
                         launch {
                             try {
+                                viewModel.selectedCatetory=0
                                 // Do positive stuff here
                                 prefProvider.setValueboolean(Constants.BACK_FROM_PAYMENT, false)
                                 prefProvider.setValueboolean(Constants.NO_NEED_TO_PRINT, false)
@@ -2166,6 +2167,7 @@ class CartFragment(
                                 viewModel.clearListTax()
                                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                                 prefProvider.setValue(Constants.REDIRECT_FROM, "")
+                                prefProvider.setValue(Constants.DELIVERY_TYPE, "")
 
                                 /*Remove the added tip - START*/
                                 prefProvider.setValueboolean(Constants.TIP_ADDED, false)
@@ -2716,6 +2718,7 @@ class CartFragment(
                     EventBus.getDefault()
                         .post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvPayNow()"))
 
+                    viewModel.selectedCatetory=0
                     prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
                     prefProvider.setValueInt("ORDER_ID", -1)
 
@@ -2837,6 +2840,7 @@ class CartFragment(
                     restrictButtonClick(false)
 
                     prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+                    viewModel.selectedCatetory=0
 
                     EventBus.getDefault()
                         .post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvSave()"))
