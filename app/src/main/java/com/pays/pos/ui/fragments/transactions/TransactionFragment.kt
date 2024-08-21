@@ -738,6 +738,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         paymentTypeList.add(getString(R.string.tv_cash_payment))
         paymentTypeList.add(getString(R.string.tv_card_payment))
         paymentTypeList.add(getString(R.string.tv_giftcard_payment))
+        paymentTypeList.add(getString(R.string.external))
 
         val spinnerAdapter = ArrayAdapter(
             requireActivity(),

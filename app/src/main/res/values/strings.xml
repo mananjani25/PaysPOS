@@ -8,7 +8,7 @@
     <string name="tv_hint_password">Password <font color='#ff6000'>*</font></string>
     <string name="tv_login">Login</string>
     <string name="tv_info_provider">If you forgot password, please <font color='#00A3E0'>contact</font> your sales provider</string>
-    <string name="tv_pos_2021">&#169; PAYS POS 2023</string>
+    <string name="tv_pos_2021">&#169; PAYS POS %1$s</string>
     <string name="save">Save</string>
     <string name="category_name">Category Name <font color='#ff6000'>*</font></string>
     <string name="assign_item_to_category">Assign Item to category</string>
@@ -485,8 +485,9 @@
     <string name="add">Add</string>
     <string name="pick_up_min">Choose Min</string>
     <string name="max"> - Max </string>
-    <string name="you_can_not_add_more_then">You cannot add more then &#160;</string>
+    <string name="you_can_not_add_more_then">You cannot add more than &#160;</string>
     <string name="items"> &#160;modifiers.</string>
+    <string name="item"> &#160;modifier.</string>
     <string name="you_can_add">You must have to add minimum modifiers.</string>
     <string name="update_modifier_set">Update Modifier Set</string>
     <string name="update_option_set">Update Option Set</string>
@@ -931,6 +932,8 @@
     <string name="single_void_message">"Batch is not closed for this transaction. It can be refunded only once."</string>
     <string name="single_void_message_1">"Please confirm if you want to void this transaction."</string>
     <string name="server_not_reachable">Server not reachable</string>
+    <string name="synergy">Synergy</string>
+    <string name="external">External</string>
 
 
 </resources>

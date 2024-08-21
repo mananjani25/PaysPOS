@@ -73,6 +73,11 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
     private var paxData = ""
     private var guestCount: Int = 0
 
+    private var screenTotalAmount=""
+
+    //    this variable is added because the loyalty deduction was causing price deterioration, hence we are adding the selected items price and passing to next screen. The selected addition is stored in below variable
+    private var totalCalculatedFromSelected = 0.0
+
     @Inject
     lateinit var magtekRequestUtils: MagtekRequestUtils
 
@@ -99,6 +104,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         isSplitPayment = arguments?.getBoolean("isSplitPayment")!!
         requiredNABServerPostAPICall = arguments?.getBoolean("requiredNABServerPostAPICall")!!
         paxData = arguments?.getString("pax_data") + ""
+        screenTotalAmount = arguments?.getString("screenTotalAmount") + ""
         serviceChargesList = arguments?.getParcelableArrayList("serviceChargesList")!!
         guestCount = arguments?.getInt("guestCount") ?: 0
         binding.orderDetails = paymentOrderDetailsResponse
@@ -486,6 +492,17 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
 
                 calculationOfItems()
+                if (paymentOrderDetailsResponse.data.is_loyalty_applied ?: false) {
+                    var count=0
+                    refundItemListAdapter.selectedItemList().forEach {
+                        if (it.isChecked)
+                            count++
+                    }
+
+                    if (count==refundItemListAdapter.selectedItemList().size){
+                        totalItemPrice=screenTotalAmount.toDouble()
+                    }
+                }
                 val bundle = Bundle().apply {
                     putParcelable("refundData", refundData)
                     //putString("orderItemRefundsAttributes", Gson().toJson(ordersItemList))

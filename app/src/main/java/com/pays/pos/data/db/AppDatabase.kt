@@ -57,8 +57,8 @@ import com.pays.pos.data.typeconvert.TypeConvertorPhone
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, PAXData::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class,
-        VenueDetailsResponse.Data.WastageReason::class, TbCartItem::class, CartModelBackup::class, OrderTypeBackup::class, TbLabelPrinterSettings::class],
-    version = 19
+        VenueDetailsResponse.Data.WastageReason::class, TbCartItem::class, CartModelBackup::class, OrderTypeBackup::class, TbLabelPrinterSettings::class, TbDynamicPaymentRecords::class],
+    version = 20
 )
 @TypeConverters(
     TypeConvertersItems::class,
@@ -117,7 +117,7 @@ public abstract class AppDatabase : RoomDatabase() {
     abstract fun cashDiscountDao(): CashDiscountsDao
     abstract fun countryListDao(): CountryListDao
     abstract fun cardReaderDao(): cardReaderDao
-    abstract fun PAXDao():PAXDao
+    abstract fun PAXDao(): PAXDao
     abstract fun cancelOrderReasonDao(): CancelOrderReasonsDao
     abstract fun eodReportSettings(): EODReportDao
     abstract fun businessDetailsDao(): BusinessDetailsDao
@@ -126,6 +126,7 @@ public abstract class AppDatabase : RoomDatabase() {
     abstract fun wastageReasonsDao(): WastageReasonsDao
     abstract fun orderTypeBackupDao(): OrderTypeBackupDao
     abstract fun labelPrinterSettings(): LabelPrinterSettingsDao
+    abstract fun dynamicPaymentDao(): DynamicPaymentDao
 
     companion object {
 
@@ -199,16 +200,18 @@ public abstract class AppDatabase : RoomDatabase() {
             override fun migrate(database: SupportSQLiteDatabase) {
                 try {
                     database.execSQL("ALTER TABLE EodShiftReport ADD COLUMN clockInOut INTEGER DEFAULT 0 NOT NULL")
-                    database.execSQL("CREATE TABLE IF NOT EXISTS `TbWastageReason` " +
-                            "(`id` INTEGER PRIMARY KEY NOT NULL, " +
-                            "`isActive` INTEGER NOT NULL, " +
-                            "`name` TEXT NOT NULL, " +
-                            "`sort` INTEGER NOT NULL, " +
-                            "`locationID` INTEGER NOT NULL, " +
-                            "`createdAt` TEXT NOT NULL, " +
-                            "`updatedAt` TEXT NOT NULL, " +
-                            "`deletedAt` TEXT)")
-                //database.execSQL("CREATE TABLE IF NOT EXISTS `TbWastageReason` (`id` INTEGER, PRIMARY KEY(`id`), `name` TEXT NOT NULL)")
+                    database.execSQL(
+                        "CREATE TABLE IF NOT EXISTS `TbWastageReason` " +
+                                "(`id` INTEGER PRIMARY KEY NOT NULL, " +
+                                "`isActive` INTEGER NOT NULL, " +
+                                "`name` TEXT NOT NULL, " +
+                                "`sort` INTEGER NOT NULL, " +
+                                "`locationID` INTEGER NOT NULL, " +
+                                "`createdAt` TEXT NOT NULL, " +
+                                "`updatedAt` TEXT NOT NULL, " +
+                                "`deletedAt` TEXT)"
+                    )
+                    //database.execSQL("CREATE TABLE IF NOT EXISTS `TbWastageReason` (`id` INTEGER, PRIMARY KEY(`id`), `name` TEXT NOT NULL)")
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -384,7 +387,7 @@ public abstract class AppDatabase : RoomDatabase() {
             }
         }
 
-        private val MIGRATION_15_16: Migration = object : Migration(15,16) {
+        private val MIGRATION_15_16: Migration = object : Migration(15, 16) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 try {
                     database.execSQL(
@@ -398,7 +401,7 @@ public abstract class AppDatabase : RoomDatabase() {
             }
         }
 
-        private val MIGRATION_16_17: Migration = object : Migration(16,17) {
+        private val MIGRATION_16_17: Migration = object : Migration(16, 17) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 try {
                     database.execSQL(
@@ -412,11 +415,45 @@ public abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_17_18: Migration = object : Migration(17, 18) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                try {
+                    database.execSQL(
+                        "CREATE TABLE IF NOT EXISTS `TbDynamicPaymentRecords` " +
+                                "(`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                                "`name` TEXT , " +
+                                "`sort` INTEGER , " +
+                                "`is_active` INTEGER, " +
+                                "`location_id` INTEGER, " +
+                                "`created_at` TEXT, " +
+                                "`updated_at` TEXT)"
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7
-                    , MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11,MIGRATION_11_12,
-                    MIGRATION_12_13,MIGRATION_13_14,MIGRATION_14_15,MIGRATION_15_16, MIGRATION_16_17
+                .addMigrations(
+                    MIGRATION_1_2,
+                    MIGRATION_2_3,
+                    MIGRATION_3_4,
+                    MIGRATION_4_5,
+                    MIGRATION_5_6,
+                    MIGRATION_6_7,
+                    MIGRATION_7_8,
+                    MIGRATION_8_9,
+                    MIGRATION_9_10,
+                    MIGRATION_10_11,
+                    MIGRATION_11_12,
+                    MIGRATION_12_13,
+                    MIGRATION_13_14,
+                    MIGRATION_14_15,
+                    MIGRATION_15_16,
+                    MIGRATION_16_17,
+                    MIGRATION_17_18
                 ).fallbackToDestructiveMigration()
                 .build()
     }

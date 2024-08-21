@@ -56,6 +56,8 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
+import com.pays.pos.data.remote.Constants.ORDER_TYPE
+import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.ArrayList
@@ -74,6 +76,8 @@ class PhoneOrderFragment : Fragment() {
     private lateinit var binding: FragmentPhoneOrderBinding
 
     private val viewModel by viewModels<LoginViewModel>()
+    private val dashboardCategoryViewModel by activityViewModels<DashBoardCategoryViewModel>()
+
 
     var placesClient: PlacesClient? = null
     var adapter1: AutoCompleteAdapter? = null
@@ -219,6 +223,7 @@ class PhoneOrderFragment : Fragment() {
             binding.txtPickup.setBackgroundResource(R.drawable.button_action_hover)
             binding.txtDelivery.setBackgroundResource(R.drawable.background_square_border_grey)
             binding.txtAddress.gone()
+            prefProvider!!.setValue(Constants.DELIVERY_TYPE, PICK_UP)
         }
         binding.txtDelivery.setOnSingleClickListener {
             orderType = DELIVERY
@@ -227,6 +232,7 @@ class PhoneOrderFragment : Fragment() {
             binding.txtPickup.setBackgroundResource(R.drawable.background_square_border_grey)
             binding.txtDelivery.setBackgroundResource(R.drawable.button_action_hover)
             binding.txtAddress.visible()
+            prefProvider!!.setValue(Constants.DELIVERY_TYPE, DELIVERY)
         }
 
         binding.llSearch.setOnSingleClickListener {
@@ -242,6 +248,7 @@ class PhoneOrderFragment : Fragment() {
         binding.etSearch.setOnSingleClickListener {
             val bundle = Bundle().apply {
                 putBoolean("PhoneOrder", true)
+                putString(ORDER_TYPE,orderType)
             }
             findNavController().navigate(
                 R.id.action_phoneOrderFragment_to_assignCustomerOrderFragment,
@@ -442,6 +449,19 @@ class PhoneOrderFragment : Fragment() {
                     data?.addresses_attributes = listAddress
                 }
 
+                addCustomerData.data?.let {
+                    prefProvider!!.setValue(
+                        Constants.RECEIPT_CUSTOMER_NAME,
+                        it.first_name + " " + it.last_name
+                    )
+
+                    prefProvider!!.setValue(
+                        Constants.CUSTOMER_NAME,
+                        it.first_name + " " + it.last_name
+                    )
+
+                }
+
                 if (customerID == null) {
                     viewModel.createCustomer(addCustomerData)
                 } else {
@@ -458,10 +478,26 @@ class PhoneOrderFragment : Fragment() {
         prefProvider!!.setValue(Constants.ORDER_TYPE, "")
         prefProvider!!.setValue(Constants.ORDER_TYPE_NAME, "")
         prefProvider!!.setValueboolean(Constants.LOYALTY_ADDED, false)
+        prefProvider!!.setValue(Constants.DELIVERY_TYPE, "")
 
+
+        /*---------Added for solving BIS-4037--------------*/
+        clearCustomer()
+        /*---------Added for solving BIS-4037--------------*/
 
         findNavController().navigate(R.id.action_phoneOrderFragment_to_dashboardCategoryBoldPOS)
 
+    }
+
+    private fun clearCustomer() {
+        prefProvider!!.setValue(Constants.CUSTOMER_NAME, "")
+        prefProvider!!.setValue(Constants.RECEIPT_CUSTOMER_NAME, "")
+        prefProvider!!.setValue(Constants.PREF_CUSTOMER, "")
+        prefProvider!!.setValueInt(Constants.CUSTOMER_ID, -1)
+        dashboardCategoryViewModel.selectedCustomer = null
+        dashboardCategoryViewModel.assignCustomer = null
+        prefProvider!!.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+        prefProvider!!.setValueboolean(Constants.LOYALTY_ADDED, false)
     }
 
     private fun redirectToMain(customer: TbCustomer) {

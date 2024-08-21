@@ -330,6 +330,7 @@ class PaymentBoldPosFragment : Fragment() {
         Log.d(TAG, "onViewCreated: " + prefProvider.getValueboolean(SPLIT_ENABLE, false))
 
         viewModel.setTipAmount(0.0)
+        viewModel.customerGivenTip.value=false
 
         prefProvider.setValueboolean(Constants.TIP_ADDED, false)
         prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, "0")

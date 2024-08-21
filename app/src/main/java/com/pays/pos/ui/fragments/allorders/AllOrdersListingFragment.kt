@@ -4928,7 +4928,7 @@ class AllOrdersListingFragment(
                                                             .styleBold(true)
                                                             .actionPrintText(
                                                                 content = if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                                    "--------------------------------------------\nOrder Note\n "
+                                                                    "--------------------------------------------\nOrder Note"
                                                                 } else ""
                                                             )
                                                     )
@@ -4946,11 +4946,18 @@ class AllOrdersListingFragment(
                                                 }
 
                                                 actionFeedLine(1)
+                                                actionFeedLine(1)
 
                                                 var printedName = StringBuilder("")
                                                 orderData.customer?.firstName?.let { firstName ->
                                                     orderData.customer?.lastName?.let { lastName ->
-                                                        if (kitchenSettingModel.showCustomerName) {
+                                                        if (kitchenSettingModel.showCustomerName || orderData.orderType.equals(
+                                                                "KioskOpenorder", true
+                                                            ) || orderData.orderType.equals(
+                                                                "OnlineWebOrder",
+                                                                true
+                                                            ) || orderData.orderType.equals("OnlineOrder", true)
+                                                        ) {
                                                             if (!firstName.contains(
                                                                     "customer",
                                                                     ignoreCase = true
@@ -5161,37 +5168,41 @@ class AllOrdersListingFragment(
                                         )
                                 )
                             }
-                            if (kitchenSettingModel.showCustomerPhone && orderData.customer?.phones?.get(
-                                    0
-                                ) != null
-                            ) {
-                                add(
-                                    PrinterBuilder()
-                                        .styleAlignment(Alignment.Left)
-                                        .actionPrintText(
-                                            content = if (kitchenSettingModel.showCustomerPhone && orderData.customer?.phones?.get(
-                                                    0
-                                                ) != null
-                                            ) {
-
-                                                var phoneNumber =
-                                                    orderData.customer?.phones?.get(
+                            try{
+                                if (kitchenSettingModel.showCustomerPhone && orderData.customer?.phones?.get(
+                                        0
+                                    ) != null
+                                ) {
+                                    add(
+                                        PrinterBuilder()
+                                            .styleAlignment(Alignment.Left)
+                                            .actionPrintText(
+                                                content = if (kitchenSettingModel.showCustomerPhone && orderData.customer?.phones?.get(
                                                         0
-                                                    )?.phoneNumber.toString()
-                                                if (phoneNumber.length != 10) {
-                                                    // Handle invalid input (must be 10 digits)
-                                                    "Invalid phone number"
-                                                }
+                                                    ) != null
+                                                ) {
 
-                                                val areaCode = phoneNumber.substring(0, 3)
-                                                val firstPart = phoneNumber.substring(3, 6)
-                                                val secondPart = phoneNumber.substring(6)
+                                                    var phoneNumber =
+                                                        orderData.customer?.phones?.get(
+                                                            0
+                                                        )?.phoneNumber.toString()
+                                                    if (phoneNumber.length != 10) {
+                                                        // Handle invalid input (must be 10 digits)
+                                                        "Invalid phone number"
+                                                    }
 
-                                                "($areaCode)$firstPart-$secondPart"
+                                                    val areaCode = phoneNumber.substring(0, 3)
+                                                    val firstPart = phoneNumber.substring(3, 6)
+                                                    val secondPart = phoneNumber.substring(6)
 
-                                            } else ""
-                                        )
-                                )
+                                                    "($areaCode)$firstPart-$secondPart"
+
+                                                } else ""
+                                            )
+                                    )
+                                }
+                            }catch (e:Exception){
+
                             }
                             printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
                         }
@@ -6783,30 +6794,38 @@ class AllOrdersListingFragment(
                     SunmiPrinterApi.getInstance().lineWrap(1)
                     PrintSunmiUtils.customerDetails()
 
-                    if (kitchenSettingModel.showCustomerName) {
-                        PrintSunmiUtils.customerName(orderData.customer.firstName + " " + orderData.customer.lastName)
+                    try {
+                        if (kitchenSettingModel.showCustomerName) {
+                            PrintSunmiUtils.customerName(orderData.customer.firstName + " " + orderData.customer.lastName)
 
-                    }
-
-
-                    if (kitchenSettingModel.showCustomerPhone) {
-
-                        if (orderData.customer.phones.isNotEmpty() == true) {
-
-                            PrintSunmiUtils.customerPhone(
-                                MethodUtils.getUSFormatNumber(
-                                    orderData.customer.phones.get(
-                                        orderData.customer.phones.size - 1
-                                    ).phoneNumber
-                                )
-
-                            )
                         }
+                    }catch (e:Exception){
+
+                    }
+
+                    try{
+                        if (kitchenSettingModel.showCustomerPhone) {
+
+                            if (orderData.customer.phones.isNotEmpty() == true) {
+
+                                PrintSunmiUtils.customerPhone(
+                                    MethodUtils.getUSFormatNumber(
+                                        orderData.customer.phones.get(
+                                            orderData.customer.phones.size - 1
+                                        ).phoneNumber
+                                    )
+
+                                )
+                            }
+
+                        }
+                    }catch (e:Exception){
 
                     }
 
 
-                    if (orderData.customer.addresses.isNotEmpty() == true) {
+                   try{
+                       if (orderData.customer.addresses.isNotEmpty() == true) {
 
 //                        orderData.customer.addresses.filter { typeOfAddress == Constants.BILLING_ADDRESS }
 //
@@ -6824,15 +6843,16 @@ class AllOrdersListingFragment(
 //                            }
 
 
-                        PrintSunmiUtils.customerAddress(
-                            orderData.customer.addresses.get(
-                                orderData.customer.addresses.size - 1
-                            ).fullAddress
-                        )
-                    }
+                           PrintSunmiUtils.customerAddress(
+                               orderData.customer.addresses.get(
+                                   orderData.customer.addresses.size - 1
+                               ).fullAddress
+                           )
+                       }
+                   }catch (e:Exception){
+
+                   }
                 }
-
-
             }
 
             PrintSunmiUtils.cutPaper()
@@ -7597,35 +7617,36 @@ class AllOrdersListingFragment(
             }
 
 
-            if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
-                if (orderData.customer != null) {
+            try{
+                if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+                    if (orderData.customer != null) {
 
-                    PrintSunmiUtils.customerDetailsInner()
+                        PrintSunmiUtils.customerDetailsInner()
 
-                    if (kitchenSettingModel.showCustomerName) {
-                        PrintSunmiUtils.normalTextLarge(orderData.customer.firstName + " " + orderData.customer.lastName)
+                        if (kitchenSettingModel.showCustomerName) {
+                            PrintSunmiUtils.normalTextLarge(orderData.customer.firstName + " " + orderData.customer.lastName)
 
-                    }
-
-
-                    if (kitchenSettingModel.showCustomerPhone) {
-
-                        if (orderData.customer.phones.isNotEmpty() == true) {
-
-                            PrintSunmiUtils.normalTextLarge(
-                                MethodUtils.getUSFormatNumber(
-                                    orderData.customer.phones?.get(
-                                        orderData.customer.phones.size - 1
-                                    ).phoneNumber
-                                )
-
-                            )
                         }
 
-                    }
+
+                        if (kitchenSettingModel.showCustomerPhone) {
+
+                            if (orderData.customer.phones.isNotEmpty() == true) {
+
+                                PrintSunmiUtils.normalTextLarge(
+                                    MethodUtils.getUSFormatNumber(
+                                        orderData.customer.phones?.get(
+                                            orderData.customer.phones.size - 1
+                                        ).phoneNumber
+                                    )
+
+                                )
+                            }
+
+                        }
 
 
-                    if (orderData.customer.addresses.isNotEmpty() == true) {
+                        if (orderData.customer.addresses.isNotEmpty() == true) {
 
 
 //                        PrintSunmiUtils.normalTextLarge(
@@ -7635,24 +7656,25 @@ class AllOrdersListingFragment(
 //                        )
 
 
-                        orderData.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                            .forEach {
+                            orderData.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                .forEach {
 
-                                if (it.typeOfAddress.equals(
-                                        Constants.BILLING_ADDRESS,
-                                        ignoreCase = true
-                                    )
-                                ) {
-                                    PrintSunmiUtils.normalTextLarge(
-                                        it.fullAddress
-                                    )
+                                    if (it.typeOfAddress.equals(
+                                            Constants.BILLING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+                                        PrintSunmiUtils.normalTextLarge(
+                                            it.fullAddress
+                                        )
+                                    }
                                 }
-                            }
+                        }
                     }
+
+
                 }
-
-
-            }
+            }catch (e:Exception){}
 
             PrintSunmiUtils.cutPaperInner()
         } catch (e: Exception) {

@@ -490,6 +490,7 @@ class TransactionDetailsFragment : Fragment() {
 
                     putBoolean("isItemRefund", isItemRefund)
                     putBoolean("isAmountRefund", isAmountRefund)
+                    putString("screenTotalAmount",(paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips).toString())
                 }
                 bundle.putString("isFrom", "refund")
 
@@ -1303,6 +1304,7 @@ class TransactionDetailsFragment : Fragment() {
         viewModel.dataPayment.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 paymentDetailsResponse = it
+                enableDisableRefundButton()
                 enableDisableTipButton()
                 val jsonString = Gson().toJson(paymentDetailsResponse)
                 Log.e("paymentDetailsResponse", "paymentDetailsResponse result = $jsonString")
@@ -1644,6 +1646,12 @@ class TransactionDetailsFragment : Fragment() {
             }
         }
 
+    }
+
+    private fun enableDisableRefundButton() {
+        if (paymentDetailsResponse.data.payment_type.contains(getString(R.string.external),ignoreCase = true)){
+            binding.tvIssueRefund.gone()
+        }
     }
 
     private fun acceptedAndDeclineOrder() {
