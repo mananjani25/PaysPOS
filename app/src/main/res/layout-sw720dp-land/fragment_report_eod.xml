@@ -822,7 +822,7 @@
                         android:id="@+id/txtLast4"
                         style="@style/ReportItemText"
                         android:gravity="start"
-                        android:text="Last4" />
+                        android:text="Card Number" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtSubtotal"
