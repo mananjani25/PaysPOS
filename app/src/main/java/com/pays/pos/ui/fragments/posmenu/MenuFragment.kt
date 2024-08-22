@@ -110,7 +110,7 @@ class MenuFragment : DialogFragment() {
     private fun setUpHeader() {
         binding.header.txtTitle.text = "Settings"
         binding.header.txtSave.text = getString(R.string.tv_home)
-        binding.header.txtLogout?.visible()
+        binding.header.llClockOut?.visible()
         if (prefProvider.getValueboolean(IS_MASTER_TERMINAL, false)) {
             binding.linearPrinterQueue.visible()
         } else {
@@ -323,7 +323,7 @@ class MenuFragment : DialogFragment() {
             }
             clearManualCartItems()
         }
-        binding.header.txtLogout?.setOnClickListener {
+        binding.llLogout.setOnClickListener {
             alert("", "Are you sure you want to Logout?") {
                 this.positiveButton("Logout") {
 
@@ -362,7 +362,7 @@ class MenuFragment : DialogFragment() {
             // closeDialog(dialog)
         }
 
-        binding.llClockOut.setOnClickListener {
+        binding.header.llClockOut.setOnClickListener {
 //            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
 //                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
 

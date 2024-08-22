@@ -81,6 +81,38 @@
             android:textColor="@color/white"
             android:textSize="@dimen/_7mdpi" />
 
+        <LinearLayout
+            android:id="@+id/llClockOut"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/txtSave"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="@dimen/_6sdp"
+            android:layout_alignBottom="@id/txtSave"
+            android:background="@drawable/button_action_hover"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="@dimen/_5sdp"
+            android:visibility="visible">
+
+            <ImageView
+                android:layout_width="@dimen/_14sdp"
+                android:layout_height="@dimen/_12sdp"
+                android:src="@drawable/ic_clock_out"
+                app:tint="@color/txtColor" />
+
+            <TextView
+                style="@style/CustomFontBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:text="@string/tv_clock_out"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_8mdpi" />
+
+
+        </LinearLayout>
+
         <TextView
             android:id="@+id/txtSave"
             android:layout_width="wrap_content"
