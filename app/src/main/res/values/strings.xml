@@ -934,6 +934,7 @@
     <string name="server_not_reachable">Server not reachable</string>
     <string name="synergy">Synergy</string>
     <string name="external">External</string>
+    <string name="remove_note">Remove Note</string>
 
 
 </resources>

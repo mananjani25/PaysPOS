@@ -1015,6 +1015,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                                         EventBus.getDefault()
                                             .post(MessageEvent("${Constants.LINE_BREAK_TAB} ManualSaleNew.kt_MANUAL_CART_MODEL_CLEARED: it1 -> viewModel.deleteCartModel(it1)"))
                                     }
+                                    viewModel.manualCartOrderNote=""
                                     prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                                     binding.txtTotalAmount.text = "$0.00"
                                     binding.txtTotal.text = "$0.00"
@@ -1039,7 +1040,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         R.id.menu_order_note -> {
                             findNavController().navigate(
                                 R.id.action_manualSaleNew_to_addNoteDialog,
-                                bundleOf("isOrderNote" to true)
+                                bundleOf("isOrderNote" to true, "isFromManual" to true)
                             )
                         }
 
@@ -1723,6 +1724,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             val note = bundle.getString("note")
             val isOrderNote = bundle.getBoolean("isOrderNote")
             if (isOrderNote) {
+                viewModel.manualCartOrderNote=note.toString()
                 manualCartModel?.let {
                     manualCartModel?.note = note.toString()
                     prefProvider.setValue(
@@ -2535,5 +2537,18 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         dialog.setCanceledOnTouchOutside(false)
         dialog.dismiss()
         dialog.show()
+    }
+
+    override fun onDestroyView() {
+        viewModel.manualCartOrderNote=""
+        super.onDestroyView()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
+    override fun onStop() {
+        super.onStop()
     }
 }
