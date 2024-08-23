@@ -102,6 +102,10 @@ class CategoryFragment(val listner: ItemListner?=null, val edtSearch: AutoComple
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+    }
 
     private fun setVenueData() {
 
