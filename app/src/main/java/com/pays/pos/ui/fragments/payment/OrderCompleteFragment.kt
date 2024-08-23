@@ -494,7 +494,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         viewModelDashBoard.customerGivenTip.observe(viewLifecycleOwner) {
             if (it) {
 
-                binding.tipGivenLayout?.visible()
+                if(dashboardViewModel.totalTipAmount != 0.0) {
+                    binding.tipGivenLayout?.visible()
+                }
 
                 var totalAmountToShow = 0.0
                 var tipToShow = 0.0
