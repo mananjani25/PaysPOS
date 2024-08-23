@@ -13,7 +13,6 @@ import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
 import android.provider.Settings
-import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
@@ -321,6 +320,16 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
             ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN -> {
 
+            }
+        }
+    }
+
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+
+        navController?.backStack?.last?.destination?.label?.let {
+            if (it.equals("DashboardCategoryBoldPOS")) {
+                dashboardViewModel.disableCursor.value = true
             }
         }
     }

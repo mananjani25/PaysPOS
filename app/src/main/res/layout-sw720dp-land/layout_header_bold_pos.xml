@@ -110,7 +110,6 @@
                 android:layout_marginEnd="@dimen/_20sdp"
                 android:autoLink="all"
                 android:maxLength="60"
-                android:cursorVisible="false"
                 android:digits="@string/character_digits_String"
                 android:singleLine="true"
                 android:background="@android:color/transparent"
