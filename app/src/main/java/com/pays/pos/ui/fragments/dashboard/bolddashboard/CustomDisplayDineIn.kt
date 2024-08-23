@@ -65,19 +65,20 @@ import com.google.gson.JsonArray
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
+import com.pays.pos.ui.fragments.dineInNew.DineInOrderTableViewModelPays
 import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayOutputStream
 
-class CustomDisplay(
+class CustomDisplayDineIn(
     display: Display,
     context: Context,
     val lifecycleOwner: LifecycleOwner,
     private val dashBoardCategoryViewModel: DashBoardCategoryViewModel,
     val passcodeViewModel: PasscodeViewModel,
-    val dineInViewModel: DineInOrderTableViewModel
+    val dineInViewModel: DineInOrderTableViewModelPays
 ) : Presentation(context, display), MyCallback, DineInAdapter.DineInCallback,
     ActiveTipsListAdapter.DiscountInterface {
 
@@ -145,6 +146,7 @@ class CustomDisplay(
         initPOSLink()
 
         initDiscountLiveData()
+
     }
 
     private fun initDiscountLiveData(){
@@ -205,11 +207,9 @@ class CustomDisplay(
         } else {
 
             if(prefProvider.getValue(ORDER_TYPE,"") == DINE_IN) {
-                binding.linearBottomNew?.gone()
-                dashBoardCategoryViewModel.getAllDineInCartItems(DINE_IN).asLiveData().observe(lifecycleOwner) {
+                dashBoardCategoryViewModel.getAllDineInCartItems("DineIn").asLiveData().observe(lifecycleOwner) {
                     Log.d("WINZO", "onDisplayChanged: ${it.size}")
                     it?.let {
-                        if (it.isNotEmpty())
                         updateCustomerDisplay(it)
                     }
                 }
@@ -220,7 +220,6 @@ class CustomDisplay(
                 ).asLiveData().observe(lifecycleOwner) {
                     Log.d("WINZO", "onDisplayChanged: ${it.size}")
                     it?.let {
-                        if(it.isNotEmpty())
                         updateCustomerDisplay(it)
                     }
                 }
@@ -278,7 +277,7 @@ class CustomDisplay(
                         val dineInList = dashBoardCategoryViewModel.cartModel?.dineInList
 
                         dineInCartAdapter.setList(
-                            dineInList?.toCollection(arrayListOf()) ?: arrayListOf() , dashBoardCategoryViewModel.currentCartItems
+                            dineInList?.toCollection(arrayListOf()) ?: arrayListOf() , dashBoardCategoryViewModel.listItems
                         )
                         binding.rowHeaderLayoutDineIn?.visible()
                         binding.rowHeaderLayout.gone()

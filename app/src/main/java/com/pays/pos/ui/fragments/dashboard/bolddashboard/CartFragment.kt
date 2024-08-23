@@ -127,7 +127,7 @@ class CartFragment(
     private var paymentId: Int? = null
     private var future_delivery_time: String = ""
     lateinit var cashDiscountModel: CashDiscountModel
-    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
+    private val dineInViewModel by activityViewModels<DineInOrderTableViewModel>()
     var cashDiscountType = ""
     var cartlist: ArrayList<CartModel> = arrayListOf()
     var tempList: JSONArray? = null
@@ -1139,6 +1139,10 @@ class CartFragment(
                                 }
 
                             }
+
+                            updateCartFooter(
+                                viewModel.currentCartItems
+                            )
 
                         } else {
 
@@ -2775,11 +2779,13 @@ class CartFragment(
                                     viewModel.addDineInRemovedItems(viewModel.cartModel!!)
                             }
 
+                            cartModelsList[0].discountSelectdValue = 10.0
 
                             val valuess = cartModelsList[0]
 
                             val request = viewModel.updateOrder(cartModelsList[0])
 
+                            var requested = 0
 
                             viewModel.dineInResult.observe(viewLifecycleOwner) { returnResult ->
 
@@ -2794,6 +2800,7 @@ class CartFragment(
                                         orderId?.let { it1 -> viewModel.updateOrderCall(it1, request) }
                                     }
 
+                                    requested = 1
                                     viewModel.dineInResult.value = false
                                 }
                             }

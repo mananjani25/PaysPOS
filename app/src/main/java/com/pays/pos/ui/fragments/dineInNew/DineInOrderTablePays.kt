@@ -84,6 +84,7 @@ import com.epson.eposprint.Print
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
@@ -101,7 +102,7 @@ import kotlin.collections.ArrayList
 @AndroidEntryPoint
 class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
-    private lateinit var presentation: CustomDisplay
+    private lateinit var presentation: CustomDisplayDineIn
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
     private var fireItemsList: ArrayList<TbCartItem> = arrayListOf()
@@ -191,16 +192,16 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
         progressDialog()
         optionType = prefProvider.getValue(Constants.OPTION_TYPE, "")
-//        getCustomerDisplay(requireContext())?.let { display ->
-//            presentation = CustomDisplay(
-//                display,
-//                requireContext(),
-//                viewLifecycleOwner,
-//                dashboardViewModel,
-//                passcodeViewModel,
-//                viewModel
-//            )
-//        }
+        getCustomerDisplay(requireContext())?.let { display ->
+            presentation = CustomDisplayDineIn(
+                display,
+                requireContext(),
+                viewLifecycleOwner,
+                dashboardViewModel,
+                passcodeViewModel,
+                viewModel
+            )
+        }
         observeShowProgress()
         setupSnackbar()
         getCustomerList()
@@ -297,10 +298,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             AlertUtils.showCustomAlertWithListenerWithOK(
                 requireContext(), event.getContentIfNotHandled().toString()
             ) { _, _ ->
-                prefProvider.setValueboolean(DINE_IN_UPDATE, false)
-                viewModel.Basedata.removeObservers(viewLifecycleOwner)
-                navigateDineInOrderNew()
-                orderId?.let { viewModel.apiCallOrderDetails(it) }
+                try {
+                    prefProvider.setValueboolean(DINE_IN_UPDATE, false)
+                    viewModel.Basedata.removeObservers(viewLifecycleOwner)
+                    navigateDineInOrderNew()
+                    orderId?.let { viewModel.apiCallOrderDetails(it) }
+                }catch (e:Exception) {
+                    e.printStackTrace()
+                }
             }
         }
     }
@@ -545,6 +550,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.btnPayNew.setOnClickListener {
             try {
 
+                prefProvider.setValue(ORDER_TYPE, DINE_IN)
 //                dashboardViewModel.currentCartItems = arrayListOf()
                 dashboardViewModel.deleteCartItems()
 
@@ -585,6 +591,19 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     k++
                 }
 
+                val currentList = dineInTableAdapter.getList()
+
+                var guestCount = 0
+                var guestPaid = 0
+                currentList.forEach {
+                    if(it.isHeader == 0){
+                        if(it.title?.equals("Whole Table",true) == false){
+                            guestCount++
+                            if(it.isPaid)
+                                guestPaid++
+                        }
+                    }
+                }
 
                 for (i in 0 until list.size) {
                     if (list.get(i).title.equals("Whole Table", true) && i + 1 <= list.size) {
@@ -592,6 +611,18 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             for (j in i + 1 until list.size) {
                                 if (list.get(j).isHeader == 1) {
                                     listWT.add(list.get(j).item!!)
+
+                                    if(guestPaid>0) {
+                                        list[j].item?.price.let {
+                                            val totalPricePaid = it?.div(guestCount)
+
+                                            list[j].item?.price = totalPricePaid?.let { it1 ->
+                                                list[j].item?.price?.minus(
+                                                    it1 * guestPaid
+                                                )
+                                            }!!
+                                        }
+                                    }
                                     dashboardViewModel.currentCartItems.add(list[j].item!!)
                                 } else {
                                     break
@@ -665,6 +696,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 }*/
                 temp_itemsList.addAll(dashboardViewModel.currentCartItems)
 
+        //        cartList!!.discountSelectdValue = cartList!!.discountPrice / totalPrice * 100
 
                 temp_itemsList.forEach { item ->
                     cartList = taxBifurcationCalculation(
@@ -757,21 +789,26 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         concatenate(cartList?.taxlistDynamic!!, listOf(remainingdata))
                 }
 
+
                 var alreadyDone = false
                 viewModelPayment.addCart(cartList!!)
                 CoroutineScope(Dispatchers.IO).launch {
-                    if(listWT.isNotEmpty()) {
-
-                        viewModelPayment.addItemToCart(
-                            dashboardViewModel.currentCartItems,
-                            listWT.first(),
-                            ADD,
-                            false
-                        )
+//                    if(listWT.isNotEmpty()) {
 //
-//
-//                        dashboardViewModel.addItemToCartItems(it)
+////                        viewModelPayment.addItemToCart(
+////                            ArrayList(dashboardViewModel.currentCartItems.filter { !it.isPaid }),
+////                            listWT.first(),
+////                            ADD,
+////                            false
+////                        )
+////
+//                        dashboardViewModel.currentCartItems.filter {!it.isPaid}.forEach {  cartItem ->
+//                            dashboardViewModel.addItemToCartItems(cartItem)
+//                        }
+//                    }
 
+                    dashboardViewModel.currentCartItems.filter {!it.isPaid}.forEach { cartItem ->
+                        dashboardViewModel.addItemToCartItems(cartItem)
                     }
                 }
 
@@ -1165,10 +1202,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, true)
 
-            findNavController().navigate(
-                R.id.action_dineInOrderTable_to_dashboardCategoryNew,
-                bundle
-            )
+            try {
+                findNavController().navigate(
+                    R.id.action_dineInOrderTable_to_dashboardCategoryNew,
+                    bundle
+                )
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
 
 
         }
@@ -3567,7 +3608,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                 dashboardViewModel.addItemToCartItems(it)
                             }
                         }
-                    }else guestCounter++
+                    } else guestCounter++
                 }
 
                 dineInCartItemMoved = false

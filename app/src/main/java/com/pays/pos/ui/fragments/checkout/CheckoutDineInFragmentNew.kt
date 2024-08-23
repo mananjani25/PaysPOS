@@ -65,6 +65,8 @@ import com.magtek.mobile.android.mtusdk.*
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
+import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
+import com.pays.pos.ui.fragments.dineInNew.DineInOrderTableViewModelPays
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import retrofit2.Call
@@ -80,10 +82,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     magtekCallback,
     DeleteOptionCallback, IDeviceListCallback {
 
-    private lateinit var presentation: CustomDisplay
+    private lateinit var presentation: CustomDisplayDineIn
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
-    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
+    private val dineInViewModel by viewModels<DineInOrderTableViewModelPays>()
     private val magtekProViewModel by viewModels<MagtekViewModel>()
 
     private var cardCVV: String = ""
@@ -102,7 +104,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     private var paymentOfflineId: String = ""
     var isSelectedCount = 1
     private val paymentviewModel by activityViewModels<PaymentViewModel>()
-    private val dineinOrderVieweModel by viewModels<DineInOrderTableViewModel>()
+    private val dineinOrderVieweModel by activityViewModels<DineInOrderTableViewModel>()
     private val dineInPaymentViewModel by viewModels<CheckoutDineInPaymentViewModel>()
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     var listtextview: ArrayList<AppCompatTextView> = arrayListOf()
@@ -205,7 +207,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         }
 
         getCustomerDisplay(requireContext())?.let { display ->
-            presentation = CustomDisplay(
+            presentation = CustomDisplayDineIn(
                 display,
                 requireContext(),
                 viewLifecycleOwner,
@@ -213,10 +215,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 passcodeViewModel,
                 dineInViewModel
             )
-//            {
-//                tipAmount = it
-//                tipAmountCalculation()
-//            }
         }
         if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
             binding.llManualCardEntry.visibility = View.GONE
@@ -1010,6 +1008,13 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     guestRequestModel?.paymentAttributes!!.cardName = cardN
                     guestRequestModel?.paymentAttributes!!.cardNumber = cardNumber
 
+                    guestRequestModel?.paymentAttributes!!.cardName =
+                        CardValidator.getCardType(cardNumber.trim())?.name.toString().uppercase()
+                    guestRequestModel?.paymentAttributes!!.cardNumber =
+                        if (cardNumber.isNotEmpty()) cardNumber.takeLast(4) else ""
+                    guestRequestModel?.paymentAttributes!!.cardType = "Credit"
+
+
                 }
 
                 if (model.cardSwipeOutput != null) {
@@ -1354,6 +1359,13 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 GlobalUID = response.PaymentTransInfo.GlobalUid
                 paymentviewModel.setPAXData(RefNumber, GlobalUID)
 //                prefProvider.setValue(Constants.GLOBAL_ID, globalUID!!)
+
+//                dineInDataModel.guestPaymentReq?.paymentAttributes?.let { it ->
+//                    it.cardName = response.CardType
+//                    it.cardNumber = cardLastDigits
+//                    it.cardType = 0.toString()
+//
+//                }
 
                 //implementation("org.dom4j:dom4j:2.1.3")
                 PAXtoken = response.PaymentTransInfo.Token
@@ -1832,22 +1844,13 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     }
 
     private fun makePaymentCreditCard() {
+
         paymentAmount -= tipAmount
         paymentAmount = MethodUtils.roundOffAmountDouble(paymentAmount)
         paymentType = "Card"
-        if (orderId != -1 && orderId != 0) {
-            paymentviewModel.updateOrder(
-                true,
-                orderId,
-                paymentId,
-                paymentOfflineId,
-                orderOfflineId
-            )
-        } else {
-            paymentviewModel.updateOrder(false, null, null, "", "")
-        }
         paymentviewModel.saveOrder(false)
 
+        ////
 
         val myRequest = cartList?.let {
             paymentviewModel.createOrderRequestForCard(
@@ -1879,11 +1882,106 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 cardTypeOfTransaction = EDCType
             )
         }
-        if (myRequest != null) {
-            if (custom_paymentAmount.toDouble() != 0.0) {
-                paymentviewModel.totalPayAmount(custom_paymentAmount)
+
+        ///
+
+
+
+        if (isGuestPay) {
+            if (custom_paymentAmount != 0.0) {
+                dineinOrderVieweModel.totalPayAmount(custom_paymentAmount)
             }
-            paymentAttributesRequest(myRequest)
+            paymentType = "Card"
+            guestAttributeCalculation(myRequest?.order?.paymentAttributes?.cardType ?: -1,"")
+
+
+            if(myRequest?.order?.paymentAttributes!=null){
+
+                val paymentAttributes = myRequest.order.paymentAttributes
+
+                dineInDataModel.guestPaymentReq?.paymentAttributes.let { it ->
+
+
+                }
+
+                dineInDataModel.guestPaymentReq?.paymentAttributes?.paymentAttributes?.forEach {
+                    it.cardName = paymentAttributes?.cardName?:""
+                    it.cardNumber = paymentAttributes?.cardNumber?:""
+                    it.cardType = "Credit"/*paymentAttributes?.cardType.toString()*/
+
+                    it.ext_data = paymentAttributes?.ext_data?:""
+                    it.global_uniq_id = paymentAttributes?.global_uniq_id?:""
+                    it.pax_transaction_token = paymentAttributes?.pax_transaction_token?:""
+                    it.ecr_ref_num = paymentAttributes?.ecr_ref_num?:""
+                    it.ref_num = paymentAttributes?.ref_num?:""
+                }
+            }
+
+
+            guestRequestModel?.paymentAttributes?.let { logPrintGuest(it) }
+            if (dineInDataModel.isLastPayment) {
+                dineinOrderVieweModel.payByGuest(
+                    dineInDataModel.guestId ?: 0,
+                    dineInDataModel.guestPaymentReq!!,
+                    dineInDataModel.isLastPayment == isSelectedCount <= 1,
+                    dineInDataModel.splitModel!!
+                )
+            } else {
+                dineinOrderVieweModel.payByGuest(
+                    dineInDataModel.guestId ?: 0, dineInDataModel.guestPaymentReq!!,
+                    false, dineInDataModel.splitModel!!
+                )
+            }
+
+        } else {
+            if (orderId != -1 && orderId != 0) {
+                paymentviewModel.updateOrder(
+                    true,
+                    orderId,
+                    paymentId,
+                    paymentOfflineId,
+                    orderOfflineId
+                )
+            } else {
+                paymentviewModel.updateOrder(false, null, null, "", "")
+            }
+
+            /*val myRequest = cartList?.let {
+                paymentviewModel.createOrderRequestForCard(
+                    it,
+                    subTotalPrice,
+                    paymentAmount,
+                    totalServiceCharge,
+                    totalTax,
+                    Constants.DINE_IN,
+                    future_delivery_date,
+                    future_delivery_time,
+                    true,
+                    totalDiscount,
+                    tipAmount,
+                    splitValue,
+                    redeemLoyaltyInfo,
+                    cashDiscountSurcharge,
+                    true,
+                    paymentType,
+                    cardNumber,
+                    cashDiscountType,
+                    tipID,
+                    GlobalUID,
+                    RefNumber,
+                    ExtData,
+                    ECRRefNumber,
+                    PAXtoken,
+                    cardLastDigits,
+                    cardTypeOfTransaction = EDCType
+                )
+            }*/
+            if (myRequest != null) {
+                if (custom_paymentAmount.toDouble() != 0.0) {
+                    paymentviewModel.totalPayAmount(custom_paymentAmount)
+                }
+                paymentAttributesRequest(myRequest)
+            }
         }
     }
 
@@ -2171,6 +2269,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         ProgressUtils.showProgressDialog("Please wait payment under process", requireActivity())
         var call: Call<PaymentResponse>? = null
+
         when (i) {
             1 -> {
                 call = jsonArray1?.let { apiModule1.getRetrofit1().processCardSwipe(it) }

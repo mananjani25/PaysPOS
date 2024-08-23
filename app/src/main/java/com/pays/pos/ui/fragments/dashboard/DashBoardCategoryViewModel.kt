@@ -6016,105 +6016,109 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
             CoroutineScope(Dispatchers.IO).launch {
+
                 cartModel.dineInList?.forEachIndexed { index, it ->
 
-                    var cartItems = getDineInCartItems(index) as ArrayList<TbCartItem>
-                    val model = GuestsAttributes()
-                    model.name = it.title.toString()
-                    model.Destroy = it.isDestroy
-                    if (it.id != 0) {
-                        model.id = it.id
-                    }
-                    if (cartItems?.isNotEmpty() == true) {
-                        var listItems: ArrayList<GuestItemsAttributes> = arrayListOf()
-                        var subTotal = 0.0
-                        var totalTax = 0.0
-                        var totalTips = 0.0
-                        var totalDiscount = 0.0
-                        var totalAmount = 0.0
-                        cartItems.sortedBy { it.dineInSort }
-                        cartItems.forEach { tb ->
-
-
-                            listItems.add(GuestItemsAttributes(id = tb.guestItemId,
-                                orderItemId = tb.orderItemId,
-                                quantity = tb.itemQuantity,
-                                itemId = tb.itemId,
-                                amount = tb.price,
-                                timestamp = tb.timeStamp,
-                                guestId = it.id?.let { it }
-
-                            )
-
-                            )
-
-
-
-
-                            subTotal += tb.price
-                            tb.taxes?.forEach {
-                                totalTax += it.rate
-                            }
-                            totalDiscount += tb.discountPrice
-
-                        }
-                        totalAmount = (subTotal + totalTax) - totalDiscount
-                        model.totalAmount = totalAmount
-                        model.totalTax = totalTax
-                        model.totalTips = totalTips
-                        if (it.id != null && it.id != 0) {
+                        var cartItems = getDineInCartItems(index) as ArrayList<TbCartItem>
+                        val model = GuestsAttributes()
+                        model.name = it.title.toString()
+                        model.Destroy = it.isDestroy
+                        if (it.id != 0) {
                             model.id = it.id
                         }
+                        if (cartItems?.isNotEmpty() == true) {
+                            var listItems: ArrayList<GuestItemsAttributes> = arrayListOf()
+                            var subTotal = 0.0
+                            var totalTax = 0.0
+                            var totalTips = 0.0
+                            var totalDiscount = 0.0
+                            var totalAmount = 0.0
+                            cartItems.sortedBy { it.dineInSort }
+                            cartItems.forEach { tb ->
+
+
+                                listItems.add(GuestItemsAttributes(id = tb.guestItemId,
+                                    orderItemId = tb.orderItemId,
+                                    quantity = tb.itemQuantity,
+                                    itemId = tb.itemId,
+                                    amount = tb.price,
+                                    timestamp = tb.timeStamp,
+                                    guestId = it.id?.let { it }
+
+                                )
+
+                                )
 
 
 
-                        model.guestItemsAttributes = listItems
-                    }
+
+                                subTotal += tb.price
+                                tb.taxes?.forEach {
+                                    totalTax += it.rate
+                                }
+                                totalDiscount += tb.discountPrice
+
+                            }
+                            totalAmount = (subTotal + totalTax) - totalDiscount
+                            model.totalAmount = totalAmount
+                            model.totalTax = totalTax
+                            model.totalTips = totalTips
+                            if (it.id != null && it.id != 0) {
+                                model.id = it.id
+                            }
 
 
-                    if (it.customer != null) {
-                        model.customerId = it.customer?.id
-                        var addressList: ArrayList<CustomerAttributes.AddressesAttribute> =
-                            arrayListOf()
-                        var phoneList: ArrayList<CustomerAttributes.PhonesAttribute> = arrayListOf()
-                        for (i in 0.until(it.customer?.addresses?.size!!)) {
 
-                            var address = CustomerAttributes.AddressesAttribute()
-                            address.address1 = it.customer?.addresses?.get(i)?.address1.toString()
-                            address.address2 = it.customer?.addresses?.get(i)?.address2.toString()
-                            address.addressableId = it.customer?.addresses?.get(i)?.id
-                            address.city = it.customer?.addresses?.get(i)?.city.toString()
-                            address.country = it.customer?.addresses?.get(i)?.country.toString()/*address.latitude = it.customer?.addresses?.get(i)?.latitude!!.toDouble()
+                            model.guestItemsAttributes = listItems
+                        }
+
+
+                        if (it.customer != null) {
+                            model.customerId = it.customer?.id
+                            var addressList: ArrayList<CustomerAttributes.AddressesAttribute> =
+                                arrayListOf()
+                            var phoneList: ArrayList<CustomerAttributes.PhonesAttribute> =
+                                arrayListOf()
+                            for (i in 0.until(it.customer?.addresses?.size!!)) {
+
+                                var address = CustomerAttributes.AddressesAttribute()
+                                address.address1 =
+                                    it.customer?.addresses?.get(i)?.address1.toString()
+                                address.address2 =
+                                    it.customer?.addresses?.get(i)?.address2.toString()
+                                address.addressableId = it.customer?.addresses?.get(i)?.id
+                                address.city = it.customer?.addresses?.get(i)?.city.toString()
+                                address.country = it.customer?.addresses?.get(i)?.country.toString()/*address.latitude = it.customer?.addresses?.get(i)?.latitude!!.toDouble()
                     address.longitude = it.customer?.addresses?.get(i)?.longitude!!.toDouble()*/
-                            address.latitude = 0.0
-                            address.longitude = 0.0
-                            address.state = it.customer?.addresses?.get(i)?.state.toString()
-                            addressList.add(address)
-                        }
-                        for (i in 0 until it.customer?.phones?.size!!) {
-                            val phoneModel = CustomerAttributes.PhonesAttribute()
-                            phoneModel.id = it.customer?.phones?.get(i)?.id
-                            phoneModel.customerId = it.customer?.id
-                            phoneModel.phoneNumber =
-                                it.customer?.phones?.get(i)?.phone_number.toString()
-                            phoneList.add(phoneModel)
-                        }
-                        val customerModel = CustomerAttributes()/*  customerModel.addressesAttributes = addressList
+                                address.latitude = 0.0
+                                address.longitude = 0.0
+                                address.state = it.customer?.addresses?.get(i)?.state.toString()
+                                addressList.add(address)
+                            }
+                            for (i in 0 until it.customer?.phones?.size!!) {
+                                val phoneModel = CustomerAttributes.PhonesAttribute()
+                                phoneModel.id = it.customer?.phones?.get(i)?.id
+                                phoneModel.customerId = it.customer?.id
+                                phoneModel.phoneNumber =
+                                    it.customer?.phones?.get(i)?.phone_number.toString()
+                                phoneList.add(phoneModel)
+                            }
+                            val customerModel = CustomerAttributes()/*  customerModel.addressesAttributes = addressList
                   customerModel.birthDate = it.customer?.birth_date.toString()
                   customerModel.firstName = it.customer?.first_name.toString()
                   customerModel.lastName = it.customer?.last_name.toString()*/
-                        customerModel.id = it.customer?.id/* customerModel.companyName = it.customer?.company.toString()
+                            customerModel.id = it.customer?.id/* customerModel.companyName = it.customer?.company.toString()
                  customerModel.phonesAttributes = phoneList
                  customerModel.locationId = prefProvider.getValueInt(LOCATION_ID, 1)
     */
-                        //  model.customerAttributes = customerModel
+                            //  model.customerAttributes = customerModel
 
-                    } else {
-                        model.customerId = 0
+                        } else {
+                            model.customerId = 0
+                        }
+                        orderItemsAttributeList.add(model)
+
                     }
-                    orderItemsAttributeList.add(model)
-
-                }
 
                 dineInResult.postValue(true)
             }
