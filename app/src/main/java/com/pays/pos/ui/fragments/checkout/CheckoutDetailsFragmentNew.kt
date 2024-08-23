@@ -339,6 +339,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         Log.d("DynamicLiveData: ", "Called")
                         list?.let { dynamicList ->
                             if (dynamicList.isNotEmpty()) {
+                                binding.tvOther.visible()
                                 var layoutInflater = requireContext().getSystemService(
                                     Context.LAYOUT_INFLATER_SERVICE
                                 ) as LayoutInflater
