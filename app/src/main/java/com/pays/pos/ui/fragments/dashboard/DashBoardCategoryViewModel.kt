@@ -248,14 +248,16 @@ class DashBoardCategoryViewModel @Inject constructor(
     public var backupPaymentOfflineId: String? = ""
     public var backupOrderOfflineId: String? = ""
 
-
     /**
      * BIS - 3500 issue resolved
      */
     val autoSyncEnabled = MutableLiveData<Boolean>()
+    val disableCursor = MutableLiveData<Boolean>()
 
     //Fetch all Items from TBITEM
     val allInventoryItems = posRepository.getItemsList()
+
+
 
     //Fetch all orders count
     fun allOrderCounts(

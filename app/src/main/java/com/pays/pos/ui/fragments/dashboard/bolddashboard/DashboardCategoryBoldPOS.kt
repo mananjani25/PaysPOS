@@ -401,6 +401,26 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
             }
         }
+
+        binding.layoutHeader.edtSearch.isCursorVisible=false
+        binding.layoutHeader.edtSearch.setOnTouchListener(object:View.OnTouchListener{
+            override fun onTouch(p0: View?, p1: MotionEvent?): Boolean {
+                binding.layoutHeader.edtSearch.isCursorVisible=true
+                return false
+            }
+        })
+
+
+        viewModel.disableCursor.observe(viewLifecycleOwner,object:Observer<Boolean>{
+            override fun onChanged(t: Boolean?) {
+                t?.let {
+                    if (it){
+                        binding.layoutHeader.edtSearch.isCursorVisible=false
+                    }
+                }
+            }
+        })
+
         return binding.root
     }
 

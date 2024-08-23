@@ -107,6 +107,8 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
             rate = binding.llKeypad.txt10.text.toString().trim()
                 .substring(0, binding.llKeypad.txt10.text.toString().length - 1).toDouble()
 
+            resetDialogTipsList()
+
             var price = 0.0
             price = if (isFromTransaction) {
                 MethodUtils.percentageCalculation(
@@ -162,6 +164,13 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
             }
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
         }
+    }
+
+    private fun resetDialogTipsList() {
+        tipsListAdapter.discountList.forEach {
+            it.isCheckedInAdapter=false
+        }
+        tipsListAdapter.notifyDataSetChanged()
     }
 
 
