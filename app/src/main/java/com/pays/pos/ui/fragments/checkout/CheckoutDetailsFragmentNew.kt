@@ -3504,6 +3504,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun loadPaymentLayout() {
+        setupPaymentScreen(isSelectedCount)
         binding.tab1.setTextColor(resources.getColor(R.color.txt_color_blue))
         binding.view1.setBackgroundColor(resources.getColor(R.color.txt_color_blue))
         binding.tab2.setTextColor(resources.getColor(R.color.white))
