@@ -1145,6 +1145,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             prefProvider.setValue(DELIVERY_TYPE, "")
                             prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
                         }
+                    }
                         clearCustomer()
                         viewModel.updateActiveOrderFlagClear()
                         viewModel.clearListTax()
@@ -1156,7 +1157,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 }"
                             )
                         )
-                    }
+                    /* This bracket is closed before clearCustomer(), to solve BIS-4098}*/
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                 }
             } catch (e: Exception) {
