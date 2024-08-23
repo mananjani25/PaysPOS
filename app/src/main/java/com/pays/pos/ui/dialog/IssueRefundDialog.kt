@@ -73,7 +73,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
     private var paxData = ""
     private var guestCount: Int = 0
 
-    private var screenTotalAmount=""
+    private var screenTotalAmount = ""
 
     //    this variable is added because the loyalty deduction was causing price deterioration, hence we are adding the selected items price and passing to next screen. The selected addition is stored in below variable
     private var totalCalculatedFromSelected = 0.0
@@ -493,14 +493,14 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
                 calculationOfItems()
                 if (paymentOrderDetailsResponse.data.is_loyalty_applied ?: false) {
-                    var count=0
+                    var count = 0
                     refundItemListAdapter.selectedItemList().forEach {
                         if (it.isChecked)
                             count++
                     }
 
-                    if (count==refundItemListAdapter.selectedItemList().size){
-                        totalItemPrice=screenTotalAmount.toDouble()
+                    if (count == refundItemListAdapter.selectedItemList().size) {
+                        totalItemPrice = screenTotalAmount.toDouble()
                     }
                 }
                 val bundle = Bundle().apply {
@@ -570,18 +570,34 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             totalItemDiscount += it.discountAmount
         }
 
-        refundItemListAdapter.addItems(
-            (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount),
-            paymentOrderDetailsResponse.data.order.order_items,
-            serviceChargesList,
-            paymentOrderDetailsResponse.data.cash_discount_or_surcharge,
-            if (paymentOrderDetailsResponse.data.cash_discount_type != null) paymentOrderDetailsResponse.data.cash_discount_type else "",
-            paymentOrderDetailsResponse.data.payment_type,
-            if (paymentOrderDetailsResponse.data.total_discount > totalItemDiscount) paymentOrderDetailsResponse.data.total_discount - totalItemDiscount else 0.0,
-            paymentOrderDetailsResponse.data.loyalty_amount,
-            paymentOrderDetailsResponse.data.tips,
-            paymentOrderDetailsResponse.data.order.order_type
-        )
+        if (paymentOrderDetailsResponse.data.loyalty_amount == 0.0) {
+            refundItemListAdapter.addItems(
+                (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount),
+                paymentOrderDetailsResponse.data.order.order_items,
+                serviceChargesList,
+                paymentOrderDetailsResponse.data.cash_discount_or_surcharge,
+                if (paymentOrderDetailsResponse.data.cash_discount_type != null) paymentOrderDetailsResponse.data.cash_discount_type else "",
+                paymentOrderDetailsResponse.data.payment_type,
+                if (paymentOrderDetailsResponse.data.total_discount > totalItemDiscount) paymentOrderDetailsResponse.data.total_discount - totalItemDiscount else 0.0,
+                paymentOrderDetailsResponse.data.loyalty_amount,
+                paymentOrderDetailsResponse.data.tips,
+                paymentOrderDetailsResponse.data.order.order_type
+            )
+        } else {
+            refundItemListAdapter.addItems(
+//    IF GETTING MORE PROBLEMS, THEN UNCOMMENT IT AND REMOVE THE IMMEDIATE BELOW LINE        (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount),
+                (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount + paymentOrderDetailsResponse.data.cash_discount_or_surcharge),
+                paymentOrderDetailsResponse.data.order.order_items,
+                serviceChargesList,
+                paymentOrderDetailsResponse.data.cash_discount_or_surcharge,
+                if (paymentOrderDetailsResponse.data.cash_discount_type != null) paymentOrderDetailsResponse.data.cash_discount_type else "",
+                paymentOrderDetailsResponse.data.payment_type,
+                if (paymentOrderDetailsResponse.data.total_discount > totalItemDiscount) paymentOrderDetailsResponse.data.total_discount - totalItemDiscount else 0.0,
+                paymentOrderDetailsResponse.data.loyalty_amount,
+                paymentOrderDetailsResponse.data.tips,
+                paymentOrderDetailsResponse.data.order.order_type
+            )
+        }
 
 
         refundItemListAdapter.setSelectedItemList(
