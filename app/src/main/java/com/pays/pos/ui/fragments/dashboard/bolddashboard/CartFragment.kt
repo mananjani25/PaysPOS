@@ -2779,8 +2779,6 @@ class CartFragment(
                                     viewModel.addDineInRemovedItems(viewModel.cartModel!!)
                             }
 
-                            cartModelsList[0].discountSelectdValue = 10.0
-
                             val valuess = cartModelsList[0]
 
                             val request = viewModel.updateOrder(cartModelsList[0])
