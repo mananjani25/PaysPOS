@@ -2,6 +2,7 @@ package com.pays.pos.ui.adapter
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.pays.pos.R
@@ -16,7 +17,7 @@ class DialogTipsListAdapter : RecyclerView.Adapter<DialogTipsListAdapter.MyViewH
     inner class MyViewHolder(private val binding: ViewDialogTipsListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: GetTipReponse.Data, position: Int) {
-            if (selectedPosition == position) {
+            if (selectedPosition == position && model.isCheckedInAdapter) {
                 binding.linearParent.background =
                     binding.root.context.getDrawable(R.drawable.button_selected)
                 binding.txtValue.setTextColor(binding.root.context.resources.getColor(R.color.white))
@@ -35,11 +36,14 @@ class DialogTipsListAdapter : RecyclerView.Adapter<DialogTipsListAdapter.MyViewH
         }
 
         init {
-            binding.root.setOnClickListener {
-                selectedPosition = layoutPosition
-                notifyDataSetChanged()
-                listner.selectedItem(discountList[layoutPosition], layoutPosition)
-            }
+            binding.root.setOnClickListener(object: View.OnClickListener{
+                override fun onClick(p0: View?) {
+                    selectedPosition = layoutPosition
+                    notifyDataSetChanged()
+                    discountList[layoutPosition].isCheckedInAdapter=!discountList[layoutPosition].isCheckedInAdapter
+                    listner.selectedItem(discountList[layoutPosition], layoutPosition)
+                }
+            })
         }
     }
 

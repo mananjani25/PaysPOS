@@ -310,19 +310,24 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
 
     override fun selectedItem(model: GetTipReponse.Data, pos: Int) {
         LogUtil.logE(TAG, "SelectedItem:  ${Gson().toJson(model)}")
-        rate = model.rate
-        tipModel.apply { model }
-        tipID = model.id
-        var tipCalculation = 0.0
-        if (isFromTransaction) {
-            tipCalculation = (totalPrice * model.rate) / 100
-        } else {
-            totalPrice =
-                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble() / splitCount
-            tipCalculation = (totalPrice * model.rate) / 100
+        if (model.isCheckedInAdapter){
+            rate = model.rate
+            tipModel.apply { model }
+            tipID = model.id
+            var tipCalculation = 0.0
+            if (isFromTransaction) {
+                tipCalculation = (totalPrice * model.rate) / 100
+            } else {
+                totalPrice =
+                    prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble() / splitCount
+                tipCalculation = (totalPrice * model.rate) / 100
+            }
+            binding.edtAmount.setText(MethodUtils.roundOffAmountString(tipCalculation))
+            selectedListPos = pos
+        }else{
+            binding.edtAmount.setText("0.00")
         }
-        binding.edtAmount.setText(MethodUtils.roundOffAmountString(tipCalculation))
-        selectedListPos = pos
+
     }
 
     private fun calculateValue(number: String, delete: Boolean) {
