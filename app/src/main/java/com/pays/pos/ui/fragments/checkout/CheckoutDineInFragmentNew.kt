@@ -1782,6 +1782,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     PaymentBoldPosFragment.newInstance().addTipHideShow(true)
                     tipAmount = 0.0
                     viewModel.setTipAmount(0.0)
+                    viewModel.totalTipAmount = 0.0
                     loadSplitLayout()
                     binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
                     binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))

@@ -3436,6 +3436,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     PaymentBoldPosFragment.newInstance().addTipHideShow(true)
                     tipAmount = 0.0
                     viewModel.setTipAmount(0.0)
+                    viewModel.totalTipAmount = 0.0
                     if (this::presentation.isInitialized) {
                         presentation.show()
                         presentation.showTipsAddedNew(tipAmount, tipAmount, WholetotalPrice)
