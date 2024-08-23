@@ -373,6 +373,7 @@ class PaymentBoldPosFragment : Fragment() {
                 } else {
                     if (prefProvider.getValue(REDIRECT_FROM, "") == MANUAL_SALE) {
                         viewModel.cartModel = null
+                        viewModel.manualCartOrderNote=""
                     }
                     findNavController().popBackStack()
                 }

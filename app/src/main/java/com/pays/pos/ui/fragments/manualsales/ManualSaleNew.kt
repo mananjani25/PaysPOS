@@ -163,6 +163,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 override fun handleOnBackPressed() {
                     prefProvider.setValue(Constants.REDIRECT_FROM, "")
                     viewModel.cartModel = null
+                    viewModel.manualCartOrderNote=""
                     findNavController().popBackStack()
                 }
             }
@@ -352,6 +353,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             try {
                 prefProvider.setValue(Constants.REDIRECT_FROM, "")
                 viewModel.cartModel = null
+                viewModel.manualCartOrderNote=""
                 findNavController().navigateUp()
             } catch (e: Exception) {
                 e.printStackTrace()

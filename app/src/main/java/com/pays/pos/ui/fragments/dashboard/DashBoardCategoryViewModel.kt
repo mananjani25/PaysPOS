@@ -752,6 +752,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         try {
             prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
             cartModel = null
+            manualCartOrderNote=""
 
             EventBus.getDefault().post(
                 MessageEvent(
