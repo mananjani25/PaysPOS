@@ -46,7 +46,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteTextView?) : Fragment(),
+class CategoryFragment(val listner: ItemListner?=null, val edtSearch: AutoCompleteTextView?=null) : Fragment(),
     CategoryTabAdapter1.TabListner,
     CategoryItemAdapter1.CategoryItemList, CategoryParentAdapter.CategoryParentListner {
     private var categoryList1: ArrayList<CategoryWithInventory> = arrayListOf()
@@ -526,7 +526,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         list.add(CategoryParentModel(listCategories))
         list.add(CategoryParentModel(listCategories))
         categoryParentAdapter = CategoryParentAdapter(requireContext(), arrayListOf(), this)
-        itemAdapter = ItemAdapterPagDash(listner, null, prefProvider)
+        itemAdapter = ItemAdapterPagDash(listner!!, null, prefProvider)
         binding.rvItemList.setHasFixedSize(true)
         binding.rvItemList.layoutManager = GridLayoutManager(requireContext(), 4)
         binding.rvItemList.adapter = itemAdapter
@@ -579,7 +579,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
 
     override fun onClick(item: TbItem) {
-        listner.onItemSelected(item, 0)
+        listner?.onItemSelected(item, 0)
 
 
     }
