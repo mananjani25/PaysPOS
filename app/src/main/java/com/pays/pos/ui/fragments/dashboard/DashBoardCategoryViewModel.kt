@@ -141,6 +141,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var tip = 0.0
     var order_note = ""
     var cartModel: CartModel? = null
+    var manualCartOrderNote: String? = ""
     var currentCartItems: ArrayList<TbCartItem> = arrayListOf()
     var duplicateCurrentCartItem: ArrayList<TbCartItem> = arrayListOf()
 
@@ -751,6 +752,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         try {
             prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
             cartModel = null
+            manualCartOrderNote=""
 
             EventBus.getDefault().post(
                 MessageEvent(

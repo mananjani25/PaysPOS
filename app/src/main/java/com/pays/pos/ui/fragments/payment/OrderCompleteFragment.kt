@@ -1029,6 +1029,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             prefProvider.setValue(Constants.PREF_CUSTOMER, "")
             prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
             viewModelDashBoard.cartModel = null
+            viewModelDashBoard.manualCartOrderNote=""
             viewModel.deleteCart()
         }
 
