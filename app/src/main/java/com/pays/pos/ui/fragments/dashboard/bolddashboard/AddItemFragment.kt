@@ -1298,6 +1298,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
 
                 var found = false
+                lateinit var foundItem:TbCartItem
 
                 Log.d("AddItemFragment.kt", "txtDone_before_for (it in viewModel.currentCartItems)")
 
@@ -1305,7 +1306,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
 
 
-                    for (it in viewModel.currentCartItems) {
+                    for(it in viewModel.currentCartItems) {
                         if (it.guestIndexForDineIn == viewModel.dineInHeaderPosition && it.itemId == item.itemId) {
                             if (viewModel.checkModifierNew(it, item)) {
                                 Log.e(
@@ -1317,6 +1318,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                                 //item.itemQuantity += qty
 
+                                foundItem = it
 
                                  dineInItemQunatity =
                                      if(isUpdateItem) {
@@ -1330,9 +1332,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                         it.itemQuantity + qty
                                      }
 
-
-//                                it.isItemEdited=true
                                 break
+//                                it.isItemEdited=true
                             }
 
                         } else {
@@ -1381,14 +1382,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         dineInList?.get(0)?.selectedPosition = viewModel.dineInSelectedItemHeaderPos
                         LogUtil.logE(TAG, "getItem  ${Gson().toJson(item)}")
                         cartModelsList[0].taxlistDynamic = arrayListOf()
-                        /*cartList[0].dineInList?.forEach { dineInModel ->
-                            dineInModel.items.forEach { items ->
-                                items.taxes?.forEach { taxData ->
-                                    taxData.subTotalAmount = 0.0
-                                    taxData.totalTaxTypePrice = 0.0
-                                }
-                            }
-                        }*/
+
                         viewModel.currentCartItems.forEach {
                             it.taxes?.forEach { taxData ->
                                 taxData.subTotalAmount = 0.0
@@ -1397,50 +1391,21 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         }
 
                         Log.e(TAG, "dineInListWhenUpdate:  ${Gson().toJson(cartModelsList)}")
-                        /*viewModel.newCartLogicModifier(
-                            cartList,
-                            item,
-                            Constants.UPDATE,
-                            false,
-                            dineInList ?: arrayListOf()
-                        )*/
                         Log.d(TAG, "398 dineintest currentCartItems: " + viewModel.currentCartItems)
                         Log.d(TAG, "dineintest item: " + item)
                         Log.d(TAG, "dineintest dineInList: " + dineInList)
 
-//                        item.itemQuantity = qty
-
-
-
-//                        CoroutineScope(Dispatchers.IO).launch {
-//
-//                            runBlocking {
-//
-//                                item.itemQuantity = dineInItemQunatity
-//
-//
-//                                viewModel.deleteCartItemsByIdGuestIndex(item.itemId,item.guestIndexForDineIn?:-1)
-//
-////                                viewModel.updateDineInCartItemsByIdGuestIndex(
-////                                    dineInItemQunatity,
-////                                    item.itemId,
-////                                    item.guestIndexForDineIn ?: -1
-////                                )
-//
-//                                dineInItemQunatity = 0
-//                            }
-//                            viewModel.addItemToCartItems(item)
-//
-//                        }
-
-
-                        viewModel.updateDineInCart(
-                            viewModel.currentCartItems,
-                            item,
-                            Constants.UPDATE,
-                            false,
-                            dineInList ?: arrayListOf()
-                        )
+                        CoroutineScope(Dispatchers.IO).launch {
+                            runBlocking {
+                                item.itemQuantity = dineInItemQunatity
+                                viewModel.updateDineInCartItemsByIdGuestIndex(
+                                    dineInItemQunatity,
+                                    foundItem.cartItemId,
+                                    item.guestIndexForDineIn ?: -1
+                                )
+                                dineInItemQunatity = 0
+                            }
+                        }
                     } else {
                         item.guestIndexForDineIn = null
                         cartModelsList[0].taxlistDynamic = arrayListOf()
@@ -1562,13 +1527,15 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             Log.d(TAG, "dineintest item: " + item)
                             Log.d(TAG, "dineintest dineInList: " + dineInList)
                             item.itemQuantity = qty
-                            viewModel.updateDineInCart(
-                                viewModel.currentCartItems,
-                                item,
-                                Constants.ADD,
-                                false,
-                                dineInList
-                            )
+//                            viewModel.updateDineInCart(
+//                                viewModel.currentCartItems,
+//                                item,
+//                                Constants.ADD,
+//                                false,
+//                                dineInList
+//                            )
+
+                            viewModel.addItemToCartItems(item)
                         }
                     } else {
                         item.guestIndexForDineIn = null

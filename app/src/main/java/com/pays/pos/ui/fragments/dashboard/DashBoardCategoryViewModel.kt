@@ -148,18 +148,17 @@ class DashBoardCategoryViewModel @Inject constructor(
     /* This variable is used to track the selected category, if this variable is not 0 then the category will be selected, it was added to solve BIS-4045 */
     var selectedCatetory:Int=0
 
+    /**
+     * Dine In
+     */
+    var dineInItemsBeforeUpdate  = arrayListOf<TbCartItem>()
     var oldDineInItems: ArrayList<TbCartItem>  = arrayListOf()
     var isDineInUpdate = false
     var dineInResult = MutableLiveData<Boolean>(false)
     var dineInResultCreateOrder = MutableLiveData<Boolean>(false)
-
     var orderRequestModel:OrderRequestModel? = null
     var orderAttributeRequestModel = OrderAttributeRequestModel()
-
-    /**
-     * Dine In Item for Item Tracking
-     */
-    var dineInItemsBeforeUpdate  = arrayListOf<TbCartItem>()
+    var dineInItemClickedFromCart = false
 
     /**
      * Tracking main cart discount

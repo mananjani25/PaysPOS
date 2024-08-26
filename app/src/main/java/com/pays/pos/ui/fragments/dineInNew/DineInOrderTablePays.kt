@@ -798,23 +798,23 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 var alreadyDone = false
                 viewModelPayment.addCart(cartList!!)
                 CoroutineScope(Dispatchers.IO).launch {
-//                    if(listWT.isNotEmpty()) {
-//
-////                        viewModelPayment.addItemToCart(
-////                            ArrayList(dashboardViewModel.currentCartItems.filter { !it.isPaid }),
-////                            listWT.first(),
-////                            ADD,
-////                            false
-////                        )
-////
-//                        dashboardViewModel.currentCartItems.filter {!it.isPaid}.forEach {  cartItem ->
-//                            dashboardViewModel.addItemToCartItems(cartItem)
-//                        }
-//                    }
+                    if(listWT.isNotEmpty()) {
 
-                    dashboardViewModel.currentCartItems.filter {!it.isPaid}.forEach { cartItem ->
-                        dashboardViewModel.addItemToCartItems(cartItem)
+//                        viewModelPayment.addItemToCart(
+//                            ArrayList(dashboardViewModel.currentCartItems.filter { !it.isPaid }),
+//                            listWT.first(),
+//                            ADD,
+//                            false
+//                        )
+//
+                        dashboardViewModel.currentCartItems.filter {!it.isPaid}.forEach {  cartItem ->
+                            dashboardViewModel.addItemToCartItems(cartItem)
+                        }
                     }
+
+//                    dashboardViewModel.currentCartItems.filter {!it.isPaid}.forEach { cartItem ->
+//                        dashboardViewModel.addItemToCartItems(cartItem)
+//                    }
                 }
 
 

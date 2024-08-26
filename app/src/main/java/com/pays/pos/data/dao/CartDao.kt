@@ -51,10 +51,10 @@ interface CartDao {
     @Query("DELETE FROM TbCartItem WHERE cartItemId=:cartItemId")
     suspend fun deleteCartItems(cartItemId:Int)
 
-    @Query("DELETE FROM TbCartItem WHERE itemId=:itemId AND guestIndexForDineIn=:guestIndexForDineIn")
+    @Query("DELETE FROM TbCartItem WHERE cartItemId=:itemId AND guestIndexForDineIn=:guestIndexForDineIn")
     suspend fun deleteCartItemsByIdGuestIndex(itemId:Int,guestIndexForDineIn:Int)
 
-    @Query("UPDATE TbCartItem SET itemQuantity=:itemQuantity  WHERE itemId=:itemId AND guestIndexForDineIn=:guestIndexForDineIn")
+    @Query("UPDATE TbCartItem SET itemQuantity=:itemQuantity  WHERE cartItemId=:itemId AND guestIndexForDineIn=:guestIndexForDineIn")
     suspend fun updateDineInCartItemsByIdGuestIndex(itemQuantity: Int,itemId:Int,guestIndexForDineIn:Int)
 
     @Query("DELETE FROM cartmodel WHERE isMaual=1")

@@ -1478,7 +1478,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     override fun onItemSelected(tbItem: TbItem, position: Int) {
-
         var lastItem = TbCartItem().convertToCartItem(tbItem, tbItem)
         lastItem.itemQuantity = 1
         when (tbItem.name) {
