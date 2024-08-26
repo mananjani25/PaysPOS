@@ -584,7 +584,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         scrollNestedView()
 
         lifecycleScope.launch {
-            oneItemPerReceipt = dashboardViewModel.getLabelPrinterSettingsData().oneItemPerReciept
+            try{
+                oneItemPerReceipt = dashboardViewModel.getLabelPrinterSettingsData().oneItemPerReciept
+            }catch (e:Exception){
+
+            }
         }
 
         ProgressUtils.showProgressDialog(requireActivity())
