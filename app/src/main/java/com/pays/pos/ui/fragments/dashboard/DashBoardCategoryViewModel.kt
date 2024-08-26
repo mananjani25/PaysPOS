@@ -8380,4 +8380,23 @@ class DashBoardCategoryViewModel @Inject constructor(
             posRepository.updateOrderTypeBackup(orderType,orderTypeName, employeeId)
         }
     }
+
+
+    suspend fun getLabelPrinterSettingsData(): TbLabelPrinterSettings {
+        return posRepository.getLabelPrinterSettingsData()
+    }
+
+    //    ----------------- Dynamic Payments -----------------------------
+    suspend fun insertDynamicPayment(tbDynamicPaymentRecords: TbDynamicPaymentRecords) {
+        posRepository.insertDynamicPayments(tbDynamicPaymentRecords)
+    }
+
+    suspend fun insertDynamicPayment(tbDynamicPaymentRecords: List<TbDynamicPaymentRecords>) {
+        posRepository.insertDynamicPayments(tbDynamicPaymentRecords)
+    }
+
+    fun getDynamicPaymentRecords(isActive:Boolean, locationId:Int):Flow<List<TbDynamicPaymentRecords>>{
+        return posRepository.getDynamicPaymentRecords(isActive, locationId)
+    }
+    //    ----------------- Dynamic Payments -----------------------------
 }
