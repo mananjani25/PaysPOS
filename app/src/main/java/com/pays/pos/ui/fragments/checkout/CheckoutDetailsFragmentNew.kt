@@ -3438,6 +3438,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     tipAmount = 0.0
                     viewModel.setTipAmount(0.0)
                     viewModel.totalTipAmount = 0.0
+                    viewModel.customerGivenTip.value = false
+                    prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+
                     if (this::presentation.isInitialized) {
                         presentation.show()
                         presentation.showTipsAddedNew(tipAmount, tipAmount, WholetotalPrice)
