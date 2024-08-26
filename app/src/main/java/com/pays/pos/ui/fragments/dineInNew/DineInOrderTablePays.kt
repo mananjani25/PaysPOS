@@ -696,7 +696,12 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 }*/
                 temp_itemsList.addAll(dashboardViewModel.currentCartItems)
 
-        //        cartList!!.discountSelectdValue = cartList!!.discountPrice / totalPrice * 100
+
+                // Work on this to resolve discount issues
+//                getOrderDetailsResponse?.let {
+//                    if(it.totalDiscount != 0.0)
+//                        cartList!!.discountSelectdValue = it.totalDiscount / it.totalAmount * 100
+//                }
 
                 temp_itemsList.forEach { item ->
                     cartList = taxBifurcationCalculation(
