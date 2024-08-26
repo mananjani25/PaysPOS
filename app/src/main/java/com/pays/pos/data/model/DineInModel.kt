@@ -43,6 +43,7 @@ data class DineInModel(
     var orderTotalAmount: Double = 0.0,
     var listOfItemsMoved: java.util.ArrayList<Int> = arrayListOf(),
     var itemsCount: Int = 0,
+    var isChecked:Boolean = false
 
 ) : Parcelable {
 }

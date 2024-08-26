@@ -151,9 +151,10 @@ data class CreateOrderResponse(
                     @SerializedName("timestamp") var timestamp: String,
                     @SerializedName("is_fired") var is_fired: Boolean,
                     @SerializedName("sort") var sort: Int? = null,
+                    @SerializedName("guest_index_for_dine_in\n") var guest_index_for_dine_in:Int
 
 
-                    ) : Parcelable
+                ) : Parcelable
             }
 
             data class Customer(

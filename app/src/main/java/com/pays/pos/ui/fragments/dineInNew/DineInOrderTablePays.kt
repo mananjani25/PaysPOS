@@ -1,4 +1,4 @@
-package com.pays.pos.ui.fragments.dinein
+package com.pays.pos.ui.fragments.dineInNew
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -84,6 +84,7 @@ import com.epson.eposprint.Print
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
@@ -99,9 +100,9 @@ import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
-class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
+class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
-    private lateinit var presentation: CustomDisplay
+    private lateinit var presentation: CustomDisplayDineIn
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
     private var fireItemsList: ArrayList<TbCartItem> = arrayListOf()
@@ -166,9 +167,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private var totalDiscountWO = 0.0
     private var clickedPosition: Int = -1
 
+    var dineInCartItemMoved = false
+
     @Inject
     lateinit var prefProvider: PrefProvider
-    private val viewModel by viewModels<DineInOrderTableViewModel>()
+    private val viewModel by viewModels<DineInOrderTableViewModelPays>()
     private val viewModelPayment by activityViewModels<CheckoutDineInPaymentViewModel>()
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -185,11 +188,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.lifecycleOwner = this
 
 
+        dineInCartItemMoved = false
 
         progressDialog()
         optionType = prefProvider.getValue(Constants.OPTION_TYPE, "")
         getCustomerDisplay(requireContext())?.let { display ->
-            presentation = CustomDisplay(
+            presentation = CustomDisplayDineIn(
                 display,
                 requireContext(),
                 viewLifecycleOwner,
@@ -212,7 +216,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         observeTipsList()
         observeAddGuest()
 
-
+        observeRefresh(savedInstanceState)
 
         navigateDineInOrderNew()
         reorderedItemObserver()
@@ -245,6 +249,33 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        dashboardViewModel.currentCartItems.clear()
+        dashboardViewModel.deleteCart()
+        dashboardViewModel.deleteCartItems()
+    }
+
+    private fun observeRefresh(savedInstanceState: Bundle?) {
+        viewModel._refreshDineInTable.observe(viewLifecycleOwner){
+            if(it){
+                val navController = findNavController()
+                val currentArgs = arguments
+                try {
+                    navController.navigate(findNavController().currentDestination!!.id, currentArgs)
+                }catch (_:Exception) {
+                    try {
+                        navController.navigate(findNavController().currentDestination!!.id, currentArgs)
+                    }catch (_:Exception) {
+
+                    }
+                }
+
+            }
+        }
+    }
+
     private fun showStaticLoader() {
         if (!SunmiPrinterApi.getInstance().isConnected) {
             ProgressUtils.showProgressDialog(requireActivity())
@@ -267,10 +298,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             AlertUtils.showCustomAlertWithListenerWithOK(
                 requireContext(), event.getContentIfNotHandled().toString()
             ) { _, _ ->
-                prefProvider.setValueboolean(DINE_IN_UPDATE, false)
-                viewModel.Basedata.removeObservers(viewLifecycleOwner)
-                navigateDineInOrderNew()
-                orderId?.let { viewModel.apiCallOrderDetails(it) }
+                try {
+                    prefProvider.setValueboolean(DINE_IN_UPDATE, false)
+                    viewModel.Basedata.removeObservers(viewLifecycleOwner)
+                    navigateDineInOrderNew()
+                    orderId?.let { viewModel.apiCallOrderDetails(it) }
+                }catch (e:Exception) {
+                    e.printStackTrace()
+                }
             }
         }
     }
@@ -475,8 +510,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
 
         binding.txtFloorPlan.setOnClickListener {
-            findNavController().navigate(R.id.action_dineInOrderTable_to_dineInFragmentPays)
 
+            dashboardViewModel.apply {
+                currentCartItems = arrayListOf()
+                duplicateCurrentCartItem = arrayListOf()
+                deleteCartItems()
+                deleteCart()
+            }
+
+            findNavController().navigate(R.id.action_dineInOrderTable_to_dineInFragmentPays)
         }
         binding.txtAddguest.setOnClickListener {
             findNavController().navigate(
@@ -485,7 +527,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
         binding.txtFireAll.setOnClickListener {
 
-            checkForAutoFire(false)
+            checkForAutoFire(false,fireAll = true)
             /*val list = dineInTableAdapter.getList()
             val idsStr = java.lang.StringBuilder()
             list.forEach {
@@ -507,9 +549,61 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         binding.btnPayNew.setOnClickListener {
             try {
+
+                prefProvider.setValue(ORDER_TYPE, DINE_IN)
+//                dashboardViewModel.currentCartItems = arrayListOf()
+                dashboardViewModel.deleteCartItems()
+
                 //new Calculation for total Discount
                 var listWT: ArrayList<TbCartItem> = arrayListOf()
                 var list = dineInTableAdapter.getList()
+
+
+                /**
+                 * Adding guestDineInPosition for Each Item
+                 */
+
+                var headerPositionCounter = -1
+                var k=0
+                while(k < list.size) {
+                    if( list[k].isHeader == 0) {
+                        headerPositionCounter++
+
+                        var innerCounter = k+1
+
+                        while(true){
+                            if (innerCounter == list.size)
+                                break
+
+                            if(list[innerCounter].isHeader == 1){
+                                list[innerCounter].item?.apply{
+                                    guestIndexForDineIn = headerPositionCounter
+                                    employeeID = getOrderDetailsResponse?.employeeId?:0
+                                    orderType = "DineIn"
+                                }
+                            }else
+                                break
+
+                            innerCounter++
+
+                        }
+                    }
+                    k++
+                }
+
+                val currentList = dineInTableAdapter.getList()
+
+                var guestCount = 0
+                var guestPaid = 0
+                currentList.forEach {
+                    if(it.isHeader == 0){
+                        if(it.title?.equals("Whole Table",true) == false){
+                            guestCount++
+                            if(it.isPaid)
+                                guestPaid++
+                        }
+                    }
+                }
 
                 for (i in 0 until list.size) {
                     if (list.get(i).title.equals("Whole Table", true) && i + 1 <= list.size) {
@@ -517,6 +611,18 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             for (j in i + 1 until list.size) {
                                 if (list.get(j).isHeader == 1) {
                                     listWT.add(list.get(j).item!!)
+
+                                    if(guestPaid>0) {
+                                        list[j].item?.price.let {
+                                            val totalPricePaid = it?.div(guestCount)
+
+                                            list[j].item?.price = totalPricePaid?.let { it1 ->
+                                                list[j].item?.price?.minus(
+                                                    it1 * guestPaid
+                                                )
+                                            }!!
+                                        }
+                                    }
                                     dashboardViewModel.currentCartItems.add(list[j].item!!)
                                 } else {
                                     break
@@ -525,6 +631,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
                     }
                 }
+
                 LogUtil.logE(TAG, "listWTItems ${Gson().toJson(listWT)}")
                 prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
 
@@ -589,6 +696,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }*/
                 temp_itemsList.addAll(dashboardViewModel.currentCartItems)
 
+
+                // Work on this to resolve discount issues
+//                getOrderDetailsResponse?.let {
+//                    if(it.totalDiscount != 0.0)
+//                        cartList!!.discountSelectdValue = it.totalDiscount / it.totalAmount * 100
+//                }
 
                 temp_itemsList.forEach { item ->
                     cartList = taxBifurcationCalculation(
@@ -682,15 +795,25 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
 
 
+                var alreadyDone = false
                 viewModelPayment.addCart(cartList!!)
                 CoroutineScope(Dispatchers.IO).launch {
-                    listWT.forEach {
-                        viewModelPayment.addItemToCart(
-                            dashboardViewModel.currentCartItems,
-                            it,
-                            ADD,
-                            false
-                        )
+//                    if(listWT.isNotEmpty()) {
+//
+////                        viewModelPayment.addItemToCart(
+////                            ArrayList(dashboardViewModel.currentCartItems.filter { !it.isPaid }),
+////                            listWT.first(),
+////                            ADD,
+////                            false
+////                        )
+////
+//                        dashboardViewModel.currentCartItems.filter {!it.isPaid}.forEach {  cartItem ->
+//                            dashboardViewModel.addItemToCartItems(cartItem)
+//                        }
+//                    }
+
+                    dashboardViewModel.currentCartItems.filter {!it.isPaid}.forEach { cartItem ->
+                        dashboardViewModel.addItemToCartItems(cartItem)
                     }
                 }
 
@@ -708,6 +831,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
                 if (totalItem.isNotEmpty()) {
                     totalItem.forEach {
+
+                        it.orderType = "DineIn"
+                         it.employeeID = getOrderDetailsResponse?.employeeId ?:0
+
                         if (!it.isPaid) {
                             subTotal += (it.price * it.itemQuantity) - it.discountPrice
                             if (it.modifiers.isNotEmpty()) {
@@ -913,6 +1040,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             prefProvider.setValue(ORDER_TYPE_NAME, "")
             dineInTableAdapter.setList(arrayListOf())
             dashboardViewModel.cartModel = null
+
+            dashboardViewModel.apply {
+                currentCartItems = arrayListOf()
+                duplicateCurrentCartItem = arrayListOf()
+                deleteCartItems()
+                deleteCart()
+            }
+
             findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
         }
         binding.txtHomeBottom.setOnClickListener {
@@ -928,9 +1063,18 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             val newList: ArrayList<DineInModel> = arrayListOf()
 
             dashboardViewModel.dineInHeaderPosition = 0
+            dashboardViewModel.isDineInUpdate = true
+            dashboardViewModel.deleteCartItems()
+            dashboardViewModel.deleteCart()
+
+            dashboardViewModel.dineInItemsBeforeUpdate = arrayListOf()
+
+            var headerPositionCounter = -1
+
             for (i in 0 until list.size) {
                 val model = DineInModel()
                 if (list[i].isHeader == 0) {
+                    headerPositionCounter++
                     val listTbItem: ArrayList<TbCartItem> = arrayListOf()
                     model.id = list[i].id
                     model.isPaid = list[i].isPaid
@@ -939,7 +1083,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     model.isFired = list[i].isFired
                     model.guestDividerAmt = list[i].guestDividerAmt
                     model.guestDividedAmt = list[i].guestDividedAmt
-                    model.item?.employeeID = prefProvider.employeeId()
 
 
                     for (j in i + 1 until list.size) {
@@ -975,12 +1118,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 //                    dashboardViewModel.currentCartItems = listTbItem
                     // IMPORTANT - remove this as this is just for logs
                     listTbItem.forEach {
-                        it.guestIndexForDineIn = i
+                        it.guestIndexForDineIn = headerPositionCounter
+                       // it.taxes = arrayListOf()
+
+                        it.employeeID = prefProvider.employeeId()//getOrderDetailsResponse?.employeeId?:0
+
                         it.orderType = "DineIn"
-                        it.employeeID = prefProvider.employeeId()
+
+                       // if(!it.isPaid)
                         dashboardViewModel.currentCartItems.add(it)
+                        dashboardViewModel.dineInItemsBeforeUpdate.add(it)
                         Log.d(TAG, "testDineInUpdate onClick: " + Gson().toJson(it))
                     }
+
                     newList.add(model)
 
 
@@ -1010,6 +1160,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
             bundle.putParcelableArrayList("dine_in_cart_items", dashboardViewModel.currentCartItems)
 
+           // dashboardViewModel.oldDineInItems = dashboardViewModel.currentCartItems
+
             LogUtil.logE(
                 "OrderFre",
                 "APIDISc  ${getOrderDetailsResponse?.totalDiscount?.toDouble()}"
@@ -1030,6 +1182,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 "dineIndorderId:   ${orderId}  >> ${getOrderDetailsResponse?.orderTypeName ?: DINE_IN}"
             )
 
+            prefProvider.setValueInt("DINE_IN_ORDER_UPDATE",orderId?:0)
             prefProvider.setValueboolean(DINE_IN_UPDATE, true)
             prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
             prefProvider.setValueInt(
@@ -1052,10 +1205,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                prefProvider.setValueInt(ORDER_TYPE_ID, 2)*/
 
 
-            findNavController().navigate(
-                R.id.action_dineInOrderTable_to_dashboardCategoryNew,
-                bundle
-            )
+            prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, true)
+
+            try {
+                findNavController().navigate(
+                    R.id.action_dineInOrderTable_to_dashboardCategoryNew,
+                    bundle
+                )
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
 
 
         }
@@ -1479,7 +1638,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 if (it.toString() != "null") {
                     AlertUtils.showCustomAlert(requireContext(), it)
                 }
-                dineInTableAdapter.updateStatus(clickedPos, isFireAll)
+              //  dineInTableAdapter.updateStatus(clickedPos, isFireAll)
             }
         }
 
@@ -1503,11 +1662,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         dividedGuestAmt: Double,
         listItemWT: ArrayList<TbCartItem>,
         listItemGuestSelected: ArrayList<TbCartItem>,
-        guestIndexForDineIn:Int
+        guestIndexForDineIn: Int
     ) {
 
         //New Drag and Drop
 
+        dashboardViewModel.deleteCartItems()
+        dashboardViewModel.deleteCart()
 
         Log.e(TAG, "divideDiscount2:  ${divideDiscount2}")
         var divideDiscount = divideDiscount2
@@ -1958,15 +2119,20 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             wholetableitems.taxes?.forEachIndexed { index, taxData ->
                 var modifierPrice: Double = 0.0
                 var totaltaxtemp: Double = 0.0
-                val price =
+                var price =
                     (wholetableitems.price * wholetableitems.itemQuantity) - (wholetableitems.discountPrice * wholetableitems.itemQuantity)
 
+                price /= totalGuestCount
+
                 wholetableitems.modifiers.forEach {
-                    modifierPrice += (it.price * it.itemQuantity)
+                    modifierPrice += ((it.price * it.itemQuantity)/totalGuestCount)
                 }
 
-                val totalPrice =
+                var totalPrice =
                     price + modifierPrice
+
+                totalPrice /= totalGuestCount
+
                 totaltaxtemp += if (taxData.taxType == "Percentage") {
                     if (totalPrice < 0.0) {
 
@@ -1992,9 +2158,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 }
 
+                totaltaxtemp /= totalGuestCount
 
                 var found = -1
-                totaltaxtemp /= (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
+               // totaltaxtemp /= (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
                 var temp_remaining = totaltaxtemp
                 var temp_subtotal =
                     totalPrice / (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
@@ -2063,6 +2230,21 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.d(TAG, "onGuestPay: onlywholetable birfurcation" + Gson().toJson(listTaxBirfucaWholeTb))
         Log.d(TAG, "getcartListAfterAdd: remaining : ${Gson().toJson(remaining_list)}")
         LogUtil.logE(TAG, "getcartListAfterAdd  ${Gson().toJson(cartList?.taxlistDynamic)}")
+
+
+        listItemWT.forEach {
+
+            it.price /= totalGuestCount
+
+            it.guestIndexForDineIn = 0
+            it.orderType = "DineIn"
+            dashboardViewModel.addItemToCartItems(it)
+        }
+
+        listItemGuestSelected.forEach {
+            dashboardViewModel.addItemToCartItems(it)
+        }
+
 
         viewModelPayment.addCart(cartList!!)
         findNavController().navigate(
@@ -2214,8 +2396,25 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
     }
 
-    override fun guestCheckboxClicked(position: Int, isChecked: Boolean) {
+    override fun guestCheckboxClicked(position: Int, guestChecked: Boolean) {
 
+        var list = dineInTableAdapter.getList()
+
+        var current = position+1
+
+        while(current < list.size-1){
+
+            if(list[current].isHeader == 1){
+                list[current].item?.isChecked = guestChecked
+            }else
+            {
+                break
+            }
+
+            current++
+        }
+
+        dineInTableAdapter.setList(ArrayList(list))
     }
 
     private fun guestPrint(
@@ -2336,6 +2535,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
         }
     }
+
 
     private fun navigateDineInOrderNew(isFromWastage: Boolean = false) {
 
@@ -2487,6 +2687,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             item.itemId = it.itemId
                                             item.categoryId = it.categoryId
                                             item.guestItemId = guestItem[j].id
+                                            item.guestIndexForDineIn = it.guestIndexForDineIn
 
                                             var listTaxes: ArrayList<TaxData> = arrayListOf()
                                             it.orderItemTaxes.forEach {
@@ -2558,11 +2759,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 item.variationsAttributes =
                                                     variationAtt(it.order_item_variation!!)
                                             }
+
+                                            item.guestIndexForDineIn = it.guestIndexForDineIn
+                                            item.orderType = "DineIn"
+                                            item.employeeID = prefProvider.employeeId()
+
+
                                             itemDineIn.isHeader = 1
                                             itemDineIn.item = item
                                             itemDineIn.sort = item.sort
                                             itemDineIn.empName =
                                                 baseResponse.floorPlanTable.lockByName.toString()
+
+
 
                                             dineInList.add(itemDineIn)
 
@@ -2972,7 +3181,26 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             presentation.showTableDetails(baseResponse)
                         }
                         if (!isFromWastage) {
-                            checkForAutoFire(true)
+
+
+                            /**
+                             * check if any of the printer have auto printing on
+                             * */
+
+                            val kitchenDineInPrinters = kitchenPrinterList
+                                .filter { kitchenPrinter ->
+                                    kitchenPrinter.orderTypes.any { orderType ->
+                                        orderType.orderType == "DineIn" && orderType.printerSettings.any { printerSetting ->
+                                            printerSetting.autoPrinting && printerSetting.printType == "Kitchen"
+                                        }
+                                    }
+                                }
+
+
+                            if(kitchenDineInPrinters.isNotEmpty() /*&& prefProvider.employeeId() == baseResponse.employeeId*/)
+                                checkForAutoFire(true)
+//                            else
+//                                checkForAutoFire(false)
                         }
 
                         //  binding.txtTotalAmountNew.setText("${MethodUtils.roundOffAmount(totalAmtnew)}")
@@ -2985,7 +3213,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     if (notPayAnyAmount) {
                         binding.txtAddguest.visibility = View.GONE
-                        binding.txtEditOrder.visibility = View.GONE
+
+                        /**
+                         * Display Edit Order / Update order everytime even though half paid
+                         */
+
+                          binding.txtEditOrder.visibility = View.GONE
                     } else {
                         binding.txtAddguest.visibility = View.VISIBLE
                         binding.txtEditOrder.visibility = View.VISIBLE
@@ -3101,8 +3334,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var WTDiscount = 0.0
         var guestCount = 0
         var eligibleGuestsForDivision = 0
+
         if (dragTo != -1) {
-            oldList.get(dragTo).item?.guestItemId?.let { listOfMoveItemIds.add(it) }
+            oldList.get(dragTo).item?.guestItemId?.let {
+                listOfMoveItemIds.add(it)
+            }
             oldList.get(dragTo).item?.guestItemId = null
 
             if (oldList[dragTo].item?.itemId != 1) {
@@ -3359,6 +3595,30 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 newList
             )
 
+            //Added to resolve , Items are not getting moved guest wise
+            if(dineInCartItemMoved) {
+                dashboardViewModel.deleteCartItems()
+                dashboardViewModel.currentCartItems = arrayListOf()
+                var guestCounter = -1
+                newList.forEach {
+                    if (it.isHeader == 1) {
+                        it.item.let {
+                            if (it != null) {
+                                val found = listOfMoveItemIds.filter { moved-> it.guestItemId == moved}
+                                if(found.isNotEmpty())
+                                    it.id = 0
+
+                                it.guestIndexForDineIn = guestCounter
+
+                                dashboardViewModel.addItemToCartItems(it)
+                            }
+                        }
+                    } else guestCounter++
+                }
+
+                dineInCartItemMoved = false
+            }
+
             updateOrderCall(isFromReorder = true)
         }
 
@@ -3460,8 +3720,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         viewHolder.layoutPosition,
                         target.layoutPosition
                     )
+                    dineInCartItemMoved = true
                     return true
                 } else {
+                    dineInCartItemMoved = false
                     return false
                 }
 
@@ -9842,6 +10104,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
 
+            if(prefProvider.getValueboolean(DINE_IN_UPDATE,false))
+                PrintSunmiUtils.addValue("*** Updated ***")
+
+            SunmiPrinterApi.getInstance().lineWrap(1)
 
             PrintSunmiUtils.addValue(getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")")
 
@@ -9914,6 +10180,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             PrintSunmiUtils.cutPaper()
+
             //ProgressUtils.dismissProgressDialog()
 
         } catch (e: Exception) {
@@ -10163,7 +10430,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
-    fun checkForAutoFire(isCheckAndFire: Boolean) {
+    fun checkForAutoFire(isCheckAndFire: Boolean, fireAll:Boolean = false) {
         Log.d("###17MAR23", "checkForAutoFire: Called - Start - $isCheckAndFire")
         var list: List<DineInModel> = arrayListOf()
         list = dineInTableAdapter.getList() ?: arrayListOf()
@@ -10204,23 +10471,96 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.e(TAG, "getListOfHash  ${Gson().toJson(listItemWithGuest)}")
         LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(list)}")
         fireItemsList = arrayListOf()
-        list.forEach {
+
+
+        var updatedItemIdsList = arrayListOf<Int>()
+
+        list.forEachIndexed { itemIndex, it ->
             if (it.isHeader == 1) {
                 it.item?.let {
-                    if (!it.isFired) {
+
+                    /**
+                     * First condition works for manual printing and second will work for auto printing
+                     */
+                    if ( (!it.isFired && it.isChecked) || (!it.isFired && isCheckAndFire)) {
                         fireItemsList.add(it)
                         listItem.add(it)
+                        it.isFired = true
+
+                        //add items ids for api call
+                        it.orderItemId?.let {
+                            builder.add(it.toString())
+                        }
+                    } else {
+                        /***
+                         * If Item is already fired and then it gets updated then this logic will check for updated item to print
+                         */
+                        if(prefProvider.getValueboolean(DINE_IN_UPDATE,false)) {
+                            val foundItemList =
+                                dashboardViewModel.dineInItemsBeforeUpdate.filter { item ->
+                                    item.cartItemId == it.cartItemId &&
+                                            item.itemId == it.itemId &&
+                                            item.guestIndexForDineIn == it.guestIndexForDineIn &&
+                                            it.isFired
+                                }
+
+                            if (foundItemList.isNotEmpty()) {
+                                val foundItem = foundItemList.first()
+
+                                /***
+                                 * Check what changes are done in item
+                                 */
+
+                                if (    it.itemQuantity != foundItem.itemQuantity ||
+                                        it.note != foundItem.note ||
+                                        !dashboardViewModel.checkModifierNew(it,foundItem)
+                                ) {
+
+
+                                    if(it.itemQuantity < foundItem.itemQuantity) {
+                                        val itemToAddInWastageModule = foundItem
+                                        foundItem.itemQuantity = foundItem.itemQuantity - it.itemQuantity
+                                    }
+
+                                    updatedItemIdsList.add(it.cartItemId)
+
+                                    fireItemsList.add(it)
+                                    listItem.add(it)
+                                    it.isFired = true
+
+                                     //add items ids for api call
+                                    it.orderItemId?.let {
+                                        builder.add(it.toString())
+                                    }
+                                } else {
+
+                                }
+                            } else {
+                                /***
+                                 * This will print checked and selected items which are not printed already
+                                 */
+                                if(fireAll &&  it.isChecked && !it.isFired ) {
+                                    fireItemsList.add(it)
+                                    listItem.add(it)
+                                    it.isFired = true
+
+                                    //add items ids for api call
+                                    it.orderItemId?.let {
+                                        builder.add(it.toString())
+                                    }
+                                } else { }
+                            }
+                        } else { }
                     }
                 }
-                it.item?.orderItemId?.let {
-                    builder.add(it.toString())
-
-                }
-                //  it.item?.isFired = true
-
             }
-
         }
+
+
+        dashboardViewModel.apply {
+            dineInItemsBeforeUpdate = arrayListOf()
+        }
+
         LogUtil.logE(TAG, "listItem:  ${Gson().toJson(listItem)}")
         val serializedObject: String =
             prefProvider.getValue(Constants.DINE_IN_UPDATE_LIST, "")
@@ -10340,68 +10680,99 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
             }
 
-            var autoPrintEnable = false
-            kitchenPrinterList.forEach { kit ->
-                if (kit.status) {
 
 
-                    if (isCheckAndFire) {
-                        kit.orderTypes.forEach {
-                            if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
-                                LogUtil.logE(
-                                    TAG,
-                                    "printerSettings  ${Gson().toJson(it.printerSettings)}"
-                                )
-                                it.printerSettings.forEach {
-                                    if (it.printType.lowercase()
-                                            .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
-                                    ) {
+                var autoPrintEnable = false
+                kitchenPrinterList.forEach { kit ->
+                    if (kit.status) {
 
-                                        if (checkItemsforPrinterDineIn(
-                                                listItem, kit.printerCategories.toCollection(
-                                                    arrayListOf()
-                                                )
-                                            )
+
+                        if (isCheckAndFire) {
+                            kit.orderTypes.forEach {
+                                if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
+                                    LogUtil.logE(
+                                        TAG,
+                                        "printerSettings  ${Gson().toJson(it.printerSettings)}"
+                                    )
+                                    it.printerSettings.forEach {
+                                        if (it.printType.lowercase()
+                                                .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
                                         ) {
-                                            LogUtil.logE(TAG, "printerName  ${kit.name} ")
-                                            autoPrintEnable = true
-                                            if (!prefProvider.getValueboolean(
-                                                    IS_PRINTER_QUEUE_ENABLE,
-                                                    false
+
+                                            if (checkItemsforPrinterDineIn(
+                                                    listItem, kit.printerCategories.toCollection(
+                                                        arrayListOf()
+                                                    )
                                                 )
                                             ) {
-                                                initKitchenPrinter(
-                                                    kit,
-                                                    Constants.KITCHEN,
-                                                    listItem,
-                                                    listItemWithGuest
-                                                )
+                                                LogUtil.logE(TAG, "printerName  ${kit.name} ")
+                                                autoPrintEnable = true
+                                                if (!prefProvider.getValueboolean(
+                                                        IS_PRINTER_QUEUE_ENABLE,
+                                                        false
+                                                    )
+                                                ) {
+                                                    initKitchenPrinter(
+                                                        kit,
+                                                        Constants.KITCHEN,
+                                                        listItem,
+                                                        listItemWithGuest
+                                                    )
+                                                }
                                             }
                                         }
                                     }
                                 }
+
+                            }
+                        } else {
+                            if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+                                initKitchenPrinter(
+                                    kit,
+                                    Constants.KITCHEN,
+                                    listItem,
+                                    listItemWithGuest
+                                )
                             }
 
-                        }
-                    } else {
-                        if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
-                            initKitchenPrinter(kit, Constants.KITCHEN, listItem, listItemWithGuest)
-                        }
 
+                        }
                     }
                 }
-            }
-            if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
-                var fireAllIds = android.text.TextUtils.join(",", builder)
 
-                viewModel.fireItemToKitchen(orderId ?: 0, true, fireAllIds, true)
-                list.forEach {
-                    if (it.isHeader == 1) {
-                        it?.item?.isFired = true
-                    }
+                if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
+                    var fireAllIds = android.text.TextUtils.join(",", builder)
+
+                    viewModel.fireItemToKitchen(orderId ?: 0, true, fireAllIds, true)
+
+
+//                    if (fireAll && !isCheckAndFire) {
+//
+//                        listItem.forEach { firedItem ->
+//                            val item = list.filter { it.item?.itemId == firedItem.itemId && it.item?.cartItemId == firedItem.cartItemId  }
+//
+//                            if( item.isNotEmpty() ) {
+//                                item.first().isFired = true
+//                            }
+//                        }
+//
+//                        dineInTableAdapter.setList(ArrayList(list))
+//                    } else if(!fireAll){
+//                        listItem.forEach { firedItem ->
+//                            val item = list.filter { it.item?.itemId == firedItem.itemId && it.item?.cartItemId == firedItem.cartItemId  }
+//
+//                            if( item.isNotEmpty() ) {
+//                                item.first().isFired = true
+//                            }
+//                        }
+//                        dineInTableAdapter.setList(ArrayList(list))
+//                    }
+
                 }
+
+
                 dineInTableAdapter.updateStatus(0, true)
-            }
+
         }
 
 

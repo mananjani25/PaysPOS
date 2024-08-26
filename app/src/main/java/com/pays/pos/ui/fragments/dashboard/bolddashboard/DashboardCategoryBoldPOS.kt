@@ -1263,10 +1263,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     var bundle: Bundle = Bundle()
                     bundle.putParcelableArrayList("carttlist", cartList)
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
-                        if ((cartList[0].dineInList?.size ?: 0) > 0) {
-                            cartList[0].dineInList?.get(0)?.selectedPosition =
-                                viewModel.dineInHeaderPosition
-                        }
+
+//                        if ((cartList[0].dineInList?.size ?: 0) > 0) {
+//                            cartList[0].dineInList?.get(0)?.selectedPosition =
+//                                viewModel.dineInHeaderPosition
+//                        }
                         bundle.putInt("selectedHeaderPosition", viewModel.dineInHeaderPosition)
                     }
                     findNavController().navigate(
@@ -1626,9 +1627,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                             )
                                         )
                                         Log.d(TAG, "dineintest item: " + Gson().toJson(item))
+
+                                        val finalList = viewModel.currentCartItems + viewModel.oldDineInItems
+
+
                                         //insert dine in
                                         viewModel.updateDineInCart(
-                                            viewModel.currentCartItems,
+                                            finalList,
                                             item,
                                             Constants.ADD,
                                             false,
@@ -1923,6 +1928,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
     override fun onItemUpdate(item: TbCartItem, position: Int) {
+
+
+        viewModel.dineInHeaderPosition = item.guestIndexForDineIn ?:-1
+
+        viewModel.isCartItemClicked = true
+
         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
         val backStateName: String = AddItemFragment.javaClass.getName()
         val fragment = AddItemFragment.newInstance(item, this, cartList, true, position)
@@ -2220,10 +2231,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 clearCustomer()
 
 
-                findNavController().navigate(
-                    R.id.action_dashboardCategoryBoldPOS_to_dineInOrderTable,
-                    bundle
-                )
+                try {
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryBoldPOS_to_dineInOrderTable,
+                        bundle
+                    )
+                }catch (_e:Exception){
+                   // AlertUtils.showAlert(requireActivity(),"Something went wrong. Please try again !")
+                }
 
             }
         }
@@ -5610,6 +5625,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
 
+
     override fun scannerFirmwareUpdateEvent(firmwareUpdateEvent: FirmwareUpdateEvent?) {
         TODO("Not yet implemented")
     }
@@ -5696,11 +5712,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             )
                         }
                         prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
-                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
+                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragmentPays)
                     }
                 } else {
                     prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragmentPays)
                 }
             }
         } else {
@@ -5709,7 +5725,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 // prefProvider.setValue(ORDER_TYPE, DINE_IN)
                 prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragmentPays)
             }
         }
     }

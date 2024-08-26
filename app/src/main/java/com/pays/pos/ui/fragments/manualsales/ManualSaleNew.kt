@@ -344,7 +344,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         binding.layoutHeader.txtDineIn.setOnClickListener {
             try {
                 prefProvider.setValue(Constants.REDIRECT_FROM, "")
-                findNavController().navigate(R.id.action_manualSalesNew_to_dineInFragment)
+                findNavController().navigate(R.id.action_manualSalesNew_to_dineInFragmentPays)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -741,6 +741,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         val mergeItems = merge(mainItems!!, manualItems!!)
                         mainCartList[0].dineInList?.get(selectedHeaderPosition)?.items =
                             mergeItems as ArrayList<TbItem>*/
+
+
+                        val mainItems = mainCartList
+                        val mergeItems = merge(mainItems, manualItems)
+                        mainCartList = mergeItems.toCollection(arrayListOf())
                     } else {
                         val mainItems = mainCartList
                         val mergeItems = merge(mainItems, manualItems)
