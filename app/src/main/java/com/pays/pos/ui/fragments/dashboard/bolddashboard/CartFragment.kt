@@ -1,6 +1,7 @@
 package com.pays.pos.ui.fragments.dashboard.bolddashboard
 
 import android.os.Bundle
+import android.os.Handler
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
@@ -67,6 +68,8 @@ import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.remote.Constants.WHOLE_AMOUNT
 import com.pays.pos.databinding.FragmentCartBinding
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.MessageEvent
+import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.adapter.DineInAdapter
 import com.pays.pos.ui.adapter.OrderTypeAdapter
 import com.pays.pos.ui.adapter.boldpos.CartItemsAdapter
@@ -82,6 +85,7 @@ import com.pays.pos.utils.callback.*
 import com.pays.pos.utils.extensions.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.json.JSONArray
@@ -300,11 +304,22 @@ class CartFragment(
 
                 binding.orderTypeDisplay.setText(builder, TextView.BufferType.SPANNABLE)
 
-                binding.orderTypeDisplay.setOnClickListener {
-                    findNavController().navigate(
-                        R.id.action_dashboardCategoryBoldPOS_to_changeOrderTypeDialog,
-                    )
-                }
+                binding.orderTypeDisplay.setOnClickListener(object : View.OnClickListener {
+                    override fun onClick(p0: View?) {
+                        if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                            findNavController().navigate(
+                                R.id.action_dashboardCategoryBoldPOS_to_changeOrderTypeDialog,
+                            )
+                        }
+                    }
+                })
+                /*binding.orderTypeDisplay.setOnClickListener {
+                    if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                        findNavController().navigate(
+                            R.id.action_dashboardCategoryBoldPOS_to_changeOrderTypeDialog,
+                        )
+                    }
+                }*/
             } else {
                 runOnUiThread(object : Runnable {
                     override fun run() {
@@ -355,6 +370,7 @@ class CartFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         prefProvider.setValueboolean(OPEN_ORDER_DIRECT_PAY, false)
+
 
         initListeners()
         setCartAdapter()
@@ -2570,6 +2586,7 @@ class CartFragment(
                     supervisorScope {
                         launch {
                             try {
+                                viewModel.selectedCatetory=0
                                 // Do positive stuff here
                                 prefProvider.setValueboolean(Constants.BACK_FROM_PAYMENT, false)
                                 prefProvider.setValueboolean(Constants.NO_NEED_TO_PRINT, false)
@@ -2577,6 +2594,7 @@ class CartFragment(
                                 viewModel.clearListTax()
                                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                                 prefProvider.setValue(Constants.REDIRECT_FROM, "")
+                                prefProvider.setValue(Constants.DELIVERY_TYPE, "")
 
                                 /*Remove the added tip - START*/
                                 prefProvider.setValueboolean(Constants.TIP_ADDED, false)
@@ -2613,6 +2631,13 @@ class CartFragment(
 
                                     clearCustomer()
                                     viewModel.deleteCart()
+                                    EventBus.getDefault().post(
+                                        MessageEvent(
+                                            "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                                                Gson().toJson(Thread.currentThread().stackTrace)
+                                            }"
+                                        )
+                                    )
                                     cartModelsList.clear()
                                     viewModel.currentCartItems.clear()
                                     viewModel.duplicateCurrentCartItem.clear()
@@ -2645,6 +2670,13 @@ class CartFragment(
                                 } else {
                                     clearCustomer()
                                     viewModel.deleteCart()
+                                    EventBus.getDefault().post(
+                                        MessageEvent(
+                                            "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                                                Gson().toJson(Thread.currentThread().stackTrace)
+                                            }"
+                                        )
+                                    )
                                     cartModelsList.clear()
                                     isOrderUpdate = false
                                     prefProvider.setValue(ORDER_TYPE, "")
@@ -2761,6 +2793,8 @@ class CartFragment(
                                 requireContext(),
                                 getString(R.string.please_add_Atleast_one_item_in_cart)
                             ) { _, _ ->
+                                restrictButtonClick(true)
+
                             }
                         } else {
                             Log.e(TAG, ".destroyedListRelPR:  ${viewModel.destroyedList.size}")
@@ -2820,52 +2854,58 @@ class CartFragment(
         }
 
         binding.txtAddCustomer.setOnSingleClickListener {
-            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+            try {
+                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+                    if (isFromPayment) {
+                        findNavController().navigate(R.id.action_paymentBoldPosFragment_to_addCustomerToGiftCard)
+                    } else {
+                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_addCustomerToGiftCard)
+                    }
+                    return@setOnSingleClickListener
+                }
                 if (isFromPayment) {
-                    findNavController().navigate(R.id.action_paymentBoldPosFragment_to_addCustomerToGiftCard)
-                } else {
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_addCustomerToGiftCard)
-                }
-                return@setOnSingleClickListener
-            }
-            if (isFromPayment) {
-                if (prefProvider.getValueboolean(
-                        Constants.LOYALTY_ADDED, false
-                    ) || prefProvider.getValueboolean(
-                        Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false
-                    )
-                ) {
-                    AlertUtils.showCustomAlertWithListenerWithOK(
-                        requireActivity(),
-                        "You can not change customer from checkout when loyalty points added. Please go back and change customer."
-                    ) { _, _ ->
-                    }
-                } else if (viewModel.getSplitCount() > 1 || splitValue > 1) {
-                    AlertUtils.showCustomAlertWithListenerWithOK(
-                        requireActivity(), "Customer can not be changed during split payment."
-                    ) { _, _ ->
+                    if (prefProvider.getValueboolean(
+                            Constants.LOYALTY_ADDED, false
+                        ) || prefProvider.getValueboolean(
+                            Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false
+                        )
+                    ) {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireActivity(),
+                            "You can not change customer from checkout when loyalty points added. Please go back and change customer."
+                        ) { _, _ ->
+                        }
+                    } else if (viewModel.getSplitCount() > 1 || splitValue > 1) {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireActivity(), "Customer can not be changed during split payment."
+                        ) { _, _ ->
+                        }
+                    } else {
+                        viewModel.setIsFromAddCustomer(true)
+                        findNavController().navigate(R.id.action_paymentBoldPosFragment_to_assignCustomerOrderFragment)
                     }
                 } else {
-                    viewModel.setIsFromAddCustomer(true)
-                    findNavController().navigate(R.id.action_paymentBoldPosFragment_to_assignCustomerOrderFragment)
+                    if (isOrderUpdate) {
+                        var bundle: Bundle = Bundle()
+                        bundle.putInt("orderId", orderId!!)
+                        bundle.putInt("paymentId", paymentId!!)
+                        bundle.putString("paymentOfflineId", paymentOfflineId)
+                        bundle.putString("orderOfflineId", orderOfflineId)
+                        bundle.putBoolean(
+                            "isLoyaltyApplied", viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+                        )
+                        bundle.putBoolean("update", isOrderUpdate)
+
+                        findNavController().navigate(
+                            R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment,
+                            bundle
+                        )
+                    } else {
+                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment)
+                    }
+
                 }
-            } else {
-                if (isOrderUpdate) {
-                    var bundle: Bundle = Bundle()
-                    bundle.putInt("orderId", orderId!!)
-                    bundle.putInt("paymentId", paymentId!!)
-                    bundle.putString("paymentOfflineId", paymentOfflineId)
-                    bundle.putString("orderOfflineId", orderOfflineId)
-                    bundle.putBoolean(
-                        "isLoyaltyApplied", viewModel.redeemLoyaltyInfo.needToApplyLoyalty
-                    )
-                    bundle.putBoolean("update", isOrderUpdate)
-                    findNavController().navigate(
-                        R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
-                    )
-                } else {
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment)
-                }
+            } catch (e: Exception) {
 
             }
         }
@@ -2898,6 +2938,7 @@ class CartFragment(
                         R.id.menu_clear_cart -> {
                             popupMenu.dismiss() //For resolving BIS-273
                             clearCart()
+                            cleanOrderBackupDetails()
                         }
 
 
@@ -3111,6 +3152,13 @@ class CartFragment(
         binding.tvPayNow.setOnClickListener(
             object : View.OnClickListener {
                 override fun onClick(p0: View?) {
+                    cleanOrderBackupDetails()
+                    EventBus.getDefault()
+                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvPayNow()"))
+
+                    viewModel.selectedCatetory=0
+                    prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+                    prefProvider.setValueInt("ORDER_ID", -1)
 
                     if (InternetUtils.isInternetAvailable(requireContext().applicationContext)) {
 
@@ -3152,7 +3200,8 @@ class CartFragment(
                                     viewModel.createEmptyCart(viewModel.cartModel!!)
                                 }
                             } catch (e: Exception) {
-
+                                EventBus.getDefault()
+                                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment.kt tvPayNow ${e.printStackTrace()}"))
                             }
                         }
 
@@ -3179,6 +3228,15 @@ class CartFragment(
                                     Constants.OLD_ITEM,
                                     prefProvider.getValue(Constants.OLD_ITEM, "")
                                 )
+
+                                EventBus.getDefault().post(
+                                    MessageEvent(
+                                        "${Constants.LINE_BREAK_TAB} CartFragment.kt-> binding.tvPayNow.setOnClickListener_if (isOrderUpdate) -> bundle = ${
+                                            Gson().toJson(bundle)
+                                        }"
+                                    )
+                                )
+
                                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                                     prefProvider.setValueboolean(IS_FROM_ALL_ORDER, false)
                                     clearObserver()
@@ -3199,6 +3257,7 @@ class CartFragment(
                                 requireContext(),
                                 resources.getString(R.string.please_add_Atleast_one_item_in_cart)
                             ) { _, _ ->
+                                restrictButtonClick(true)
                             }
                         }
 
@@ -3216,6 +3275,30 @@ class CartFragment(
         binding.tvSave.setOnSingleClickListener(
             object : View.OnClickListener {
                 override fun onClick(p0: View?) {
+                    restrictButtonClick(false)
+
+                    prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+                    viewModel.selectedCatetory=0
+
+                    EventBus.getDefault()
+                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvSave()"))
+                    if (!binding.tvSave.text.toString().trim()
+                            .equals("update", ignoreCase = true)) {
+                        prefProvider.setValueInt("ORDER_ID", -1)
+                    }
+
+                    if (viewModel.backupOrderId != null &&
+                        viewModel.backupPaymentId != null &&
+                        viewModel.backupPaymentOfflineId?.isNotEmpty()?:false &&
+                        viewModel.backupOrderOfflineId?.isNotEmpty()?:false
+                    ) {
+                        isOrderUpdate = true
+                        orderId = viewModel.backupOrderId
+                        paymentId = viewModel.backupPaymentId
+                        paymentOfflineId = viewModel.backupPaymentOfflineId?:"Failing"
+                        orderOfflineId = viewModel.backupOrderOfflineId?:"Failing"
+                    }
+
                     if (InternetUtils.isInternetAvailable(requireContext().applicationContext)) {
                         runBlocking {
                             try {
@@ -3479,7 +3562,17 @@ class CartFragment(
                                     } catch (e: Exception) {
                                     }
 */
-                                            //
+                                            EventBus.getDefault().post(
+                                                MessageEvent(
+                                                    "${Constants.LINE_BREAK_TAB} CartFragment.kt_binding.tvSave.setOnSingleClickListener , request?.order?.offlineId -> ${request?.order?.offlineId} , request -> ${
+                                                        Gson().toJson(request)
+                                                    } _2"
+                                                )
+                                            )
+
+                                            //FILE ASSERTION
+//                                            MainActivity.writeToFile(Gson().toJson(request),"Save_".plus(request?.order?.offlineId),activity?.filesDir,activity!!)
+
                                             viewModel.fromAllOrderFragment = false
                                             request?.let { it1 -> viewModelPayment.submit(it1) }
                                             if (!prefProvider.getValueboolean(
@@ -3523,6 +3616,7 @@ class CartFragment(
                                         requireContext(),
                                         resources.getString(R.string.please_add_Atleast_one_item_in_cart)
                                     ) { _, _ ->
+                                        restrictButtonClick(true)
                                     }
                                 }
                             } catch (e: Exception) {
@@ -3631,6 +3725,22 @@ class CartFragment(
             })
     }
 
+    private fun cleanOrderBackupDetails() {
+        viewModel.backupOrderId = null
+        viewModel.backupPaymentId = null
+        viewModel.backupPaymentOfflineId = ""
+        viewModel.backupOrderOfflineId = ""
+    }
+
+    private fun restrictButtonClick(value: Boolean) {
+        binding.tvSave.isEnabled = value
+
+        Handler().postDelayed({
+            binding.tvSave.isEnabled = value
+        }, 2000)
+
+    }
+
     private fun calculateDiscount() {
 
         viewModel.cartModel?.let {
@@ -3733,6 +3843,8 @@ class CartFragment(
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         requireContext(), getString(R.string.please_add_Atleast_one_item_in_cart)
                     ) { _, _ ->
+                        restrictButtonClick(true)
+
                     }
                 } else {
                     val request = viewModel.updateOrder(cartModelsList[0])
@@ -3775,6 +3887,8 @@ class CartFragment(
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         requireContext(), getString(R.string.please_add_Atleast_one_item_in_cart)
                     ) { _, _ ->
+                        restrictButtonClick(true)
+
                     }
 
                 }
@@ -3869,19 +3983,26 @@ class CartFragment(
 
         viewModel.orderTypes().observe(requireActivity()) {
 
-            val orderTypesToShow= it?.data?.let { it1 -> ArrayList(it1) }
+            val orderTypesToShow = it?.data?.let { it1 -> ArrayList(it1) }
 
             /**
              * List contains order types that we don't want to show on POS order types
              *
              */
-            val orderTypesToRemove = listOf("OnlineWebOrder","OnlineOrder","KioskTakeout","OnlineWebOrder","KioskOpenorder")
+            val orderTypesToRemove = listOf(
+                "OnlineWebOrder",
+                "OnlineOrder",
+                "KioskTakeout",
+                "OnlineWebOrder",
+                "KioskOpenorder"
+            )
 
             orderTypesToRemove.forEach { orderTypeToRemove ->
 
-                val found = orderTypesToShow?.filter { it.orderType.equals(orderTypeToRemove,true) }
+                val found =
+                    orderTypesToShow?.filter { it.orderType.equals(orderTypeToRemove, true) }
 
-                if(found?.isNotEmpty() == true)
+                if (found?.isNotEmpty() == true)
                     orderTypesToShow.remove(found.first())
             }
 

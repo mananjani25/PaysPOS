@@ -257,7 +257,7 @@
                             android:gravity="center"
                             android:hint="@string/email_receipt"
                             android:imeOptions="actionDone"
-                            android:inputType="textVisiblePassword"
+                            android:inputType="textWebEmailAddress"
                             android:padding="@dimen/_9sdp"
                             android:textColor="@color/btnColor"
                             android:textColorHint="@color/hintColor"

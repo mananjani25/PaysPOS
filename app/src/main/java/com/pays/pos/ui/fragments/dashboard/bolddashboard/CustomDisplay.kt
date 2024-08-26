@@ -1491,23 +1491,33 @@ class CustomDisplay(
 
             txtContinue.setOnSingleClickListener  {
 
+                //dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=true
+
+                txtContinue.isEnabled = false
+                txtContinue.setBackgroundColor(Color.GRAY)
+
                 tippedAmount =
                     edtAmount.text.toString().replace("$", "").trim().toDouble()
 
+             /*   dashBoardCategoryViewModel.apply {
+                    totalTipAmount = tippedAmount
+                    customerGivenTip.value = true
+                }*/
+
                 if (mIsCardPayment) {
-                    if (!mIsSignatureRequired) {
-                        showWouldYouLikeToAddTipScreen(
-                            tipsListViewModel,
-                            mTransactionViewModel,
-                            mWholeTotalPrice,
-                            mOrderID,
-                            mIsCardPayment,
-                            mPaymentViewModel,
-                            magtekRequestUtils,
-                            apiModule1,
-                            true
-                        )
-                    } else {
+                    if (/*!mIsSignatureRequired*/ true) {
+//                       /* showWouldYouLikeToAddTipScreen(
+//                            tipsListViewModel,
+//                            mTransactionViewModel,
+//                            mWholeTotalPrice,
+//                            mOrderID,
+//                            mIsCardPayment,
+//                            mPaymentViewModel,
+//                            magtekRequestUtils,
+//                            apiModule1,
+//                            true
+//                        )
+//                    } else {*/
 //                        magtekCall(wholeTotalPrice)
 
                         /*if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
@@ -1548,6 +1558,8 @@ class CustomDisplay(
 
     private fun adjustPaxTips() {
         GlobalScope.launch {
+            dashBoardCategoryViewModel.processingTipForCard.postValue(true)
+
             posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
             val tip_amt = (tippedAmount*100).toInt()
             Log.d("Amt: ","tip $tip_amt RefNo ${mPaymentViewModel.paxReferenceNo}")
@@ -1784,7 +1796,7 @@ class CustomDisplay(
             setupActiveTipsList(mTipListViewModel)
 //            observeActiveTipsList(wholeTotalPrice)
             Log.d("C_Disp_3::", mPaymentViewModel.tipOnAmount.toString())
-            observeActiveTipsList(mPaymentViewModel.tipOnAmount)
+            observeActiveTipsList(mPaymentViewModel.tipOnAmount / dashBoardCategoryViewModel.getSplitCount())
 
             mainCartLayout.gone()
             splashLayout.gone()
@@ -1821,6 +1833,16 @@ class CustomDisplay(
             }
 
             noTipRootLayout.setOnClickListener {
+
+                /**
+                 * Customer Clicked no Tip , so it will reflect tip as $0.0
+                 */
+                dashBoardCategoryViewModel.apply {
+                    totalTipAmount = 0.0
+                    customerGivenTip.value = true
+                    employeeGivenTip = false
+                }
+
                 showThankYou(mWholeTotalPrice)
             }
 
@@ -1912,10 +1934,20 @@ class CustomDisplay(
             mTransactionViewModel.updateTipData.observe(lifecycleOwner) { event ->
                 event.getContentIfNotHandled()?.let {
                     if (it.status == 200) {
+                        dashBoardCategoryViewModel.apply {
+                            totalTipAmount = tippedAmount
+                            customerGivenTip.value = true
+                            employeeGivenTip = false
+                        }
+
+                        dashBoardCategoryViewModel.processingTipForCard.value = false
+                       // dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=false
+
                         prefProvider.setValueboolean(Constants.TIP_ADDED, false)
                         showThankYou(mWholeTotalPrice + tippedAmount)
                     } else {
                         showErrorLayout(it.message)
+                        dashBoardCategoryViewModel.processingTipForCard.value = false
                     }
                 }
             }
@@ -1947,9 +1979,20 @@ class CustomDisplay(
         pos: Int,
         wholeTotalPrice: Double
     ) {
+       // dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=true
+
         tipRate = model.rate
         tippedAmount = MethodUtils.percentageCalculation(wholeTotalPrice, model.rate)
         Log.d("selectedItem: ","tip params $tipRate $tippedAmount")
+
+        /**
+         * Used to show Given TIPS on OrderCompleted Fragment
+         */
+      /*  dashBoardCategoryViewModel.apply {
+            totalTipAmount = tippedAmount
+            customerGivenTip.value = true
+        }
+*/
         if (mIsCardPayment /*&& !mIsSignatureRequired*/) {
 //            callUpdateTip()
             if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {

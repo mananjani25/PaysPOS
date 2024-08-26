@@ -268,6 +268,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_below="@+id/tvCard"
                                 android:layout_gravity="center_vertical"
+                                android:layout_marginStart="@dimen/_5sdp"
                                 android:layout_marginLeft="@dimen/_5sdp"
                                 android:layout_weight="1"
                                 android:background="@drawable/background_txt_selector"
@@ -354,6 +355,26 @@
                             android:textSize="@dimen/_7mdpi"
                             android:visibility="gone" />
 
+                        <androidx.core.widget.NestedScrollView
+                            android:id="@+id/nsvDynamicLink"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tvOther">
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:id="@+id/llDynamicLink"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_5sdp"
+                                android:nestedScrollingEnabled="true"
+                                android:orientation="horizontal"
+                                android:visibility="visible">
+
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
+                        </androidx.core.widget.NestedScrollView>
+
+
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:id="@+id/llPaymentLink"
                             android:layout_width="match_parent"
@@ -361,18 +382,17 @@
                             android:layout_below="@+id/tvOther"
                             android:layout_marginTop="@dimen/_5sdp"
                             android:orientation="horizontal"
-                            android:visibility="visible"
-                            android:weightSum="3">
+                            android:visibility="visible">
 
                             <androidx.appcompat.widget.LinearLayoutCompat
                                 android:id="@+id/lnrGiftCard"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:visibility="gone"
                                 android:background="@drawable/background_txt_selector"
                                 android:gravity="center_vertical|center_horizontal"
-                                android:paddingVertical="@dimen/_10sdp">
+                                android:paddingVertical="@dimen/_10sdp"
+                                android:visibility="gone">
 
                                 <ImageView
                                     android:layout_width="wrap_content"
@@ -396,6 +416,31 @@
                                     android:visibility="visible" />
 
                             </androidx.appcompat.widget.LinearLayoutCompat>
+
+                            <!-- <androidx.appcompat.widget.LinearLayoutCompat
+                                 android:id="@+id/llDynamicPayment"
+                                 android:layout_width="0dp"
+                                 android:layout_height="wrap_content"
+                                 android:layout_weight="1"
+                                 android:background="@drawable/background_txt_selector"
+                                 android:gravity="center_vertical|center_horizontal"
+                                 android:paddingVertical="@dimen/_10sdp"
+                                 android:visibility="visible">
+
+                                 <androidx.appcompat.widget.AppCompatTextView
+                                     android:id="@+id/tvDynamicButton"
+                                     style="@style/CustomFontSemiBold"
+                                     android:layout_width="wrap_content"
+                                     android:layout_height="wrap_content"
+                                     android:layout_below="@+id/tvCard"
+                                     android:layout_gravity="center_vertical"
+                                     android:gravity="center_horizontal"
+                                     android:text="@string/synergy"
+                                     android:textColor="@color/txtColor"
+                                     android:textSize="@dimen/_7mdpi"
+                                     android:visibility="visible" />
+
+                             </androidx.appcompat.widget.LinearLayoutCompat>-->
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/tvPaymentLink"
@@ -807,6 +852,7 @@
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>
+
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/llGiftCard"
             android:layout_width="match_parent"
@@ -875,16 +921,17 @@
                     app:met_mask="####  ####" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginStart="@dimen/_5sdp"
-                android:visibility="gone"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:text="@string/enter_card_number_here"
                 android:textColor="@color/hint_color"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_5mdpi"
+                android:visibility="gone" />
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
@@ -892,9 +939,9 @@
                 android:layout_marginHorizontal="@dimen/_10sdp"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="@drawable/background_square_border_grey"
-                android:visibility="gone"
                 android:orientation="horizontal"
                 android:padding="@dimen/_9sdp"
+                android:visibility="gone"
                 android:weightSum="4">
 
                 <androidx.appcompat.widget.AppCompatImageView

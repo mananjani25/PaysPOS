@@ -344,36 +344,6 @@
                             </androidx.appcompat.widget.LinearLayoutCompat>
 
                             <androidx.appcompat.widget.LinearLayoutCompat
-                                android:id="@+id/llRefundAmount"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center"
-                                android:orientation="horizontal"
-                                android:padding="@dimen/_1sdp"
-                                android:visibility="gone">
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    style="@style/CustomFontBold"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="@dimen/_3sdp"
-                                    android:layout_weight="6.5"
-                                    android:text="@string/tv_refunded_amount"
-                                    android:textColor="@color/colorRed"
-                                    android:textSize="@dimen/text_size_medium" />
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    style="@style/CustomFontBold"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="3.5"
-                                    android:gravity="right"
-                                    android:text="@{@string/symbole+String.format(@string/format,orderDetails.data.order.refund_detail.refunded_amount)}"
-                                    android:textColor="@color/colorRed"
-                                    android:textSize="@dimen/text_size_medium" />
-                            </androidx.appcompat.widget.LinearLayoutCompat>
-
-                            <androidx.appcompat.widget.LinearLayoutCompat
                                 android:id="@+id/llLoyalty"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -430,6 +400,37 @@
                                     android:textColor="@color/txtColor"
                                     android:textSize="@dimen/text_size_medium" />
                             </androidx.appcompat.widget.LinearLayoutCompat>
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:id="@+id/llRefundAmount"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:orientation="horizontal"
+                                android:padding="@dimen/_1sdp"
+                                android:visibility="gone">
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    style="@style/CustomFontBold"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="@dimen/_3sdp"
+                                    android:layout_weight="6.5"
+                                    android:text="@string/tv_refunded_amount"
+                                    android:textColor="@color/colorRed"
+                                    android:textSize="@dimen/text_size_medium" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    style="@style/CustomFontBold"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="3.5"
+                                    android:gravity="right"
+                                    android:text="@{@string/symbole+String.format(@string/format,orderDetails.data.order.refund_detail.refunded_amount)}"
+                                    android:textColor="@color/colorRed"
+                                    android:textSize="@dimen/text_size_medium" />
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
                         </LinearLayout>
                     </ScrollView>
 

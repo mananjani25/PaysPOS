@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Environment
 import android.os.Message
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -129,7 +130,7 @@ class MagtekViewModel @Inject constructor(
     }
 
     private fun paxNetworkCall(context: Context) {
-        ProgressUtils.showProgressDialog("Connecting to PAX", context)
+        ProgressUtils.showProgressDialog("Connecting to PAX", context, View.GONE)
         val srNo = prefProvider.getValue(
             Constants.PAX_SERIAL_NO,
             ""

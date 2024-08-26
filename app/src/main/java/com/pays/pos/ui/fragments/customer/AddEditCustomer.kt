@@ -39,7 +39,11 @@ import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
+import com.pays.pos.data.remote.Constants.DELIVERY
+import com.pays.pos.logger.MessageEvent
 import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.EventBus
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -54,6 +58,7 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
 
     private lateinit var binding: FragmentAddEditCustomerBinding
     private var isEdit = false
+    private var orderType:String = ""
     private var isFromPhoneOrderEdit = false
     private val TAG = "AddEditCustomer"
     private val viewModel by viewModels<AddCustomerViewModel>()
@@ -180,6 +185,7 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
         onClick()
         setPlaceApi()
         isEdit = requireArguments().getBoolean("isEdit", false)
+        orderType = requireArguments().getString(Constants.ORDER_TYPE, "")
         isFromPhoneOrderEdit = requireArguments().getBoolean("isFromPhoneOrderEdit", false)
         LogUtil.logE(TAG, "isEdit  $isEdit")
 
@@ -1148,7 +1154,21 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
                     )
             }
 
-            viewModel.submit(listAddress, isFromPhoneOrderEdit)
+            if (orderType.equals(DELIVERY)){
+                if (listAddress.isNotEmpty()){
+                    viewModel.submit(listAddress, isFromPhoneOrderEdit)
+                }else{
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(),
+                        "Please Enter Delivery Address.",
+                    )
+                    { _, _ ->
+
+                    }
+                }
+            }else{
+                viewModel.submit(listAddress, isFromPhoneOrderEdit)
+            }
         }
         binding.chksameasbilling.setOnClickListener {
             if (binding.edtStreet.text.toString().isNotEmpty()) {
@@ -1326,6 +1346,8 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
         prefProvider.setValue(Constants.SERVICE_CHARGE, "")
 
         dashboardViewModel.deleteCart()
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AddEditCustomer.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+
 
         prefProvider.setValue(Constants.ORDER_TYPE, Constants.GIFT_CARD)
         prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.GIFT_CARD_NAME)

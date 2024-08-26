@@ -10,13 +10,11 @@ import android.os.*
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.*
@@ -74,6 +72,7 @@ import com.pays.pos.data.remote.Constants.UPDATE
 import com.pays.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.fragments.allorders.AllOrdersViewModel
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
@@ -102,7 +101,9 @@ import com.pays.pos.utils.statusUtils.Status
 import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
+import com.starmicronics.stario10.StarSpoolJobSettings
 import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
+import com.starmicronics.stario10.starxpandcommand.MagnificationParameter
 import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
 import com.starmicronics.stario10.starxpandcommand.StarXpandCommandBuilder
 import com.starmicronics.stario10.starxpandcommand.printer.Alignment
@@ -114,6 +115,7 @@ import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import com.zebra.scannercontrol.FirmwareUpdateEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
 import java.io.IOException
 import java.lang.Runnable
 import java.util.*
@@ -172,6 +174,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     lateinit var settings: StarConnectionSettings
     lateinit var printer: StarPrinter
     /*Star label printer - END*/
+
+    private var oneItemPerReceipt: Boolean = true
+
 
 
     @Inject
@@ -233,6 +238,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private fun addFragmentReplaceObserver() {
         viewModel.fragmentNeedToBeUpdated.observe(viewLifecycleOwner) {
             if (it) {
+                EventBus.getDefault()
+                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} addFragmentReplaceObserver"))
 
                 viewModel.fragmentNeedToBeUpdated.value = false
                 Log.e("Fragment Restarted", "Restarted")
@@ -255,6 +262,21 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         //      }
     }
 
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.clearCartModelBackup()
+
+        lifecycleScope.launch {
+            try {
+                oneItemPerReceipt =
+                    viewModel.getLabelPrinterSettingsData().oneItemPerReciept
+            } catch (e: Exception) {
+                oneItemPerReceipt = false
+            }
+        }
+
+    }
 
     private fun autoSyncObserver() {
         val rotateAnimation =
@@ -280,16 +302,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         savedInstanceState: Bundle?
     ): View? {
 
-        if(viewModel.boldPosNeedToRefresh){
+
+        if (viewModel.boldPosNeedToRefresh) {
 
             viewModel.boldPosNeedToRefresh = false
 
-            var intent=Intent(requireActivity(),MainActivity::class.java)
+            var intent = Intent(requireActivity(), MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             requireActivity().startActivity(intent)
             requireActivity().finish()
-        }
-        else {
+        } else {
             syncDataCallback = this
             Binding()// putting method in onviewcreated due to UI glitch issue
             checkCashDrawerObserver() // putting method in onviewcreated due to UI glitch issue
@@ -322,6 +344,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             val callback: OnBackPressedCallback =
                 object : OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {
+                        EventBus.getDefault()
+                            .post(MessageEvent("${Constants.LINE_BREAK_TAB} handleOnBackPressed()"))
                         requireActivity().finish()
                     }
                 }
@@ -377,6 +401,26 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
             }
         }
+
+        binding.layoutHeader.edtSearch.isCursorVisible=false
+        binding.layoutHeader.edtSearch.setOnTouchListener(object:View.OnTouchListener{
+            override fun onTouch(p0: View?, p1: MotionEvent?): Boolean {
+                binding.layoutHeader.edtSearch.isCursorVisible=true
+                return false
+            }
+        })
+
+
+        viewModel.disableCursor.observe(viewLifecycleOwner,object:Observer<Boolean>{
+            override fun onChanged(t: Boolean?) {
+                t?.let {
+                    if (it){
+                        binding.layoutHeader.edtSearch.isCursorVisible=false
+                    }
+                }
+            }
+        })
+
         return binding.root
     }
 
@@ -554,7 +598,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                         viewModel.updateCartModel(viewModel.cartModel!!)
 
-                        lifecycleScope.launch{
+                        lifecycleScope.launch {
                             viewModel.addCashDiscountForCustomerDisplay(orderDiscount)
                         }
                     }
@@ -698,7 +742,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             val note = bundle.getString("note")
             val isOrderNote = bundle.getBoolean("isOrderNote")
             val singleItem = bundle.getParcelable<TbCartItem>("item")
-            prefProvider.setValue("BEFORE_ORDER_NOTE",Gson().toJson(viewModel.cartModel))
+            prefProvider.setValue("BEFORE_ORDER_NOTE", Gson().toJson(viewModel.cartModel))
             // val cartList = bundle.getParcelableArrayList<CartModel>("cartList")
             var dineInArrayList: List<DineInModel>? = null
             /*if (prefProvider.getValue(
@@ -726,13 +770,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     }
                 } else {
                     singleItem?.let {
-                        viewModel.updateCart(
+                        viewModel.noteTbCartItem.value = it
+
+                        /*viewModel.updateCart(
                             viewModel.currentCartItems,
                             it,
                             UPDATE,
                             false,
                             isFromDetail = true
-                        )
+                        )*/
                     }
                 }
 
@@ -803,7 +849,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
             viewModel.clearGiftCardCart()
         }
-
 
         /* getOrderTypes()
          observeSaveOrder()
@@ -992,7 +1037,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
 
-
     override fun onDestroy() {
         super.onDestroy()
         syncDataCallback = null
@@ -1070,7 +1114,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     }, 1000)
 
                 }
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
@@ -1117,11 +1161,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             prefProvider.setValue(DELIVERY_TYPE, "")
                             prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
                         }
+                    }
                         clearCustomer()
                         viewModel.updateActiveOrderFlagClear()
                         viewModel.clearListTax()
                         viewModel.deleteCart()
-                    }
+                        EventBus.getDefault().post(
+                            MessageEvent(
+                                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                                    Gson().toJson(Thread.currentThread().stackTrace)
+                                }"
+                            )
+                        )
+                    /* This bracket is closed before clearCustomer(), to solve BIS-4098}*/
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                 }
             } catch (e: Exception) {
@@ -1136,6 +1188,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 viewModel.deleteCart()
+                EventBus.getDefault().post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                            Gson().toJson(Thread.currentThread().stackTrace)
+                        }"
+                    )
+                )
                 findNavController().navigate(
                     R.id.action_dashboardCategoryBoldPOS_to_passcode,
                     bundle
@@ -1635,7 +1694,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
         }
         viewModel.syncProgressDialog.observe(requireActivity()) { event ->
-            try{
+            try {
                 event.getContentIfNotHandled()?.let {
 
                     if (it) {
@@ -1644,8 +1703,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         ProgressUtils.dismissProgressDialog()
                     }
                 }
-            }catch (e:Exception){
-                    e.printStackTrace()
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
 
@@ -1657,6 +1716,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 bundle.putBoolean("isDashboard", false)
                 bundle.putBoolean("isSwap", false)
                 viewModel.deleteCart()
+                EventBus.getDefault().post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                            Gson().toJson(Thread.currentThread().stackTrace)
+                        }"
+                    )
+                )
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                     findNavController().navigate(
                         R.id.action_dashboardCategoryBoldPOS_to_passcode,
@@ -2155,6 +2221,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 prefProvider.setValue(ORDER_TYPE_NAME, "")
                 LogUtil.logE(TAG, "deleteCartDineIn")
                 viewModel.deleteCart()
+                EventBus.getDefault().post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                            Gson().toJson(Thread.currentThread().stackTrace)
+                        }"
+                    )
+                )
                 clearCustomer()
 
 
@@ -2256,11 +2329,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             setService(data, createOrderResponse.data, cartModel)
 
 
-        } else if (data.name.contains("TSP", ignoreCase = true)) {
+        } else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains("SP", ignoreCase = true)))) {
             settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
             printer = StarPrinter(settings, requireContext())
 
-            runBlocking{
+            runBlocking {
                 try {
                     val builder = StarXpandCommandBuilder()
 
@@ -2271,187 +2344,370 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         styleCharacterSpace(0.0)
                         styleAlignment(Alignment.Center)
 
-                        if (cartModel!!.isEdited || isOrderUpdate) {
+                        if (!oneItemPerReceipt) {
+                            createOrderResponse.data?.order.orderItems.forEach {item->
+                                data.printerCategories.toCollection(arrayListOf())?.forEach {
+                                    if (it?.id == item.categoryId) {
+                                        if (it.categoryActive && it.printerEnable) {
+                                            for (singularity in 1..item.quantity) {
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleBold(true)
+                                                        .styleMagnification(
+                                                            MagnificationParameter(3, 3)
+                                                        )
+                                                        .actionPrintText(
+                                                            "OrderId: ${createOrderResponse.data?.order.custom_order_id}"
+                                                        )
+                                                )
+
+                                                actionFeedLine(1)
+
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleBold(true)
+                                                        .styleMagnification(
+                                                            MagnificationParameter(2, 2)
+                                                        )
+                                                        .actionPrintText(
+                                                            "${createOrderResponse.data?.order?.orderTypeName}"
+                                                        )
+                                                )
+
+                                                actionFeedLine(1)
+
+                                                if (createOrderResponse.data?.order?.orderType?.contains(
+                                                        "Phone",
+                                                        true
+                                                    ) == true
+                                                ) {
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleBold(true)
+                                                            .styleMagnification(
+                                                                MagnificationParameter(2, 2)
+                                                            )
+                                                            .actionPrintText(
+                                                                "${createOrderResponse.data?.order?.deliveryType}"
+                                                            )
+                                                    )
+
+                                                    actionFeedLine(1)
+                                                }
+
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleAlignment(Alignment.Left)
+                                                        .styleMagnification(
+                                                            MagnificationParameter(2, 2)
+                                                        )
+                                                        .actionPrintText(
+                                                            content = addSingleOrdersForStarKitchen(
+                                                                1,
+                                                                item,
+                                                                data.printerCategories.toCollection(arrayListOf())
+                                                            )
+                                                        )
+                                                )
+
+
+                                                actionFeedLine(1)
+                                                if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleAlignment(Alignment.Center)
+                                                            .styleBold(true)
+                                                            .actionPrintText(
+                                                                content = if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                    "--------------------------------------------\nOrder Note"
+                                                                } else ""
+                                                            )
+                                                    )
+                                                }
+                                                if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleAlignment(Alignment.Center)
+                                                            .actionPrintText(
+                                                                content = if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                    createOrderResponse.data?.order?.note.toString()
+                                                                } else ""
+                                                            )
+                                                    )
+                                                }
+
+                                                actionFeedLine(1)
+                                                actionFeedLine(1)
+
+                                                try{
+                                                    var printedName = StringBuilder("")
+                                                    createOrderResponse.data?.order?.customer?.firstName?.let { firstName ->
+                                                        createOrderResponse.data?.order?.customer?.lastName?.let { lastName ->
+                                                            if (kitchenSettingModel.showCustomerName) {
+                                                                if (!firstName.contains(
+                                                                        "customer",
+                                                                        ignoreCase = true
+                                                                    )
+                                                                ) {
+                                                                    printedName.append(firstName)
+                                                                    printedName.append(" ")
+                                                                }
+
+                                                                if (!lastName.isBlank()) {
+                                                                    printedName.append(lastName)
+                                                                }
+
+                                                                if (printedName.isNotEmpty()) {
+                                                                    add(
+                                                                        PrinterBuilder()
+                                                                            .styleAlignment(Alignment.Left)
+                                                                            .styleBold(true)
+                                                                            .actionPrintText(
+                                                                                content = "Customer Details\n"
+                                                                            )
+                                                                    )
+
+                                                                    add(
+                                                                        PrinterBuilder()
+                                                                            .styleAlignment(Alignment.Center)
+                                                                            .actionPrintText(
+                                                                                content =
+                                                                                "-------------------------------------------"
+                                                                            )
+                                                                    )
+
+                                                                    add(
+                                                                        PrinterBuilder()
+                                                                            .styleAlignment(Alignment.Left)
+                                                                            .actionPrintText(
+                                                                                content = printedName.toString()
+                                                                            )
+                                                                    )
+
+                                                                }
+                                                            }
+
+                                                        }
+                                                    }
+                                                }catch (e:Exception){}
+
+                                                actionFeedLine(1)
+
+                                                add(
+                                                    PrinterBuilder()
+                                                        .actionPrintText(
+                                                            Constants.getReceiptFormatDateFromUTCServer(
+                                                                requireContext(),
+                                                                createOrderResponse.data?.order.createdAt.toString()
+                                                            )
+                                                        )
+                                                )
+
+                                                actionFeedLine(1)
+                                                actionCut(CutType.Partial)
+
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            if (cartModel!!.isEdited || isOrderUpdate) {
+                                add(
+                                    PrinterBuilder()
+                                        .styleBold(true)
+                                        .actionPrintText(
+                                            "***** UPDATED *****"
+                                        )
+                                )
+                            }
+                            styleAlignment(Alignment.Center)
+
                             add(
                                 PrinterBuilder()
                                     .styleBold(true)
+                                    .styleMagnification(
+                                        MagnificationParameter(3, 3)
+                                    )
                                     .actionPrintText(
-                                        "***** UPDATED *****"
+                                        "OrderId:${createOrderResponse.data?.order?.custom_order_id}"
                                     )
                             )
-                        }
-                        styleAlignment(Alignment.Center)
 
-                        add(
-                            PrinterBuilder()
-                                .styleBold(true)
-                                .actionPrintText(
-                                    "OrderId:${createOrderResponse.data?.order?.custom_order_id}"
-                                )
-                        )
+                            styleAlignment(Alignment.Center)
 
-                        styleAlignment(Alignment.Center)
-
-                        add(
-                            PrinterBuilder()
-                                .styleBold(true)
-                                .actionPrintText(
-                                    if (kitchenSettingModel.showOrderType)
-                                        createOrderResponse.data.order.orderType
-                                    else ""
-                                )
-                        )
-
-                        actionFeedLine(1)
-
-                        if(createOrderResponse.data.order.orderType == Constants.PHONE_ORDER_) {
                             add(
                                 PrinterBuilder()
                                     .styleBold(true)
                                     .actionPrintText(
-                                        createOrderResponse.data.order.deliveryType
+                                        if (kitchenSettingModel.showOrderType)
+                                            createOrderResponse.data.order.orderType
+                                        else ""
+                                    )
+                            )
+
+                            actionFeedLine(1)
+
+                            if (createOrderResponse.data.order.orderType == Constants.PHONE_ORDER_) {
+                                add(
+                                    PrinterBuilder()
+                                        .styleBold(true)
+                                        .actionPrintText(
+                                            createOrderResponse.data.order.deliveryType
+                                        )
+                                )
+                                actionFeedLine(1)
+                            }
+
+                            add(
+                                PrinterBuilder()
+                                    .actionPrintText(
+                                        "Employee:${createOrderResponse.data?.order?.employee?.name}"
                                     )
                             )
                             actionFeedLine(1)
-                        }
 
-                        add(
-                            PrinterBuilder()
-                                .actionPrintText(
-                                    "Employee:${createOrderResponse.data?.order?.employee?.name}"
-                                )
-                        )
-                        actionFeedLine(1)
-
-                        add(
-                            PrinterBuilder()
-                                .actionPrintText(
-                                    Constants.getReceiptFormatDateFromUTCServer(
-                                        requireContext(),
-                                        createOrderResponse.data?.order?.createdAt.toString()
-                                    )
-                                )
-                        )
-
-                        actionFeedLine(1)
-
-                        add(
-                            PrinterBuilder()
-                                .styleBold(true)
-                                .actionPrintText(
-                                    "--------------------------------------------"
-                                )
-                        )
-
-                        actionFeedLine(1)
-
-                        add(
-                            PrinterBuilder()
-                                .styleAlignment(Alignment.Left)
-                                .actionPrintText(
-                                    content = addOrdersForStarKitchen(
-                                        createOrderResponse.data?.order?.orderItems!!,
-                                        data.printerCategories.toCollection(arrayListOf())
-                                    )
-                                )
-                        )
-
-                        actionFeedLine(1)
-                        if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
                             add(
                                 PrinterBuilder()
-                                    .styleAlignment(Alignment.Center)
+                                    .actionPrintText(
+                                        Constants.getReceiptFormatDateFromUTCServer(
+                                            requireContext(),
+                                            createOrderResponse.data?.order?.createdAt.toString()
+                                        )
+                                    )
+                            )
+
+                            actionFeedLine(1)
+
+                            add(
+                                PrinterBuilder()
                                     .styleBold(true)
                                     .actionPrintText(
-                                        content = if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                            "--------------------------------------------\nOrder Note\n "
-                                        } else ""
+                                        "--------------------------------------------"
                                     )
                             )
-                        }
-                        if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                            add(
-                                PrinterBuilder()
-                                    .styleAlignment(Alignment.Center)
-                                    .actionPrintText(
-                                        content = if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                            createOrderResponse.data?.order?.note.toString()
-                                        } else ""
-                                    )
-                            )
-                        }
-                        actionFeedLine(1)
-                        if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
-                            add(
-                                PrinterBuilder()
-                                    .styleAlignment(Alignment.Left)
-                                    .styleBold(true)
-                                    .actionPrintText(
-                                        content = if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
-                                            "Customer Details\n"
-                                        } else ""
-                                    )
-                            )
-                        }
 
-                        if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
-                            add(
-                                PrinterBuilder()
-                                    .styleAlignment(Alignment.Center)
-                                    .actionPrintText(
-                                        content = if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
-                                            "--------------------------------------------"
-                                        } else ""
-                                    )
-                            )
-                        }
-                        if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
+                            actionFeedLine(1)
+
                             add(
                                 PrinterBuilder()
                                     .styleAlignment(Alignment.Left)
                                     .actionPrintText(
-                                        content = if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
-                                            createOrderResponse.data?.order?.customer?.firstName + " " + createOrderResponse.data?.order?.customer?.lastName
-                                        } else ""
+                                        content = addOrdersForStarKitchen(
+                                            createOrderResponse.data?.order?.orderItems!!,
+                                            data.printerCategories.toCollection(arrayListOf())
+                                        )
                                     )
                             )
-                        }
-                        if (kitchenSettingModel.showCustomerPhone && createOrderResponse.data?.order?.customer?.phones?.get(
-                                0
-                            ) != null
-                        ) {
-                            add(
-                                PrinterBuilder()
-                                    .styleAlignment(Alignment.Left)
-                                    .actionPrintText(
-                                        content = if (kitchenSettingModel.showCustomerPhone && createOrderResponse.data?.order?.customer?.phones?.get(
-                                                0
-                                            ) != null
-                                        ) {
 
-                                            var phoneNumber =
-                                                createOrderResponse.data.order?.customer?.phones?.get(
-                                                    0
-                                                )?.phoneNumber.toString()
-                                            if (phoneNumber.length != 10) {
-                                                // Handle invalid input (must be 10 digits)
-                                                "Invalid phone number"
-                                            }
-
-                                            val areaCode = phoneNumber.substring(0, 3)
-                                            val firstPart = phoneNumber.substring(3, 6)
-                                            val secondPart = phoneNumber.substring(6)
-
-                                            "($areaCode)$firstPart-$secondPart"
-
-                                        } else ""
+                            actionFeedLine(1)
+                            if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                add(
+                                    PrinterBuilder()
+                                        .styleAlignment(Alignment.Center)
+                                        .styleBold(true)
+                                        .actionPrintText(
+                                            content = if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                "--------------------------------------------\nOrder Note\n "
+                                            } else ""
+                                        )
+                                )
+                            }
+                            if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                add(
+                                    PrinterBuilder()
+                                        .styleAlignment(Alignment.Center)
+                                        .actionPrintText(
+                                            content = if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                createOrderResponse.data?.order?.note.toString()
+                                            } else ""
+                                        )
+                                )
+                            }
+                            actionFeedLine(1)
+                            try{
+                                if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
+                                    add(
+                                        PrinterBuilder()
+                                            .styleAlignment(Alignment.Left)
+                                            .styleBold(true)
+                                            .actionPrintText(
+                                                content = if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
+                                                    "Customer Details\n"
+                                                } else ""
+                                            )
                                     )
-                            )
+                                }
+
+                                if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
+                                    add(
+                                        PrinterBuilder()
+                                            .styleAlignment(Alignment.Center)
+                                            .actionPrintText(
+                                                content = if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
+                                                    "--------------------------------------------"
+                                                } else ""
+                                            )
+                                    )
+                                }
+                                if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
+                                    add(
+                                        PrinterBuilder()
+                                            .styleAlignment(Alignment.Left)
+                                            .actionPrintText(
+                                                content = if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
+                                                    createOrderResponse.data?.order?.customer?.firstName + " " + createOrderResponse.data?.order?.customer?.lastName
+                                                } else ""
+                                            )
+                                    )
+                                }
+                            }catch (e:Exception){
+
+                            }
+
+                         try{
+                             if (kitchenSettingModel.showCustomerPhone && createOrderResponse.data?.order?.customer?.phones?.get(
+                                     0
+                                 ) != null
+                             ) {
+                                 add(
+                                     PrinterBuilder()
+                                         .styleAlignment(Alignment.Left)
+                                         .actionPrintText(
+                                             content = if (kitchenSettingModel.showCustomerPhone && createOrderResponse.data?.order?.customer?.phones?.get(
+                                                     0
+                                                 ) != null
+                                             ) {
+
+                                                 var phoneNumber =
+                                                     createOrderResponse.data.order?.customer?.phones?.get(
+                                                         0
+                                                     )?.phoneNumber.toString()
+                                                 if (phoneNumber.length != 10) {
+                                                     // Handle invalid input (must be 10 digits)
+                                                     "Invalid phone number"
+                                                 }
+
+                                                 val areaCode = phoneNumber.substring(0, 3)
+                                                 val firstPart = phoneNumber.substring(3, 6)
+                                                 val secondPart = phoneNumber.substring(6)
+
+                                                 "($areaCode)$firstPart-$secondPart"
+
+                                             } else ""
+                                         )
+                                 )
+                             }
+                         }catch (e:Exception){
+
+                         }
+                            printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
                         }
+
                     }
 
 
-                    printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
+//                    printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
 
                     var document = DocumentBuilder()
                         .addPrinter(printerBuilder)
@@ -2463,15 +2719,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                     printer.openAsync().await()
 
-//                val jobSettings = StarSpoolJobSettings(true, 30, "Print from Android")
+//                    val jobSettings = StarSpoolJobSettings(true, 30, "Print from Android")
 
                     printer.printAsync(commands).await()
 
-                  /*  try {
-                        SunmiPrintHelper.getInstance().openCashBox()
-                    } catch (e: java.lang.Exception) {
-                        e.printStackTrace()
-                    }*/
+                    /*  try {
+                          SunmiPrintHelper.getInstance().openCashBox()
+                      } catch (e: java.lang.Exception) {
+                          e.printStackTrace()
+                      }*/
 
                     Log.d("Printing", "Success")
                 } catch (e: Exception) {
@@ -2488,7 +2744,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
             }
 
-        }  else {
+        } else {
 
             if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
 
@@ -3059,6 +3315,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
 
                 viewModel.deleteCart()
+                EventBus.getDefault().post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                            Gson().toJson(Thread.currentThread().stackTrace)
+                        }"
+                    )
+                )
                 viewModel.updateActiveOrderFlagClear()
 
                 prefProvider.setValue(ORDER_TYPE_NAME, "")
@@ -3193,16 +3456,24 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     val token: TypeToken<List<TbCartItem>> =
                                         object :
                                             TypeToken<List<TbCartItem>>() {}
+                                    var oldDataModel: List<TbCartItem> = arrayListOf()
+                                    if (prefProvider.getValue(Constants.OLD_ITEM_BASE, "")
+                                            .isNotEmpty()
+                                    ) {
+                                        oldDataModel =
+                                            Gson().fromJson(
+                                                prefProvider.getValue(Constants.OLD_ITEM_BASE, ""),
+                                                token.type
+                                            )
+                                    } else {
+                                        EventBus.getDefault()
+                                            .post(MessageEvent("${Constants.LINE_BREAK_TAB} DashboardCategoryBoldPOS.kt_ OLD_ITEM_BASE is Empty"))
+                                    }
 
-                                    var oldDataModel: List<TbCartItem> =
-                                        Gson().fromJson(
-                                            prefProvider.getValue(Constants.OLD_ITEM_BASE,""),
-                                            token.type
-                                        )
 
-                                    if (oldDataModel.size!=createOrderResponse.data.order.orderItems.size){
+                                    if (oldDataModel.size != createOrderResponse.data.order.orderItems.size) {
                                         isOrderUpdate = true
-                                    }else {
+                                    } else {
                                         for (item in createOrderResponse.data.order.orderItems) {
                                             if (item.isItemEdited) {
                                                 isOrderUpdate = true
@@ -3428,6 +3699,35 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         }
 
                                     } else {
+//                                        Check for Custom items
+                                        var notPrinted =
+                                            printingData.filter { it.isPrinted == false }
+
+                                        try {
+                                            if (notPrinted.isNotEmpty()) {
+                                                for (i in 0..notPrinted.size) {
+                                                    try {
+                                                        initKitchenPrinter(
+                                                            it.data!!.get(i),
+                                                            Constants.KITCHEN,
+                                                            createOrderResponse,
+                                                            cartModel
+                                                        )
+                                                    } catch (e: Exception) {
+                                                    }
+
+                                                }
+                                            }
+                                        } catch (e: java.lang.NullPointerException) {
+
+                                        }
+
+                                        for (data in printingData) {
+                                            if (!data.isPrinted) {
+                                                break
+                                            }
+//                                            check all the items for isPrinted flags, if false found the print the whole kitchen receipt
+                                        }
                                         viewModel.downloadFinished(false)
                                         if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                                             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
@@ -3769,25 +4069,25 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     }  /*Added By Rahul */
                     else {
 
-                        isUpdated=true
+                        isUpdated = true
 
                         for (oldIndex in 0 until oldItems.size) {
 
                             for (indexNew in 0 until newItems.size) {
 
                                 if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId) {
-                                    if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity){
+                                    if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity) {
                                         newItems.get(indexNew).isEdited = true
-                                        isUpdated=true
+                                        isUpdated = true
                                     }
-                                    if (oldItems.get(oldIndex).price != newItems.get(indexNew).price){
+                                    if (oldItems.get(oldIndex).price != newItems.get(indexNew).price) {
                                         newItems.get(indexNew).isEdited = true
-                                        isUpdated=true
+                                        isUpdated = true
                                     }
 
                                     if (!oldItems.get(oldIndex).note.equals(newItems.get(indexNew).note)) {
                                         newItems.get(indexNew).isEdited = true
-                                        isUpdated=true
+                                        isUpdated = true
 
                                     }
                                 }
@@ -3797,7 +4097,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     ).orderItemModifiers.size != newItems.get(indexNew).orderItemModifiers.size
                                 ) {
                                     newItems.get(indexNew).isEdited = true
-                                    isUpdated=true
+                                    isUpdated = true
 
                                 } else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId && oldItems.get(
                                         oldIndex
@@ -3811,7 +4111,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         ).orderItemModifiers
                                     ) {
                                         newItems.get(indexNew).isEdited = true
-                                        isUpdated=true
+                                        isUpdated = true
 
                                     }
 
@@ -3834,7 +4134,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                     ).modifierQuantity
                                                 ) {
                                                     newItems.get(indexNew).isEdited = true
-                                                    isUpdated=true
+                                                    isUpdated = true
 
 
                                                 } else if (oldItems.get(oldIndex).orderItemModifiers.get(
@@ -3844,7 +4144,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                     ).price
                                                 ) {
                                                     newItems.get(indexNew).isEdited = true
-                                                    isUpdated=true
+                                                    isUpdated = true
 
 
                                                 } else if (oldItems.get(oldIndex).orderItemModifiers.get(
@@ -3854,7 +4154,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                     ).totalPrice
                                                 ) {
                                                     newItems.get(indexNew).isEdited = true
-                                                    isUpdated=true
+                                                    isUpdated = true
 
 
                                                 } else if (!oldItems.get(oldIndex).orderItemModifiers.get(
@@ -3866,7 +4166,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                     )
                                                 ) {
                                                     newItems.get(indexNew).isEdited = true
-                                                    isUpdated=true
+                                                    isUpdated = true
 
 
                                                 }
@@ -3889,9 +4189,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 }
                                 *//* Modifiers are equal, i.e. the quantity of modifiers may change*//*
                             }*/ else if (oldItems.get(oldIndex).itemId == newItems.get(indexNew).itemId) {
-                                    if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity ) {
+                                    if (oldItems.get(oldIndex).quantity != newItems.get(indexNew).quantity) {
                                         newItems.get(indexNew).isEdited = true
-                                        isUpdated=true
+                                        isUpdated = true
 
 
                                     }
@@ -3901,7 +4201,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         ).orderItemModifiers) && (oldIndex == indexNew)
                                     ) {
                                         newItems.get(indexNew).isEdited = true
-                                        isUpdated=true
+                                        isUpdated = true
 
                                     }
                                     /*Added By Rahul */
@@ -3926,7 +4226,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                         ).modifierQuantity
                                                     ) {
                                                         newItems.get(indexNew).isEdited = true
-                                                        isUpdated=true
+                                                        isUpdated = true
 
                                                     } else if (oldItems.get(oldIndex).orderItemModifiers.get(
                                                             oldModifiersIndex
@@ -3935,7 +4235,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                         ).price
                                                     ) {
                                                         newItems.get(indexNew).isEdited = true
-                                                        isUpdated=true
+                                                        isUpdated = true
 
                                                     } else if (oldItems.get(oldIndex).orderItemModifiers.get(
                                                             oldModifiersIndex
@@ -3944,7 +4244,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                         ).totalPrice
                                                     ) {
                                                         newItems.get(indexNew).isEdited = true
-                                                        isUpdated=true
+                                                        isUpdated = true
 
                                                     } else if (!oldItems.get(oldIndex).orderItemModifiers.get(
                                                             oldModifiersIndex
@@ -3955,7 +4255,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                         )
                                                     ) {
                                                         newItems.get(indexNew).isEdited = true
-                                                        isUpdated=true
+                                                        isUpdated = true
 
                                                     }
 
@@ -5066,44 +5366,44 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
             if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName) {
-                if (receiptModel?.order?.customer != null) {
+                try{
+                    if (receiptModel?.order?.customer != null) {
 
-                    PrintSunmiUtils.customerDetailsInner()
+                        PrintSunmiUtils.customerDetailsInner()
 
-
-                    if (kitchenSettingModel.showCustomerName) {
-
-                        PrintSunmiUtils.normalTextLarge(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
-
-
-                    }
-
-
-                    if (kitchenSettingModel.showCustomerPhone) {
-
-                        if (receiptModel?.order?.customer?.phones?.isNotEmpty()) {
-
-
-                            receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
-                                PrintSunmiUtils.normalTextLarge(
-                                    MethodUtils.getUSFormatNumber(it)
-                                )
+                        try{
+                            if (kitchenSettingModel.showCustomerName) {
+                                PrintSunmiUtils.normalTextLarge(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
                             }
+                        }catch (e:Exception){}
+
+                        try{
+                            if (kitchenSettingModel.showCustomerPhone) {
+
+                                if (receiptModel?.order?.customer?.phones?.isNotEmpty()) {
+
+                                    receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
+                                        PrintSunmiUtils.normalTextLarge(
+                                            MethodUtils.getUSFormatNumber(it)
+                                        )
+                                    }
+                                }
+                            }
+                        }catch (e:Exception){
+
                         }
 
-                    }
+                        try{
+                            if (kitchenSettingModel.showCustomerAddress) {
 
+                                if (receiptModel?.order?.orderType.trim()
+                                        .lowercase() == "Open Order".trim()
+                                        .lowercase() && receiptModel?.order?.deliveryType.trim()
+                                        .lowercase() == "Pickup".trim()
+                                        .lowercase()
+                                ) {
 
-                    if (kitchenSettingModel.showCustomerAddress) {
-
-                        if (receiptModel?.order?.orderType.trim()
-                                .lowercase() == "Open Order".trim()
-                                .lowercase() && receiptModel?.order?.deliveryType.trim()
-                                .lowercase() == "Pickup".trim()
-                                .lowercase()
-                        ) {
-
-                        } else if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
+                                } else if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
 
 
 //                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
@@ -5112,23 +5412,28 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 //                                )
 //                            }
 
-                            receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
-                                ?.forEach {
+                                    receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                        ?.forEach {
 
-                                    if (it.typeOfAddress.equals(
-                                            Constants.BILLING_ADDRESS,
-                                            ignoreCase = true
-                                        )
-                                    ) {
-                                        PrintSunmiUtils.normalTextLarge(
-                                            it.fullAddress
-                                        )
-                                    }
+                                            if (it.typeOfAddress.equals(
+                                                    Constants.BILLING_ADDRESS,
+                                                    ignoreCase = true
+                                                )
+                                            ) {
+                                                PrintSunmiUtils.normalTextLarge(
+                                                    it.fullAddress
+                                                )
+                                            }
+                                        }
+
+
                                 }
-
+                            }
+                        }catch (e:Exception){
 
                         }
                     }
+                }catch (e:Exception){
 
                 }
             }
@@ -5501,6 +5806,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
 
     }
+
 
     @SuppressLint("MissingPermission")
     private fun searchBluetooth() {

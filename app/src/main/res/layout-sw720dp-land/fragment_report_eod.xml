@@ -550,7 +550,7 @@
                     android:id="@+id/rvSalesSummary"
                     style="@style/ReportRecyclerViewstyle"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:itemCount="2"
+                    tools:itemCount="10"
                     tools:listitem="@layout/view_sales_report" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -822,7 +822,7 @@
                         android:id="@+id/txtLast4"
                         style="@style/ReportItemText"
                         android:gravity="start"
-                        android:text="Last4" />
+                        android:text="Card Number" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtSubtotal"

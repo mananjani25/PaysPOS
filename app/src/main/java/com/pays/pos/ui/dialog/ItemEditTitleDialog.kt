@@ -39,6 +39,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.pays.pos.utils.extensions.setOnSingleClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import kotlin.math.log
@@ -84,8 +85,9 @@ class ItemEditTitleDialog : DialogFragment() {
             requestPermissionDialog(selectOption)
         }
 
-        binding.tvChoosePhoto.setOnClickListener {
-            if (MethodUtils.isDoubleClick()) return@setOnClickListener
+        binding.tvChoosePhoto.setOnSingleClickListener {
+       /*     if (MethodUtils.isDoubleClick())
+                return@setOnClickListener*/
             selectOption = "2"
             requestPermissionDialog(selectOption)
         }

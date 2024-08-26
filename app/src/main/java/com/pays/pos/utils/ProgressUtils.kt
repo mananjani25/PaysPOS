@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageView
@@ -37,6 +38,7 @@ object ProgressUtils {
     fun setCallback(callback: DeleteOptionCallback) {
         listener = callback
     }
+
     /***
      * Show progress dialog
      * @param message Message
@@ -45,6 +47,11 @@ object ProgressUtils {
      */
     @JvmOverloads
     fun showProgressDialog(context: Activity) {
+        if (context.isFinishing || context.isDestroyed) {
+            // Do not attempt to show the dialog if the Activity is not in a valid state
+            return
+        }
+
         if (builder == null)
             builder = Dialog(context)
 
@@ -70,6 +77,7 @@ object ProgressUtils {
                 try {
                     builder?.show()
                 } catch (e: Exception) {
+                    e.printStackTrace()
                 }
 
             }
@@ -77,7 +85,7 @@ object ProgressUtils {
     }
 
     @JvmOverloads
-    fun showProgressDialog(message: String?, context: Context) {
+    fun showProgressDialog(message: String?, context: Context, showClose: Int = 0) {
         if (builder == null)
             builder = Dialog(context)
 
@@ -97,6 +105,7 @@ object ProgressUtils {
             WindowManager.LayoutParams.WRAP_CONTENT
         )
         imgClose.visible()
+        imgClose.visibility = showClose
 
         imgClose.setOnClickListener {
             listener?.onItemClickListener(0)
@@ -108,11 +117,11 @@ object ProgressUtils {
                     builder!!.show()
                 }
             }
-        }catch (e:Exception){
+        } catch (e: Exception) {
             Toast.makeText(context, "Loading...", Toast.LENGTH_SHORT).show()
         }
-        
-        
+
+
     }
 
     /***

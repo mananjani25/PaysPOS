@@ -38,14 +38,13 @@
                     android:tint="@color/white"/>
 
 
-
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
                     android:layout_gravity="center"
                     android:layout_weight="6"
                     android:gravity="center"
-                    android:layout_centerInParent="true"
                     android:orientation="horizontal">
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -147,6 +146,7 @@
                 android:background="@color/view" />
 
             <androidx.core.widget.NestedScrollView
+                android:id="@+id/nestedScrollView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fillViewport="true"
@@ -251,6 +251,131 @@
                             android:text=""
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_10mdpi" />
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:id="@+id/tipGivenLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            >
+
+
+                            <TableLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="@dimen/_2sdp"
+
+                                >
+
+                                <TableRow
+                                    >
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/labelTotalAmount"
+                                        style="@style/CustomFontBold"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="end"
+                                        android:text="Total Amount"
+                                        android:textColor="@color/btnColor"
+                                        android:textSize="@dimen/_8mdpi"
+                                        android:background="@drawable/background_txt_selector"
+                                        android:paddingHorizontal="12dp"
+                                        android:paddingVertical="4dp"
+                                        android:layout_margin="2dp"
+                                        />
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/txtTotalAmount"
+                                        style="@style/CustomFontBold"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="start"
+                                        android:text="Total Amount"
+                                        android:textColor="@color/btnColor"
+                                        android:textSize="@dimen/_8mdpi"
+                                        android:background="@drawable/background_txt_selector"
+                                        android:paddingHorizontal="12dp"
+                                        android:paddingVertical="4dp"
+                                        android:layout_margin="2dp"
+                                        />
+                                </TableRow>
+
+                                <TableRow
+                                    >
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/labelTipAmount"
+                                        style="@style/CustomFontBold"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="end"
+                                        android:text="Tip Amount"
+                                        android:textColor="@color/white"
+                                        android:textSize="@dimen/_8mdpi"
+                                        android:background="@drawable/background_txt_selector"
+                                        android:paddingHorizontal="12dp"
+                                        android:paddingVertical="4dp"
+                                        android:layout_margin="2dp"
+                                        />
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/txtTipAmount"
+                                        style="@style/CustomFontBold"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="start"
+                                        android:text="Tip Amount"
+                                        android:textColor="@color/white"
+                                        android:textSize="@dimen/_8mdpi"
+                                        android:background="@drawable/background_txt_selector"
+                                        android:paddingHorizontal="12dp"
+                                        android:paddingVertical="4dp"
+                                        android:layout_margin="2dp"
+                                       />
+                                </TableRow>
+
+                                <TableRow
+                                    >
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/labelFinalAmount"
+                                        style="@style/CustomFontBold"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="end"
+                                        android:text="Final Amount"
+                                        android:textColor="@color/colorGreen"
+                                        android:textSize="@dimen/_8mdpi"
+                                        android:background="@drawable/background_txt_selector"
+                                        android:paddingHorizontal="12dp"
+                                        android:paddingVertical="4dp"
+                                        android:layout_margin="2dp"
+                                        />
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/txtFinalAmount"
+                                        style="@style/CustomFontBold"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="start"
+                                        android:text="Final Amount"
+                                        android:textColor="@color/colorGreen"
+                                        android:textSize="@dimen/_8mdpi"
+                                        android:background="@drawable/background_txt_selector"
+                                        android:paddingHorizontal="12dp"
+                                        android:paddingVertical="4dp"
+                                        android:layout_margin="2dp"
+                                        />
+                                </TableRow>
+
+                            </TableLayout>
+
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
 
                         <RelativeLayout
                             android:layout_width="wrap_content"

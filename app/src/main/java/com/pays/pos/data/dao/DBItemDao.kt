@@ -19,7 +19,7 @@ interface DBItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAllItem(elementsBeanList: List<TbItem>)
 
-    @get:Query("select * from TbItem where TbItem.hide_status = 'UnHide' and TbItem.isDeleted = 0 and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort DESC LIMIT 50")
+    @get:Query("select * from TbItem where TbItem.hide_status = 'UnHide' and TbItem.isDeleted = 0 and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort DESC")
     val allItem: LiveData<List<TbItem?>>?
 
     @get:Query("select * from TbItem where TbItem.hide_status = 'UnHide' and TbItem.isDeleted = 0 and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort DESC")

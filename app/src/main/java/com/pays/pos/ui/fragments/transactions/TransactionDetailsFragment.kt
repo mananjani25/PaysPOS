@@ -10,6 +10,7 @@ import android.os.*
 import android.util.Base64
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -169,7 +170,6 @@ class TransactionDetailsFragment : Fragment() {
         initPOSLink()
         getMerchantDataObserver()
 
-
         return binding.root
     }
 
@@ -327,22 +327,32 @@ class TransactionDetailsFragment : Fragment() {
                     return
                 }
                 mLastClickTime = SystemClock.elapsedRealtime()
-                if (!paymentDetailsResponse.data.ext_data.isNullOrEmpty()) {
+                try {
+                    if (!paymentDetailsResponse.data.ext_data.isNullOrEmpty()) {
 //                    Check if the the PAX is connected or not then perform the void checking
-                    if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
+                        if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
 //                    Check if the transaction is void or not
-                        CoroutineScope(Dispatchers.Main).launch {
-                            ProgressUtils.showProgressDialog(requireActivity())
+                            CoroutineScope(Dispatchers.Main).launch {
+                                ProgressUtils.showProgressDialog(requireActivity())
+                            }
+                            checkIfTransactionIsVoided()
+                        } else {
+                            activity?.let {
+                                AlertUtils.showCustomAlertWithListenerWithOK(
+                                    it,
+                                    getString(R.string.pax_connect_error),
+                                    null
+                                )
+                            }
                         }
-                        checkIfTransactionIsVoided()
-                    }else{
-                        activity?.let {
-                            AlertUtils.showCustomAlertWithListenerWithOK(it,getString(R.string.pax_connect_error),null)
-                        }
-                    }
 
-                } else {
-                    startRefund()
+                    } else {
+                        startRefund()
+                    }
+                } catch (e: Exception) {
+                    activity?.let {
+                        Toast.makeText(it, "Try after sometime", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         })
@@ -358,6 +368,7 @@ class TransactionDetailsFragment : Fragment() {
             openReceiptDialog(2)
 
         }
+
     }
 
     private fun startRefund() {
@@ -479,6 +490,7 @@ class TransactionDetailsFragment : Fragment() {
 
                     putBoolean("isItemRefund", isItemRefund)
                     putBoolean("isAmountRefund", isAmountRefund)
+                    putString("screenTotalAmount",(paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips).toString())
                 }
                 bundle.putString("isFrom", "refund")
 
@@ -513,50 +525,117 @@ class TransactionDetailsFragment : Fragment() {
             posLink.ReportRequest = report
             val result = posLink.ProcessTrans()
             Log.d("result batch: ", result.Code.toString() + " " + result.Msg)
-            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
-                val msg = Message()
-                msg.what = Constants.TRANSACTION_SUCCESSED
-                msg.obj = posLink.ReportResponse
-
-                val response = msg.obj as com.pax.poslink.ReportResponse
-                val resultCode = response.ResultCode
-                val resultTxt = response.ResultTxt
-
-                if (resultCode == "000000") {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        ProgressUtils.dismissProgressDialog()
-                    }
-                    showConfirmationAlertDialog()
-                    Log.d("Data::", "void transaction")
-                } else if (resultCode == "100023") {
-                    //Transaction not found in current batch
-                    //refundViaPAX()
-                    startRefund()
-                } else {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        ProgressUtils.dismissProgressDialog()
-                        AlertUtils.showCustomAlertWithListenerWithOK(
-                            requireContext(),
-                            resultTxt,
-                            object :
-                                DialogInterface.OnClickListener {
-                                override fun onClick(p0: DialogInterface?, p1: Int) {
-                                    try {
-                                        p0?.dismiss()
-                                    } catch (e: Exception) {
-                                    }
-                                }
-                            })
+            try {
+                if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                    val msg = Message()
+                    msg.what = Constants.TRANSACTION_SUCCESSED
+                    msg.obj = posLink.ReportResponse
+                    if (posLink.ReportResponse == null) {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            ProgressUtils.dismissProgressDialog()
+                        }
+                        showConfirmationAlertDialog()
+                        Log.d("Data::", "void transaction")
+                    } else {
+                        val response = msg.obj as com.pax.poslink.ReportResponse
+                        val resultCode = response.ResultCode
+                        val resultTxt = response.ResultTxt
+                        if (resultCode == "000000") {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                ProgressUtils.dismissProgressDialog()
+                            }
+                            showConfirmationAlertDialog()
+                            Log.d("Data::", "void transaction")
+                        } else if (resultCode == "100023") {
+                            //Transaction not found in current batch
+                            //refundViaPAX()
+                            startRefund()
+                        } else {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                ProgressUtils.dismissProgressDialog()
+                                AlertUtils.showCustomAlertWithListenerWithOK(
+                                    requireContext(),
+                                    resultTxt,
+                                    object :
+                                        DialogInterface.OnClickListener {
+                                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                                            try {
+                                                p0?.dismiss()
+                                            } catch (e: Exception) {
+                                            }
+                                        }
+                                    })
 
 //                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+                            }
+                        }
+
+                        Log.d(
+                            "Params:",
+                            "Report $resultCode $resultTxt ${response.ExtData}  ${
+                                Gson().toJson(
+                                    response
+                                )
+                            }"
+                        )
                     }
                 }
-
-                Log.d(
-                    "Params:",
-                    "Report $resultCode $resultTxt ${response.ExtData}  ${Gson().toJson(response)}"
-                )
+            } catch (e: Exception) {
+//                posLink.s
             }
+        }
+    }
+
+    private fun enableDisableTipButton() {
+        try {
+            if (paymentDetailsResponse.data.ref_num != null) {
+                if (paymentDetailsResponse.data.ref_num.isNotEmpty()) {
+                    GlobalScope.launch {
+                        posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+
+                        val report = ReportRequest()
+                        report.TransType = report.ParseTransType("LOCALDETAILREPORT") //recommend
+                        report.EDCType = report.ParseEDCType("CREDIT")
+                        report.RefNum = paymentDetailsResponse.data.ref_num
+                        report.ECRRefNum = paymentDetailsResponse.data.ecr_ref_num
+
+                        posLink.ReportRequest = report
+                        val result = posLink.ProcessTrans()
+                        Log.d("result batch: ", result.Code.toString() + " " + result.Msg)
+                        try {
+                            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                                val msg = Message()
+                                msg.what = Constants.TRANSACTION_SUCCESSED
+                                msg.obj = posLink.ReportResponse
+                                if (posLink.ReportResponse == null) {
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        binding.tvtipadd.visibility = View.GONE
+                                    }
+                                    Log.d("Data::", "void transaction")
+                                } else {
+                                    val response = msg.obj as com.pax.poslink.ReportResponse
+                                    val resultCode = response.ResultCode
+                                    val resultTxt = response.ResultTxt
+                                    if (resultCode == "000000") {
+                                        CoroutineScope(Dispatchers.Main).launch {
+                                            binding.tvtipadd.visibility = View.VISIBLE
+                                        }
+
+                                    } else if (resultCode == "100023") {
+                                        CoroutineScope(Dispatchers.Main).launch {
+                                            binding.tvtipadd.visibility = View.GONE
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (e: Exception) {
+//                posLink.s
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+
         }
     }
 
@@ -574,6 +653,10 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun voidViaPAX() {
         var refundAmount = paymentDetailsResponse.data.amount
+        paymentDetailsResponse.data.tips?.let {
+            refundAmount += it
+        }
+
         if (refundAmount != 0.0) {
             if (paymentDetailsResponse.data.payment_type.equals("Card", ignoreCase = true)) {
                 GlobalScope.launch {
@@ -1188,11 +1271,9 @@ class TransactionDetailsFragment : Fragment() {
         }
 
         val id = findNavController().currentDestination?.id
-        findNavController().popBackStack(id!!,true)
-        findNavController().navigate(id,bundle)
+        findNavController().popBackStack(id!!, true)
+        findNavController().navigate(id, bundle)
     }
-
-
 
 
     @SuppressLint("SetTextI18n")
@@ -1202,16 +1283,19 @@ class TransactionDetailsFragment : Fragment() {
         viewModel.dataRefundDone.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { createTaxResponse ->
                 activity?.let {
-                    AlertUtils.showCustomAlertWithListenerWithOK(it,createTaxResponse.message,object:
-                        DialogInterface.OnClickListener{
-                        override fun onClick(p0: DialogInterface?, p1: Int) {
-                            try {
-                                reloadScreen()
-                                p0?.dismiss()
-                            } catch (e: Exception) {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        it,
+                        createTaxResponse.message,
+                        object :
+                            DialogInterface.OnClickListener {
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                try {
+                                    reloadScreen()
+                                    p0?.dismiss()
+                                } catch (e: Exception) {
+                                }
                             }
-                        }
-                    })
+                        })
 
                 }
             }
@@ -1220,6 +1304,8 @@ class TransactionDetailsFragment : Fragment() {
         viewModel.dataPayment.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 paymentDetailsResponse = it
+                enableDisableRefundButton()
+                enableDisableTipButton()
                 val jsonString = Gson().toJson(paymentDetailsResponse)
                 Log.e("paymentDetailsResponse", "paymentDetailsResponse result = $jsonString")
 
@@ -1459,7 +1545,7 @@ class TransactionDetailsFragment : Fragment() {
                 }
 
 
-                if (paymentDetailsResponse.data.payment_type.equals("Card")) {
+                if (paymentDetailsResponse.data.payment_type.equals("Card", true) || paymentDetailsResponse.data.payment_type.equals("Cash", true)) {
                     val total = String.format("%.2f", paymentDetailsResponse.data.amount)
                     val refundedAmount = String.format(
                         "%.2f",
@@ -1560,6 +1646,12 @@ class TransactionDetailsFragment : Fragment() {
             }
         }
 
+    }
+
+    private fun enableDisableRefundButton() {
+        if (paymentDetailsResponse.data.payment_type.contains(getString(R.string.external),ignoreCase = true)){
+            binding.tvIssueRefund.gone()
+        }
     }
 
     private fun acceptedAndDeclineOrder() {
@@ -1786,20 +1878,24 @@ class TransactionDetailsFragment : Fragment() {
                                                                         .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
                                                                 ) {
 
-                                                                    if (checkItemsforTransactionPrinter(
-                                                                            (paymentDetailsResponse.data.order.order_items
-                                                                                ?: arrayListOf()) as List<GetOrderDetailsResponse.Data.OrderItem>,
-                                                                            kitchenPrinterList[i].printerCategories.toCollection(
-                                                                                arrayListOf()
-                                                                            )
-                                                                        )
-                                                                    ) {
+                                                                   try{
+                                                                       if (checkItemsforTransactionPrinter(
+                                                                               (paymentDetailsResponse.data.order.order_items
+                                                                                   ?: arrayListOf()) as List<GetOrderDetailsResponse.Data.OrderItem>,
+                                                                               kitchenPrinterList[i].printerCategories.toCollection(
+                                                                                   arrayListOf()
+                                                                               )
+                                                                           )
+                                                                       ) {
 
-                                                                        initKitchenPrinter(
-                                                                            kitchenPrinterList.get(i),
-                                                                            Constants.KITCHEN
-                                                                        )
-                                                                    }
+                                                                           initKitchenPrinter(
+                                                                               kitchenPrinterList.get(i),
+                                                                               Constants.KITCHEN
+                                                                           )
+                                                                       }
+                                                                   }catch (e:Exception){
+
+                                                                   }
 
                                                                 }
                                                             }

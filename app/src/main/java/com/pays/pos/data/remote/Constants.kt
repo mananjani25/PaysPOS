@@ -1,6 +1,7 @@
 package com.pays.pos.data.remote
 
 import android.content.Context
+import android.os.Debug
 import android.util.Log
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -20,6 +21,9 @@ import java.util.concurrent.ExecutionException
 
 object Constants {
 
+    const val isPaxInDebugMode: Boolean = true
+    const val paxLive="https://secure.epx.com/"
+    const val paxDebug="https://secure.epxuap.com/"
 
     const val DO_PRINT: String = "DO_PRINT"
     const val DO_PRINT_CUSTOM: String = "DO_PRINT_CUSTOM"
@@ -448,6 +452,7 @@ object Constants {
 
     const val ALL_ORDER_TAB = "ALL"
     const val OPEN_ORDER_TAB = "OpenOrder"
+    const val KIOSK_OPEN_ORDER = "KioskOpenorder"
     const val PHONE_ORDER_TAB = "PhoneOrder"
     const val ONLINE_ORDER_TAB = "OnlineWebOrder"
     const val THIRD_PARTY_ORDER_TAB = "OnlineOrder"
@@ -459,6 +464,8 @@ object Constants {
     const val isManual = "isManual"
     const val orderNoteOld = "orderNoteOld"
     const val orderNoteNew = "orderNoteNew"
+
+    const val LINE_BREAK_TAB = "\n \t"
 
     //PAX
     const val TRANSACTION_SUCCESSED = 100 //transaction success

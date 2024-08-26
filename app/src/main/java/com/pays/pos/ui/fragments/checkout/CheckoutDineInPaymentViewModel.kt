@@ -33,12 +33,14 @@ import com.pays.pos.utils.TimeFormatUtils
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
+import com.pays.pos.logger.MessageEvent
 import com.squareup.okhttp.Callback
 import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.Request
 import com.squareup.okhttp.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -220,6 +222,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
     }
 
     fun deleteDineInCart() {
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         viewModelScope.launch {
             posRepository.deleteDineInCart()
             destroyedList.clear()
@@ -229,6 +232,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
     // to delete cart from database
     fun deleteCart() {
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         viewModelScope.launch {
             posRepository.deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0))
             destroyedList.clear()
@@ -248,6 +252,8 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
             posRepository.deleteManualSaleCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0))
 
         }
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR CheckoutDineInPaymentViewModel.kt_Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+
     }
 
     // To update dine cart
@@ -326,11 +332,13 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                 if (list.isEmpty()) {
                     // delete carts
                     deleteCart()
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                 }
             } else {
 
                 if (type == Constants.DELETE) {
                     deleteCart()
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                 } else {
                     val cartModel = cartList?.get(0)
                     cartModel?.items = listOf(item)
@@ -630,11 +638,13 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                     if (list.isEmpty()) {
                         // delete carts
                         deleteCart()
+                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                     }
                 } else {
 
                     if (type == Constants.DELETE) {
                         deleteCart()
+                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                     } else {
 
                         LogUtil.logE(TAG, "AddedListNull")
@@ -774,6 +784,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
                 if (type == Constants.DELETE) {
                     deleteCart()
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInPayment.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                 } /*else {
 
                     LogUtil.logE(TAG, "AddedListNull")
@@ -2001,6 +2012,9 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
         viewModelScope.launch {
 
+            EventBus.getDefault()
+                .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInPaymentViewModel.kt_submit ${Gson().toJson(orderRequestModel)}"))
+
             val resource: Resource<CreateOrderResponse> =
 
                 posRepository.createOrder(orderRequestModel)
@@ -2022,11 +2036,18 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                         }
                     }
 
+                    EventBus.getDefault()
+                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInPaymentViewModel.kt_submit_SUCCESS"))
+
                 }
 
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message)
                     _showProgress.value = Event(false)
+
+                    EventBus.getDefault()
+                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInPaymentViewModel.kt_submit_ERROR"))
+
                 }
 
                 Status.LOADING -> {

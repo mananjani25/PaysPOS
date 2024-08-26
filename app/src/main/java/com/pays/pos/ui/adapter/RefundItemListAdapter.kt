@@ -275,6 +275,8 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                 totalItemPrice -= loyaltyAmountPerItem
             }
 
+            item.deductedPrice=totalItemPrice
+
 
 
 

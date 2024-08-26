@@ -12,10 +12,13 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.pays.pos.R
+import com.pays.pos.data.remote.Constants
 import com.pays.pos.databinding.DailogCustomAmountBinding
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.AmountTextWatcher
 import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.EventBus
 
 
 @AndroidEntryPoint
@@ -61,6 +64,7 @@ class CustomAmountFragment : DialogFragment() {
                         putDouble("amount", custom_amount)
                         putDouble("totalAmount", totalprice)
                     }
+
                     requireActivity().supportFragmentManager.setFragmentResult(
                         "request_for_customAmount",
                         result

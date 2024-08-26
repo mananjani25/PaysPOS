@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pays.pos.data.db.AppDatabase
+import com.pays.pos.data.entities.TbCartItem
 import com.pays.pos.data.entities.TbItem
 import com.pays.pos.data.model.responseModel.BaseResponse
 import com.pays.pos.data.model.responseModel.CreateNoteResponse
@@ -37,6 +38,8 @@ class NoteListViewModel @Inject constructor(
 
     private val _notifydata = MutableLiveData<Event<Boolean?>>()
     val notifydata: LiveData<Event<Boolean?>> = _notifydata
+
+    public val unSavedNote = MutableLiveData<String>()
 
     val getTaxList = posRepository.getNoteListNew()
     val taxListActive = posRepository.taxListActive()

@@ -93,46 +93,49 @@ class OrderHistoryAdapter(val callBack: (View, Orders) -> Unit) :
         }
 
         private fun setupAmountPayType(total: Double?, paymentDetails: List<PaymentDetail>?) {
+            try {
+                val sring = SpannableStringBuilder()
 
-            val sring = SpannableStringBuilder()
-
-            var size = 1
-            paymentDetails?.forEach {
+                var size = 1
+                paymentDetails?.forEach {
 
 
-                val totalFormatted = "$" + String.format(
-                    "%.2f",
-                    it.amount ?: 0.0
-                )
-                val ssTotal = SpannableStringBuilder(totalFormatted)
-                ssTotal.setSpan(
-                    TextAppearanceSpan(MainApplication.getInstance(), R.style.DateStyle),
-                    0,
-                    ssTotal.length,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-                val payType = it.paymentType/*if (paymentDetails.isNotEmpty()) {
+                    val totalFormatted = "$" + String.format(
+                        "%.2f",
+                        it.amount ?: 0.0
+                    )
+                    val ssTotal = SpannableStringBuilder(totalFormatted)
+                    ssTotal.setSpan(
+                        TextAppearanceSpan(MainApplication.getInstance(), R.style.DateStyle),
+                        0,
+                        ssTotal.length,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                    val payType = it.paymentType/*if (paymentDetails.isNotEmpty()) {
                     paymentDetails[0].paymentType ?: ""
                 } else {
                     ""
                 }*/
-                val ssPayType = SpannableStringBuilder(payType)
-                ssPayType.setSpan(
-                    TextAppearanceSpan(MainApplication.getInstance(), R.style.TimeStyle),
-                    0,
-                    ssPayType.length,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
+                    val ssPayType = SpannableStringBuilder(payType)
+                    ssPayType.setSpan(
+                        TextAppearanceSpan(MainApplication.getInstance(), R.style.TimeStyle),
+                        0,
+                        ssPayType.length,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
 
-                val a = TextUtils.concat(ssTotal, "\n", ssPayType)
+                    val a = TextUtils.concat(ssTotal, "\n", ssPayType)
 
-                sring.append(a)
-                if (paymentDetails.size > 1 && paymentDetails.size > size)
-                    sring.append("\n\n")
+                    sring.append(a)
+                    if (paymentDetails.size > 1 && paymentDetails.size > size)
+                        sring.append("\n\n")
 
-                size += 1
+                    size += 1
+                }
+                binding.txtPayType.text = sring.toString()
+            } catch (e: Exception) {
+
             }
-            binding.txtPayType.text = sring.toString()
         }
 
         private fun setupIdAndStatus(id: Int?, paymentStatus: String?) {

@@ -413,12 +413,12 @@ class PrintSunmiUtils {
                 SunmiPrinterApi.getInstance().enableBold(true)
                 setFontSize()
                 when (i) {
-                    1 -> {
+                    /*1 -> {
                         if (!cardName.isNullOrBlank()) {
                             SunmiPrinterApi.getInstance().printText(cardName)
                             SunmiPrinterApi.getInstance().lineWrap(1)
                         }
-                    }
+                    }*/
                     2 -> {
                         if (!cardType.isNullOrBlank()) {
                             SunmiPrinterApi.getInstance().printText(cardType)
@@ -766,7 +766,7 @@ class PrintSunmiUtils {
             for (i in 1..3) {
 
                 when (i) {
-                    1 -> {
+                    /*1 -> {
                         if (!cardName.isNullOrBlank()) {
                             val strCardName = padLine(
                                 "",
@@ -776,7 +776,7 @@ class PrintSunmiUtils {
                             normalText(strCardName)
 
                         }
-                    }
+                    }*/
 
                     2 -> {
                         if (!cardType.isNullOrBlank()) {

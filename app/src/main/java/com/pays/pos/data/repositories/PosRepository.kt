@@ -4,49 +4,34 @@ package com.pays.pos.data.repositories
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.gson.Gson
 import com.pays.pos.data.db.AppDatabase
 import com.pays.pos.data.db.IDataManager
+import com.pays.pos.data.entities.*
+import com.pays.pos.data.entities.ModifierSet
 import com.pays.pos.data.model.PrinterQueueModel
 import com.pays.pos.data.model.ShiftRportConfiguration
 import com.pays.pos.data.model.SplitDetailListModel
-import com.pays.pos.data.model.requestModel.CashInOutModel
-import com.pays.pos.data.model.requestModel.CashLogRequest
-import com.pays.pos.data.model.requestModel.CreateCategoryRequestModel
-import com.pays.pos.data.model.requestModel.CreateCustomerRequestModel
-import com.pays.pos.data.model.requestModel.CreateEmployeeRequestModel
-import com.pays.pos.data.model.requestModel.CreateItemRequestModel
-import com.pays.pos.data.model.requestModel.CreateModifierRequest
-import com.pays.pos.data.model.requestModel.CreateNoteRequest
-import com.pays.pos.data.model.requestModel.CreateOptionRequestModel
-import com.pays.pos.data.model.requestModel.CreatePrinterRequestModel
-import com.pays.pos.data.model.requestModel.CreateQueuePrinterRequestModel
-import com.pays.pos.data.model.requestModel.GuestPaymentRequest
-import com.pays.pos.data.model.requestModel.MergeTableRequest
-import com.pays.pos.data.model.requestModel.OrderCancelRequest
-import com.pays.pos.data.model.requestModel.OrderRequestModel
-import com.pays.pos.data.model.requestModel.RefundRequestModelOnlineOrder
-import com.pays.pos.data.model.requestModel.SpitByOrderRequestModel
-import com.pays.pos.data.model.requestModel.WastageItemRequest
+import com.pays.pos.data.model.requestModel.*
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardAddValueRequest
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.requestModel.giftCard.request.SellGiftCardRequestModel
+import com.pays.pos.data.model.responseModel.*
 import com.pays.pos.data.remote.ApiHelper
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.DINE_IN
 import com.pays.pos.data.remote.Constants.EMPLOYEE_ID
 import com.pays.pos.data.remote.Constants.LOCATION_ID
-import com.pays.pos.data.remote.Constants.SYNC_SETTING_TIME_STAMP
 import com.pays.pos.data.remote.Constants.TERMINAL_ID
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.performGetOperation
 import com.pays.pos.utils.performGetOperationDatabase
 import com.pays.pos.utils.performGetOperationNew
 import com.pays.pos.utils.statusUtils.Resource
-import com.google.gson.Gson
-import com.pays.pos.data.entities.*
-import com.pays.pos.data.model.responseModel.*
 import kotlinx.coroutines.flow.Flow
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 
@@ -184,7 +169,7 @@ class PosRepository @Inject constructor(
         prefProvider.getValueInt(
             TERMINAL_ID, 0
         ),
-        prefProvider.getValue(SYNC_SETTING_TIME_STAMP, "")
+       /* prefProvider.getValue(SYNC_SETTING_TIME_STAMP, "")*/""
     )
 
     suspend fun getOnlineOrderNotificationCount() = apiHelperNew.getOnlineOrderCountNoti()
@@ -617,6 +602,9 @@ class PosRepository @Inject constructor(
     suspend fun deleteCustomerDataBase(id: Int?) =
         appDatabase.customerDao().deleteCustomerByID(id)
 
+  suspend fun getTotalCustomersCount() =
+        appDatabase.customerDao().getTotalCustomersCount()
+
 
     suspend fun createCustomer(data: CreateCustomerRequestModel) =
         apiHelperNew.createCustomer(data)
@@ -803,6 +791,7 @@ class PosRepository @Inject constructor(
     }
 
     fun deleteCartModel(cartModel: CartModel) {
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         synchronized(this) {
             appDatabase.cartDao().deleteCartModel(cartModel)
         }
@@ -829,8 +818,10 @@ class PosRepository @Inject constructor(
 
     suspend fun addItemToCart(tbCartItem: TbCartItem) {
         val startTime = System.currentTimeMillis()
-        appDatabase.cartDao().addCartItem(tbCartItem)
+        var returnData=appDatabase.cartDao().addCartItem(tbCartItem)
         // Calculate the time taken
+        Log.d("AddItemFragment.kt","txtDone_addItemToCart: returnData -> ${Gson().toJson(returnData)}")
+
         val endTime = System.currentTimeMillis()
         val timeTaken = endTime - startTime
         Log.d("InsertTime", "Time taken to insert: $timeTaken ms")
@@ -851,12 +842,14 @@ class PosRepository @Inject constructor(
     }
 
     suspend fun deleteItemFromCartItems(tbCartItem: TbCartItem) {
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         appDatabase.cartDao().deleteItemFromCartItems(tbCartItem)
     }
 
     suspend fun removeItemFromCart(itemId: Int, guestIndexForDineIn: Int) {
         val startTime = System.currentTimeMillis()
         appDatabase.cartDao().removeCartItem(itemId, guestIndexForDineIn)
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         // Calculate the time taken
         val endTime = System.currentTimeMillis()
         val timeTaken = endTime - startTime
@@ -1319,6 +1312,7 @@ class PosRepository @Inject constructor(
     }
 
     suspend fun clearTable() {
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
 
         LogUtil.logE("clear Db Table", "-------")
         appDatabase.categoryDao().delete1()
@@ -1345,6 +1339,8 @@ class PosRepository @Inject constructor(
         appDatabase.cancelOrderReasonDao().delete()
         appDatabase.cashDiscountDao().delete()
         appDatabase.loyaltyProgramsDao().delete()
+        appDatabase.labelPrinterSettings().delete()
+        appDatabase.dynamicPaymentDao().delete()
     }
 
     fun orderCounts(startDate: String?, endDate: String?, isOpenOrder: Boolean) =
@@ -1490,6 +1486,31 @@ class PosRepository @Inject constructor(
     suspend fun addOrderTypeBackup(orderType: OrderTypeBackup) =
         appDatabase.orderTypeBackupDao().add(orderType)
 
+    /*This method is used to maintain the single of multiple receipt for label printer*/
+    fun insertOrUpdateLabelPrinter(data:Boolean) {
+        val tbLabelPrinterSettings = TbLabelPrinterSettings(1, data)
+        var aaaaa=appDatabase.labelPrinterSettings().insertOrUpdate(tbLabelPrinterSettings)
+    }
+
+    /*This method will be used to check if the merchant wants */
+    suspend fun getLabelPrinterSettingsData():TbLabelPrinterSettings{
+        return appDatabase.labelPrinterSettings().getLabelPrinterSettingsData()
+    }
+
+    /* This method is used to manage the Dynamic payments */
+    suspend fun insertDynamicPayments(dynamicPaymentRecords: TbDynamicPaymentRecords) {
+        appDatabase.dynamicPaymentDao().add(dynamicPaymentRecords)
+    }
+
+    suspend fun insertDynamicPayments(dynamicPaymentRecords: List<TbDynamicPaymentRecords>) {
+        appDatabase.dynamicPaymentDao().addAll(dynamicPaymentRecords)
+    }
+
+    fun getDynamicPaymentRecords(isActive:Boolean, locationId:Int)=appDatabase.dynamicPaymentDao().getDynamicPaymentRecords(isActive,locationId)
+
+    fun getDynamicPaymentFromID(id:Int):TbDynamicPaymentRecords{
+        return appDatabase.dynamicPaymentDao().getDynamicPaymentFromID(id)
+    }
 
 }
 

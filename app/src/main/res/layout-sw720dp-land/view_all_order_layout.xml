@@ -109,9 +109,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="start"
+                android:padding="5dp"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"
-                android:text="John Smith" />
+                tools:text="John Smith" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtDeliveryOrPickup"

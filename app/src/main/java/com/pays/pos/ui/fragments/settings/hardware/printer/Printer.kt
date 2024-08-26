@@ -649,7 +649,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         allPrinterlist.clear()
         addedCustomerPrinters = false
         addedKitchenPrinters = false
-        viewModel.printerList().observe(viewLifecycleOwner) {
+        viewModel.printerList().observe(parentFragment?.viewLifecycleOwner?:viewLifecycleOwner) {
             when (it.status) {
 
                 Status.SUCCESS -> {
@@ -860,7 +860,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                     if (kitchenData[i].name.equals(
                                             "TM-L100",
                                             ignoreCase = true
-                                        ) || kitchenData[i].name.contains("TSP", ignoreCase = true)
+                                        ) || kitchenData[i].name.contains("TSP", ignoreCase = true) || kitchenData[i].name.contains("SP", ignoreCase = true)
                                     ) {
                                         addPrinters(kitchenPrintersList, kitchenData, i)
                                     } else {
@@ -1699,7 +1699,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     ) == true
                 ) {
                     initLabelPrinter(printerListModel)
-                } else if (it?.contains("TSP", ignoreCase = true) == true) {
+                } else if (it?.contains("TSP", ignoreCase = true) == true || it?.contains("SP", ignoreCase = true) == true) {
                     initStarPrinter(printerListModel)
                 } else {
                     Log.e(TAG, "printerListModel  ${Gson().toJson(printerListModel)}")
@@ -2062,54 +2062,58 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     fun test() {
-        if (SunmiPrinterApi.getInstance().isConnected) {
-            SunmiPrinterApi.getInstance().printerInit()
-            SunmiPrinterApi.getInstance().printText("")
-            SunmiPrinterApi.getInstance().lineWrap(2)
-            SunmiPrinterApi.getInstance().setAlignMode(1)
-            SunmiPrinterApi.getInstance().setFontZoom(2, 2)
-            SunmiPrinterApi.getInstance().printText("Test Print")
-            SunmiPrinterApi.getInstance().lineWrap(1)
-            val current = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                LocalDateTime.now()
-            } else {
-                TODO("VERSION.SDK_INT < O")
-            }
-            val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
-            val formatted = current.format(formatter)
-            SunmiPrinterApi.getInstance().setAlignMode(1)
-            SunmiPrinterApi.getInstance().setFontZoom(2, 2)
-            SunmiPrinterApi.getInstance()
-                .printText(getCurrentTimeFromTimeZone(requireContext(), formatted))
-            SunmiPrinterApi.getInstance().lineWrap(2)
-            SunmiPrinterApi.getInstance().cutPaper(2, 20)
-            LogUtil.logE(TAG, "WOHO SERIESNULL ${woyouService}")
-            if (woyouService != null) {
-                LogUtil.logE(TAG, "WOHO SERIES NOT NULL")
-                // ToastUtil.showNormalToast(requireContext(), "Cash Drawer Connected..")
-                //  woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
-            } else {
-                val aa = ByteArray(5)
-
-                aa[0] = 0x10
-                aa[1] = 0x14
-                aa[2] = 0x00
-                aa[3] = 0x00
-                aa[4] = 0x00
-
-
-                try {
-                    SunmiPrinterApi.getInstance().sendRawData(aa)
-                } catch (e: java.lang.Exception) {
-                    e.printStackTrace()
+        try{
+            if (SunmiPrinterApi.getInstance().isConnected) {
+                SunmiPrinterApi.getInstance().printerInit()
+                SunmiPrinterApi.getInstance().printText("")
+                SunmiPrinterApi.getInstance().lineWrap(2)
+                SunmiPrinterApi.getInstance().setAlignMode(1)
+                SunmiPrinterApi.getInstance().setFontZoom(2, 2)
+                SunmiPrinterApi.getInstance().printText("Test Print")
+                SunmiPrinterApi.getInstance().lineWrap(1)
+                val current = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    LocalDateTime.now()
+                } else {
+                    TODO("VERSION.SDK_INT < O")
                 }
-                /* try {
-                     SunmiPrintHelper.getInstance().openCashBox()
-                 } catch (e: java.lang.Exception) {
-                     e.printStackTrace()
-                 }*/
-            }
+                val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+                val formatted = current.format(formatter)
+                SunmiPrinterApi.getInstance().setAlignMode(1)
+                SunmiPrinterApi.getInstance().setFontZoom(2, 2)
+                SunmiPrinterApi.getInstance()
+                    .printText(getCurrentTimeFromTimeZone(requireContext(), formatted))
+                SunmiPrinterApi.getInstance().lineWrap(2)
+                SunmiPrinterApi.getInstance().cutPaper(2, 20)
+                LogUtil.logE(TAG, "WOHO SERIESNULL ${woyouService}")
+                if (woyouService != null) {
+                    LogUtil.logE(TAG, "WOHO SERIES NOT NULL")
+                    // ToastUtil.showNormalToast(requireContext(), "Cash Drawer Connected..")
+                    //  woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
+                } else {
+                    val aa = ByteArray(5)
 
+                    aa[0] = 0x10
+                    aa[1] = 0x14
+                    aa[2] = 0x00
+                    aa[3] = 0x00
+                    aa[4] = 0x00
+
+
+                    try {
+                        SunmiPrinterApi.getInstance().sendRawData(aa)
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
+                    }
+                    /* try {
+                         SunmiPrintHelper.getInstance().openCashBox()
+                     } catch (e: java.lang.Exception) {
+                         e.printStackTrace()
+                     }*/
+                }
+
+
+            }
+        }catch (e:Exception){
 
         }
     }

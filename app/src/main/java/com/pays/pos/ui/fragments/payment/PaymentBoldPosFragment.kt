@@ -35,6 +35,7 @@ import com.pays.pos.data.remote.Constants.SPLIT_IS_GUESTPAY
 import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.databinding.FragmentPaymentBoldPosBinding
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.pays.pos.ui.fragments.checkout.CheckoutDineInFragmentNew
 import com.pays.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
@@ -51,6 +52,7 @@ import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.getCustomerDisplay
 import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -106,7 +108,7 @@ class PaymentBoldPosFragment : Fragment() {
         binding.lifecycleOwner = this
         isFromActiveOrder = arguments?.getBoolean("isFromActiveOrder") ?: false
         orderId = arguments?.getInt("orderId")
-        oldItems = arguments?.getString(Constants.OLD_ITEM)+""
+        oldItems = arguments?.getString(Constants.OLD_ITEM) + ""
         viewModel.setSplitCount(1)
         LogUtil.logE("orderId :: ", orderId.toString())
         getCustomerDisplay(requireContext())?.let { display ->
@@ -328,6 +330,7 @@ class PaymentBoldPosFragment : Fragment() {
         Log.d(TAG, "onViewCreated: " + prefProvider.getValueboolean(SPLIT_ENABLE, false))
 
         viewModel.setTipAmount(0.0)
+        viewModel.customerGivenTip.value=false
 
         prefProvider.setValueboolean(Constants.TIP_ADDED, false)
         prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, "0")
@@ -370,6 +373,7 @@ class PaymentBoldPosFragment : Fragment() {
                 } else {
                     if (prefProvider.getValue(REDIRECT_FROM, "") == MANUAL_SALE) {
                         viewModel.cartModel = null
+                        viewModel.manualCartOrderNote=""
                     }
                     findNavController().popBackStack()
                 }
@@ -454,15 +458,26 @@ class PaymentBoldPosFragment : Fragment() {
         try {
             val fm: FragmentManager = requireActivity().supportFragmentManager
 
+
+
             LogUtil.logE("orderId :: ", orderId.toString())
             val bundle = Bundle().apply {
                 orderId?.let { putInt("orderId", it) }
                 putInt("paymentId", paymentId)
                 putString("orderOfflineId", orderOfflineId)
                 putString("paymentOfflineId", paymentOfflineId)
+
                 putString(Constants.OLD_ITEM, oldItems)
                 putString(REDIRECT_FROM, prefProvider.getValue(REDIRECT_FROM, ""))
 
+            }
+
+            try {
+                bundle.putString(
+                    "orderType_to_check_kiosk",
+                    arguments?.get("orderType_to_check_kiosk").toString()
+                )
+            } catch (e: Exception) {
             }
             fragment.arguments = bundle
             // fragment.arguments = arguments
@@ -488,6 +503,9 @@ class PaymentBoldPosFragment : Fragment() {
         prefProvider.setValue(Constants.TAX_CHARGE, "")
         prefProvider.setValue(Constants.SERVICE_CHARGE, "")
         prefProvider.setValueInt("ORDER_ID", -1)
+
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentBoldPosFragment.kt -> removeCustomer()_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _1"))
+
         prefProvider.setValueInt(Constants.PAYMENT_ID, 0)
         prefProvider.setValue(Constants.TOTAL_PRICE_ACTUAL, "0.0")
         prefProvider.setValue(Constants.SUB_TOTAL_ACTUAL, "0.0")

@@ -56,7 +56,6 @@ class TransactionDetailsViewModel @Inject constructor(
 
     val startDate = MutableLiveData<String>()
 
-
     var orderItemAttribututes :MutableList<RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute>? = null
 
     // get added tips of any transaction

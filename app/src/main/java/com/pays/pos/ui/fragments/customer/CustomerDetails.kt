@@ -34,7 +34,9 @@ import com.pays.pos.utils.extensions.liveSnackBar
 import com.pays.pos.utils.extensions.visible
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import com.pays.pos.logger.MessageEvent
 import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.EventBus
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
@@ -731,6 +733,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         try {
             order.id?.let {
                 viewModel.deleteCart()
+                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                 viewModel.apiCallOrderDetails(orderId = order.id)
             } ?: viewModel.showError(getString(R.string.error_order_id_not_available))
         } catch (e: Exception) {

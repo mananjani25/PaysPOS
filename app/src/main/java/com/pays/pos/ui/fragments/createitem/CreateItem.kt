@@ -53,7 +53,9 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import com.pays.pos.logger.MessageEvent
 import dagger.hilt.android.AndroidEntryPoint
+import org.greenrobot.eventbus.EventBus
 
 @AndroidEntryPoint
 class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, ItemCallback,
@@ -429,7 +431,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
                 productCode ?: ""
             )
         }
-
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CreateItem, saveItem()"))
         viewModel.submit()
     }
 
@@ -817,13 +819,16 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it, createTaxResponse.message
                     ) { _, _ ->
-
-                        val navControll = findNavController()
-                        navControll.previousBackStackEntry?.savedStateHandle?.set(
-                            Constants.KEY,
-                            Constants.CREATEITEM
-                        )
-                        findNavController().popBackStack()
+                        try {
+                            val navControll = findNavController()
+                            if (findNavController().currentDestination?.id==R.id.createItem) {
+                                navControll.previousBackStackEntry?.savedStateHandle?.set(
+                                    Constants.KEY,
+                                    Constants.CREATEITEM
+                                )
+                                findNavController().popBackStack()
+                            }
+                        }catch (e:Exception){}
                     }
                 }
 

@@ -8,7 +8,6 @@ import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
 import android.os.StrictMode
-import android.provider.Settings.Global
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
@@ -19,6 +18,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.google.gson.Gson
 import com.pays.pos.MainApplication
 import com.pays.pos.data.db.AppDatabase
@@ -86,6 +86,7 @@ import com.pays.pos.data.repositories.TaxServiceChargeRepository
 import com.pays.pos.data.repositories.TipDiscountRepository
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.utils.*
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
@@ -93,6 +94,7 @@ import com.pays.pos.utils.workmanager.ThreadPoolManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
+import org.greenrobot.eventbus.EventBus
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -102,6 +104,7 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.collections.set
 import kotlin.math.ceil
 
@@ -138,8 +141,12 @@ class DashBoardCategoryViewModel @Inject constructor(
     var tip = 0.0
     var order_note = ""
     var cartModel: CartModel? = null
+    var manualCartOrderNote: String? = ""
     var currentCartItems: ArrayList<TbCartItem> = arrayListOf()
     var duplicateCurrentCartItem: ArrayList<TbCartItem> = arrayListOf()
+
+    /* This variable is used to track the selected category, if this variable is not 0 then the category will be selected, it was added to solve BIS-4045 */
+    var selectedCatetory:Int=0
 
     var oldDineInItems: ArrayList<TbCartItem>  = arrayListOf()
     var isDineInUpdate = false
@@ -198,9 +205,12 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _removeGuestSuccess = MutableLiveData<Event<String>>()
     val removeGuestSuccess: LiveData<Event<String>> = _removeGuestSuccess
 
+    val noteTbCartItem: MutableLiveData<TbCartItem> = MutableLiveData<TbCartItem>()
 
     private val _latestDiscount = MutableLiveData<Double>()
     val latestDiscount: LiveData<Double> = _latestDiscount
+
+    public val tipButtonOnCustomerDisplayClicked = MutableLiveData<Boolean>()
 
     var isUpdatedOnce = false
 
@@ -209,6 +219,17 @@ class DashBoardCategoryViewModel @Inject constructor(
      * */
     var isCartItemClicked = false
 
+
+    /**
+     * Tip has been added , Either from customer display or from checkoutFragment
+     */
+    val customerGivenTip = MutableLiveData<Boolean>(false)
+    var employeeGivenTip = false
+    var totalTipAmount = 0.0
+    var totalAmount = 0.0
+    var finalAmount = 0.0
+    var paymentTypeForTip = ""
+    val processingTipForCard = MutableLiveData(false)
 
     /**
      * Fields used to check navigation from fragments
@@ -241,13 +262,22 @@ class DashBoardCategoryViewModel @Inject constructor(
      */
     var boldPosNeedToRefresh = false
 
+    /* Below 4 variables are used as backup variables to solve the BIS-3973, when the cart's last item is deleted the the metadata is also getting removed, these variables will keep the metadata with them. */
+    public var backupOrderId:Int? = null
+    public var backupPaymentId:Int? = null
+    public var backupPaymentOfflineId: String? = ""
+    public var backupOrderOfflineId: String? = ""
+
     /**
      * BIS - 3500 issue resolved
      */
     val autoSyncEnabled = MutableLiveData<Boolean>()
+    val disableCursor = MutableLiveData<Boolean>()
 
     //Fetch all Items from TBITEM
     val allInventoryItems = posRepository.getItemsList()
+
+
 
     //Fetch all orders count
     fun allOrderCounts(
@@ -460,8 +490,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     ) {
         appDatabase.itemDao().getItemListByCategory(id)
 
-    }.flow
-
+    }.flow.cachedIn(viewModelScope)
+/* The above .cachedIn(viewModelScope) is added by Rahul to solve the, Attempt to collect twice from pageEventFlow issue. */
 
     /*
         fun getCartList(orderType:String,employee_Id: Int) : List<CartModel>{
@@ -575,12 +605,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun addItemToCartItems(tbCartItem: TbCartItem) {
-        CoroutineScope(Dispatchers.IO).launch {
-
+        CoroutineScope(Dispatchers.Default).launch {
 
             posRepository.addItemToCart(tbCartItem)
             destroyedCartItemsList.clear()
-
 
             val currentTimeMillis = System.currentTimeMillis()
             val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
@@ -630,6 +658,13 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     private fun removeItemFromCartItems(itemId: Int, guestIndexForDineIn: Int) {
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                    Gson().toJson(Thread.currentThread().stackTrace)
+                }"
+            )
+        )
         CoroutineScope(Dispatchers.IO).launch {
             posRepository.removeItemFromCart(itemId, guestIndexForDineIn)
         }
@@ -700,6 +735,13 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     suspend fun deleteCartItem(cartItemId: Int) {
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                    Gson().toJson(Thread.currentThread().stackTrace)
+                }"
+            )
+        )
         viewModelScope.launch {
             posRepository.deleteCartItems(cartItemId)
         }
@@ -718,6 +760,13 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     suspend fun deleteManualCartModel() {
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                    Gson().toJson(Thread.currentThread().stackTrace)
+                }"
+            )
+        )
         viewModelScope.launch {
             posRepository.deleteManualCartModel()
         }
@@ -725,6 +774,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     fun deleteCartItems() {
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                    Gson().toJson(Thread.currentThread().stackTrace)
+                }"
+            )
+        )
         viewModelScope.launch {
             posRepository.deleteCartItems()
         }
@@ -734,6 +790,15 @@ class DashBoardCategoryViewModel @Inject constructor(
         try {
             prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
             cartModel = null
+            manualCartOrderNote=""
+
+            EventBus.getDefault().post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                        Gson().toJson(Thread.currentThread().stackTrace)
+                    }"
+                )
+            )
             GlobalScope.launch {
                 deleteOrderTypeBackupByName(
                     prefProvider.employeeId()
@@ -750,12 +815,26 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun deleteCartBeforeSwitch() {
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR deleteCartBeforeSwitch() Thread.dumpStack(): it1 -> ${
+                    Gson().toJson(Thread.currentThread().stackTrace)
+                }"
+            )
+        )
         GlobalScope.launch {
             posRepository.deleteOldCartBeforeSwitch(prefProvider.getValueInt(EMPLOYEE_ID, 0))
         }
     }
 
     fun clearCartModelBackup() {
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                    Gson().toJson(Thread.currentThread().stackTrace)
+                }"
+            )
+        )
         viewModelScope.launch {
             posRepository.clearCartModelBackup()
         }
@@ -771,8 +850,16 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalCount = 0
             order_note = ""
             posRepository.deleteManualSaleCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
-
         }
+
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR DashboardCategoryViewModel.kt_Thread.dumpStack(): it1 -> ${
+                    Gson().toJson(Thread.currentThread().stackTrace)
+                }"
+            )
+        )
+
     }
 
     fun deleteManualSaleItemsFromCartItems() {
@@ -792,6 +879,14 @@ class DashBoardCategoryViewModel @Inject constructor(
             )
 
         }
+
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                    Gson().toJson(Thread.currentThread().stackTrace)
+                }"
+            )
+        )
 
     }
 
@@ -990,6 +1085,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                             } else {
                                 list.remove(item)
                                 deleteItemFromCartItem(item)
+                                EventBus.getDefault().post(
+                                    MessageEvent(
+                                        "${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                                            Gson().toJson(Thread.currentThread().stackTrace)
+                                        }"
+                                    )
+                                )
                             }
                         }
                     } else {
@@ -1636,6 +1738,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                     if (type == DELETE) {
                         // deletes whole cart
                         deleteCart()
+                        EventBus.getDefault().post(
+                            MessageEvent(
+                                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                                    Gson().toJson(Thread.currentThread().stackTrace)
+                                }"
+                            )
+                        )
                     } else {
 
                         var cartModel = cartList.get(0)
@@ -2211,6 +2320,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     if (type == DELETE) {
                         deleteCart()
+                        EventBus.getDefault().post(
+                            MessageEvent(
+                                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                                    Gson().toJson(Thread.currentThread().stackTrace)
+                                }"
+                            )
+                        )
                     } else {
 
                         var cartModel = cartList?.get(0)
@@ -2818,6 +2934,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                                 list.remove(model)
                                 deleteItemFromCartItem(model)
+                                EventBus.getDefault().post(
+                                    MessageEvent(
+                                        "${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                                            Gson().toJson(Thread.currentThread().stackTrace)
+                                        }"
+                                    )
+                                )
                             }
                         }
                     } else {
@@ -2860,6 +2983,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 if (type == DELETE) {
                     deleteCart()
+                    EventBus.getDefault().post(
+                        MessageEvent(
+                            "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                                Gson().toJson(Thread.currentThread().stackTrace)
+                            }"
+                        )
+                    )
                 } else {
 
                     val newCartModel: CartModel =

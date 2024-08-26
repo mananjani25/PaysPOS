@@ -4,8 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.pays.pos.data.entities.TbCartItem
 import com.pays.pos.data.entities.TbCustomer
+import com.pays.pos.data.entities.TbLabelPrinterSettings
 import com.pays.pos.data.model.CustomerSearchList
 import com.pays.pos.data.model.responseModel.BaseResponse
 import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
@@ -15,11 +17,13 @@ import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.repositories.PosRepository
 import com.pays.pos.data.repositories.TaxServiceChargeRepository
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.utils.Event
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 @HiltViewModel
@@ -66,6 +70,7 @@ public class CustomerListViewModel @Inject constructor(
         posRepository.customerListPagination(data)
 
     fun deleteCart() {
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CustomerListViewModel.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
         viewModelScope.launch {
             posRepository.deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0))
         }
@@ -166,6 +171,10 @@ public class CustomerListViewModel @Inject constructor(
         }
 
 
+    }
+
+    suspend fun getTotalCustomersCount(): Int {
+        return posRepository.getTotalCustomersCount()
     }
 
     fun getReportSummary(isFromSearch: Boolean) {

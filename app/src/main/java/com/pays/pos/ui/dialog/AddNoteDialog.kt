@@ -12,6 +12,7 @@ import android.view.Window
 import android.view.WindowManager
 import android.view.*
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -41,12 +42,15 @@ import javax.inject.Inject
 class AddNoteDialog : DialogFragment(), ItemCallback {
 
     private var isOrderNote: Boolean = false
+    private var isFromManual: Boolean = false
     private var item: TbCartItem? = null
     private var headerItemPosition: Int? = null
     private lateinit var binding: DailogAddNoteBinding
     private lateinit var noteListadapter: NotesListAdapter
     private val viewModel by viewModels<NoteListViewModel>()
-    private val dashBoardCategoryViewModel by viewModels<DashBoardCategoryViewModel>()
+    private val dashBoardCategoryViewModel by activityViewModels<DashBoardCategoryViewModel>()
+
+    //    private val dashBoardCategoryViewModel by viewModels<DashBoardCategoryViewModel>()
     private val TAG = "AddNoteDialog"
 
     @Inject
@@ -81,6 +85,7 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
 
         item = requireArguments().getParcelable("item")
         isOrderNote = requireArguments().getBoolean("isOrderNote")
+        isFromManual = requireArguments().getBoolean("isFromManual")
 
         if ((requireArguments().getString("from")
                 .toString()).equals(AddItemFragment.javaClass.name)
@@ -108,6 +113,18 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
                 } else {
                     txtRemovenote?.gone()
                 }
+
+                if (isFromManual) {
+                    dashBoardCategoryViewModel.manualCartOrderNote?.let {
+                        if (it.isNotEmpty()) {
+                            edtNote.setText(it ?: "")
+                            txtRemovenote?.visible()
+                        } else {
+                            txtRemovenote?.gone()
+                        }
+                    }
+                }
+
             } else {
                 if (item?.note?.isNotEmpty() == true) {
                     edtNote.setText(item?.note)
@@ -136,9 +153,16 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
             }
         }
 
-        binding.imgBack.setOnClickListener {
+        binding.imgBack.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(p0: View?) {
+                item?.note = ""
+                var it = item
+                dismiss()
+            }
+        })
+        /*binding.imgBack.setOnClickListener {
             dismiss()
-        }
+        }*/
         binding.txtRemovenote?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 val result = Bundle().apply {
@@ -237,6 +261,6 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
 
         val note = noteListadapter.getItem(pos)
         binding.edtNote.setText(note.name)
-        addNote()
+//        addNote()
     }
 }

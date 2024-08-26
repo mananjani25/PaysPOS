@@ -41,6 +41,8 @@ data class GetTipReponse(
         @SerializedName("updated_at")
         val updatedAt: String? =null,
         var isChecked: Boolean = true,
+        /*The isCheckedInAdapter is added to solve BIS-4032, the variable will enable the toggle functionality of the button only for setting the orange background layout*/
+        var isCheckedInAdapter: Boolean = false,
         @SerializedName("is_deleted")
         var isDeleted: Boolean = false
     ) : Parcelable

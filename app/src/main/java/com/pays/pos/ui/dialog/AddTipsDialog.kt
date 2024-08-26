@@ -29,6 +29,7 @@ import com.pays.pos.utils.AmountTextWatcher
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
 import com.google.gson.Gson
+import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
@@ -43,6 +44,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
     private var totalPrice: Double = 0.0
     private lateinit var binding: DailogAddTipsBinding
     private val viewModel by activityViewModels<TipListViewModel>()
+    private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val TAG = "AddDiscountDialog"
     private lateinit var tipsListAdapter: DialogTipsListAdapter
     private var tipModel: GetTipReponse.Data? = null
@@ -105,6 +107,8 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
             rate = binding.llKeypad.txt10.text.toString().trim()
                 .substring(0, binding.llKeypad.txt10.text.toString().length - 1).toDouble()
 
+            resetDialogTipsList()
+
             var price = 0.0
             price = if (isFromTransaction) {
                 MethodUtils.percentageCalculation(
@@ -160,6 +164,13 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
             }
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
         }
+    }
+
+    private fun resetDialogTipsList() {
+        tipsListAdapter.discountList.forEach {
+            it.isCheckedInAdapter=false
+        }
+        tipsListAdapter.notifyDataSetChanged()
     }
 
 
@@ -221,6 +232,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
         }
 
         binding.llKeypad.tvClear.setOnClickListener {
+            dashboardViewModel.customerGivenTip.value=false
             calculateValue("", true)
         }
         binding.llKeypad.tvDZero.setOnClickListener {
@@ -250,7 +262,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
     private fun setupData() {
 
         binding.llKeypad.txtClear.setOnClickListener {
-
+            dashboardViewModel.customerGivenTip.value=false
             binding.edtAmount.setText("0.00")
 
             tipsListAdapter.clearSelectedItem()
@@ -307,19 +319,24 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
 
     override fun selectedItem(model: GetTipReponse.Data, pos: Int) {
         LogUtil.logE(TAG, "SelectedItem:  ${Gson().toJson(model)}")
-        rate = model.rate
-        tipModel.apply { model }
-        tipID = model.id
-        var tipCalculation = 0.0
-        if (isFromTransaction) {
-            tipCalculation = (totalPrice * model.rate) / 100
-        } else {
-            totalPrice =
-                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble() / splitCount
-            tipCalculation = (totalPrice * model.rate) / 100
+        if (model.isCheckedInAdapter){
+            rate = model.rate
+            tipModel.apply { model }
+            tipID = model.id
+            var tipCalculation = 0.0
+            if (isFromTransaction) {
+                tipCalculation = (totalPrice * model.rate) / 100
+            } else {
+                totalPrice =
+                    prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble() / splitCount
+                tipCalculation = (totalPrice * model.rate) / 100
+            }
+            binding.edtAmount.setText(MethodUtils.roundOffAmountString(tipCalculation))
+            selectedListPos = pos
+        }else{
+            binding.edtAmount.setText("0.00")
         }
-        binding.edtAmount.setText(MethodUtils.roundOffAmountString(tipCalculation))
-        selectedListPos = pos
+
     }
 
     private fun calculateValue(number: String, delete: Boolean) {

@@ -17,8 +17,10 @@ import com.pays.pos.di.PrefProvider
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
 import com.google.gson.Gson
+import com.pays.pos.logger.MessageEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 import kotlin.math.ceil
 
@@ -49,6 +51,7 @@ class ManualSaleViewModel @Inject constructor(
 
     init {
         deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0))
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
     }
 
 
@@ -72,9 +75,10 @@ class ManualSaleViewModel @Inject constructor(
             totalServiceCharge = 0.0
             totalCount = 0
             posRepository.deleteManualSaleCart(employee_id)
-
-
         }
+
+        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR manualSaleViewModel.kt_Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+
     }
 
     fun saveManualSaleData(cartList: List<CartModel>) {
@@ -137,11 +141,13 @@ class ManualSaleViewModel @Inject constructor(
                 if (list.isEmpty()) {
                     // delete carts
                     deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0))
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                 }
             } else {
 
                 if (type == DELETE) {
                     deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0))
+                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
                 } else {
                     val cartModel = cartList?.get(0)
                     cartModel?.items = listOf(item)

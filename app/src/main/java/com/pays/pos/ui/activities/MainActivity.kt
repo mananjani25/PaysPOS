@@ -2,9 +2,7 @@ package com.pays.pos.ui.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Dialog
-import android.app.NotificationChannel
-import android.app.NotificationManager
+import android.app.*
 import android.content.*
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
@@ -57,10 +55,7 @@ import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
 import com.pays.pos.MainApplication
 import com.pays.pos.R
-import com.pays.pos.data.model.GuestAttrQueue
-import com.pays.pos.data.model.PrinterJSONElementData
-import com.pays.pos.data.model.PrinterQueueModel
-import com.pays.pos.data.model.TmpPrinterModel
+import com.pays.pos.data.model.*
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.pays.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.pays.pos.data.model.responseModel.PrinterResponse
@@ -77,12 +72,15 @@ import com.pays.pos.di.ApiModule.BASE_URL
 import com.pays.pos.di.HostSelectionInterceptor
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
+import com.pays.pos.logger.MessageEvent
+import com.pays.pos.service.KioskService
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.payment.OrderCompleteViewModel
+import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.Hardware
 import com.pays.pos.ui.fragments.settings.hardware.printer.UpdatePrinters
 import com.pays.pos.utils.*
@@ -100,11 +98,16 @@ import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
 import com.sunmi.externalprinterlibrary2.style.UnderlineStyle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URI
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 import javax.inject.Inject
 
 
@@ -134,8 +137,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private var globalListPrinters: ArrayList<TmpPrinterModel> = arrayListOf()
     private var printerQueueModelGlobal: PrinterQueueModel? = null
     private var isPrinterQueueRun: Boolean = false
-    private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> =
-        emptyList()
+    private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = emptyList()
     private var cameraUri: Uri? = null
     private var selectedFilePath: String? = ""
     private var builder: Dialog? = null
@@ -147,6 +149,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     var activityResultCallBack: ActivityResultCallBack? = null
     private val TAG = "MainActivity"
     private val viewModelPrinter by viewModels<OrderCompleteViewModel>()
+    private val paymentViewModel by viewModels<PaymentViewModel>()
     private var customerSettingModel = GetKitchenReceiptSettingsResponse.Data()
     private var subscription: Subscription? = null
     private var consumer: Consumer? = null
@@ -163,7 +166,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     @set:Inject
     internal var prefProvider: PrefProvider? = null
 
-    private var doubleBackToExitPressedOnce:Boolean = false
+    private var doubleBackToExitPressedOnce: Boolean = false
 
     @set:Inject
     var hostSelectionInterceptor: HostSelectionInterceptor? = null
@@ -192,9 +195,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         var updatePrinter: UpdatePrinters? = null
 
         private var subscription: Subscription? = null
-        private var subscription2: Subscription? = null
+        public var subscription2: Subscription? = null
         private var consumer: Consumer? = null
-        private var consumer2: Consumer? = null
+        public var consumer2: Consumer? = null
 
         fun workerDisconnect() {
             try {
@@ -203,7 +206,50 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 e.printStackTrace()
             }
         }
+
+        fun writeToFile(data: String, fileName: String, filesDir: File?, context: Context) {
+            try {
+/*
+                val folder = filesDir
+                val f = File(folder, "Order_logs")
+                f.mkdir()
+                val file = File(folder, "$fileName.txt")
+
+                file.appendText(Gson().toJson(data))*/
+
+            } catch (e: IOException) {
+                Log.e("Exception", "File write failed: $e")
+            }
+        }
+
+        /* fun writeToFile(
+             data: String,
+             folder: File?,
+             fileName: String,
+             folderName: String,
+             context: Context
+         ) {
+             try {
+                 val f = File(folder, folderName)
+                 f.mkdir()
+                 val file = File(
+                     folder.toString().plus("/").plus(folderName).plus("/").plus(fileName),
+                     fileName
+                 )
+                 val fos = FileOutputStream(file)
+                 fos.write(data.toByteArray())
+                 fos.close()
+             } catch (e: IOException) {
+                 Log.e("Exception", "File write failed: $e")
+             }
+         }*/
     }
+
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
 
     @Inject
     lateinit var repo: UserRepository
@@ -215,8 +261,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             var isAuto = intent?.getBooleanExtra("isAuto", false)
             if (isAuto == true) {
                 AlertUtils.showCustomAlertWithYesNoListener(
-                    context,
-                    message
+                    context, message
                 ) { _, _ ->
                     clockoutFromSystem()
                 }
@@ -259,17 +304,13 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
         when (level) {
-            ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE,
-            ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW,
-            ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL -> {
+            ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE, ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW, ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL -> {
                 System.gc()
                 cacheDir.delete()
                 Log.e("Cache Clear", "Cleared cache")
             }
 
-            ComponentCallbacks2.TRIM_MEMORY_BACKGROUND,
-            ComponentCallbacks2.TRIM_MEMORY_MODERATE,
-            ComponentCallbacks2.TRIM_MEMORY_COMPLETE -> {
+            ComponentCallbacks2.TRIM_MEMORY_BACKGROUND, ComponentCallbacks2.TRIM_MEMORY_MODERATE, ComponentCallbacks2.TRIM_MEMORY_COMPLETE -> {
                 System.gc()
                 // val lruCache = LruCache(100,10)
                 cacheDir.delete()
@@ -279,6 +320,16 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
             ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN -> {
 
+            }
+        }
+    }
+
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+
+        navController?.backStack?.last?.destination?.label?.let {
+            if (it.equals("DashboardCategoryBoldPOS")) {
+                dashboardViewModel.disableCursor.value = true
             }
         }
     }
@@ -346,22 +397,18 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         override fun onReceive(p0: Context?, p1: Intent?) {
 
             Log.e(
-                TAG,
-                "checkPrinterQueueWorker:  ${
+                TAG, "checkPrinterQueueWorker:  ${
                     checkUploadWorker(
-                        PRINTER_QUEUE_BACKGROUND,
-                        this@MainActivity
+                        PRINTER_QUEUE_BACKGROUND, this@MainActivity
                     )
                 }"
             )
 
 
             if (prefProvider?.getValueboolean(
-                    IS_MASTER_TERMINAL,
-                    false
+                    IS_MASTER_TERMINAL, false
                 ) == true && prefProvider?.getValueboolean(
-                    Constants.IS_PRINTER_QUEUE_STARTS,
-                    false
+                    Constants.IS_PRINTER_QUEUE_STARTS, false
                 ) == false && prefProvider?.getValueboolean(
                     IS_PRINTER_QUEUE_ENABLE, false
                 ) == true
@@ -376,20 +423,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
                     // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
                     .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
-                    .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
-                    .put(
+                    .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, "")).put(
                         IS_PRINTER_QUEUE_ENABLE,
                         prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)
-                    )
-                    .put("is_cancel_work", true)
-                    .build()
+                    ).put("is_cancel_work", true).build()
                 prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL, true)
-                val uploadWorkRequest =
-                    OneTimeWorkRequest.Builder(
-                        UploadWorker2::class.java
-                    ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
-                        .setInputData(data)
-                        .build()
+                val uploadWorkRequest = OneTimeWorkRequest.Builder(
+                    UploadWorker2::class.java
+                ).addTag(Constants.PRINTER_QUEUE_BACKGROUND).setInputData(data).build()
 
 
                 val workManager = WorkManager.getInstance(this@MainActivity)
@@ -397,7 +438,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 try {
 
                     workManager.enqueueUniqueWork(
-                        Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.KEEP,
+                        Constants.PRINTER_QUEUE_BACKGROUND,
+                        ExistingWorkPolicy.KEEP,
                         uploadWorkRequest
                     )
 
@@ -411,20 +453,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
                         // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
                         .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
-                        .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
-                        .put(
+                        .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, "")).put(
                             IS_PRINTER_QUEUE_ENABLE,
                             prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)
-                        )
-                        .put("is_cancel_work", false)
-                        .build()
+                        ).put("is_cancel_work", false).build()
                     prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL, false)
-                    val uploadWorkRequest =
-                        OneTimeWorkRequest.Builder(
-                            UploadWorker2::class.java
-                        ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
-                            .setInputData(data)
-                            .build()
+                    val uploadWorkRequest = OneTimeWorkRequest.Builder(
+                        UploadWorker2::class.java
+                    ).addTag(Constants.PRINTER_QUEUE_BACKGROUND).setInputData(data).build()
 
 
                     val workManager = WorkManager.getInstance(this@MainActivity)
@@ -432,7 +468,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     try {
 
                         workManager.enqueueUniqueWork(
-                            Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE,
+                            Constants.PRINTER_QUEUE_BACKGROUND,
+                            ExistingWorkPolicy.REPLACE,
                             uploadWorkRequest
                         )
 
@@ -446,20 +483,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
                         // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
                         .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
-                        .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
-                        .put(
+                        .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, "")).put(
                             IS_PRINTER_QUEUE_ENABLE,
                             prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)
-                        )
-                        .put("is_cancel_work", true)
-                        .build()
+                        ).put("is_cancel_work", true).build()
                     prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL, true)
-                    val uploadWorkRequest =
-                        OneTimeWorkRequest.Builder(
-                            UploadWorker2::class.java
-                        ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
-                            .setInputData(data)
-                            .build()
+                    val uploadWorkRequest = OneTimeWorkRequest.Builder(
+                        UploadWorker2::class.java
+                    ).addTag(Constants.PRINTER_QUEUE_BACKGROUND).setInputData(data).build()
 
 
                     val workManager = WorkManager.getInstance(this@MainActivity)
@@ -467,7 +498,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     try {
 
                         workManager.enqueueUniqueWork(
-                            Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.KEEP,
+                            Constants.PRINTER_QUEUE_BACKGROUND,
+                            ExistingWorkPolicy.KEEP,
                             uploadWorkRequest
                         )
 
@@ -485,20 +517,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
                     // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
                     .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
-                    .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
-                    .put(
+                    .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, "")).put(
                         IS_PRINTER_QUEUE_ENABLE,
                         prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)
-                    )
-                    .put("is_cancel_work", false)
-                    .build()
+                    ).put("is_cancel_work", false).build()
                 prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL, false)
-                val uploadWorkRequest =
-                    OneTimeWorkRequest.Builder(
-                        UploadWorker2::class.java
-                    ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
-                        .setInputData(data)
-                        .build()
+                val uploadWorkRequest = OneTimeWorkRequest.Builder(
+                    UploadWorker2::class.java
+                ).addTag(Constants.PRINTER_QUEUE_BACKGROUND).setInputData(data).build()
 
 
                 val workManager = WorkManager.getInstance(this@MainActivity)
@@ -506,7 +532,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 try {
 
                     workManager.enqueueUniqueWork(
-                        Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.KEEP,
+                        Constants.PRINTER_QUEUE_BACKGROUND,
+                        ExistingWorkPolicy.KEEP,
                         uploadWorkRequest
                     )
 
@@ -518,11 +545,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
             }
             Log.e(
-                TAG,
-                "checkQUeue: ${
+                TAG, "checkQUeue: ${
                     prefProvider?.getValueboolean(
-                        IS_PRINTER_QUEUE_ENABLE,
-                        false
+                        IS_PRINTER_QUEUE_ENABLE, false
                     )
                 }  checkMAsterRermi: ${
                     prefProvider?.getValueboolean(
@@ -532,8 +557,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             )
 
             if (prefProvider?.getValueboolean(
-                    IS_PRINTER_QUEUE_ENABLE,
-                    false
+                    IS_PRINTER_QUEUE_ENABLE, false
                 ) == true && prefProvider?.getValueboolean(
                     IS_MASTER_TERMINAL, false
                 ) == true && consumer == null && isLocalMasterFlag == false
@@ -544,8 +568,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 connectActionCable()
 
             } else if ((prefProvider?.getValueboolean(
-                    IS_PRINTER_QUEUE_ENABLE,
-                    false
+                    IS_PRINTER_QUEUE_ENABLE, false
                 ) == false || prefProvider?.getValueboolean(
                     IS_MASTER_TERMINAL, false
                 ) == false) && consumer != null
@@ -601,13 +624,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             val serializedObject: String = p1?.getStringExtra(Constants.DATA).toString()
             if (serializedObject.isNotEmpty()) {
                 val gson = Gson()
-                val type = object :
-                    TypeToken<List<PrinterQueueModel?>?>() {}.type
-                arrayItems =
-                    gson.fromJson<Any>(
-                        serializedObject,
-                        type
-                    ) as ArrayList<PrinterQueueModel>
+                val type = object : TypeToken<List<PrinterQueueModel?>?>() {}.type
+                arrayItems = gson.fromJson<Any>(
+                    serializedObject, type
+                ) as ArrayList<PrinterQueueModel>
 
 
                 LogUtil.logE(TAG, "printerQueueDataReceived  ${Gson().toJson(arrayItems)}")
@@ -663,9 +683,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
                     newKitchenPrinterInit(
-                        it[it.size - 1],
-                        it.size - 1,
-                        it.toCollection(arrayListOf())
+                        it[it.size - 1], it.size - 1, it.toCollection(arrayListOf())
                     )
 
                 }
@@ -695,9 +713,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
     private fun newKitchenPrinterInit(
-        printerQueueModel: PrinterQueueModel,
-        index: Int,
-        arrayItems: ArrayList<PrinterQueueModel>
+        printerQueueModel: PrinterQueueModel, index: Int, arrayItems: ArrayList<PrinterQueueModel>
     ) {
         LogUtil.logE(TAG, "kitchenPrinters  ${kitchenPrinterList.size}")
         printerQueueModelGlobal = printerQueueModel
@@ -728,8 +744,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
                 var containsFlag: Boolean = true
                 LogUtil.logE(
-                    TAG,
-                    "printerSuccessData  ${Gson().toJson(printerQueueModel.printSuccessData)}"
+                    TAG, "printerSuccessData  ${Gson().toJson(printerQueueModel.printSuccessData)}"
                 )
                 LogUtil.logE(TAG, "PrinterID ${kitchenPrinterList[i].id}")
                 if (printerQueueModel.printSuccessData.isNotEmpty()) {
@@ -761,40 +776,121 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
                         isPrinterQueueRun = true
-                        lifecycleScope.executeAsyncTask(
-                            onPostExecute = {
-                                if (mPrinter != null) {
-                                    LogUtil.logE(
-                                        TAG,
-                                        "statusInfo  ${Gson().toJson(mPrinter?.status)}"
-                                    )
+                        lifecycleScope.executeAsyncTask(onPostExecute = {
+                            if (mPrinter != null) {
+                                LogUtil.logE(
+                                    TAG, "statusInfo  ${Gson().toJson(mPrinter?.status)}"
+                                )
 
-                                    var fontSizeH = 1
-                                    var fontSizeW = 1
-                                    when (kitchenSettingModel.fonts) {
-                                        Constants.SMALL -> {
-                                            fontSizeH = 1
-                                            fontSizeW = 1
-                                        }
-
-                                        Constants.MEDIUM -> {
-                                            fontSizeH = 1
-                                            fontSizeW = 2
-                                        }
-
-                                        Constants.LARGE -> {
-                                            fontSizeH = 2
-                                            fontSizeW = 2
-                                        }
-
-
+                                var fontSizeH = 1
+                                var fontSizeW = 1
+                                when (kitchenSettingModel.fonts) {
+                                    Constants.SMALL -> {
+                                        fontSizeH = 1
+                                        fontSizeW = 1
                                     }
-                                    mPrinter?.addFeedLine(2)
-                                    if (kitchenSettingModel.showOrderType) {
+
+                                    Constants.MEDIUM -> {
+                                        fontSizeH = 1
+                                        fontSizeW = 2
+                                    }
+
+                                    Constants.LARGE -> {
+                                        fontSizeH = 2
+                                        fontSizeW = 2
+                                    }
 
 
-                                        mPrinter?.addFeedLine(0)
+                                }
+                                mPrinter?.addFeedLine(2)
+                                if (kitchenSettingModel.showOrderType) {
+
+
+                                    mPrinter?.addFeedLine(0)
+                                    mPrinter?.addTextFont(Builder.FONT_E)
+                                    mPrinter?.addTextLang(Builder.LANG_EN)
+                                    mPrinter?.addTextSize(fontSizeH, fontSizeW)
+                                    mPrinter?.addTextStyle(
+                                        Builder.FALSE,
+                                        Builder.FALSE,
+                                        Builder.TRUE,
+                                        Builder.COLOR_1
+                                    )
+                                    mPrinter?.addTextAlign(Builder.ALIGN_CENTER)
+                                    mPrinter?.addText(printerQueueModel.orderType)
+
+                                }
+
+                                mPrinter?.addFeedLine(2)
+                                mPrinter?.addTextFont(Builder.FONT_E)
+                                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                                mPrinter?.addTextLang(Builder.LANG_EN)
+                                mPrinter?.addTextSize(1, 1)
+                                mPrinter?.addTextStyle(
+                                    Builder.FALSE, Builder.FALSE, Builder.FALSE, Builder.COLOR_1
+                                )
+
+                                mPrinter?.addText(
+                                    padLine(
+                                        "OrderID:" + printerQueueModel.orderID, "", 48
+                                    )
+                                )
+
+                                mPrinter?.addFeedUnit(30)
+                                mPrinter?.addTextFont(Builder.FONT_E)
+                                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                                mPrinter?.addTextLang(Builder.LANG_EN)
+                                mPrinter?.addTextSize(1, 1)
+                                mPrinter?.addTextStyle(
+                                    Builder.FALSE, Builder.FALSE, Builder.FALSE, Builder.COLOR_1
+                                )
+
+
+                                mPrinter?.addText(
+                                    padLine(
+                                        "ReceiptID:" + printerQueueModel.offlineId, "", 48
+                                    )
+                                )
+
+                                mPrinter?.addFeedUnit(30)
+                                mPrinter?.addTextFont(Builder.FONT_E)
+                                mPrinter?.addTextAlign(Builder.ALIGN_LEFT)
+                                mPrinter?.addTextLang(Builder.LANG_EN)
+                                mPrinter?.addTextSize(fontSizeH, fontSizeW)
+                                mPrinter?.addTextStyle(
+                                    Builder.FALSE, Builder.FALSE, Builder.FALSE, Builder.COLOR_1
+                                )
+
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                    val current = LocalDateTime.now()
+                                    val formatter =
+                                        DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+                                    val formatted = current.format(formatter)
+                                    mPrinter?.addText(
+                                        "Print Time:" + Constants.getCurrentTimeFromTimeZone(
+                                            this, formatted
+                                        )
+                                    )
+                                }
+                                mPrinter?.addFeedLine(1)
+                                mPrinter?.let {
+                                    addHorizontalLineNew(it)
+                                }
+
+                                printerQueueModel.orderItems.let {
+                                    addOrdersForKitchenCustomerNewPrinter(
+                                        mPrinter!!, it, fontSizeH, fontSizeW
+                                    )
+                                }
+
+                                if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
+                                    if (printerQueueModel.customerName.isNotEmpty()) {
+
+                                        mPrinter?.addFeedUnit(30)
+                                        mPrinter?.addFeedLine(1)
                                         mPrinter?.addTextFont(Builder.FONT_E)
+                                        //builder.addTextLineSpace(20)
+                                        mPrinter?.addTextAlign(Builder.ALIGN_LEFT)
                                         mPrinter?.addTextLang(Builder.LANG_EN)
                                         mPrinter?.addTextSize(fontSizeH, fontSizeW)
                                         mPrinter?.addTextStyle(
@@ -803,98 +899,26 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                                             Builder.TRUE,
                                             Builder.COLOR_1
                                         )
-                                        mPrinter?.addTextAlign(Builder.ALIGN_CENTER)
-                                        mPrinter?.addText(printerQueueModel.orderType)
+                                        mPrinter?.addText("Customer Details" + "\n")
 
-                                    }
-
-                                    mPrinter?.addFeedLine(2)
-                                    mPrinter?.addTextFont(Builder.FONT_E)
-                                    //  builder.addTextAlign(Builder.ALIGN_LEFT)
-                                    mPrinter?.addTextLang(Builder.LANG_EN)
-                                    mPrinter?.addTextSize(1, 1)
-                                    mPrinter?.addTextStyle(
-                                        Builder.FALSE,
-                                        Builder.FALSE,
-                                        Builder.FALSE,
-                                        Builder.COLOR_1
-                                    )
-
-                                    mPrinter?.addText(
-                                        padLine(
-                                            "OrderID:" + printerQueueModel.orderID,
-                                            "",
-                                            48
+                                        mPrinter?.addTextFont(Builder.FONT_B)
+                                        //builder.addTextLineSpace(20)
+                                        mPrinter?.addTextLang(Builder.LANG_EN)
+                                        mPrinter?.addTextSize(fontSizeH, fontSizeW)
+                                        mPrinter?.addTextStyle(
+                                            Builder.FALSE,
+                                            Builder.FALSE,
+                                            Builder.FALSE,
+                                            Builder.COLOR_1
                                         )
-                                    )
+                                        addHorizontalLineNew(mPrinter!!)
 
-                                    mPrinter?.addFeedUnit(30)
-                                    mPrinter?.addTextFont(Builder.FONT_E)
-                                    //  builder.addTextAlign(Builder.ALIGN_LEFT)
-                                    mPrinter?.addTextLang(Builder.LANG_EN)
-                                    mPrinter?.addTextSize(1, 1)
-                                    mPrinter?.addTextStyle(
-                                        Builder.FALSE,
-                                        Builder.FALSE,
-                                        Builder.FALSE,
-                                        Builder.COLOR_1
-                                    )
-
-
-                                    mPrinter?.addText(
-                                        padLine(
-                                            "ReceiptID:" + printerQueueModel.offlineId,
-                                            "",
-                                            48
-                                        )
-                                    )
-
-                                    mPrinter?.addFeedUnit(30)
-                                    mPrinter?.addTextFont(Builder.FONT_E)
-                                    mPrinter?.addTextAlign(Builder.ALIGN_LEFT)
-                                    mPrinter?.addTextLang(Builder.LANG_EN)
-                                    mPrinter?.addTextSize(fontSizeH, fontSizeW)
-                                    mPrinter?.addTextStyle(
-                                        Builder.FALSE,
-                                        Builder.FALSE,
-                                        Builder.FALSE,
-                                        Builder.COLOR_1
-                                    )
-
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                        val current = LocalDateTime.now()
-                                        val formatter =
-                                            DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
-                                        val formatted = current.format(formatter)
-                                        mPrinter?.addText(
-                                            "Print Time:" + Constants.getCurrentTimeFromTimeZone(
-                                                this,
-                                                formatted
-                                            )
-                                        )
-                                    }
-                                    mPrinter?.addFeedLine(1)
-                                    mPrinter?.let {
-                                        addHorizontalLineNew(it)
-                                    }
-
-                                    printerQueueModel.orderItems.let {
-                                        addOrdersForKitchenCustomerNewPrinter(
-                                            mPrinter!!,
-                                            it,
-                                            fontSizeH,
-                                            fontSizeW
-                                        )
-                                    }
-
-                                    if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
-                                        if (printerQueueModel.customerName.isNotEmpty()) {
+                                        if (kitchenSettingModel.showCustomerName) {
 
                                             mPrinter?.addFeedUnit(30)
-                                            mPrinter?.addFeedLine(1)
                                             mPrinter?.addTextFont(Builder.FONT_E)
-                                            //builder.addTextLineSpace(20)
                                             mPrinter?.addTextAlign(Builder.ALIGN_LEFT)
+                                            //builder.addTextLineSpace(20)
                                             mPrinter?.addTextLang(Builder.LANG_EN)
                                             mPrinter?.addTextSize(fontSizeH, fontSizeW)
                                             mPrinter?.addTextStyle(
@@ -903,21 +927,35 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                                                 Builder.TRUE,
                                                 Builder.COLOR_1
                                             )
-                                            mPrinter?.addText("Customer Details" + "\n")
+                                            mPrinter?.addText(printerQueueModel.customerName)
 
-                                            mPrinter?.addTextFont(Builder.FONT_B)
-                                            //builder.addTextLineSpace(20)
-                                            mPrinter?.addTextLang(Builder.LANG_EN)
-                                            mPrinter?.addTextSize(fontSizeH, fontSizeW)
-                                            mPrinter?.addTextStyle(
-                                                Builder.FALSE,
-                                                Builder.FALSE,
-                                                Builder.FALSE,
-                                                Builder.COLOR_1
-                                            )
-                                            addHorizontalLineNew(mPrinter!!)
+                                        }
 
-                                            if (kitchenSettingModel.showCustomerName) {
+
+                                        if (kitchenSettingModel.showCustomerPhone) {
+
+                                            if (printerQueueModel?.customerPhoneNo.isNotEmpty()) {
+                                                mPrinter?.addFeedUnit(30)
+                                                mPrinter?.addTextFont(Builder.FONT_E)
+                                                mPrinter?.addTextAlign(Builder.ALIGN_LEFT)
+                                                //builder.addTextLineSpace(20)
+                                                mPrinter?.addTextLang(Builder.LANG_EN)
+                                                mPrinter?.addTextSize(fontSizeH, fontSizeW)
+                                                mPrinter?.addTextStyle(
+                                                    Builder.FALSE,
+                                                    Builder.FALSE,
+                                                    Builder.TRUE,
+                                                    Builder.COLOR_1
+                                                )
+                                                mPrinter?.addText(printerQueueModel.customerPhoneNo)
+                                            }
+
+                                        }
+
+                                        if (kitchenSettingModel.showCustomerAddress) {
+
+
+                                            if (printerQueueModel.customerAddress.isNotEmpty()) {
 
                                                 mPrinter?.addFeedUnit(30)
                                                 mPrinter?.addTextFont(Builder.FONT_E)
@@ -931,135 +969,88 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                                                     Builder.TRUE,
                                                     Builder.COLOR_1
                                                 )
-                                                mPrinter?.addText(printerQueueModel.customerName)
 
-                                            }
-
-
-                                            if (kitchenSettingModel.showCustomerPhone) {
-
-                                                if (printerQueueModel?.customerPhoneNo.isNotEmpty()) {
-                                                    mPrinter?.addFeedUnit(30)
-                                                    mPrinter?.addTextFont(Builder.FONT_E)
-                                                    mPrinter?.addTextAlign(Builder.ALIGN_LEFT)
-                                                    //builder.addTextLineSpace(20)
-                                                    mPrinter?.addTextLang(Builder.LANG_EN)
-                                                    mPrinter?.addTextSize(fontSizeH, fontSizeW)
-                                                    mPrinter?.addTextStyle(
-                                                        Builder.FALSE,
-                                                        Builder.FALSE,
-                                                        Builder.TRUE,
-                                                        Builder.COLOR_1
-                                                    )
-                                                    mPrinter?.addText(printerQueueModel.customerPhoneNo)
-                                                }
-
-                                            }
-
-                                            if (kitchenSettingModel.showCustomerAddress) {
-
-
-                                                if (printerQueueModel.customerAddress.isNotEmpty()) {
-
-                                                    mPrinter?.addFeedUnit(30)
-                                                    mPrinter?.addTextFont(Builder.FONT_E)
-                                                    mPrinter?.addTextAlign(Builder.ALIGN_LEFT)
-                                                    //builder.addTextLineSpace(20)
-                                                    mPrinter?.addTextLang(Builder.LANG_EN)
-                                                    mPrinter?.addTextSize(fontSizeH, fontSizeW)
-                                                    mPrinter?.addTextStyle(
-                                                        Builder.FALSE,
-                                                        Builder.FALSE,
-                                                        Builder.TRUE,
-                                                        Builder.COLOR_1
-                                                    )
-
-                                                    mPrinter?.addText(printerQueueModel.customerAddress)
-                                                }
-
+                                                mPrinter?.addText(printerQueueModel.customerAddress)
                                             }
 
                                         }
+
                                     }
-
-                                    mPrinter?.addFeedLine(2)
-                                    mPrinter?.addCut(Builder.CUT_FEED)
-
-                                    if (mPrinter?.status?.connection != 0) {
-                                        mPrinter?.beginTransaction()
-                                        mPrinter?.sendData(Printer.PARAM_DEFAULT)
-
-                                        isPrinterQueueRun = false
-                                    }
-
-
                                 }
+
+                                mPrinter?.addFeedLine(2)
+                                mPrinter?.addCut(Builder.CUT_FEED)
+
+                                if (mPrinter?.status?.connection != 0) {
+                                    mPrinter?.beginTransaction()
+                                    mPrinter?.sendData(Printer.PARAM_DEFAULT)
+
+                                    isPrinterQueueRun = false
+                                }
+
+
+                            }
+
+                            lifecycleScope.launch {
+                                delay(5000)
+                                getPrinterQueueData()
+                            }
+
+                        }, doInBackground = {
+
+
+                            LogUtil.logE(
+                                TAG, "getIpAddress  ${kitchenPrinterList[i].ipAddress}"
+                            )
+                            LogUtil.logE(
+                                TAG, "connectionPrinter   ${mPrinter?.status?.connection}"
+                            )
+                            /*
+                                                                try {
+                                                                    mPrinter?.disconnect()
+                                                                } catch (e: Exception) {
+                                                                    e.printStackTrace()
+                                                                }*/
+                            try {
 
                                 lifecycleScope.launch {
-                                    delay(5000)
-                                    getPrinterQueueData()
-                                }
 
-                            },
-                            doInBackground = {
+                                    for (m in 0 until 3) {
+                                        try {
 
+                                            mPrinter?.connect(
+                                                kitchenPrinterList[i].ipAddress,
+                                                Printer.PARAM_DEFAULT
+                                            )
 
-                                LogUtil.logE(
-                                    TAG,
-                                    "getIpAddress  ${kitchenPrinterList[i].ipAddress}"
-                                )
-                                LogUtil.logE(
-                                    TAG,
-                                    "connectionPrinter   ${mPrinter?.status?.connection}"
-                                )
-                                /*
-                                                                    try {
-                                                                        mPrinter?.disconnect()
-                                                                    } catch (e: Exception) {
-                                                                        e.printStackTrace()
-                                                                    }*/
-                                try {
-
-                                    lifecycleScope.launch {
-
-                                        for (m in 0 until 3) {
+                                            mPrinter?.startMonitor()
+                                        } catch (e: Exception) {
+                                            isPrinterQueueRun = false
                                             try {
-
-                                                mPrinter?.connect(
-                                                    kitchenPrinterList[i].ipAddress,
-                                                    Printer.PARAM_DEFAULT
-                                                )
-
-                                                mPrinter?.startMonitor()
-                                            } catch (e: Exception) {
-                                                isPrinterQueueRun = false
-                                                try {
-                                                    if (mPrinter?.status?.connection == 1) {
-                                                        mPrinter?.disconnect()
-                                                    }
-                                                } catch (e: java.lang.Exception) {
-                                                    e.printStackTrace()
+                                                if (mPrinter?.status?.connection == 1) {
+                                                    mPrinter?.disconnect()
                                                 }
+                                            } catch (e: java.lang.Exception) {
                                                 e.printStackTrace()
-
                                             }
+                                            e.printStackTrace()
 
                                         }
+
                                     }
-                                    mPrinter?.setReceiveEventListener(this)
-                                    mPrinter?.setConnectionEventListener(this)
-                                    mPrinter?.setStatusChangeEventListener(this)
-
-
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
                                 }
+                                mPrinter?.setReceiveEventListener(this)
+                                mPrinter?.setConnectionEventListener(this)
+                                mPrinter?.setStatusChangeEventListener(this)
 
-                            },
-                            onPreExecute = {
-                                isPrinterQueueRun = true
+
+                            } catch (e: Exception) {
+                                e.printStackTrace()
                             }
-                        )
+
+                        }, onPreExecute = {
+                            isPrinterQueueRun = true
+                        })
 
 
                     } catch (e: java.lang.Exception) {
@@ -1108,11 +1099,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         )*/
 
         Log.e(
-            TAG,
-            "checkPrinterQueueWorker:  ${
+            TAG, "checkPrinterQueueWorker:  ${
                 checkUploadWorker(
-                    Constants.PRINTER_QUEUE_BACKGROUND,
-                    this@MainActivity
+                    Constants.PRINTER_QUEUE_BACKGROUND, this@MainActivity
                 )
             }"
         )
@@ -1121,22 +1110,16 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
             // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
             .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
-            .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
-            .put(
+            .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, "")).put(
                 IS_PRINTER_QUEUE_ENABLE,
                 prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)
-            )
-            .put("is_cancel_work", false)
-            .build()
+            ).put("is_cancel_work", false).build()
 
         prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL, false)
 
-        val uploadWorkRequest =
-            OneTimeWorkRequest.Builder(
-                UploadWorker2::class.java
-            ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
-                .setInputData(data)
-                .build()
+        val uploadWorkRequest = OneTimeWorkRequest.Builder(
+            UploadWorker2::class.java
+        ).addTag(Constants.PRINTER_QUEUE_BACKGROUND).setInputData(data).build()
 
 
         val workManager = WorkManager.getInstance(this)
@@ -1145,8 +1128,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
             workManager.enqueueUniqueWork(
-                Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE,
-                uploadWorkRequest
+                Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE, uploadWorkRequest
             )
 
         } catch (e: java.lang.Exception) {
@@ -1166,8 +1148,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         kitchenPrinterList = emptyList()
                         kitchenPrinterList = it.data
                         if (prefProvider?.getValueboolean(
-                                Constants.IS_MASTER_TERMINAL,
-                                false
+                                Constants.IS_MASTER_TERMINAL, false
                             ) == true
                         ) {
                             //  getKitOne()
@@ -1195,12 +1176,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         prefProvider?.setValueInt(Constants.EMPLOYEE_ID, 0)
         prefProvider?.setValue(Constants.EMPLOYEE_NAME, "")
         prefProvider?.setValue(
-            Constants.EMPLOYEE_ROLE,
-            ""
+            Constants.EMPLOYEE_ROLE, ""
         )
         prefProvider?.setValueInt(
-            Constants.EMPLOYEE_ROLE_ID,
-            0
+            Constants.EMPLOYEE_ROLE_ID, 0
         )
         prefProvider?.setValue(Constants.PASSCODE, "")
         var bundle: Bundle = Bundle()
@@ -1216,8 +1195,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         super.onDestroy()
 
         if (prefProvider?.getValueboolean(
-                IS_MASTER_TERMINAL,
-                false
+                IS_MASTER_TERMINAL, false
             ) == true && prefProvider?.getValueboolean(
                 Constants.IS_PRINTER_QUEUE_ENABLE, false
             ) == true
@@ -1240,18 +1218,16 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private fun initCustomerDisplay() {
         getCustomerDisplay(this)?.let { display ->
             presentation = CustomDisplay(
-                display,
-                this,
-                this,
-                dashboardViewModel,
-                passcodeViewModel,
-                dineInViewModel
+                display, this, this, dashboardViewModel, passcodeViewModel, dineInViewModel
             )
         }
     }
 
     override fun onStop() {
         super.onStop()
+
+        EventBus.getDefault().unregister(this)
+
         try {
             if (consumer != null) {
                 consumer?.disconnect()
@@ -1266,11 +1242,32 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     }
 
 
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    fun onMessageEvent(event: MessageEvent?) {
+        log(event?.data.toString())
+        event?.newTrack.let {
+            if (it == true) {
+                logNewTrack(event?.data.toString())
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MainApplication.mainActivity = this
         permissionCheck()
 
+        attachFileLogger()
+        prefProvider!!.setValue(Constants.DELIVERY_TYPE, "")
+
+
+        if (!checkServiceRunning(
+                applicationContext,
+                KioskService::class.java
+            ) && !android.os.Build.MODEL.contains("MINI")
+        ) {
+            startForegroundService(Intent(this, KioskService::class.java))
+        }
         Log.e(TAG, "checkConsumerNullorNot  ${consumer}")
         if (consumer != null) {
             consumer = null
@@ -1298,11 +1295,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         getKitOne()
         masterTerminalObserver()
         Log.e(
-            TAG,
-            "checkPrinterQueue ${
+            TAG, "checkPrinterQueue ${
                 prefProvider?.getValueboolean(
-                    IS_PRINTER_QUEUE_ENABLE,
-                    false
+                    IS_PRINTER_QUEUE_ENABLE, false
                 )
             }  checkMaster: ${
                 prefProvider?.getValueboolean(
@@ -1312,8 +1307,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         )
 
         if (prefProvider?.getValueboolean(
-                IS_PRINTER_QUEUE_ENABLE,
-                false
+                IS_PRINTER_QUEUE_ENABLE, false
             ) == true && prefProvider?.getValueboolean(
                 IS_MASTER_TERMINAL, false
             ) == true && consumer == null
@@ -1321,7 +1315,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
             //   connectActionCable()
         }
-
 
         // connectionActionCable()
         val intentFilter = IntentFilter("PrinterQueue")
@@ -1344,17 +1337,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this)
         registerReceiver(
-            broadCastReceiverPrinterQueueSuccess,
-            IntentFilter(Constants.PRITNER_QUEUE_DATA_DELETE)
+            broadCastReceiverPrinterQueueSuccess, IntentFilter(Constants.PRITNER_QUEUE_DATA_DELETE)
         )
         registerReceiver(
-            broadcastReceiver,
-            IntentFilter(Constants.SEND_CLOCKOUT_NOTIFICATION)
+            broadcastReceiver, IntentFilter(Constants.SEND_CLOCKOUT_NOTIFICATION)
         )
 
         registerReceiver(
-            broadcastReceiveronlineOrder,
-            IntentFilter(Constants.ONLINE_ORDER_GET_NOTIFICATION)
+            broadcastReceiveronlineOrder, IntentFilter(Constants.ONLINE_ORDER_GET_NOTIFICATION)
         )
         registerReceiver(
             broadCastReceiverPrinterQueueDataGet,
@@ -1362,27 +1352,22 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         )
 
         registerReceiver(
-            syncReceiver,
-            IntentFilter(Constants.SYNC_NOTIFICATION)
+            syncReceiver, IntentFilter(Constants.SYNC_NOTIFICATION)
         )
         registerReceiver(
-            syncFloorPlan,
-            IntentFilter(Constants.SYNC_FLOORPLAN)
+            syncFloorPlan, IntentFilter(Constants.SYNC_FLOORPLAN)
         )
 
         registerReceiver(
-            masterTerminal,
-            IntentFilter(Constants.MASTER_TEMINAL_CHANGED)
+            masterTerminal, IntentFilter(Constants.MASTER_TEMINAL_CHANGED)
         )
 
         registerReceiver(
-            syncSettingReceiver,
-            IntentFilter(Constants.SYNC_SETTING_NOTIFICATION)
+            syncSettingReceiver, IntentFilter(Constants.SYNC_SETTING_NOTIFICATION)
         )
 
         registerReceiver(
-            syncMarkupReceiver,
-            IntentFilter(Constants.SYNC_MARKUP)
+            syncMarkupReceiver, IntentFilter(Constants.SYNC_MARKUP)
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
@@ -1397,17 +1382,15 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.navHostFrag) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.navHostFrag) as NavHostFragment
         navController = navHostFragment.navController
 
 //        navController = findNavController(R.id.navHostFrag) as NavHostFragment
 
         listner = NavController.OnDestinationChangedListener { controller, destination, arguments ->
 
-            if (destination.id == R.id.dashboard || destination.id == R.id.dashboardCategory || destination.id == R.id.teamList ||
-                destination.id == R.id.settings || destination.id == R.id.inventory || destination.id == R.id.reports || destination.id == R.id.customer
-            ) {
+            if (destination.id == R.id.dashboard || destination.id == R.id.dashboardCategory || destination.id == R.id.teamList || destination.id == R.id.settings || destination.id == R.id.inventory || destination.id == R.id.reports || destination.id == R.id.customer) {
                 //drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
             } else {
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
@@ -1524,10 +1507,79 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     }
 
+    private fun attachFileLogger() {
+        log("\n \n ${System.currentTimeMillis()} - ${Calendar.getInstance().time} ::")
+
+        /* Logging the shared preferences values */
+        try {
+            EventBus.getDefault().post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} MainActivity.kt -> attachFileLogger() ORDER_ID -> ${
+                        Gson().toJson(prefProvider?.getValueInt("ORDER_ID", -2))
+                    }"
+                )
+            )
+        } catch (e: Exception) {
+
+        }
+
+    }
+
+
+    public fun log(text: String) {
+        /* This function will log the data to a file*/
+        try {
+
+            val folder = externalCacheDir
+            val file = File(folder, "log_steps.txt")
+
+            val stream = FileOutputStream(file, true)
+            try {
+                stream.write(text.toByteArray())
+            } finally {
+                stream.close()
+            }
+
+
+        } catch (e: IOException) {
+            Log.e("Exception", "File write failed: $e")
+        }
+    }
+
+    public fun logNewTrack(text: String) {
+        /* This function will log the data to a file*/
+        try {
+
+            val folder = externalCacheDir
+            val file = File(folder, "log_steps_new_track.txt")
+
+            val stream = FileOutputStream(file, true)
+            try {
+                stream.write(text.toByteArray())
+            } finally {
+                stream.close()
+            }
+
+
+        } catch (e: IOException) {
+            Log.e("Exception", "File write failed: $e")
+        }
+    }
+
+
+    fun checkServiceRunning(context: Context, serviceClass: Class<*>): Boolean {
+        val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (service in manager.getRunningServices(Int.MAX_VALUE)) {
+            if (serviceClass.name == service.service.className) {
+                return true
+            }
+        }
+        return false
+    }
+
     private fun permissionCheck() {
         ActivityCompat.requestPermissions(
-            this@MainActivity,
-            arrayOf(
+            this@MainActivity, arrayOf(
                 Manifest.permission.BLUETOOTH_CONNECT,
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.BLUETOOTH_ADMIN,
@@ -1540,11 +1592,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     private fun reConnectPrinterQueue() {
         Log.e(
-            TAG,
-            "checkAll Data: ${
+            TAG, "checkAll Data: ${
                 prefProvider?.getValueboolean(
-                    IS_MASTER_TERMINAL,
-                    false
+                    IS_MASTER_TERMINAL, false
                 )
             }  printerQueue:  ${
                 prefProvider?.getValueboolean(
@@ -1555,8 +1605,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
         reConnectCount = 0
         if (prefProvider?.getValueboolean(
-                IS_MASTER_TERMINAL,
-                false
+                IS_MASTER_TERMINAL, false
             ) == true && prefProvider?.getValueboolean(
                 IS_PRINTER_QUEUE_ENABLE, false
             ) == true
@@ -1573,11 +1622,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     fun connectActionCable() {
 
-        var requestURL =
-            prefProvider?.getValue(
-                Constants.BASE_URL_NEW,
-                ""
-            ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
+        var requestURL = prefProvider?.getValue(
+            Constants.BASE_URL_NEW, ""
+        ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
         Log.e(TAG, "checkrequestURL  ${requestURL}")
 
         val uri = URI(Constants.PRINTER_QUEUE_CONNECTION_URL_SNACKPOS)
@@ -1614,21 +1661,17 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 params.addProperty("id", prefProvider?.getValueInt(LOCATION_ID, 0))
                 params.addProperty("url", requestURL)
                 Log.e(
-                    TAG,
-                    "checkID 8: ${
+                    TAG, "checkID 8: ${
                         prefProvider?.getValueInt(
-                            LOCATION_ID,
-                            0
+                            LOCATION_ID, 0
                         )
                     }  checkURL 8:  ${
                         prefProvider?.getValue(
-                            Constants.BASE_URL_NEW,
-                            ""
+                            Constants.BASE_URL_NEW, ""
                         ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                     }"
                 )
-                if (navController?.currentDestination?.id == R.id.login
-                ) {
+                if (navController?.currentDestination?.id == R.id.login) {
                     Log.e(TAG, "IN_CONNECTION_CONDITION")
 //                        consumer?.disconnect()
                 } else {
@@ -1653,20 +1696,17 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             }?.onReceived {
                 Log.e(TAG, "onActionReceived:  ${Gson().toJson(it)}")
                 Log.e(
-                    TAG,
-                    "onActionReceived checkCancelWeok:  ${isCancelWork}"
+                    TAG, "onActionReceived checkCancelWeok:  ${isCancelWork}"
                 )
 
                 isLocalMasterFlag = false
 
                 this@MainActivity.getSharedPreferences(
-                    this@MainActivity.resources.getString(R.string.app_name),
-                    Context.MODE_PRIVATE
+                    this@MainActivity.resources.getString(R.string.app_name), Context.MODE_PRIVATE
                 ).edit().putBoolean(Constants.WORKER_QUEUE_IN_PROGRESS, true)
 
                 Log.e(TAG, "checkCancelWork")
-                if (navController?.currentDestination?.id == R.id.login
-                ) {
+                if (navController?.currentDestination?.id == R.id.login) {
                     Log.e(TAG, "IN_CONNECTION_CONDITION")
                     consumer?.disconnect()
                 }
@@ -1700,16 +1740,13 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
                             val params = JsonObject()
                             params.addProperty(
-                                "id",
-                                prefProvider?.getValueInt(LOCATION_ID, 0)
+                                "id", prefProvider?.getValueInt(LOCATION_ID, 0)
                             )
                             params.addProperty("url", requestURL)
                             Log.e(
-                                TAG,
-                                "checkID: ${
+                                TAG, "checkID: ${
                                     prefProvider?.getValueInt(
-                                        LOCATION_ID,
-                                        0
+                                        LOCATION_ID, 0
                                     )
                                 }  checkURL:  ${requestURL}"
                             )
@@ -1746,8 +1783,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 currentPrinterIndex = 0
 
                 this@MainActivity.getSharedPreferences(
-                    this@MainActivity.resources.getString(R.string.app_name),
-                    Context.MODE_PRIVATE
+                    this@MainActivity.resources.getString(R.string.app_name), Context.MODE_PRIVATE
                 ).edit().putBoolean(Constants.WORKER_QUEUE_IN_PROGRESS, false)
                 Log.e(TAG, "onDisconnected")
                 localCallConnect = false
@@ -1796,15 +1832,13 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 currentPrinterIndex = 0
 
                 this@MainActivity.getSharedPreferences(
-                    this@MainActivity.resources.getString(R.string.app_name),
-                    Context.MODE_PRIVATE
+                    this@MainActivity.resources.getString(R.string.app_name), Context.MODE_PRIVATE
                 ).edit().putBoolean(Constants.WORKER_QUEUE_IN_PROGRESS, false)
                 Log.e(TAG, "onFailed")
 
                 if (isInternetAvailable()) {
                     if (prefProvider?.getValueboolean(
-                            IS_MASTER_TERMINAL,
-                            false
+                            IS_MASTER_TERMINAL, false
                         ) == true && prefProvider?.getValueboolean(
                             IS_PRINTER_QUEUE_ENABLE, false
                         ) == true
@@ -1832,8 +1866,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         localCallConnect = true
         Log.e(TAG, "consumerConnect  ${consumer}")
         this@MainActivity.getSharedPreferences(
-            this@MainActivity.resources.getString(R.string.app_name),
-            Context.MODE_PRIVATE
+            this@MainActivity.resources.getString(R.string.app_name), Context.MODE_PRIVATE
         ).edit().putBoolean(Constants.WORKER_QUEUE_IN_PROGRESS, true)
 
         isQueueRunning = false
@@ -1849,10 +1882,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         Log.d("checkCommitResultF", "sendReceiptToPrintSunmi 5")
 
         try {
-            var obj =
-                listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.get(
-                    currentOrderIndex
-                )
+            var obj = listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.get(
+                currentOrderIndex
+            )
 
 
             cloudPrinter.lineFeed(1)
@@ -1892,8 +1924,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             cloudPrinter.let { addDoubleDotLineForSunmiQueue(it) }
 
             if (obj.orderType.equals(
-                    Constants.DINE_IN,
-                    true
+                    Constants.DINE_IN, true
                 ) || obj.orderType.equals(Constants.DINE_IN_SPACE, true)
             ) {
 
@@ -1980,20 +2011,17 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             if (checkConnect(cloudPrinter)) {
                 Log.e(
                     "checkCommitResultFo",
-                    "checkCommitResultForCloud flagIsComplete 1 = $flagIsComplete " +
-                            "checkOrderNot  ${
-                                checkOrderIsProceedOrNot(
-                                    obj.orderID,
-                                    cloudPrinter?.cloudPrinterInfo?.mac ?: ""
-                                )
-                            }  orderUpdateOrNot  ${obj.isOrderUpdated}"
+                    "checkCommitResultForCloud flagIsComplete 1 = $flagIsComplete " + "checkOrderNot  ${
+                        checkOrderIsProceedOrNot(
+                            obj.orderID, cloudPrinter?.cloudPrinterInfo?.mac ?: ""
+                        )
+                    }  orderUpdateOrNot  ${obj.isOrderUpdated}"
                 )
 
 
 
                 if (obj.isOrderUpdated == false && checkOrderIsProceedOrNot(
-                        obj.orderID,
-                        cloudPrinter.cloudPrinterInfo.name ?: ""
+                        obj.orderID, cloudPrinter.cloudPrinterInfo.name ?: ""
                     )
                 ) {
 
@@ -2010,8 +2038,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         ) {
 
                             deleteUrl = prefProvider?.getValue(
-                                Constants.BASE_URL_NEW,
-                                ""
+                                Constants.BASE_URL_NEW, ""
                             ) + Constants.DELETE_QUEUE_ORDER_PHASE3 + listOfPrintersData.get(
                                 currentPrinterIndex
                             ).printerQueueModelList.get(currentOrderIndex).id
@@ -2027,8 +2054,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     )
                     params.addProperty("url", deleteUrl)
                     params.addProperty(
-                        "name",
-                        listOfPrintersData.get(currentPrinterIndex).printerName
+                        "name", listOfPrintersData.get(currentPrinterIndex).printerName
                     )
                     subscription?.perform("delete_order", params)
 
@@ -2048,8 +2074,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                                 if (list.isNotEmpty() && list.contains(obj.orderID)) {
                                     list.remove(obj.orderID)
                                     queueInProgressList.set(
-                                        cloudPrinter.cloudPrinterInfo.name,
-                                        list
+                                        cloudPrinter.cloudPrinterInfo.name, list
                                     )
 
                                 }
@@ -2070,8 +2095,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
                                 cloudPrinter.cloudPrinterInfo?.name?.let {
                                     queueOrderList.put(
-                                        it,
-                                        list
+                                        it, list
                                     )
                                 }
 
@@ -2095,8 +2119,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                                     ) {
 
                                         deleteUrl = prefProvider?.getValue(
-                                            Constants.BASE_URL_NEW,
-                                            ""
+                                            Constants.BASE_URL_NEW, ""
                                         ) + Constants.DELETE_QUEUE_ORDER_PHASE3 + listOfPrintersData.get(
                                             currentPrinterIndex
                                         ).printerQueueModelList.get(currentOrderIndex).id
@@ -2112,8 +2135,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                                 )
                                 params.addProperty("url", deleteUrl)
                                 params.addProperty(
-                                    "name",
-                                    listOfPrintersData.get(currentPrinterIndex).printerName
+                                    "name", listOfPrintersData.get(currentPrinterIndex).printerName
                                 )
                                 subscription?.perform("delete_order", params)
 
@@ -2135,8 +2157,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                             )
 
                             Log.e(
-                                TAG,
-                                "getOrderDetailsID: ${
+                                TAG, "getOrderDetailsID: ${
                                     listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.get(
                                         currentOrderIndex
                                     ).id.toString()
@@ -2246,8 +2267,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                                     list.add(it.asJsonObject.get("id").asInt.toString())
 
                                     queueInProgressList.set(
-                                        it1.asJsonObject.get("printer_name").asString,
-                                        list
+                                        it1.asJsonObject.get("printer_name").asString, list
                                     )
 
 
@@ -2257,8 +2277,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
                                     queueInProgressList.put(
-                                        it1.asJsonObject.get("printer_name").asString,
-                                        list
+                                        it1.asJsonObject.get("printer_name").asString, list
                                     )
 
 
@@ -2268,14 +2287,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                                 var modelOrder = PrinterQueueModel()
 
                                 modelOrder.id = it.asJsonObject.get("id").asInt
-                                modelOrder.orderType =
-                                    it.asJsonObject.get("order_type").asString
+                                modelOrder.orderType = it.asJsonObject.get("order_type").asString
 
                                 try {
                                     if (it.asJsonObject.has("delivery_type")) {
-                                        if (it.asJsonObject.get("order_type").asString == Constants.PHONE_ORDER_)
-                                            modelOrder.deliveryType =
-                                                it.asJsonObject.get("delivery_type").asString
+                                        if (it.asJsonObject.get("order_type").asString == Constants.PHONE_ORDER_) modelOrder.deliveryType =
+                                            it.asJsonObject.get("delivery_type").asString
                                     }
                                 } catch (e: Exception) {
                                     Log.d("KeyNotFound", "Exception")
@@ -2295,11 +2312,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
                                 if (it.asJsonObject.get("order_type").asString.equals(
-                                        Constants.DINE_IN,
-                                        true
+                                        Constants.DINE_IN, true
                                     ) || it.asJsonObject.get("order_type").asString.equals(
-                                        Constants.DINE_IN_SPACE,
-                                        true
+                                        Constants.DINE_IN_SPACE, true
                                     )
                                 ) {
 
@@ -2567,23 +2582,18 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         val params = JsonObject()
                         params.addProperty("id", prefProvider?.getValueInt(LOCATION_ID, 0))
                         params.addProperty(
-                            "url",
-                            prefProvider?.getValue(
-                                Constants.BASE_URL_NEW,
-                                ""
+                            "url", prefProvider?.getValue(
+                                Constants.BASE_URL_NEW, ""
                             ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                         )
                         Log.e(
-                            TAG,
-                            "checkID 2: ${
+                            TAG, "checkID 2: ${
                                 prefProvider?.getValueInt(
-                                    LOCATION_ID,
-                                    0
+                                    LOCATION_ID, 0
                                 )
                             }  checkURL 2:  ${
                                 prefProvider?.getValue(
-                                    Constants.BASE_URL_NEW,
-                                    ""
+                                    Constants.BASE_URL_NEW, ""
                                 ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                             }"
                         )
@@ -2614,23 +2624,18 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     val params = JsonObject()
                     params.addProperty("id", prefProvider?.getValueInt(LOCATION_ID, 0))
                     params.addProperty(
-                        "url",
-                        prefProvider?.getValue(
-                            Constants.BASE_URL_NEW,
-                            ""
+                        "url", prefProvider?.getValue(
+                            Constants.BASE_URL_NEW, ""
                         ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                     )
                     Log.e(
-                        TAG,
-                        "checkID 3: ${
+                        TAG, "checkID 3: ${
                             prefProvider?.getValueInt(
-                                LOCATION_ID,
-                                0
+                                LOCATION_ID, 0
                             )
                         }  checkURL 3:  ${
                             prefProvider?.getValue(
-                                Constants.BASE_URL_NEW,
-                                ""
+                                Constants.BASE_URL_NEW, ""
                             ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                         }"
                     )
@@ -2665,10 +2670,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 val params = JsonObject()
                 params.addProperty("id", prefProvider?.getValueInt(LOCATION_ID, 0))
                 params.addProperty(
-                    "url",
-                    prefProvider?.getValue(
-                        Constants.BASE_URL_NEW,
-                        ""
+                    "url", prefProvider?.getValue(
+                        Constants.BASE_URL_NEW, ""
                     ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                 )
 
@@ -2700,10 +2703,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             val params = JsonObject()
             params.addProperty("id", prefProvider?.getValueInt(LOCATION_ID, 0))
             params.addProperty(
-                "url",
-                prefProvider?.getValue(
-                    Constants.BASE_URL_NEW,
-                    ""
+                "url", prefProvider?.getValue(
+                    Constants.BASE_URL_NEW, ""
                 ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
             )
             if (reConnectCount >= 10) {
@@ -2787,8 +2788,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 Log.e(TAG, "connectionFailed 11  ${p0}")
 
                 Log.e(
-                    TAG,
-                    "getOrderDetailsID: ${
+                    TAG, "getOrderDetailsID: ${
                         Gson().toJson(listOfPrintersData)
                     }"
                 )
@@ -2799,8 +2799,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
                     queueInProgressList.set(
-                        cloudPrinter?.cloudPrinterInfo?.name ?: "",
-                        arrayListOf()
+                        cloudPrinter?.cloudPrinterInfo?.name ?: "", arrayListOf()
                     )
                     /*if (queueInProgressList.isNotEmpty() && queueInProgressList.get(cloudPrinter?.cloudPrinterInfo?.name)
                             ?.contains(
@@ -2834,8 +2833,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 try {
 
                     queueInProgressList.set(
-                        cloudPrinter?.cloudPrinterInfo?.name ?: "",
-                        arrayListOf()
+                        cloudPrinter?.cloudPrinterInfo?.name ?: "", arrayListOf()
                     )
                     /*queueInProgressList.get(cloudPrinter?.cloudPrinterInfo?.name)?.forEach {
                         queueInProgressList.get(cloudPrinter?.cloudPrinterInfo?.name)?.remove(it)
@@ -2880,8 +2878,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
         if (listOfPrintersData.get(currentPrinterIndex).printerQueueModelList.isNotEmpty() && listOfPrintersData.get(
                 currentPrinterIndex
-            ).printerQueueModelList.size - 1 > currentOrderIndex
-            && isCurrentPrinterFailed == false
+            ).printerQueueModelList.size - 1 > currentOrderIndex && isCurrentPrinterFailed == false
         ) {
             currentOrderIndex += 1
             Log.e("checkCommitResultFo", "checkCommitResultForCloud 89")
@@ -2921,10 +2918,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     val params = JsonObject()
                     params.addProperty("id", prefProvider?.getValueInt(LOCATION_ID, 0))
                     params.addProperty(
-                        "url",
-                        prefProvider?.getValue(
-                            Constants.BASE_URL_NEW,
-                            ""
+                        "url", prefProvider?.getValue(
+                            Constants.BASE_URL_NEW, ""
                         ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                     )
 
@@ -2956,10 +2951,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 val params = JsonObject()
                 params.addProperty("id", prefProvider?.getValueInt(LOCATION_ID, 0))
                 params.addProperty(
-                    "url",
-                    prefProvider?.getValue(
-                        Constants.BASE_URL_NEW,
-                        ""
+                    "url", prefProvider?.getValue(
+                        Constants.BASE_URL_NEW, ""
                     ) + Constants.CREATE_QUEUE_PRINTER_PHASE3
                 )
                 if (reConnectCount >= 10) {
@@ -3093,8 +3086,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
                 printer.connect(
-                    printerAdd,
-                    Printer.PARAM_DEFAULT
+                    printerAdd, Printer.PARAM_DEFAULT
                 )
 
             }
@@ -3141,10 +3133,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             printer.addTextLang(Builder.LANG_EN)
             printer.addTextSize(2, 2)
             printer.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.TRUE,
-                Builder.COLOR_1
+                Builder.FALSE, Builder.FALSE, Builder.TRUE, Builder.COLOR_1
             )
 
             printer.addText("OrderID:" + orderId + 1)
@@ -3158,10 +3147,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             printer.addTextLang(Builder.LANG_EN)
             printer.addTextSize(2, 2)
             printer.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.TRUE,
-                Builder.COLOR_1
+                Builder.FALSE, Builder.FALSE, Builder.TRUE, Builder.COLOR_1
             )
 
 
@@ -3260,8 +3246,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     @SuppressLint("HardwareIds")
     fun getDeviceId(): String {
         return Settings.Secure.getString(
-            contentResolver,
-            Settings.Secure.ANDROID_ID
+            contentResolver, Settings.Secure.ANDROID_ID
         )
     }
 
@@ -3270,8 +3255,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             this.positiveButton("Logout") {
                 viewModel.logoutAPI()
             }
-            this.negativeButton("Cancel") {
-            }
+            this.negativeButton("Cancel") {}
 
         }
     }
@@ -3324,8 +3308,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     override fun onResume() {
         super.onResume()
         if (prefProvider?.getValueboolean(
-                IS_PRINTER_QUEUE_ENABLE,
-                false
+                IS_PRINTER_QUEUE_ENABLE, false
             ) == true && prefProvider?.getValueboolean(
                 IS_MASTER_TERMINAL, false
             ) == true && consumer == null
@@ -3364,7 +3347,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
         dashboardViewModel.allInventoryItems.observe(this) { it ->
-            if (it.data?.isEmpty() == true && navController?.currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+            if (it.data?.isEmpty() == true && (navController?.currentDestination?.id == R.id.dashboardCategoryBoldPOS || navController?.currentDestination?.id == R.id.passcodeView || navController?.currentDestination?.id == R.id.passcode)) {
 
                 try {
                     val dialog = Dialog(this)
@@ -3373,7 +3356,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     dialog.setCanceledOnTouchOutside(false)
                     dialog.show()
 
-                        Handler(mainLooper).postDelayed({ dialog.dismiss() }, 15000)
+                    Handler(mainLooper).postDelayed({ dialog.dismiss() }, 15000)
 
                 } catch (e: Exception) {
 
@@ -3417,10 +3400,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(mContext, channelId)
             .setSmallIcon(R.drawable.ic_baseline_notifications_24)
-            .setContentTitle(mContext.getString(R.string.app_name))
-            .setContentText(messageBody)
-            .setAutoCancel(true)
-            .setSound(defaultSoundUri)
+            .setContentTitle(mContext.getString(R.string.app_name)).setContentText(messageBody)
+            .setAutoCancel(true).setSound(defaultSoundUri)
 
         val notificationManager =
             mContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -3428,24 +3409,20 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         // Since android Oreo notification channel is needed.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                channelId,
-                "Channel human readable title",
-                NotificationManager.IMPORTANCE_DEFAULT
+                channelId, "Channel human readable title", NotificationManager.IMPORTANCE_DEFAULT
             )
             notificationManager.createNotificationChannel(channel)
         }
 
         notificationManager.notify(
-            System.currentTimeMillis().toInt()/* ID of notification */,
-            notificationBuilder.build()
+            System.currentTimeMillis().toInt()/* ID of notification */, notificationBuilder.build()
         )
     }
 
 
-    fun connectActionCableSYNCSETTINGS() {
+    public fun connectActionCableSYNCSETTINGS() {
         // 1. Setup
-        var requestURL =
-            baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
+        var requestURL = baseUrl + Constants.CREATE_QUEUE_PRINTER_PHASE3
 
         Log.e("PrinterRefreshWorker", "requestURL = $requestURL")
 
@@ -3482,7 +3459,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     lastSyncTime = System.currentTimeMillis()
 
                     if (it.asJsonObject.has("location_id"))
-                        if (PrefProvider(baseContext).getLocationId() == it.asJsonObject.get("location_id").asInt) {
+                        if (PrefProvider(baseContext).getLocationId() == it.asJsonObject.get(
+                                "location_id"
+                            ).asInt
+                        ) {
                             Log.e(TAG2, "onReceived  Inside" + Gson().toJson(it))
                             handleUpdatedData(it)
                         }
@@ -3622,7 +3602,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 val orderTypeName = it.asJsonObject.get("order_type").toString()
 
                 if (it.asJsonObject.has("new_order")) {
-                    if (orderTypeName.equals("\"KioskOpenorder\"", true)  || orderTypeName.equals("\"Online Web Order\"", true) || orderTypeName.equals("\"Online Order\"",true)){
+                    if (orderTypeName.equals(
+                            "\"KioskOpenorder\"",
+                            true
+                        ) || orderTypeName.equals(
+                            "\"OnlineWebOrder\"",
+                            true
+                        ) || orderTypeName.equals("\"OnlineOrder\"", true)
+                    ) {
                         setSoundForOnlineOrder()
                     }
                 }
@@ -3704,13 +3691,13 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         binding.drawerLayout.closeDrawer(GravityCompat.START)
     }
 
-   /* override fun onBackPressed() {
-        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            binding.drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
-    }*/
+    /* override fun onBackPressed() {
+         if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+             binding.drawerLayout.closeDrawer(GravityCompat.START)
+         } else {
+             super.onBackPressed()
+         }
+     }*/
 
     override fun onBackPressed() {
         /*if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -3819,26 +3806,21 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         photoFile?.let { photo ->
             selectedFilePath = photo.absolutePath
             cameraUri = FileProvider.getUriForFile(
-                this,
-                "$APPLICATION_ID.provider",
-                photo
+                this, "$APPLICATION_ID.provider", photo
             )
             val pictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri)
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
                 pictureIntent.clipData = ClipData.newRawUri("", cameraUri)
                 pictureIntent.addFlags(
-                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
-                            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
                 )
             }
             if (pictureIntent.resolveActivity(this.packageManager) != null) {
                 this.startActivityForResult(pictureIntent, Constants.REQUEST_GET_IMAGE_CAMERA)
             } else {
                 Toast.makeText(
-                    this,
-                    R.string.error_camera_app_not_found,
-                    Toast.LENGTH_SHORT
+                    this, R.string.error_camera_app_not_found, Toast.LENGTH_SHORT
                 ).show()
             }
         }
@@ -3853,8 +3835,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 }
                 //received new file path
                 activityResultCallBack?.onReceivedCameraCapturedPath(
-                    mediaType = Constants.MEDIA_TYPE_IMAGE,
-                    mediaPath = selectedFilePath
+                    mediaType = Constants.MEDIA_TYPE_IMAGE, mediaPath = selectedFilePath
                 )
             }
         }
@@ -3869,38 +3850,32 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             Manifest.permission.ACCESS_FINE_LOCATION
         )
         return if ((ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
+                this, Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED)
         ) {
             true
         } else {
             ActivityCompat.requestPermissions(
-                this,
-                permissionsLocation,
-                Constants.REQUEST_LOCATION_PERMISSION
+                this, permissionsLocation, Constants.REQUEST_LOCATION_PERMISSION
             )
             false
         }
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         LogUtil.logE("!_@_", "$requestCode")
         when (requestCode) {
-            Constants.REQUEST_LOCATION_PERMISSION ->
-                if (permissions.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //permission with request code 1 granted
-                    LogUtil.logE("!_@_", "Permission Granted")
-                    requestCallBack?.invoke()
-                } else {
-                    //permission with request code 1 was not granted
-                    LogUtil.logE("!_@_", "Permission not granted")
-                }
+            Constants.REQUEST_LOCATION_PERMISSION -> if (permissions.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //permission with request code 1 granted
+                LogUtil.logE("!_@_", "Permission Granted")
+                requestCallBack?.invoke()
+            } else {
+                //permission with request code 1 was not granted
+                LogUtil.logE("!_@_", "Permission not granted")
+            }
 
             else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
@@ -3942,8 +3917,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             var flag = printerQueueModelGlobal?.let { viewModelPrinter.checkDataisExistOrNot(it) }
             LogUtil.logE(TAG, "UpdateGetloag ${flag}")
             if (flag == false) {
-                var listIds: ArrayList<Int> =
-                    arrayListOf()
+                var listIds: ArrayList<Int> = arrayListOf()
                 listIds.add(kitchenPrinterList[currentIndex].id)
 
                 LogUtil.logE(TAG, "listIds  ${Gson().toJson(listIds)}")
@@ -3952,8 +3926,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     lifecycleScope.launch {
                         printerQueueModelGlobal?.id?.let {
                             viewModelPrinter.updateStatusPrinterQueue(
-                                listIds,
-                                it
+                                listIds, it
                             )
 
                             /*delay(2000)*/
@@ -4023,21 +3996,17 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     fun sendBroadCast() {
 
         Log.e(
-            TAG,
-            "checkPrinterQueueWorker:  ${
+            TAG, "checkPrinterQueueWorker:  ${
                 checkUploadWorker(
-                    PRINTER_QUEUE_BACKGROUND,
-                    this@MainActivity
+                    PRINTER_QUEUE_BACKGROUND, this@MainActivity
                 )
             }"
         )
 
         Log.e(
-            TAG,
-            "checkQUeue: ${
+            TAG, "checkQUeue: ${
                 prefProvider?.getValueboolean(
-                    IS_PRINTER_QUEUE_ENABLE,
-                    false
+                    IS_PRINTER_QUEUE_ENABLE, false
                 )
             }  checkMAsterRermi: ${
                 prefProvider?.getValueboolean(
@@ -4047,20 +4016,17 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         )
 
         if (prefProvider?.getValueboolean(
-                IS_PRINTER_QUEUE_ENABLE,
-                false
+                IS_PRINTER_QUEUE_ENABLE, false
             ) == true && prefProvider?.getValueboolean(
                 IS_MASTER_TERMINAL, false
-            ) == true && isLocalMasterFlag == false /*&& consumer == null && isLocalMasterFlag == false */
-        ) {
+            ) == true && isLocalMasterFlag == false /*&& consumer == null && isLocalMasterFlag == false */) {
             isLocalMasterFlag = true
 
             Log.e(TAG, "YesIN ACtionConnect")
             connectActionCable()
 
         } else if ((prefProvider?.getValueboolean(
-                IS_PRINTER_QUEUE_ENABLE,
-                false
+                IS_PRINTER_QUEUE_ENABLE, false
             ) == false || prefProvider?.getValueboolean(
                 IS_MASTER_TERMINAL, false
             ) == false) && consumer != null
@@ -4074,11 +4040,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
         if (prefProvider?.getValueboolean(
-                IS_MASTER_TERMINAL,
-                false
+                IS_MASTER_TERMINAL, false
             ) == true && prefProvider?.getValueboolean(
-                Constants.IS_PRINTER_QUEUE_STARTS,
-                false
+                Constants.IS_PRINTER_QUEUE_STARTS, false
             ) == false && prefProvider?.getValueboolean(
                 IS_PRINTER_QUEUE_ENABLE, false
             ) == true
@@ -4093,20 +4057,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
                 // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
                 .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
-                .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
-                .put(
+                .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, "")).put(
                     IS_PRINTER_QUEUE_ENABLE,
                     prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)
-                )
-                .put("is_cancel_work", true)
-                .build()
+                ).put("is_cancel_work", true).build()
             prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL, true)
-            val uploadWorkRequest =
-                OneTimeWorkRequest.Builder(
-                    UploadWorker2::class.java
-                ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
-                    .setInputData(data)
-                    .build()
+            val uploadWorkRequest = OneTimeWorkRequest.Builder(
+                UploadWorker2::class.java
+            ).addTag(Constants.PRINTER_QUEUE_BACKGROUND).setInputData(data).build()
 
 
             val workManager = WorkManager.getInstance(this@MainActivity)
@@ -4114,8 +4072,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             try {
 
                 workManager.enqueueUniqueWork(
-                    Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.KEEP,
-                    uploadWorkRequest
+                    Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.KEEP, uploadWorkRequest
                 )
 
             } catch (e: java.lang.Exception) {
@@ -4128,20 +4085,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
                     // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
                     .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
-                    .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
-                    .put(
+                    .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, "")).put(
                         IS_PRINTER_QUEUE_ENABLE,
                         prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)
-                    )
-                    .put("is_cancel_work", false)
-                    .build()
+                    ).put("is_cancel_work", false).build()
                 prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL, false)
-                val uploadWorkRequest =
-                    OneTimeWorkRequest.Builder(
-                        UploadWorker2::class.java
-                    ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
-                        .setInputData(data)
-                        .build()
+                val uploadWorkRequest = OneTimeWorkRequest.Builder(
+                    UploadWorker2::class.java
+                ).addTag(Constants.PRINTER_QUEUE_BACKGROUND).setInputData(data).build()
 
 
                 val workManager = WorkManager.getInstance(this@MainActivity)
@@ -4149,7 +4100,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 try {
 
                     workManager.enqueueUniqueWork(
-                        Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.REPLACE,
+                        Constants.PRINTER_QUEUE_BACKGROUND,
+                        ExistingWorkPolicy.REPLACE,
                         uploadWorkRequest
                     )
 
@@ -4163,20 +4115,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
                     // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
                     .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
-                    .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
-                    .put(
+                    .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, "")).put(
                         IS_PRINTER_QUEUE_ENABLE,
                         prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)
-                    )
-                    .put("is_cancel_work", true)
-                    .build()
+                    ).put("is_cancel_work", true).build()
                 prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL, true)
-                val uploadWorkRequest =
-                    OneTimeWorkRequest.Builder(
-                        UploadWorker2::class.java
-                    ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
-                        .setInputData(data)
-                        .build()
+                val uploadWorkRequest = OneTimeWorkRequest.Builder(
+                    UploadWorker2::class.java
+                ).addTag(Constants.PRINTER_QUEUE_BACKGROUND).setInputData(data).build()
 
 
                 val workManager = WorkManager.getInstance(this@MainActivity)
@@ -4184,7 +4130,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 try {
 
                     workManager.enqueueUniqueWork(
-                        Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.KEEP,
+                        Constants.PRINTER_QUEUE_BACKGROUND,
+                        ExistingWorkPolicy.KEEP,
                         uploadWorkRequest
                     )
 
@@ -4202,20 +4149,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 //.putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
                 // .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
                 .put("location_id", prefProvider?.getValueInt(LOCATION_ID, 0))
-                .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
-                .put(
+                .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, "")).put(
                     IS_PRINTER_QUEUE_ENABLE,
                     prefProvider?.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)
-                )
-                .put("is_cancel_work", false)
-                .build()
+                ).put("is_cancel_work", false).build()
             prefProvider?.setValueboolean(Constants.CHECK_QUEUE_CANCEL, false)
-            val uploadWorkRequest =
-                OneTimeWorkRequest.Builder(
-                    UploadWorker2::class.java
-                ).addTag(Constants.PRINTER_QUEUE_BACKGROUND)
-                    .setInputData(data)
-                    .build()
+            val uploadWorkRequest = OneTimeWorkRequest.Builder(
+                UploadWorker2::class.java
+            ).addTag(Constants.PRINTER_QUEUE_BACKGROUND).setInputData(data).build()
 
 
             val workManager = WorkManager.getInstance(this@MainActivity)
@@ -4223,8 +4164,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             try {
 
                 workManager.enqueueUniqueWork(
-                    Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.KEEP,
-                    uploadWorkRequest
+                    Constants.PRINTER_QUEUE_BACKGROUND, ExistingWorkPolicy.KEEP, uploadWorkRequest
                 )
 
             } catch (e: java.lang.Exception) {
@@ -4301,9 +4241,8 @@ private fun makeErrorMessage(status: PrinterStatusInfo): String? {
 
 private fun isInternetAvailable(): Boolean {
     var result: Boolean
-    val connectivityManager =
-        MainApplication.getInstance()
-            ?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val connectivityManager = MainApplication.getInstance()
+        ?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     connectivityManager.let {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -4333,32 +4272,24 @@ private fun sendNotification(messageBody: String) {
         MainApplication.getInstance()?.getString(R.string.default_notification_channel_id)
     val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
     val notificationBuilder = NotificationCompat.Builder(
-        MainApplication.getInstance()?.applicationContext!!,
-        channelId.toString()
-    )
-        .setSmallIcon(R.drawable.ic_baseline_notifications_24)
+        MainApplication.getInstance()?.applicationContext!!, channelId.toString()
+    ).setSmallIcon(R.drawable.ic_baseline_notifications_24)
         .setContentTitle(MainApplication.getInstance()?.getString(R.string.app_name))
-        .setContentText(messageBody)
-        .setAutoCancel(true)
-        .setSound(defaultSoundUri)
+        .setContentText(messageBody).setAutoCancel(true).setSound(defaultSoundUri)
 
-    val notificationManager =
-        MainApplication.getInstance()
-            ?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    val notificationManager = MainApplication.getInstance()
+        ?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     // Since android Oreo notification channel is needed.
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val channel = NotificationChannel(
-            channelId,
-            "Channel human readable title",
-            NotificationManager.IMPORTANCE_DEFAULT
+            channelId, "Channel human readable title", NotificationManager.IMPORTANCE_DEFAULT
         )
         notificationManager.createNotificationChannel(channel)
     }
 
     notificationManager.notify(
-        System.currentTimeMillis().toInt()/* ID of notification */,
-        notificationBuilder.build()
+        System.currentTimeMillis().toInt()/* ID of notification */, notificationBuilder.build()
     )
 }
 

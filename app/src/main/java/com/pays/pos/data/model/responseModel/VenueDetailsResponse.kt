@@ -29,6 +29,8 @@ data class VenueDetailsResponse(
     data class Data(
         @SerializedName("is_master_terminal")
         val isMasterTeminal: Boolean = false,
+        @SerializedName("one_item_per_reciept")
+        var oneItemPerReciept: Boolean = false,
         @SerializedName("business_name")
         val businessName: String,
         @SerializedName("business_website")
@@ -40,7 +42,7 @@ data class VenueDetailsResponse(
         @SerializedName("daily_report_sending_time")
         val dailyReportSendingTime: String,
         @SerializedName("dynamic_payment_records")
-        val dynamicPaymentRecords: List<Any>,
+        val dynamicPaymentRecords: List<TbDynamicPaymentRecords>,
         @SerializedName("end_time_for_report_summary")
         val endTimeForReportSummary: String,
         @SerializedName("id")

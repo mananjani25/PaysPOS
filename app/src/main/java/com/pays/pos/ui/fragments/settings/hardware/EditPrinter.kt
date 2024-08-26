@@ -219,7 +219,8 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
 
                     }
                     CUSTOMER -> {
-                        orderTypeList.forEach {
+                        if((printerModel?.printerName?.toLowerCase()?.contains("tsp") == false) || (printerModel?.printerName?.toLowerCase()?.contains("sp") == false)){
+                            orderTypeList.forEach {
                             dataList = arrayListOf()
                             dataList.add(
                                 PrinterResponse.Data.PrinterSettings(
@@ -243,22 +244,32 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                             )
 
                         }
-
+                        }else {
+                            val index = list.indexOf(KITCHEN)
+                            binding.spnPrinterCat.setSelection(index)
+                            AlertUtils.showCustomAlert(requireContext(),"This printer is not compatible with Customer receipts.")
+                        }
                     }
                     KITCHENANDCUSTOMER -> {
+                       if(((printerModel?.printerName?.toLowerCase()?.contains("tsp") == false)) || ((printerModel?.printerName?.toLowerCase()?.contains("sp") == false))){
                         orderTypeList.forEach {
                             dataList = arrayListOf()
-                            dataList.add(
-                                PrinterResponse.Data.PrinterSettings(
-                                    orderTypeId = it.id,
-                                    printType = CUSTOMER,
-                                    manualPrinting = false,
-                                    autoPrinting = true,
-                                    printerId = 0,
-                                    createdAt = "",
-                                    updatedAt = ""
+
+
+
+                                dataList.add(
+                                    PrinterResponse.Data.PrinterSettings(
+                                        orderTypeId = it.id,
+                                        printType = CUSTOMER,
+                                        manualPrinting = false,
+                                        autoPrinting = true,
+                                        printerId = 0,
+                                        createdAt = "",
+                                        updatedAt = ""
+                                    )
                                 )
-                            )
+
+
                             dataList.add(
                                 PrinterResponse.Data.PrinterSettings(
                                     orderTypeId = it.id,
@@ -281,8 +292,12 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                             )
                         }
 
+                    }else {
+                        val index = list.indexOf(KITCHEN)
+                        binding.spnPrinterCat.setSelection(index)
+                        AlertUtils.showCustomAlert(requireContext(),"This printer is not compatible with Customer receipts.")
                     }
-                }
+                }}
                 LogUtil.logE(TAG, "oderTypes:  ${Gson().toJson(oderTypes)}")
                 if (oderTypes.isNotEmpty()) {
                     adapter.setList(oderTypes)
