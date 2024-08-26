@@ -65,19 +65,20 @@ import com.google.gson.JsonArray
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
+import com.pays.pos.ui.fragments.dineInNew.DineInOrderTableViewModelPays
 import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayOutputStream
 
-class CustomDisplay(
+class CustomDisplayDineIn(
     display: Display,
     context: Context,
     val lifecycleOwner: LifecycleOwner,
     private val dashBoardCategoryViewModel: DashBoardCategoryViewModel,
     val passcodeViewModel: PasscodeViewModel,
-    val dineInViewModel: DineInOrderTableViewModel
+    val dineInViewModel: DineInOrderTableViewModelPays
 ) : Presentation(context, display), MyCallback, DineInAdapter.DineInCallback,
     ActiveTipsListAdapter.DiscountInterface {
 
@@ -145,6 +146,7 @@ class CustomDisplay(
         initPOSLink()
 
         initDiscountLiveData()
+
     }
 
     private fun initDiscountLiveData(){
@@ -205,11 +207,9 @@ class CustomDisplay(
         } else {
 
             if(prefProvider.getValue(ORDER_TYPE,"") == DINE_IN) {
-                binding.linearBottomNew?.gone()
-                dashBoardCategoryViewModel.getAllDineInCartItems(DINE_IN).asLiveData().observe(lifecycleOwner) {
+                dashBoardCategoryViewModel.getAllDineInCartItems("DineIn").asLiveData().observe(lifecycleOwner) {
                     Log.d("WINZO", "onDisplayChanged: ${it.size}")
                     it?.let {
-                        if (it.isNotEmpty())
                         updateCustomerDisplay(it)
                     }
                 }
@@ -220,7 +220,6 @@ class CustomDisplay(
                 ).asLiveData().observe(lifecycleOwner) {
                     Log.d("WINZO", "onDisplayChanged: ${it.size}")
                     it?.let {
-                        if(it.isNotEmpty())
                         updateCustomerDisplay(it)
                     }
                 }
@@ -278,7 +277,7 @@ class CustomDisplay(
                         val dineInList = dashBoardCategoryViewModel.cartModel?.dineInList
 
                         dineInCartAdapter.setList(
-                            dineInList?.toCollection(arrayListOf()) ?: arrayListOf() , dashBoardCategoryViewModel.currentCartItems
+                            dineInList?.toCollection(arrayListOf()) ?: arrayListOf() , dashBoardCategoryViewModel.listItems
                         )
                         binding.rowHeaderLayoutDineIn?.visible()
                         binding.rowHeaderLayout.gone()
@@ -1491,33 +1490,23 @@ class CustomDisplay(
 
             txtContinue.setOnSingleClickListener  {
 
-                //dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=true
-
-                txtContinue.isEnabled = false
-                txtContinue.setBackgroundColor(Color.GRAY)
-
                 tippedAmount =
                     edtAmount.text.toString().replace("$", "").trim().toDouble()
 
-             /*   dashBoardCategoryViewModel.apply {
-                    totalTipAmount = tippedAmount
-                    customerGivenTip.value = true
-                }*/
-
                 if (mIsCardPayment) {
-                    if (/*!mIsSignatureRequired*/ true) {
-//                       /* showWouldYouLikeToAddTipScreen(
-//                            tipsListViewModel,
-//                            mTransactionViewModel,
-//                            mWholeTotalPrice,
-//                            mOrderID,
-//                            mIsCardPayment,
-//                            mPaymentViewModel,
-//                            magtekRequestUtils,
-//                            apiModule1,
-//                            true
-//                        )
-//                    } else {*/
+                    if (!mIsSignatureRequired) {
+                        showWouldYouLikeToAddTipScreen(
+                            tipsListViewModel,
+                            mTransactionViewModel,
+                            mWholeTotalPrice,
+                            mOrderID,
+                            mIsCardPayment,
+                            mPaymentViewModel,
+                            magtekRequestUtils,
+                            apiModule1,
+                            true
+                        )
+                    } else {
 //                        magtekCall(wholeTotalPrice)
 
                         /*if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
@@ -1558,8 +1547,6 @@ class CustomDisplay(
 
     private fun adjustPaxTips() {
         GlobalScope.launch {
-            dashBoardCategoryViewModel.processingTipForCard.postValue(true)
-
             posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
             val tip_amt = (tippedAmount*100).toInt()
             Log.d("Amt: ","tip $tip_amt RefNo ${mPaymentViewModel.paxReferenceNo}")
@@ -1796,7 +1783,7 @@ class CustomDisplay(
             setupActiveTipsList(mTipListViewModel)
 //            observeActiveTipsList(wholeTotalPrice)
             Log.d("C_Disp_3::", mPaymentViewModel.tipOnAmount.toString())
-            observeActiveTipsList(mPaymentViewModel.tipOnAmount / dashBoardCategoryViewModel.getSplitCount())
+            observeActiveTipsList(mPaymentViewModel.tipOnAmount)
 
             mainCartLayout.gone()
             splashLayout.gone()
@@ -1833,16 +1820,6 @@ class CustomDisplay(
             }
 
             noTipRootLayout.setOnClickListener {
-
-                /**
-                 * Customer Clicked no Tip , so it will reflect tip as $0.0
-                 */
-                dashBoardCategoryViewModel.apply {
-                    totalTipAmount = 0.0
-                    customerGivenTip.value = true
-                    employeeGivenTip = false
-                }
-
                 showThankYou(mWholeTotalPrice)
             }
 
@@ -1934,20 +1911,10 @@ class CustomDisplay(
             mTransactionViewModel.updateTipData.observe(lifecycleOwner) { event ->
                 event.getContentIfNotHandled()?.let {
                     if (it.status == 200) {
-                        dashBoardCategoryViewModel.apply {
-                            totalTipAmount = tippedAmount
-                            customerGivenTip.value = true
-                            employeeGivenTip = false
-                        }
-
-                        dashBoardCategoryViewModel.processingTipForCard.value = false
-                       // dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=false
-
                         prefProvider.setValueboolean(Constants.TIP_ADDED, false)
                         showThankYou(mWholeTotalPrice + tippedAmount)
                     } else {
                         showErrorLayout(it.message)
-                        dashBoardCategoryViewModel.processingTipForCard.value = false
                     }
                 }
             }
@@ -1979,20 +1946,9 @@ class CustomDisplay(
         pos: Int,
         wholeTotalPrice: Double
     ) {
-       // dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=true
-
         tipRate = model.rate
         tippedAmount = MethodUtils.percentageCalculation(wholeTotalPrice, model.rate)
         Log.d("selectedItem: ","tip params $tipRate $tippedAmount")
-
-        /**
-         * Used to show Given TIPS on OrderCompleted Fragment
-         */
-      /*  dashBoardCategoryViewModel.apply {
-            totalTipAmount = tippedAmount
-            customerGivenTip.value = true
-        }
-*/
         if (mIsCardPayment /*&& !mIsSignatureRequired*/) {
 //            callUpdateTip()
             if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {

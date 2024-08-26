@@ -65,10 +65,10 @@ import com.magtek.mobile.android.mtusdk.*
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
-import com.pays.pos.logger.MessageEvent
+import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
+import com.pays.pos.ui.fragments.dineInNew.DineInOrderTableViewModelPays
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
-import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -82,10 +82,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     magtekCallback,
     DeleteOptionCallback, IDeviceListCallback {
 
-    private lateinit var presentation: CustomDisplay
+    private lateinit var presentation: CustomDisplayDineIn
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
-    private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
+    private val dineInViewModel by viewModels<DineInOrderTableViewModelPays>()
     private val magtekProViewModel by viewModels<MagtekViewModel>()
 
     private var cardCVV: String = ""
@@ -104,7 +104,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     private var paymentOfflineId: String = ""
     var isSelectedCount = 1
     private val paymentviewModel by activityViewModels<PaymentViewModel>()
-    private val dineinOrderVieweModel by viewModels<DineInOrderTableViewModel>()
+    private val dineinOrderVieweModel by activityViewModels<DineInOrderTableViewModel>()
     private val dineInPaymentViewModel by viewModels<CheckoutDineInPaymentViewModel>()
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     var listtextview: ArrayList<AppCompatTextView> = arrayListOf()
@@ -207,7 +207,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         }
 
         getCustomerDisplay(requireContext())?.let { display ->
-            presentation = CustomDisplay(
+            presentation = CustomDisplayDineIn(
                 display,
                 requireContext(),
                 viewLifecycleOwner,
@@ -215,10 +215,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 passcodeViewModel,
                 dineInViewModel
             )
-//            {
-//                tipAmount = it
-//                tipAmountCalculation()
-//            }
         }
         if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
             binding.llManualCardEntry.visibility = View.GONE
@@ -554,9 +550,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             event.getContentIfNotHandled()?.let {
                 viewModel.redeemLoyaltyInfo = RedeemLoyaltyInfo()
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
-                EventBus.getDefault()
-                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragment.kt _ observeData() _ prefProvider.setValueInt(ORDER_ID) _ it.data.order.id -> ${Gson().toJson(it.data.order.id)}"))
-
                 when {
                     paymentType == "Cash" -> {
                         LogUtil.logE("TipAmount 4:: ", tipAmount.toString())
@@ -650,7 +643,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
                             splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
                             splitAllAmounts(Constants.TIP, 0.0)
-
                         } else {
                             if (custom_paymentAmount != 0.0 && isSelectedCount != 1) {
                                 prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true)
@@ -669,9 +661,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 //                                }
 
                                 splitAllAmounts(Constants.TIP, 0.0)
-
-                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ custom_paymentAmount -> ${custom_paymentAmount} _12"))
-
                             } else if (custom_paymentAmount != 0.0) {
                                 bundle.putBoolean("isSpilt", false)
                                 prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false)
@@ -689,9 +678,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 //                                }
 
                                 splitAllAmounts(Constants.TIP, 0.0)
-
-                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _13"))
-
                             } else {
                                 bundle.putBoolean("isSpilt", true)
                                 bundle.putBoolean("isSplitByNo", true)
@@ -709,9 +695,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 //                                }
 
                                 splitAllAmounts(Constants.TIP, 0.0)
-
-                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true)_ custom_paymentAmount -> ${custom_paymentAmount} _13"))
-
                             }
 
                         }
@@ -798,9 +781,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
                             splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
                             splitAllAmounts(Constants.TIP, 0.0)
-
-                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _14"))
-
                         } else {
                             bundle.putBoolean("isSpilt", true)
                             bundle.putBoolean("isSplitByNo", true)
@@ -815,9 +795,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 cashDiscountSurcharge
                             )
                             splitAllAmounts(Constants.TIP, 0.0)
-
-                            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true)_ remainingValue -> ${remainingValue} _14"))
-
                         }
 
 
@@ -1030,6 +1007,13 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     }
                     guestRequestModel?.paymentAttributes!!.cardName = cardN
                     guestRequestModel?.paymentAttributes!!.cardNumber = cardNumber
+
+                    guestRequestModel?.paymentAttributes!!.cardName =
+                        CardValidator.getCardType(cardNumber.trim())?.name.toString().uppercase()
+                    guestRequestModel?.paymentAttributes!!.cardNumber =
+                        if (cardNumber.isNotEmpty()) cardNumber.takeLast(4) else ""
+                    guestRequestModel?.paymentAttributes!!.cardType = "Credit"
+
 
                 }
 
@@ -1375,6 +1359,13 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 GlobalUID = response.PaymentTransInfo.GlobalUid
                 paymentviewModel.setPAXData(RefNumber, GlobalUID)
 //                prefProvider.setValue(Constants.GLOBAL_ID, globalUID!!)
+
+//                dineInDataModel.guestPaymentReq?.paymentAttributes?.let { it ->
+//                    it.cardName = response.CardType
+//                    it.cardNumber = cardLastDigits
+//                    it.cardType = 0.toString()
+//
+//                }
 
                 //implementation("org.dom4j:dom4j:2.1.3")
                 PAXtoken = response.PaymentTransInfo.Token
@@ -1782,7 +1773,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     PaymentBoldPosFragment.newInstance().addTipHideShow(true)
                     tipAmount = 0.0
                     viewModel.setTipAmount(0.0)
-                    viewModel.totalTipAmount = 0.0
                     loadSplitLayout()
                     binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
                     binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -1854,21 +1844,14 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     }
 
     private fun makePaymentCreditCard() {
+
         paymentAmount -= tipAmount
         paymentAmount = MethodUtils.roundOffAmountDouble(paymentAmount)
         paymentType = "Card"
-        if (orderId != -1 && orderId != 0) {
-            paymentviewModel.updateOrder(
-                true,
-                orderId,
-                paymentId,
-                paymentOfflineId,
-                orderOfflineId
-            )
-        } else {
-            paymentviewModel.updateOrder(false, null, null, "", "")
-        }
         paymentviewModel.saveOrder(false)
+
+        ////
+
         val myRequest = cartList?.let {
             paymentviewModel.createOrderRequestForCard(
                 it,
@@ -1899,9 +1882,106 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 cardTypeOfTransaction = EDCType
             )
         }
-        if (myRequest != null) {
-            paymentviewModel.totalPayAmount(paymentAmount)
-            paymentAttributesRequest(myRequest)
+
+        ///
+
+
+
+        if (isGuestPay) {
+            if (custom_paymentAmount != 0.0) {
+                dineinOrderVieweModel.totalPayAmount(custom_paymentAmount)
+            }
+            paymentType = "Card"
+            guestAttributeCalculation(myRequest?.order?.paymentAttributes?.cardType ?: -1,"")
+
+
+            if(myRequest?.order?.paymentAttributes!=null){
+
+                val paymentAttributes = myRequest.order.paymentAttributes
+
+                dineInDataModel.guestPaymentReq?.paymentAttributes.let { it ->
+
+
+                }
+
+                dineInDataModel.guestPaymentReq?.paymentAttributes?.paymentAttributes?.forEach {
+                    it.cardName = paymentAttributes?.cardName?:""
+                    it.cardNumber = paymentAttributes?.cardNumber?:""
+                    it.cardType = "Credit"/*paymentAttributes?.cardType.toString()*/
+
+                    it.ext_data = paymentAttributes?.ext_data?:""
+                    it.global_uniq_id = paymentAttributes?.global_uniq_id?:""
+                    it.pax_transaction_token = paymentAttributes?.pax_transaction_token?:""
+                    it.ecr_ref_num = paymentAttributes?.ecr_ref_num?:""
+                    it.ref_num = paymentAttributes?.ref_num?:""
+                }
+            }
+
+
+            guestRequestModel?.paymentAttributes?.let { logPrintGuest(it) }
+            if (dineInDataModel.isLastPayment) {
+                dineinOrderVieweModel.payByGuest(
+                    dineInDataModel.guestId ?: 0,
+                    dineInDataModel.guestPaymentReq!!,
+                    dineInDataModel.isLastPayment == isSelectedCount <= 1,
+                    dineInDataModel.splitModel!!
+                )
+            } else {
+                dineinOrderVieweModel.payByGuest(
+                    dineInDataModel.guestId ?: 0, dineInDataModel.guestPaymentReq!!,
+                    false, dineInDataModel.splitModel!!
+                )
+            }
+
+        } else {
+            if (orderId != -1 && orderId != 0) {
+                paymentviewModel.updateOrder(
+                    true,
+                    orderId,
+                    paymentId,
+                    paymentOfflineId,
+                    orderOfflineId
+                )
+            } else {
+                paymentviewModel.updateOrder(false, null, null, "", "")
+            }
+
+            /*val myRequest = cartList?.let {
+                paymentviewModel.createOrderRequestForCard(
+                    it,
+                    subTotalPrice,
+                    paymentAmount,
+                    totalServiceCharge,
+                    totalTax,
+                    Constants.DINE_IN,
+                    future_delivery_date,
+                    future_delivery_time,
+                    true,
+                    totalDiscount,
+                    tipAmount,
+                    splitValue,
+                    redeemLoyaltyInfo,
+                    cashDiscountSurcharge,
+                    true,
+                    paymentType,
+                    cardNumber,
+                    cashDiscountType,
+                    tipID,
+                    GlobalUID,
+                    RefNumber,
+                    ExtData,
+                    ECRRefNumber,
+                    PAXtoken,
+                    cardLastDigits,
+                    cardTypeOfTransaction = EDCType
+                )
+            }*/
+            if (myRequest != null) {
+                if (custom_paymentAmount.toDouble() != 0.0) {
+                    paymentviewModel.totalPayAmount(custom_paymentAmount)
+                }
+                paymentAttributesRequest(myRequest)
+            }
         }
     }
 
@@ -1973,8 +2053,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         prefProvider.setValue(Constants.TAX_CHARGE, "")
         prefProvider.setValue(Constants.SERVICE_CHARGE, "")
         prefProvider.setValueInt("ORDER_ID", -1)
-        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt -> removeCustomer()_ ORDER_ID -> ${Gson().toJson(prefProvider.getValueInt("ORDER_ID",-2))} _1"))
-
         prefProvider.setValueInt(Constants.PAYMENT_ID, 0)
         prefProvider.setValue(Constants.TOTAL_PRICE_ACTUAL, "0.0")
         prefProvider.setValue(Constants.SUB_TOTAL_ACTUAL, "0.0")
@@ -1989,7 +2067,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     // generate payment attributes request
     private fun paymentAttributesRequest(myRequest: OrderRequestModel) {
-        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel), myRequest=${Gson().toJson(myRequest)}_7"))
         val orderId = prefProvider.getValueInt("ORDER_ID", -1)
         if (orderId == -1) {
             if (myRequest.order.totalAmount!=0.0){
@@ -1997,10 +2074,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             }else{
                 myRequest.completed_all_payments = true
             }
+
             paymentviewModel.submit(myRequest)
         } else {
-            EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_else_7"))
-
             val paymentReq = myRequest.order.paymentAttributes
             if (paymentReq != null) {
                 paymentReq.order_id = orderId
@@ -2011,25 +2087,21 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     false
                 ) && prefProvider.getValueInt("ORDER_ID", -1) != -1
             ) {
+
+
                 // total amount - (hal pay amoutn + alredy pay )
                 val aa = SpitByOrderRequestModel(
                     orderId, isSelectedCount <= 1,
                     SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
                 )
-                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_paymentviewModel.splitByOrder(aa, true)_Before_7"))
-                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_paymentviewModel.splitByOrder(aa, true), aa -> ${Gson().toJson(aa)} _7"))
-                paymentviewModel.splitByOrder(aa, true)
-                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_paymentviewModel.splitByOrder(aa, true)_After_7"))
 
+                paymentviewModel.splitByOrder(aa, true)
             } else {
                 if (myRequest.order.totalAmount!=0.0){
                     myRequest.completed_all_payments = isSelectedCount <= 1
                 }else{
                     myRequest.completed_all_payments = true
                 }
-
-                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_else, myRequest = ${myRequest} _7"))
-
                 paymentviewModel.submit(myRequest)
             }
 
@@ -2197,6 +2269,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         ProgressUtils.showProgressDialog("Please wait payment under process", requireActivity())
         var call: Call<PaymentResponse>? = null
+
         when (i) {
             1 -> {
                 call = jsonArray1?.let { apiModule1.getRetrofit1().processCardSwipe(it) }
@@ -2587,8 +2660,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
                     splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
                     splitAllAmounts(Constants.TIP, 0.0)
-                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _1"))
-
                 } else {
                     if (custom_paymentAmount != 0.0 && isSelectedCount != 1) {
                         prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true)
@@ -2604,10 +2675,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             cashDiscountSurcharge
                         )
                         splitAllAmounts(Constants.TIP, 0.0)
-
-                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _1"))
-                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt_ custom_paymentAmount -> ${custom_paymentAmount} _1"))
-
                     } else if (custom_paymentAmount != 0.0) {
                         bundle.putBoolean("isSpilt", false)
                         prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false)
@@ -2622,10 +2689,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             cashDiscountSurcharge
                         )
                         splitAllAmounts(Constants.TIP, 0.0)
-
-                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _2"))
-                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt_ custom_paymentAmount -> ${custom_paymentAmount} _2"))
-
                     } else {
                         bundle.putBoolean("isSpilt", true)
                         bundle.putBoolean("isSplitByNo", true)
@@ -2641,10 +2704,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                         )
 
                         splitAllAmounts(Constants.TIP, 0.0)
-
-                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _3"))
-                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt_ custom_paymentAmount -> ${custom_paymentAmount} _3"))
-
                     }
 
                 }
@@ -2731,9 +2790,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
                     splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
                     splitAllAmounts(Constants.TIP, 0.0)
-
-                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _4"))
-
                 } else {
                     bundle.putBoolean("isSpilt", true)
                     bundle.putBoolean("isSplitByNo", true)
@@ -2748,10 +2804,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                         cashDiscountSurcharge
                     )
                     splitAllAmounts(Constants.TIP, 0.0)
-
-                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _4"))
-                    EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDineInFragmentNew.kt_ remainingValue -> ${remainingValue} _4"))
-
                 }
 
 

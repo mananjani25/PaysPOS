@@ -1,4 +1,4 @@
-package com.pays.pos.ui.fragments.dashboard
+package com.pays.pos.ui.fragments.dineInNew
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
 import android.os.StrictMode
+import android.provider.Settings.Global
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
@@ -18,7 +19,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import com.google.gson.Gson
 import com.pays.pos.MainApplication
 import com.pays.pos.data.db.AppDatabase
@@ -86,7 +86,6 @@ import com.pays.pos.data.repositories.TaxServiceChargeRepository
 import com.pays.pos.data.repositories.TipDiscountRepository
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
-import com.pays.pos.logger.MessageEvent
 import com.pays.pos.utils.*
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
@@ -94,7 +93,6 @@ import com.pays.pos.utils.workmanager.ThreadPoolManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
-import org.greenrobot.eventbus.EventBus
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -104,13 +102,12 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 import kotlin.collections.set
 import kotlin.math.ceil
 
 
 @HiltViewModel
-class DashBoardCategoryViewModel @Inject constructor(
+class DashBoardCategoryViewModelPaysDineIn @Inject constructor(
     private val posRepository: PosRepository,
     private val appDatabase: AppDatabase,
     private val prefProvider: PrefProvider,
@@ -137,29 +134,11 @@ class DashBoardCategoryViewModel @Inject constructor(
     var cashdiscountAmount = 0.0
     var cashDiscountType = ""
     var totalDiscount = 0.0
-    var wholetotalPrice = 0.0
     var tip = 0.0
     var order_note = ""
     var cartModel: CartModel? = null
-    var manualCartOrderNote: String? = ""
     var currentCartItems: ArrayList<TbCartItem> = arrayListOf()
     var duplicateCurrentCartItem: ArrayList<TbCartItem> = arrayListOf()
-
-    /* This variable is used to track the selected category, if this variable is not 0 then the category will be selected, it was added to solve BIS-4045 */
-    var selectedCatetory:Int=0
-
-    var oldDineInItems: ArrayList<TbCartItem>  = arrayListOf()
-    var isDineInUpdate = false
-    var dineInResult = MutableLiveData<Boolean>(false)
-    var dineInResultCreateOrder = MutableLiveData<Boolean>(false)
-
-    var orderRequestModel:OrderRequestModel? = null
-    var orderAttributeRequestModel = OrderAttributeRequestModel()
-
-    /**
-     * Dine In Item for Item Tracking
-     */
-    var dineInItemsBeforeUpdate  = arrayListOf<TbCartItem>()
 
     /**
      * Tracking main cart discount
@@ -197,39 +176,15 @@ class DashBoardCategoryViewModel @Inject constructor(
     val itemQuantityCheck: LiveData<Event<Boolean?>> = _itemQuantityCheck
     var orderId: Int? = 0
 
-    var activeOrderTypeText: String = ""
-    var activeOrderTypeName: String = ""
-    var activeOrderTypeId: Int? = 0
-
     var openOrderUpdate: Boolean? = false
     private val _removeGuestSuccess = MutableLiveData<Event<String>>()
     val removeGuestSuccess: LiveData<Event<String>> = _removeGuestSuccess
 
-    val noteTbCartItem: MutableLiveData<TbCartItem> = MutableLiveData<TbCartItem>()
 
     private val _latestDiscount = MutableLiveData<Double>()
     val latestDiscount: LiveData<Double> = _latestDiscount
 
-    public val tipButtonOnCustomerDisplayClicked = MutableLiveData<Boolean>()
-
     var isUpdatedOnce = false
-
-    /**
-     * When Item in cart clicked
-     * */
-    var isCartItemClicked = false
-
-
-    /**
-     * Tip has been added , Either from customer display or from checkoutFragment
-     */
-    val customerGivenTip = MutableLiveData<Boolean>(false)
-    var employeeGivenTip = false
-    var totalTipAmount = 0.0
-    var totalAmount = 0.0
-    var finalAmount = 0.0
-    var paymentTypeForTip = ""
-    val processingTipForCard = MutableLiveData(false)
 
     /**
      * Fields used to check navigation from fragments
@@ -262,22 +217,13 @@ class DashBoardCategoryViewModel @Inject constructor(
      */
     var boldPosNeedToRefresh = false
 
-    /* Below 4 variables are used as backup variables to solve the BIS-3973, when the cart's last item is deleted the the metadata is also getting removed, these variables will keep the metadata with them. */
-    public var backupOrderId:Int? = null
-    public var backupPaymentId:Int? = null
-    public var backupPaymentOfflineId: String? = ""
-    public var backupOrderOfflineId: String? = ""
-
     /**
      * BIS - 3500 issue resolved
      */
     val autoSyncEnabled = MutableLiveData<Boolean>()
-    val disableCursor = MutableLiveData<Boolean>()
 
     //Fetch all Items from TBITEM
     val allInventoryItems = posRepository.getItemsList()
-
-
 
     //Fetch all orders count
     fun allOrderCounts(
@@ -490,8 +436,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     ) {
         appDatabase.itemDao().getItemListByCategory(id)
 
-    }.flow.cachedIn(viewModelScope)
-/* The above .cachedIn(viewModelScope) is added by Rahul to solve the, Attempt to collect twice from pageEventFlow issue. */
+    }.flow
+
 
     /*
         fun getCartList(orderType:String,employee_Id: Int) : List<CartModel>{
@@ -522,8 +468,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.getAllCartItems(orderType, employee_Id)
     }
 
-    fun getAllDineInCartItems(orderType: String): Flow<List<TbCartItem>> {
-        return posRepository.getAllDineInCartItems(orderType)
+    fun getDineInCartItems(orderType: String, employee_Id: Int): Flow<List<TbCartItem>> {
+        return posRepository.getAllCartItems(orderType, employee_Id)
     }
 
 
@@ -605,10 +551,12 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun addItemToCartItems(tbCartItem: TbCartItem) {
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(Dispatchers.IO).launch {
+
 
             posRepository.addItemToCart(tbCartItem)
             destroyedCartItemsList.clear()
+
 
             val currentTimeMillis = System.currentTimeMillis()
             val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
@@ -658,13 +606,6 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     private fun removeItemFromCartItems(itemId: Int, guestIndexForDineIn: Int) {
-        EventBus.getDefault().post(
-            MessageEvent(
-                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
-                    Gson().toJson(Thread.currentThread().stackTrace)
-                }"
-            )
-        )
         CoroutineScope(Dispatchers.IO).launch {
             posRepository.removeItemFromCart(itemId, guestIndexForDineIn)
         }
@@ -735,38 +676,12 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     suspend fun deleteCartItem(cartItemId: Int) {
-        EventBus.getDefault().post(
-            MessageEvent(
-                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
-                    Gson().toJson(Thread.currentThread().stackTrace)
-                }"
-            )
-        )
         viewModelScope.launch {
             posRepository.deleteCartItems(cartItemId)
         }
     }
 
-    suspend fun deleteCartItemsByIdGuestIndex(itemId: Int,guestIndexForDineIn:Int) {
-        viewModelScope.launch {
-            posRepository.deleteCartItemsByIdGuestIndex(itemId,guestIndexForDineIn)
-        }
-    }
-
-    suspend fun updateDineInCartItemsByIdGuestIndex(itemQuantity: Int,itemId: Int,guestIndexForDineIn:Int) {
-        viewModelScope.launch {
-            posRepository.updateDineInCartItemsByIdGuestIndex(itemQuantity,itemId,guestIndexForDineIn)
-        }
-    }
-
     suspend fun deleteManualCartModel() {
-        EventBus.getDefault().post(
-            MessageEvent(
-                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
-                    Gson().toJson(Thread.currentThread().stackTrace)
-                }"
-            )
-        )
         viewModelScope.launch {
             posRepository.deleteManualCartModel()
         }
@@ -774,13 +689,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     fun deleteCartItems() {
-        EventBus.getDefault().post(
-            MessageEvent(
-                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
-                    Gson().toJson(Thread.currentThread().stackTrace)
-                }"
-            )
-        )
         viewModelScope.launch {
             posRepository.deleteCartItems()
         }
@@ -790,19 +698,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         try {
             prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
             cartModel = null
-            manualCartOrderNote=""
-
-            EventBus.getDefault().post(
-                MessageEvent(
-                    "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
-                        Gson().toJson(Thread.currentThread().stackTrace)
-                    }"
-                )
-            )
             GlobalScope.launch {
-                deleteOrderTypeBackupByName(
-                    prefProvider.employeeId()
-                )
                 posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
                 destroyedList.clear()
 
@@ -815,26 +711,12 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun deleteCartBeforeSwitch() {
-        EventBus.getDefault().post(
-            MessageEvent(
-                "${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR deleteCartBeforeSwitch() Thread.dumpStack(): it1 -> ${
-                    Gson().toJson(Thread.currentThread().stackTrace)
-                }"
-            )
-        )
         GlobalScope.launch {
             posRepository.deleteOldCartBeforeSwitch(prefProvider.getValueInt(EMPLOYEE_ID, 0))
         }
     }
 
     fun clearCartModelBackup() {
-        EventBus.getDefault().post(
-            MessageEvent(
-                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
-                    Gson().toJson(Thread.currentThread().stackTrace)
-                }"
-            )
-        )
         viewModelScope.launch {
             posRepository.clearCartModelBackup()
         }
@@ -850,16 +732,8 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalCount = 0
             order_note = ""
             posRepository.deleteManualSaleCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
+
         }
-
-        EventBus.getDefault().post(
-            MessageEvent(
-                "${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR DashboardCategoryViewModel.kt_Thread.dumpStack(): it1 -> ${
-                    Gson().toJson(Thread.currentThread().stackTrace)
-                }"
-            )
-        )
-
     }
 
     fun deleteManualSaleItemsFromCartItems() {
@@ -879,14 +753,6 @@ class DashBoardCategoryViewModel @Inject constructor(
             )
 
         }
-
-        EventBus.getDefault().post(
-            MessageEvent(
-                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
-                    Gson().toJson(Thread.currentThread().stackTrace)
-                }"
-            )
-        )
 
     }
 
@@ -1035,17 +901,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                 cartModel = cartModel?.let { taxBifurcationCalculationNew(item, it, type, false) }
             }
             cartModel?.let { addCart(it) }
-
-
-            if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN){
-                item.apply {
-                    guestIndexForDineIn = dineInHeaderPosition
-                    orderType = "DineIn"
-                    employeeID = prefProvider.employeeId()
-                }
-            }
-
-
             addItemToCartItems(item)
         } else {
             val list = cartList?.toMutableList()
@@ -1085,13 +940,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                             } else {
                                 list.remove(item)
                                 deleteItemFromCartItem(item)
-                                EventBus.getDefault().post(
-                                    MessageEvent(
-                                        "${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
-                                            Gson().toJson(Thread.currentThread().stackTrace)
-                                        }"
-                                    )
-                                )
                             }
                         }
                     } else {
@@ -1738,13 +1586,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                     if (type == DELETE) {
                         // deletes whole cart
                         deleteCart()
-                        EventBus.getDefault().post(
-                            MessageEvent(
-                                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
-                                    Gson().toJson(Thread.currentThread().stackTrace)
-                                }"
-                            )
-                        )
                     } else {
 
                         var cartModel = cartList.get(0)
@@ -2320,13 +2161,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     if (type == DELETE) {
                         deleteCart()
-                        EventBus.getDefault().post(
-                            MessageEvent(
-                                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
-                                    Gson().toJson(Thread.currentThread().stackTrace)
-                                }"
-                            )
-                        )
                     } else {
 
                         var cartModel = cartList?.get(0)
@@ -2860,8 +2694,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                         }
                     }
-                } else
-                    if (type == DELETE) {
+                } else if (type == DELETE) {
 
                     var index = -1
                     Log.e(TAG, "CheckDeleteItem ${Gson().toJson(item)}")
@@ -2934,13 +2767,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                                 list.remove(model)
                                 deleteItemFromCartItem(model)
-                                EventBus.getDefault().post(
-                                    MessageEvent(
-                                        "${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
-                                            Gson().toJson(Thread.currentThread().stackTrace)
-                                        }"
-                                    )
-                                )
                             }
                         }
                     } else {
@@ -2983,13 +2809,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 if (type == DELETE) {
                     deleteCart()
-                    EventBus.getDefault().post(
-                        MessageEvent(
-                            "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
-                                Gson().toJson(Thread.currentThread().stackTrace)
-                            }"
-                        )
-                    )
                 } else {
 
                     val newCartModel: CartModel =
@@ -3255,7 +3074,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     if (index != -1) {
                                         if (item != null) {
                                             model.name = item.name
-                                            model.taxes = item.taxes
                                             model.itemQuantity =
                                                 model.itemQuantity + item.itemQuantity
                                             model.price = item.price
@@ -3441,8 +3259,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         if (index == -2) {
                             Log.e(TAG, "Itis NotMinus  ")
 
-                        } else if (index != -1)
-                        {
+                        } else if (index != -1) {
                             val model = list.get(index)
                             Log.d(TAG, "cartLogic: " + index)
                             if (model != null) {
@@ -3507,8 +3324,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                             }
                         }
-                    } else if (type == DELETE)
-                    {
+                    } else if (type == DELETE) {
                         var list: ArrayList<TbCartItem> = arrayListOf()
                         if (item != null) {
                             list = cartList as ArrayList<TbCartItem>
@@ -3637,14 +3453,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                         list.filter { it.itemId == item?.itemId && it.guestIndexForDineIn == dineInHeaderPosition }
                     var newUpdatedItem: TbCartItem = if (newUpdatedItemList.isNotEmpty()) {
                         // IMPORTANT -- remove this.. this is for log purpose only
-//                        newUpdatedItemList.forEach {
-//                            it.taxes = arrayListOf()
-//                            Log.d(TAG, "newUpdatedItemList updateDineInCart: " + Gson().toJson(it))
-//                        }
+                        newUpdatedItemList.forEach {
+                            it.taxes = arrayListOf()
+                            Log.d(TAG, "newUpdatedItemList updateDineInCart: " + Gson().toJson(it))
+                        }
 
                         newUpdatedItemList[0]
                     } else {
-                        list.first { it.itemId == item.itemId }
+                        list.filter { it.itemId == item.itemId }[0]
                     }
 
                     if (type != DELETE) {
@@ -3654,22 +3470,22 @@ class DashBoardCategoryViewModel @Inject constructor(
                             "newUpdatedItem:: guestIndexForDineIn: " + dineInHeaderPosition
                         )
                         // IMPORTANT -- remove this.. this is for log purpose only
-                      //  newUpdatedItem.taxes = arrayListOf()
+                        newUpdatedItem.taxes = arrayListOf()
                         Log.d(
                             "DashViewModModel",
                             "newUpdatedItem:: " + Gson().toJson(newUpdatedItem)
                         )
                         newUpdatedItem.guestIndexForDineIn = this.dineInHeaderPosition
-
+                        newUpdatedItem.orderType = prefProvider.getOrderTypeName("order_type_name","")
                         if (addNewEntry) {
                             viewModelScope.launch {
                                 newUpdatedItem.cartItemId =
-                                    this@DashBoardCategoryViewModel.getLatestPrimaryKey() + 1
+                                    this@DashBoardCategoryViewModelPaysDineIn.getLatestPrimaryKey() + 1
                             }
-                         //   currentCartItems.add(newUpdatedItem)
+                           // currentCartItems.add(newUpdatedItem)
                             addItemToCartItems(newUpdatedItem)
                         } else {
-                        //    currentCartItems.add(newUpdatedItem)
+                          //  currentCartItems.add(newUpdatedItem)
                             addItemToCartItems(newUpdatedItem)
                         }
                         cartModel?.let { addCart(it) }
@@ -3684,7 +3500,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 "newUpdatedItem:: guestIndexForDineIn: " + dineInHeaderPosition
                             )
                             // IMPORTANT -- remove this.. this is for log purpose only
-                           // newUpdatedItem.taxes = arrayListOf()
+                            newUpdatedItem.taxes = arrayListOf()
                             Log.d(
                                 "DashViewModModel",
                                 "newUpdatedItem:: " + Gson().toJson(newUpdatedItem)
@@ -3693,12 +3509,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                             if (addNewEntry) {
                                 viewModelScope.launch {
                                     newUpdatedItem.cartItemId =
-                                        this@DashBoardCategoryViewModel.getLatestPrimaryKey() + 1
+                                        this@DashBoardCategoryViewModelPaysDineIn.getLatestPrimaryKey() + 1
                                 }
-                            //    currentCartItems.add(newUpdatedItem)
-                             //   addItemToCartItems(newUpdatedItem)
+                           //     currentCartItems.add(newUpdatedItem)
+                                addItemToCartItems(newUpdatedItem)
                             } else {
-                             //   currentCartItems.add(newUpdatedItem)
+                          //      currentCartItems.add(newUpdatedItem)
                                 addItemToCartItems(newUpdatedItem)
                             }
                             cartModel?.let { addCart(it) }
@@ -3730,7 +3546,6 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
         }
-     //   oldDineInItems.clear()
     }
 
     private fun combineItem(list: ArrayList<TbItem>, item: TbItem, index: Int): List<TbItem> {
@@ -4093,18 +3908,6 @@ class DashBoardCategoryViewModel @Inject constructor(
             ) {
                 deliveryType = ""
             }
-            if (orderTypeId == -1) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    var job = launch {
-                        posRepository.getOrderTypeBackupList(employeeID)?.let {
-                            try{
-                                orderTypeId = (it.get(0).orderType) ?: -1
-                            }catch (e:Exception){}
-                        }
-                    }
-                    job.join()
-                }
-            }
             orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
             isMaual = isManualSales
             serviceCharge = serviceChargesList
@@ -4114,10 +3917,6 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
         }
-    }
-
-    suspend fun getOrderTypeBackupList(employeeId: Int): List<OrderTypeBackup> {
-        return posRepository.getOrderTypeBackupList(employeeId)
     }
 
     fun getCashDiscountDetails(active: Int): LiveData<CashDiscountModel>? {
@@ -4810,15 +4609,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         LOYALTY_ADDED, false
                     )
                     totalPrice = finalTotal
-                    try {
-                        if (finalTotal >= prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0")
-                                .toDouble()
-                        ) {
-                            wholetotalPrice = finalTotal
-                        }
-                    } catch (e: Exception) {
 
-                    }
 
 
                     cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
@@ -5827,9 +5618,9 @@ class DashBoardCategoryViewModel @Inject constructor(
         tipAmount: Double,
         floorPlanDetails: DineInOrderDetailAttributes,
         cartItems: ArrayList<TbCartItem>
-    ) {
+    ): OrderRequestModel {
 
-        orderAttributeRequestModel = OrderAttributeRequestModel()
+        val orderAttributeRequestModel = OrderAttributeRequestModel()
 
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
 
@@ -5901,18 +5692,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                 item.timeStamp = randomOfflineId().toString()
             }
         }
-
         orderAttributeRequestModel.orderItemsAttributes =
             dineInOrderItemAttributed(cartModel, cartItems)
 
+        orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
 
-        orderAttributeRequestModel.guestsAttributes = getGuestsAttributesCreateOrder(cartModel)
 
-//
-//        val orderRequestModel = OrderRequestModel(false, orderAttributeRequestModel)
-//
-//
-//        return orderRequestModel
+        val orderRequestModel = OrderRequestModel(false, orderAttributeRequestModel)
+
+
+        return orderRequestModel
     }
 
     fun dineInServiceChargeAppliedAttribute(cartModel: CartModel): List<OrderServiceChargesAttribute> {
@@ -6030,11 +5819,11 @@ class DashBoardCategoryViewModel @Inject constructor(
         return orderServiceChargesAttributeList
     }
 
-    private fun getGuestsAttributesCreateOrder(cartModel: CartModel): List<GuestsAttributes> {
+    private fun getGuestsAttributes(cartModel: CartModel): List<GuestsAttributes> {
         val orderItemsAttributeList: ArrayList<GuestsAttributes> = arrayListOf()
         Log.e(TAG, "dineInListData:   ${Gson().toJson(cartModel.dineInList)}")
-        CoroutineScope(Dispatchers.IO).launch {
         cartModel.dineInList?.forEachIndexed { index, it ->
+            CoroutineScope(Dispatchers.IO).launch {
                 var cartItems = getDineInCartItems(index) as ArrayList<TbCartItem>
                 val model = GuestsAttributes()
                 model.name = it.title.toString()
@@ -6102,7 +5891,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         address.addressableId = it.customer?.addresses?.get(i)?.id
                         address.city = it.customer?.addresses?.get(i)?.city.toString()
                         address.country = it.customer?.addresses?.get(i)?.country.toString()/*address.latitude = it.customer?.addresses?.get(i)?.latitude!!.toDouble()
-                address.longitude = it.customer?.addresses?.get(i)?.longitude!!.toDouble()*/
+                    address.longitude = it.customer?.addresses?.get(i)?.longitude!!.toDouble()*/
                         address.latitude = 0.0
                         address.longitude = 0.0
                         address.state = it.customer?.addresses?.get(i)?.state.toString()
@@ -6117,13 +5906,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                         phoneList.add(phoneModel)
                     }
                     val customerModel = CustomerAttributes()/*  customerModel.addressesAttributes = addressList
-              customerModel.birthDate = it.customer?.birth_date.toString()
-              customerModel.firstName = it.customer?.first_name.toString()
-              customerModel.lastName = it.customer?.last_name.toString()*/
+                  customerModel.birthDate = it.customer?.birth_date.toString()
+                  customerModel.firstName = it.customer?.first_name.toString()
+                  customerModel.lastName = it.customer?.last_name.toString()*/
                     customerModel.id = it.customer?.id/* customerModel.companyName = it.customer?.company.toString()
-             customerModel.phonesAttributes = phoneList
-             customerModel.locationId = prefProvider.getValueInt(LOCATION_ID, 1)
-*/
+                 customerModel.phonesAttributes = phoneList
+                 customerModel.locationId = prefProvider.getValueInt(LOCATION_ID, 1)
+    */
                     //  model.customerAttributes = customerModel
 
                 } else {
@@ -6132,126 +5921,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttributeList.add(model)
 
             }
-            orderRequestModel = OrderRequestModel(false, orderAttributeRequestModel)
-            dineInResultCreateOrder.postValue(true)
         }
-
-        return orderItemsAttributeList
-
-    }
-
-    private fun getGuestsAttributes(cartModel: CartModel): List<GuestsAttributes> {
-        val orderItemsAttributeList: ArrayList<GuestsAttributes> = arrayListOf()
-        Log.e(TAG, "dineInListData:   ${Gson().toJson(cartModel.dineInList)}")
-
-
-            CoroutineScope(Dispatchers.IO).launch {
-
-                cartModel.dineInList?.forEachIndexed { index, it ->
-
-                        var cartItems = getDineInCartItems(index) as ArrayList<TbCartItem>
-                        val model = GuestsAttributes()
-                        model.name = it.title.toString()
-                        model.Destroy = it.isDestroy
-                        if (it.id != 0) {
-                            model.id = it.id
-                        }
-                        if (cartItems?.isNotEmpty() == true) {
-                            var listItems: ArrayList<GuestItemsAttributes> = arrayListOf()
-                            var subTotal = 0.0
-                            var totalTax = 0.0
-                            var totalTips = 0.0
-                            var totalDiscount = 0.0
-                            var totalAmount = 0.0
-                            cartItems.sortedBy { it.dineInSort }
-                            cartItems.forEach { tb ->
-
-
-                                listItems.add(GuestItemsAttributes(id = tb.guestItemId,
-                                    orderItemId = tb.orderItemId,
-                                    quantity = tb.itemQuantity,
-                                    itemId = tb.itemId,
-                                    amount = tb.price,
-                                    timestamp = tb.timeStamp,
-                                    guestId = it.id?.let { it }
-
-                                )
-
-                                )
-
-
-
-
-                                subTotal += tb.price
-                                tb.taxes?.forEach {
-                                    totalTax += it.rate
-                                }
-                                totalDiscount += tb.discountPrice
-
-                            }
-                            totalAmount = (subTotal + totalTax) - totalDiscount
-                            model.totalAmount = totalAmount
-                            model.totalTax = totalTax
-                            model.totalTips = totalTips
-                            if (it.id != null && it.id != 0) {
-                                model.id = it.id
-                            }
-
-
-
-                            model.guestItemsAttributes = listItems
-                        }
-
-
-                        if (it.customer != null) {
-                            model.customerId = it.customer?.id
-                            var addressList: ArrayList<CustomerAttributes.AddressesAttribute> =
-                                arrayListOf()
-                            var phoneList: ArrayList<CustomerAttributes.PhonesAttribute> =
-                                arrayListOf()
-                            for (i in 0.until(it.customer?.addresses?.size!!)) {
-
-                                var address = CustomerAttributes.AddressesAttribute()
-                                address.address1 =
-                                    it.customer?.addresses?.get(i)?.address1.toString()
-                                address.address2 =
-                                    it.customer?.addresses?.get(i)?.address2.toString()
-                                address.addressableId = it.customer?.addresses?.get(i)?.id
-                                address.city = it.customer?.addresses?.get(i)?.city.toString()
-                                address.country = it.customer?.addresses?.get(i)?.country.toString()/*address.latitude = it.customer?.addresses?.get(i)?.latitude!!.toDouble()
-                    address.longitude = it.customer?.addresses?.get(i)?.longitude!!.toDouble()*/
-                                address.latitude = 0.0
-                                address.longitude = 0.0
-                                address.state = it.customer?.addresses?.get(i)?.state.toString()
-                                addressList.add(address)
-                            }
-                            for (i in 0 until it.customer?.phones?.size!!) {
-                                val phoneModel = CustomerAttributes.PhonesAttribute()
-                                phoneModel.id = it.customer?.phones?.get(i)?.id
-                                phoneModel.customerId = it.customer?.id
-                                phoneModel.phoneNumber =
-                                    it.customer?.phones?.get(i)?.phone_number.toString()
-                                phoneList.add(phoneModel)
-                            }
-                            val customerModel = CustomerAttributes()/*  customerModel.addressesAttributes = addressList
-                  customerModel.birthDate = it.customer?.birth_date.toString()
-                  customerModel.firstName = it.customer?.first_name.toString()
-                  customerModel.lastName = it.customer?.last_name.toString()*/
-                            customerModel.id = it.customer?.id/* customerModel.companyName = it.customer?.company.toString()
-                 customerModel.phonesAttributes = phoneList
-                 customerModel.locationId = prefProvider.getValueInt(LOCATION_ID, 1)
-    */
-                            //  model.customerAttributes = customerModel
-
-                        } else {
-                            model.customerId = 0
-                        }
-                        orderItemsAttributeList.add(model)
-
-                    }
-
-                dineInResult.postValue(true)
-            }
 
         return orderItemsAttributeList
 
@@ -6297,8 +5967,6 @@ class DashBoardCategoryViewModel @Inject constructor(
             orderItemsAttribute.quantity = item.itemQuantity
             orderItemsAttribute.terminalId = cartModel.terminalId
             orderItemsAttribute.isFired = cartModel.isFired
-            orderItemsAttribute.guestIndexForDineIn = item.guestIndexForDineIn
-
             item.dineInSort = if (item.dineInSort == 0) {
                 orderItemsAttributeList.size + 1
             } else {
@@ -6714,13 +6382,6 @@ class DashBoardCategoryViewModel @Inject constructor(
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
             note = cartModel.note
             openOrderType = "DineIn"
-
-            val isDineInUpdate = prefProvider.getValueboolean(DINE_IN_UPDATE,false)
-
-            if(prefProvider.getValueboolean(DINE_IN_UPDATE,false)){
-                orderId =  prefProvider.getValueInt("DINE_IN_ORDER_UPDATE",0)
-                cartModel.orderId = orderId
-            }
             orderTypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 2)
             orderTypeName = prefProvider.getValue(ORDER_TYPE_NAME, DINE_IN)
             tax_bifurcation_data = Gson().toJson(cartModel.taxlistDynamic)
@@ -7895,6 +7556,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         mPosition = position
     }
 
+
     fun createCart(cartList: ArrayList<CartModel>): ArrayList<CartModel> {
         if (cartList.isEmpty()) {
             val model = CartModel()
@@ -7910,37 +7572,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                     ).lowercase()
                 ) {
                     model.orderTypeId = it.id
-
-                    activeOrderTypeText = it.name
-                    activeOrderTypeName = it.orderType
-                    activeOrderTypeId = it.id
-                    var foundedList: List<OrderTypeBackup>? = null
-                    CoroutineScope(Dispatchers.IO).async {
-                        async {
-                            foundedList = findOrderTypeBackup(
-                                it.id,
-                                activeOrderTypeText,
-                                model.employeeID.toInt()
-                            )
-                        }.await()
-
-                        async {
-                            try {
-                                foundedList?.let { founded ->
-                                    if (founded.isNullOrEmpty()) {
-                                        var orderTypebackup = OrderTypeBackup()
-                                        orderTypebackup.orderType = it.id
-                                        orderTypebackup.employeeId = model.employeeID
-                                        orderTypebackup.orderTypeName = activeOrderTypeText
-                                        insertOrderTypeBackup(orderTypebackup)
-                                    }
-                                }
-
-                            } catch (e: Exception) {
-                            }
-                        }.await()
-                    }
-
                 }
             }
             model.items = null
@@ -8351,33 +7982,4 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.getCartModelFromID(cartId)
     }
 
-    suspend fun insertOrderTypeBackup(orderTypeBackup: OrderTypeBackup): Long? {
-        return posRepository.addOrderTypeBackup(orderTypeBackup)
-    }
-
-    suspend fun findOrderTypeBackup(
-        orderType: Int,
-        orderTypeName: String,
-        employeeId: Int
-    ): List<OrderTypeBackup> {
-        return posRepository.findOrderTypeBackup(orderType, employeeId, orderTypeName)
-    }
-
-    suspend fun deleteOrderTypeBackup(orderType: Int, employeeId: Int) {
-        viewModelScope.launch {
-            posRepository.deleteOrderTypeBackup(orderType, employeeId)
-        }
-    }
-
-    fun deleteOrderTypeBackupByName(employeeId: Int) {
-        viewModelScope.launch {
-            posRepository.deleteOrderTypeBackupByName(employeeId)
-        }
-    }
-
-    suspend fun updateOrderTypeBackup(orderType: Int, orderTypeName:String,employeeId: Int) {
-        viewModelScope.launch {
-            posRepository.updateOrderTypeBackup(orderType,orderTypeName, employeeId)
-        }
-    }
 }

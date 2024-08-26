@@ -157,7 +157,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1.2"
                 android:gravity="center"
-                android:text="Group Quantity"
+                android:text="Quantity"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />
 
@@ -232,6 +232,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/dine_in_footer_selector"
                 android:gravity="center"
+                android:visibility="gone"
                 android:minWidth="@dimen/_120sdp"
                 android:paddingHorizontal="@dimen/padding_home_button"
                 android:paddingVertical="@dimen/vertical_padding_home_button"
@@ -252,7 +253,7 @@
                 android:gravity="center"
                 android:minWidth="@dimen/_120sdp"
                 android:padding="@dimen/_8sdp"
-                android:text="Fire All"
+                android:text="Fire"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6ssp" />
 
