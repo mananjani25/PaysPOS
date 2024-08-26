@@ -7442,6 +7442,409 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
 
+    /*fun syncSettingModule() {
+        viewModelScope.launch {
+            val resource = posRepository.syncVenueDetails()
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    Log.e("TOMIN", "SUCCESS")
+                    Log.e("BINGE", "syncSettingModule: START")
+                    resource.data.let { venueDetailsResponse ->
+                        if (venueDetailsResponse?.status == 200) {
+
+                            posRepository.deleteKitchenPrinters()
+                            resource.data?.let { it ->
+                                if (it.settingData.data.teamRoles.isNotEmpty()) {
+                                    posRepository.addTeamRoleFromDb(it.settingData.data.teamRoles)
+                                    rolePermission.findCurrentUserRoleAndSave(it.settingData.data.teamRoles)
+                                    _checkCashDrawerPermission.value = true
+                                } else {
+
+                                    ThreadPoolManager.instance.executeTask {
+
+                                        rolePermission.findCurrentUserRoleAndSave(
+                                            appDatabase.teamRoleDao().allRoleList()
+                                        )
+                                    }
+
+
+                                }
+
+
+                                if (prefProvider.getValue(SYNC_SETTING_TIME_STAMP, "").isEmpty()) {
+                                    prefProvider.setValueboolean(
+                                        Constants.IS_FIRST_TIME_LOGIN,
+                                        true
+                                    )
+                                } else {
+                                    prefProvider.setValueboolean(
+                                        Constants.IS_FIRST_TIME_LOGIN,
+                                        false
+                                    )
+                                }
+
+                                prefProvider.setValueboolean(
+                                    IS_PRINTER_QUEUE_ENABLE,
+                                    it.settingData.data.isPrinterQueueEnable
+                                )
+
+                                if (it.settingData.data.isMasterTeminal) {
+
+                                    prefProvider.setValueboolean(
+                                        Constants.CHECK_QUEUE_CANCEL, false
+                                    )
+                                    prefProvider.setValueboolean(Constants.IS_MASTER_TERMINAL, true)
+                                } else {
+                                    prefProvider.setValueboolean(
+                                        Constants.IS_PRINTER_QUEUE_STARTS, false
+                                    )
+                                    prefProvider.setValueboolean(
+                                        Constants.IS_MASTER_TERMINAL, false
+                                    )
+                                }
+
+
+                                val intent = Intent()
+                                intent.action = Constants.MASTER_TEMINAL_CHANGED
+                                _masterTerminal.value = Event(true)
+                                prefProvider.setValue(
+                                    Constants.QUEUE_SYNC_TIME_STAMP,
+                                    System.currentTimeMillis().toString()
+                                )
+
+
+                                *//*  val intent = Intent()
+                                  intent.action = Constants.MASTER_TEMINAL_CHANGED
+                                  MainApplication.getInstance()?.baseContext?.sendBroadcast(intent)
+                                  prefProvider.setValue(
+                                      QUEUE_SYNC_TIME_STAMP,
+                                      System.currentTimeMillis().toString()
+                                  )
+*//*
+
+
+
+
+
+
+
+
+                                try {
+
+                                    if (it.settingData.data.logo != null) {
+                                        if (it.settingData.data.logo.logoUrl.isNotEmpty() && !prefProvider.getValue(
+                                                Constants.VENUE_LOGO_URL, ""
+                                            ).equals(it.settingData.data.logo.thumb.thumbUrl)
+                                        ) {
+                                            val policy: StrictMode.ThreadPolicy =
+                                                StrictMode.ThreadPolicy.Builder().permitAll()
+                                                    .build()
+
+                                            StrictMode.setThreadPolicy(policy)
+
+                                            val bitmap =
+                                                getBitmapFromURL(it.settingData.data.logo.thumb.thumbUrl)
+                                            var baseBitmap =
+                                                bitmap?.let { it1 -> encodeTobase64(it1) }
+                                            if (baseBitmap?.isNotEmpty() == true) {
+                                                Log.d(TAG, "syncSettingModule: " + baseBitmap)
+                                                baseBitmap?.let { it1 ->
+                                                    prefProvider.setValue(
+                                                        VENUE_LOGO, it1
+                                                    )
+                                                }
+                                            }
+                                            prefProvider.setValue(
+                                                Constants.VENUE_LOGO_URL,
+                                                it.settingData.data.logo.thumb.thumbUrl
+                                            )
+                                        }
+
+
+                                    }
+
+                                } catch (e: Exception) {
+//                                    e.printStackTrace()
+                                }
+
+                                prefProvider.setValue(
+                                    PAX_SERIAL_NO, it.settingData.data.SerialNo ?: ""
+                                )
+                                prefProvider.setValue(
+                                    PAX_TERMINAL_ID, it.settingData.data.PAXTerminalID ?: ""
+                                )
+
+                                prefProvider.setValue(
+                                    BUSINESS_NAME, it.settingData.data.businessName
+                                )
+                                prefProvider.setValue(
+                                    SYSTEM_TIMEZONE, it.settingData.data.timeZone
+                                )
+                                prefProvider.setValue(
+                                    BUSINESS_PHONE_NO, it.settingData.data.phoneNumber
+                                )
+                                if (it.settingData.data.address != null) {
+                                    prefProvider.setValue(
+                                        BUSINESS_ADDRESS, it.settingData.data.address
+                                    )
+                                }
+
+
+                                prefProvider.setValueboolean(
+                                    CUSTOMER_SIGN_REQUIRED_ON_CD,
+                                    it.settingData.data.customer_sign_required_on_cd
+                                )
+
+                                prefProvider.setValueboolean(
+                                    SHOW_CASH_CREDIT_PRICE_ON_CUSTOMER_DISPLAY,
+                                    it.settingData.data.show_cash_credit_price_on_customer_display
+                                )
+
+                                prefProvider.setValue(
+                                    BUSINESS_WEBSITE, it.settingData.data.businessWebsite.toString()
+                                )
+                                prefProvider.setValue(
+                                    REPORT_START_TIME, it.settingData.data.report_start_time
+                                )
+                                prefProvider.setValue(
+                                    REPORT_END_TIME, it.settingData.data.report_end_time
+                                )
+
+                                prefProvider.setValueboolean(
+                                    SERVICECHARGE_TAKEOUT_OPENORDER,
+                                    it.settingData.data.service_charge_enable
+                                )
+                                prefProvider.setValueboolean(
+                                    SERVICECHARGE_DINEIN_ORDER,
+                                    it.settingData.data.enable_dine_in_service_charge
+                                )
+                                prefProvider.setValueboolean(
+                                    LOCK_SCREEN_TRANSACTION,
+                                    it.settingData.data.lock_screen_after_each_transaction
+                                )
+                                prefProvider.setValueboolean(
+                                    DINEIN_FLOORPLAN_SHOW_TABLENAME,
+                                    it.settingData.data.show_table_name
+                                )
+
+
+                                if (prefProvider.getValueboolean(
+                                        ONLY_SHOW_PRICE_GREATER_THAN_ZERO, false
+                                    ) != it.settingData.data.only_show_price_greater_than_zero
+                                ) {
+                                    _syncInventroyForPriceChange.value = Event(true)
+
+                                }
+
+
+
+                                prefProvider.setValueboolean(
+                                    ONLY_SHOW_PRICE_GREATER_THAN_ZERO,
+                                    it.settingData.data.only_show_price_greater_than_zero
+                                )
+                                prefProvider.setValueboolean(
+                                    ORDER_NUMBER_STARTING_FROM_ONE,
+                                    it.settingData.data.order_number_starting_from_one
+                                )
+                                posRepository.addCashDiscountsFromDb(it.settingData.data.cash_discounts)
+//                                taxServiceChargeRepository.deleteTaxFromDb()
+                                if (it.settingData.data.taxes.isNotEmpty()) {
+                                    taxServiceChargeRepository.addAllTaxDatabase(it.settingData.data.taxes)
+                                }
+//                                posRepository.deleteNotesFromDb()
+                                posRepository.addAllNotesDatabase(it.settingData.data.notes)
+//                                tipDiscountRepository.deleteDiscountsFromDb()
+                                tipDiscountRepository.addDiscount(it.settingData.data.discounts)
+
+                                *//* serviceChargesList.clear()
+                                 serviceChargesList = it.data.service_charges.toCollection(
+                                     arrayListOf()
+                                 )*//*
+
+                                if (it.settingData.data.service_charges.isNotEmpty()) {
+                                    taxServiceChargeRepository.deleteServiceChargesFromDb()
+                                    taxServiceChargeRepository.addServiceCharges(it.settingData.data.service_charges)
+                                }
+//                                posRepository.deleteTerminalsFromDb()
+                                posRepository.addTerminalsDatabase(it.settingData.data.terminals)
+//                                tipDiscountRepository.deleteTipsFromDb()
+                                tipDiscountRepository.addTips(it.settingData.data.tip_settings)
+//                                posRepository.deleteCustomerReceiptSettingsFromDb()
+                                posRepository.addCancelOrderReasonFromDb(it.settingData.data.cancelOrderReasons)
+                                posRepository.addWastageReasonInDb(it.settingData.data.wastageReasons)
+//                                posRepository.deleteCustomerPrinters()
+//                                posRepository.deleteKitchenPrinters()
+                                if (it.settingData.data.printers.kitchenPrinterList.isEmpty()) {
+                                    posRepository.deleteKitchenPrinters()
+                                } else {
+                                    posRepository.addKitchenPrinter(it.settingData.data.printers.kitchenPrinterList)
+
+                                }
+                                val custList = it.settingData.data.printers.customerPrinterList
+                                custList.forEach {
+                                    it.name = it.name.ifEmpty { "" }
+                                    it.modalName = it.modalName.ifEmpty { "" }
+                                }
+                                if (it.settingData.data.printers.customerPrinterList.isEmpty()) {
+                                    posRepository.deleteCustomerPrinters()
+                                } else {
+                                    posRepository.addCustomerPrinter(custList)
+                                }
+                                it.settingData.data.customerReceipt?.let { it1 ->
+                                    posRepository.addCustomerReceiptSettings(
+                                        it1
+                                    )
+                                }
+                                posRepository.deleteKitchenReceiptSettingsFromDb()
+                                it.settingData.data.kitchenReceipt?.let { it1 ->
+                                    posRepository.addKitchenReceiptSettings(
+                                        it1
+                                    )
+                                }
+//                                posRepository.deleteLoyaltyProgramFromDb()
+                                posRepository.addLoyaltyProgramFromDb(it.settingData.data.loyaltyPrograms)
+//                                posRepository.deleteSurcharge()
+                                posRepository.addCashDiscountsFromDb(it.settingData.data.cash_discounts)
+                                posRepository.deleteEODReportSettings()
+                                it.settingData.data.shift_report_configuration?.let { it1 ->
+                                    posRepository.addEODReportSettings(
+                                        it1
+                                    )
+                                }
+
+                                if (it.settingData.data.loyaltyPrograms.isNotEmpty()) {
+                                    it.settingData.data.loyaltyPrograms.forEach {
+                                        if (it.isEnable && !it.isDeleted) {
+                                            prefProvider.saveActiveLoyaltyData(it)
+                                        }
+                                    }
+                                }
+                                if (it.settingData.data.cash_discounts.isNotEmpty()) {
+                                    it.settingData.data.cash_discounts.forEach {
+                                        if (it.is_active) {
+                                            prefProvider.setValue(
+                                                CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE, it.amount_type
+                                            )
+                                            prefProvider.setValue(
+                                                CASH_DISCOUNT_SURCHARGE_RATE,
+                                                it.rate_or_amount.toString()
+                                            )
+                                        }
+                                    }
+                                }
+
+//                                posRepository.deleteTeamRoleFromDb()
+//                                posRepository.addTeamRoleFromDb(it.data.teamRoles)
+//                                posRepository.deleteAllEmployee()
+                                posRepository.employeeListAddAllFromSeeting(it.settingData.data.employee)
+//                                rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
+//                                posRepository.deleteOrderTypeFromDb()
+                                posRepository.addOrderType(it.settingData.data.orderTypes)
+                                posRepository.addAllCountryList(it.settingData.data.phoneCountrylist)
+                                posRepository.addTimeZones(it.settingData.data.time_zone_options)
+                                posRepository.addBusinessDetails(TbBusinessDetails().apply {
+                                    id = prefProvider.getLocationId()
+                                    business_name = it.settingData.data.businessName
+                                    business_website = it.settingData.data.businessWebsite
+                                    phone_number = it.settingData.data.phoneNumber
+                                    phone_number_1_country =
+                                        it.settingData.data.phone_number_1_country.toString()
+                                    phone_number_2_country =
+                                        it.settingData.data.phone_number_2_country.toString()
+                                    phone_number_2 = it.settingData.data.phoneNumber2.toString()
+                                    time_zone = it.settingData.data.business_time_zone.toString()
+                                    customer_contact_email =
+                                        it.settingData.data.customerContactEmail.toString()
+                                    businessAddress = listOf(it.settingData.data.business_address)
+                                })
+
+
+
+                                it.settingData.data.terminals.forEach { terminal ->
+                                    if (terminal.id == prefProvider.getValueInt(
+                                            Constants.TERMINAL_ID, 0
+                                        )
+                                    ) {
+                                        prefProvider.setValueboolean(
+                                            ONLINE_ORDER_ENABLE,
+                                            terminal.enabled_for_receiving_web_order!!
+                                        )
+                                        _enableOnlineOrder.value = Event(true)
+                                    }
+                                }
+                                _callCashDiscount.value = Event(true)
+
+                                prefProvider.setValue(Constants.MAGENSA_SETTINGS, "")
+
+                                if (it.settingData.data.magensaSettings.isNotEmpty()) {
+                                    prefProvider.setValue(
+                                        Constants.MAGENSA_SETTINGS,
+                                        Gson().toJson(it.settingData.data.magensaSettings[0])
+                                    )
+                                } else prefProvider.setValue(Constants.MAGENSA_SETTINGS, "")
+
+                                if (it.settingData.data.shift_report_configuration != null) {
+                                    prefProvider.setValue(
+                                        Constants.SHIFT_REPORT_SETTINGS,
+                                        Gson().toJson(it.settingData.data.shift_report_configuration)
+                                    )
+                                } else prefProvider.setValue(
+                                    Constants.SHIFT_REPORT_SETTINGS, ""
+                                )
+
+
+
+                                MainApplication.getInstance()?.let { it1 ->
+                                    Pref.setValue(
+                                        it1, Constants.MAGENSA_SETTINGS1, ""
+                                    )
+                                }
+
+                                if (it.settingData.data.magensaSettings.isNotEmpty()) MainApplication.getInstance()
+                                    ?.let { it1 ->
+                                        Pref.setValue(
+                                            it1,
+                                            Constants.MAGENSA_SETTINGS1,
+                                            Gson().toJson(it.settingData.data.magensaSettings[0])
+                                        )
+                                    }
+
+                            }
+                            _showProgress.value = Event(false)
+                            prefProvider.setValueboolean(Constants.SYNC_DATA, true)
+                            prefProvider.setValue(
+                                SYNC_SETTING_TIME_STAMP, venueDetailsResponse.settingData.timeStamp
+                            )
+
+                            _syncDone.value = Event(true)
+
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+                    Log.d("BINGE", "syncSettingModule: END")
+                    autoSyncEnabled.value = true
+                }
+
+                Status.ERROR -> {
+                    Log.e("TOMIN", "ERROR")
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                    autoSyncEnabled.value = true
+                }
+
+                Status.LOADING -> {
+                    Log.e("TOMIN", "LOADING")
+                    _showProgress.value = Event(true)
+                    autoSyncEnabled.value = true
+                }
+            }
+
+        }
+
+    }*/
+
     fun syncSettingModule() {
         viewModelScope.launch {
             val resource = posRepository.syncVenueDetails()
@@ -7455,6 +7858,19 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                             posRepository.deleteKitchenPrinters()
                             resource.data?.let { it ->
+                                try {
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept)
+                                    }
+
+                                } catch (e: Exception) {
+
+                                }
+
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    insertDynamicPayment(it.settingData.data.dynamicPaymentRecords)
+                                }
+
                                 if (it.settingData.data.teamRoles.isNotEmpty()) {
                                     posRepository.addTeamRoleFromDb(it.settingData.data.teamRoles)
                                     rolePermission.findCurrentUserRoleAndSave(it.settingData.data.teamRoles)
