@@ -743,6 +743,9 @@ class PosRepository @Inject constructor(
     fun getAllCartItems(orderType: String, employee_Id: Int) =
         appDatabase.cartDao().getCartItems(orderType, employee_Id)
 
+    fun getAllDineInCartItems(orderType: String) =
+        appDatabase.cartDao().getAllDineInCartItems(orderType)
+
     fun getDineInCartItems(guestIndexForDineIn: Int) =
         appDatabase.cartDao().getDineInCartItems(guestIndexForDineIn)
 
@@ -898,6 +901,15 @@ class PosRepository @Inject constructor(
         //  appDatabase.cartDao().delete(employee_id)//delete cart model
         appDatabase.cartDao().deleteCartItems(cartItemId)//delete cart items from TbCartItem
     }
+
+    suspend fun deleteCartItemsByIdGuestIndex(itemId: Int,guestIndexForDineIn:Int){
+        appDatabase.cartDao().deleteCartItemsByIdGuestIndex(itemId,guestIndexForDineIn)
+    }
+
+    suspend fun updateDineInCartItemsByIdGuestIndex(itemQuantity: Int,itemId: Int,guestIndexForDineIn:Int){
+        appDatabase.cartDao().updateDineInCartItemsByIdGuestIndex(itemQuantity,itemId,guestIndexForDineIn)
+    }
+
 
     suspend fun deleteManualCartModel() {
         //  appDatabase.cartDao().delete(employee_id)//delete cart model

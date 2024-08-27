@@ -582,7 +582,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         scrollNestedView()
 
         lifecycleScope.launch {
-            oneItemPerReceipt = dashboardViewModel.getLabelPrinterSettingsData().oneItemPerReciept
+            try{
+                oneItemPerReceipt = dashboardViewModel.getLabelPrinterSettingsData().oneItemPerReciept
+            }catch (e:Exception){
+
+            }
         }
 
         ProgressUtils.showProgressDialog(requireActivity())
@@ -1509,29 +1513,38 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
     private fun setLabelData() {
-        var paymentTypeTitle=java.lang.StringBuilder()
+        var paymentTypeTitle:java.lang.StringBuilder?=java.lang.StringBuilder()
        /* if (paymentType == "Card") {
             paymentTypeTitle = "Card"
         } else {
             paymentTypeTitle = "Cash"
         }*/
 
-        receiptModelForOpenORder?.order?.let {item->
-            item.payments.forEach {
-                paymentTypeTitle.append(it.paymentType+", ")
+        Log.v("TRACKING::", "START\n ------------------------------------")
+        Log.v("TRACKING::", "${Gson().toJson(receiptModelForOpenORder?.order)}")
+
+        if (receiptModelForOpenORder?.order!=null) {
+            receiptModelForOpenORder?.order?.let { item ->
+                item.payments.forEach {
+                    paymentTypeTitle?.append(it.paymentType + ", ")
+                }
+            }
+
+            Log.v("TRACKING::", "${paymentTypeTitle}")
+            paymentTypeTitle?.let {
+                binding.txtTitleCash.text = it.deleteCharAt(it.length - 2)
+                binding.txtRemainingAmountLabel.text = "Remaining Amount"
             }
         }
+        Log.v("TRACKING::", "END")
 
-
-        binding.txtTitleCash.text = paymentTypeTitle.deleteCharAt(paymentTypeTitle.length-2)
-        binding.txtRemainingAmountLabel.text = "Remaining Amount"
     }
 
     private fun cleanOrderBackupDetails() {
-        dashboardViewModel.backupOrderId = null
+       /* dashboardViewModel.backupOrderId = null
         dashboardViewModel.backupPaymentId = null
         dashboardViewModel.backupPaymentOfflineId = ""
-        dashboardViewModel.backupOrderOfflineId = ""
+        dashboardViewModel.backupOrderOfflineId = ""*/
     }
 
     override fun onClick(v: View?) {

@@ -589,8 +589,8 @@
             android:id="@+id/action_dashboardCategoryNew_to_cashLogFragment"
             app:destination="@id/cashLogFragment" />
         <action
-            android:id="@+id/action_dashboardCategoryNew_to_dineInFragment"
-            app:destination="@id/dineInFragment" />
+            android:id="@+id/action_dashboardCategoryNew_to_dineInFragmentPays"
+            app:destination="@id/dineInFragmentPays" />
         <action
             android:id="@+id/action_dashboardCategoryNew_to_orderTypeDialog"
             app:destination="@id/orderTypeDialog" />
@@ -985,8 +985,8 @@
             app:enterAnim="@anim/nav_default_enter_anim" />
 
         <action
-            android:id="@+id/action_manualSalesNew_to_dineInFragment"
-            app:destination="@id/dineInFragment" />
+            android:id="@+id/action_manualSalesNew_to_dineInFragmentPays"
+            app:destination="@id/dineInFragmentPays" />
 
     </fragment>
     <dialog
@@ -1237,51 +1237,51 @@
 
     </dialog>
     <fragment
-        android:id="@+id/dineInFragment"
-        android:name="com.pays.pos.ui.fragments.dinein.DineInFragment"
-        android:label="DineInFragment">
+        android:id="@+id/dineInFragmentPays"
+        android:name="com.pays.pos.ui.fragments.dineInNew.DineInFragmentPays"
+        android:label="dineInFragmentPays">
         <action
-            android:id="@+id/action_dineInFragment_to_transactionFragment"
+            android:id="@+id/action_dineInFragmentPays_to_transactionFragment"
             app:destination="@id/transactionFragment" />
         <action
-            android:id="@+id/action_dineInFragment_to_orders"
+            android:id="@+id/action_dineInFragmentPays_to_orders"
             app:destination="@id/orders" />
         <action
-            android:id="@+id/action_dineInFragment_to_passcode"
+            android:id="@+id/action_dineInFragmentPays_to_passcode"
             app:destination="@id/passcode" />
         <action
-            android:id="@+id/action_dineInFragment_to_reportEODFragmeent"
+            android:id="@+id/action_dineInFragmentPays_to_reportEODFragmeent"
             app:destination="@id/reportEODFragment" />
         <action
-            android:id="@+id/action_dineInFragment_to_dineInGuestFragment"
+            android:id="@+id/action_dineInFragmentPays_to_dineInGuestFragment"
             app:destination="@id/dineInGuestFragment" />
         <action
-            android:id="@+id/action_dineInFragment_to_dineInOrderTable"
+            android:id="@+id/action_dineInFragmentPays_to_dineInOrderTable"
             app:destination="@id/dineInOrderTable"
             app:enterAnim="@anim/nav_default_enter_anim"
-            app:popUpTo="@id/dineInFragment"
+            app:popUpTo="@id/dineInFragmentPays"
             app:popUpToInclusive="false" />
         <action
-            android:id="@+id/action_dineInFragment_to_mergeTableDialog"
+            android:id="@+id/action_dineInFragmentPays_to_mergeTableDialog"
             app:destination="@id/mergeTableDialogOld"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
-            android:id="@+id/action_dineInFragment_to_menuFragment"
+            android:id="@+id/action_dineInFragmentPays_to_menuFragment"
             app:destination="@id/menuFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
-            android:id="@+id/action_dineInFragment_to_dashboardCategoryBoldPOS"
+            android:id="@+id/action_dineInFragmentPays_to_dashboardCategoryBoldPOS"
             app:destination="@id/dashboardCategoryBoldPOS"
-            app:popUpTo="@id/dineInFragment"
+            app:popUpTo="@id/dineInFragmentPays"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_dineInFragment_to_transferTableDialog"
+            android:id="@+id/action_dineInFragmentPays_to_transferTableDialog"
             app:destination="@id/transferTableDialog"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
-            android:id="@+id/action_dineInFragment_self"
-            app:destination="@id/dineInFragment"
-            app:popUpTo="@id/dineInFragment"
+            android:id="@+id/action_dineInFragmentPays_self"
+            app:destination="@id/dineInFragmentPays"
+            app:popUpTo="@id/dineInFragmentPays"
             app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
     <fragment
@@ -1307,8 +1307,8 @@
             app:destination="@id/openOrderCustomerFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
-            android:id="@+id/action_orderTypeDialog_to_dineInFragment"
-            app:destination="@id/dineInFragment"
+            android:id="@+id/action_orderTypeDialog_to_dineInFragmentPays"
+            app:destination="@id/dineInFragmentPays"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_orderTypeDialog_to_openOrderCustomerFragmentNew"
@@ -1322,7 +1322,7 @@
         android:label="AddVariablePriceDialog" />
     <fragment
         android:id="@+id/dineInOrderTable"
-        android:name="com.pays.pos.ui.fragments.dinein.DineInOrderTable"
+        android:name="com.pays.pos.ui.fragments.dineInNew.DineInOrderTablePays"
         android:label="DineInOrderTable"
         tools:layout="@layout/fragment_dine_in_order_table">
         <action
@@ -1344,13 +1344,13 @@
             app:destination="@id/addGuestCountDialog"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
-            android:id="@+id/action_dineInOrderTable_to_dineInFragment"
-            app:destination="@id/dineInFragment"
+            android:id="@+id/action_dineInOrderTable_to_dineInFragmentPays"
+            app:destination="@id/dineInFragmentPays"
             app:enterAnim="@anim/nav_default_enter_anim"
-            app:popUpTo="@id/dineInFragment" />
+            app:popUpTo="@id/dineInFragmentPays" />
         <action
-            android:id="@+id/action_dineInOrderTable_to_dineInFragment2"
-            app:destination="@id/dineInFragment"
+            android:id="@+id/action_dineInOrderTable_to_dineInFragmentPays2"
+            app:destination="@id/dineInFragmentPays"
             app:popUpTo="@id/dineInOrderTable"
             app:popUpToInclusive="true" />
         <action
@@ -1650,8 +1650,8 @@
             android:id="@+id/action_dashboardCategoryBoldPOS_to_addDiscountDialog"
             app:destination="@id/addDiscountDialog" />
         <action
-            android:id="@+id/action_dashboardCategoryBoldPOS_to_dineInFragment"
-            app:destination="@id/dineInFragment" />
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_dineInFragmentPays"
+            app:destination="@id/dineInFragmentPays" />
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_addNoteDialog"
             app:destination="@id/addNoteDialog" />

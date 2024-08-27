@@ -53,8 +53,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:visibility="gone"
                         android:button="@drawable/dine_in_fire_selector"
                         android:checked="false"
+                        android:gravity="center" />
+
+                    <androidx.appcompat.widget.AppCompatCheckBox
+                        android:id="@+id/checkedForFire"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:buttonTint="@color/btnColor"
+                        android:layout_gravity="center"
                         android:gravity="center" />
                 </LinearLayout>
 
