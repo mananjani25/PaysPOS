@@ -277,7 +277,11 @@ class DashBoardCategoryViewModel @Inject constructor(
     //Fetch all Items from TBITEM
     val allInventoryItems = posRepository.getItemsList()
 
+//    var customerCashAmount: String = ""
 
+    val customerCardAmount = MutableLiveData<String>()
+    val customerCashAmount = MutableLiveData<String>()
+//    val cashAmount: LiveData<Event<String>> = _cashAmount
 
     //Fetch all orders count
     fun allOrderCounts(

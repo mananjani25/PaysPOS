@@ -3229,6 +3229,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 ).toDouble().toString()
             )
         }
+
+        dashboardViewModel.customerCashAmount.value=binding.tvCash.text.toString()
+        dashboardViewModel.customerCardAmount.value=binding.tvCard.text.toString()
+
         binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
         binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
     }
@@ -3253,6 +3257,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
             if (this::presentation.isInitialized) {
                 presentation.show()
+                dashboardViewModel.customerCashAmount.value=binding.tvCash.text.toString()
+                dashboardViewModel.customerCardAmount.value=binding.tvCard.text.toString()
                 presentation.updateTotals(
                     binding.tvCash.text.toString(),
                     binding.tvCard.text.toString()
@@ -3260,6 +3266,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
             binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
             binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
+
+            presentation.onDisplayChanged()
+
             MethodUtils.setPriceTextViewDown(
                 binding.tvAmount,
                 getCalCashDiscWithAmount(
@@ -3321,6 +3330,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvsplittip?.visible()
             binding.tvsplittip?.text =
                 "(" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
+
+            presentation.onDisplayChanged()
+
         }
     }
 

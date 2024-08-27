@@ -263,7 +263,12 @@ class DineInOrderTableViewModel @Inject constructor(
         }
     }
 
-    fun updateOrder(orderId: Int, orderRequestModel: OrderRequestModel, fromReorder: Boolean = false, message: String = "added") {
+    fun updateOrder(
+        orderId: Int,
+        orderRequestModel: OrderRequestModel,
+        fromReorder: Boolean = false,
+        message: String = "added"
+    ) {
         _showProgress.value = Event(true)
 
         viewModelScope.launch {
@@ -398,6 +403,7 @@ class DineInOrderTableViewModel @Inject constructor(
 
 
     }
+
     fun randomOfflineId(): String {
 
         val locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
@@ -410,6 +416,7 @@ class DineInOrderTableViewModel @Inject constructor(
 
         return timeStampFinal
     }
+
     protected open fun getSaltString(reqLent: Int): String? {
         val SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
         val salt = StringBuilder()
@@ -420,6 +427,7 @@ class DineInOrderTableViewModel @Inject constructor(
         }
         return salt.toString()
     }
+
     fun updateOrderRequest(cartModel: CartModel): OrderRequestModel {
         val orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
         orderModel.apply {
@@ -444,7 +452,7 @@ class DineInOrderTableViewModel @Inject constructor(
             dineInOrderDetailsAttr
         }
 
-            Log.e(TAG, "getCartmodelId  ${cartModel.orderId}")
+        Log.e(TAG, "getCartmodelId  ${cartModel.orderId}")
         orderModel.apply {
             guestsAttributes = getGuestsAttributes(cartModel)
         }
@@ -452,6 +460,7 @@ class DineInOrderTableViewModel @Inject constructor(
 
 
     }
+
     private fun getGuestsAttributes(cartModel: CartModel): List<GuestsAttributes> {
         val orderItemsAttributeList: ArrayList<GuestsAttributes> = arrayListOf()
         cartModel.dineInList?.forEach { it ->
@@ -558,6 +567,7 @@ class DineInOrderTableViewModel @Inject constructor(
         return orderItemsAttributeList
 
     }
+
     private suspend fun cashLogApi(createOrderResponse: CreateOrderResponse, event: String) {
 
 
