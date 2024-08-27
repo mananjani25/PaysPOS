@@ -7389,7 +7389,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 CoroutineScope(Dispatchers.Main).launch {
                                     delay(1000)
-                                    _syncProgressDialog.postValue(Event(false))
+//                                    _syncProgressDialog.postValue(Event(false))
                                     _taxSyncDone.value = Event(true)
                                 }
 
