@@ -456,7 +456,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         isFromDashboard = true
                     )
                 )
-                loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
+                try {
+                    loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
+                }catch (e:Exception) {
+                    e.printStackTrace()
+                }
             }
         })
 
