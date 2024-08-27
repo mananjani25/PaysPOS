@@ -161,6 +161,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
     private val tipDetailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = false) }
     private val itemWiseSalesAdapter by lazy { ItemWiseSalesAdapter() }
     private val saleCategorySummaryAdapter by lazy { SalesPerCategorySummary() }
+    private val dynamicPaymentsAdapter by lazy { SalesReportAdapter() }
 
 
     private val salesOrderDetailsAdapter by lazy { SalesOrderDetailsAdapter() }
@@ -3054,7 +3055,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
             rvemployeeGuestDetails.adapter = employeeGuestDetailsAdapter
             rvSaleCategorySummary?.adapter = saleCategorySummaryAdapter
             rvClockInClockOut?.adapter = clockInClockOutAdapter
-
+            rvDynamicPayments?.adapter = dynamicPaymentsAdapter
             rvItemWiseSales.adapter = itemWiseSalesAdapter
         }
 
@@ -3197,6 +3198,14 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                 visible = it.totalCashPayments.isNotEmpty()
             )
             cashPaymentsAdapter.add(it.totalCashPayments)
+
+            showHide(
+                rvMedia = binding.rvDynamicPayments,
+                textView = binding.txtDynamicPayments,
+                headerView = null,
+                visible = it.totalCashPayments.isNotEmpty()
+            )
+            dynamicPaymentsAdapter.add(it.totalCashPayments)
 
 
             showHide(

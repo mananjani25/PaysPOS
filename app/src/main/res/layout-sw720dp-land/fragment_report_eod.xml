@@ -733,6 +733,17 @@
                     tools:itemCount="2"
                     tools:listitem="@layout/view_sales_report" />
 
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtDynamicPayments"
+                    style="@style/ReportTitleStyle"
+                    android:text="TOTAL EXTERNAL PAYMENTS" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvDynamicPayments"
+                    style="@style/ReportRecyclerViewstyle"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/view_sales_report" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtTotalPayments"
