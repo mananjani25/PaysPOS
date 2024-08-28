@@ -50,6 +50,7 @@ import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.ALL_ORDER_TAB
 import com.pays.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.pays.pos.data.remote.Constants.IS_FROM_ALL_ORDER
+import com.pays.pos.data.remote.Constants.KIOSK_OPEN_ORDER
 import com.pays.pos.data.remote.Constants.OLD_ITEM_BASE_CUSTOM_ITEM
 import com.pays.pos.data.remote.Constants.ONLINE_ORDER_TAB
 import com.pays.pos.data.remote.Constants.OPEN_ORDER_TAB
@@ -1855,6 +1856,9 @@ class AllOrdersListingFragment(
                 } else if (order.orderType == PHONE_ORDER_TAB) {
                     prefProvider.setValue(Constants.ORDER_TYPE, Constants.PHONE_ORDER)
                     prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.PHONE_ORDER_)
+                } else if (order.orderType == KIOSK_OPEN_ORDER) {
+                    prefProvider.setValue(Constants.ORDER_TYPE, Constants.KIOSK_OPEN_ORDER)
+                    prefProvider.setValue(Constants.ORDER_TYPE_NAME, order.orderTypeName)
                 }
 
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, order.orderTypeId)
