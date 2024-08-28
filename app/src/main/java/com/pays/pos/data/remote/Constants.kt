@@ -465,6 +465,8 @@ object Constants {
     const val orderNoteOld = "orderNoteOld"
     const val orderNoteNew = "orderNoteNew"
 
+    const val SUNMI_FRAMEWORK_VERSION = "SUNMI_FRAMEWORK_VERSION"
+
     const val LINE_BREAK_TAB = "\n \t"
 
     //PAX

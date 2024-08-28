@@ -593,7 +593,7 @@ class PrintSunmiUtils {
         }
 
 
-        private fun setFontSizeInner(): Float {
+        public fun setFontSizeInner(): Float {
             return when (fontSizeInner) {
                 SMALL -> {
                     24f
@@ -663,6 +663,17 @@ class PrintSunmiUtils {
             SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
+        fun normalTextNew(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(0)
+            if (fontSizeInner == LARGE) {
+                SunmiPrintHelper.getInstance()
+                    .printText(value, 36f)
+            } else
+                SunmiPrintHelper.getInstance()
+                    .printText(value, setFontSizeInner())
+            SunmiPrintHelper.getInstance().lineWrap(1)
+        }
+
         fun normalTextTest(value: String) {
             SunmiPrintHelper.getInstance().setAlign(0)
             if (fontSizeInner == LARGE) {
@@ -710,6 +721,15 @@ class PrintSunmiUtils {
             SunmiPrintHelper.getInstance().setAlign(0)
             SunmiPrintHelper.getInstance()
                 .printText(value, setFontSizeInner(), true, false, fontName)
+
+            SunmiPrintHelper.getInstance().lineWrap(1)
+        }
+
+
+        fun boldTextNew(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance()
+                .printText(value, setFontSizeInner())
 
             SunmiPrintHelper.getInstance().lineWrap(1)
         }

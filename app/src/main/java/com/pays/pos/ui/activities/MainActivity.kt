@@ -1257,6 +1257,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         MainApplication.mainActivity = this
         permissionCheck()
 
+/*--------------------- FOR CUSTOMER RECEIPT MODIFICATION--------------------*/
+        prefProvider?.setValue(Constants.SUNMI_FRAMEWORK_VERSION, SystemProperties.get("ro.version.sunmi_versionname"))
+/*--------------------- FOR CUSTOMER RECEIPT MODIFICATION--------------------*/
+
         attachFileLogger()
         prefProvider!!.setValue(Constants.DELIVERY_TYPE, "")
 

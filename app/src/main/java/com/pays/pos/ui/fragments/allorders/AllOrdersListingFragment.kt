@@ -4840,7 +4840,11 @@ class AllOrdersListingFragment(
                 delay(100)
                 setServiceForKitchen(data, type, orderData)
             }
-        } else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains("SP", ignoreCase = true)))) {
+        } else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains(
+                "SP",
+                ignoreCase = true
+            )))
+        ) {
             settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
             printer = StarPrinter(settings, requireContext())
 
@@ -4956,7 +4960,10 @@ class AllOrdersListingFragment(
                                                             ) || orderData.orderType.equals(
                                                                 "OnlineWebOrder",
                                                                 true
-                                                            ) || orderData.orderType.equals("OnlineOrder", true)
+                                                            ) || orderData.orderType.equals(
+                                                                "OnlineOrder",
+                                                                true
+                                                            )
                                                         ) {
                                                             if (!firstName.contains(
                                                                     "customer",
@@ -5168,7 +5175,7 @@ class AllOrdersListingFragment(
                                         )
                                 )
                             }
-                            try{
+                            try {
                                 if (kitchenSettingModel.showCustomerPhone && orderData.customer?.phones?.get(
                                         0
                                     ) != null
@@ -5201,7 +5208,7 @@ class AllOrdersListingFragment(
                                             )
                                     )
                                 }
-                            }catch (e:Exception){
+                            } catch (e: Exception) {
 
                             }
                             printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
@@ -6799,11 +6806,11 @@ class AllOrdersListingFragment(
                             PrintSunmiUtils.customerName(orderData.customer.firstName + " " + orderData.customer.lastName)
 
                         }
-                    }catch (e:Exception){
+                    } catch (e: Exception) {
 
                     }
 
-                    try{
+                    try {
                         if (kitchenSettingModel.showCustomerPhone) {
 
                             if (orderData.customer.phones.isNotEmpty() == true) {
@@ -6819,13 +6826,13 @@ class AllOrdersListingFragment(
                             }
 
                         }
-                    }catch (e:Exception){
+                    } catch (e: Exception) {
 
                     }
 
 
-                   try{
-                       if (orderData.customer.addresses.isNotEmpty() == true) {
+                    try {
+                        if (orderData.customer.addresses.isNotEmpty() == true) {
 
 //                        orderData.customer.addresses.filter { typeOfAddress == Constants.BILLING_ADDRESS }
 //
@@ -6843,15 +6850,15 @@ class AllOrdersListingFragment(
 //                            }
 
 
-                           PrintSunmiUtils.customerAddress(
-                               orderData.customer.addresses.get(
-                                   orderData.customer.addresses.size - 1
-                               ).fullAddress
-                           )
-                       }
-                   }catch (e:Exception){
+                            PrintSunmiUtils.customerAddress(
+                                orderData.customer.addresses.get(
+                                    orderData.customer.addresses.size - 1
+                                ).fullAddress
+                            )
+                        }
+                    } catch (e: Exception) {
 
-                   }
+                    }
                 }
             }
 
@@ -7617,7 +7624,7 @@ class AllOrdersListingFragment(
             }
 
 
-            try{
+            try {
                 if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
                     if (orderData.customer != null) {
 
@@ -7674,7 +7681,8 @@ class AllOrdersListingFragment(
 
 
                 }
-            }catch (e:Exception){}
+            } catch (e: Exception) {
+            }
 
             PrintSunmiUtils.cutPaperInner()
         } catch (e: Exception) {
