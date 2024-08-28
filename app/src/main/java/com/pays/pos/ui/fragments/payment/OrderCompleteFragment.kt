@@ -6833,6 +6833,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.deleteValue(Constants.DO_PRINT)
         prefProvider.setValue(Constants.DELIVERY_TYPE, "")
 
+        viewModelDashBoard.customerCardAmount.value=""
+        viewModelDashBoard.customerCashAmount.value=""
         if (isSpilt) {
             if (isDineIn) {
                 val navController = findNavController()
