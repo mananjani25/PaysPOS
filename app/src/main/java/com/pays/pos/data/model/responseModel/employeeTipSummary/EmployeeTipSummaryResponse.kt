@@ -19,6 +19,8 @@ data class EmployeeTipSummaryResponse(
         val total_card_tips: Double,
         @SerializedName("total_cash_tips")
         val total_cash_tips: Double,
+        @SerializedName("total_external_tips")
+        val total_external_tips: Double,
         @SerializedName("total_tips")
         val total_tips: Double
     )

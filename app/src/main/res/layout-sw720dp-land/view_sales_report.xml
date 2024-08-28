@@ -13,23 +13,43 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="@dimen/_5sdp">
+        android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/txtKey"
-            style="@style/ReportItemText"
-            android:gravity="start"
-            android:text="@{keyValue.key}"
-            tools:text="Service Charge" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="5dp"
+            android:background="@color/white"
+            android:visibility="@{keyValue.showDividerLine()}" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/txtValue"
-            style="@style/ReportItemText"
-            android:gravity="end"
-            android:text="@{keyValue.showData()}"
-            tools:text="$103.59" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/_5sdp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtKey"
+                style="@style/ReportItemText"
+                android:gravity="start"
+                android:text="@{keyValue.key}"
+                tools:text="Service Charge" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtValue"
+                style="@style/ReportItemText"
+                android:gravity="end"
+                android:text="@{keyValue.showData()}"
+                tools:text="$103.59" />
 
 
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="5dp"
+            android:background="@color/white"
+            android:visibility="@{keyValue.showDividerLine()}" />
     </LinearLayout>
 </layout>
