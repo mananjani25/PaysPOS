@@ -38,6 +38,12 @@
             android:text="@{@string/symbole +``+String.format(@string/format,model.total_card_tips)}" />
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtExternalPays"
+            style="@style/ReportItemText"
+            android:gravity="end"
+            android:text="@{@string/symbole +``+String.format(@string/format,model.total_card_tips)}" />
+
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtTotalPrice"
             style="@style/ReportItemText"
             android:gravity="end"
