@@ -53,6 +53,8 @@ data class EodReportResponse(
         val totalCashPayments: List<KeyValue>,
         @SerializedName("total_credit_payment_details")
         val totalCreditPaymentDetails: List<KeyValue>,
+        @SerializedName("external_payments")
+        val externalPayments: ArrayList<ArrayList<KeyValue>>,
         @SerializedName("total_payments")
         val totalPayments: List<KeyValue>,
         @SerializedName("wastage_details")

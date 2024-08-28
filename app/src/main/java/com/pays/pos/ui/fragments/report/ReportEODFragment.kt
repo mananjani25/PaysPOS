@@ -104,6 +104,7 @@ import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import com.pays.pos.ui.adapter.ExternalPaymentDetailsAdapter
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
@@ -161,7 +162,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
     private val tipDetailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = false) }
     private val itemWiseSalesAdapter by lazy { ItemWiseSalesAdapter() }
     private val saleCategorySummaryAdapter by lazy { SalesPerCategorySummary() }
-    private val dynamicPaymentsAdapter by lazy { SalesReportAdapter() }
+    private val externalPaymentsAdapter by lazy { ExternalPaymentDetailsAdapter() }
 
 
     private val salesOrderDetailsAdapter by lazy { SalesOrderDetailsAdapter() }
@@ -3055,7 +3056,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
             rvemployeeGuestDetails.adapter = employeeGuestDetailsAdapter
             rvSaleCategorySummary?.adapter = saleCategorySummaryAdapter
             rvClockInClockOut?.adapter = clockInClockOutAdapter
-            rvDynamicPayments?.adapter = dynamicPaymentsAdapter
+            rvExternalPayments?.adapter = externalPaymentsAdapter
             rvItemWiseSales.adapter = itemWiseSalesAdapter
         }
 
@@ -3200,12 +3201,22 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
             cashPaymentsAdapter.add(it.totalCashPayments)
 
             showHide(
-                rvMedia = binding.rvDynamicPayments,
-                textView = binding.txtDynamicPayments,
+                rvMedia = binding.rvExternalPayments,
+                textView = binding.txtExternalPayments,
                 headerView = null,
-                visible = it.totalCashPayments.isNotEmpty()
+                visible = it.externalPayments.isNotEmpty()
             )
-            dynamicPaymentsAdapter.add(it.totalCashPayments)
+            Log.e("ExternalPaymentDetails", "Details ${Gson().toJson(it.externalPayments)}")
+
+            val newList = ArrayList<KeyValue>()
+
+        it.externalPayments.forEach {
+            it.forEach{it1->
+                newList.add(it1)
+            }
+        }
+
+            externalPaymentsAdapter.add(newList)
 
 
             showHide(
