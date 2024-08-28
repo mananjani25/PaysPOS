@@ -1268,6 +1268,53 @@ fun padLineCustomerItem(
     return concat
 }
 
+fun padLineCustomerItemNew(
+    @Nullable partOne: String?,
+    @Nullable partTwo: String?,
+    columnsPerLine: Int
+): String {
+    var partOne = partOne
+    var partTwo = partTwo
+
+    if (partOne == null) {
+        partOne = ""
+    }
+    if (partTwo == null) {
+        partTwo = ""
+    }
+    val concat: String
+    concat = if (partOne.length + partTwo.length > columnsPerLine) {
+        val strBuffer = StringBuffer()
+
+        strBuffer.append(
+            partOne.substring(0, columnsPerLine - 8) + repeat(
+                " ",
+                8 - partTwo.length
+            ) + partTwo
+        )
+        strBuffer.append("\n")
+        var tempStr = ""
+        var tempPartOne = partOne.substring(columnsPerLine - 8, partOne.length)
+        var tempPadding = 0
+        if (((columnsPerLine - tempPartOne.length) - partTwo.length) < 0) {
+            tempPadding = partTwo.length
+        } else {
+            tempPadding = (columnsPerLine - tempPartOne.length) - partTwo.length
+        }
+        tempStr = tempPartOne + repeat(" ", tempPadding)
+
+        strBuffer.append(tempStr)
+
+        return strBuffer.toString()
+
+        //partOne + " " + partTwo
+    } else {
+        val padding = columnsPerLine - (partOne.length + partTwo.length)
+        partOne + repeat(" ", padding) + partTwo
+    }
+    return concat
+}
+
 fun addCustomerTextSize(builder: Builder, font: String): Builder {
     when (font) {
         Constants.SMALL -> {
@@ -2043,6 +2090,49 @@ fun addTipsListInner(
 
 
 }
+
+fun addTipsListInnerNew(
+    list: List<GetTipReponse.Data>,
+    totalAmt: Double,
+    font: String
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+        val tipName = obj.name + "(" + MethodUtils.roundOffAmountString(obj.rate) + "%)"
+
+        val price = "(Tip $" + calculateTipAmt(
+            obj.rate,
+            totalAmt
+        ) + " Total $" + MethodUtils.roundOffAmountString(
+            (totalAmt + calculateTipAmt(
+                obj.rate,
+                totalAmt
+            ))
+        ) + ")"
+
+        val row = formatTableRow(tipName, "", price)
+
+        SunmiPrintHelper.getInstance().printText("$row\n", 23f)
+//        SunmiPrintHelper.getInstance().printText("$row\n", 24f)
+
+    }
+
+
+}
+
+val itemColumnWidth = 16 // for "Item"
+val quantityColumnWidth = 6 // for "Quantity"
+val priceColumnWidth = 8 // for "Price"
+
+// Function to format a row of the table
+fun formatTableRow(item: String, quantity: String, price: String): String {
+    val formattedItem = "%-${itemColumnWidth}s".format(item)  // Left align item
+    val formattedQuantity = "%-${quantityColumnWidth}s".format(quantity) // Left align quantity
+    val formattedPrice = "%${priceColumnWidth}s".format(price) // Right align price
+    return formattedItem + formattedQuantity + formattedPrice
+}
+
 
 fun addOrdersForKitchenDineIn(
     builder: Builder,
@@ -5194,6 +5284,69 @@ fun addOrderItemsInner(
         if (obj.note.isNotEmpty()) {
 
             PrintSunmiUtils.normalText("   Note: " + obj.note)
+
+        }
+
+
+    }
+
+
+}
+
+fun addOrderItemsInnerNew(
+    list: List<CreateOrderResponse.Data.Order.OrderItem>,
+    showModifiers: Boolean,
+    font: String,
+) {
+
+    for (i in 0 until list.size) {
+        val obj = list[i]
+
+        val item = padLineCustomerItem(
+            obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
+            getItemPriceToShow(totalPrice(obj)),
+            if (font == Constants.LARGE) 23 else 48
+        )
+//var item=formatTableRow(obj.quantity.toString() ,getItemNameToShow(obj.itemName),getItemPriceToShow(totalPrice(obj)))
+        PrintSunmiUtils.normalTextNew(item.toString())
+
+
+
+        if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+
+                val modifier = padLineCustomerItem(
+                    /*if (modifierObj.modifierQuantity == 1) {
+                        "     "
+                    } else {
+                        "   " + modifierObj.modifierQuantity.toString() + "x"
+                    }*/"   " + modifierObj.modifierQuantity.toString() + "x" + "  " + getItemNameToShow(
+                        modifierObj.name
+                    ),
+                    getModifierItemPriceToShow(modifierObj.price, modifierObj.quantity),
+                    if (font == Constants.LARGE) {
+                        22
+                    } else {
+                        48
+                    }
+                )
+
+                /*val modifier = padLineCustomerItem(
+                    "   " + modifierObj.name,
+                    "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                    if (font == Constants.LARGE) 22 else 48
+                )
+*/
+                PrintSunmiUtils.normalTextNew(modifier.toString())
+
+            }
+
+        }
+
+        if (obj.note.isNotEmpty()) {
+
+            PrintSunmiUtils.normalTextNew("   Note: " + obj.note)
 
         }
 
