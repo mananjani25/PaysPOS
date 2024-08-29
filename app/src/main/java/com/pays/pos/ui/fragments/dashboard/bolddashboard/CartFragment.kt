@@ -36,6 +36,7 @@ import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.ADD
 import com.pays.pos.data.remote.Constants.CUSTOMER_ID
 import com.pays.pos.data.remote.Constants.DELETE
+import com.pays.pos.data.remote.Constants.DELIVERY
 import com.pays.pos.data.remote.Constants.DELIVERY_TYPE
 import com.pays.pos.data.remote.Constants.DINE_IN
 import com.pays.pos.data.remote.Constants.DINE_IN_LIST_EDIT
@@ -3154,15 +3155,21 @@ class CartFragment(
             object : View.OnClickListener {
                 override fun onClick(p0: View?) {
                     cleanOrderBackupDetails()
-                    if ((binding.txtAddCustomer.text.toString().contains("+")) && (binding.txtAddCustomer.text.toString().lowercase().contains("add"))){
-                        AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), getString(R.string.add_customer_message), object : DialogInterface.OnClickListener{
-                            override fun onClick(p0: DialogInterface?, p1: Int) {
-                                p0?.dismiss()
-                            }
+                    if ((binding.orderTypeDisplay.text.toString().lowercase().contains("phone"))){
+                        var deliveryType=prefProvider.getValue(DELIVERY_TYPE,"")
+                        if (deliveryType.isNotEmpty() && deliveryType.equals(DELIVERY,ignoreCase = true)){
+                            if ((binding.txtAddCustomer.text.toString().contains("+")) && (binding.txtAddCustomer.text.toString().lowercase().contains("add"))){
+                                AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), getString(R.string.add_customer_message), object : DialogInterface.OnClickListener{
+                                    override fun onClick(p0: DialogInterface?, p1: Int) {
+                                        p0?.dismiss()
+                                    }
 
-                        })
-                        return
+                                })
+                                return
+                            }
+                        }
                     }
+
                     EventBus.getDefault()
                         .post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvPayNow()"))
 
