@@ -150,6 +150,8 @@ class AllOrdersListingFragment(
 
     var removedPos = 0
 
+    private var sunmiFrameworkVersion :Array<String>? = null
+
     @Inject
     lateinit var prefProvider: PrefProvider
 
@@ -986,6 +988,8 @@ class AllOrdersListingFragment(
         getCustomerReceiptSettings()
         observeTipsList()
         cancelOrderObserver()
+
+        sunmiFrameworkVersion = prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".").toTypedArray()
 
         startTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
             val timecalender = Calendar.getInstance()
@@ -7104,20 +7108,37 @@ class AllOrdersListingFragment(
 
             PrintSunmiUtils.addHorizontalInner()
 
-
-
-            receiptModel.orderItems.let {
-                addOrderItemOnlineOrderSunmiInner(
-                    it,
-                    customerSettingModel.fonts,
-                    customerSettingModel.showModifiers
-                )
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                PrintSunmiUtils.normalText("\n")
             }
+
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                receiptModel.orderItems.let {
+                    addOrderItemOnlineOrderSunmiInner(
+                        it,
+                        customerSettingModel.fonts,
+                        customerSettingModel.showModifiers,
+                        false
+                    )
+                }
+            }else{
+                receiptModel.orderItems.let {
+                    addOrderItemOnlineOrderSunmiInner(
+                        it,
+                        customerSettingModel.fonts,
+                        customerSettingModel.showModifiers,
+                        true
+                    )
+                }
+            }
+
 
             SunmiPrintHelper.getInstance().lineWrap(2)
 
 
-            if (receiptModel?.totalDiscount != null) {
+
+
+                if (receiptModel?.totalDiscount != null) {
 
                 val str1 = padLine(
                     "Total Discount",
@@ -7133,7 +7154,11 @@ class AllOrdersListingFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.normalText(str1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                        PrintSunmiUtils.normalTextNew(str1)
+                    }else{
+                        PrintSunmiUtils.normalText(str1)
+                    }
 
             }
 
@@ -7148,7 +7173,11 @@ class AllOrdersListingFragment(
                 }
             ).toString()
 
-            PrintSunmiUtils.normalText(str2)
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                PrintSunmiUtils.normalTextNew(str2)
+            }else{
+                PrintSunmiUtils.normalText(str2)
+            }
 
 
             if (receiptModel?.totalTaxAmount != null) {
@@ -7163,7 +7192,13 @@ class AllOrdersListingFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.normalText(str3)
+
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.normalTextNew(str3)
+                }else{
+                    PrintSunmiUtils.normalText(str3)
+                }
+
             }
 
             val result =
@@ -7183,7 +7218,13 @@ class AllOrdersListingFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.normalText(str4)
+
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.normalTextNew(str4)
+                }else{
+                    PrintSunmiUtils.normalText(str4)
+                }
+
             }
 
             if (receiptModel?.totalTips != 0.0) {
@@ -7202,11 +7243,14 @@ class AllOrdersListingFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.normalText(str8)
 
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.normalTextNew(str8)
+                }else{
+                    PrintSunmiUtils.normalText(str8)
+                }
 
             }
-
 
 
 
@@ -7227,7 +7271,11 @@ class AllOrdersListingFragment(
                             48
                         }
                     ).toString()
-                    PrintSunmiUtils.normalText(str8)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                        PrintSunmiUtils.normalTextNew(str8)
+                    }else{
+                        PrintSunmiUtils.normalText(str8)
+                    }
 
                 } else {
 
@@ -7244,7 +7292,11 @@ class AllOrdersListingFragment(
                             48
                         }
                     ).toString()
-                    PrintSunmiUtils.normalText(str8)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                        PrintSunmiUtils.normalTextNew(str8)
+                    }else{
+                        PrintSunmiUtils.normalText(str8)
+                    }
 
                 }
             }
@@ -7265,7 +7317,11 @@ class AllOrdersListingFragment(
                     }
                 ).toString()
 
-                PrintSunmiUtils.normalText(str8)
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.normalTextNew(str8)
+                }else{
+                    PrintSunmiUtils.normalText(str8)
+                }
 
                 val str9 = padLine(
                     "Used Loyalty Points",
@@ -7277,7 +7333,11 @@ class AllOrdersListingFragment(
                     }
                 ).toString()
 
-                PrintSunmiUtils.normalText(str9)
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.normalTextNew(str9)
+                }else{
+                    PrintSunmiUtils.normalText(str9)
+                }
 
 
             }
@@ -7300,7 +7360,11 @@ class AllOrdersListingFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.boldText(str5)
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.boldTextNew(str5)
+                }else{
+                    PrintSunmiUtils.boldText(str5)
+                }
 
             }
 
@@ -7322,7 +7386,12 @@ class AllOrdersListingFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.boldText(str5)
+
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.boldTextNew(str5)
+                }else{
+                    PrintSunmiUtils.boldText(str5)
+                }
 
                 val totalAmt1 = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount)
                 val str51 = padLine(
@@ -7334,7 +7403,12 @@ class AllOrdersListingFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.boldText(str51)
+
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.boldTextNew(str51)
+                }else{
+                    PrintSunmiUtils.boldText(str51)
+                }
             } else if (receiptModel.cashDiscountType == "SurCharge"
             ) {
 
@@ -7347,7 +7421,11 @@ class AllOrdersListingFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.boldText(str5)
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.boldTextNew(str5)
+                }else{
+                    PrintSunmiUtils.boldText(str5)
+                }
 
                 val totalAmt1 = MethodUtils.roundOffAmountDouble(
                     receiptModel.totalAmount + MethodUtils.getLatestCashDiscountOrSurCharge(
@@ -7365,7 +7443,11 @@ class AllOrdersListingFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.boldText(str51)
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.boldTextNew(str51)
+                }else{
+                    PrintSunmiUtils.boldText(str51)
+                }
 
             }
 
@@ -7380,7 +7462,13 @@ class AllOrdersListingFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.boldText(str7)
+
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.boldTextNew(str7)
+                }else{
+                    PrintSunmiUtils.boldText(str7)
+                }
+
                 SunmiPrintHelper.getInstance().lineWrap(2)
 
 
@@ -7458,6 +7546,10 @@ class AllOrdersListingFragment(
                 if (receiptModel.customer != null) {
 
                     PrintSunmiUtils.customerDetailsInner()
+
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                        PrintSunmiUtils.normalText("\n")
+                    }
 
                     if (customerSettingModel.showCustomerName) {
                         PrintSunmiUtils.normalText(receiptModel.customer.firstName + " " + receiptModel.customer.lastName)
