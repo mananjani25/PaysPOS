@@ -226,28 +226,32 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
         }
     }
 
-
-    private fun onClick() {
+    private fun imgMinusClick() {
         binding.imgMinus.setOnClickListener {
             MethodUtils.hideSoftKeyboard(requireActivity())
-            /* if (prefProvider.getValueboolean(DINE_IN_UPDATE, false) == true && item.isFired) {
-                 if (qty > item.itemQuantity) {
-                     qty -= 1
-                 } else {
-                     qty = qty
-                 }
-             } */
-
             if (qty == 1) {
                 qty = 1
             } else {
                 qty -= 1
             }
-
-
             binding.edttxtQuantity.setText("" + qty)
-
         }
+    }
+
+    private fun onClick() {
+
+        if(prefProvider.getValueboolean(DINE_IN_UPDATE,false)){
+            if(item.isFired) {
+                binding.imgMinus.setOnClickListener {
+                    AlertUtils.showCustomAlert(requireContext(),
+                        resources.getString(R.string.cant_decrease_item_quantity_dinein))
+                }
+            } else
+                imgMinusClick()
+        }else {
+           imgMinusClick()
+        }
+
         binding.imgPlus.setOnClickListener {
             MethodUtils.hideSoftKeyboard(requireActivity())
             qty += 1
@@ -1132,6 +1136,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 Log.d("AddItemFragment.kt", "txtDone_qty: ${Gson().toJson(qty)}")
 
                 MethodUtils.hideSoftKeyboard(requireActivity())
+                val oldItemQuantity = item.itemQuantity
                 item.itemQuantity = qty
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
                 var isPriceNull = true
@@ -1332,6 +1337,18 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                         it.itemQuantity + qty
                                      }
 
+                                if(prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
+
+                                    if(dineInItemQunatity < oldItemQuantity) {
+                                        dineInItemQunatity = oldItemQuantity
+
+                                        AlertUtils.showCustomAlert(
+                                            requireContext(),
+                                            resources.getString(R.string.cant_decrease_item_quantity_dinein)
+                                        )
+                                    }
+                                }
+
                                 break
 //                                it.isItemEdited=true
                             }
@@ -1376,6 +1393,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     viewModel.cartFooterNeedToBeUpdated = true
 
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+
                         item.guestIndexForDineIn = viewModel.dineInHeaderPosition
                         val dineInList = cartModelsList[0].dineInList
                         dineInList?.get(0)?.headerPosition = viewModel.dineInSelectedItemHeaderPos
@@ -1404,6 +1422,18 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                     item.guestIndexForDineIn ?: -1
                                 )
                                 dineInItemQunatity = 0
+
+
+                                viewModel.cartModel.let {
+                                    if (it != null) {
+                                        viewModel.taxBifurcationCalculationNew(
+                                            item,
+                                            it, "UPDATE", false
+                                        )
+                                    }
+                                }
+                                viewModel.updateCartModel(viewModel.cartModel!!)
+
                             }
                         }
                     } else {
@@ -1454,6 +1484,17 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                     viewModel.addItemToCartItems(it)
                                 }
                             }
+
+                            viewModel.cartModel.let {
+                                if (it != null) {
+                                    viewModel.taxBifurcationCalculationNew(
+                                        item,
+                                        it, "UPDATE", false
+                                    )
+                                }
+                            }
+
+                            viewModel.updateCartModel(viewModel.cartModel!!)
 
 //                            viewModel.updateCart(
 //                                viewModel.currentCartItems,
@@ -1536,6 +1577,15 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 //                            )
 
                             viewModel.addItemToCartItems(item)
+                            viewModel.cartModel.let {
+                                if (it != null) {
+                                    viewModel.taxBifurcationCalculationNew(
+                                        item,
+                                        it, "ADD", false
+                                    )
+                                }
+                            }
+                            viewModel.updateCartModel(viewModel.cartModel!!)
                         }
                     } else {
                         item.guestIndexForDineIn = null

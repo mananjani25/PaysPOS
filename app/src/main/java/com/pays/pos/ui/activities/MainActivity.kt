@@ -77,6 +77,7 @@ import com.pays.pos.service.KioskService
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
+import com.pays.pos.ui.fragments.dineInNew.model.SyncDineInEvent
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.payment.OrderCompleteViewModel
@@ -3592,6 +3593,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         sendNotification(it.asJsonObject.get("message").asString)
                     }
                 }
+            }
+
+            //Change this - get order response key as sync_dine_in
+            if(navController?.currentDestination?.id == R.id.dineInFragmentPays) {
+                EventBus.getDefault().post(SyncDineInEvent(true, "RefreshDineIn"))
             }
 
 

@@ -160,6 +160,13 @@ class DashBoardCategoryViewModel @Inject constructor(
     var orderAttributeRequestModel = OrderAttributeRequestModel()
     var dineInItemClickedFromCart = false
 
+    val syncDineIn = MutableLiveData<Boolean>()
+    var isUpaidReceiptPrinted = false
+
+    var updateRequested = true
+    var currentDestination = ""
+
+
     /**
      * Tracking main cart discount
      */
@@ -2705,7 +2712,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                         }
                     }
-                } else if (type == UPDATE) {
+                } else if (type == UPDATE)
+                {
                     var index = -1
 
                     var idsF = list.filter { it.itemId == item?.itemId }
@@ -3631,6 +3639,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                             cartModel?.let { taxBifurcationCalculationNew(item, it, type, false) }
                     }
                 }
+
+                updateCartModel(cartModel!!)
+
                 if (item != null) {
                     val newUpdatedItemList =
                         list.filter { it.itemId == item?.itemId && it.guestIndexForDineIn == dineInHeaderPosition }
@@ -4112,6 +4123,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                 item.itemQuantity = item.itemQuantity
             }
 
+            note = cartModel?.note ?: ""
+            discountPrice = cartModel?.discountPrice ?: 0.0
+            discountSelectdValue = cartModel?.discountSelectdValue ?: 0.0
         }
     }
 
@@ -5295,7 +5309,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         return cartModel
     }
 
-    private fun taxBifurcationCalculationNew(
+    fun taxBifurcationCalculationNew(
         item: TbCartItem, cartModel: CartModel, type: String, orderTaxID: Boolean
     ): CartModel {
         item.taxes?.forEachIndexed { indextax, itemtype ->
@@ -6249,7 +6263,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     }
 
-                dineInResult.postValue(true)
+                if(currentDestination == DINE_IN_UPDATE)
+                    dineInResult.postValue(true)
+
             }
 
         return orderItemsAttributeList
@@ -6744,7 +6760,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             orderServiceChargesAttributes = orderServiceChargesAttributes(cartModel, subTotalPrice)
 
+
             guestsAttributes = getGuestsAttributes(cartModel)
+
+
 
 
             /*var listTbItem: ArrayList<TbItem> = arrayListOf()

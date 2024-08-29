@@ -10,8 +10,6 @@ import android.os.Message
 import android.util.Base64
 import android.util.Log
 import android.view.*
-import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
@@ -43,8 +41,6 @@ import com.pays.pos.ui.adapter.DineInAdapter
 import com.pays.pos.ui.adapter.DineInTableAdapterCD
 import com.pays.pos.ui.adapter.boldpos.CartAdapterCustomerDisplay
 import com.pays.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
-import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.pays.pos.ui.fragments.magtek.PaymentResponse

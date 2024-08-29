@@ -14,10 +14,8 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -37,7 +35,6 @@ import com.pays.pos.data.remote.Constants.CUSTOMER_ID
 import com.pays.pos.data.remote.Constants.DELETE
 import com.pays.pos.data.remote.Constants.DELIVERY_TYPE
 import com.pays.pos.data.remote.Constants.DINE_IN
-import com.pays.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.pays.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.pays.pos.data.remote.Constants.EMPLOYEE_ID
 import com.pays.pos.data.remote.Constants.GIFT_CARD
@@ -69,14 +66,11 @@ import com.pays.pos.data.remote.Constants.WHOLE_AMOUNT
 import com.pays.pos.databinding.FragmentCartBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.logger.MessageEvent
-import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.adapter.DineInAdapter
 import com.pays.pos.ui.adapter.OrderTypeAdapter
 import com.pays.pos.ui.adapter.boldpos.CartItemsAdapter
 import com.pays.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.pays.pos.ui.fragments.dineInNew.DashBoardCategoryViewModelPaysDineIn
-import com.pays.pos.ui.fragments.dineInNew.DineInOrderTableViewModelPays
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
@@ -838,7 +832,7 @@ class CartFragment(
         }
 
         binding.rvCartDineIn.visibility = View.VISIBLE
-        AlertUtils.showAlert(requireContext(),"CART VISIBILITY = ${binding.rvCartDineIn.visibility == View.VISIBLE}")
+       // AlertUtils.showAlert(requireContext(),"CART VISIBILITY = ${binding.rvCartDineIn.visibility == View.VISIBLE}")
     }
 
     fun setTaxBifurcationData(taxlistData: ArrayList<TaxData>) {
@@ -2435,64 +2429,74 @@ class CartFragment(
             }
             return
         }
-        var existing_count = dineInCartAdapter.getList().size - 1
-        var total_count = existing_count + count
-        if (total_count <= 15) {
-            var existinglist: ArrayList<DineInModel> = arrayListOf()
-            cartModelsList[0].dineInList?.forEach {
-                if (!it.isDestroy) {
-                    existinglist.add(it)
-                }
-            }
 
-            val dineInList: java.util.ArrayList<DineInModel> = arrayListOf()
-            if (existinglist.isNotEmpty()) {
-                // List of available counts from list to add new guest
-                var availableName: ArrayList<Int> = arrayListOf()
-                for (i in 1 until 16) {
-                    var filteredList: List<DineInModel> = arrayListOf()
-                    filteredList = dineInCartAdapter.getList()
-                        .filter { item -> item.title?.substringAfter("Guest ") == i.toString() }
-                        ?: arrayListOf()
-                    if (filteredList.isEmpty()) {
-                        availableName.add(i)
-                    }
-                    if (availableName.size >= count) {
-                        break
-                    }
-                }
 
-                for (i in 1..count) {
-
-                    // Check if cartList already contains destroyed guest, if contains change the flag else add new guest
-                    try {
-                        var commonDineInModel =
-                            cartModelsList[0].dineInList?.single { item -> item.title == "Guest ${availableName[i - 1]}" }
-                        if (commonDineInModel != null) {
-                            commonDineInModel.isDestroy = false
-                            dineInList.add(commonDineInModel)
-                        }
-                    } catch (e: Exception) {
-                        dineInList.add(
-                            DineInModel(
-                                0,
-                                false,
-                                0,
-                                "Guest ${availableName[i - 1]}",
-                                floorPlanTable = cartModelsList[0].dineInList!![0].floorPlanTable
-
-                            )
-                        )
-                    }
-                }
-            }
-            existinglist.addAll(dineInList)
-            cartModelsList[0].dineInList = existinglist.toList()
-            viewModel.addGuestFromDashBoard(cartModelsList)
-        } else {
+        if(cartModelsList.isEmpty()){
             AlertUtils.showCustomAlertWithListenerWithOK(
-                requireContext(), "You can't add more than 15 Guest in an order."
+                requireContext(), "Unable to Add Guest !"
             ) { _, _ ->
+            }
+            return
+        } else {
+            var existing_count = dineInCartAdapter.getList().size - 1
+            var total_count = existing_count + count
+            if (total_count <= 15) {
+                var existinglist: ArrayList<DineInModel> = arrayListOf()
+                cartModelsList[0].dineInList?.forEach {
+                    if (!it.isDestroy) {
+                        existinglist.add(it)
+                    }
+                }
+
+                val dineInList: java.util.ArrayList<DineInModel> = arrayListOf()
+                if (existinglist.isNotEmpty()) {
+                    // List of available counts from list to add new guest
+                    var availableName: ArrayList<Int> = arrayListOf()
+                    for (i in 1 until 16) {
+                        var filteredList: List<DineInModel> = arrayListOf()
+                        filteredList = dineInCartAdapter.getList()
+                            .filter { item -> item.title?.substringAfter("Guest ") == i.toString() }
+                            ?: arrayListOf()
+                        if (filteredList.isEmpty()) {
+                            availableName.add(i)
+                        }
+                        if (availableName.size >= count) {
+                            break
+                        }
+                    }
+
+                    for (i in 1..count) {
+
+                        // Check if cartList already contains destroyed guest, if contains change the flag else add new guest
+                        try {
+                            var commonDineInModel =
+                                cartModelsList[0].dineInList?.single { item -> item.title == "Guest ${availableName[i - 1]}" }
+                            if (commonDineInModel != null) {
+                                commonDineInModel.isDestroy = false
+                                dineInList.add(commonDineInModel)
+                            }
+                        } catch (e: Exception) {
+                            dineInList.add(
+                                DineInModel(
+                                    0,
+                                    false,
+                                    0,
+                                    "Guest ${availableName[i - 1]}",
+                                    floorPlanTable = cartModelsList[0].dineInList!![0].floorPlanTable
+
+                                )
+                            )
+                        }
+                    }
+                }
+                existinglist.addAll(dineInList)
+                cartModelsList[0].dineInList = existinglist.toList()
+                viewModel.addGuestFromDashBoard(cartModelsList)
+            } else {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(), "You can't add more than 15 Guest in an order."
+                ) { _, _ ->
+                }
             }
         }
     }
@@ -2526,7 +2530,17 @@ class CartFragment(
 
     // To remove guest from order
     override fun onRemoveGuest(position: Int) {
-        if (dineInCartAdapter.getList().isNotEmpty() && dineInCartAdapter.getList().size > 2) {
+
+        if(cartModelsList.isNotEmpty()){
+            if(viewModel.currentCartItems.any { it.guestIndexForDineIn == position }) {
+                AlertUtils.showCustomAlert(requireContext(),"Can't remove guest as it contains items.")
+                return
+            }
+        }
+
+
+
+        if (dineInCartAdapter.getList().isNotEmpty() && dineInCartAdapter.getList().size > 2 && cartModelsList.isNotEmpty()) {
             if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
                 cartModelsList.get(0).dineInList?.forEach {
                     if (it.title == dineInCartAdapter.getList()[position].title) {
@@ -2544,6 +2558,18 @@ class CartFragment(
                 cartModelsList[0].dineInList = dineIn
             }
             viewModel.addCart(cartModelsList[0])
+
+            /**
+             * After removing any guest select whole table by default
+             * */
+            try {
+                viewModel.dineInHeaderPosition = 0
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
+
+        } else if(cartModelsList.isEmpty()){
+            AlertUtils.showCustomAlert(requireContext(),"Unable to remove guest")
         } else {
             viewModel.unableToRemoveGuest(getString(R.string.minimum_one_guest_is_required))
         }
@@ -2815,13 +2841,18 @@ class CartFragment(
 
                             val valuess = cartModelsList[0]
 
-                            val request = viewModel.updateOrder(cartModelsList[0])
 
-                            var requested = 0
 
-                            viewModel.dineInResult.observe(viewLifecycleOwner) { returnResult ->
 
-                                if(returnResult) {
+
+                                val request = viewModel.updateOrder(cartModelsList[0])
+
+
+                            /***
+                             * Added this delay to resolve items getting added two times after moving items
+                             */
+                                Handler().postDelayed({
+
                                     if (cartModelsList[0].orderId != 0) {
                                         cartModelsList[0].orderId?.let {
                                             viewModel.updateOrderCall(
@@ -2829,13 +2860,40 @@ class CartFragment(
                                             )
                                         }
                                     } else {
-                                        orderId?.let { it1 -> viewModel.updateOrderCall(it1, request) }
+                                        orderId?.let { it1 ->
+                                            viewModel.updateOrderCall(
+                                                it1,
+                                                request
+                                            )
+                                        }
                                     }
+                                },300)
 
-                                    requested = 1
-                                    viewModel.dineInResult.value = false
-                                }
-                            }
+
+
+
+//                                viewModel.dineInResult.observe(viewLifecycleOwner) { returnResult ->
+//
+//                                    if (returnResult) {
+//                                        viewModel.updateRequested = false
+//                                        if (cartModelsList[0].orderId != 0) {
+//                                            cartModelsList[0].orderId?.let {
+//                                                viewModel.updateOrderCall(
+//                                                    it, request
+//                                                )
+//                                            }
+//                                        } else {
+//                                            orderId?.let { it1 ->
+//                                                viewModel.updateOrderCall(
+//                                                    it1,
+//                                                    request
+//                                                )
+//                                            }
+//                                        }
+//
+//                                        // viewModel.dineInResult.value = false
+//                                    }
+//                                }
 //                            prefProvider.setValueboolean(DINE_IN_UPDATE, false)
 //                            prefProvider.setValueboolean(DINE_IN_LIST_EDIT, false)
 //                            prefProvider.setValueboolean(DINE_IN_UPDATE, false)

@@ -3497,6 +3497,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             PrintSunmiUtils.addHorizontal()
 
 
+            if(listWTitems.isNotEmpty())
+                PrintSunmiUtils.printTextCenter("Whole Table")
 
             for (i in 0 until listWTitems.size) {
 
