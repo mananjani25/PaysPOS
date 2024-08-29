@@ -7237,9 +7237,12 @@ class DashBoardCategoryViewModel @Inject constructor(
             when (resource.status) {
                 Status.SUCCESS -> {
                     Log.e("SyncInventory", "SyncSuccess")
-
                     resource.data.let { response ->
                         if (response?.status == 200) {
+
+                            _showProgress.value = Event(true)
+                            _syncProgressDialog.value = Event(true)
+
                             Log.d("BINGE", "syncInventoryModule: START")
 //                            posRepository.saveDatabase(response)
 
@@ -7430,7 +7433,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 Status.LOADING -> {
                     Log.e("SyncInventory", "SyncLoading")
-                    _showProgress.value = Event(false)
+//                    _showProgress.value = Event(false)
 
                     autoSyncEnabled.value = true
                 }

@@ -302,6 +302,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         savedInstanceState: Bundle?
     ): View? {
 
+        /*--------------------- FOR CUSTOMER RECEIPT MODIFICATION--------------------*/
+        prefProvider?.setValue(Constants.SUNMI_FRAMEWORK_VERSION, SystemProperties.get("ro.version.sunmi_versionname"))
+/*--------------------- FOR CUSTOMER RECEIPT MODIFICATION--------------------*/
 
         if (viewModel.boldPosNeedToRefresh) {
 
