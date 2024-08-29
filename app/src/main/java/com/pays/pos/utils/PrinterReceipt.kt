@@ -4489,22 +4489,38 @@ fun addOrderItemOpenOrderSunmiInner(
 fun addOrderItemOnlineOrderSunmiInner(
     list: List<OnlineOrderResponseModel.Data.OrderItem>,
     font: String,
-    showModifiers: Boolean
+    showModifiers: Boolean,
+    isVersion39:Boolean
 ) {
     for (i in 0 until list.size) {
         val obj = list.get(i)
 
-        PrintSunmiUtils.normalText(
-            padLineCustomerItem(
-                obj.quantity.toString() + " " + getItemNameToShow(obj.itemName),
-                getItemPriceToShow(totalPriceOnlineOrder(obj)),
-                if (font == Constants.LARGE) {
-                    23
-                } else {
-                    48
-                }
-            ).toString()
-        )
+        if (isVersion39){
+            PrintSunmiUtils.normalText(
+                padLineCustomerItem(
+                    obj.quantity.toString() + " " + getItemNameToShow(obj.itemName),
+                    getItemPriceToShow(totalPriceOnlineOrder(obj)),
+                    if (font == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+            )
+        }else{
+            PrintSunmiUtils.normalTextNew(
+                padLineCustomerItem(
+                    obj.quantity.toString() + " " + getItemNameToShow(obj.itemName),
+                    getItemPriceToShow(totalPriceOnlineOrder(obj)),
+                    if (font == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+            )
+        }
+
 
 
 
@@ -4523,17 +4539,31 @@ fun addOrderItemOnlineOrderSunmiInner(
                 Log.e("CheckPartF", "part1 ${part1.length}")
                 Log.e("CheckPartF", "part2 ${part2.length}")
 
-                PrintSunmiUtils.normalText(
-                    padLineCustomerItem(
-                        part1,
-                        part2,
-                        if (font == Constants.LARGE) {
-                            23
-                        } else {
-                            48
-                        }
-                    ).toString()
-                )
+                if (isVersion39){
+                    PrintSunmiUtils.normalText(
+                        padLineCustomerItem(
+                            part1,
+                            part2,
+                            if (font == Constants.LARGE) {
+                                23
+                            } else {
+                                48
+                            }
+                        ).toString()
+                    )
+                }else{
+                    PrintSunmiUtils.normalTextNew(
+                        padLineCustomerItem(
+                            part1,
+                            part2,
+                            if (font == Constants.LARGE) {
+                                23
+                            } else {
+                                48
+                            }
+                        ).toString()
+                    )
+                }
 
             }
 
@@ -4541,7 +4571,11 @@ fun addOrderItemOnlineOrderSunmiInner(
 
         if (obj.note.isNotEmpty()) {
 
-            PrintSunmiUtils.normalText("   Note: " + obj.note)
+            if (isVersion39) {
+                PrintSunmiUtils.normalText("   Note: " + obj.note)
+            }else{
+                PrintSunmiUtils.normalTextNew("   Note: " + obj.note)
+            }
 
         }
     }
