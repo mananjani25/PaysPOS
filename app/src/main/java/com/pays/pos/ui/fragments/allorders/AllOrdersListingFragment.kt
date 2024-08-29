@@ -1601,6 +1601,13 @@ class AllOrdersListingFragment(
 
                 updatedCartModel.discountSelectdValue = order.totalDiscount / completePrice * 100
 
+                /*---------------BIS-4189---------------*/
+                if (updatedCartModel.discountSelectdValue.isNaN()){
+                    updatedCartModel.discountSelectdValue=0.0
+                }
+                /*---------------BIS-4189---------------*/
+
+
                 dashboardViewModel.addCart(updatedCartModel)
                 dashboardViewModel.setUpdatedCartModel(updatedCartModel)
                 generateCartItemsListFromOrderModel(order)?.let {
@@ -1906,6 +1913,12 @@ class AllOrdersListingFragment(
                 val completePrice = order.subTotal + updatedCartModel.discountPrice
 
                 updatedCartModel.discountSelectdValue = order.totalDiscount / completePrice * 100
+
+                /*---------------BIS-4189---------------*/
+                if (updatedCartModel.discountSelectdValue.isNaN()){
+                    updatedCartModel.discountSelectdValue=0.0
+                }
+                /*---------------BIS-4189---------------*/
 
                 dashboardViewModel.addCart(updatedCartModel)
                 dashboardViewModel.setUpdatedCartModel(updatedCartModel)

@@ -1,5 +1,6 @@
 package com.pays.pos.ui.fragments.dashboard.bolddashboard
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Handler
 import android.text.SpannableString
@@ -3153,6 +3154,15 @@ class CartFragment(
             object : View.OnClickListener {
                 override fun onClick(p0: View?) {
                     cleanOrderBackupDetails()
+                    if ((binding.txtAddCustomer.text.toString().contains("+")) && (binding.txtAddCustomer.text.toString().lowercase().contains("add"))){
+                        AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), getString(R.string.add_customer_message), object : DialogInterface.OnClickListener{
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                p0?.dismiss()
+                            }
+
+                        })
+                        return
+                    }
                     EventBus.getDefault()
                         .post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvPayNow()"))
 
