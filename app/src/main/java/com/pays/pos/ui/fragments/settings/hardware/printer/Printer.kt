@@ -86,7 +86,6 @@ import com.pays.pos.utils.printer.PrinterClass.language
 import com.pays.pos.utils.statusUtils.Status
 import com.starmicronics.stario10.*
 import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
-import com.starmicronics.stario10.starxpandcommand.MagnificationParameter
 import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
 import com.starmicronics.stario10.starxpandcommand.StarXpandCommandBuilder
 import com.starmicronics.stario10.starxpandcommand.printer.*
@@ -115,7 +114,6 @@ import java.util.*
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
-import java.util.function.Consumer
 import javax.inject.Inject
 
 
@@ -1755,7 +1753,19 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             StarConnectionSettings(InterfaceType.Lan, printerListModel.deviceModel!!.macAddress)
         val printer = StarPrinter(settings, requireContext())
 
+
+
         CoroutineScope(Dispatchers.Main).launch {
+/*
+            printerListModel.deviceModel?.let {
+                if (it.printerName.contains("TSP")){
+
+                }else if (it.printerName.contains("SP7")){
+
+                }
+            }
+*/
+
             try {
                 // TSP100III series and TSP100IIU+ do not support actionPrintText because these products are graphics-only printers.
                 // Please use the actionPrintImage method to create printing data for these products.
@@ -1797,6 +1807,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
     }
+
 
     private fun initLabelPrinter(printerListModel: PrinterListModel) {
         var printer: Printer? = null

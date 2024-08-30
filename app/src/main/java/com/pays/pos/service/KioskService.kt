@@ -24,7 +24,6 @@ import com.hosopy.actioncable.ActionCable
 import com.hosopy.actioncable.Channel
 import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
-import com.pays.pos.MainApplication
 import com.pays.pos.R
 import com.pays.pos.data.db.AppDatabase
 import com.pays.pos.data.entities.TbLabelPrinterSettings
@@ -55,6 +54,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import java.net.URI
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class KioskService : Service(), StatusChangeEventListener {
@@ -363,10 +363,12 @@ class KioskService : Service(), StatusChangeEventListener {
                         styleAlignment(Alignment.Center)
 
                         if (!oneItemPerReceipt) {
+                            printerBuilder
                             orderData.data?.orderItems?.forEach { item ->
                                 data.printerCategories.forEach { category ->
                                     if (category.id == item.categoryId && category.printerEnable) {
                                         for (singularity in 1..item.quantity!!) {
+
                                             add(
                                                 PrinterBuilder()
                                                     .styleBold(true)
