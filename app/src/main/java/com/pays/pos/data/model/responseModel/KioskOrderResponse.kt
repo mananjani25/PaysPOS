@@ -232,7 +232,7 @@ data class KioskOrderResponse(
                 @SerializedName("tax_id") var taxId: Int? = null,
                 @SerializedName("name") var name: String? = null,
                 @SerializedName("amount") var amount: String? = null,
-                @SerializedName("rate") var rate: Int? = null,
+                @SerializedName("rate") var rate: Double? = null,
                 @SerializedName("is_default") var isDefault: Boolean? = null,
                 @SerializedName("is_tax_removed") var isTaxRemoved: String? = null,
                 @SerializedName("created_at") var createdAt: String? = null,
