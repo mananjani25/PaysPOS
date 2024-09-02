@@ -1450,6 +1450,10 @@ class PosRepository @Inject constructor(
         return appDatabase.cartDao().getCartModelFromID(cartId)
     }
 
+   suspend fun deleteOrderTypesById(idList: Int) {
+        appDatabase.orderTypeDao().deleteOrderTypesById(idList)
+    }
+
 
     suspend fun getAllCartModels(): List<CartModel> {
         return appDatabase.cartDao().getAllCartModels()
