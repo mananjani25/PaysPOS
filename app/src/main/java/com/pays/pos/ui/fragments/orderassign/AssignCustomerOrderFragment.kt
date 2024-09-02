@@ -110,7 +110,8 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             }
         }
 
-        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AssignCustomerOrderFragment.kt onCreateView"))
+        EventBus.getDefault()
+            .post(MessageEvent("${Constants.LINE_BREAK_TAB} AssignCustomerOrderFragment.kt onCreateView"))
 
         return binding.root
     }
@@ -169,7 +170,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
         })
 
         binding.imgBack.setOnClickListener {
-
+            hideKeyboard()
             val navController = findNavController()
             var bundle = Bundle()
             bundle.putString("SELECTED_DATE", selectedDate)
@@ -187,11 +188,14 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
                 putString(ORDER_TYPE, orderType)
             }
 
-            findNavController().navigate(R.id.action_assignCustomerOrderFragment_to_addEditCustomer, bundle)
+            findNavController().navigate(
+                R.id.action_assignCustomerOrderFragment_to_addEditCustomer,
+                bundle
+            )
         }
         binding.txtHome.setOnClickListener {
+            hideKeyboard()
             if (arguments != null) {
-
                 var bundle: Bundle = Bundle()
                 bundle.putBoolean("update", arguments?.getBoolean("update") ?: false)
                 bundle.putInt("orderId", arguments?.getInt("orderId")!!)
@@ -199,7 +203,13 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
                 bundle.putString("paymentOfflineId", arguments?.getString("paymentOfflineId"))
                 bundle.putString("orderOfflineId", arguments?.getString("orderOfflineId"))
 
-                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} AssignCustomerOrderFragment.kt  binding.txtHome bundle -> ${Gson().toJson(bundle)}"))
+                EventBus.getDefault().post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} AssignCustomerOrderFragment.kt  binding.txtHome bundle -> ${
+                            Gson().toJson(bundle)
+                        }"
+                    )
+                )
 
                 findNavController().navigate(
                     R.id.action_assignCustomerOrderFragment_to_dashboard_category_new,
@@ -265,6 +275,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
     }
+
     override fun onItemClickListener(view: View?, pos: Int) {
         hideKeyboard()
         // if adding customer to phone order, verify if customer has necessary details
@@ -293,7 +304,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
         }
     }
 
-    private fun onSelectingCustomer(pos: Int){
+    private fun onSelectingCustomer(pos: Int) {
         val customer = adapter.getItem(pos)
         prefProvider.setValue(
             Constants.CUSTOMER_NAME,
@@ -328,10 +339,10 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             LogUtil.logE(TAG, "isFromDineIn:  ${isFromDineIn}")
             setFragmentResult("request_key_customer_dine_in", result)
         } else {
-            if (isPhoneOrder == true){
+            if (isPhoneOrder == true) {
                 setFragmentResult("request_key_customer_phone_order", result)
-            }else
-            setFragmentResult("request_key_customer", result)
+            } else
+                setFragmentResult("request_key_customer", result)
         }
 
 //        val navController =
@@ -345,7 +356,12 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             message, getString(R.string.edit),
         )
         { _, _ ->
-            val bundle: Bundle = bundleOf("isEdit" to true, "dataModel" to customer, "isFromPhoneOrderEdit" to true, ORDER_TYPE to orderType)
+            val bundle: Bundle = bundleOf(
+                "isEdit" to true,
+                "dataModel" to customer,
+                "isFromPhoneOrderEdit" to true,
+                ORDER_TYPE to orderType
+            )
             findNavController().navigate(
                 R.id.action_assignCustomerOrderFragment_to_addEditCustomer_,
                 bundle
