@@ -7739,6 +7739,10 @@ class AllOrdersListingFragment(
 
                         PrintSunmiUtils.customerDetailsInner()
 
+                        if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                            PrintSunmiUtils.normalText("\n")
+                        }
+
                         if (kitchenSettingModel.showCustomerName) {
                             PrintSunmiUtils.normalTextLarge(orderData.customer.firstName + " " + orderData.customer.lastName)
 
@@ -7799,7 +7803,7 @@ class AllOrdersListingFragment(
             e.printStackTrace()
         }
 
-
+        adapter.enableReprintKitchenReceiptButton()
     }
 
     override fun onStatusChangeEvent(p0: String?, p1: Int) {
