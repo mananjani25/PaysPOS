@@ -1,5 +1,6 @@
 package com.pays.pos.ui.fragments.orderassign
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -14,6 +16,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.Gson
 import com.pays.pos.R
 import com.pays.pos.data.entities.CartModel
 import com.pays.pos.data.entities.TbCustomer
@@ -27,6 +30,7 @@ import com.pays.pos.data.remote.Constants.PICK_UP
 import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.databinding.FragmentAssignCustomerOrderBinding
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.adapter.AssignCustomerToOrderAdapter
 import com.pays.pos.ui.fragments.customer.CustomerListViewModel
 import com.pays.pos.utils.AlertUtils
@@ -34,8 +38,6 @@ import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.callback.ItemCallback
 import com.pays.pos.utils.callback.PaginationScrollListener
 import com.pays.pos.utils.statusUtils.Status
-import com.google.gson.Gson
-import com.pays.pos.logger.MessageEvent
 import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
@@ -255,7 +257,16 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
 
     }
 
+    private fun hideKeyboard() {
+        val view = activity!!.currentFocus
+        if (view != null) {
+            val imm: InputMethodManager =
+                activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
+    }
     override fun onItemClickListener(view: View?, pos: Int) {
+        hideKeyboard()
         // if adding customer to phone order, verify if customer has necessary details
         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == PHONE_ORDER) {
             val customer = adapter.getItem(pos)

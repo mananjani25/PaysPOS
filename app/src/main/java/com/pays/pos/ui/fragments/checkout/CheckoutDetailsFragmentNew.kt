@@ -3201,16 +3201,19 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         MethodUtils.setPriceTextView(
             binding.tvCash,
-            getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
+            (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount)+ tipAmount
+//     Commented to solve BIS-4196       getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
         )
         MethodUtils.setPriceTextView(
             binding.tvCash0,
-            getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
+            (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount)+tipAmount
+            //     Commented to solve BIS-4196  getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
         )
         Log.e(TAG, "WholetotalPrice:   ${WholetotalPrice}")
         MethodUtils.setPriceTextView(
             binding.tvCard,
-            getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectCount
+            (getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectCount)+tipAmount
+            //     Commented to solve BIS-4196  getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectCount
         )
         if (this::presentation.isInitialized) {
             presentation.show()

@@ -370,6 +370,7 @@ class CreateTax : Fragment() {
         dashViewModel.taxSyncDone.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
+                    dashViewModel._showProgress.value = Event(true)
                     viewModel.setItemIds(ArrayList())
                     CoroutineScope(Dispatchers.Main).launch {
                         if (message.isNotEmpty() && !alertAlreadyShown) {

@@ -177,7 +177,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     private var oneItemPerReceipt: Boolean = true
 
-
+    private var sunmiFrameworkVersion :Array<String>? = null
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -302,6 +302,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         savedInstanceState: Bundle?
     ): View? {
 
+        /*--------------------- FOR CUSTOMER RECEIPT MODIFICATION--------------------*/
+        prefProvider?.setValue(Constants.SUNMI_FRAMEWORK_VERSION, SystemProperties.get("ro.version.sunmi_versionname"))
+/*--------------------- FOR CUSTOMER RECEIPT MODIFICATION--------------------*/
+        sunmiFrameworkVersion = prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".").toTypedArray()
 
         if (viewModel.boldPosNeedToRefresh) {
 
@@ -1690,11 +1694,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         viewModel.showProgress.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
-                if (it) {
-                    //ProgressUtils.showProgressDialog(requireActivity())
-                } else {
-                    // ProgressUtils.dismissProgressDialog()
-                }
+                try{
+                    if (it) {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    } else {
+                        ProgressUtils.dismissProgressDialog()
+                    }
+                }catch (e:Exception){}
             }
         }
         viewModel.syncProgressDialog.observe(requireActivity()) { event ->
@@ -5353,6 +5359,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             )
 
             PrintSunmiUtils.addHorizontalInner()
+
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                PrintSunmiUtils.normalText("\n")
+            }
 
             receiptModel?.order?.orderItems?.let {
 

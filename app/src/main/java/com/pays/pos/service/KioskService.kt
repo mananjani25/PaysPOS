@@ -24,7 +24,6 @@ import com.hosopy.actioncable.ActionCable
 import com.hosopy.actioncable.Channel
 import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
-import com.pays.pos.MainApplication
 import com.pays.pos.R
 import com.pays.pos.data.db.AppDatabase
 import com.pays.pos.data.entities.TbLabelPrinterSettings
@@ -55,6 +54,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import java.net.URI
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class KioskService : Service(), StatusChangeEventListener {
@@ -343,7 +343,11 @@ class KioskService : Service(), StatusChangeEventListener {
                 delay(100)
                 setServiceForKitchen(data, orderData)
             }
-        } else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains("SP", ignoreCase = true)))) {
+        } else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains(
+                "SP",
+                ignoreCase = true
+            )))
+        ) {
             settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
             printer = StarPrinter(settings, applicationContext)
 
@@ -359,15 +363,17 @@ class KioskService : Service(), StatusChangeEventListener {
                         styleAlignment(Alignment.Center)
 
                         if (!oneItemPerReceipt) {
+                            printerBuilder
                             orderData.data?.orderItems?.forEach { item ->
                                 data.printerCategories.forEach { category ->
                                     if (category.id == item.categoryId && category.printerEnable) {
                                         for (singularity in 1..item.quantity!!) {
+
                                             add(
                                                 PrinterBuilder()
                                                     .styleBold(true)
                                                     .styleMagnification(
-                                                        MagnificationParameter(3, 3)
+                                                        MagnificationParameter(2, 2)
                                                     )
                                                     .actionPrintText(
                                                         "OrderId:${orderData.data?.customOrderId}"
@@ -432,6 +438,13 @@ class KioskService : Service(), StatusChangeEventListener {
                                                     PrinterBuilder()
                                                         .styleAlignment(Alignment.Center)
                                                         .styleBold(true)
+                                                        .styleMagnification(
+                                                            MagnificationParameter(
+                                                                2,
+                                                                2
+                                                            )
+                                                        )
+
                                                         .actionPrintText(
                                                             content = if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
                                                                 "--------------------------------------------\nOrder Note"
@@ -442,6 +455,13 @@ class KioskService : Service(), StatusChangeEventListener {
                                             if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
                                                 add(
                                                     PrinterBuilder()
+                                                        .styleMagnification(
+                                                            MagnificationParameter(
+                                                                2,
+                                                                2
+                                                            )
+                                                        )
+
                                                         .styleAlignment(Alignment.Center)
                                                         .actionPrintText(
                                                             content = if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
@@ -476,6 +496,10 @@ class KioskService : Service(), StatusChangeEventListener {
                                                                 PrinterBuilder()
                                                                     .styleAlignment(Alignment.Left)
                                                                     .styleBold(true)
+                                                                    .styleMagnification(
+                                                                        MagnificationParameter(2, 2)
+                                                                    )
+
                                                                     .actionPrintText(
                                                                         content = "Customer Details\n"
                                                                     )
@@ -492,6 +516,10 @@ class KioskService : Service(), StatusChangeEventListener {
 
                                                             add(
                                                                 PrinterBuilder()
+                                                                    .styleMagnification(
+                                                                        MagnificationParameter(2, 2)
+                                                                    )
+
                                                                     .styleAlignment(Alignment.Left)
                                                                     .actionPrintText(
                                                                         content = printedName.toString()
@@ -529,6 +557,7 @@ class KioskService : Service(), StatusChangeEventListener {
                             add(
                                 PrinterBuilder()
                                     .styleBold(true)
+                                    .styleMagnification(MagnificationParameter(3, 3))
                                     .actionPrintText(
                                         "OrderId:${orderData.data?.customOrderId}"
                                     )
@@ -539,6 +568,7 @@ class KioskService : Service(), StatusChangeEventListener {
                             add(
                                 PrinterBuilder()
                                     .styleBold(true)
+                                    .styleMagnification(MagnificationParameter(3, 3))
                                     .actionPrintText(
                                         if (kitchenSettingModel.showOrderType)
                                             orderData.data?.orderType ?: ""
@@ -552,6 +582,7 @@ class KioskService : Service(), StatusChangeEventListener {
                                 add(
                                     PrinterBuilder()
                                         .styleBold(true)
+                                        .styleMagnification(MagnificationParameter(2, 2))
                                         .actionPrintText(
                                             orderData.data?.deliveryType ?: ""
                                         )
@@ -597,6 +628,7 @@ class KioskService : Service(), StatusChangeEventListener {
 
                             add(
                                 PrinterBuilder()
+                                    .styleMagnification(MagnificationParameter(2, 2))
                                     .styleAlignment(Alignment.Left)
                                     .actionPrintText(
                                         content = addReprintOrdersForStarKitchenKiosk(
@@ -610,6 +642,7 @@ class KioskService : Service(), StatusChangeEventListener {
                             if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
                                 add(
                                     PrinterBuilder()
+                                        .styleMagnification(MagnificationParameter(2, 2))
                                         .styleAlignment(Alignment.Center)
                                         .styleBold(true)
                                         .actionPrintText(
@@ -622,6 +655,7 @@ class KioskService : Service(), StatusChangeEventListener {
                             if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
                                 add(
                                     PrinterBuilder()
+                                        .styleMagnification(MagnificationParameter(2, 2))
                                         .styleAlignment(Alignment.Center)
                                         .actionPrintText(
                                             content = if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
@@ -634,6 +668,7 @@ class KioskService : Service(), StatusChangeEventListener {
                             if (kitchenSettingModel.showCustomerName && (orderData.data?.customer?.firstName != null || orderData.data?.customer?.lastName != null)) {
                                 add(
                                     PrinterBuilder()
+                                        .styleMagnification(MagnificationParameter(2, 2))
                                         .styleAlignment(Alignment.Left)
                                         .styleBold(true)
                                         .actionPrintText(
@@ -658,6 +693,7 @@ class KioskService : Service(), StatusChangeEventListener {
                             if (kitchenSettingModel.showCustomerName && (orderData.data?.customer?.firstName != null || orderData.data?.customer?.lastName != null)) {
                                 add(
                                     PrinterBuilder()
+                                        .styleMagnification(MagnificationParameter(2, 2))
                                         .styleAlignment(Alignment.Left)
                                         .actionPrintText(
                                             content = if (kitchenSettingModel.showCustomerName && (orderData.data?.customer?.firstName != null || orderData.data?.customer?.lastName != null)) {
@@ -674,6 +710,7 @@ class KioskService : Service(), StatusChangeEventListener {
                                 ) {
                                     add(
                                         PrinterBuilder()
+                                            .styleMagnification(MagnificationParameter(2, 2))
                                             .styleAlignment(Alignment.Left)
                                             .actionPrintText(
                                                 content = if (kitchenSettingModel.showCustomerPhone && orderData.data?.customer?.phones?.get(
@@ -703,6 +740,7 @@ class KioskService : Service(), StatusChangeEventListener {
                             } catch (e: Exception) {
 
                             }
+                            printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
 
                         }
 
@@ -719,9 +757,6 @@ class KioskService : Service(), StatusChangeEventListener {
 
                     }
 
-
-
-                    printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
 
                     var document = DocumentBuilder()
                         .addPrinter(printerBuilder)
@@ -2435,7 +2470,7 @@ class KioskService : Service(), StatusChangeEventListener {
                     }
 
 
-                    try{
+                    try {
                         if (kitchenSettingModel.showCustomerPhone) {
 
                             if (orderData.data?.customer?.phones?.isNotEmpty() == true) {
@@ -2451,7 +2486,8 @@ class KioskService : Service(), StatusChangeEventListener {
                             }
 
                         }
-                    }catch (e:Exception){}
+                    } catch (e: Exception) {
+                    }
 
                 }
 

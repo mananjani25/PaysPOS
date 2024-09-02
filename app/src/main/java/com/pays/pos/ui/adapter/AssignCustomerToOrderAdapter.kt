@@ -155,8 +155,11 @@ class AssignCustomerToOrderAdapter :
         holder: AssignCustomerToOrderAdapter.MyViewHolder,
         position: Int
     ) {
+        try {
+            holder.bind(filterList[position])
+        }catch (e:Exception){
 
-        holder.bind(filterList[position])
+        }
     }
 
     override fun getItemCount(): Int {

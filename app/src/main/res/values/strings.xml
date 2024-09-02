@@ -425,6 +425,7 @@
     <string name="tv_action">Action</string>
     <string name="take_out_order">Take Out Order</string>
     <string name="add_customer">Add Customer</string>
+    <string name="add_customer_message">Please add a customer</string>
     <string name="quantity">Quantity</string>
     <string name="notes">Notes</string>
     <string name="add_note">Add Note</string>
