@@ -11,10 +11,7 @@ import android.os.StrictMode
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -7881,9 +7878,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 }
 
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    insertDynamicPayment(it.settingData.data.dynamicPaymentRecords)
-                                }
 
                                 if (it.settingData.data.teamRoles.isNotEmpty()) {
                                     posRepository.addTeamRoleFromDb(it.settingData.data.teamRoles)
@@ -8186,7 +8180,26 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 }
 
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    var dynamicPaymentList :kotlin.collections.ArrayList<TbDynamicPaymentRecords> = posRepository.getAllDynamicPayments() as ArrayList<TbDynamicPaymentRecords>
+                                    if (dynamicPaymentList.size>=it.settingData.data.dynamicPaymentRecords.size){
+                                        var removedIDs= arrayListOf<Int>()
+                                        dynamicPaymentList.removeAll(it.settingData.data.dynamicPaymentRecords)
+                                        dynamicPaymentList.forEach {
+                                            launch {
+                                                posRepository.deleteDynamicPaymentById(it.id)
+                                            }
+                                        }
+
+                                    }
+
+                                }
+
                                 posRepository.addOrderType(it.settingData.data.orderTypes)
+
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    insertDynamicPayment(it.settingData.data.dynamicPaymentRecords)
+                                }
 
                                 posRepository.addAllCountryList(it.settingData.data.phoneCountrylist)
                                 posRepository.addTimeZones(it.settingData.data.time_zone_options)

@@ -26,6 +26,12 @@ interface DynamicPaymentDao {
     @Query("select * from TbDynamicPaymentRecords where isActive = :isActive AND locationId = :locationId")
     fun getDynamicPaymentRecords(isActive: Boolean, locationId: Int): Flow<List<TbDynamicPaymentRecords>>
 
+    @get:Query("select * from TbDynamicPaymentRecords")
+    val getAllDynamicPayments: List<TbDynamicPaymentRecords>
+
     @Query("DELETE FROM TbDynamicPaymentRecords")
     suspend fun delete()
+
+    @Query("DELETE from TbDynamicPaymentRecords where TbDynamicPaymentRecords.id = :idList")
+    suspend fun deleteDynamicPaymentById(idList: Int)
 }
