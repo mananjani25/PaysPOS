@@ -647,7 +647,7 @@ class KioskService : Service(), StatusChangeEventListener {
                                         .styleBold(true)
                                         .actionPrintText(
                                             content = if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                "--------------------------------------------\nOrder Note\n "
+                                                "--------------------------------------------\nOrder Note "
                                             } else ""
                                         )
                                 )
