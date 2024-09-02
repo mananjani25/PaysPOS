@@ -2328,7 +2328,7 @@ class KioskService : Service(), StatusChangeEventListener {
                             PrintSunmiUtils.customerAddress(
                                 orderData.data?.customer?.addresses?.get(
                                     orderData.data?.customer?.addresses?.size?.minus(1) ?: 0
-                                ) ?: ""
+                                )?.fullAddress ?: ""
                             )
                         }
                     } catch (e: Exception) {
