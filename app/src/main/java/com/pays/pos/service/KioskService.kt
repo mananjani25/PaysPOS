@@ -82,13 +82,15 @@ class KioskService : Service(), StatusChangeEventListener {
 
     override fun onCreate() {
         super.onCreate()
+        runBlocking {
+            CoroutineScope(Dispatchers.IO).launch {
+                var tbLabelPrinterSettings: TbLabelPrinterSettings? =
+                    AppDatabase.getDatabase(applicationContext).labelPrinterSettings()
+                        .getLabelPrinterSettingsData()
+                oneItemPerReceipt =
+                    if (tbLabelPrinterSettings != null) tbLabelPrinterSettings.oneItemPerReciept else true
+            }
 
-        CoroutineScope(Dispatchers.IO).launch {
-            var tbLabelPrinterSettings: TbLabelPrinterSettings? =
-                AppDatabase.getDatabase(applicationContext).labelPrinterSettings()
-                    .getLabelPrinterSettingsData()
-            oneItemPerReceipt =
-                if (tbLabelPrinterSettings != null) tbLabelPrinterSettings.oneItemPerReciept else true
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
