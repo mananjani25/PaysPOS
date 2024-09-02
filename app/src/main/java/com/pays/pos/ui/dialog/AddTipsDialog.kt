@@ -142,6 +142,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
                 )
             }
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
+
         }
         binding.llKeypad.txt30.setOnClickListener {
 

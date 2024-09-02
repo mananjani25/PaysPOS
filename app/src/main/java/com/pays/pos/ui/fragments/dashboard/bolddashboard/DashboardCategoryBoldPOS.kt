@@ -5385,6 +5385,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                         PrintSunmiUtils.customerDetailsInner()
 
+                        if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                            PrintSunmiUtils.normalText("\n")
+                        }
                         try{
                             if (kitchenSettingModel.showCustomerName) {
                                 PrintSunmiUtils.normalTextLarge(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
