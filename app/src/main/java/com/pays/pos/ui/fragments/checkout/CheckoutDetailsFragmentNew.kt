@@ -3193,7 +3193,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     // To set different cash payment options and total amount values
     private fun setupPaymentScreen(isSelectCount: Int) {
         MethodUtils.getCashPaymentOptionList(
-            getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount,
+//   Commented to solve BIS-4196         getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount,
+            (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount)+ tipAmount,
             binding.tvCash1,
             binding.tvCash2,
             binding.tvCash3
