@@ -83,15 +83,17 @@ class KioskService : Service(), StatusChangeEventListener {
     override fun onCreate() {
         super.onCreate()
         runBlocking {
-            CoroutineScope(Dispatchers.IO).launch {
+            CoroutineScope(Dispatchers.IO).async {
                 var tbLabelPrinterSettings: TbLabelPrinterSettings? =
                     AppDatabase.getDatabase(applicationContext).labelPrinterSettings()
                         .getLabelPrinterSettingsData()
                 oneItemPerReceipt =
                     if (tbLabelPrinterSettings != null) tbLabelPrinterSettings.oneItemPerReciept else true
-            }
+            }.await()
 
+            delay(6000)
         }
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel()
@@ -282,7 +284,7 @@ class KioskService : Service(), StatusChangeEventListener {
     ) {
         if (pos < kitchenList.size) {
             kitchenList.get(pos).let {
-                if (it.receiptPrintType.equals("Kitchen", ignoreCase = true) && it.status) {
+                if (it.receiptPrintType.equals("Kitchen", ignoreCase = true) || it.receiptPrintType.equals("KitchenAndCustomer", ignoreCase = true) && it.status) {
                     Log.d("Hey", Gson().toJson(it))
                     initKitchenPrinter(it, createOrderResponse)
                 }
