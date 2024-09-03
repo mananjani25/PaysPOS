@@ -7497,11 +7497,23 @@ class AllOrdersListingFragment(
                 }
                 if (customerSettingModel.showTipLineForCash) {
 
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        PrintSunmiUtils.boldText("Tips      _____________")
-                        SunmiPrintHelper.getInstance().lineWrap(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ){
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            PrintSunmiUtils.boldTextNew("Tips      _____________")
+                            SunmiPrintHelper.getInstance().lineWrap(1)
+                        } else {
+                            PrintSunmiUtils.boldTextNew("Tips                              _____________")
+                        }
                     } else {
-                        PrintSunmiUtils.boldText("Tips                              _____________")
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            PrintSunmiUtils.boldText("Tips      _____________")
+                            SunmiPrintHelper.getInstance().lineWrap(1)
+                        } else {
+                            PrintSunmiUtils.boldText("Tips                              _____________")
+                        }
                     }
                 }
 
