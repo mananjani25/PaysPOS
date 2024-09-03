@@ -80,6 +80,8 @@ class KioskService : Service(), StatusChangeEventListener {
 
     private var oneItemPerReceipt: Boolean = true
 
+    private var sunmiFrameworkVersion :Array<String>? = null
+
     override fun onCreate() {
         super.onCreate()
         runBlocking {
@@ -91,8 +93,9 @@ class KioskService : Service(), StatusChangeEventListener {
                     if (tbLabelPrinterSettings != null) tbLabelPrinterSettings.oneItemPerReciept else true
             }.await()
 
-            delay(6000)
+            delay(4000)
         }
+        sunmiFrameworkVersion = PrefProvider(this).getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".").toTypedArray()
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -356,7 +359,6 @@ class KioskService : Service(), StatusChangeEventListener {
             printer = StarPrinter(settings, applicationContext)
 
             CoroutineScope(Dispatchers.Main).launch {
-                delay(2000)
                 try {
                     val builder = StarXpandCommandBuilder()
 
@@ -2450,6 +2452,9 @@ class KioskService : Service(), StatusChangeEventListener {
 
             PrintSunmiUtils.addHorizontalInner()
 
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                PrintSunmiUtils.normalTextNew("\n")
+            }
 
             orderData.data?.orderItems?.let {
                 addOrdersForKitchenOnlineOrderSunmiInnerKiosk(
@@ -2468,6 +2473,10 @@ class KioskService : Service(), StatusChangeEventListener {
                 if (orderData.data?.customer != null) {
 
                     PrintSunmiUtils.customerDetailsInner()
+
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                        PrintSunmiUtils.normalTextNew("\n")
+                    }
 
                     if (kitchenSettingModel.showCustomerName) {
                         PrintSunmiUtils.normalTextLarge(orderData.data?.customer?.firstName + " " + orderData.data?.customer?.lastName)
