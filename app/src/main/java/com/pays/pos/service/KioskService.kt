@@ -356,6 +356,7 @@ class KioskService : Service(), StatusChangeEventListener {
             printer = StarPrinter(settings, applicationContext)
 
             CoroutineScope(Dispatchers.Main).launch {
+                delay(2000)
                 try {
                     val builder = StarXpandCommandBuilder()
 
