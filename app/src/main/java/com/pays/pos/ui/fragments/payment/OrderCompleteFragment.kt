@@ -14490,12 +14490,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     if (customerSettingModel.showTipLineForCash) {
 
-                        if (customerSettingModel.fonts == LARGE) {
-                            PrintSunmiUtils.boldText("Tips      _____________")
-                            PrintSunmiUtils.boldText("Total     _____________")
+                        if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                                1
+                            )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                        ) {
+                            if (customerSettingModel.fonts == LARGE) {
+                                PrintSunmiUtils.boldTextNew("Tips      _____________")
+                                PrintSunmiUtils.boldTextNew("Total     _____________")
+                            } else {
+                                PrintSunmiUtils.boldTextNew("Tips                              _____________")
+                                PrintSunmiUtils.boldTextNew("Total                             _____________")
+                            }
                         } else {
-                            PrintSunmiUtils.boldText("Tips                              _____________")
-                            PrintSunmiUtils.boldText("Total                             _____________")
+                            if (customerSettingModel.fonts == LARGE) {
+                                PrintSunmiUtils.boldText("Tips      _____________")
+                                PrintSunmiUtils.boldText("Total     _____________")
+                            } else {
+                                PrintSunmiUtils.boldText("Tips                              _____________")
+                                PrintSunmiUtils.boldText("Total                             _____________")
+                            }
                         }
 
                         SunmiPrintHelper.getInstance().lineWrap(1)
