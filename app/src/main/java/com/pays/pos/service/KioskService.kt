@@ -84,17 +84,7 @@ class KioskService : Service(), StatusChangeEventListener {
 
     override fun onCreate() {
         super.onCreate()
-        runBlocking {
-            CoroutineScope(Dispatchers.IO).async {
-                var tbLabelPrinterSettings: TbLabelPrinterSettings? =
-                    AppDatabase.getDatabase(applicationContext).labelPrinterSettings()
-                        .getLabelPrinterSettingsData()
-                oneItemPerReceipt =
-                    if (tbLabelPrinterSettings != null) tbLabelPrinterSettings.oneItemPerReciept else true
-            }.await()
 
-            delay(4000)
-        }
         sunmiFrameworkVersion = PrefProvider(this).getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".").toTypedArray()
 
 
@@ -358,8 +348,17 @@ class KioskService : Service(), StatusChangeEventListener {
             settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
             printer = StarPrinter(settings, applicationContext)
 
+            CoroutineScope(Dispatchers.IO).launch {
+                var tbLabelPrinterSettings: TbLabelPrinterSettings? =
+                    AppDatabase.getDatabase(applicationContext).labelPrinterSettings()
+                        .getLabelPrinterSettingsData()
+                oneItemPerReceipt =
+                    if (tbLabelPrinterSettings != null) tbLabelPrinterSettings.oneItemPerReciept else true
+            }
             CoroutineScope(Dispatchers.Main).launch {
                 try {
+                    delay(6000)
+
                     val builder = StarXpandCommandBuilder()
 
                     var printerBuilder = PrinterBuilder()
@@ -2398,7 +2397,7 @@ class KioskService : Service(), StatusChangeEventListener {
 
             SunmiPrintHelper.getInstance().initPrinter()
             SunmiPrintHelper.getInstance().lineWrap(2)
-            PrintSunmiUtils.headerText("OrderID:" + orderData.data?.id)
+//            PrintSunmiUtils.headerText("OrderID:" + orderData.data?.id)
 
             if (PrefProvider(applicationContext).getValueboolean(
                     Constants.ORDER_NUMBER_STARTING_FROM_ONE,
@@ -2456,11 +2455,20 @@ class KioskService : Service(), StatusChangeEventListener {
                 PrintSunmiUtils.normalTextNew("\n")
             }
 
-            orderData.data?.orderItems?.let {
-                addOrdersForKitchenOnlineOrderSunmiInnerKiosk(
-                    it,
-                    customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
-                )
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                orderData.data?.orderItems?.let {
+                    addOrdersForKitchenOnlineOrderSunmiInnerKioskNew(
+                        it,
+                        customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
+                    )
+                }
+            }else{
+                orderData.data?.orderItems?.let {
+                    addOrdersForKitchenOnlineOrderSunmiInnerKiosk(
+                        it,
+                        customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
+                    )
+                }
             }
 
             if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {

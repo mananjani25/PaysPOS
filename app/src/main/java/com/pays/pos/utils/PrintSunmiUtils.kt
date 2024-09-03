@@ -702,6 +702,12 @@ class PrintSunmiUtils {
                 .printText(value, 36f, false, false, fontName)
             SunmiPrintHelper.getInstance().lineWrap(1)
         }
+        fun normalTextLargeNew(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance()
+                .printText(value, 36f)
+            SunmiPrintHelper.getInstance().lineWrap(1)
+        }
 
         fun normalTextCenter(value: String) {
             SunmiPrintHelper.getInstance().setAlign(1)
