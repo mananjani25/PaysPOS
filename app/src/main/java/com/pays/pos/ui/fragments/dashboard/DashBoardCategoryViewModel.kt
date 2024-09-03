@@ -8182,8 +8182,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
 
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    var dynamicPaymentList: kotlin.collections.ArrayList<TbDynamicPaymentRecords> =
-                                        posRepository.getAllDynamicPayments() as ArrayList<TbDynamicPaymentRecords>
+//                                    var dynamicPaymentList: kotlin.collections.ArrayList<TbDynamicPaymentRecords> =
+//                                        posRepository.getAllDynamicPayments() as ArrayList<TbDynamicPaymentRecords>
 //                                    if (dynamicPaymentList.size > it.settingData.data.dynamicPaymentRecords.size) {
                                         var dynamicPaymentListToBeInserted = arrayListOf<TbDynamicPaymentRecords>()
 //                                        dynamicPaymentList.removeAll(it.settingData.data.dynamicPaymentRecords)
