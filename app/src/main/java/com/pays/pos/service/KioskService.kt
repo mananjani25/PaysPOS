@@ -368,7 +368,6 @@ class KioskService : Service(), StatusChangeEventListener {
                         styleAlignment(Alignment.Center)
 
                         if (!oneItemPerReceipt) {
-                            printerBuilder
                             orderData.data?.orderItems?.forEach { item ->
                                 data.printerCategories.forEach { category ->
                                     if (category.id == item.categoryId && category.printerEnable) {
