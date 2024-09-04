@@ -1850,44 +1850,44 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         paymentType = "Card"
         paymentviewModel.saveOrder(false)
 
-        ////
-
-        val myRequest = cartList?.let {
-            paymentviewModel.createOrderRequestForCard(
-                it,
-                subTotalPrice,
-                paymentAmount,
-                totalServiceCharge,
-                totalTax,
-                Constants.DINE_IN,
-                future_delivery_date,
-                future_delivery_time,
-                true,
-                totalDiscount,
-                tipAmount,
-                splitValue,
-                redeemLoyaltyInfo,
-                cashDiscountSurcharge,
-                true,
-                paymentType,
-                cardNumber,
-                cashDiscountType,
-                tipID,
-                GlobalUID,
-                RefNumber,
-                ExtData,
-                ECRRefNumber,
-                PAXtoken,
-                cardLastDigits,
-                cardTypeOfTransaction = EDCType
-            )
-        }
-
-        ///
-
-
 
         if (isGuestPay) {
+
+            ////
+
+            val myRequest = cartList?.let {
+                paymentviewModel.createOrderRequestForCard(
+                    it,
+                    subTotalPrice,
+                    paymentAmount,
+                    totalServiceCharge,
+                    totalTax,
+                    Constants.DINE_IN,
+                    future_delivery_date,
+                    future_delivery_time,
+                    true,
+                    totalDiscount,
+                    tipAmount,
+                    splitValue,
+                    redeemLoyaltyInfo,
+                    cashDiscountSurcharge,
+                    true,
+                    paymentType,
+                    cardNumber,
+                    cashDiscountType,
+                    tipID,
+                    GlobalUID,
+                    RefNumber,
+                    ExtData,
+                    ECRRefNumber,
+                    PAXtoken,
+                    cardLastDigits,
+                    cardTypeOfTransaction = EDCType
+                )
+            }
+
+            ///
+
             if (custom_paymentAmount != 0.0) {
                 dineinOrderVieweModel.totalPayAmount(custom_paymentAmount)
             }
@@ -1946,7 +1946,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 paymentviewModel.updateOrder(false, null, null, "", "")
             }
 
-            /*val myRequest = cartList?.let {
+            val myRequest = cartList?.let {
                 paymentviewModel.createOrderRequestForCard(
                     it,
                     subTotalPrice,
@@ -1975,7 +1975,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     cardLastDigits,
                     cardTypeOfTransaction = EDCType
                 )
-            }*/
+            }
             if (myRequest != null) {
                 if (custom_paymentAmount.toDouble() != 0.0) {
                     paymentviewModel.totalPayAmount(custom_paymentAmount)

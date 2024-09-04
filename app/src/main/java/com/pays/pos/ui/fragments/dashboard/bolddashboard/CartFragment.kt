@@ -2394,23 +2394,28 @@ class CartFragment(
 
         } else {
 
-            var listOfCustomersID: ArrayList<Int> = arrayListOf()
-            cartModelsList[0].dineInList?.forEach {
-                if (it.customer != null) {
-                    listOfCustomersID.add(it.customer?.id ?: 0)
+
+            if(cartModelsList.isNotEmpty()) {
+
+                var listOfCustomersID: ArrayList<Int> = arrayListOf()
+                cartModelsList[0].dineInList?.forEach {
+                    if (it.customer != null) {
+                        listOfCustomersID.add(it.customer?.id ?: 0)
+
+                    }
 
                 }
-
-            }
-            val bundle = bundleOf(
-                "DINE_IN" to true,
-                "position" to position,
-                "cartList" to cartModelsList,
-                "listOfCustomersID" to listOfCustomersID
-            )
-            findNavController().navigate(
-                R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
-            )
+                val bundle = bundleOf(
+                    "DINE_IN" to true,
+                    "position" to position,
+                    "cartList" to cartModelsList,
+                    "listOfCustomersID" to listOfCustomersID
+                )
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
+                )
+            } else
+                AlertUtils.showCustomAlert(requireContext(),"Unable to assign customer ! Please add at least one Item.")
         }
 
 
@@ -2793,7 +2798,12 @@ class CartFragment(
     private fun initListeners() {
 
         binding.relPreoceedToFire.setOnClickListener {
+
             if (viewModel.restrictedAmount(binding.txtTotal)) {
+
+                it.isEnabled = false
+                binding.relPreoceedToFire.gone()
+
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 //cartModelsList[0] = viewModel.generateCombinedItems(viewModel.cartModel!!)
 

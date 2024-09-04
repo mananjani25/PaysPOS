@@ -1508,10 +1508,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     val item = TbCartItem().convertToCartItem(tbItem, tbItem)
                     item.timeStamp = System.currentTimeMillis().toString()
                     getInitialTakeOutOrderType()
-                    Log.e(
-                        TAG,
-                        "dineintest viewModel.cartmodel: " + Gson().toJson(viewModel.cartModel)
-                    )
 
                     prefProvider.setValue(Constants.REDIRECT_FROM, "")
 
@@ -2165,17 +2161,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 )*/
 
                 // IMPORTANT - remove this as this is just for logs
-                dineInItemsList?.forEach {
-                    it.taxes = arrayListOf()
-                    Log.d(TAG, "testDineInUpdate dineInItemsList: " + Gson().toJson(it))
-                }
-                // IMPORTANT - remove this as this is just for logs
-                viewModel.currentCartItems.forEach {
-                    it.taxes = arrayListOf()
-                    Log.d(TAG, "testDineInUpdate dineInItemsList: " + Gson().toJson(it))
-                }
+//                dineInItemsList?.forEach {
+//                    it.taxes = arrayListOf()
+//                    Log.d(TAG, "testDineInUpdate dineInItemsList: " + Gson().toJson(it))
+//                }
+//                // IMPORTANT - remove this as this is just for logs
+//                viewModel.currentCartItems.forEach {
+//                    it.taxes = arrayListOf()
+//                    Log.d(TAG, "testDineInUpdate dineInItemsList: " + Gson().toJson(it))
+//                }
+
 
                 viewModel.cartModel = cartList[0]
+
 
                 viewModel.updateDineInCart(
                     viewModel.currentCartItems,

@@ -956,6 +956,16 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     "totalServiceCharge",
                     MethodUtils.roundOffAmountDouble(serviceCharge)
                 )
+
+                /***
+                 * Fetch discount percentage from subtotal and discount given
+                 */
+                val completePrice = getOrderDetailsResponse?.subTotal?.plus(getOrderDetailsResponse?.totalDiscount?:0.0) ?: 0.0
+                val discountSelectdValue = (getOrderDetailsResponse?.totalDiscount?.div(completePrice) ?: 1.0) * 100
+
+                cartList!!.discountSelectdValue = discountSelectdValue
+
+
                 bundle.putDouble("totalDiscount", MethodUtils.roundOffAmountDouble(totalDiscount))
                 bundle.putDouble(
                     "totalOrderPassDiscount",
@@ -1024,6 +1034,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     Constants.ORDER_TYPE_NAME,
                     getOrderDetailsResponse?.orderTypeName ?: DINE_IN
                 )
+
+
+
 
                 Handler().postDelayed({
                     if (findNavController().currentDestination?.id == R.id.dineInOrderTable)
@@ -2265,29 +2278,35 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 it.guestIndexForDineIn = 0
                 it.orderType = "DineIn"
 
-                runBlocking {
-                    dashboardViewModel.addItemToCartItems(it)
-                }
+
+                dashboardViewModel.addItemToCartItems(it)
+
             }
 
             listItemGuestSelected.forEach {
                 it.orderType = "DineIn"
 
-                runBlocking {
-                    dashboardViewModel.addItemToCartItems(it)
-                }
+                dashboardViewModel.addItemToCartItems(it)
+
             }
 
-            runBlocking {
-                viewModelPayment.addCart(cartList!!)
-            }
+            /***
+             * Fetch discount percentage from subtotal and discount given
+             */
+            val completePrice = getOrderDetailsResponse?.subTotal?.plus(getOrderDetailsResponse?.totalDiscount?:0.0) ?: 0.0
+            val discountSelectdValue = (getOrderDetailsResponse?.totalDiscount?.div(completePrice) ?: 1.0) * 100
+
+            cartList!!.discountSelectdValue = discountSelectdValue
+
+            viewModelPayment.addCart(cartList!!)
+
 
             Handler().postDelayed({
                 findNavController().navigate(
                     R.id.action_dineInOrderTable_to_checkoutDineIN,
                     bundle
                 )},
-                100)
+                0)
 
     }
 
@@ -5612,6 +5631,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             PrintSunmiUtils.addHorizontal()
+
+            PrintSunmiUtils.printTextCenter("Whole Table")
 
             for (i in 0 until listWTitems.size) {
 
@@ -10492,12 +10513,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                 var customer_name = list[i].customer?.first_name ?:""
 
-//                                if(customer_name == "")
-//                                   customer_name =  list[i].title?:""
+                                if(customer_name == "")
+                                   customer_name =  list[i].title?:""
 
-                                list[i].title?.let {
-                                    listItemWithGuest.put(it, listItemLocal)
-                                }
+                                listItemWithGuest.put(customer_name, listItemLocal)
                                 break
                             }
 
@@ -10508,11 +10527,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             if (customer_name == "")
                                 customer_name =  list[i].title?:""
 
-                           // listItemWithGuest.put(customer_name, listItemLocal)
+                           listItemWithGuest.put(customer_name, listItemLocal)
 
-                            list[i].title?.let {
-                                listItemWithGuest.put(it, listItemLocal)
-                            }
+//                            list[i].title?.let {
+//                                listItemWithGuest.put(it, listItemLocal)
+//                            }
 
                             break
                         }
