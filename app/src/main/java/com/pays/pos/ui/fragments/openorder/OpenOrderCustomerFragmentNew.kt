@@ -212,9 +212,9 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
 
                     MethodUtils.hideKeyboard(requireActivity())
-                    val gcd = Geocoder(context, Locale.getDefault())
+                    val gcd = Geocoder(context!!, Locale.getDefault())
                     val address: List<Address> =
-                        gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)
+                        gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)!!
 
 
                     LogUtil.logE(TAG, "address   ${Gson().toJson(address)}")
@@ -260,9 +260,9 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
                     MethodUtils.hideKeyboard(requireActivity())
 
-                    val gcd = Geocoder(context, Locale.getDefault())
+                    val gcd = Geocoder(context!!, Locale.getDefault())
                     val address: List<Address> =
-                        gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)
+                        gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)!!
                     LogUtil.logE(TAG, "address:  ${Gson().toJson(address)}")
 
                     if (address.isNotEmpty()) {

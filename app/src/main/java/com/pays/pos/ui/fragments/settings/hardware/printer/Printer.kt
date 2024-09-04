@@ -29,6 +29,8 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
+import com.dantsu.escposprinter.EscPosPrinter
+import com.dantsu.escposprinter.connection.bluetooth.BluetoothPrintersConnections
 import com.epson.epos2.Epos2Exception
 import com.epson.epos2.discovery.Discovery
 import com.epson.epos2.discovery.DiscoveryListener
@@ -1691,7 +1693,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                 } else if (it?.startsWith("InnerPrinter", true) == true) {
                     sunmiInnerPrinter(printerListModel.deviceModel?.ipAddress)
-                } else if (it?.equals(
+                } else if (it?.equals("Inner Printer",ignoreCase = true)){
+                    landiTestPrint(printerListModel)
+                }else if (it?.equals(
                         "TM-L100",
                         ignoreCase = true
                     ) == true
@@ -1744,6 +1748,22 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 }
             }
         }
+
+    }
+
+    private fun landiTestPrint(printerListModel: PrinterListModel) {
+
+        val printer = EscPosPrinter(BluetoothPrintersConnections.selectFirstPaired(), 203, 48f, 32)
+        printer
+            .printFormattedText(
+                """
+        [C]================================
+        [L]
+        [C] Test Print 
+        [L]
+        [C]================================
+        """.trimIndent()
+            )
 
     }
 

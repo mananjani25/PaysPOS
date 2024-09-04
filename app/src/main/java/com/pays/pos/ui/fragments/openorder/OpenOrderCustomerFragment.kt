@@ -109,9 +109,9 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
                 override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {
 
                     MethodUtils.hideKeyboard(requireActivity())
-                    val gcd = Geocoder(context, Locale.getDefault())
+                    val gcd = Geocoder(context!!, Locale.getDefault())
                     val address: List<Address> =
-                        gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)
+                        gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)!!
 
                     if (address.isNotEmpty()) {
 
@@ -142,9 +142,9 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
 
                     MethodUtils.hideKeyboard(requireActivity())
 
-                    val gcd = Geocoder(context, Locale.getDefault())
+                    val gcd = Geocoder(context!!, Locale.getDefault())
                     val address: List<Address> =
-                        gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)
+                        gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)!!
 
                     if (address.isNotEmpty()) {
 

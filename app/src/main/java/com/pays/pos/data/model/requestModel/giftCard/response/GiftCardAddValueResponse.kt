@@ -57,9 +57,11 @@ data class GiftCardAddValueResponse(
             return 0
         }
 
-        override fun writeToParcel(dest: Parcel?, flags: Int) {
+        override fun writeToParcel(p0: Parcel, p1: Int) {
+
 
         }
+
 
         companion object CREATOR : Parcelable.Creator<Data> {
             override fun createFromParcel(parcel: Parcel): Data {
