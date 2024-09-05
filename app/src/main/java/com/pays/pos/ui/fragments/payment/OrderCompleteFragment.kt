@@ -27,7 +27,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.dantsu.escposprinter.connection.bluetooth.BluetoothPrintersConnections
 import com.epson.epos2.printer.Printer
 import com.epson.eposprint.BatteryStatusChangeEventListener
 import com.epson.eposprint.Builder
@@ -4167,7 +4166,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (customerSettingModel.showTipSuggestion) {
                 PrintSunmiUtils.additionalTipsInner()
-
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                ) {
+                    PrintSunmiUtils.addHorizontalInnerNew()
+                }else{
+                    PrintSunmiUtils.addHorizontalInner()
+                }
                 if (tipsList.isNotEmpty()) {
                     addTipsListInner(
                         tipsList,
@@ -13468,7 +13473,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             SunmiPrintHelper.getInstance().lineWrap(1)
 
 
-            PrintSunmiUtils.addHorizontalInner()
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+            ) {
+                PrintSunmiUtils.addHorizontalInnerNew()
+            }else{
+                PrintSunmiUtils.addHorizontalInner()
+            }
             SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
@@ -13498,8 +13509,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (receiptModel?.order?.customer != null) {
 
 
-                    PrintSunmiUtils.customerDetailsInner()
-
+                    PrintSunmiUtils.customerDetailsInner(true,sunmiFrameworkVersion)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
+                        PrintSunmiUtils.addHorizontalInnerNew()
+                    }else{
+                        PrintSunmiUtils.addHorizontalInner()
+                    }
                     try {
                         if (kitchenSettingModel.showCustomerName) {
                             PrintSunmiUtils.normalTextLarge(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
@@ -15152,7 +15169,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }
                     }
                 }
-                PrintSunmiUtils.addHorizontalInner()
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                ) {
+                    PrintSunmiUtils.addHorizontalInnerNew()
+                }else{
+                    PrintSunmiUtils.addHorizontalInner()
+                }
+
                 if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
                         ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                 ) {
@@ -15659,6 +15683,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.additionalTipsInner()
+                        if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                                ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                        ) {
+                            PrintSunmiUtils.addHorizontalInnerNew()
+                        }else{
+                            PrintSunmiUtils.addHorizontalInner()
+                        }
                         PrintSunmiUtils.normalText("\n")
 
                         /*if (tipsList.isNotEmpty()) {
@@ -15692,6 +15723,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //                    -----------------------------
                     } else {
                         PrintSunmiUtils.additionalTipsInner()
+
+                        if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                                ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                        ) {
+                            PrintSunmiUtils.addHorizontalInnerNew()
+                        }else{
+                            PrintSunmiUtils.addHorizontalInner()
+                        }
+
                         if (tipsList.isNotEmpty()) {
                             addTipsListInner(
                                 tipsList,
@@ -15818,7 +15858,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     ) {
 
                         SunmiPrintHelper.getInstance().lineWrap(1)
-                        PrintSunmiUtils.customerDetailsInner()
+                        PrintSunmiUtils.customerDetailsInner(false,sunmiFrameworkVersion)
 
                         if (sunmiFrameworkVersion?.get(0)
                                 ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
@@ -16166,7 +16206,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             }
 
-            PrintSunmiUtils.addHorizontalInner()
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+            ) {
+                PrintSunmiUtils.addHorizontalInnerNew()
+            }else{
+                PrintSunmiUtils.addHorizontalInner()
+            }
 
             val giftCardList: MutableList<CreateOrderResponse.Data.Order.OrderItem> =
                 mutableListOf()
@@ -16263,7 +16309,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (giftCardReceiptModel?.gift_card?.customer != null) {
 
                     SunmiPrintHelper.getInstance().lineWrap(1)
-                    PrintSunmiUtils.customerDetailsInner()
+                    PrintSunmiUtils.customerDetailsInner(false,sunmiFrameworkVersion)
 
                     if (customerSettingModel.showCustomerName) {
 

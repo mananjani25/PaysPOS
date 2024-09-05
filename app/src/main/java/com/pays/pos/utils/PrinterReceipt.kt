@@ -1789,6 +1789,45 @@ fun addHorizontalKitchenLineSunmi(fontSize: String): String {
     return str
 }
 
+
+fun addHorizontalKitchenLineSunmiSmall(fontSize: String): String {
+
+    var int = 1
+    when (fontSize) {
+        Constants.LARGE -> {
+            int = 23
+        }
+    }
+
+    var str: String = ""
+    for (i in 0 until int) {
+        str += "-"
+    }
+
+
+
+    return str
+}
+
+fun addHorizontalKitchenLineSunmiNew(fontSize: String): String {
+
+    var int = 80
+    when (fontSize) {
+        Constants.LARGE -> {
+            int = 23
+        }
+    }
+
+    var str: String = ""
+    for (i in 0 until int) {
+        str += "-"
+    }
+
+
+
+    return str
+}
+
 fun addHorizontalKitchenLineSunmi24(fontSize: String): String {
 
     var int = 48
@@ -5623,6 +5662,60 @@ fun addOrderItemsTransactionInner(
         }
         if (obj.note.isNotEmpty()) {
             PrintSunmiUtils.normalText("   Note: " + obj.note)
+        }
+    }
+}
+
+
+fun addOrderItemsTransactionInnerNew(
+    list: List<GetOrderDetailsResponse.Data.OrderItem>,
+    font: String,
+    showModifiers: Boolean
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+        val item = padLineCustomerItem(
+            obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
+            getItemPriceToShow(totalPriceTransaction(obj)),
+            if (font == Constants.LARGE) 23 else 48
+        )
+
+        PrintSunmiUtils.normalTextNew(item.toString())
+
+
+
+        if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+
+                /*   var part1 = if (modifierObj.modifier_quantity == 1) {
+                       "       " + getItemNameToShow(modifierObj.name)
+                   } else {
+                       "   " + modifierObj.modifier_quantity.toString() + "x" + "  " + getItemNameToShow(
+                           modifierObj.name
+                       )
+                   }*/
+
+                var part1 =
+                    "   " + modifierObj.modifier_quantity.toString() + "x" + "  " + getItemNameToShow(
+                        modifierObj.name
+                    )
+
+
+                val modifier = padLineCustomerItem(
+                    part1,
+                    getModifierItemPriceToShow(modifierObj.price, modifierObj.quantity),
+                    if (font == Constants.LARGE) 23 else 48
+                )
+                PrintSunmiUtils.normalTextNew(modifier.toString())
+
+
+            }
+
+        }
+        if (obj.note.isNotEmpty()) {
+            PrintSunmiUtils.normalTextNew("   Note: " + obj.note)
         }
     }
 }
