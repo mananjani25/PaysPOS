@@ -32,5 +32,8 @@ class TbDynamicPaymentRecords {
 
     @SerializedName("updated_at")
     var updatedAt: String? = null
+
+    @SerializedName("deleted_at")
+    var deleted_at: String? = null
 }
 
