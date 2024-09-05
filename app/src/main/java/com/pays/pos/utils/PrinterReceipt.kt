@@ -1143,6 +1143,24 @@ fun addItemsInEmployeeTipsSummaryInnerPrinter(data: EmployeeTipSummaryResponse.D
 
 }
 
+fun addItemsInEmployeeTipsSummaryInnerPrinterNew(data: EmployeeTipSummaryResponse.Data) {
+
+    var items = ""
+    var emName = data.employee_name
+    if (data.employee_name.length >= 13) {
+        emName = data.employee_name.substring(0, 11).plus("...")
+    }
+    items += repeat(" ", 0 - data.employee_name.length) + emName
+    items += repeat(" ", 17 - items.length) + MethodUtils.roundOffAmount(data.total_cash_tips)
+    items += repeat(" ", 28 - items.length) + MethodUtils.roundOffAmount(data.total_card_tips)
+    items += repeat(" ", 39 - items.length) + MethodUtils.roundOffAmount(data.total_tips)
+
+    Log.e("addItemsInEmployeeTip", "$items")
+
+    PrintSunmiUtils.normalTextNew(items)
+
+}
+
 fun itemWiseSalesM30Print(it: EodReportResponse.Data.ItemWiseSalesData, builder: Builder) {
 
     var itemName = ""
