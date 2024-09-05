@@ -1309,8 +1309,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     // To make card payment via pax device
     private fun makePaxPaymentRequest() {
         GlobalScope.launch {
-            Log.d("getCommSettingFromFile ","getCommSettingFromFile: "+Gson().toJson(SettingINI.getCommSettingFromFile("/storage/emulated/0/Download/"+ SettingINI.FILENAME)))
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile("/storage/emulated/0/Download/"+ SettingINI.FILENAME))
+            Log.d("getCommSettingFromFile ","getCommSettingFromFile: "+Gson().toJson(SettingINI.getCommSettingFromFile(context!!,"/storage/emulated/0/Download/"+ SettingINI.FILENAME)))
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,"/storage/emulated/0/Download/"+ SettingINI.FILENAME))
             val amt = ((paymentAmount-tipAmount) * 100).roundToInt()
             val tip_amt = (tipAmount * 100).roundToInt()
             ECRRefNumber = System.currentTimeMillis().toString()

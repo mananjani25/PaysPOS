@@ -1755,7 +1755,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         val printer = EscPosPrinter(BluetoothPrintersConnections.selectFirstPaired(), 203, 48f, 32)
         printer
-            .printFormattedText(
+            .printFormattedTextAndCut(
                 """
         [C]================================
         [L]

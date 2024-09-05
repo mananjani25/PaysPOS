@@ -1,12 +1,11 @@
 package com.pays.pos.utils.paxUtils
 
+import android.content.Context
+import android.os.Environment
 import android.text.TextUtils
 import com.pax.poslink.CommSetting
 import com.pax.poslink.LogSetting
-import java.io.File
-import java.io.FileReader
-import java.io.FileWriter
-import java.io.IOException
+import java.io.*
 
 object SettingINI {
     const val FILENAME = "setting.ini"
@@ -28,49 +27,105 @@ object SettingINI {
     private const val TagOutputPath = "OUTPUTFILE"
     private const val TagHost = "HOST"
     private const val TAG_ENABLE_PROXY = "ENABLE_PROXY"
-    fun saveCommSettingToFile(fileName: String, commsetting: CommSetting): Boolean {
-        val ini: IniFile
-        ini = IniFile(fileName)
-        ini.section = SectionComm
-        var bDone = ini.write(TagComm, commsetting.type)
-        bDone = bDone and ini.write(TagTimeout, commsetting.timeOut)
-        bDone = bDone and ini.write(TagPortnum, commsetting.serialPort)
-        bDone = bDone and ini.write(TagBaudrate, commsetting.baudRate)
-        bDone = bDone and ini.write(TagIp, commsetting.destIP)
-        bDone = bDone and ini.write(TagPort, commsetting.destPort)
-        bDone = bDone and ini.write(TagMacAddr, commsetting.macAddr)
-        bDone = bDone and ini.write(TagDevice, commsetting.deviceName)
-        /*bDone = bDone and ini.write(
-            TagHost,
-            Convenience.getHost(MainApplication.getInstance()?.applicationContext, commsetting)
-        )*/
-        bDone = bDone and ini.write(TAG_ENABLE_PROXY, commsetting.isEnableProxy.toString())
-        return bDone
+    fun saveCommSettingToFile(context: Context, fileName: String, commsetting: CommSetting): Boolean {
+        if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.Q) {
+            val ini: IniFile
+            ini = IniFile(fileName)
+            ini.section = SectionComm
+            var bDone = ini.write(TagComm, commsetting.type)
+            bDone = bDone and ini.write(TagTimeout, commsetting.timeOut)
+            bDone = bDone and ini.write(TagPortnum, commsetting.serialPort)
+            bDone = bDone and ini.write(TagBaudrate, commsetting.baudRate)
+            bDone = bDone and ini.write(TagIp, commsetting.destIP)
+            bDone = bDone and ini.write(TagPort, commsetting.destPort)
+            bDone = bDone and ini.write(TagMacAddr, commsetting.macAddr)
+            bDone = bDone and ini.write(TagDevice, commsetting.deviceName)
+            /*bDone = bDone and ini.write(
+                TagHost,
+                Convenience.getHost(MainApplication.getInstance()?.applicationContext, commsetting)
+            )*/
+            bDone = bDone and ini.write(TAG_ENABLE_PROXY, commsetting.isEnableProxy.toString())
+            return bDone
+        }else{
+            var keyValuePairs= HashMap<String, String>()
+            keyValuePairs.put(TagComm,commsetting.type)
+            keyValuePairs.put(TagTimeout,commsetting.timeOut)
+            keyValuePairs.put(TagPortnum,commsetting.serialPort)
+            keyValuePairs.put(TagBaudrate,commsetting.baudRate)
+            keyValuePairs.put(TagIp,commsetting.destIP)
+            keyValuePairs.put(TagPort,commsetting.destPort)
+            keyValuePairs.put(TagMacAddr,commsetting.macAddr)
+            keyValuePairs.put(TagDevice,commsetting.deviceName)
+
+            val file = File(context.getExternalFilesDir(null), fileName.substring(fileName.lastIndexOf('/')+1))
+            val content = keyValuePairs.entries.joinToString(separator = "\n") { "${it.key}=${it.value}" }
+
+            try {
+                file.writeText(content)
+                return true
+            } catch (e: IOException) {
+                e.printStackTrace()
+                return false
+            }
+        }
     }
 
-    fun getCommSettingFromFile(fileName: String): CommSetting {
-        val ini: IniFile
-        ini = IniFile(fileName)
-        ini.section = SectionComm
+    fun getCommSettingFromFile(context: Context,fileName: String): CommSetting {
         val commsetting = CommSetting()
-        commsetting.timeOut = ini.read(TagTimeout, Deft)
-        commsetting.type = ini.read(TagComm, Deft)
-        commsetting.serialPort = ini.read(TagPortnum, Deft)
-        commsetting.baudRate = ini.read(TagBaudrate, Deft)
-        commsetting.destIP = ini.read(TagIp, Deft)
-        commsetting.destPort = ini.read(TagPort, Deft)
-        commsetting.macAddr = ini.read(TagMacAddr, Deft)
-        commsetting.deviceName = ini.read(TagDevice, Deft)
-        /*Convenience.setHost(
-            MainApplication.getInstance()?.applicationContext, commsetting, ini.read(
-                TagHost, Deft
-            )
-        )*/
-        val enableProxy = ini.read(TAG_ENABLE_PROXY, Deft)
-        if (!TextUtils.isEmpty(enableProxy)) {
-            commsetting.isEnableProxy = java.lang.Boolean.parseBoolean(enableProxy)
+        if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.Q){
+            val ini: IniFile
+            ini = IniFile(fileName)
+            ini.section = SectionComm
+            val commsetting = CommSetting()
+            commsetting.timeOut = ini.read(TagTimeout, Deft)
+            commsetting.type = ini.read(TagComm, Deft)
+            commsetting.serialPort = ini.read(TagPortnum, Deft)
+            commsetting.baudRate = ini.read(TagBaudrate, Deft)
+            commsetting.destIP = ini.read(TagIp, Deft)
+            commsetting.destPort = ini.read(TagPort, Deft)
+            commsetting.macAddr = ini.read(TagMacAddr, Deft)
+            commsetting.deviceName = ini.read(TagDevice, Deft)
+            /*Convenience.setHost(
+                MainApplication.getInstance()?.applicationContext, commsetting, ini.read(
+                    TagHost, Deft
+                )
+            )*/
+            val enableProxy = ini.read(TAG_ENABLE_PROXY, Deft)
+            if (!TextUtils.isEmpty(enableProxy)) {
+                commsetting.isEnableProxy = java.lang.Boolean.parseBoolean(enableProxy)
+            }
+            return commsetting
         }
-        return commsetting
+        else{
+            val file = File(context.getExternalFilesDir(null), fileName.substring(fileName.lastIndexOf("/")+1))
+             if (file.exists()) {
+                try {
+                    var map=file.readLines().associate {
+                        val (key, value) = it.split("=")
+                        key to value
+                    }
+                    commsetting.timeOut = map.get(TagTimeout)
+                    commsetting.type = map.get(TagComm)
+                    commsetting.serialPort = map.get(TagPortnum)
+                    commsetting.baudRate = map.get(TagBaudrate)
+                    commsetting.destIP = map.get(TagIp)
+                    commsetting.destPort = map.get(TagPort)
+                    commsetting.macAddr = map.get(TagMacAddr)
+                    commsetting.deviceName = map.get(TagDevice)
+                    val enableProxy = map.get(TAG_ENABLE_PROXY)
+                    if (!TextUtils.isEmpty(enableProxy)) {
+                        commsetting.isEnableProxy = java.lang.Boolean.parseBoolean(enableProxy)
+                    }
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    null
+                }
+            } else {
+                null
+            }
+            return commsetting
+        }
+
     }
 
     fun saveLastSN(fileName: String, SN: String): Boolean {
@@ -196,33 +251,65 @@ internal class IniFile(val fileName: String) {
         const val MAX_INI_FILE_SIZE = 1024 * 16
         private fun load_ini_file(file: String, buf: StringBuffer, file_size: IntArray): Int {
             var `in`: FileReader? = null
-            try {
-                val fconfig = File(file)
+            val fconfig = File(file)
+            try{
                 if (!fconfig.exists()) {
                     //System.out.println("file is not exist!");
                     return 0
                 }
-                `in` = FileReader(file)
-                file_size[0] = 0
-                val data = CharArray(MAX_INI_FILE_SIZE)
-                val num = `in`.read(data)
-                if (num > 0) {
-                    val str = String(data, 0, num)
-                    buf.delete(0, buf.capacity())
-                    buf.append(str)
-                    file_size[0] = num
-                }
-                `in`.close()
-                return 1
-            } catch (e: IOException) {
-                //Do nothing
-            } finally {
+            }finally{
                 try {
                     `in`?.close()
                 } catch (e: IOException) {
                     //Do nothing
                 }
             }
+
+            if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.Q){
+
+                try {
+
+
+                    `in` = FileReader(file)
+                    file_size[0] = 0
+                    val data = CharArray(MAX_INI_FILE_SIZE)
+                    val num = `in`.read(data)
+                    if (num > 0) {
+                        val str = String(data, 0, num)
+                        buf.delete(0, buf.capacity())
+                        buf.append(str)
+                        file_size[0] = num
+                    }
+                    `in`.close()
+                    return 1
+                } catch (e: IOException) {
+                    //Do nothing
+                    e.printStackTrace()
+                } finally {
+                    try {
+                        `in`?.close()
+                    } catch (e: IOException) {
+                        //Do nothing
+                    }
+                }
+            } else{
+                val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), file)
+                 if (file.exists()) {
+                    var text=file.readText()
+                } else {
+                    null  // File not found
+                }
+
+               /* return try {
+                    context.contentResolver.openInputStream(uri)?.bufferedReader().use { it?.readText() }
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    null
+                }*/
+
+            }
+
+
             return 0
         }
 

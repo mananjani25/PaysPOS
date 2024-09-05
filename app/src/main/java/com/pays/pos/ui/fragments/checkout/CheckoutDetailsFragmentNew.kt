@@ -150,6 +150,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private var future_delivery_time: String = ""
     var totalDiscount = 0.0
     var cardPaymentAmount = 0.0
+    var retryCount=1
 
     // PAX variables
     private lateinit var mPaymentRequest: PaymentRequest
@@ -2727,11 +2728,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     // To make card payment using PAX device
     private fun makePaxPaymentRequest() {
         GlobalScope.launch {
-            Log.d(
-                "getCommSettingFromFile ",
-                "getCommSettingFromFile: " + Gson().toJson(SettingINI.getCommSettingFromFile("/storage/emulated/0/Download/" + SettingINI.FILENAME))
-            )
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile("/storage/emulated/0/Download/" + SettingINI.FILENAME))
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,"/storage/emulated/0/Download/" + SettingINI.FILENAME))
             val amt = ((paymentAmount - tipAmount) * 100).roundToInt()
             val tip_amt = (tipAmount * 100).roundToInt()
             ECRRefNumber = System.currentTimeMillis().toString()
@@ -2740,7 +2737,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 Constants.BROADPOS_VERSION,
                 ""
             )
-
             CoroutineScope(Dispatchers.Main).launch {
                 ProgressUtils.showProgressDialog(requireActivity())
             }
@@ -2755,10 +2751,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             } else if (broadPOS_version.contains("Rapid")) {
                 mPaymentRequest.ExtData = "<Force>T</Force><TokenRequest>1</TokenRequest>"
             }
-
-
-            Log.d("ECRRefNum", "ECRRefNum: $ECRRefNumber")
-
             posLink.PaymentRequest = mPaymentRequest
             val result = posLink.ProcessTrans()
             Log.d("result: ", result.Code.toString() + " " + result.Msg)
@@ -2836,18 +2828,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     }
                 }
             } else {
-                CoroutineScope(Dispatchers.Main).launch {
-                    ProgressUtils.dismissProgressDialog()
-                    AlertUtils.showCustomAlertWithListenerWithOKCancel(
-                        requireContext(),
-                        getString(R.string.pax_connect_error), getString(R.string.reconnect),
-                    )
-                    { _, _ ->
-                        // Add connect to PAX logic
-                        magtekProViewModel.initPOSLink(requireContext())
-                    }
-
-                    /*if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT"){
+                /*if (retryCount<=2) {
+                    retryCount++
+                    magtekProViewModel.initPOSLink(requireContext())
+                }else{*/
+//                    retryCount=1
+                    CoroutineScope(Dispatchers.Main).launch {
+                        ProgressUtils.dismissProgressDialog()
                         AlertUtils.showCustomAlertWithListenerWithOKCancel(
                             requireContext(),
                             getString(R.string.pax_connect_error), getString(R.string.reconnect),
@@ -2856,11 +2843,22 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             // Add connect to PAX logic
                             magtekProViewModel.initPOSLink(requireContext())
                         }
-//                        Toast.makeText(requireContext(), R.string.pax_connect_error, Toast.LENGTH_LONG).show()
-                    } else {
-                        Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
-                    }*/
-                }
+
+                        /*if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT"){
+                            AlertUtils.showCustomAlertWithListenerWithOKCancel(
+                                requireContext(),
+                                getString(R.string.pax_connect_error), getString(R.string.reconnect),
+                            )
+                            { _, _ ->
+                                // Add connect to PAX logic
+                                magtekProViewModel.initPOSLink(requireContext())
+                            }
+    //                        Toast.makeText(requireContext(), R.string.pax_connect_error, Toast.LENGTH_LONG).show()
+                        } else {
+                            Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
+                        }*/
+                    }
+//                }
             }
 
         }
