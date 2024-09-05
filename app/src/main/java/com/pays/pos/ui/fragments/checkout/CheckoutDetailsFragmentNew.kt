@@ -3435,13 +3435,45 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         binding.linearTab1.setOnSingleClickListener {
-            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) != GIFT_CARD) {
-                PaymentBoldPosFragment.newInstance().addTipHideShow(false)
+            if (!isPaymentScreen) {
+                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) != GIFT_CARD) {
+                    PaymentBoldPosFragment.newInstance().addTipHideShow(false)
+                }
+                isSelectedCount = 1
+                tipsetupGlobal(tipAmount, isSelectedCount)
+                loadPaymentLayout()
+                tipAmountCalculation()
             }
-            isSelectedCount = 1
-            tipsetupGlobal(tipAmount, isSelectedCount)
-            loadPaymentLayout()
-            tipAmountCalculation()
+            else{/*
+                tipAmount = 0.0
+                viewModel.setTipAmount(0.0)
+                viewModel.totalTipAmount = 0.0
+                viewModel.customerGivenTip.value = false
+                prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+                prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+                if (this::presentation.isInitialized) {
+                    presentation.show()
+                    presentation.showTipsAddedNew(tipAmount, tipAmount, WholetotalPrice)
+//                        presentation.updateTotals(
+//                            binding.tvCash.text.toString(),
+//                            binding.tvCard.text.toString()
+//                        )
+                }
+
+                binding.tvCustom.text = "Custom"
+                isSelectedCount = 1
+                binding.tvsplittip?.gone()
+                binding.tvtipcard?.gone()
+                binding.tvtipcash?.gone()
+//                tipsetupGlobal(tipAmount, isSelectedCount)
+                binding.tvFullAMounttxt.visibility = View.VISIBLE
+                binding.tvwaysplit?.invisible()
+                isSelectedCount = 1
+//                tipsetupGlobal(tipAmount, isSelectedCount)
+                binding.tvFullAMounttxt.visibility = View.VISIBLE
+                getDataFromPref()
+*/
+            }
         }
         binding.linearTab2.setOnSingleClickListener {
 
