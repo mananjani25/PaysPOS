@@ -5,8 +5,10 @@ import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.os.Message
+import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
 import android.view.*
@@ -70,6 +72,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayOutputStream
+import java.io.File
 
 class CustomDisplay(
     display: Display,
@@ -1634,7 +1637,7 @@ class CustomDisplay(
         GlobalScope.launch {
             dashBoardCategoryViewModel.processingTipForCard.postValue(true)
 
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
             val tip_amt = (tippedAmount * 100).toInt()
             Log.d("Amt: ", "tip $tip_amt RefNo ${mPaymentViewModel.paxReferenceNo}")
 

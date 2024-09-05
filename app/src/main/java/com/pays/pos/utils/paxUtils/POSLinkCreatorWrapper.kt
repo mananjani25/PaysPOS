@@ -12,7 +12,7 @@ import com.pays.pos.utils.paxUtils.SettingINI.getCommSettingFromFile
 object POSLinkCreatorWrapper {
     private fun create(context: Context): PosLink {
         val iniFile: String = context.getFilesDir().getAbsolutePath() + "/" + SettingINI.FILENAME
-        val commset = getCommSettingFromFile(iniFile)
+        val commset = getCommSettingFromFile(context!!,iniFile)
         if (commset.type == CommSetting.USB && !UsbUtil.hasPermission(context)) {
             val usbDevice = UsbUtil.getDevice(context)
             if (usbDevice == null) {

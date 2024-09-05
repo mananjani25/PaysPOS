@@ -11,7 +11,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.google.gson.Gson
 import com.pax.poslink.CommSetting
 import com.pax.poslink.LogSetting
 import com.pax.poslink.POSLinkAndroid
@@ -19,7 +18,6 @@ import com.pays.pos.data.remote.Constants
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.utils.InternetUtils
-import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.paxUtils.Convenience
 import com.pays.pos.utils.paxUtils.SettingINI
 import com.pays.pos.utils.scanner.helpers.AvailableScanner
@@ -254,7 +252,7 @@ class MainApplication : Application() {
 
     private fun setupSetting(context: Context): CommSetting {
         val settingIniFile = context.filesDir.absolutePath + "/" + SettingINI.FILENAME
-        val commSetting: CommSetting = SettingINI.getCommSettingFromFile(settingIniFile)
+        val commSetting: CommSetting = SettingINI.getCommSettingFromFile(context,settingIniFile)
         disableProxyForThisVersion(commSetting, settingIniFile)
 
         //initialization value  for comsetting's attribute
@@ -268,7 +266,7 @@ class MainApplication : Application() {
         commSetting.destPort = "10009"
         /*val selectedHost = "UNKNOWN"
         Convenience.setHost(context, commSetting, selectedHost)*/
-        SettingINI.saveCommSettingToFile(settingIniFile, commSetting)
+        SettingINI.saveCommSettingToFile(context, settingIniFile, commSetting)
 
         Log.i(
             "TAG", "coms.CommType = " + commSetting.type + "; coms.TimeOut=" + commSetting.timeOut
@@ -284,12 +282,12 @@ class MainApplication : Application() {
             LogSetting.setOutputPath(LogOutputFile)
             SettingINI.saveLogSettingToFile(settingIniFile)
         }
-        return SettingINI.getCommSettingFromFile(settingIniFile)
+        return SettingINI.getCommSettingFromFile(context!!,settingIniFile)
     }
 
     private fun disableProxyForThisVersion(commSetting: CommSetting, settingIniFile: String) {
         commSetting.isEnableProxy = false
-        SettingINI.saveCommSettingToFile(settingIniFile, commSetting)
+        SettingINI.saveCommSettingToFile(applicationContext, settingIniFile, commSetting)
     }
 
 }

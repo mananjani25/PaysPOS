@@ -1524,7 +1524,7 @@ class CustomDisplayPays(
 
     private fun adjustPaxTips() {
         GlobalScope.launch {
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
             val tip_amt = (tippedAmount*100).toInt()
             Log.d("Amt: ","tip $tip_amt RefNo ${mPaymentViewModel.paxReferenceNo}")
 
