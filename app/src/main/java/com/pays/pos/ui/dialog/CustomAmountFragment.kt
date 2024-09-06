@@ -43,9 +43,12 @@ class CustomAmountFragment : DialogFragment() {
         if (arguments != null)
             totalprice = requireArguments().getDouble("totalprice")
 
+        val amountToDisplay = requireArguments().getDouble("amountToDisplay")
+
+
         binding.txtAmount.text = "$ " + String.format(
             "%.2f",
-            totalprice
+            amountToDisplay
         ) + " Cash"
 
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)

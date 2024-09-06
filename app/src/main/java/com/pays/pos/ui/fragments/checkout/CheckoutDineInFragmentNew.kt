@@ -538,6 +538,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             listtextview.add(binding.tvFullAmount)
             setupColorChanges(binding.tvCustom, listtextview)
             val bundle = Bundle()
+
             bundle.putDouble("totalPrice", WholetotalPrice)
             bundle.putInt("splitValue", isSelectedCount)
 
@@ -1229,9 +1230,16 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         binding.tvCustomAmount.setOnSingleClickListener {
 
 
+            val finalCashAmount =  binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
             val bundleVal = Bundle().apply {
                 putDouble("totalprice", ((WholetotalPrice + tipAmount)))
+                putDouble("amountToDisplay", finalCashAmount)
             }
+
+
+
+
+
             findNavController().navigate(
                 R.id.action_paymentBoldPosFragment_to_customAmountFragment,
                 bundleVal
@@ -1764,7 +1772,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             loadPaymentLayout()
             tipAmountCalculation()
         }
-        binding.linearTab2.setOnSingleClickListener {
+
+        if(isGuestPay)
+            binding.linearTab2.gone()
+        else binding.linearTab2.setOnSingleClickListener {
             if (tipAmount != 0.0 && viewModel.tipTransactionAmount != 0.0) {
                 AlertUtils.showCustomAlertWithListenerWithOKCancel(
                     requireContext(),

@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -86,6 +87,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.Runnable
 import java.lang.System
+import java.security.spec.ECField
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -283,6 +285,7 @@ class CartFragment(
                 )
             ) {
                 binding.txtAddCustomer.invisible()
+                binding.rvCartDineIn.visible()
             } else {
                 binding.txtAddCustomer.visible()
             }
@@ -1140,11 +1143,11 @@ class CartFragment(
                                         Constants.DINE_IN_UPDATE, false
                                     )
                                 ) {
-                                    listOfTax.addAll(arrayListOf())
-                                    setTaxBifurcationData(arrayListOf())
+                                    //listOfTax.addAll(arrayListOf())
+                                    setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
 
                                 } else {
-                                    listOfTax.addAll(it1)
+                                   // listOfTax.addAll(it1)
                                     setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
                                 }
 
@@ -2128,7 +2131,9 @@ class CartFragment(
 
                     cartModel?.discountPrice = totalDiscount
 
-                    binding.txtSubTotal.text = MethodUtils.roundOffAmount(remaining)
+                    try {
+                        binding.txtSubTotal.text = MethodUtils.roundOffAmount(remaining)
+                    }catch (e:Exception) {}
                     subTotalPrice = remaining
                 } else {
                     viewModel.totalDiscount = 0.0
@@ -2395,6 +2400,9 @@ class CartFragment(
         } else {
 
 
+            if(cartModelsList.isEmpty())
+                viewModel.cartModel?.let { cartModelsList.add(0, it) }
+
             if(cartModelsList.isNotEmpty()) {
 
                 var listOfCustomersID: ArrayList<Int> = arrayListOf()
@@ -2434,6 +2442,9 @@ class CartFragment(
             }
             return
         }
+
+        if(cartModelsList.isEmpty())
+            viewModel.cartModel?.let { cartModelsList.add(0, it) }
 
 
         if(cartModelsList.isEmpty()){
@@ -2543,6 +2554,8 @@ class CartFragment(
             }
         }
 
+        if(cartModelsList.isEmpty())
+            viewModel.cartModel?.let { cartModelsList.add(0, it) }
 
 
         if (dineInCartAdapter.getList().isNotEmpty() && dineInCartAdapter.getList().size > 2 && cartModelsList.isNotEmpty()) {
@@ -2551,6 +2564,7 @@ class CartFragment(
                     if (it.title == dineInCartAdapter.getList()[position].title) {
                         it.apply {
                             this.isDestroy = true
+                            viewModel.updateDineInCartItemGuestDineInPositions(position)
                         }
                     }
                 }
@@ -2559,7 +2573,14 @@ class CartFragment(
                 val destroyedGuestsList: ArrayList<DineInModel> = ArrayList()
                 dineIn.filter { (it.title == dineInCartAdapter.getList()[position].title) }
                     .forEach { destroyedGuestsList.add(it) }
+
+                val index = position
+                Toast.makeText(requireContext(),"Removed guest at index $index",Toast.LENGTH_LONG).show()
+
                 dineIn.removeAll(destroyedGuestsList.toSet())
+
+                viewModel.updateDineInCartItemGuestDineInPositions(position)
+
                 cartModelsList[0].dineInList = dineIn
             }
             viewModel.addCart(cartModelsList[0])
@@ -2642,9 +2663,9 @@ class CartFragment(
                                     prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
                                     viewModel.removeItemDineInList.clear()
 
-                                    if (cartModelsList.size > 0) {
+                                    //if (cartModelsList.size > 0) {
 
-                                        val dList = cartModelsList[0].dineInList ?: arrayListOf()
+                                        val dList = viewModel.cartModel?.dineInList ?: arrayListOf()
                                         LogUtil.logE(TAG, "dList:  ${Gson().toJson(dList)}")
                                         if (dList.isNotEmpty()) {
                                             dList[0].floorPlanTable?.id?.let {
@@ -2658,7 +2679,7 @@ class CartFragment(
                                                 }
                                             }
                                         }
-                                    }
+                                    //}
 
                                     clearCustomer()
                                     viewModel.deleteCart()

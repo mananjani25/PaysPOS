@@ -1360,7 +1360,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             )
                         }
                     }
-                } else {
+                } else
+                {
 
                     //Order type other than Dine in
                     for (it in viewModel.currentCartItems) {
@@ -1549,7 +1550,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     }
 
 
-                } else {
+                } else
+                {
                     Log.d("AddItemFragment.kt", "txtDone_else_found")
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                         item.guestIndexForDineIn = viewModel.dineInHeaderPosition

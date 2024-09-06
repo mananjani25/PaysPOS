@@ -1150,6 +1150,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                        // if(!it.isPaid)
                         dashboardViewModel.currentCartItems.add(it)
                         dashboardViewModel.dineInItemsBeforeUpdate.add(it)
+
                         Log.d(TAG, "testDineInUpdate onClick: " + Gson().toJson(it))
                     }
 
@@ -1203,6 +1204,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 update_order_Discount
             )
 
+            if(discountSelectdValue>0)
             bundle.putDouble("discountSelectdValue",discountSelectdValue)
 
             bundle.putString("order_note", order_note)
@@ -2306,7 +2308,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     R.id.action_dineInOrderTable_to_checkoutDineIN,
                     bundle
                 )},
-                0)
+                300)
 
     }
 
@@ -6584,7 +6586,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             PrintSunmiUtils.cutPaperInner()
 
-            SunmiPrintHelper.getInstance().deInitSunmiPrinterService(requireContext())
+         //   SunmiPrintHelper.getInstance().deInitSunmiPrinterService(requireContext())
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -8867,7 +8869,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             }
             PrintSunmiUtils.cutPaperInner()
 
-            SunmiPrintHelper.getInstance().deInitSunmiPrinterService(requireContext())
+           // SunmiPrintHelper.getInstance().deInitSunmiPrinterService(requireContext())
         } catch (e: Exception) {
             e.printStackTrace()
         }

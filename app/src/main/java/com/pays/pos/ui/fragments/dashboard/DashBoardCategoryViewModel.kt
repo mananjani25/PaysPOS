@@ -541,6 +541,12 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.getDineInCartItems(guestIndexForDineIn)
     }
 
+    fun updateDineInCartItemGuestDineInPositions(removedGuestIndex: Int){
+        CoroutineScope(Dispatchers.IO).launch {
+            posRepository.updateDineInCartItemGuestDineInPositions(removedGuestIndex)
+        }
+    }
+
     fun manualSale(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
 
         return posRepository.getCartList(orderType, employee_Id)
@@ -592,8 +598,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
 
             }
-            posRepository.addItemCart(mCartModel)
-            destroyedList.clear()
+
+                posRepository.addItemCart(mCartModel)
+                destroyedList.clear()
+
         }
 
     }

@@ -26,7 +26,7 @@ interface CartDao {
     @Query("DELETE FROM CartModelBackup")
     suspend fun clearCartModelBackup()
 
-    @Query("select * from TbCartItem where orderType = :orderType /*AND isManualSaleItem = 0 AND employeeID=:employee_Id */ ORDER BY timeStamp")
+    @Query("select * from TbCartItem where orderType = :orderType /*AND isManualSaleItem = 0 AND employeeID=:employee_Id */ AND isDestroy = 0 ORDER BY timeStamp")
     fun getAllDineInCartItems(orderType: String): Flow<List<TbCartItem>>
 
     @Query("select * from TbCartItem where orderType = :orderType AND isManualSaleItem = 0 AND employeeID=:employee_Id ORDER BY timeStamp")
@@ -71,6 +71,9 @@ interface CartDao {
 
     @Query("select * from TbCartItem WHERE guestIndexForDineIn = :guestIndexForDineIn ORDER BY timeStamp")
     fun getDineInCartItems(guestIndexForDineIn:Int): List<TbCartItem>
+
+    @Query("UPDATE TbCartItem set guestIndexForDineIn = guestIndexForDineIn-1 WHERE guestIndexForDineIn > :removedGuestIndex")
+    fun updateDineInCartItemGuestDineInPositions(removedGuestIndex:Int)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addSuspended(cartModel: CartModel): Long?
