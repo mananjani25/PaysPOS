@@ -5069,6 +5069,9 @@ class AllOrdersListingFragment(
                             add(
                                 PrinterBuilder()
                                     .styleBold(true)
+                                    .styleMagnification(
+                                        MagnificationParameter(2, 2)
+                                    )
                                     .actionPrintText(
                                         if (kitchenSettingModel.showOrderType)
                                             orderData.orderType
@@ -5082,6 +5085,9 @@ class AllOrdersListingFragment(
                                 add(
                                     PrinterBuilder()
                                         .styleBold(true)
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
+                                        )
                                         .actionPrintText(
                                             orderData.deliveryType
                                         )
@@ -5092,6 +5098,9 @@ class AllOrdersListingFragment(
 
                             add(
                                 PrinterBuilder()
+                                    .styleMagnification(
+                                        MagnificationParameter(2, 2)
+                                    )
                                     .actionPrintText(
                                         "Employee:${
                                             prefProvider.getValue(
@@ -5105,6 +5114,9 @@ class AllOrdersListingFragment(
 
                             add(
                                 PrinterBuilder()
+                                    .styleMagnification(
+                                        MagnificationParameter(2, 2)
+                                    )
                                     .actionPrintText(
                                         Constants.getReceiptFormatDateFromUTCServer(
                                             requireContext(),
@@ -5126,8 +5138,9 @@ class AllOrdersListingFragment(
                             actionFeedLine(1)
 
                             add(
-                                PrinterBuilder()
-                                    .styleAlignment(Alignment.Left)
+                                PrinterBuilder().styleMagnification(
+                                    MagnificationParameter(2, 2)
+                                ).styleAlignment(Alignment.Left)
                                     .actionPrintText(
                                         content = addReprintOrdersForStarKitchen(
                                             orderData.orderItems!!,
@@ -5140,6 +5153,9 @@ class AllOrdersListingFragment(
                             if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
                                 add(
                                     PrinterBuilder()
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
+                                        )
                                         .styleAlignment(Alignment.Center)
                                         .styleBold(true)
                                         .actionPrintText(
@@ -5153,6 +5169,9 @@ class AllOrdersListingFragment(
                                 add(
                                     PrinterBuilder()
                                         .styleAlignment(Alignment.Center)
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
+                                        )
                                         .actionPrintText(
                                             content = if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
                                                 orderData.note.toString()
@@ -5166,6 +5185,9 @@ class AllOrdersListingFragment(
                                     PrinterBuilder()
                                         .styleAlignment(Alignment.Left)
                                         .styleBold(true)
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
+                                        )
                                         .actionPrintText(
                                             content = if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
                                                 "Customer Details\n"
@@ -5189,6 +5211,9 @@ class AllOrdersListingFragment(
                                 add(
                                     PrinterBuilder()
                                         .styleAlignment(Alignment.Left)
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
+                                        )
                                         .actionPrintText(
                                             content = if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
                                                 orderData.customer?.firstName + " " + orderData.customer?.lastName
@@ -5204,6 +5229,9 @@ class AllOrdersListingFragment(
                                     add(
                                         PrinterBuilder()
                                             .styleAlignment(Alignment.Left)
+                                            .styleMagnification(
+                                                MagnificationParameter(2, 2)
+                                            )
                                             .actionPrintText(
                                                 content = if (kitchenSettingModel.showCustomerPhone && orderData.customer?.phones?.get(
                                                         0
