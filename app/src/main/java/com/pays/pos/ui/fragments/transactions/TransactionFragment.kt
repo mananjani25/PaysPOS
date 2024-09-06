@@ -419,7 +419,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     // Adjust tip on transactions done via PAX
     private fun adjustPaxTips() {
         GlobalScope.launch {
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(FILE_PATH + SettingINI.FILENAME))
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,FILE_PATH + SettingINI.FILENAME))
             val tip_amt = (tipAmount*100).toInt()
             Log.d("Amt: ","tip $tip_amt RefNo ${singleTransaction?.ref_num}")
 

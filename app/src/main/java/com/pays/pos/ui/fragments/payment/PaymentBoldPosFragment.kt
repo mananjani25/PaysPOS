@@ -332,6 +332,9 @@ class PaymentBoldPosFragment : Fragment() {
         viewModel.setTipAmount(0.0)
         viewModel.customerGivenTip.value=false
 
+        viewModel.customerCardAmount.value=""
+        viewModel.customerCashAmount.value=""
+
         prefProvider.setValueboolean(Constants.TIP_ADDED, false)
         prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, "0")
         prefProvider.setValueInt(Constants.TIP_ADDED_ID, 0)

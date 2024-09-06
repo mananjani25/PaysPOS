@@ -29,6 +29,8 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
+import com.dantsu.escposprinter.EscPosPrinter
+import com.dantsu.escposprinter.connection.bluetooth.BluetoothPrintersConnections
 import com.epson.epos2.Epos2Exception
 import com.epson.epos2.discovery.Discovery
 import com.epson.epos2.discovery.DiscoveryListener
@@ -86,7 +88,6 @@ import com.pays.pos.utils.printer.PrinterClass.language
 import com.pays.pos.utils.statusUtils.Status
 import com.starmicronics.stario10.*
 import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
-import com.starmicronics.stario10.starxpandcommand.MagnificationParameter
 import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
 import com.starmicronics.stario10.starxpandcommand.StarXpandCommandBuilder
 import com.starmicronics.stario10.starxpandcommand.printer.*
@@ -115,7 +116,6 @@ import java.util.*
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
-import java.util.function.Consumer
 import javax.inject.Inject
 
 
@@ -1693,7 +1693,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                 } else if (it?.startsWith("InnerPrinter", true) == true) {
                     sunmiInnerPrinter(printerListModel.deviceModel?.ipAddress)
-                } else if (it?.equals(
+                } else if (it?.equals("Inner Printer",ignoreCase = true)){
+                    landiTestPrint(printerListModel)
+                }else if (it?.equals(
                         "TM-L100",
                         ignoreCase = true
                     ) == true
@@ -1749,13 +1751,41 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     }
 
+    private fun landiTestPrint(printerListModel: PrinterListModel) {
+
+        val printer = EscPosPrinter(BluetoothPrintersConnections.selectFirstPaired(), 203, 48f, 32)
+        printer
+            .printFormattedTextAndCut(
+                """
+        [C]================================
+        [L]
+        [C] Test Print 
+        [L]
+        [C]================================
+        """.trimIndent()
+            )
+
+    }
+
     private fun initStarPrinter(printerListModel: PrinterListModel) {
 
         val settings =
             StarConnectionSettings(InterfaceType.Lan, printerListModel.deviceModel!!.macAddress)
         val printer = StarPrinter(settings, requireContext())
 
+
+
         CoroutineScope(Dispatchers.Main).launch {
+/*
+            printerListModel.deviceModel?.let {
+                if (it.printerName.contains("TSP")){
+
+                }else if (it.printerName.contains("SP7")){
+
+                }
+            }
+*/
+
             try {
                 // TSP100III series and TSP100IIU+ do not support actionPrintText because these products are graphics-only printers.
                 // Please use the actionPrintImage method to create printing data for these products.
@@ -1797,6 +1827,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
     }
+
 
     private fun initLabelPrinter(printerListModel: PrinterListModel) {
         var printer: Printer? = null

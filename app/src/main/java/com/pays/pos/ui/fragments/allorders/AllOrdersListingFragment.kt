@@ -50,6 +50,7 @@ import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.ALL_ORDER_TAB
 import com.pays.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.pays.pos.data.remote.Constants.IS_FROM_ALL_ORDER
+import com.pays.pos.data.remote.Constants.KIOSK_OPEN_ORDER
 import com.pays.pos.data.remote.Constants.OLD_ITEM_BASE_CUSTOM_ITEM
 import com.pays.pos.data.remote.Constants.ONLINE_ORDER_TAB
 import com.pays.pos.data.remote.Constants.OPEN_ORDER_TAB
@@ -148,6 +149,8 @@ class AllOrdersListingFragment(
     private var oneItemPerReceipt: Boolean = true
 
     var removedPos = 0
+
+    private var sunmiFrameworkVersion :Array<String>? = null
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -988,6 +991,8 @@ class AllOrdersListingFragment(
         observeTipsList()
         cancelOrderObserver()
 
+        sunmiFrameworkVersion = prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".").toTypedArray()
+
         startTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
             val timecalender = Calendar.getInstance()
             timecalender.set(Calendar.HOUR_OF_DAY, hour)
@@ -1598,6 +1603,13 @@ class AllOrdersListingFragment(
 
                 updatedCartModel.discountSelectdValue = order.totalDiscount / completePrice * 100
 
+                /*---------------BIS-4189---------------*/
+                if (updatedCartModel.discountSelectdValue.isNaN()){
+                    updatedCartModel.discountSelectdValue=0.0
+                }
+                /*---------------BIS-4189---------------*/
+
+
                 dashboardViewModel.addCart(updatedCartModel)
                 dashboardViewModel.setUpdatedCartModel(updatedCartModel)
                 generateCartItemsListFromOrderModel(order)?.let {
@@ -1857,6 +1869,9 @@ class AllOrdersListingFragment(
                 } else if (order.orderType == PHONE_ORDER_TAB) {
                     prefProvider.setValue(Constants.ORDER_TYPE, Constants.PHONE_ORDER)
                     prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.PHONE_ORDER_)
+                } else if (order.orderType == KIOSK_OPEN_ORDER) {
+                    prefProvider.setValue(Constants.ORDER_TYPE, Constants.KIOSK_OPEN_ORDER)
+                    prefProvider.setValue(Constants.ORDER_TYPE_NAME, order.orderTypeName)
                 }
 
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, order.orderTypeId)
@@ -1900,6 +1915,12 @@ class AllOrdersListingFragment(
                 val completePrice = order.subTotal + updatedCartModel.discountPrice
 
                 updatedCartModel.discountSelectdValue = order.totalDiscount / completePrice * 100
+
+                /*---------------BIS-4189---------------*/
+                if (updatedCartModel.discountSelectdValue.isNaN()){
+                    updatedCartModel.discountSelectdValue=0.0
+                }
+                /*---------------BIS-4189---------------*/
 
                 dashboardViewModel.addCart(updatedCartModel)
                 dashboardViewModel.setUpdatedCartModel(updatedCartModel)
@@ -4842,7 +4863,11 @@ class AllOrdersListingFragment(
                 delay(100)
                 setServiceForKitchen(data, type, orderData)
             }
-        } else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains("SP", ignoreCase = true)))) {
+        } else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains(
+                "SP",
+                ignoreCase = true
+            )))
+        ) {
             settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
             printer = StarPrinter(settings, requireContext())
 
@@ -4958,7 +4983,10 @@ class AllOrdersListingFragment(
                                                             ) || orderData.orderType.equals(
                                                                 "OnlineWebOrder",
                                                                 true
-                                                            ) || orderData.orderType.equals("OnlineOrder", true)
+                                                            ) || orderData.orderType.equals(
+                                                                "OnlineOrder",
+                                                                true
+                                                            )
                                                         ) {
                                                             if (!firstName.contains(
                                                                     "customer",
@@ -5170,7 +5198,7 @@ class AllOrdersListingFragment(
                                         )
                                 )
                             }
-                            try{
+                            try {
                                 if (kitchenSettingModel.showCustomerPhone && orderData.customer?.phones?.get(
                                         0
                                     ) != null
@@ -5203,7 +5231,7 @@ class AllOrdersListingFragment(
                                             )
                                     )
                                 }
-                            }catch (e:Exception){
+                            } catch (e: Exception) {
 
                             }
                             printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
@@ -6801,11 +6829,11 @@ class AllOrdersListingFragment(
                             PrintSunmiUtils.customerName(orderData.customer.firstName + " " + orderData.customer.lastName)
 
                         }
-                    }catch (e:Exception){
+                    } catch (e: Exception) {
 
                     }
 
-                    try{
+                    try {
                         if (kitchenSettingModel.showCustomerPhone) {
 
                             if (orderData.customer.phones.isNotEmpty() == true) {
@@ -6821,13 +6849,13 @@ class AllOrdersListingFragment(
                             }
 
                         }
-                    }catch (e:Exception){
+                    } catch (e: Exception) {
 
                     }
 
 
-                   try{
-                       if (orderData.customer.addresses.isNotEmpty() == true) {
+                    try {
+                        if (orderData.customer.addresses.isNotEmpty() == true) {
 
 //                        orderData.customer.addresses.filter { typeOfAddress == Constants.BILLING_ADDRESS }
 //
@@ -6845,15 +6873,15 @@ class AllOrdersListingFragment(
 //                            }
 
 
-                           PrintSunmiUtils.customerAddress(
-                               orderData.customer.addresses.get(
-                                   orderData.customer.addresses.size - 1
-                               ).fullAddress
-                           )
-                       }
-                   }catch (e:Exception){
+                            PrintSunmiUtils.customerAddress(
+                                orderData.customer.addresses.get(
+                                    orderData.customer.addresses.size - 1
+                                ).fullAddress
+                            )
+                        }
+                    } catch (e: Exception) {
 
-                   }
+                    }
                 }
             }
 
@@ -7095,20 +7123,37 @@ class AllOrdersListingFragment(
 
             PrintSunmiUtils.addHorizontalInner()
 
-
-
-            receiptModel.orderItems.let {
-                addOrderItemOnlineOrderSunmiInner(
-                    it,
-                    customerSettingModel.fonts,
-                    customerSettingModel.showModifiers
-                )
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                PrintSunmiUtils.normalText("\n")
             }
+
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                receiptModel.orderItems.let {
+                    addOrderItemOnlineOrderSunmiInner(
+                        it,
+                        customerSettingModel.fonts,
+                        customerSettingModel.showModifiers,
+                        false
+                    )
+                }
+            }else{
+                receiptModel.orderItems.let {
+                    addOrderItemOnlineOrderSunmiInner(
+                        it,
+                        customerSettingModel.fonts,
+                        customerSettingModel.showModifiers,
+                        true
+                    )
+                }
+            }
+
 
             SunmiPrintHelper.getInstance().lineWrap(2)
 
 
-            if (receiptModel?.totalDiscount != null) {
+
+
+                if (receiptModel?.totalDiscount != null) {
 
                 val str1 = padLine(
                     "Total Discount",
@@ -7124,7 +7169,11 @@ class AllOrdersListingFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.normalText(str1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                        PrintSunmiUtils.normalTextNew(str1)
+                    }else{
+                        PrintSunmiUtils.normalText(str1)
+                    }
 
             }
 
@@ -7139,7 +7188,11 @@ class AllOrdersListingFragment(
                 }
             ).toString()
 
-            PrintSunmiUtils.normalText(str2)
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                PrintSunmiUtils.normalTextNew(str2)
+            }else{
+                PrintSunmiUtils.normalText(str2)
+            }
 
 
             if (receiptModel?.totalTaxAmount != null) {
@@ -7154,7 +7207,13 @@ class AllOrdersListingFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.normalText(str3)
+
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.normalTextNew(str3)
+                }else{
+                    PrintSunmiUtils.normalText(str3)
+                }
+
             }
 
             val result =
@@ -7174,7 +7233,13 @@ class AllOrdersListingFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.normalText(str4)
+
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.normalTextNew(str4)
+                }else{
+                    PrintSunmiUtils.normalText(str4)
+                }
+
             }
 
             if (receiptModel?.totalTips != 0.0) {
@@ -7193,11 +7258,14 @@ class AllOrdersListingFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.normalText(str8)
 
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.normalTextNew(str8)
+                }else{
+                    PrintSunmiUtils.normalText(str8)
+                }
 
             }
-
 
 
 
@@ -7218,7 +7286,11 @@ class AllOrdersListingFragment(
                             48
                         }
                     ).toString()
-                    PrintSunmiUtils.normalText(str8)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                        PrintSunmiUtils.normalTextNew(str8)
+                    }else{
+                        PrintSunmiUtils.normalText(str8)
+                    }
 
                 } else {
 
@@ -7235,7 +7307,11 @@ class AllOrdersListingFragment(
                             48
                         }
                     ).toString()
-                    PrintSunmiUtils.normalText(str8)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                        PrintSunmiUtils.normalTextNew(str8)
+                    }else{
+                        PrintSunmiUtils.normalText(str8)
+                    }
 
                 }
             }
@@ -7256,7 +7332,11 @@ class AllOrdersListingFragment(
                     }
                 ).toString()
 
-                PrintSunmiUtils.normalText(str8)
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.normalTextNew(str8)
+                }else{
+                    PrintSunmiUtils.normalText(str8)
+                }
 
                 val str9 = padLine(
                     "Used Loyalty Points",
@@ -7268,7 +7348,11 @@ class AllOrdersListingFragment(
                     }
                 ).toString()
 
-                PrintSunmiUtils.normalText(str9)
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.normalTextNew(str9)
+                }else{
+                    PrintSunmiUtils.normalText(str9)
+                }
 
 
             }
@@ -7291,7 +7375,11 @@ class AllOrdersListingFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.boldText(str5)
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.boldTextNew(str5)
+                }else{
+                    PrintSunmiUtils.boldText(str5)
+                }
 
             }
 
@@ -7313,7 +7401,12 @@ class AllOrdersListingFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.boldText(str5)
+
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.boldTextNew(str5)
+                }else{
+                    PrintSunmiUtils.boldText(str5)
+                }
 
                 val totalAmt1 = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount)
                 val str51 = padLine(
@@ -7325,7 +7418,12 @@ class AllOrdersListingFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.boldText(str51)
+
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.boldTextNew(str51)
+                }else{
+                    PrintSunmiUtils.boldText(str51)
+                }
             } else if (receiptModel.cashDiscountType == "SurCharge"
             ) {
 
@@ -7338,7 +7436,11 @@ class AllOrdersListingFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.boldText(str5)
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.boldTextNew(str5)
+                }else{
+                    PrintSunmiUtils.boldText(str5)
+                }
 
                 val totalAmt1 = MethodUtils.roundOffAmountDouble(
                     receiptModel.totalAmount + MethodUtils.getLatestCashDiscountOrSurCharge(
@@ -7356,7 +7458,11 @@ class AllOrdersListingFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.boldText(str51)
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.boldTextNew(str51)
+                }else{
+                    PrintSunmiUtils.boldText(str51)
+                }
 
             }
 
@@ -7371,7 +7477,13 @@ class AllOrdersListingFragment(
                         48
                     }
                 ).toString()
-                PrintSunmiUtils.boldText(str7)
+
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.boldTextNew(str7)
+                }else{
+                    PrintSunmiUtils.boldText(str7)
+                }
+
                 SunmiPrintHelper.getInstance().lineWrap(2)
 
 
@@ -7387,11 +7499,23 @@ class AllOrdersListingFragment(
                 }
                 if (customerSettingModel.showTipLineForCash) {
 
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        PrintSunmiUtils.boldText("Tips      _____________")
-                        SunmiPrintHelper.getInstance().lineWrap(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ){
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            PrintSunmiUtils.boldTextNew("Tips      _____________")
+                            SunmiPrintHelper.getInstance().lineWrap(1)
+                        } else {
+                            PrintSunmiUtils.boldTextNew("Tips                              _____________")
+                        }
                     } else {
-                        PrintSunmiUtils.boldText("Tips                              _____________")
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            PrintSunmiUtils.boldText("Tips      _____________")
+                            SunmiPrintHelper.getInstance().lineWrap(1)
+                        } else {
+                            PrintSunmiUtils.boldText("Tips                              _____________")
+                        }
                     }
                 }
 
@@ -7449,6 +7573,10 @@ class AllOrdersListingFragment(
                 if (receiptModel.customer != null) {
 
                     PrintSunmiUtils.customerDetailsInner()
+
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                        PrintSunmiUtils.normalText("\n")
+                    }
 
                     if (customerSettingModel.showCustomerName) {
                         PrintSunmiUtils.normalText(receiptModel.customer.firstName + " " + receiptModel.customer.lastName)
@@ -7606,6 +7734,9 @@ class AllOrdersListingFragment(
 
             PrintSunmiUtils.addHorizontalInner()
 
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                PrintSunmiUtils.normalText("\n")
+            }
 
             addOrdersForKitchenOnlineOrderSunmiInner(
                 orderData.orderItems,
@@ -7619,11 +7750,15 @@ class AllOrdersListingFragment(
             }
 
 
-            try{
+            try {
                 if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
                     if (orderData.customer != null) {
 
                         PrintSunmiUtils.customerDetailsInner()
+
+                        if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                            PrintSunmiUtils.normalText("\n")
+                        }
 
                         if (kitchenSettingModel.showCustomerName) {
                             PrintSunmiUtils.normalTextLarge(orderData.customer.firstName + " " + orderData.customer.lastName)
@@ -7676,7 +7811,8 @@ class AllOrdersListingFragment(
 
 
                 }
-            }catch (e:Exception){}
+            } catch (e: Exception) {
+            }
 
             PrintSunmiUtils.cutPaperInner()
         } catch (e: Exception) {
@@ -7684,7 +7820,7 @@ class AllOrdersListingFragment(
             e.printStackTrace()
         }
 
-
+        adapter.enableReprintKitchenReceiptButton()
     }
 
     override fun onStatusChangeEvent(p0: String?, p1: Int) {

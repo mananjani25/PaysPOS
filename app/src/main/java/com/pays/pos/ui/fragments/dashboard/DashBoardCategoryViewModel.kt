@@ -11,10 +11,7 @@ import android.os.StrictMode
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -146,7 +143,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var duplicateCurrentCartItem: ArrayList<TbCartItem> = arrayListOf()
 
     /* This variable is used to track the selected category, if this variable is not 0 then the category will be selected, it was added to solve BIS-4045 */
-    var selectedCatetory:Int=0
+    var selectedCatetory: Int = 0
 
     /**
      * Dine In
@@ -269,10 +266,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     var boldPosNeedToRefresh = false
 
     /* Below 4 variables are used as backup variables to solve the BIS-3973, when the cart's last item is deleted the the metadata is also getting removed, these variables will keep the metadata with them. */
-   /* public var backupOrderId:Int? = null
-    public var backupPaymentId:Int? = null
-    public var backupPaymentOfflineId: String? = ""
-    public var backupOrderOfflineId: String? = ""*/
+    /* public var backupOrderId:Int? = null
+     public var backupPaymentId:Int? = null
+     public var backupPaymentOfflineId: String? = ""
+     public var backupOrderOfflineId: String? = ""*/
 
     /**
      * BIS - 3500 issue resolved
@@ -283,7 +280,11 @@ class DashBoardCategoryViewModel @Inject constructor(
     //Fetch all Items from TBITEM
     val allInventoryItems = posRepository.getItemsList()
 
+//    var customerCashAmount: String = ""
 
+    val customerCardAmount = MutableLiveData<String>()
+    val customerCashAmount = MutableLiveData<String>()
+//    val cashAmount: LiveData<Event<String>> = _cashAmount
 
     //Fetch all orders count
     fun allOrderCounts(
@@ -761,15 +762,23 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    suspend fun deleteCartItemsByIdGuestIndex(itemId: Int,guestIndexForDineIn:Int) {
+    suspend fun deleteCartItemsByIdGuestIndex(itemId: Int, guestIndexForDineIn: Int) {
         viewModelScope.launch {
-            posRepository.deleteCartItemsByIdGuestIndex(itemId,guestIndexForDineIn)
+            posRepository.deleteCartItemsByIdGuestIndex(itemId, guestIndexForDineIn)
         }
     }
 
-    suspend fun updateDineInCartItemsByIdGuestIndex(itemQuantity: Int,itemId: Int,guestIndexForDineIn:Int) {
+    suspend fun updateDineInCartItemsByIdGuestIndex(
+        itemQuantity: Int,
+        itemId: Int,
+        guestIndexForDineIn: Int
+    ) {
         viewModelScope.launch {
-            posRepository.updateDineInCartItemsByIdGuestIndex(itemQuantity,itemId,guestIndexForDineIn)
+            posRepository.updateDineInCartItemsByIdGuestIndex(
+                itemQuantity,
+                itemId,
+                guestIndexForDineIn
+            )
         }
     }
 
@@ -804,7 +813,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         try {
             prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
             cartModel = null
-            manualCartOrderNote=""
+            manualCartOrderNote = ""
 
             EventBus.getDefault().post(
                 MessageEvent(
@@ -1051,7 +1060,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             cartModel?.let { addCart(it) }
 
 
-            if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN){
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 item.apply {
                     guestIndexForDineIn = dineInHeaderPosition
                     orderType = "DineIn"
@@ -2878,90 +2887,90 @@ class DashBoardCategoryViewModel @Inject constructor(
                 } else
                     if (type == DELETE) {
 
-                    var index = -1
-                    Log.e(TAG, "CheckDeleteItem ${Gson().toJson(item)}")
-                    Log.e(TAG, "getListedItems  ${Gson().toJson(list[0])}")
-                    Log.e(TAG, "checkReOrder  ${cartModel?.reorder}")
+                        var index = -1
+                        Log.e(TAG, "CheckDeleteItem ${Gson().toJson(item)}")
+                        Log.e(TAG, "getListedItems  ${Gson().toJson(list[0])}")
+                        Log.e(TAG, "checkReOrder  ${cartModel?.reorder}")
 
-                    for (i in list.indices) {
-                        if (item != null) {
-                            if (!item.isManualSales && item.itemId != 1) {
-                                if (cartModel?.reorder == false && list[i].itemId == item.itemId && item.modifiers.isEmpty() && checkVariationNew(
-                                        list[i], item
-                                    ) && item.id == list[i].id
-                                ) {
-                                    index = i
-                                    Log.d(TAG, "newCartLogicModifier normal item: ${i}")
-                                    break
-                                } else if (cartModel?.reorder == false && list[i].itemId == item.itemId && list[i].id == item.id && checkVariationNew(
-                                        list[i], item
-                                    ) && checkModifierNew(list[i], item)
-                                ) {
-                                    Log.e(TAG, "CheckedBefore")
-                                    index = i
-                                    break
-                                } else if (cartModel?.reorder == true) {
-                                    if (list[i].orderItemId == item.orderItemId) {
+                        for (i in list.indices) {
+                            if (item != null) {
+                                if (!item.isManualSales && item.itemId != 1) {
+                                    if (cartModel?.reorder == false && list[i].itemId == item.itemId && item.modifiers.isEmpty() && checkVariationNew(
+                                            list[i], item
+                                        ) && item.id == list[i].id
+                                    ) {
                                         index = i
-                                        Log.e(TAG, "indexReorder:  ${index}")
+                                        Log.d(TAG, "newCartLogicModifier normal item: ${i}")
                                         break
-                                    }
-
-                                } else if (cartModel?.reorder == false && list[i].itemId == item.itemId && (!checkVariationNew(
-                                        list[i], item
-                                    ) || !checkModifierNew(list[i], item))
-                                ) {
-                                    if (list[i].id == item.id) {
-                                        Log.e(TAG, "CheckedBefore   ${i}")
+                                    } else if (cartModel?.reorder == false && list[i].itemId == item.itemId && list[i].id == item.id && checkVariationNew(
+                                            list[i], item
+                                        ) && checkModifierNew(list[i], item)
+                                    ) {
+                                        Log.e(TAG, "CheckedBefore")
                                         index = i
                                         break
-                                    }
-                                }
+                                    } else if (cartModel?.reorder == true) {
+                                        if (list[i].orderItemId == item.orderItemId) {
+                                            index = i
+                                            Log.e(TAG, "indexReorder:  ${index}")
+                                            break
+                                        }
 
-                            } else {
-                                if (list[i].manualSaleId == item.manualSaleId && list[i].cartItemId == item.cartItemId) {
-                                    index = i
-                                    break
-                                } else if (cartModel?.reorder == true) {
-                                    if (list[i].orderItemId == item.orderItemId) {
+                                    } else if (cartModel?.reorder == false && list[i].itemId == item.itemId && (!checkVariationNew(
+                                            list[i], item
+                                        ) || !checkModifierNew(list[i], item))
+                                    ) {
+                                        if (list[i].id == item.id) {
+                                            Log.e(TAG, "CheckedBefore   ${i}")
+                                            index = i
+                                            break
+                                        }
+                                    }
+
+                                } else {
+                                    if (list[i].manualSaleId == item.manualSaleId && list[i].cartItemId == item.cartItemId) {
                                         index = i
-                                        Log.e(TAG, "indexReorder23:  ${index}")
                                         break
-                                    }
+                                    } else if (cartModel?.reorder == true) {
+                                        if (list[i].orderItemId == item.orderItemId) {
+                                            index = i
+                                            Log.e(TAG, "indexReorder23:  ${index}")
+                                            break
+                                        }
 
+                                    }
                                 }
                             }
+
                         }
 
-                    }
-
-                    if (index != -1) {
-                        val model = cartList[index]
-                        if (model != null) {
-                            //delete from cart
-                            if (item?.isEdited == true) {
-                                model.isEdited = item.isEdited
-                                model.isDestroy = true
-                                addItemToCartItems(model)//Update deleted item with its updated fields like isEdited and isDestroy
-                            } else {
-                                if (list.size == 1) {
-                                    prefProvider.setValueboolean(IS_LAST_ITEM_DELETE, true)
-                                }
-                                list.remove(model)
-                                deleteItemFromCartItem(model)
-                                EventBus.getDefault().post(
-                                    MessageEvent(
-                                        "${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
-                                            Gson().toJson(Thread.currentThread().stackTrace)
-                                        }"
+                        if (index != -1) {
+                            val model = cartList[index]
+                            if (model != null) {
+                                //delete from cart
+                                if (item?.isEdited == true) {
+                                    model.isEdited = item.isEdited
+                                    model.isDestroy = true
+                                    addItemToCartItems(model)//Update deleted item with its updated fields like isEdited and isDestroy
+                                } else {
+                                    if (list.size == 1) {
+                                        prefProvider.setValueboolean(IS_LAST_ITEM_DELETE, true)
+                                    }
+                                    list.remove(model)
+                                    deleteItemFromCartItem(model)
+                                    EventBus.getDefault().post(
+                                        MessageEvent(
+                                            "${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                                                Gson().toJson(Thread.currentThread().stackTrace)
+                                            }"
+                                        )
                                     )
-                                )
+                                }
                             }
+                        } else {
+                            //list.remove(item)
                         }
-                    } else {
-                        //list.remove(item)
                     }
-                }
 
 
                 if (type == UPDATE) {
@@ -3456,8 +3465,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         if (index == -2) {
                             Log.e(TAG, "Itis NotMinus  ")
 
-                        } else if (index != -1)
-                        {
+                        } else if (index != -1) {
                             val model = list.get(index)
                             Log.d(TAG, "cartLogic: " + index)
                             if (model != null) {
@@ -3522,8 +3530,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                             }
                         }
-                    } else if (type == DELETE)
-                    {
+                    } else if (type == DELETE) {
                         var list: ArrayList<TbCartItem> = arrayListOf()
                         if (item != null) {
                             list = cartList as ArrayList<TbCartItem>
@@ -3672,7 +3679,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             "newUpdatedItem:: guestIndexForDineIn: " + dineInHeaderPosition
                         )
                         // IMPORTANT -- remove this.. this is for log purpose only
-                      //  newUpdatedItem.taxes = arrayListOf()
+                        //  newUpdatedItem.taxes = arrayListOf()
                         Log.d(
                             "DashViewModModel",
                             "newUpdatedItem:: " + Gson().toJson(newUpdatedItem)
@@ -3684,10 +3691,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 newUpdatedItem.cartItemId =
                                     this@DashBoardCategoryViewModel.getLatestPrimaryKey() + 1
                             }
-                         //   currentCartItems.add(newUpdatedItem)
+                            //   currentCartItems.add(newUpdatedItem)
                             addItemToCartItems(newUpdatedItem)
                         } else {
-                        //    currentCartItems.add(newUpdatedItem)
+                            //    currentCartItems.add(newUpdatedItem)
                             addItemToCartItems(newUpdatedItem)
                         }
                         cartModel?.let { addCart(it) }
@@ -3702,21 +3709,21 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 "newUpdatedItem:: guestIndexForDineIn: " + dineInHeaderPosition
                             )
                             // IMPORTANT -- remove this.. this is for log purpose only
-                           // newUpdatedItem.taxes = arrayListOf()
+                            // newUpdatedItem.taxes = arrayListOf()
                             Log.d(
                                 "DashViewModModel",
                                 "newUpdatedItem:: " + Gson().toJson(newUpdatedItem)
                             )
-                            newUpdatedItem.guestIndexForDineIn =list[i].guestIndexForDineIn
+                            newUpdatedItem.guestIndexForDineIn = list[i].guestIndexForDineIn
                             if (addNewEntry) {
                                 viewModelScope.launch {
                                     newUpdatedItem.cartItemId =
                                         this@DashBoardCategoryViewModel.getLatestPrimaryKey() + 1
                                 }
-                            //    currentCartItems.add(newUpdatedItem)
-                             //   addItemToCartItems(newUpdatedItem)
+                                //    currentCartItems.add(newUpdatedItem)
+                                //   addItemToCartItems(newUpdatedItem)
                             } else {
-                             //   currentCartItems.add(newUpdatedItem)
+                                //   currentCartItems.add(newUpdatedItem)
                                 addItemToCartItems(newUpdatedItem)
                             }
                             cartModel?.let { addCart(it) }
@@ -3748,7 +3755,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
         }
-     //   oldDineInItems.clear()
+        //   oldDineInItems.clear()
     }
 
     private fun combineItem(list: ArrayList<TbItem>, item: TbItem, index: Int): List<TbItem> {
@@ -4115,9 +4122,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                 CoroutineScope(Dispatchers.IO).launch {
                     var job = launch {
                         posRepository.getOrderTypeBackupList(employeeID)?.let {
-                            try{
+                            try {
                                 orderTypeId = (it.get(0).orderType) ?: -1
-                            }catch (e:Exception){}
+                            } catch (e: Exception) {
+                            }
                         }
                     }
                     job.join()
@@ -6055,7 +6063,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         val orderItemsAttributeList: ArrayList<GuestsAttributes> = arrayListOf()
         Log.e(TAG, "dineInListData:   ${Gson().toJson(cartModel.dineInList)}")
         CoroutineScope(Dispatchers.IO).launch {
-        cartModel.dineInList?.forEachIndexed { index, it ->
+            cartModel.dineInList?.forEachIndexed { index, it ->
                 var cartItems = getDineInCartItems(index) as ArrayList<TbCartItem>
                 val model = GuestsAttributes()
                 model.name = it.title.toString()
@@ -6166,110 +6174,110 @@ class DashBoardCategoryViewModel @Inject constructor(
         Log.e(TAG, "dineInListData:   ${Gson().toJson(cartModel.dineInList)}")
 
 
-            CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.IO).launch {
 
-                cartModel.dineInList?.forEachIndexed { index, it ->
+            cartModel.dineInList?.forEachIndexed { index, it ->
 
-                        var cartItems = getDineInCartItems(index) as ArrayList<TbCartItem>
-                        val model = GuestsAttributes()
-                        model.name = it.title.toString()
-                        model.Destroy = it.isDestroy
-                        if (it.id != 0) {
-                            model.id = it.id
+                var cartItems = getDineInCartItems(index) as ArrayList<TbCartItem>
+                val model = GuestsAttributes()
+                model.name = it.title.toString()
+                model.Destroy = it.isDestroy
+                if (it.id != 0) {
+                    model.id = it.id
+                }
+                if (cartItems?.isNotEmpty() == true) {
+                    var listItems: ArrayList<GuestItemsAttributes> = arrayListOf()
+                    var subTotal = 0.0
+                    var totalTax = 0.0
+                    var totalTips = 0.0
+                    var totalDiscount = 0.0
+                    var totalAmount = 0.0
+                    cartItems.sortedBy { it.dineInSort }
+                    cartItems.forEach { tb ->
+
+
+                        listItems.add(GuestItemsAttributes(id = tb.guestItemId,
+                            orderItemId = tb.orderItemId,
+                            quantity = tb.itemQuantity,
+                            itemId = tb.itemId,
+                            amount = tb.price,
+                            timestamp = tb.timeStamp,
+                            guestId = it.id?.let { it }
+
+                        )
+
+                        )
+
+
+
+
+                        subTotal += tb.price
+                        tb.taxes?.forEach {
+                            totalTax += it.rate
                         }
-                        if (cartItems?.isNotEmpty() == true) {
-                            var listItems: ArrayList<GuestItemsAttributes> = arrayListOf()
-                            var subTotal = 0.0
-                            var totalTax = 0.0
-                            var totalTips = 0.0
-                            var totalDiscount = 0.0
-                            var totalAmount = 0.0
-                            cartItems.sortedBy { it.dineInSort }
-                            cartItems.forEach { tb ->
+                        totalDiscount += tb.discountPrice
 
-
-                                listItems.add(GuestItemsAttributes(id = tb.guestItemId,
-                                    orderItemId = tb.orderItemId,
-                                    quantity = tb.itemQuantity,
-                                    itemId = tb.itemId,
-                                    amount = tb.price,
-                                    timestamp = tb.timeStamp,
-                                    guestId = it.id?.let { it }
-
-                                )
-
-                                )
+                    }
+                    totalAmount = (subTotal + totalTax) - totalDiscount
+                    model.totalAmount = totalAmount
+                    model.totalTax = totalTax
+                    model.totalTips = totalTips
+                    if (it.id != null && it.id != 0) {
+                        model.id = it.id
+                    }
 
 
 
-
-                                subTotal += tb.price
-                                tb.taxes?.forEach {
-                                    totalTax += it.rate
-                                }
-                                totalDiscount += tb.discountPrice
-
-                            }
-                            totalAmount = (subTotal + totalTax) - totalDiscount
-                            model.totalAmount = totalAmount
-                            model.totalTax = totalTax
-                            model.totalTips = totalTips
-                            if (it.id != null && it.id != 0) {
-                                model.id = it.id
-                            }
+                    model.guestItemsAttributes = listItems
+                }
 
 
+                if (it.customer != null) {
+                    model.customerId = it.customer?.id
+                    var addressList: ArrayList<CustomerAttributes.AddressesAttribute> =
+                        arrayListOf()
+                    var phoneList: ArrayList<CustomerAttributes.PhonesAttribute> =
+                        arrayListOf()
+                    for (i in 0.until(it.customer?.addresses?.size!!)) {
 
-                            model.guestItemsAttributes = listItems
-                        }
-
-
-                        if (it.customer != null) {
-                            model.customerId = it.customer?.id
-                            var addressList: ArrayList<CustomerAttributes.AddressesAttribute> =
-                                arrayListOf()
-                            var phoneList: ArrayList<CustomerAttributes.PhonesAttribute> =
-                                arrayListOf()
-                            for (i in 0.until(it.customer?.addresses?.size!!)) {
-
-                                var address = CustomerAttributes.AddressesAttribute()
-                                address.address1 =
-                                    it.customer?.addresses?.get(i)?.address1.toString()
-                                address.address2 =
-                                    it.customer?.addresses?.get(i)?.address2.toString()
-                                address.addressableId = it.customer?.addresses?.get(i)?.id
-                                address.city = it.customer?.addresses?.get(i)?.city.toString()
-                                address.country = it.customer?.addresses?.get(i)?.country.toString()/*address.latitude = it.customer?.addresses?.get(i)?.latitude!!.toDouble()
+                        var address = CustomerAttributes.AddressesAttribute()
+                        address.address1 =
+                            it.customer?.addresses?.get(i)?.address1.toString()
+                        address.address2 =
+                            it.customer?.addresses?.get(i)?.address2.toString()
+                        address.addressableId = it.customer?.addresses?.get(i)?.id
+                        address.city = it.customer?.addresses?.get(i)?.city.toString()
+                        address.country = it.customer?.addresses?.get(i)?.country.toString()/*address.latitude = it.customer?.addresses?.get(i)?.latitude!!.toDouble()
                     address.longitude = it.customer?.addresses?.get(i)?.longitude!!.toDouble()*/
-                                address.latitude = 0.0
-                                address.longitude = 0.0
-                                address.state = it.customer?.addresses?.get(i)?.state.toString()
-                                addressList.add(address)
-                            }
-                            for (i in 0 until it.customer?.phones?.size!!) {
-                                val phoneModel = CustomerAttributes.PhonesAttribute()
-                                phoneModel.id = it.customer?.phones?.get(i)?.id
-                                phoneModel.customerId = it.customer?.id
-                                phoneModel.phoneNumber =
-                                    it.customer?.phones?.get(i)?.phone_number.toString()
-                                phoneList.add(phoneModel)
-                            }
-                            val customerModel = CustomerAttributes()/*  customerModel.addressesAttributes = addressList
+                        address.latitude = 0.0
+                        address.longitude = 0.0
+                        address.state = it.customer?.addresses?.get(i)?.state.toString()
+                        addressList.add(address)
+                    }
+                    for (i in 0 until it.customer?.phones?.size!!) {
+                        val phoneModel = CustomerAttributes.PhonesAttribute()
+                        phoneModel.id = it.customer?.phones?.get(i)?.id
+                        phoneModel.customerId = it.customer?.id
+                        phoneModel.phoneNumber =
+                            it.customer?.phones?.get(i)?.phone_number.toString()
+                        phoneList.add(phoneModel)
+                    }
+                    val customerModel = CustomerAttributes()/*  customerModel.addressesAttributes = addressList
                   customerModel.birthDate = it.customer?.birth_date.toString()
                   customerModel.firstName = it.customer?.first_name.toString()
                   customerModel.lastName = it.customer?.last_name.toString()*/
-                            customerModel.id = it.customer?.id/* customerModel.companyName = it.customer?.company.toString()
+                    customerModel.id = it.customer?.id/* customerModel.companyName = it.customer?.company.toString()
                  customerModel.phonesAttributes = phoneList
                  customerModel.locationId = prefProvider.getValueInt(LOCATION_ID, 1)
     */
-                            //  model.customerAttributes = customerModel
+                    //  model.customerAttributes = customerModel
 
-                        } else {
-                            model.customerId = 0
-                        }
-                        orderItemsAttributeList.add(model)
+                } else {
+                    model.customerId = 0
+                }
+                orderItemsAttributeList.add(model)
 
-                    }
+            }
 
                 if(currentDestination == DINE_IN_UPDATE)
                     dineInResult.postValue(true)

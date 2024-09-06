@@ -425,6 +425,7 @@
     <string name="tv_action">Action</string>
     <string name="take_out_order">Take Out Order</string>
     <string name="add_customer">Add Customer</string>
+    <string name="add_customer_message">Please add a customer</string>
     <string name="quantity">Quantity</string>
     <string name="notes">Notes</string>
     <string name="add_note">Add Note</string>
@@ -913,6 +914,7 @@
     <string name="customer_cannot_be_remove_at_the_moment">Customer cannot be removed at the moment.</string>
     <string name="cash_tips">Cash Tips</string>
     <string name="card_tips">Card Tips</string>
+    <string name="external_tips">External Tips</string>
     <string name="total_tips">Total Tips</string>
     <string name="item_wise_sales">Item Wise Sales</string>
     <string name="employee_tip_summary">Employee Tip Summary</string>

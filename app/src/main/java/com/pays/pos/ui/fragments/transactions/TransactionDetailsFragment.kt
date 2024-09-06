@@ -514,7 +514,7 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun checkIfTransactionIsVoided() {
         GlobalScope.launch {
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
 
             val report = ReportRequest()
             report.TransType = report.ParseTransType("LOCALDETAILREPORT") //recommend
@@ -591,7 +591,7 @@ class TransactionDetailsFragment : Fragment() {
             if (paymentDetailsResponse.data.ref_num != null) {
                 if (paymentDetailsResponse.data.ref_num.isNotEmpty()) {
                     GlobalScope.launch {
-                        posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+                        posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
 
                         val report = ReportRequest()
                         report.TransType = report.ParseTransType("LOCALDETAILREPORT") //recommend
@@ -660,7 +660,7 @@ class TransactionDetailsFragment : Fragment() {
         if (refundAmount != 0.0) {
             if (paymentDetailsResponse.data.payment_type.equals("Card", ignoreCase = true)) {
                 GlobalScope.launch {
-                    posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+                    posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
 
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.showProgressDialog(requireActivity())
@@ -821,7 +821,7 @@ class TransactionDetailsFragment : Fragment() {
     // Adjust tip on transactions done via PAX
     private fun adjustPaxTips() {
         GlobalScope.launch {
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
             val tip_amt = (tipAmount * 100).toInt()
             Log.d("Amt: ", "tip $tip_amt RefNo ${paymentDetailsResponse.data?.ref_num}")
 

@@ -42,4 +42,7 @@ interface OrderTypeDao {
     @Query("SELECT * FROM TbOrderType WHERE TbOrderType.id IN (:userIds)")
     fun tipsByIds(userIds: IntArray): List<TbOrderType>
 
+    @Query("DELETE from TbOrderType where TbOrderType.id = :idList")
+    suspend fun deleteOrderTypesById(idList: Int)
+
 }

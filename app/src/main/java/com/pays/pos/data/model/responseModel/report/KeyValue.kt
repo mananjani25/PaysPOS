@@ -1,6 +1,7 @@
 package com.pays.pos.data.model.responseModel.report
 
 import android.util.Log
+import android.view.View
 import com.google.gson.annotations.SerializedName
 
 data class KeyValue(
@@ -64,6 +65,9 @@ data class KeyValue(
             key?.trim().equals("Total Refunds") -> {
                 showFormattedValueMinus()
             }
+            key?.trim().equals("Name") -> {
+                showName()
+            }
             else -> {
                 showFormattedValue()
             }
@@ -73,6 +77,10 @@ data class KeyValue(
     fun showFormattedValue() = if (value?.isEmpty() == true) "$0.00" else "$" + String.format(
         "%.2f", value?.toDouble() ?: 0.0
     )
+
+    fun showName() =  value.toString()
+
+    fun showDividerLine() = if(key?.contains("name",true)==true) View.VISIBLE else View.GONE
 
     private fun showFormattedValueMinus() =
         if (value?.isEmpty() == true || (value=="0.0" || value=="0.00")) "$0.00" else "-$" + String.format(

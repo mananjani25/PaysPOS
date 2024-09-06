@@ -27,18 +27,21 @@ import com.pays.pos.utils.paxUtils.AppThreadPool
 import com.pays.pos.utils.paxUtils.POSLinkCreatorWrapper
 import com.pays.pos.utils.paxUtils.SettingINI
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
 class MagtekViewModel @Inject constructor(
     private val posRepository: PosRepository,
     private val prefProvider: PrefProvider,
-    private val apiModule2: ApiModule2
+    private val apiModule2: ApiModule2,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private var posLink: PosLink = PosLink()
@@ -78,9 +81,9 @@ class MagtekViewModel @Inject constructor(
 
     private fun checkBroadPOSVersion() {
         GlobalScope.launch {
-            try{
+            try {
 
-                posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+                posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context,Constants.FILE_PATH + SettingINI.FILENAME))
 
                 val manageRequest = ManageRequest()
                 manageRequest.TransType = manageRequest.ParseTransType("INIT")
@@ -113,7 +116,9 @@ class MagtekViewModel @Inject constructor(
                     }
 
                 }
-            }catch (e:Exception){e.printStackTrace()}
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
@@ -178,12 +183,15 @@ class MagtekViewModel @Inject constructor(
             ) {
 
                 ProgressUtils.dismissProgressDialog()
-                when(t.message?.contains("org.simpleframework.xml")){
-                    true->{
-                        AlertUtils.showCustomAlert(context,  "Please connect your credit card machine to the Wi-Fi network. Ensure that both your Point of Sale (POS) terminal and credit card machine are connected to the same Wi-Fi network.")
+                when (t.message?.contains("org.simpleframework.xml")) {
+                    true -> {
+                        AlertUtils.showCustomAlert(
+                            context,
+                            "Please connect your credit card machine to the Wi-Fi network. Ensure that both your Point of Sale (POS) terminal and credit card machine are connected to the same Wi-Fi network."
+                        )
                     }
-                    false->{
-                        AlertUtils.showCustomAlert(context,  t.message)
+                    false -> {
+                        AlertUtils.showCustomAlert(context, t.message)
                     }
                 }
 
@@ -195,12 +203,19 @@ class MagtekViewModel @Inject constructor(
 
     private fun setCommSetting(context: Context, edtIP: String, edtPort: String) {
         //create commsetting object
+        var file: File? = null
+        var iniFile = ""
+        if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.Q) {
 
-        var file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        val iniFile = "/storage/emulated/0/Download/" + SettingINI.FILENAME
+            file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)!!
+            iniFile = "/storage/emulated/0/Download/" + SettingINI.FILENAME
+        } else {
+            file = context.getExternalFilesDir("")!!
+            iniFile = SettingINI.FILENAME
+        }
         /*val iniFile =
-            activity!!.applicationContext.filesDir.absolutePath + "/" + SettingINI.FILENAME*/
-        val commset: CommSetting = SettingINI.getCommSettingFromFile(iniFile)
+        activity!!.applicationContext.filesDir.absolutePath + "/" + SettingINI.FILENAME*/
+        val commset: CommSetting = SettingINI.getCommSettingFromFile(context!!,iniFile)
         Log.d("iniFile: ", "iniFile $iniFile ${file.absolutePath}")
 
         //initialization value  for comsetting's attribute
@@ -212,18 +227,19 @@ class MagtekViewModel @Inject constructor(
         commset.destPort = edtPort
         commset.destIP = edtIP
         /*val selectedHost = "UNKNOWN"
-        Convenience.setHost(context, commset, selectedHost)*/
+    Convenience.setHost(context, commset, selectedHost)*/
         Log.i(
             "TAG", "coms.CommType = " + commset.type + "; coms.TimeOut=" + commset.timeOut
                     + "; SerialPort=" + commset.serialPort + "; coms.BaudRate=" + commset.baudRate
                     + "; coms.DestIP=" + commset.destIP + "; coms.DestPort=" + commset.destPort + "; coms.MacAddr=" + commset.macAddr + "; coms.EnableProxy=" + commset.isEnableProxy
         )
         POSLinkAndroid.initPOSListener(context, commset)
-        SettingINI.saveCommSettingToFile(iniFile, commset)
+        SettingINI.saveCommSettingToFile(context,iniFile, commset)
         // set the folder to save the "comsetting.ini" file
         posLink.appDataFolder = file.absolutePath
         posLink.SetCommSetting(commset)
         Log.d("SetCommSetting: ", "saved successfully")
+
     }
 
     // Get merchant details from pax

@@ -103,12 +103,27 @@ data class KioskOrderResponse(
             @SerializedName("final_reward") var finalReward: Int? = null,
             @SerializedName("same_as_billing_address") var sameAsBillingAddress: Boolean? = null,
             @SerializedName("phones") var phones: ArrayList<Phones> = arrayListOf(),
-            @SerializedName("addresses") var addresses: ArrayList<String> = arrayListOf()
+            @SerializedName("addresses") var addresses: ArrayList<Address> = arrayListOf()
 
         ) {
             data class Phones(
                 @SerializedName("id") var id: Int? = null,
                 @SerializedName("phone_number") var phoneNumber: String? = null
+            )
+
+            data class Address(
+                @SerializedName("address1") var address1: String? = null,
+                @SerializedName("address2") var address2: String? = null,
+                @SerializedName("city") var city: String? = null,
+                @SerializedName("country") var country: String? = null,
+                @SerializedName("full_address") var fullAddress: String? = null,
+                @SerializedName("id") var id: Int? = null,
+                @SerializedName("latitude") var latitude: String? = null,
+                @SerializedName("longitude") var longitude: String? = null,
+                @SerializedName("postcode") var postcode: String? = null,
+                @SerializedName("state") var state: String? = null,
+                @SerializedName("street") var street: String? = null,
+                @SerializedName("type_of_address") var typeOfAddress: String? = null
             )
         }
 
@@ -232,7 +247,7 @@ data class KioskOrderResponse(
                 @SerializedName("tax_id") var taxId: Int? = null,
                 @SerializedName("name") var name: String? = null,
                 @SerializedName("amount") var amount: String? = null,
-                @SerializedName("rate") var rate: Int? = null,
+                @SerializedName("rate") var rate: Double? = null,
                 @SerializedName("is_default") var isDefault: Boolean? = null,
                 @SerializedName("is_tax_removed") var isTaxRemoved: String? = null,
                 @SerializedName("created_at") var createdAt: String? = null,

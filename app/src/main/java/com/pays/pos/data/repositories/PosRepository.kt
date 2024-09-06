@@ -169,7 +169,7 @@ class PosRepository @Inject constructor(
         prefProvider.getValueInt(
             TERMINAL_ID, 0
         ),
-       /* prefProvider.getValue(SYNC_SETTING_TIME_STAMP, "")*/""
+        /* prefProvider.getValue(SYNC_SETTING_TIME_STAMP, "")*/""
     )
 
     suspend fun getOnlineOrderNotificationCount() = apiHelperNew.getOnlineOrderCountNoti()
@@ -602,7 +602,7 @@ class PosRepository @Inject constructor(
     suspend fun deleteCustomerDataBase(id: Int?) =
         appDatabase.customerDao().deleteCustomerByID(id)
 
-  suspend fun getTotalCustomersCount() =
+    suspend fun getTotalCustomersCount() =
         appDatabase.customerDao().getTotalCustomersCount()
 
 
@@ -794,7 +794,13 @@ class PosRepository @Inject constructor(
     }
 
     fun deleteCartModel(cartModel: CartModel) {
-        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                    Gson().toJson(Thread.currentThread().stackTrace)
+                }"
+            )
+        )
         synchronized(this) {
             appDatabase.cartDao().deleteCartModel(cartModel)
         }
@@ -821,9 +827,12 @@ class PosRepository @Inject constructor(
 
     suspend fun addItemToCart(tbCartItem: TbCartItem) {
         val startTime = System.currentTimeMillis()
-        var returnData=appDatabase.cartDao().addCartItem(tbCartItem)
+        var returnData = appDatabase.cartDao().addCartItem(tbCartItem)
         // Calculate the time taken
-        Log.d("AddItemFragment.kt","txtDone_addItemToCart: returnData -> ${Gson().toJson(returnData)}")
+        Log.d(
+            "AddItemFragment.kt",
+            "txtDone_addItemToCart: returnData -> ${Gson().toJson(returnData)}"
+        )
 
         val endTime = System.currentTimeMillis()
         val timeTaken = endTime - startTime
@@ -845,14 +854,26 @@ class PosRepository @Inject constructor(
     }
 
     suspend fun deleteItemFromCartItems(tbCartItem: TbCartItem) {
-        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                    Gson().toJson(Thread.currentThread().stackTrace)
+                }"
+            )
+        )
         appDatabase.cartDao().deleteItemFromCartItems(tbCartItem)
     }
 
     suspend fun removeItemFromCart(itemId: Int, guestIndexForDineIn: Int) {
         val startTime = System.currentTimeMillis()
         appDatabase.cartDao().removeCartItem(itemId, guestIndexForDineIn)
-        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                    Gson().toJson(Thread.currentThread().stackTrace)
+                }"
+            )
+        )
         // Calculate the time taken
         val endTime = System.currentTimeMillis()
         val timeTaken = endTime - startTime
@@ -905,12 +926,17 @@ class PosRepository @Inject constructor(
         appDatabase.cartDao().deleteCartItems(cartItemId)//delete cart items from TbCartItem
     }
 
-    suspend fun deleteCartItemsByIdGuestIndex(itemId: Int,guestIndexForDineIn:Int){
-        appDatabase.cartDao().deleteCartItemsByIdGuestIndex(itemId,guestIndexForDineIn)
+    suspend fun deleteCartItemsByIdGuestIndex(itemId: Int, guestIndexForDineIn: Int) {
+        appDatabase.cartDao().deleteCartItemsByIdGuestIndex(itemId, guestIndexForDineIn)
     }
 
-    suspend fun updateDineInCartItemsByIdGuestIndex(itemQuantity: Int,itemId: Int,guestIndexForDineIn:Int){
-        appDatabase.cartDao().updateDineInCartItemsByIdGuestIndex(itemQuantity,itemId,guestIndexForDineIn)
+    suspend fun updateDineInCartItemsByIdGuestIndex(
+        itemQuantity: Int,
+        itemId: Int,
+        guestIndexForDineIn: Int
+    ) {
+        appDatabase.cartDao()
+            .updateDineInCartItemsByIdGuestIndex(itemQuantity, itemId, guestIndexForDineIn)
     }
 
 
@@ -1315,7 +1341,13 @@ class PosRepository @Inject constructor(
     }
 
     suspend fun clearTable() {
-        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                    Gson().toJson(Thread.currentThread().stackTrace)
+                }"
+            )
+        )
 
         LogUtil.logE("clear Db Table", "-------")
         appDatabase.categoryDao().delete1()
@@ -1453,6 +1485,14 @@ class PosRepository @Inject constructor(
         return appDatabase.cartDao().getCartModelFromID(cartId)
     }
 
+    suspend fun deleteOrderTypesById(idList: Int) {
+        appDatabase.orderTypeDao().deleteOrderTypesById(idList)
+    }
+
+    suspend fun deleteDynamicPaymentById(idList: Int) {
+        appDatabase.dynamicPaymentDao().deleteDynamicPaymentById(idList)
+    }
+
 
     suspend fun getAllCartModels(): List<CartModel> {
         return appDatabase.cartDao().getAllCartModels()
@@ -1470,12 +1510,17 @@ class PosRepository @Inject constructor(
         appDatabase.optionSetDao().updateOptionsJSON(modId!!, modifiersJson)
     }
 
-    suspend fun updateOrderTypeBackup(orderType: Int,orderTypeName:String,  employeeId: Int) {
-        appDatabase.orderTypeBackupDao().updateOrderTypeBackup(orderType,orderTypeName, employeeId)
+    suspend fun updateOrderTypeBackup(orderType: Int, orderTypeName: String, employeeId: Int) {
+        appDatabase.orderTypeBackupDao().updateOrderTypeBackup(orderType, orderTypeName, employeeId)
     }
 
-    suspend fun findOrderTypeBackup(orderType: Int, employeeId: Int,orderTypeName: String):List<OrderTypeBackup> {
-        return appDatabase.orderTypeBackupDao().findOrderTypeBackup(orderType,orderTypeName, employeeId)
+    suspend fun findOrderTypeBackup(
+        orderType: Int,
+        employeeId: Int,
+        orderTypeName: String
+    ): List<OrderTypeBackup> {
+        return appDatabase.orderTypeBackupDao()
+            .findOrderTypeBackup(orderType, orderTypeName, employeeId)
     }
 
     suspend fun deleteOrderTypeBackup(orderType: Int, employeeId: Int) {
@@ -1490,13 +1535,13 @@ class PosRepository @Inject constructor(
         appDatabase.orderTypeBackupDao().add(orderType)
 
     /*This method is used to maintain the single of multiple receipt for label printer*/
-    fun insertOrUpdateLabelPrinter(data:Boolean) {
+    fun insertOrUpdateLabelPrinter(data: Boolean) {
         val tbLabelPrinterSettings = TbLabelPrinterSettings(1, data)
-        var aaaaa=appDatabase.labelPrinterSettings().insertOrUpdate(tbLabelPrinterSettings)
+        var aaaaa = appDatabase.labelPrinterSettings().insertOrUpdate(tbLabelPrinterSettings)
     }
 
     /*This method will be used to check if the merchant wants */
-    suspend fun getLabelPrinterSettingsData():TbLabelPrinterSettings{
+    suspend fun getLabelPrinterSettingsData(): TbLabelPrinterSettings {
         return appDatabase.labelPrinterSettings().getLabelPrinterSettingsData()
     }
 
@@ -1509,9 +1554,14 @@ class PosRepository @Inject constructor(
         appDatabase.dynamicPaymentDao().addAll(dynamicPaymentRecords)
     }
 
-    fun getDynamicPaymentRecords(isActive:Boolean, locationId:Int)=appDatabase.dynamicPaymentDao().getDynamicPaymentRecords(isActive,locationId)
+    fun getDynamicPaymentRecords(isActive: Boolean, locationId: Int) =
+        appDatabase.dynamicPaymentDao().getDynamicPaymentRecords(isActive, locationId)
 
-    fun getDynamicPaymentFromID(id:Int):TbDynamicPaymentRecords{
+       fun getAllDynamicPayments() =
+        appDatabase.dynamicPaymentDao().getAllDynamicPayments
+
+
+    fun getDynamicPaymentFromID(id: Int): TbDynamicPaymentRecords {
         return appDatabase.dynamicPaymentDao().getDynamicPaymentFromID(id)
     }
 

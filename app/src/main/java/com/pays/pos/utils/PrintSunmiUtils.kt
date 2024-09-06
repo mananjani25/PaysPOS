@@ -593,7 +593,7 @@ class PrintSunmiUtils {
         }
 
 
-        private fun setFontSizeInner(): Float {
+        public fun setFontSizeInner(): Float {
             return when (fontSizeInner) {
                 SMALL -> {
                     24f
@@ -663,6 +663,17 @@ class PrintSunmiUtils {
             SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
+        fun normalTextNew(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(0)
+            if (fontSizeInner == LARGE) {
+                SunmiPrintHelper.getInstance()
+                    .printText(value, 36f)
+            } else
+                SunmiPrintHelper.getInstance()
+                    .printText(value, setFontSizeInner())
+            SunmiPrintHelper.getInstance().lineWrap(1)
+        }
+
         fun normalTextTest(value: String) {
             SunmiPrintHelper.getInstance().setAlign(0)
             if (fontSizeInner == LARGE) {
@@ -691,6 +702,12 @@ class PrintSunmiUtils {
                 .printText(value, 36f, false, false, fontName)
             SunmiPrintHelper.getInstance().lineWrap(1)
         }
+        fun normalTextLargeNew(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance()
+                .printText(value, 36f)
+            SunmiPrintHelper.getInstance().lineWrap(1)
+        }
 
         fun normalTextCenter(value: String) {
             SunmiPrintHelper.getInstance().setAlign(1)
@@ -715,6 +732,15 @@ class PrintSunmiUtils {
         }
 
 
+        fun boldTextNew(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance()
+                .printText(value, setFontSizeInner())
+
+            SunmiPrintHelper.getInstance().lineWrap(1)
+        }
+
+
         fun addHorizontalInner() {
             val st = addHorizontalKitchenLineSunmi(fontSizeInner)
             SunmiPrintHelper.getInstance()
@@ -732,6 +758,78 @@ class PrintSunmiUtils {
 
         }
 
+        fun cardDetailsInnerNew(cardName: String, cardType: String, cardNumber: String, font: String) {
+
+//            for (i in 1..3) {
+//
+//                when (i) {
+//                    1 -> {
+//                        val strCardType = padLine(
+//                            "",
+//                            cardType,
+//                            if (font == Constants.LARGE) 23 else 48
+//                        ).toString()
+//                        normalTextTest(strCardType)
+//                    }
+//                    2 -> {
+//                        val strCardName = padLine(
+//                            "",
+//                            cardName,
+//                            if (font == Constants.LARGE) 23 else 48
+//                        ).toString()
+//                        normalTextTest(strCardName)
+//                    }
+//                    3 -> {
+//                        val strCardNumber = padLine(
+//                            "",
+//                            cardNumber,
+//                            if (font == Constants.LARGE) 23 else 48
+//                        ).toString()
+//                        normalTextTest(strCardNumber)
+//                    }
+//                }
+//            }
+            for (i in 1..3) {
+
+                when (i) {
+                    /*1 -> {
+                        if (!cardName.isNullOrBlank()) {
+                            val strCardName = padLine(
+                                "",
+                                cardName,
+                                if (font == Constants.LARGE) 23 else 48
+                            ).toString()
+                            normalText(strCardName)
+
+                        }
+                    }*/
+
+                    2 -> {
+
+                        if (!cardType.isNullOrBlank()) {
+                            val strCardType = padLine(
+                                "",
+                                cardType,
+                                if (font == Constants.LARGE) 23 else 83
+                            ).toString()
+                            PrintSunmiUtils.normalText(strCardType)
+                        }
+
+                    }
+
+                    3 -> {
+                        if (!cardNumber.isNullOrBlank()) {
+                            val strCardNumber = padLine(
+                                "",
+                                cardNumber,
+                                if (font == Constants.LARGE) 23 else 86
+                            ).toString()
+                            PrintSunmiUtils.normalText(strCardNumber)
+                        }
+                    }
+                }
+            }
+        }
         fun cardDetailsInner(cardName: String, cardType: String, cardNumber: String, font: String) {
 
 //            for (i in 1..3) {
