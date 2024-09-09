@@ -14,7 +14,6 @@ import android.view.*
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.*
@@ -54,6 +53,7 @@ import com.pays.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
 import com.pays.pos.data.remote.Constants.IS_PAYMENT_SCREEN
 import com.pays.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.pays.pos.data.remote.Constants.KITCHENANDCUSTOMER
+import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.LARGE
 import com.pays.pos.data.remote.Constants.MAX_ITEM_QUANTITY
 import com.pays.pos.data.remote.Constants.MEDIUM
@@ -101,7 +101,6 @@ import com.pays.pos.utils.statusUtils.Status
 import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
-import com.starmicronics.stario10.StarSpoolJobSettings
 import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
 import com.starmicronics.stario10.starxpandcommand.MagnificationParameter
 import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
@@ -5383,7 +5382,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 try{
                     if (receiptModel?.order?.customer != null) {
 
-                        PrintSunmiUtils.customerDetailsInner()
+                        PrintSunmiUtils.customerDetailsInner(true,sunmiFrameworkVersion)
 
                         if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
                             PrintSunmiUtils.normalText("\n")
@@ -5786,10 +5785,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     if (data?.isNotEmpty() == true) {
                         var isInnerPrinterConnected = false
                         for (i in data.indices) {
-                            if (data[i].name.startsWith(
+                            if (((data[i].name.startsWith(
                                     SUNMI_INNER_PRINTER,
                                     true
-                                ) && (data[i].receiptPrintType == CUSTOMER || data[i].receiptPrintType == KITCHENANDCUSTOMER)
+                                )) || (data[i].name.startsWith(
+                                    LANDI_INNER_PRINTER,
+                                    true
+                                ))) && (data[i].receiptPrintType == CUSTOMER || data[i].receiptPrintType == KITCHENANDCUSTOMER)
                             ) {
                                 isInnerPrinterConnected = true
                                 break

@@ -18,7 +18,6 @@ import android.text.TextWatcher
 import android.util.Base64
 import android.util.Log
 import android.view.*
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
@@ -55,7 +54,6 @@ import com.pays.pos.data.remote.Constants.OLD_ITEM_BASE_CUSTOM_ITEM
 import com.pays.pos.data.remote.Constants.ONLINE_ORDER_TAB
 import com.pays.pos.data.remote.Constants.OPEN_ORDER_TAB
 import com.pays.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
-import com.pays.pos.data.remote.Constants.ORDER_TYPE
 import com.pays.pos.data.remote.Constants.PHONE_ORDER_TAB
 import com.pays.pos.data.remote.Constants.SUNMI_PRINTER
 import com.pays.pos.data.remote.Constants.THIRD_PARTY_ORDER_TAB
@@ -77,7 +75,6 @@ import com.pays.pos.utils.statusUtils.Status
 import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
-import com.starmicronics.stario10.StarSpoolJobSettings
 import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
 import com.starmicronics.stario10.starxpandcommand.MagnificationParameter
 import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
@@ -94,7 +91,6 @@ import org.greenrobot.eventbus.EventBus
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.StringReader
-import java.lang.Runnable
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -5069,6 +5065,9 @@ class AllOrdersListingFragment(
                             add(
                                 PrinterBuilder()
                                     .styleBold(true)
+                                    .styleMagnification(
+                                        MagnificationParameter(2, 2)
+                                    )
                                     .actionPrintText(
                                         if (kitchenSettingModel.showOrderType)
                                             orderData.orderType
@@ -5082,6 +5081,9 @@ class AllOrdersListingFragment(
                                 add(
                                     PrinterBuilder()
                                         .styleBold(true)
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
+                                        )
                                         .actionPrintText(
                                             orderData.deliveryType
                                         )
@@ -5092,6 +5094,9 @@ class AllOrdersListingFragment(
 
                             add(
                                 PrinterBuilder()
+                                    .styleMagnification(
+                                        MagnificationParameter(2, 2)
+                                    )
                                     .actionPrintText(
                                         "Employee:${
                                             prefProvider.getValue(
@@ -5105,6 +5110,9 @@ class AllOrdersListingFragment(
 
                             add(
                                 PrinterBuilder()
+                                    .styleMagnification(
+                                        MagnificationParameter(2, 2)
+                                    )
                                     .actionPrintText(
                                         Constants.getReceiptFormatDateFromUTCServer(
                                             requireContext(),
@@ -5126,8 +5134,9 @@ class AllOrdersListingFragment(
                             actionFeedLine(1)
 
                             add(
-                                PrinterBuilder()
-                                    .styleAlignment(Alignment.Left)
+                                PrinterBuilder().styleMagnification(
+                                    MagnificationParameter(2, 2)
+                                ).styleAlignment(Alignment.Left)
                                     .actionPrintText(
                                         content = addReprintOrdersForStarKitchen(
                                             orderData.orderItems!!,
@@ -5140,6 +5149,9 @@ class AllOrdersListingFragment(
                             if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
                                 add(
                                     PrinterBuilder()
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
+                                        )
                                         .styleAlignment(Alignment.Center)
                                         .styleBold(true)
                                         .actionPrintText(
@@ -5153,6 +5165,9 @@ class AllOrdersListingFragment(
                                 add(
                                     PrinterBuilder()
                                         .styleAlignment(Alignment.Center)
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
+                                        )
                                         .actionPrintText(
                                             content = if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
                                                 orderData.note.toString()
@@ -5166,6 +5181,9 @@ class AllOrdersListingFragment(
                                     PrinterBuilder()
                                         .styleAlignment(Alignment.Left)
                                         .styleBold(true)
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
+                                        )
                                         .actionPrintText(
                                             content = if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
                                                 "Customer Details\n"
@@ -5189,6 +5207,9 @@ class AllOrdersListingFragment(
                                 add(
                                     PrinterBuilder()
                                         .styleAlignment(Alignment.Left)
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
+                                        )
                                         .actionPrintText(
                                             content = if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
                                                 orderData.customer?.firstName + " " + orderData.customer?.lastName
@@ -5204,6 +5225,9 @@ class AllOrdersListingFragment(
                                     add(
                                         PrinterBuilder()
                                             .styleAlignment(Alignment.Left)
+                                            .styleMagnification(
+                                                MagnificationParameter(2, 2)
+                                            )
                                             .actionPrintText(
                                                 content = if (kitchenSettingModel.showCustomerPhone && orderData.customer?.phones?.get(
                                                         0
@@ -7570,7 +7594,7 @@ class AllOrdersListingFragment(
 
                 if (receiptModel.customer != null) {
 
-                    PrintSunmiUtils.customerDetailsInner()
+                    PrintSunmiUtils.customerDetailsInner(false,sunmiFrameworkVersion)
 
                     if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
                         PrintSunmiUtils.normalText("\n")
@@ -7751,9 +7775,19 @@ class AllOrdersListingFragment(
             try {
                 if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
                     if (orderData.customer != null) {
-
-                        PrintSunmiUtils.customerDetailsInner()
-
+                        if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                                ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                        ) {
+                            PrintSunmiUtils.normalText("\n")
+                        }
+                        PrintSunmiUtils.customerDetailsInner(true,sunmiFrameworkVersion)
+                        if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                                ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                        ) {
+                            PrintSunmiUtils.addHorizontalInnerNew()
+                        }else{
+                            PrintSunmiUtils.addHorizontalInner()
+                        }
                         if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
                             PrintSunmiUtils.normalText("\n")
                         }

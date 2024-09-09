@@ -32,7 +32,6 @@ import com.pays.pos.data.model.responseModel.OpenOrderResponse
 import com.pays.pos.data.model.responseModel.PrinterResponse
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.BUSINESS_ADDRESS
-import com.pays.pos.data.remote.Constants.OPEN_ORDER
 import com.pays.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.pays.pos.data.remote.Constants.PHONE_ORDER
 import com.pays.pos.data.remote.Constants.PRINT_PAID
@@ -40,11 +39,9 @@ import com.pays.pos.data.remote.Constants.PRINT_UNPAID
 import com.pays.pos.data.remote.Constants.SHIPPING_ADDRESS
 import com.pays.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.SUNMI_PRINTER
-import com.pays.pos.databinding.FragmentActiveOrdersBinding
 import com.pays.pos.databinding.FragmentPhoneOrdersBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
-import com.pays.pos.ui.adapter.OpenOrderAdapter
 import com.pays.pos.ui.adapter.PhoneOrderAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil

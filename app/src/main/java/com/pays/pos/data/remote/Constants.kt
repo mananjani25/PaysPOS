@@ -1,22 +1,20 @@
 package com.pays.pos.data.remote
 
 import android.content.Context
-import android.os.Debug
 import android.util.Log
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import com.google.gson.Gson
 import com.pays.pos.data.model.PrinterListModel
 import com.pays.pos.data.model.requestModel.CreatePrinterRequestModel
 import com.pays.pos.data.model.responseModel.PrinterResponse
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.TimeFormatUtils
-import com.google.gson.Gson
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinterBuilder
 import java.text.SimpleDateFormat
-import java.util.Locale
-import java.util.TimeZone
+import java.util.*
 import java.util.concurrent.ExecutionException
 
 object Constants {
@@ -813,6 +811,7 @@ object Constants {
     const val SUNMI_INNER_PRINTER = "InnerPrinter"
     const val SUNMI_PRINTER = "CloudPrint"
 
+    const val LANDI_INNER_PRINTER = "Inner Printer"
 
     const val SHIPPING_ADDRESS = "Shipping"
     const val BILLING_ADDRESS = "Billing"
@@ -846,6 +845,12 @@ object Constants {
     const val IS_PAX_PAYMENT_FAILED = "isPaxPaymentFailed"
     const val INVENTORY_SYNC = "INVENTORY_SYNC"
     const val UPDATED_CARTMODEL_ID = "updated_cartmodel_id"
+
+
+    const val PERMISSION_BLUETOOTH = 1
+    const val PERMISSION_BLUETOOTH_ADMIN = 2
+    const val PERMISSION_BLUETOOTH_CONNECT = 3
+    const val PERMISSION_BLUETOOTH_SCAN = 4
 
     fun createCloudPrinter(ipAddress: String, portNo: Int): CloudPrinter {
         return CloudPrinterBuilder.buildPrinter(ipAddress, portNo)

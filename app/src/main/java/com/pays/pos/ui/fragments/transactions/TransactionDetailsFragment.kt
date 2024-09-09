@@ -65,7 +65,6 @@ import com.pax.poslink.ProcessTransResult
 import com.google.gson.reflect.TypeToken
 import com.pax.poslink.ReportRequest
 import com.pays.pos.data.model.requestModel.RefundRequestModel
-import com.pays.pos.ui.activities.MainActivity
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
@@ -91,6 +90,8 @@ class TransactionDetailsFragment : Fragment() {
     private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
     private var orderIDglobal = 0
     var taxClickable = false
+
+    private var sunmiFrameworkVersion: Array<String>? = null
 
     @Inject
     lateinit var apiModule1: ApiModule1
@@ -141,6 +142,7 @@ class TransactionDetailsFragment : Fragment() {
             container,
             false
         )
+
 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
@@ -204,6 +206,11 @@ class TransactionDetailsFragment : Fragment() {
         var selectedroleType = arguments?.getInt("selectedroleType")
         var selectedemployeeType = arguments?.getInt("selectedemployeeType")
         var selectedterminalType = arguments?.getInt("selectedterminalType")
+
+        sunmiFrameworkVersion =
+            prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".")
+                .toTypedArray()
+
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true /* enabled by default */) {
                 override fun handleOnBackPressed() {
@@ -514,7 +521,7 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun checkIfTransactionIsVoided() {
         GlobalScope.launch {
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
 
             val report = ReportRequest()
             report.TransType = report.ParseTransType("LOCALDETAILREPORT") //recommend
@@ -591,7 +598,7 @@ class TransactionDetailsFragment : Fragment() {
             if (paymentDetailsResponse.data.ref_num != null) {
                 if (paymentDetailsResponse.data.ref_num.isNotEmpty()) {
                     GlobalScope.launch {
-                        posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+                        posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
 
                         val report = ReportRequest()
                         report.TransType = report.ParseTransType("LOCALDETAILREPORT") //recommend
@@ -660,7 +667,7 @@ class TransactionDetailsFragment : Fragment() {
         if (refundAmount != 0.0) {
             if (paymentDetailsResponse.data.payment_type.equals("Card", ignoreCase = true)) {
                 GlobalScope.launch {
-                    posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+                    posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
 
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.showProgressDialog(requireActivity())
@@ -821,7 +828,7 @@ class TransactionDetailsFragment : Fragment() {
     // Adjust tip on transactions done via PAX
     private fun adjustPaxTips() {
         GlobalScope.launch {
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
             val tip_amt = (tipAmount * 100).toInt()
             Log.d("Amt: ", "tip $tip_amt RefNo ${paymentDetailsResponse.data?.ref_num}")
 
@@ -2974,6 +2981,11 @@ class TransactionDetailsFragment : Fragment() {
             if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                 if (paymentDetailsResponse.data.order.customer != null) {
                     PrintSunmiUtils.customerDetails()
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
+                        PrintSunmiUtils.normalText("\n")
+                    }
                     if (kitchenSettingModel.showCustomerName) {
                         PrintSunmiUtils.customerName(paymentDetailsResponse.data.order.customer.firstName + " " + paymentDetailsResponse.data.order.customer.lastName)
                     }
@@ -3488,10 +3500,15 @@ class TransactionDetailsFragment : Fragment() {
                     paymentDetailsResponse.data.order.created_at.toString()
                 )
             )
-            SunmiPrintHelper.getInstance().lineWrap(1)
 
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+            ) {
+                PrintSunmiUtils.addHorizontalInnerNew()
+            }else{
+                PrintSunmiUtils.addHorizontalInner()
+            }
 
-            PrintSunmiUtils.addHorizontalInner()
             SunmiPrintHelper.getInstance().lineWrap(1)
 
 //            receiptModel?.order?.orderItems?.let {
@@ -3516,7 +3533,20 @@ class TransactionDetailsFragment : Fragment() {
             SunmiPrintHelper.getInstance().lineWrap(1)
             if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                 if (paymentDetailsResponse.data.order.customer != null) {
-                    PrintSunmiUtils.customerDetailsInner()
+                    PrintSunmiUtils.customerDetailsInner(true,sunmiFrameworkVersion)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
+                        PrintSunmiUtils.addHorizontalInnerNew()
+                    }else{
+                        PrintSunmiUtils.addHorizontalInner()
+                    }
+
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
+                        PrintSunmiUtils.normalText("\n")
+                    }
                     if (kitchenSettingModel.showCustomerName) {
                         PrintSunmiUtils.normalTextLarge(paymentDetailsResponse.data.order.customer.firstName + " " + paymentDetailsResponse.data.order.customer.lastName)
                     }
@@ -4972,7 +5002,11 @@ class TransactionDetailsFragment : Fragment() {
                         )
                     )
 
-
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
+                        PrintSunmiUtils.normalText("\n")
+                    }
                 }
 
                 if (customerSettingModel.showPrintTime) {
@@ -4988,7 +5022,11 @@ class TransactionDetailsFragment : Fragment() {
                             )
                         )
                     }
-
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
+                        PrintSunmiUtils.normalText("\n")
+                    }
 
                 }
             } else {
@@ -5033,6 +5071,7 @@ class TransactionDetailsFragment : Fragment() {
 
                     PrintSunmiUtils.orderTime(orderTime)
 
+
                 }
 
                 if (customerSettingModel.showPrintTime) {
@@ -5058,7 +5097,11 @@ class TransactionDetailsFragment : Fragment() {
             }
 
             PrintSunmiUtils.addHorizontal()
-
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+            ) {
+                PrintSunmiUtils.normalText("\n")
+            }
 
             paymentDetailsResponse.data.order.order_items.let {
                 addOrderItemsTransaction(
@@ -5314,6 +5357,11 @@ class TransactionDetailsFragment : Fragment() {
                 if (paymentDetailsResponse?.data.order?.customer != null) {
 
                     PrintSunmiUtils.customerDetails()
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
+                        PrintSunmiUtils.normalText("\n")
+                    }
 
                     if (customerSettingModel.showCustomerName) {
 
@@ -5559,15 +5607,34 @@ class TransactionDetailsFragment : Fragment() {
                 }
             }
 
-            PrintSunmiUtils.addHorizontalInner()
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+            ) {
+                PrintSunmiUtils.addHorizontalInnerNew()
+                PrintSunmiUtils.normalText("\n")
+            }else{
+                PrintSunmiUtils.addHorizontalInner()
+            }
 
 
-            paymentDetailsResponse.data.order.order_items.let {
-                addOrderItemsTransactionInner(
-                    it,
-                    customerSettingModel.fonts,
-                    customerSettingModel.showModifiers
-                )
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+            ) {
+                paymentDetailsResponse.data.order.order_items.let {
+                    addOrderItemsTransactionInnerNew(
+                        it,
+                        customerSettingModel.fonts,
+                        customerSettingModel.showModifiers
+                    )
+                }
+            }else{
+                paymentDetailsResponse.data.order.order_items.let {
+                    addOrderItemsTransactionInner(
+                        it,
+                        customerSettingModel.fonts,
+                        customerSettingModel.showModifiers
+                    )
+                }
             }
 
             SunmiPrintHelper.getInstance().lineWrap(2)
@@ -5585,8 +5652,14 @@ class TransactionDetailsFragment : Fragment() {
                         "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order.total_discount)
                     }, PrintSunmiUtils.lineChar()
                 ).toString()
-                PrintSunmiUtils.normalText(str1)
 
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                ) {
+                    PrintSunmiUtils.normalTextNew(str1)
+                }else{
+                    PrintSunmiUtils.normalText(str1)
+                }
             }
 
             val sub = padLine(
@@ -5595,45 +5668,95 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.lineChar()
             ).toString()
 
-            PrintSunmiUtils.normalText(sub)
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+            ) {
+                PrintSunmiUtils.normalTextNew(sub)
+            }else{
+                PrintSunmiUtils.normalText(sub)
+            }
 
 
 
             if (paymentDetailsResponse.data?.tax_amount != null) {
 
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                ) {
+                    PrintSunmiUtils.normalTextNew(
+                        padLine(
+                            "Tax",
+                            "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.tax_amount),
+                            PrintSunmiUtils.lineChar()
+                        ).toString()
+                    )
+                }else{
+                    PrintSunmiUtils.normalText(
+                        padLine(
+                            "Tax",
+                            "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.tax_amount),
+                            PrintSunmiUtils.lineChar()
+                        ).toString()
+                    )
+                }
 
-                PrintSunmiUtils.normalText(
-                    padLine(
-                        "Tax",
-                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.tax_amount),
-                        PrintSunmiUtils.lineChar()
-                    ).toString()
-                )
             }
 
             if (paymentDetailsResponse.data?.service_charge_amount != null && paymentDetailsResponse.data.order.service_charge_enabled) {
 
-                PrintSunmiUtils.normalText(
-                    padLine(
-                        "Service Charge",
-                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.service_charge_amount),
-                        PrintSunmiUtils.lineChar()
-                    ).toString()
-                )
+
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                ) {
+
+                    PrintSunmiUtils.normalTextNew(
+                        padLine(
+                            "Service Charge",
+                            "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.service_charge_amount),
+                            PrintSunmiUtils.lineChar()
+                        ).toString()
+                    )
+                }else{
+
+                    PrintSunmiUtils.normalText(
+                        padLine(
+                            "Service Charge",
+                            "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.service_charge_amount),
+                            PrintSunmiUtils.lineChar()
+                        ).toString()
+                    )
+                }
+
             }
 
             if (paymentDetailsResponse.data?.tips != 0.0) {
 
-                PrintSunmiUtils.normalText(
-                    padLine(
-                        "Tips",
-                        "$" + paymentDetailsResponse.data.tips?.let {
-                            MethodUtils.roundOffAmountString(
-                                it
-                            )
-                        }, PrintSunmiUtils.lineChar()
-                    ).toString()
-                )
+
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                ) {
+                    PrintSunmiUtils.normalTextNew(
+                        padLine(
+                            "Tips",
+                            "$" + paymentDetailsResponse.data.tips?.let {
+                                MethodUtils.roundOffAmountString(
+                                    it
+                                )
+                            }, PrintSunmiUtils.lineChar()
+                        ).toString()
+                    )
+                }else{
+                    PrintSunmiUtils.normalText(
+                        padLine(
+                            "Tips",
+                            "$" + paymentDetailsResponse.data.tips?.let {
+                                MethodUtils.roundOffAmountString(
+                                    it
+                                )
+                            }, PrintSunmiUtils.lineChar()
+                        ).toString()
+                    )
+                }
             }
 
 
@@ -5652,9 +5775,14 @@ class TransactionDetailsFragment : Fragment() {
                             }, PrintSunmiUtils.lineChar()
                         ).toString()
 
-                    PrintSunmiUtils.normalText(surCharge)
 
-
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
+                        PrintSunmiUtils.normalTextNew(surCharge)
+                    }else {
+                        PrintSunmiUtils.normalText(surCharge)
+                    }
                 } else if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Cash".lowercase() && paymentDetailsResponse?.data?.cash_discount_type.lowercase() == "CashDiscount".lowercase()) {
 
 
@@ -5667,9 +5795,13 @@ class TransactionDetailsFragment : Fragment() {
                         }, PrintSunmiUtils.lineChar()
                     ).toString()
 
-
-                    PrintSunmiUtils.normalText(cashDisc)
-
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
+                        PrintSunmiUtils.normalTextNew(cashDisc)
+                    }else{
+                        PrintSunmiUtils.normalText(cashDisc)
+                    }
                 }
             }
 
@@ -5686,7 +5818,13 @@ class TransactionDetailsFragment : Fragment() {
                             )
                         }, PrintSunmiUtils.lineChar()
                     ).toString()
-                    PrintSunmiUtils.normalText(loyaltyAmount)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
+                        PrintSunmiUtils.normalTextNew(loyaltyAmount)
+                    }else{
+                        PrintSunmiUtils.normalText(loyaltyAmount)
+                    }
 
                 }
 
@@ -5698,8 +5836,13 @@ class TransactionDetailsFragment : Fragment() {
                         PrintSunmiUtils.lineChar()
                     ).toString()
 
-                    PrintSunmiUtils.normalText(loyaltyPoint)
-
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
+                        PrintSunmiUtils.normalTextNew(loyaltyPoint)
+                    }else{
+                        PrintSunmiUtils.normalText(loyaltyPoint)
+                    }
                 }
             }
 
@@ -5707,14 +5850,25 @@ class TransactionDetailsFragment : Fragment() {
             val totalAmt =
                 MethodUtils.roundOffAmountDouble(paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips)
 
-            PrintSunmiUtils.boldText(
-                padLine(
-                    "Total Price",
-                    "$" + MethodUtils.roundOffAmountString(totalAmt),
-                    PrintSunmiUtils.lineChar()
-                ).toString()
-            )
-
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+            ) {
+                PrintSunmiUtils.boldTextNew(
+                    padLine(
+                        "Total Price",
+                        "$" + MethodUtils.roundOffAmountString(totalAmt),
+                        PrintSunmiUtils.lineChar()
+                    ).toString()
+                )
+            }else{
+                PrintSunmiUtils.boldText(
+                    padLine(
+                        "Total Price",
+                        "$" + MethodUtils.roundOffAmountString(totalAmt),
+                        PrintSunmiUtils.lineChar()
+                    ).toString()
+                )
+            }
 
             if (paymentDetailsResponse?.data?.order.refund_detail != null && paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount != 0.0 && customerSettingModel.showRefundAmount) {
 
@@ -5733,27 +5887,59 @@ class TransactionDetailsFragment : Fragment() {
             if (paymentDetailsResponse.data.order?.total_tips == 0.0) {
                 if (customerSettingModel.showTipLineForCash) {
 
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        PrintSunmiUtils.boldText("Tips      _____________")
-                        SunmiPrintHelper.getInstance().lineWrap(1)
-                    } else {
-                        PrintSunmiUtils.boldText("Tips                              _____________")
-                    }
 
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            PrintSunmiUtils.boldTextNew("Tips      _____________")
+                            SunmiPrintHelper.getInstance().lineWrap(1)
+                        } else {
+                            PrintSunmiUtils.boldTextNew("Tips                              _____________")
+                        }
+                    }else{
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            PrintSunmiUtils.boldText("Tips      _____________")
+                            SunmiPrintHelper.getInstance().lineWrap(1)
+                        } else {
+                            PrintSunmiUtils.boldText("Tips                              _____________")
+                        }
+                    }
                 }
             }
-
 
             if (customerSettingModel.showTipSuggestion) {
                 SunmiPrintHelper.getInstance().lineWrap(1)
                 PrintSunmiUtils.additionalTipsInner()
-                if (tipsList.isNotEmpty()) {
-                    PrintSunmiUtils.addTipListInner(
-                        tipsList,
-                        paymentDetailsResponse.data.order.total_amount,
-                        customerSettingModel.fonts
-                    )
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                ) {
+                    PrintSunmiUtils.addHorizontalInnerNew()
+                    PrintSunmiUtils.normalText("\n")
+                }else{
+                    PrintSunmiUtils.addHorizontalInner()
                 }
+
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                ) {
+                    if (tipsList.isNotEmpty()) {
+                        addTipsListInnerNew(
+                            tipsList,
+                            paymentDetailsResponse.data.order.total_amount,
+                            customerSettingModel.fonts
+                        )
+                    }
+                }else{
+                    if (tipsList.isNotEmpty()) {
+                        PrintSunmiUtils.addTipListInner(
+                            tipsList,
+                            paymentDetailsResponse.data.order.total_amount,
+                            customerSettingModel.fonts
+                        )
+                    }
+                }
+
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
@@ -5764,7 +5950,13 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.lineChar()
             ).toString()
 
-            PrintSunmiUtils.normalText(tranId)
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+            ) {
+                PrintSunmiUtils.normalTextNew(tranId)
+            }else{
+                PrintSunmiUtils.normalText(tranId)
+            }
 
             if (paymentDetailsResponse.data.payment_type.lowercase() == "Card".lowercase()) {
 
@@ -5773,17 +5965,35 @@ class TransactionDetailsFragment : Fragment() {
                     "Card", PrintSunmiUtils.lineChar()
                 ).toString()
 
-                PrintSunmiUtils.normalTextTest(tranType)
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                ) {
+                    PrintSunmiUtils.normalTextNew(tranType)
+                }else{
+                    PrintSunmiUtils.normalText(tranType)
+                }
 
                 try {
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
+                        PrintSunmiUtils.cardDetailsInnerNew(
+                            paymentDetailsResponse.data.card_name,
+                            /*paymentDetailsResponse.data.card_type ?: ""*/
+                            MethodUtils.getCardType(paymentDetailsResponse.data.ext_data),
+                            paymentDetailsResponse.data.card_number,
+                            customerSettingModel.fonts
+                        )
+                    }else{
+                        PrintSunmiUtils.cardDetailsInner(
+                            paymentDetailsResponse.data.card_name,
+                            /*paymentDetailsResponse.data.card_type ?: ""*/
+                            MethodUtils.getCardType(paymentDetailsResponse.data.ext_data),
+                            paymentDetailsResponse.data.card_number,
+                            customerSettingModel.fonts
+                        )
+                    }
 
-                    PrintSunmiUtils.cardDetailsInner(
-                        paymentDetailsResponse.data.card_name,
-                        /*paymentDetailsResponse.data.card_type ?: ""*/
-                        MethodUtils.getCardType(paymentDetailsResponse.data.ext_data),
-                        paymentDetailsResponse.data.card_number,
-                        customerSettingModel.fonts
-                    )
 
                 } catch (e: Exception) {
 
@@ -5791,13 +6001,26 @@ class TransactionDetailsFragment : Fragment() {
 
             } else {
 
-                PrintSunmiUtils.normalText(
-                    padLine(
-                        "Transaction Type",
-                        paymentDetailsResponse.data.payment_type ?: "Cash",
-                        PrintSunmiUtils.lineChar()
-                    ).toString()
-                )
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                ) {
+                    PrintSunmiUtils.normalTextNew(
+                        padLine(
+                            "Transaction Type",
+                            paymentDetailsResponse.data.payment_type ?: "Cash",
+                            PrintSunmiUtils.lineChar()
+                        ).toString()
+                    )
+
+                }else{
+                    PrintSunmiUtils.normalText(
+                        padLine(
+                            "Transaction Type",
+                            paymentDetailsResponse.data.payment_type ?: "Cash",
+                            PrintSunmiUtils.lineChar()
+                        ).toString()
+                    )
+                }
 
             }
 
@@ -5809,8 +6032,13 @@ class TransactionDetailsFragment : Fragment() {
 
                 if (paymentDetailsResponse?.data.order?.customer != null) {
 
-                    PrintSunmiUtils.customerDetailsInner()
+                    PrintSunmiUtils.customerDetailsInner(false,sunmiFrameworkVersion)
 
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
+                        PrintSunmiUtils.normalText("\n")
+                    }
                     if (customerSettingModel.showCustomerName) {
 
                         PrintSunmiUtils.normalText(paymentDetailsResponse?.data.order?.customer.firstName + " " + paymentDetailsResponse?.data.order?.customer.lastName)

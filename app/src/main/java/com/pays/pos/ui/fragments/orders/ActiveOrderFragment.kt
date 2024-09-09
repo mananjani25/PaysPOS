@@ -33,7 +33,6 @@ import com.pays.pos.data.model.responseModel.PrinterResponse
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.pays.pos.data.remote.Constants.OPEN_ORDER
-import com.pays.pos.data.remote.Constants.OPEN_ORDER_
 import com.pays.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.pays.pos.data.remote.Constants.PRINT_PAID
 import com.pays.pos.data.remote.Constants.PRINT_UNPAID

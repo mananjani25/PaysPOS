@@ -578,7 +578,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 
     private fun checkBroadPOSVersion() {
         GlobalScope.launch {
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
 
             val manageRequest = ManageRequest()
             manageRequest.TransType = manageRequest.ParseTransType("INIT")
@@ -624,7 +624,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             withContext(Dispatchers.Main) {
 
             }
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
 
             Log.d("paxRefNo: ", "paxRefNo: ${referenceNo}")
             requireActivity().let {
@@ -704,7 +704,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
         if (refundAmount != 0.0 || refundAmount > 0.0) {
             if (paymentType == "Card") {
                 GlobalScope.launch {
-                    posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+                    posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
 
                     val amt = (refundAmount * 100).toInt()
                     val refund = PaymentRequest()
@@ -775,7 +775,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
         if (refundAmount != 0.0 || refundAmount > 0.0) {
             if (paymentType == "Card") {
                 GlobalScope.launch {
-                    posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+                    posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
 
                     /*CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.showProgressDialog(requireActivity())
@@ -914,7 +914,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
         if (refundAmount != 0.0 || refundAmount > 0.0) {
             if (paymentType == "Card") {
                 GlobalScope.launch {
-                    posLink.SetCommSetting(SettingINI.getCommSettingFromFile(Constants.FILE_PATH + SettingINI.FILENAME))
+                    posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
 
                     /*CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.showProgressDialog(requireActivity())
