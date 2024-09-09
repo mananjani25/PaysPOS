@@ -2830,6 +2830,40 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                 }
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
+            if (eodReportData?.externalPayments?.isNotEmpty() == true && eodReportConfiguration?.totalCashPayments == true) {
+
+                PrintSunmiUtils.headerText("TOTAL EXTERNAL PAYMENT")
+
+
+                eodReportData?.externalPayments?.forEach { report ->
+                    report.forEach {
+                        if(it.key?.contains("Name", true) == true){
+                            SunmiPrintHelper.getInstance().lineWrap(1)
+                        }
+                        if (sunmiFrameworkVersion?.get(0)
+                                ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                                ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                        ) {
+                            PrintSunmiUtils.normalTextNew(
+                                padLine(
+                                    it.key,
+                                    it.showData(),
+                                    48
+                                ).toString()
+                            )
+                        } else {
+                            PrintSunmiUtils.normalText(
+                                padLine(
+                                    it.key,
+                                    it.showData(),
+                                    48
+                                ).toString()
+                            )
+                        }
+                    }
+                }
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
             if (eodReportData?.totalPayments?.isNotEmpty() == true && eodReportConfiguration?.totalPayments == true) {
 
                 PrintSunmiUtils.headerText("TOTAL PAYMENTS")
