@@ -105,6 +105,19 @@ import com.epson.eposprint.Print
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.pays.pos.ui.adapter.ExternalPaymentDetailsAdapter
+import com.pays.pos.utils.addCreditCardBreakDownDataInnerNew
+import com.pays.pos.utils.addCreditCardBreakDownInnerNew
+import com.pays.pos.utils.addCreditTipAuditDataInnerNew
+import com.pays.pos.utils.addCreditTipAuditHeaderInnerNew
+import com.pays.pos.utils.addItemWiseSalesHeaderSunmiInnerNew
+import com.pays.pos.utils.addItemWiseSalesSunmiInnerPrinterNew
+import com.pays.pos.utils.addItemsInOrderSalesDetailsInnerNew
+import com.pays.pos.utils.addPaymentDetailsHeaderInnerNew
+import com.pays.pos.utils.addPaymentDetailsThreeDataInnerNew
+import com.pays.pos.utils.addPaymentDetailsTwoDataInnerNew
+import com.pays.pos.utils.addRefundVoidsMultipleInnerNew
+import com.pays.pos.utils.addSixHeaderForOrderSaleDetailsSunmiInnerNew
+import com.pays.pos.utils.employeeGuestDetailsDataInnerNew
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
@@ -179,6 +192,8 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
     val myCalendar2 = Calendar.getInstance()
     val myCalendar3 = Calendar.getInstance()
 
+    private var sunmiFrameworkVersion: Array<String>? = null //Fetching Sunmi OS version to format printing.
+
     @set:Inject
     internal var prefProvider: PrefProvider? = null
 
@@ -190,6 +205,11 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
         binding = FragmentReportEodBinding.inflate(inflater, container, false)
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
+        //        3.3.39
+        sunmiFrameworkVersion =
+            prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".")
+                .toTypedArray()
+
         return binding.root
     }
 
@@ -2401,13 +2421,19 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                 PrintSunmiUtils.headerText("ORDER SALES DETAILS")
 
-                addSixHeaderForOrderSaleDetailsSunmiInner()
-
-                PrintSunmiUtils.addHorizontalInner()
-
-
-                eodReportData?.orderSalesDetails?.data?.forEach {
-                    addItemsInOrderSalesDetailsInner(it)
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    addSixHeaderForOrderSaleDetailsSunmiInnerNew()
+                    PrintSunmiUtils.addHorizontalInnerNew()
+                    PrintSunmiUtils.normalTextNew("\n")
+                    eodReportData?.orderSalesDetails?.data?.forEach {
+                        addItemsInOrderSalesDetailsInnerNew(it)
+                    }
+                } else {
+                    addSixHeaderForOrderSaleDetailsSunmiInner()
+                    PrintSunmiUtils.addHorizontalInner()
+                    eodReportData?.orderSalesDetails?.data?.forEach {
+                        addItemsInOrderSalesDetailsInner(it)
+                    }
                 }
 
                 SunmiPrintHelper.getInstance().lineWrap(1)
@@ -2421,13 +2447,23 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                 eodReportData?.salesSummary?.forEach {
 
-                    PrintSunmiUtils.normalText(
-                        padLine(
-                            it.key,
-                            it.showData(),
-                            48
-                        ).toString()
-                    )
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39) {
+                        PrintSunmiUtils.normalTextNew(
+                            padLine(
+                                it.key,
+                                it.showData(),
+                                48
+                            ).toString()
+                        )
+                    } else {
+                        PrintSunmiUtils.normalText(
+                            padLine(
+                                it.key,
+                                it.showData(),
+                                48
+                            ).toString()
+                        )
+                    }
                 }
                 SunmiPrintHelper.getInstance().lineWrap(1)
 
@@ -2437,20 +2473,51 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                 PrintSunmiUtils.headerText("SALES AND TAXES SUMMARY")
 
-                PrintSunmiUtils.normalText(padLine("Category(Quantity)", "Amount", 48).toString())
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39) {
 
-                PrintSunmiUtils.addHorizontalInner()
-
-
-                eodReportData?.salesAndTaxesSummary?.forEach {
-
-                    PrintSunmiUtils.normalText(
+                    PrintSunmiUtils.normalTextNew(
                         padLine(
-                            it.key,
-                            it.showData(),
+                            "Category(Quantity)",
+                            "Amount",
                             48
                         ).toString()
                     )
+
+                    PrintSunmiUtils.addHorizontalInnerNew()
+                    PrintSunmiUtils.normalTextNew("\n")
+
+                    eodReportData?.salesAndTaxesSummary?.forEach {
+
+                        PrintSunmiUtils.normalTextNew(
+                            padLine(
+                                it.key,
+                                it.showData(),
+                                48
+                            ).toString()
+                        )
+                    }
+                } else {
+                    PrintSunmiUtils.normalText(
+                        padLine(
+                            "Category(Quantity)",
+                            "Amount",
+                            48
+                        ).toString()
+                    )
+
+                    PrintSunmiUtils.addHorizontalInner()
+
+
+                    eodReportData?.salesAndTaxesSummary?.forEach {
+
+                        PrintSunmiUtils.normalText(
+                            padLine(
+                                it.key,
+                                it.showData(),
+                                48
+                            ).toString()
+                        )
+                    }
                 }
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
@@ -2458,11 +2525,22 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
             if (eodReportData?.itemWiseSales?.isNotEmpty() == true && eodReportConfiguration?.isItemWiseSales == true){
 
                 PrintSunmiUtils.headerText("ITEM WISE SALES")
-                addItemWiseSalesHeaderSunmiInner()
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39) {
+                    addItemWiseSalesHeaderSunmiInnerNew()
 
-                PrintSunmiUtils.addHorizontalInner()
-                eodReportData?.itemWiseSales?.forEach {
-                    addItemWiseSalesSunmiInnerPrinter(it)
+                    PrintSunmiUtils.addHorizontalInnerNew()
+                    PrintSunmiUtils.normalTextNew("\n")
+
+                    eodReportData?.itemWiseSales?.forEach {
+                        addItemWiseSalesSunmiInnerPrinterNew(it)
+                    }
+                } else {
+                    addItemWiseSalesHeaderSunmiInner()
+
+                    PrintSunmiUtils.addHorizontalInner()
+                    eodReportData?.itemWiseSales?.forEach {
+                        addItemWiseSalesSunmiInnerPrinter(it)
+                    }
                 }
 
                 SunmiPrintHelper.getInstance().lineWrap(1)
@@ -2473,21 +2551,42 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                 PrintSunmiUtils.headerText("PAYMENT DETAILS")
 
-                addPaymentDetailsHeaderInner()
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39) {
+                    addPaymentDetailsHeaderInnerNew()
 
-                PrintSunmiUtils.addHorizontalInner()
+                    PrintSunmiUtils.addHorizontalInnerNew()
+                    PrintSunmiUtils.normalTextNew("\n")
+
+                    eodReportData?.paymentDetails?.forEach {
+
+                        if (it.size == 2) {
 
 
-                eodReportData?.paymentDetails?.forEach {
+                            addPaymentDetailsThreeDataInnerNew(it)
 
-                    if (it.size == 2) {
+                        } else if (it.size == 1) {
+                            it.forEach {
+                                addPaymentDetailsTwoDataInnerNew(it)
+                            }
+                        }
+                    }
+                } else {
+                    addPaymentDetailsHeaderInner()
+
+                    PrintSunmiUtils.addHorizontalInner()
 
 
-                       addPaymentDetailsThreeDataInner(it)
+                    eodReportData?.paymentDetails?.forEach {
 
-                    } else if (it.size == 1) {
-                        it.forEach {
-                           addPaymentDetailsTwoDataInner(it)
+                        if (it.size == 2) {
+
+
+                            addPaymentDetailsThreeDataInner(it)
+
+                        } else if (it.size == 1) {
+                            it.forEach {
+                                addPaymentDetailsTwoDataInner(it)
+                            }
                         }
                     }
                 }
@@ -2499,19 +2598,38 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                 PrintSunmiUtils.headerText("TIPS DETAILS")
 
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    addPaymentDetailsHeaderInnerNew()
 
-                addPaymentDetailsHeaderInner()
+                    PrintSunmiUtils.addHorizontalInnerNew()
+                    PrintSunmiUtils.normalTextNew("\n")
 
-                PrintSunmiUtils.addHorizontalInner()
+                    eodReportData?.tipDetails?.forEach {
 
-                eodReportData?.tipDetails?.forEach {
+                        if (it.size == 2) {
+                            addPaymentDetailsThreeDataInnerNew(it)
 
-                    if (it.size == 2) {
-                        addPaymentDetailsThreeDataInner(it)
+                        } else if (it.size == 1) {
+                            it.forEach {
+                                addPaymentDetailsTwoDataInnerNew(it)
+                            }
+                        }
+                    }
+                } else {
 
-                    } else if (it.size == 1) {
-                        it.forEach {
-                            addPaymentDetailsTwoDataInner(it)
+                    addPaymentDetailsHeaderInner()
+
+                    PrintSunmiUtils.addHorizontalInner()
+
+                    eodReportData?.tipDetails?.forEach {
+
+                        if (it.size == 2) {
+                            addPaymentDetailsThreeDataInner(it)
+
+                        } else if (it.size == 1) {
+                            it.forEach {
+                                addPaymentDetailsTwoDataInner(it)
+                            }
                         }
                     }
                 }
@@ -2526,14 +2644,23 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                 eodReportData?.taxDetails?.forEach {
 
-
-                    PrintSunmiUtils.normalText(
-                        padLine(
-                            it.key,
-                            it.showData(),
-                            48
-                        ).toString()
-                    )
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                        PrintSunmiUtils.normalTextNew(
+                            padLine(
+                                it.key,
+                                it.showData(),
+                                48
+                            ).toString()
+                        )
+                    } else {
+                        PrintSunmiUtils.normalText(
+                            padLine(
+                                it.key,
+                                it.showData(),
+                                48
+                            ).toString()
+                        )
+                    }
                 }
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
@@ -2542,26 +2669,51 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                 PrintSunmiUtils.headerText("REFUNDS/VOIDS")
 
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    PrintSunmiUtils.normalTextNew(
+                        padLine(
+                            "Order Id(Employee Name)",
+                            "Amount",
+                            48
+                        ).toString()
+                    )
 
-                PrintSunmiUtils.normalText(
-                    padLine(
-                        "Order Id(Employee Name)",
-                        "Amount",
-                        48
-                    ).toString()
-                )
+                    PrintSunmiUtils.addHorizontalInnerNew()
+                    PrintSunmiUtils.normalTextNew("\n")
 
-                PrintSunmiUtils.addHorizontalInner()
+                    eodReportData?.refundAndVoidDetails?.forEach {
 
-                eodReportData?.refundAndVoidDetails?.forEach {
+                        if (it.size > 1) {
+                            addRefundVoidsMultipleInnerNew(it)
+                        } else if (it.size == 1) {
+                            it.forEach {
+                                addPaymentDetailsTwoDataInnerNew(it)
+                            }
 
-                    if (it.size > 1) {
-                        addRefundVoidsMultipleInner(it)
-                    } else if (it.size == 1) {
-                        it.forEach {
-                            addPaymentDetailsTwoDataInner(it)
                         }
+                    }
+                } else {
 
+                    PrintSunmiUtils.normalText(
+                        padLine(
+                            "Order Id(Employee Name)",
+                            "Amount",
+                            48
+                        ).toString()
+                    )
+
+                    PrintSunmiUtils.addHorizontalInner()
+
+                    eodReportData?.refundAndVoidDetails?.forEach {
+
+                        if (it.size > 1) {
+                            addRefundVoidsMultipleInner(it)
+                        } else if (it.size == 1) {
+                            it.forEach {
+                                addPaymentDetailsTwoDataInner(it)
+                            }
+
+                        }
                     }
                 }
                 SunmiPrintHelper.getInstance().lineWrap(1)
@@ -2575,14 +2727,23 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                 eodReportData?.refundDetails?.forEach {
 
-
-                    PrintSunmiUtils.normalText(
-                        padLine(
-                            it.key,
-                            it.showData(),
-                            48
-                        ).toString()
-                    )
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                        PrintSunmiUtils.normalTextNew(
+                            padLine(
+                                it.key,
+                                it.showData(),
+                                48
+                            ).toString()
+                        )
+                    }else {
+                        PrintSunmiUtils.normalText(
+                            padLine(
+                                it.key,
+                                it.showData(),
+                                48
+                            ).toString()
+                        )
+                    }
                 }
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
@@ -2593,14 +2754,23 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
 
                 eodReportData?.discountDetails?.forEach {
-
-                    PrintSunmiUtils.normalText(
-                        padLine(
-                            it.key,
-                            it.showData(),
-                            48
-                        ).toString()
-                    )
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39) {
+                        PrintSunmiUtils.normalTextNew(
+                            padLine(
+                                it.key,
+                                it.showData(),
+                                48
+                            ).toString()
+                        )
+                    }else {
+                        PrintSunmiUtils.normalText(
+                            padLine(
+                                it.key,
+                                it.showData(),
+                                48
+                            ).toString()
+                        )
+                    }
                 }
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
@@ -2612,14 +2782,23 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                 eodReportData?.totalCreditPaymentDetails?.forEach {
 
-
-                    PrintSunmiUtils.normalText(
-                        padLine(
-                            it.key,
-                            it.showData(),
-                            48
-                        ).toString()
-                    )
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39) {
+                        PrintSunmiUtils.normalTextNew(
+                            padLine(
+                                it.key,
+                                it.showData(),
+                                48
+                            ).toString()
+                        )
+                    }else{
+                        PrintSunmiUtils.normalText(
+                            padLine(
+                                it.key,
+                                it.showData(),
+                                48
+                            ).toString()
+                        )
+                    }
                 }
                 SunmiPrintHelper.getInstance().lineWrap(1)
 
@@ -2631,13 +2810,23 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                 eodReportData?.totalCashPayments?.forEach {
 
-                    PrintSunmiUtils.normalText(
-                        padLine(
-                            it.key,
-                            it.showData(),
-                            48
-                        ).toString()
-                    )
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39) {
+                        PrintSunmiUtils.normalTextNew(
+                            padLine(
+                                it.key,
+                                it.showData(),
+                                48
+                            ).toString()
+                        )
+                    }else {
+                        PrintSunmiUtils.normalText(
+                            padLine(
+                                it.key,
+                                it.showData(),
+                                48
+                            ).toString()
+                        )
+                    }
                 }
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
@@ -2647,14 +2836,23 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                 eodReportData?.totalPayments?.forEach {
 
-
-                    PrintSunmiUtils.normalText(
-                        padLine(
-                            it.key,
-                            it.showData(),
-                            48
-                        ).toString()
-                    )
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39) {
+                        PrintSunmiUtils.normalTextNew(
+                            padLine(
+                                it.key,
+                                it.showData(),
+                                48
+                            ).toString()
+                        )
+                    }else {
+                        PrintSunmiUtils.normalText(
+                            padLine(
+                                it.key,
+                                it.showData(),
+                                48
+                            ).toString()
+                        )
+                    }
                 }
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
@@ -2663,14 +2861,26 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                 PrintSunmiUtils.headerText("CREDIT CARD BREAKDOWN")
 
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39) {
 
-                addCreditCardBreakDownInner()
+                    addCreditCardBreakDownInnerNew()
 
-                PrintSunmiUtils.addHorizontalInner()
+                    PrintSunmiUtils.addHorizontalInnerNew()
+                    PrintSunmiUtils.normalTextNew("\n")
 
-                eodReportData?.creditCardBreakdown?.forEach {
+                    eodReportData?.creditCardBreakdown?.forEach {
 
-                    addCreditCardBreakDownDataInner(it)
+                        addCreditCardBreakDownDataInnerNew(it)
+                    }
+                } else {
+                    addCreditCardBreakDownInner()
+
+                    PrintSunmiUtils.addHorizontalInner()
+
+                    eodReportData?.creditCardBreakdown?.forEach {
+
+                        addCreditCardBreakDownDataInner(it)
+                    }
                 }
                 SunmiPrintHelper.getInstance().lineWrap(1)
 
@@ -2683,7 +2893,10 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                 eodReportData?.serviceChargeDetails?.forEach {
 
                     it.forEach {
-                        addPaymentDetailsTwoDataInner(it)
+                        if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39)
+                            addPaymentDetailsTwoDataInnerNew(it)
+                        else
+                            addPaymentDetailsTwoDataInner(it)
                     }
                 }
 
@@ -2692,8 +2905,14 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
             if (eodReportData?.creditTipAudit?.isNotEmpty() == true && eodReportConfiguration?.creditTipAudit == true) {
 
                 PrintSunmiUtils.headerText("CREDIT TIP AUDIT")
-                addCreditTipAuditHeaderInner()
-                PrintSunmiUtils.addHorizontalInner()
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39) {
+                    addCreditTipAuditHeaderInnerNew()
+                    PrintSunmiUtils.addHorizontalInnerNew()
+                    PrintSunmiUtils.normalTextNew("\n")
+                }else {
+                    addCreditTipAuditHeaderInner()
+                    PrintSunmiUtils.addHorizontalInner()
+                }
 
                 eodReportData?.creditTipAudit?.forEach { it ->
                     var FPArt = ""
@@ -2723,7 +2942,11 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                         }
 
                     }
-                    addCreditTipAuditDataInner(FPArt, SPart, TPArt, LPart)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39) {
+                        addCreditTipAuditDataInnerNew(FPArt, SPart, TPArt, LPart)
+                    }else{
+                        addCreditTipAuditDataInner(FPArt, SPart, TPArt, LPart)
+                    }
                 }
 
                 SunmiPrintHelper.getInstance().lineWrap(1)
@@ -2734,7 +2957,11 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                 eodReportData?.employeeGuestDetails?.forEach {
                     it.forEach {
-                        employeeGuestDetailsDataInner(it)
+                        if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39) {
+                            employeeGuestDetailsDataInnerNew(it)
+                        }else{
+                            employeeGuestDetailsDataInner(it)
+                        }
                     }
 
                 }
@@ -2752,11 +2979,16 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                         PrintSunmiUtils.addHorizontalInner()
                         SunmiPrintHelper.getInstance().lineWrap(1)
                         arrayList.forEach {
-                            addPaymentDetailsTwoDataInner(it)
+                            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39) {
+                                addPaymentDetailsTwoDataInnerNew(it)
+                            }else{
+                                addPaymentDetailsTwoDataInner(it)
+                            }
                         }
                         SunmiPrintHelper.getInstance().lineWrap(1)
 
-                        PrintSunmiUtils.addHorizontalInner()
+                        PrintSunmiUtils.addHorizontalInnerNew()
+                        PrintSunmiUtils.normalTextNew("\n")
 
                     } else if (index == 1) {
 
@@ -2765,7 +2997,11 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                         SunmiPrintHelper.getInstance().lineWrap(1)
 
                         arrayList.forEach {
-                            addPaymentDetailsTwoDataInner(it)
+                            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39) {
+                                addPaymentDetailsTwoDataInnerNew(it)
+                            }else{
+                                addPaymentDetailsTwoDataInner(it)
+                            }
                         }
 
                     }
@@ -2785,12 +3021,31 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                 eodReportData?.clockInClockOut?.forEach {
                     it.forEach { data ->
                         if (data.key != "Total") {
-                            PrintSunmiUtils.normalText(
-                                padLine(
-                                    if (data.key == "Total Working Hour") { "Total" } else { data.key },
-                                    data.value.toString(),
-                                    48).toString()
-                            )
+                            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39) {
+                                PrintSunmiUtils.normalTextNew(
+                                    padLine(
+                                        if (data.key == "Total Working Hour") {
+                                            "Total"
+                                        } else {
+                                            data.key
+                                        },
+                                        data.value.toString(),
+                                        48
+                                    ).toString()
+                                )
+                            }else {
+                                PrintSunmiUtils.normalText(
+                                    padLine(
+                                        if (data.key == "Total Working Hour") {
+                                            "Total"
+                                        } else {
+                                            data.key
+                                        },
+                                        data.value.toString(),
+                                        48
+                                    ).toString()
+                                )
+                            }
                         }
                     }
                     SunmiPrintHelper.getInstance().lineWrap(1)
@@ -2802,10 +3057,11 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                 PrintSunmiUtils.headerText("CASH LOG DETAILS")
 
                 eodReportData?.cashLogDetails?.forEach {
-
-                    addPaymentDetailsTwoDataInner(it)
-
-
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39) {
+                        addPaymentDetailsTwoDataInnerNew(it)
+                    }else{
+                        addPaymentDetailsTwoDataInner(it)
+                    }
                 }
 
                 SunmiPrintHelper.getInstance().lineWrap(1)
@@ -2816,8 +3072,11 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                 eodReportData?.otherDetails?.forEach {
 
-                    addPaymentDetailsTwoDataInner(it)
-
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39) {
+                        addPaymentDetailsTwoDataInnerNew(it)
+                    }else{
+                        addPaymentDetailsTwoDataInner(it)
+                    }
 
                 }
 
