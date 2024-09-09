@@ -51,6 +51,7 @@ import com.pays.pos.utils.statusUtils.Status
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
 import com.pays.pos.utils.addItemsInEmployeeTipsSummaryInnerPrinterNew
+import com.pays.pos.utils.employeeTipSummaryHeaderNew
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
@@ -757,19 +758,19 @@ class EmployeeTipSummary : Fragment() {
 
 
         //Main part start
-
-        employeeTipSummaryHeader()
-        ETSdataList?.forEach {
-            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
-                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
-            ) {
+        if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+        ) {
+            employeeTipSummaryHeaderNew()
+            ETSdataList?.forEach {
                 addItemsInEmployeeTipsSummaryInnerPrinterNew(it)
-            }else {
+            }
+        }else {
+            employeeTipSummaryHeader()
+            ETSdataList?.forEach {
                 addItemsInEmployeeTipsSummaryInnerPrinter(it)
-
             }
         }
-
         // Main part end
 
         SunmiPrintHelper.getInstance().lineWrap(2)
