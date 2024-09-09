@@ -64,6 +64,7 @@ import com.pays.pos.data.remote.Constants.GIFT_CARD
 import com.pays.pos.data.remote.Constants.GUEST_POSITION
 import com.pays.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.pays.pos.data.remote.Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED
+import com.pays.pos.data.remote.Constants.KIOSK_OPEN_ORDER
 import com.pays.pos.data.remote.Constants.KITCHEN
 import com.pays.pos.data.remote.Constants.KITCHENANDCUSTOMER
 import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
@@ -607,6 +608,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         arguments?.let {
             orderTypeToCheckKiosk = it.getString("orderType_to_check_kiosk", "")
+        }
+
+        if(orderTypeToCheckKiosk.isNullOrEmpty()) {
+            orderTypeToCheckKiosk = prefProvider.getValue(ORDER_TYPE, "")
         }
 
         prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)
