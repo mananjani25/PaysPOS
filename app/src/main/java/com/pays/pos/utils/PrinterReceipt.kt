@@ -150,7 +150,7 @@ fun employeeTipSummaryHeader() {
 //Added for version 3.3.66 or above.
 fun employeeTipSummaryHeaderNew() {
 
-    val header = "Employee        Cash         Card         External     Total"
+    val header = "Employee         Cash         Card       External      Total"
 
     PrintSunmiUtils.normalText(header)
 
@@ -1341,7 +1341,7 @@ fun addItemsInEmployeeTipsSummaryInnerPrinterNew(data: EmployeeTipSummaryRespons
 
     var items = ""
     var emName = data.employee_name
-    if (data.employee_name.length >= 10) {
+    if (data.employee_name.length >= 11) {
         emName = data.employee_name.substring(0, 8).plus("...")
     }
     items += repeat(" ", 0 - data.employee_name.length) + emName
