@@ -6,13 +6,23 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
+        android:background="@color/backgroundColor"
         android:layout_height="match_parent">
+
+        <View
+            android:id="@+id/viewBgDark"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/dark" />
 
         <RelativeLayout
             android:id="@+id/relative_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/backgroundColor"
             android:visibility="visible">
+
+
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/tab_linear"
@@ -88,6 +98,7 @@
                     android:id="@+id/payment_linear_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="@color/bg_color"
                     android:visibility="visible">
 
                     <RelativeLayout
@@ -720,6 +731,7 @@
 
 
             </androidx.appcompat.widget.LinearLayoutCompat>
+
         </RelativeLayout>
 
         <androidx.appcompat.widget.LinearLayoutCompat
