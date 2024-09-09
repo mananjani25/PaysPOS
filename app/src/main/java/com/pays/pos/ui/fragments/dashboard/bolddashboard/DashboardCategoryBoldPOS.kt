@@ -53,6 +53,7 @@ import com.pays.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
 import com.pays.pos.data.remote.Constants.IS_PAYMENT_SCREEN
 import com.pays.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.pays.pos.data.remote.Constants.KITCHENANDCUSTOMER
+import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.LARGE
 import com.pays.pos.data.remote.Constants.MAX_ITEM_QUANTITY
 import com.pays.pos.data.remote.Constants.MEDIUM
@@ -5784,10 +5785,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     if (data?.isNotEmpty() == true) {
                         var isInnerPrinterConnected = false
                         for (i in data.indices) {
-                            if (data[i].name.startsWith(
+                            if (((data[i].name.startsWith(
                                     SUNMI_INNER_PRINTER,
                                     true
-                                ) && (data[i].receiptPrintType == CUSTOMER || data[i].receiptPrintType == KITCHENANDCUSTOMER)
+                                )) || (data[i].name.startsWith(
+                                    LANDI_INNER_PRINTER,
+                                    true
+                                ))) && (data[i].receiptPrintType == CUSTOMER || data[i].receiptPrintType == KITCHENANDCUSTOMER)
                             ) {
                                 isInnerPrinterConnected = true
                                 break

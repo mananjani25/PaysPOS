@@ -206,7 +206,7 @@ class PrinterViewModel @Inject constructor(
                         } else if (status.lowercase() == Constants.KITCHEN.lowercase()) {
                             Log.e("PrinterDelete", "Printer ID: ${printerListModel.id}")
 
-                            posRepository.deleteKitchenPrinter(printerListModel.id)
+                            posRepository.deleteCustomerPrinter(printerListModel.id)
                         } else {
                             Log.e("PrinterDeleteElse", "Printer Else ID: ${printerListModel.id}")
                             posRepository.deleteCustomerPrinter(printerListModel.id)
