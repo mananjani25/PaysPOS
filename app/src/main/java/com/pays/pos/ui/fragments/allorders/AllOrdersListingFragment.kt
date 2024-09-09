@@ -184,6 +184,11 @@ class AllOrdersListingFragment(
         super.onViewCreated(view, savedInstanceState)
         setupAdapter()
 
+        dashboardViewModel.backupOrderId = null
+        dashboardViewModel.backupPaymentId = null
+        dashboardViewModel.backupPaymentOfflineId = ""
+        dashboardViewModel.backupOrderOfflineId = ""
+
         onlineDetailViewModel.refresh.observe(viewLifecycleOwner,
             object : androidx.lifecycle.Observer<Boolean> {
                 override fun onChanged(t: Boolean?) {
