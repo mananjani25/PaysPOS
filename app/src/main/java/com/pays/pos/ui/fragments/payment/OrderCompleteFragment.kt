@@ -146,6 +146,7 @@ import java.net.URL
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import java.util.stream.Collectors
 import javax.inject.Inject
 
 
@@ -11597,7 +11598,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                         )
                                                                         .actionPrintText(
                                                                             content =
-                                                                            "--------------------------------------------"
+                                                                            "------------------------------------------------"
                                                                         )
                                                                 )
 
@@ -11608,6 +11609,24 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                         )
                                                                         .actionPrintText(
                                                                             content = printedName.toString()
+                                                                        )
+                                                                )
+
+                                                                var phone=""
+                                                                receiptModel?.order?.customer?.phones?.let {
+                                                                    it.forEach {
+                                                                    if (it.phoneNumber.isNotEmpty())
+                                                                        phone=it.phoneNumber
+                                                                        return@let
+                                                                    }
+                                                                }
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleAlignment(
+                                                                            Alignment.Left
+                                                                        )
+                                                                        .actionPrintText(
+                                                                            content = phone
                                                                         )
                                                                 )
 
