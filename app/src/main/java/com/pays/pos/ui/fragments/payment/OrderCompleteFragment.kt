@@ -1556,10 +1556,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     private fun cleanOrderBackupDetails() {
-        /* dashboardViewModel.backupOrderId = null
+         dashboardViewModel.backupOrderId = null
          dashboardViewModel.backupPaymentId = null
          dashboardViewModel.backupPaymentOfflineId = ""
-         dashboardViewModel.backupOrderOfflineId = ""*/
+         dashboardViewModel.backupOrderOfflineId = ""
     }
 
     override fun onClick(v: View?) {

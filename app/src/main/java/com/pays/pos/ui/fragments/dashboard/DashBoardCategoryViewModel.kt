@@ -260,10 +260,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     var boldPosNeedToRefresh = false
 
     /* Below 4 variables are used as backup variables to solve the BIS-3973, when the cart's last item is deleted the the metadata is also getting removed, these variables will keep the metadata with them. */
-    /* public var backupOrderId:Int? = null
+     public var backupOrderId:Int? = null
      public var backupPaymentId:Int? = null
      public var backupPaymentOfflineId: String? = ""
-     public var backupOrderOfflineId: String? = ""*/
+     public var backupOrderOfflineId: String? = ""
 
     /**
      * BIS - 3500 issue resolved
