@@ -130,6 +130,15 @@ fun addItemWiseSalesHeaderSunmiInner() {
 
 }
 
+//Added for sunmi version 3.3.66 or above.
+fun addItemWiseSalesHeaderSunmiInnerNew() {
+
+    val header = "Item Name" + repeat(" ", 18) + "Quantity" + repeat(" ", 7) + "Amount"
+    Log.e("addItemWiseSalesHeader", "$header")
+    PrintSunmiUtils.normalTextNew(header)
+
+}
+
 fun employeeTipSummaryHeader() {
 
     val header = "Employee Name   Cash Tips  Card Tips  Total Tips"
@@ -139,10 +148,11 @@ fun employeeTipSummaryHeader() {
 }
 
 fun addPaymentDetailsHeaderInner() {
-
     PrintSunmiUtils.normalText("Details" + repeat(" ", 20) + "Refund" + repeat(" ", 9) + "Amount")
+}
 
-
+fun addPaymentDetailsHeaderInnerNew() {
+    PrintSunmiUtils.normalTextNew("Details" + repeat(" ", 20) + "Refund" + repeat(" ", 9) + "Amount")
 }
 
 fun addPaymentDetailsThreeData(builder: Builder, keyValue: java.util.ArrayList<KeyValue>): Builder {
@@ -319,6 +329,41 @@ fun addPaymentDetailsThreeDataInner(keyValue: java.util.ArrayList<KeyValue>) {
 
 }
 
+fun addPaymentDetailsThreeDataInnerNew(keyValue: java.util.ArrayList<KeyValue>) {
+
+    var title = ""
+    var refund = ""
+    var amount = ""
+
+
+    keyValue.forEach {
+
+
+        if (it.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
+            refund = it.showData()
+        } else {
+            title = it.key.toString()
+            amount = if (it.value?.isNotEmpty() == true) {
+                it.showData()
+            } else {
+                "$0.00"
+            }
+        }
+    }
+
+    var fPart = title + repeat(" ", 27 - title.length) + refund
+    var spaceLastPart = 48 - fPart.length
+    var spaceLast = 0
+    if (spaceLastPart > 1 && amount.length < spaceLastPart) {
+        spaceLast = spaceLastPart - amount.length
+    }
+
+    fPart += repeat(" ", spaceLast) + amount
+
+    PrintSunmiUtils.normalTextNew(fPart)
+
+}
+
 fun employeeGuestDetailsData(builder: Builder, keyValue: KeyValue): Builder {
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
@@ -414,6 +459,25 @@ fun employeeGuestDetailsDataInner(keyValue: KeyValue) {
 
 }
 
+//Added for sunmi version 3.3.66 or above
+fun employeeGuestDetailsDataInnerNew(keyValue: KeyValue) {
+
+    var sPart = if (keyValue.key?.contains("Served", true) == true) {
+        keyValue.value.toString()
+    } else {
+        MethodUtils.roundOffAmount(keyValue.value?.toDouble() ?: 0.0)
+    }
+    PrintSunmiUtils.normalTextNew(
+        padLine(
+            keyValue.key,
+            sPart,
+            48
+        ).toString()
+    )
+
+
+}
+
 fun addPaymentDetailsTwoData(builder: Builder, keyValue: KeyValue): Builder {
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
@@ -478,6 +542,20 @@ fun addPaymentDetailsTwoData(keyValue: KeyValue) {
 fun addPaymentDetailsTwoDataInner(keyValue: KeyValue) {
 
     PrintSunmiUtils.normalText(
+        padLine(
+            keyValue.key,
+            keyValue.showData(),
+            48
+        ).toString()
+    )
+
+
+}
+
+//Added for sunmi version 3.3.66 or above.
+fun addPaymentDetailsTwoDataInnerNew(keyValue: KeyValue) {
+
+    PrintSunmiUtils.normalTextNew(
         padLine(
             keyValue.key,
             keyValue.showData(),
@@ -581,6 +659,24 @@ fun addRefundVoidsMultipleInner(keyValue: java.util.ArrayList<KeyValue>) {
 
 }
 
+//Added for sunmi version 3.3.66 or above
+fun addRefundVoidsMultipleInnerNew(keyValue: java.util.ArrayList<KeyValue>) {
+
+    keyValue.forEach {
+        if (!it.key?.trim().equals("Item Count".trim(), true)) {
+            PrintSunmiUtils.normalTextNew(
+                padLine(
+                    it.key,
+                    MethodUtils.roundOffAmount(it.value.toString().toDouble() ?: 0.0),
+                    48
+                ).toString()
+            )
+        }
+    }
+
+
+}
+
 fun addSixHeaderForOrderSaleDetails(builder: Builder): Builder {
 
 
@@ -654,6 +750,11 @@ fun addSixHeaderForOrderSaleDetailsSunmiInner() {
     PrintSunmiUtils.normalText("OrderId    Tip      SC     PayType     Amount   ")
 }
 
+//Added for sunmi version 3.3.66 or above
+fun addSixHeaderForOrderSaleDetailsSunmiInnerNew() {
+    PrintSunmiUtils.normalTextNew("OrderId    Tip      SC     PayType     Amount   ")
+}
+
 fun addCreditTipAuditHeader(builder: Builder): Builder {
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
@@ -719,6 +820,19 @@ fun addCreditTipAuditHeader() {
 fun addCreditTipAuditHeaderInner() {
 
     PrintSunmiUtils.normalText(
+        "PaymentId" + repeat(" ", 4) + "SubTotal" + repeat(" ", 6) + "Tip" + repeat(
+            " ",
+            8
+        ) + "Total"
+    )
+
+
+}
+
+//Added for sunmi version 3.3.66 or above.
+fun addCreditTipAuditHeaderInnerNew() {
+
+    PrintSunmiUtils.normalTextNew(
         "PaymentId" + repeat(" ", 4) + "SubTotal" + repeat(" ", 6) + "Tip" + repeat(
             " ",
             8
@@ -831,6 +945,25 @@ fun addCreditTipAuditDataInner(
 
 }
 
+//Added for sunmi version 3.3.66 or above.
+fun addCreditTipAuditDataInnerNew(
+    fPArt: String,
+    sPart: String,
+    TPArt: String,
+    lPart: String
+) {
+
+
+    var pOne = TPArt + repeat(" ", 13 - TPArt.length) + fPArt
+
+    pOne += repeat(" ", 27 - pOne.length) + sPart
+    pOne += repeat(" ", 38 - pOne.length) + lPart
+
+
+    PrintSunmiUtils.normalTextNew(pOne)
+
+}
+
 fun addCreditCardBreakDown(builder: Builder): Builder {
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
@@ -883,6 +1016,13 @@ fun addCreditCardBreakDownInner() {
 
 
     PrintSunmiUtils.normalText("CardName" + repeat(" ", 20) + "Tip" + repeat(" ", 11) + "Amount")
+
+}
+
+//Added for sunmi version 3.3.66 or above
+fun addCreditCardBreakDownInnerNew() {
+
+    PrintSunmiUtils.normalTextNew("CardName" + repeat(" ", 20) + "Tip" + repeat(" ", 11) + "Amount")
 
 }
 
@@ -988,6 +1128,27 @@ fun addCreditCardBreakDownDataInner(
     pOne += repeat(" ", spaceLast) + amount
 
     PrintSunmiUtils.normalText(pOne)
+
+}
+
+//Added for sunmi version 3.3.66 or above
+fun addCreditCardBreakDownDataInnerNew(
+    creditCardBreakdown: EodReportResponse.Data.CreditCardBreakdown
+) {
+
+    var pOne = creditCardBreakdown.key + repeat(
+        " ",
+        28 - creditCardBreakdown.key.length
+    ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
+    var lastPart = 48 - pOne.length
+    var amount = creditCardBreakdown.showData()
+    var spaceLast = 0
+    if (lastPart > 1 && amount.length < lastPart) {
+        spaceLast = lastPart - amount.length
+    }
+    pOne += repeat(" ", spaceLast) + amount
+
+    PrintSunmiUtils.normalTextNew(pOne)
 
 }
 
@@ -1106,6 +1267,30 @@ fun addItemWiseSalesSunmiInnerPrinter(it: EodReportResponse.Data.ItemWiseSalesDa
     fPart += repeat(" ", spaceLast) + amount
     Log.e("addItemWiseSalesHeader", "$fPart")
     PrintSunmiUtils.normalText(fPart)
+
+}
+
+fun addItemWiseSalesSunmiInnerPrinterNew(it: EodReportResponse.Data.ItemWiseSalesData) {
+
+    var itemName = ""
+    var quantity = ""
+    var amount = ""
+
+
+    itemName = it.itemName
+    quantity = it.quantity
+    amount = MethodUtils.roundOffAmount(it.amount)
+
+    var fPart = itemName + repeat(" ", 27 - itemName.length) + quantity
+    var spaceLastPart = 48 - fPart.length
+    var spaceLast = 0
+    if (spaceLastPart > 1 && amount.length < spaceLastPart) {
+        spaceLast = spaceLastPart - amount.length
+    }
+
+    fPart += repeat(" ", spaceLast) + amount
+    Log.e("addItemWiseSalesHeader", "$fPart")
+    PrintSunmiUtils.normalTextNew(fPart)
 
 }
 
@@ -1237,6 +1422,20 @@ fun addItemsInOrderSalesDetailsInner(
     data += repeat(" ", 39 - data.length) + MethodUtils.roundOffAmount(details.amount)
 
     PrintSunmiUtils.normalText(data)
+}
+
+//Added for sunmi version 3.3.66 or above
+fun addItemsInOrderSalesDetailsInnerNew(
+    details: EodReportResponse.Data.OrderSalesDetails.Details
+) {
+
+    var data = details.orderId
+    data += repeat(" ", 10 - details.orderId.length) + MethodUtils.roundOffAmount(details.tip)
+    data += repeat(" ", 18 - data.length) + MethodUtils.roundOffAmount(details.serviceCharge)
+    data += repeat(" ", 27 - data.length) + details.payType
+    data += repeat(" ", 39 - data.length) + MethodUtils.roundOffAmount(details.amount)
+
+    PrintSunmiUtils.normalTextNew(data)
 }
 
 fun padLineCustomerItem(
