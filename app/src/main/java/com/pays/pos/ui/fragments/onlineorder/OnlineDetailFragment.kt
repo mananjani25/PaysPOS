@@ -2535,6 +2535,7 @@ class OnlineDetailFragment(
 
                     PrintSunmiUtils.customerDetailsInner()
 
+
                     if (kitchenSettingModel.showCustomerName) {
                         PrintSunmiUtils.normalTextLarge(orderData?.data?.customer?.firstName + " " + orderData?.data?.customer?.lastName)
 

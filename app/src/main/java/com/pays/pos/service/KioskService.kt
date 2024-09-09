@@ -2480,7 +2480,7 @@ class KioskService : Service(), StatusChangeEventListener {
             if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
                 if (orderData.data?.customer != null) {
 
-                    PrintSunmiUtils.customerDetailsInner()
+                    PrintSunmiUtils.customerDetailsInner(true,sunmiFrameworkVersion)
 
                     if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
                         PrintSunmiUtils.normalTextNew("\n")

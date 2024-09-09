@@ -448,11 +448,25 @@ class PrintSunmiUtils {
 
         }
 
-        fun customerDetailsInner() {
+        fun customerDetailsInner(isKitchenReceipt:Boolean=false,sunmiFrameworkVersion: Array<String>?=null) {
 
             headerTextLeft("Customer Details")
-            addHorizontalInner()
 
+            if (sunmiFrameworkVersion!=null){
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                ) {
+                    if (!isKitchenReceipt){
+                        PrintSunmiUtils.addHorizontalInnerNew()
+                    }else{
+                        PrintSunmiUtils.addHorizontalInnerSmall()
+                    }
+                }else{
+                    PrintSunmiUtils.addHorizontalInner()
+                }
+            }else{
+                addHorizontalInner()
+            }
         }
 
         fun customerName(value: String) {
@@ -746,6 +760,16 @@ class PrintSunmiUtils {
             SunmiPrintHelper.getInstance()
                 .printText(st, setFontSizeInner(), false, false, fontName)
         }
+        fun addHorizontalInnerSmall() {
+            val st = addHorizontalKitchenLineSunmiSmall(fontSizeInner)
+            SunmiPrintHelper.getInstance()
+                .printText(st, setFontSizeInner(), false, false, fontName)
+        }
+        fun addHorizontalInnerNew() {
+            val st = addHorizontalKitchenLineSunmiNew(fontSizeInner)
+            SunmiPrintHelper.getInstance()
+                .printText(st, setFontSizeInner(), false, false, fontName)
+        }
 
 
         fun additionalTipsInner() {
@@ -754,7 +778,7 @@ class PrintSunmiUtils {
             SunmiPrintHelper.getInstance()
                 .printText("Additional Tips", setFontSizeHeader(), true, false, fontName)
             SunmiPrintHelper.getInstance().lineWrap(1)
-            addHorizontalInner()
+//            addHorizontalInner()
 
         }
 
@@ -822,7 +846,7 @@ class PrintSunmiUtils {
                             val strCardNumber = padLine(
                                 "",
                                 cardNumber,
-                                if (font == Constants.LARGE) 23 else 86
+                                if (font == Constants.LARGE) 23 else 90
                             ).toString()
                             PrintSunmiUtils.normalText(strCardNumber)
                         }
