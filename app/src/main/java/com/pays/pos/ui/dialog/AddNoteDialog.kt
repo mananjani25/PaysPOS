@@ -47,6 +47,7 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
     private var headerItemPosition: Int? = null
     private lateinit var binding: DailogAddNoteBinding
     private lateinit var noteListadapter: NotesListAdapter
+    private var oldNote:String=""
     private val viewModel by viewModels<NoteListViewModel>()
     private val dashBoardCategoryViewModel by activityViewModels<DashBoardCategoryViewModel>()
 
@@ -86,6 +87,7 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
         item = requireArguments().getParcelable("item")
         isOrderNote = requireArguments().getBoolean("isOrderNote")
         isFromManual = requireArguments().getBoolean("isFromManual")
+        oldNote = requireArguments().getString("oldNote")+""
 
         if ((requireArguments().getString("from")
                 .toString()).equals(AddItemFragment.javaClass.name)
@@ -105,7 +107,7 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
 
 
         with(binding) {
-            txtRemovenote?.gone()
+//            txtRemovenote?.gone()
             if (isOrderNote) {
                 if (dashBoardCategoryViewModel.cartModel?.note?.isNotEmpty() == true) {
                     edtNote.setText(dashBoardCategoryViewModel.cartModel?.note ?: "")
@@ -156,6 +158,9 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
         binding.imgBack.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 item?.note = ""
+                if (oldNote.isNotEmpty()) {
+                    item?.note = oldNote
+                }
                 var it = item
                 dismiss()
             }
