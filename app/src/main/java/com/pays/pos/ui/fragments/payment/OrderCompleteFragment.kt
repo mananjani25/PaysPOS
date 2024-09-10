@@ -27,7 +27,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.dantsu.escposprinter.connection.bluetooth.BluetoothPrintersConnections
 import com.epson.epos2.printer.Printer
 import com.epson.eposprint.BatteryStatusChangeEventListener
 import com.epson.eposprint.Builder
@@ -1920,6 +1919,31 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 generateDineInPrint(customerReceiptPrinters, type, "")
             }
 
+        } else if(customerReceiptPrinters.name.startsWith(LANDI_INNER_PRINTER, true)) {
+
+            if(isGuest) {
+
+                val checkOutDineInModel =
+                    requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
+                LogUtil.logE(
+                    TAG,
+                    "checkOutDineInModel:  ${Gson().toJson(checkOutDineInModel)}"
+                )
+
+
+                if (checkOutDineInModel != null) {
+                    generateGuestPrint(
+                        customerReceiptPrinters,
+                        type,
+                        paymentType,
+                        listGuestItem,
+                        guestName,
+                        listWTitems,
+                        checkOutDineInModel
+                    )
+                }
+
+            }else generateDineInPrintForLandi(customerReceiptPrinters, type, "")
         } else {
 
             PrinterClass.closePrinter()
@@ -2114,7 +2138,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 guestServiceCharge
             )
 
-        } else {
+        } else if (customerReceiptPrinters.name.startsWith(LANDI_INNER_PRINTER, true)) {
+
+            printLandiDineinInner(paymentType,
+                listWTitems,
+                listGuestItem,
+                guestName,
+                finaldisLocal,
+                checkOutDineInModel,
+                orderDiscount,
+                guestTaxes,
+                guestSubTotal,
+                guestServiceCharge ,
+                customerReceiptPrinters)
+
+        } else{
 
 
             var builder: Builder? = null
@@ -3798,6 +3836,580 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             e.printStackTrace()
         }
     }
+
+
+    private fun printLandiDineinInner(
+        paymentType: String,
+        listWTitems: ArrayList<TbCartItem>,
+        listGuestItem: ArrayList<TbCartItem>,
+        guestName: String,
+        finaldisLocal: Double,
+        checkOutDineInModel: GuestDataModel?,
+        orderDiscount: Double,
+        guestTaxes: Double,
+        guestSubTotal: Double,
+        guestServiceCharge: Double,
+        customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters
+    ) {
+        val order = getDineInOrderDetails
+        this.checkBluetoothPermissions(object: OrderCompleteFragment.OnBluetoothPermissionGranted {
+            override fun onPermissionsGranted() {
+                GlobalScope.launch {
+                    LPrint.connectLandiInnerPrinter(customerReceiptPrinters.macAddress)
+                        ?.let { outputStream ->
+
+                            LPrint.apply {
+
+                                try {
+                                    setOutputStream(outputStream)
+
+                                    if (customerSettingModel.showOrderIdTop) {
+                                        val orderIdToPrint = if (prefProvider.getValueboolean(
+                                                ORDER_NUMBER_STARTING_FROM_ONE,
+                                                false
+                                            )
+                                        ) {
+                                            "OrderID: ${order?.custom_order_id}"
+                                        } else {
+                                            "OrderID: ${order?.id}"
+                                        }
+
+                                        printCenter(
+                                            orderIdToPrint,
+                                            FONT_SIZE_5X,
+                                            isBold = true
+                                        )
+
+                                        printCenter(
+                                            "Paid",
+                                            FONT_SIZE_5X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                    }
+
+
+
+
+                                    if (customerSettingModel.showVenueLogo && prefProvider.getValue(
+                                            Constants.VENUE_LOGO,
+                                            ""
+                                        )
+                                            .isNotEmpty()
+                                    ) {
+
+                                        PrintSunmiUtils.printLogoInner(
+                                            prefProvider.getValue(
+                                                Constants.VENUE_LOGO,
+                                                ""
+                                            )
+                                        )
+                                    }
+
+                                    printCenter(
+                                        "Paid",
+                                        FONT_SIZE_5X,
+                                        isBold = true,
+                                        printOnNewLine = true
+                                    )
+
+                                    /**
+                                     * Print Business Name
+                                     */
+                                    printCenter(
+                                        prefProvider.getValue(
+                                            Constants.BUSINESS_NAME,
+                                            ""
+                                        ),
+                                        fontSize = FONT_SIZE_DOUBLE_HEIGHT,
+                                        isBold = true,
+                                        printOnNewLine = true
+                                    )
+
+
+                                    val venueAddress = if (customerSettingModel.showVenueAddress) {
+                                        prefProvider.getValue(Constants.BUSINESS_ADDRESS, "")
+                                    } else ""
+
+                                    val businessPhoneNumber = prefProvider.getValue(
+                                        Constants.BUSINESS_PHONE_NO,
+                                        ""
+                                    )
+
+
+                                    printCenter(venueAddress, fontSize = SMALL_SIZE)
+                                    lineBreak()
+
+                                    printCenter(businessPhoneNumber, fontSize = SMALL_SIZE)
+                                    lineBreak()
+
+                                    printCenter(
+                                        prefProvider.getValue(
+                                            Constants.BUSINESS_WEBSITE,
+                                            ""
+                                        ), fontSize = SMALL_SIZE
+                                    )
+                                    lineBreak()
+
+                                    /**
+                                     * Print Order Type
+                                     */
+
+
+                                    printCenter(
+                                        "Dine In",
+                                        isBold = true,
+                                        fontSize = FONT_SIZE_5X
+                                    )
+                                    lineBreak()
+
+
+                                    // print receipt id , employee , order time and print time
+                                    printLeft("ReceiptID : ${order?.offlineId?.trim()}")
+
+                                    lineBreak()
+
+                                    printLeft("Employee : ${order?.employee?.name?.trim()}")
+
+                                    lineBreak()
+
+                                    printLeft(
+                                        "Order Time : ${
+                                            getReceiptFormatDateFromUTCServer(
+                                                requireContext(),
+                                                order?.createdAt.toString()
+                                            )
+                                        }"
+                                    )
+
+
+
+                                    if (customerSettingModel.showPrintTime) {
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                                            lineBreak()
+
+                                            printLeft(
+                                                "Print Time : ${
+                                                    getCurrentTimeFromTimeZone(
+                                                        requireContext(),
+                                                        MethodUtils.formatted()
+                                                    )
+                                                }"
+                                            )
+
+                                        }
+                                    }
+
+
+
+                                    lineBreak()
+                                    printDashedLineAndBreak()
+
+
+
+
+                                    printCenter("Whole Table")
+                                    lineBreak()
+
+                                    for (i in 0 until listWTitems.size) {
+
+                                        var guestCount: Int =
+                                            (order?.guestAttributes?.size?.minus(1)) ?: 1
+                                        if (guestCount < 1) {
+                                            guestCount = 1
+                                        }
+
+
+                                        addWholeTbItemToGuestInnerLandi(
+                                            listWTitems.get(i), customerSettingModel.fonts,
+                                            customerSettingModel.showModifiers, guestCount, arrayListOf(), LPrint
+                                        )
+                                    }
+
+                                    lineBreak()
+                                    printCenter(guestName)
+                                    lineBreak()
+
+                                    listGuestItem.forEach {
+                                        addOrderItemForDineInInnerLandi(
+                                            it,
+                                            customerSettingModel.fonts,
+                                            customerSettingModel.showModifiers,
+                                            LPrint
+                                        )
+
+                                    }
+
+                                    lineBreak()
+
+
+                                    /**
+                                     * Print Discount
+                                     */
+                                    lineBreak()
+
+                                    if (order?.totalDiscount != null) {
+
+                                        val discountToPrint =
+                                            padLine(
+                                                "Total Discount",
+
+                                                if (order?.totalDiscount == 0.0) {
+//                            "-$" + MethodUtils.roundOffAmountString(0.00)
+                                                    "$" + MethodUtils.roundOffAmountString(0.00)
+                                                } else {
+                                                    order?.totalDiscount?.let {
+                                                        "-$" + MethodUtils.roundOffAmountString(it)
+                                                    }
+                                                },
+                                                48
+                                            ).toString()
+
+                                        printLeft(discountToPrint)
+                                        lineBreak()
+                                    }
+
+
+                                    /**
+                                     * Print Subtotal
+                                     */
+
+                                    val subTotalToPrint = padLine(
+                                        "Sub Total",
+                                        "$" + MethodUtils.roundOffAmountString(order?.subTotal?.toDouble() ?: 0.0),
+                                        48
+                                    ).toString()
+
+                                    printLeft(subTotalToPrint)
+                                    lineBreak()
+
+
+
+
+                                    /**
+                                     * Print Tax Amount
+                                     */
+
+                                    if (guestTaxes != null) {
+
+
+                                        val taxToPrint =
+                                            padLine(
+                                                "Tax",
+                                                "$" + MethodUtils.roundOffAmountString(order?.totalTaxAmount?.toDouble()?:0.0),
+                                                48
+                                            ).toString()
+
+
+                                        printLeft(taxToPrint)
+                                        lineBreak()
+                                    }
+
+
+
+                                    /**
+                                     * Print Serivce charge
+                                     */
+
+                                    if (guestServiceCharge != null && (order?.serviceChargeEnabled == true) && prefProvider.getValueboolean(
+                                            SERVICECHARGE_DINEIN_ORDER,
+                                            false
+                                        )
+                                    ) {
+
+
+                                        val serviceChargeToPrint =
+                                            padLine(
+                                                "Service Charge",
+                                                "$" + MethodUtils.roundOffAmountString(serviceCharge),
+                                                if (customerSettingModel.fonts == Constants.LARGE) {
+                                                    23
+                                                } else {
+                                                    48
+                                                }
+                                            ).toString()
+
+                                        printLeft(serviceChargeToPrint)
+                                        lineBreak()
+                                    }
+
+
+
+                                    if (tipAmount != 0.0) {
+
+                                        val str8 = padLine(
+                                            "Tips",
+                                            "$" + MethodUtils.roundOffAmountString(tipAmount),
+                                            48
+                                        ).toString()
+                                        printLeft(str8)
+                                    }
+
+                                    if (noCashAdjGlobal != 0.0 && customerSettingModel.showCashDisSurCharg) {
+
+                                        if (prefProvider.getValue(OPTION_TYPE, "")
+                                                .lowercase() == "CashDiscount".lowercase() && payTypeGlb == "Cash"
+                                        ) {
+
+                                            val str8 = padLine(
+                                                "Cash Discount",
+                                                if (noCashAdjGlobal == 0.0) {
+                                                    "$" + MethodUtils.roundOffAmountString(
+                                                        noCashAdjGlobal
+                                                    )
+                                                } else {
+                                                    "-$" + MethodUtils.roundOffAmountString(
+                                                        noCashAdjGlobal
+                                                    )
+                                                },
+                                                if (customerSettingModel.fonts == LARGE) 23 else 48
+                                            ).toString()
+
+                                            lineBreak()
+                                            printLeft(str8)
+                                            lineBreak()
+
+
+                                        } else if (prefProvider.getValue(OPTION_TYPE, "")
+                                                .lowercase() == "SurCharge".lowercase() && payTypeGlb == "Card"
+                                        ) {
+
+                                            val str8 = padLine(
+                                                Constants.SURCHARGE_TEXT,
+                                                if (noCashAdjGlobal == 0.0) {
+                                                    "$" + MethodUtils.roundOffAmountString(
+                                                        noCashAdjGlobal
+                                                    )
+                                                } else {
+                                                    "$" + MethodUtils.roundOffAmountString(
+                                                        noCashAdjGlobal
+                                                    )
+                                                },
+                                                if (customerSettingModel.fonts == LARGE) 23 else 48
+                                            ).toString()
+
+                                            lineBreak()
+                                            printLeft(str8)
+                                            lineBreak()
+
+                                        }
+                                    }
+
+
+                                    var totalAmt = checkOutDineInModel?.totalAmount?:0.0 + tipAmount
+
+                                    if (payTypeGlb.lowercase() == "Cash".lowercase() && prefProvider.getValue(
+                                            OPTION_TYPE,
+                                            ""
+                                        ).lowercase() == "CashDiscount".lowercase()
+                                    ) {
+
+                                        totalAmt =
+                                            MethodUtils.roundOffAmountDouble(totalAmt - noCashAdjGlobal)
+                                    } else if (payTypeGlb.lowercase() == "Card".lowercase() && prefProvider.getValue(
+                                            OPTION_TYPE, ""
+                                        ).lowercase() == "SurCharge".lowercase()
+                                    ) {
+                                        totalAmt =
+                                            MethodUtils.roundOffAmountDouble(totalAmt + noCashAdjGlobal)
+                                    }
+
+                                    lineBreak()
+
+                                    val str5 = padLine(
+                                        "Total Price",
+                                        "$" + MethodUtils.roundOffAmountString(totalAmt),
+                                       48
+                                    ).toString()
+
+                                    printBoldLeft(str5)
+                                    lineBreak()
+
+
+                                    val str6 = padLine(
+                                        "Paid Amount",
+                                        "$" + MethodUtils.roundOffAmountString(
+                                            paidAmount + tipAmount
+                                        ),
+                                       48
+                                    ).toString()
+
+                                    printBoldLeft(str6)
+
+                                    //ADDCHANGE
+
+                                    val str7 = padLine(
+                                        "Change Amount",
+                                        "$" + MethodUtils.roundOffAmountString(changeAmtGlobal),
+                                        if (customerSettingModel.fonts == LARGE) 23 else 48
+                                    ).toString()
+
+                                    printBoldLeft(str7)
+                                    lineBreak()
+
+                                    if (customerSettingModel.showRefundAmount) {
+
+                                    }
+
+
+
+                                    if (customerSettingModel.showTipSuggestion) {
+
+                                        printBoldLeft("Additional Tips")
+                                        lineBreak()
+
+                                        printDashedLineAndBreak()
+
+
+                                        if (tipsList.isNotEmpty()) {
+                                            val tipsToPrint = addTipsListInnerLandi(
+                                                tipsList,
+                                                totalAmt,
+                                                customerSettingModel.fonts
+                                            )
+
+                                            printLeft(tipsToPrint)
+                                            lineBreak()
+                                        }
+                                    }
+
+
+                                    if (receiptModel?.order?.payments?.isNotEmpty() == true) {
+
+                                        val str10 = padLine(
+                                            "Transaction ID",
+                                            "" + receiptModel?.order?.payments?.size?.minus(1)
+                                                ?.let { receiptModel?.order?.payments?.get(it)?.id },
+                                            48
+                                        ).toString()
+                                        printLeft(str10)
+                                        lineBreak()
+
+                                        val str11 = padLine(
+                                            "Transaction Type",
+                                            receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType,
+                                            48
+                                        ).toString()
+                                        printLeft(str11)
+                                        lineBreak()
+                                    }
+
+                                    if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType?.lowercase() == "Card".lowercase()) {
+
+                                        /*PrintSunmiUtils.normalText(
+                            padLine(
+                                "",
+                                receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName,
+                                if (customerSettingModel.fonts == LARGE) 23 else 48
+                            ).toString()
+                        )*/
+
+                                        var strCardType =
+                                            receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType
+
+                                        if (paymentViewModel.extData != null && !paymentViewModel.extData.isNullOrEmpty()) {
+
+                                            var applabStartIndex =
+                                                paymentViewModel.extData.indexOf("<APPLAB>")
+                                            var applabEndIndex =
+                                                paymentViewModel.extData.indexOf("</APPLAB>")
+                                            strCardType =
+                                                paymentViewModel.extData.substring(
+                                                    applabStartIndex + "<APPLAB>".length,
+                                                    applabEndIndex
+                                                )
+                                        }
+
+                                        printLeft(
+                                            padLine(
+                                                "",
+                                                strCardType,
+                                                48
+                                            ).toString()
+                                        )
+                                        lineBreak()
+
+                                        printLeft(
+                                            padLine(
+                                                "",
+                                                receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber,
+                                                48
+                                            ).toString()
+                                        )
+
+                                    }
+
+
+
+
+                                    if (getDineInOrderDetails?.note != null && getDineInOrderDetails?.note != "" && customerSettingModel.showOrderNote) {
+                                        lineBreak()
+                                        printCenter("Order Note")
+                                        printCenter(getDineInOrderDetails?.note.toString())
+                                    }
+
+
+                                    lineBreak()
+                                    lineBreak()
+                                    if (customerSettingModel.fonts == Constants.LARGE) {
+                                        printBoldLeft("Customer Signature ____")
+                                    } else {
+                                        printBoldLeft("Customer Signature           __________________")
+                                    }
+
+                                    lineBreak()
+                                    lineBreak()
+
+                                    /**
+                                     * Print QR
+                                     */
+                                    if (customerSettingModel.showQrCode) {
+                                        LPrint.printQRCode(
+                                            outputStream,
+                                            order?.digitalReceiptUrl.toString(),
+                                            LPrint.CENTER_ALIGN
+                                        )
+                                    }
+
+
+//                                    if (paymentType.equals("Cash", true)) {
+//                                        val aa = ByteArray(5)
+//
+//                                        aa[0] = 0x10
+//                                        aa[1] = 0x14
+//                                        aa[2] = 0x00
+//                                        aa[3] = 0x00
+//                                        aa[4] = 0x00
+//
+//
+//                                        try {
+//                                            SunmiPrinterApi.getInstance().sendRawData(aa)
+//                                        } catch (e: java.lang.Exception) {
+//                                            e.printStackTrace()
+//                                        }
+//                                        try {
+//                                            SunmiPrintHelper.getInstance().openCashBox()
+//                                        } catch (e: java.lang.Exception) {
+//                                            e.printStackTrace()
+//                                        }
+//                                    }
+//
+//                                    PrintSunmiUtils.cutPaperInner()
+
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+
+                                paperCut()
+                                disconnectLandiPrinter()
+                            }
+                        }
+                }
+            }
+        })
+    }
+
 
     private fun printSunmiDineinInner(
         paymentType: String,
@@ -6167,6 +6779,625 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
 
+
+
+    private fun generateDineInPrintForLandi(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,type: String,s: String) {
+
+        this.checkBluetoothPermissions(object: OrderCompleteFragment.OnBluetoothPermissionGranted {
+            override fun onPermissionsGranted() {
+                GlobalScope.launch {
+                    LPrint.connectLandiInnerPrinter(customerReceiptPrinters.macAddress)
+                        ?.let { outputStream ->
+
+                            try{
+//                                    outputStream.write(LPrint.CENTER_ALIGN)  // Center align
+//                                    outputStream.write(LPrint.BOLD_ON)  // Center align
+//                                    outputStream.write(LPrint.FONT_SIZE_5X)
+
+                                val order = getDineInOrderDetails
+
+                                outputStream.apply {
+
+                                    outputStream.write(LPrint.CENTER_ALIGN)  // Center align
+                                    outputStream.write(LPrint.BOLD_ON)  // Center align
+                                    outputStream.write(LPrint.FONT_SIZE_5X)     // Set large font size
+
+                                    if (customerSettingModel.showOrderIdTop) {
+                                        if (prefProvider.getValueboolean(
+                                                ORDER_NUMBER_STARTING_FROM_ONE,
+                                                false
+                                            )
+                                        ) {
+                                            outputStream.write("OrderID: ${order?.custom_order_id}".toByteArray())
+                                        } else {
+                                            outputStream.write("OrderID: ${order?.id}".toByteArray())
+                                        }
+                                        outputStream.write(LPrint.LINE_FEED)
+                                    }
+
+                                    /**
+                                     * Print Logo
+                                     */
+
+                                    if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
+                                            .isNotEmpty()
+                                    ) {
+
+                                    }
+
+                                    /**
+                                     *
+                                     */
+
+                                    outputStream.write(LPrint.FONT_SIZE_DOUBLE_HEIGHT)     // Set large font size
+                                    outputStream.write(LPrint.LINE_FEED)
+
+                                    outputStream.write(
+                                        prefProvider.getValue(
+                                            Constants.BUSINESS_NAME,
+                                            ""
+                                        ).toByteArray()
+                                    )
+                                    outputStream.write(LPrint.LINE_FEED)
+
+                                    outputStream.write(LPrint.NORMAL_SIZE)     // Set large font size
+
+                                    var venueAddress = if (customerSettingModel.showVenueAddress) {
+                                        prefProvider.getValue(Constants.BUSINESS_ADDRESS, "")
+                                    } else ""
+
+                                    var businessPhoneNumber = prefProvider.getValue(
+                                        Constants.BUSINESS_PHONE_NO,
+                                        ""
+                                    )
+
+                                    outputStream.write(venueAddress.toByteArray())
+                                    outputStream.write(LPrint.LINE_FEED)
+                                    outputStream.write(businessPhoneNumber.toByteArray())
+
+                                    outputStream.write(LPrint.LINE_FEED)
+
+                                    outputStream.write(
+                                        prefProvider.getValue(
+                                            Constants.BUSINESS_WEBSITE,
+                                            ""
+                                        ).toByteArray()
+                                    )
+                                    outputStream.write(LPrint.LINE_FEED)
+
+
+                                    outputStream.apply {
+                                        /**
+                                         * Print Order Type
+                                         */
+                                        write(LPrint.CENTER_ALIGN)
+                                        write(LPrint.BOLD_ON)
+                                        write(LPrint.FONT_SIZE_5X)
+                                        write("Dine In".toByteArray())
+
+                                        write(LPrint.BOLD_OFF)
+                                        write(LPrint.LINE_FEED)
+                                    }
+
+                                    outputStream.write(LPrint.LINE_FEED)
+                                    outputStream.write(LPrint.NORMAL_SIZE)
+                                    outputStream.write(LPrint.LEFT_ALIGN)
+
+                                    outputStream.apply {
+
+                                        // print receipt id , employee , order time and print time
+                                        write("ReceiptID : ${order?.offlineId?.trim()}".toByteArray())
+                                        write(LPrint.LINE_FEED)
+
+                                        write("Employee : ${order?.employee?.name?.trim()}".toByteArray())
+                                        write(LPrint.LINE_FEED)
+
+                                        write(
+                                            "Order Time : ${
+                                                getReceiptFormatDateFromUTCServer(
+                                                    requireContext(),
+                                                    order?.createdAt.toString()
+                                                )
+                                            }".toByteArray()
+                                        )
+
+
+
+                                        if (customerSettingModel.showPrintTime) {
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                                write(LPrint.LINE_FEED)
+                                                write(
+                                                    "Print Time : ${
+                                                        getCurrentTimeFromTimeZone(
+                                                            requireContext(),
+                                                            MethodUtils.formatted()
+                                                        )
+                                                    }".toByteArray()
+                                                )
+
+                                            }
+                                        }
+
+                                    }
+
+                                    outputStream.write(LPrint.DASHED_LINE_FEED)
+
+                                    /**
+                                     * Print ALL Table Items
+                                     */
+
+                                    outputStream.apply {
+                                        write(LPrint.NORMAL_SIZE)
+                                        write(LPrint.CENTER_ALIGN)
+
+                                        val dineInList = dineInList
+                                        for (i in 0 until dineInList.size) {
+                                            if (dineInList[i].isHeader == 0) {
+
+                                                if (i != (dineInList.size - 1) && dineInList[i + 1].isHeader == 1) {
+
+                                                    if (dineInList[i]?.customer == null) {
+
+                                                        dineInList[i]?.title?.let {
+                                                            write(LPrint.CENTER_ALIGN)
+                                                            write(it.toByteArray())
+                                                            write(LPrint.LINE_FEED)
+                                                        }
+
+                                                    } else {
+
+                                                        val tableName =
+                                                            dineInList[i]?.customer?.first_name + " " +
+                                                                    if (dineInList[i]?.customer?.last_name != null) {
+                                                                        dineInList[i].customer?.last_name
+                                                                    } else {
+                                                                        ""
+                                                                    }
+                                                        write(LPrint.CENTER_ALIGN)
+                                                        write(tableName.trim().toByteArray())
+
+                                                    }
+                                                }
+
+
+                                            } else {
+                                                LogUtil.logE("addDineInInner", "22222222")
+                                                dineInList.get(i).item?.let { item ->
+
+
+                                                    val obj = item
+
+                                                    val itemDataToPrint =
+                                                        padLineCustomerItem(
+                                                            obj.itemQuantity.toString() + "  " + getItemNameToShow(obj.name),
+                                                            getItemPriceToShow(obj.price * obj.itemQuantity),
+                                                            48
+                                                        ).toString().toByteArray()
+
+
+                                                    write(LPrint.LEFT_ALIGN)
+                                                    write(itemDataToPrint)
+                                                    write(LPrint.LINE_FEED)
+
+
+                                                    if (obj.modifiers.isNotEmpty() && customerSettingModel.showModifiers) {
+                                                        for (j in 0 until obj.modifiers.size) {
+                                                            val modifierObj = obj.modifiers.get(j)
+
+
+                                                            val modifiersToPrint =
+                                                                padLineCustomerItem(
+                                                                    if (modifierObj.modifier_quantity == 1) {
+                                                                        "     " + getItemNameToShow(modifierObj.name)
+                                                                    } else {
+                                                                        "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(modifierObj.name)
+                                                                    },
+                                                                    getModifierItemPriceToShow(modifierObj.price, modifierObj.itemQuantity),
+                                                                    48
+                                                                ).toString().toByteArray()
+
+
+                                                            write(modifiersToPrint)
+                                                            write(LPrint.LINE_FEED)
+
+                                                        }
+
+
+                                                    }
+
+/*
+                                                if (obj.note.isNotEmpty()) {
+                                                    PrintSunmiUtils.normalText("   Note: " + obj.note)
+                                                }*/
+
+                                                }
+
+
+                                            }
+
+                                        }
+
+                                    }
+
+
+
+                                    /**
+                                     * Print Discount
+                                     */
+                                    outputStream.write(LPrint.LINE_FEED)
+
+                                    if (order?.totalDiscount != null) {
+
+                                        val discountToPrint =
+                                            padLine(
+                                                "Total Discount",
+
+                                                if (order?.totalDiscount == 0.0) {
+//                            "-$" + MethodUtils.roundOffAmountString(0.00)
+                                                    "$" + MethodUtils.roundOffAmountString(0.00)
+                                                } else {
+                                                    order?.totalDiscount?.let {
+                                                        "-$" + MethodUtils.roundOffAmountString(it)
+                                                    }
+                                                },
+                                                48
+                                            ).toString().toByteArray()
+
+                                        outputStream.write(discountToPrint)
+                                        outputStream.write(LPrint.LINE_FEED)
+                                    }
+
+
+
+                                    /**
+                                     * Print Subtotal
+                                     */
+
+                                    val subTotalToPrint = padLine(
+                                        "Sub Total",
+                                        "$" + MethodUtils.roundOffAmountString(order?.subTotal ?: 0.0),
+                                        if (customerSettingModel.fonts == Constants.LARGE) {
+                                            23
+                                        } else {
+                                            48
+                                        }
+                                    ).toString().toByteArray()
+
+                                    outputStream.write(subTotalToPrint)
+                                    outputStream.write(LPrint.LINE_FEED)
+
+
+                                    /**
+                                     * Print Tax Amount
+                                     */
+
+                                    if (order?.totalTaxAmount != null) {
+
+
+                                        val taxToPrint =
+                                            padLine(
+                                                "Tax",
+                                                "$" + MethodUtils.roundOffAmountString(order.totalTaxAmount),
+                                                if (customerSettingModel.fonts == Constants.LARGE) {
+                                                    23
+                                                } else {
+                                                    48
+                                                }
+                                            ).toString().toByteArray()
+
+
+                                        outputStream.write(taxToPrint)
+                                        outputStream.write(LPrint.LINE_FEED)
+                                    }
+
+                                    /**
+                                     * Print Serivce charge
+                                     */
+
+                                    if (serviceCharge != null && (order?.serviceChargeEnabled == true) && prefProvider.getValueboolean(
+                                            SERVICECHARGE_DINEIN_ORDER,
+                                            false
+                                        )
+                                    ) {
+
+                                        val serviceChargeToPrint =
+                                            padLine(
+                                                "Service Charge",
+                                                "$" + MethodUtils.roundOffAmountString(serviceCharge),
+                                                if (customerSettingModel.fonts == Constants.LARGE) {
+                                                    23
+                                                } else {
+                                                    48
+                                                }
+                                            ).toString().toByteArray()
+
+                                        outputStream.write(serviceChargeToPrint)
+                                        outputStream.write(LPrint.LINE_FEED)
+
+                                    }
+
+                                    /**
+                                     * Print Tips
+                                     */
+
+                                    if (order?.totalTips != 0.0) {
+
+
+                                        val tipsToPrint =
+                                            padLine(
+                                                "Tips",
+                                                "$" + order?.totalTips?.let {
+                                                    MethodUtils.roundOffAmountString(
+                                                        it
+                                                    )
+                                                },
+                                                if (customerSettingModel.fonts == Constants.LARGE) {
+                                                    23
+                                                } else {
+                                                    48
+                                                }
+                                            ).toString().toByteArray()
+
+                                        outputStream.write(tipsToPrint)
+                                        outputStream.write(LPrint.LINE_FEED)
+                                    }
+
+                                    outputStream.write(LPrint.BOLD_ON)
+
+                                    outputStream.write(LPrint.LINE_FEED)
+
+                                    /**
+                                     * Print total amount
+                                     */
+
+                                    val totalAmt =
+                                        MethodUtils.roundOffAmountDouble(order?.subTotal?:0.0 + serviceCharge + order?.totalTaxAmount!!
+                                        ?: 0.0)
+
+                                    val totalAmountToPrint =
+                                        padLine(
+                                            "Total Price",
+                                            "$" + MethodUtils.roundOffAmountString(totalAmt),
+                                            48
+                                        ).toString().toByteArray()
+
+                                    outputStream.write(totalAmountToPrint)
+                                    outputStream.write(LPrint.LINE_FEED)
+
+
+                                    /***
+                                     * Print total price
+                                     */
+
+                                    val str5 = padLine(
+                                        "Total Price",
+                                        "$" + MethodUtils.roundOffAmountString(totalAmt),
+                                        48
+                                    ).toString().toByteArray()
+                                    write(str5)
+                                    write(LPrint.LINE_FEED)
+
+                                    /***
+                                     * Print Paid Amount
+                                     */
+                                    val str6 = padLine(
+                                        "Paid Amount",
+                                        "$" + MethodUtils.roundOffAmountString(
+                                            paidAmount + tipAmount
+                                        ),
+                                        48
+                                    ).toString().toByteArray()
+
+                                    write(str6)
+                                    write(LPrint.LINE_FEED)
+
+
+                                    /***
+                                     * Print Change Amount
+                                     */
+
+                                    val str7 = padLine(
+                                        "Change Amount",
+                                        "$" + MethodUtils.roundOffAmountString(changeAmtGlobal),
+                                        48
+                                    ).toString().toByteArray()
+
+                                    write(str7)
+                                    write(LPrint.LINE_FEED)
+
+
+                                    /**
+                                     * Print Remaining amount
+                                     */
+
+                                    if (isSpilt) {
+
+                                        val str7 = padLine(
+                                            "Remaining Amount",
+                                            "$" + MethodUtils.roundOffAmountString(remainingAmount),
+                                            48
+                                        ).toString().toByteArray()
+                                        write(str7)
+                                        write(LPrint.LINE_FEED)
+
+                                    }
+
+
+
+                                    /**
+                                     * TIPS
+                                     */
+                                    write(LPrint.LINE_FEED)
+                                    if (getDineInOrderDetails?.totalTips == 0.0) {
+
+
+                                        if (customerSettingModel.showTipLineForCash) {
+
+                                            write(LPrint.BOLD_ON)
+                                            write("Tips                              _____________".toByteArray())
+                                            write(LPrint.LINE_FEED)
+                                            write("Total                             _____________".toByteArray())
+                                            write(LPrint.BOLD_ON)
+
+                                        }
+
+                                    }
+
+                                    write(LPrint.LINE_FEED)
+
+                                    /**
+                                     * TIP SUGGESTION
+                                     */
+
+                                        if (customerSettingModel.showTipSuggestion) {
+                                            write(LPrint.BOLD_ON)
+                                            write("Additional Tips".toByteArray())
+
+                                            write(LPrint.NORMAL_SIZE)
+                                            write(LPrint.DASHED_LINE_FEED)
+
+
+                                            if (tipsList.isNotEmpty()) {
+                                                val tipsToPrint =  addTipsListInnerLandi(
+                                                    tipsList,
+                                                    totalAmt,
+                                                    customerSettingModel.fonts
+                                                )
+
+                                                write(tipsToPrint.toByteArray())
+                                                write(LPrint.LINE_FEED)
+                                            }
+
+                                        }
+
+
+                                    /**
+                                     * Print transaction ID
+                                     */
+
+                                    if (order?.payments?.isNotEmpty() == true) {
+
+
+                                        val str10 = padLine(
+                                            "Transaction ID",
+                                            "" + order.payments.size.minus(1)
+                                                .let { order.payments.get(it).id },
+                                            48
+                                        ).toString().toByteArray()
+
+                                        write(str10)
+
+                                    } else {
+                                        write(LPrint.LINE_FEED)
+                                    }
+
+                                    if (order?.payments?.isNotEmpty() == true) {
+
+                                        val str11 = padLine(
+                                            "Transaction Type",
+                                            order.payments[order.payments.size!! - 1].paymentType,
+                                            48
+                                        ).toString().toByteArray()
+
+                                        write(str11)
+
+                                    }
+
+
+                                    /**
+                                     * CARD DETAILS
+                                     */
+
+                                    if(order?.payments?.isNotEmpty() == true)
+                                    if (order?.payments?.last()?.paymentType?.lowercase() == "Card".lowercase()) {
+                                        /*val str12 = padLine(
+                                            "",
+                                            receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString(),
+                                            if (customerSettingModel.fonts == LARGE) 23 else 48
+                                        ).toString()
+
+                                        if (!str12.isNullOrBlank()) {
+                                            PrintSunmiUtils.normalTextTest(str12)
+                                            SunmiPrintHelper.getInstance().lineWrap(1)
+                                        }*/
+
+                                        var strCardType =
+                                            order.payments.get(order.payments.size!! - 1).cardType.toString()
+
+                                        if (!paymentViewModel.extData.isNullOrEmpty()) {
+
+                                            var applabStartIndex = paymentViewModel.extData.indexOf("<APPLAB>")
+                                            var applabEndIndex = paymentViewModel.extData.indexOf("</APPLAB>")
+                                            strCardType =
+                                                paymentViewModel.extData.substring(
+                                                    applabStartIndex + "<APPLAB>".length,
+                                                    applabEndIndex
+                                                )
+                                        }
+
+                                        val str13 = padLine(
+                                            "",
+                                            strCardType,48
+                                        ).toString()
+
+                                        if (!str13.isBlank()) {
+                                            write(str13.toByteArray())
+                                            write(LPrint.LINE_FEED)
+                                        }
+                                        val str14 = padLine(
+                                            "",
+                                            order.payments[order.payments.size - 1].cardNumber.toString(),
+                                            48
+                                        ).toString()
+
+                                        if (!str14.isBlank()) {
+                                            write(str14.toByteArray())
+                                            write(LPrint.LINE_FEED)
+                                        }
+                                    }
+
+
+
+                                    write(LPrint.LINE_FEED)
+                                    write(LPrint.LINE_FEED)
+
+                                    write("__________________________".toByteArray())
+                                    write(LPrint.LINE_FEED)
+
+                                    write(LPrint.LINE_FEED)
+                                    write(LPrint.LINE_FEED)
+
+
+                                    write("Customer Signature           __________________".toByteArray())
+
+
+                                    write(LPrint.LINE_FEED)
+                                    if (customerSettingModel.showQrCode) {
+
+                                        LPrint.printQRCode(outputStream,order?.digitalReceiptUrl.toString(),LPrint.CENTER_ALIGN)
+
+                                        // getDineInOrderDetails?.digitalReceiptUrl.toString().let { PrintSunmiUtils.qrCode(it) }
+                                    }
+
+
+
+                                    /**
+                                     * CUT PAPER AND DISCONNECT PRINTER
+                                     */
+                                    write(LPrint.CUT_PAPER)
+                                    LPrint.disconnectLandiPrinter()
+                                }
+
+                            }catch (e:Exception){
+                                Log.e("PRINTING ERROR WHILE DINE IN _ LANDI INNER PRINTER",e.printStackTrace().toString())
+                            }
+                        }
+                }
+            }
+        })
+
+    }
+
     private fun printDineInTable1Inner() {
         try {
             LogUtil.logE("printDineReciept", "Staring....")
@@ -6775,6 +8006,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             LogUtil.logE("printDineReciept", "Staring error....")
         }
     }
+
 
     private fun moveToCheckOut() {
         if (isDineIn) {

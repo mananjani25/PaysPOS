@@ -20,8 +20,10 @@ import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
 import com.pays.pos.data.model.responseModel.*
+import com.pays.pos.utils.landi.LPrint
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
+import java.io.OutputStream
 
 val TAG = "PrinterReceipt"
 
@@ -2088,6 +2090,42 @@ fun addTipsListInner(
 
     }
 
+
+}
+
+fun addTipsListInnerLandi(
+    list: List<GetTipReponse.Data>,
+    totalAmt: Double,
+    font: String
+):String {
+
+    var stringToReturn = ""
+
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+
+        val tipName = obj.name + "(" + MethodUtils.roundOffAmountString(obj.rate) + "%)"
+
+        val price = "(Tip $" + calculateTipAmt(
+            obj.rate,
+            totalAmt
+        ) + " Total $" + MethodUtils.roundOffAmountString(
+            (totalAmt + calculateTipAmt(
+                obj.rate,
+                totalAmt
+            ))
+        ) + ")"
+
+        val str = padLine(
+            tipName, price, 48
+        ).toString()
+
+        stringToReturn += str + "\n"
+
+    }
+
+    return stringToReturn
 
 }
 
@@ -4817,6 +4855,108 @@ fun addWholeTbItemToGuest(
 }
 
 
+fun addWholeTbItemToGuestInnerLandi(
+    list: TbCartItem,
+    font: String,
+    showModifiers: Boolean,
+    guestCount: Int,
+    serviceChargeList: ArrayList<TbServiceCharge>,
+    lPrint:LPrint
+) {
+
+    val obj = list
+
+    var subTotal = (obj.price * obj.itemQuantity).toDouble()
+
+    if (obj.modifiers.isNotEmpty() && showModifiers) {
+        obj.modifiers.forEach {
+            subTotal += it.price * it.itemQuantity
+        }
+    }
+    var WTTaxes = 0.0
+    var serviceCharge = 0.0
+
+
+    obj.taxes?.forEach { tax ->
+        if (tax.isActive) {
+            WTTaxes += if (tax.taxType == "Percentage") {
+
+                var modifierPrice = 0.0
+                val price =
+                    (obj.price * obj.itemQuantity) - obj.discountPrice
+
+                obj.modifiers.forEach {
+                    modifierPrice += (it.price * it.itemQuantity)
+                }
+
+                val totalPrice = price + modifierPrice
+
+                val itemTaxPrice =
+                    (tax.rate * totalPrice) / 100
+                LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
+                String.format("%.2f", itemTaxPrice)
+                    .toDouble()
+            } else {
+
+                String.format(
+                    "%.2f",
+                    tax.rate * obj.itemQuantity
+                )
+                    .toDouble()
+            }
+        }
+
+
+    }
+
+    if (serviceChargeList.isNotEmpty()) {
+        serviceChargeList.forEach {
+            if (it.isEnabled) {
+                serviceCharge += (subTotal * it.percentage) / 100
+            }
+        }
+    }
+
+    val price = (subTotal) / guestCount
+
+    var priceToShow = ""
+    if (price > 0.0) {
+        priceToShow = MethodUtils.roundOffAmount(price)
+    }
+
+    //val finalAmt = MethodUtils.roundOffAmount((subTotal) / guestCount)
+
+    lPrint.printLeft(
+        padLineCustomerItem(
+            obj.itemQuantity.toString() + "  " + getItemNameToShow(obj.name),
+            "" + priceToShow,
+            48
+        ).toString()
+    )
+
+    lPrint.lineBreak()
+
+    if (obj.modifiers.isNotEmpty()) {
+
+        obj.modifiers.forEach {
+            lPrint.printLeft(
+                padLineCustomerItem(
+                    if (it.modifier_quantity == 1) {
+                        "      " + it.name
+                    } else {
+                        "   " + it.modifier_quantity + "x " + it.name
+                    },
+                    "" + MethodUtils.roundOffAmount(it.price * it.itemQuantity),
+                    48
+                ).toString()
+            )
+        }
+
+
+    }
+
+}
+
 fun addWholeTbItemToGuestInner(
     list: TbCartItem,
     font: String,
@@ -5074,6 +5214,59 @@ fun addOrderItemForDineIn(
 
     if (obj.note.isNotEmpty()) {
         PrintSunmiUtils.orderTime("   Note: " + obj.note)
+    }
+
+
+}
+
+
+fun addOrderItemForDineInInnerLandi(
+    list: TbCartItem,
+    font: String,
+    showModifiers: Boolean,
+    lPrint: LPrint
+) {
+
+
+    val obj = list
+
+
+    lPrint.printLeft(
+        padLineCustomerItem(
+            obj.itemQuantity.toString() + "  " + getItemNameToShow(obj.name),
+            getItemPriceToShow(totalPriceDineInItem(obj)),
+            48
+        ).toString()
+    )
+
+    lPrint.lineBreak()
+
+    if (obj.modifiers.isNotEmpty() && showModifiers) {
+        for (j in 0 until obj.modifiers.size) {
+            val modifierObj = obj.modifiers.get(j)
+
+
+            lPrint.printLeft(
+                padLineCustomerItem(
+                    if (modifierObj.modifier_quantity == 1) {
+                        "     " + getItemNameToShow(modifierObj.name)
+                    } else {
+                        "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(modifierObj.name)
+                    },
+                    getModifierItemPriceToShow(modifierObj.price, modifierObj.itemQuantity),
+                    48
+                ).toString()
+            )
+            lPrint.lineBreak()
+
+
+        }
+
+
+    }
+
+    if (obj.note.isNotEmpty()) {
+        lPrint.printLeft("   Note: " + obj.note)
     }
 
 

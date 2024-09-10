@@ -3,9 +3,12 @@ package com.pays.pos.utils.landi
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
+import com.pays.pos.data.model.DineInModel
+import com.pays.pos.utils.*
 import java.io.IOException
 import java.io.OutputStream
 import java.util.*
+import kotlin.collections.List
 
 final object LPrint {
     private lateinit var bluetoothAdapter: BluetoothAdapter
@@ -15,11 +18,13 @@ final object LPrint {
 
     /*------------------------Formatting Parameters--------------------------*/
     public val FONT_SIZE = byteArrayOf(0x1D, 0x21, 0x11)
+    public val SMALL_SIZE  = byteArrayOf(0x1B, 0x21, 0x11)
+    public val MEDIUM_SIZE = byteArrayOf(0x1B, 0x21, 0x12)
     public var NORMAL_SIZE = byteArrayOf(0x1B, 0x21, 0x00) // ESC ! 0
     public var DOUBLE_HEIGHT_WIDTH = byteArrayOf(0x1B, 0x21, 0x11) // ESC ! 17 (0x11)
     val FONT_SIZE_3X = byteArrayOf(0x1B, 0x21, 0x11)
     val FONT_SIZE_4X = byteArrayOf(0x1B, 0x21, 0x22) // Width: 4, Height: 4
-    val FONT_B = byteArrayOf(0x1B, 0x4B, 0x01) // Font B
+    val FONT_B = byteArrayOf(0x1D, 0x21, 0x11) // Font B0x1B, 0x4D, 0x01
     val FONT_SIZE_10X = byteArrayOf(0x1B, 0x21, 0xAA.toByte()) // Width: 10, Height: 10
     val FONT_SIZE_DOUBLE_HEIGHT = byteArrayOf(0x1B, 0x21, 0x31) // Double height
     val FONT_SIZE_DOUBLE_BOTH = byteArrayOf(0x1B, 0x21, 0x11) // Double width and height
@@ -39,6 +44,7 @@ final object LPrint {
 
 
     public val LINE_FEED = "\n".toByteArray()
+    public val DASHED_LINE_FEED = "------------------------------------------------\n".toByteArray()
 
     /*------------------------Formatting Parameters--------------------------*/
 
@@ -59,8 +65,8 @@ final object LPrint {
             }
 
         } catch (e: IOException) {
-            return null
             e.printStackTrace()
+            return null
         }
         outputStream = bluetoothSocket?.outputStream
         return outputStream
@@ -75,6 +81,86 @@ final object LPrint {
             it.close()
         }
     }
+
+    fun setOutputStream(outputStream: OutputStream){
+        this.outputStream = outputStream
+    }
+
+    fun getOutputStream() = outputStream
+
+    fun print(string: String,fontSize:ByteArray = NORMAL_SIZE, isBold:Boolean = false ,printOnNewLine:Boolean = false,align: ByteArray = LEFT_ALIGN){
+        outputStream?.apply {
+
+            if(isBold)
+                write(BOLD_ON)
+            else
+                write(BOLD_OFF)
+
+            write(fontSize)
+            write(align)
+
+            val stringToPrint = if(printOnNewLine) "\n${string.trim()}\n".toByteArray() else string.trim().toByteArray()
+            write(stringToPrint)
+
+            if(isBold)
+                write(BOLD_OFF)
+        }
+    }
+
+    fun printCenter(string: String,fontSize:ByteArray = NORMAL_SIZE, isBold:Boolean = false ,printOnNewLine:Boolean = false){
+        outputStream?.apply {
+
+
+
+            if(isBold)
+                write(BOLD_ON)
+            else
+                write(BOLD_OFF)
+            write(fontSize)
+            write(CENTER_ALIGN)
+
+            val stringToPrint = if(printOnNewLine) "\n${string}\n".toByteArray() else string.toByteArray()
+            write(stringToPrint)
+
+            if(isBold)
+                write(BOLD_OFF)
+        }
+    }
+
+    fun printLeft(string: String,fontSize:ByteArray = NORMAL_SIZE, isBold:Boolean = false ,printOnNewLine:Boolean = false){
+        outputStream?.apply {
+
+            if(isBold)
+                write(BOLD_ON)
+            else
+                write(BOLD_OFF)
+
+            write(LEFT_ALIGN)
+            write(fontSize)
+
+
+            val stringToPrint = if(printOnNewLine) "\n${string}\n".toByteArray() else string.toByteArray()
+            write(stringToPrint)
+
+            if(isBold)
+                write(BOLD_OFF)
+        }
+    }
+
+    fun printBoldLeft(string:String) {
+        outputStream?.apply {
+            write(BOLD_ON)
+            write(string.toByteArray())
+
+        }
+    }
+
+    fun printDashedLineAndBreak(fontSize: ByteArray = NORMAL_SIZE) {
+        outputStream?.write(fontSize)
+        outputStream?.write(DASHED_LINE_FEED)
+    }
+
+
 
     public fun bold_On() {
         outputStream?.write(BOLD_ON)
@@ -127,6 +213,146 @@ final object LPrint {
 
     public fun paperCut() {
         outputStream?.write(CUT_PAPER)
+    }
+
+    public fun centerText(writer: OutputStream,text:String) {
+        writer.apply {
+            write(CENTER_ALIGN)
+            write(text.toByteArray())
+            write(LINE_FEED)
+        }
+
+    }
+
+    public fun printQRCode(writer: OutputStream, data: String,align :ByteArray= CENTER_ALIGN) {
+        try {
+            val outputStream = writer
+
+            outputStream.write(align)
+
+            // Set QR code model
+            outputStream.write(byteArrayOf(0x1D, 0x28, 0x6B, 0x04, 0x00, 0x31, 0x41, 0x32, 0x00))
+
+            // Set QR code size (n: 1-16)
+            val qrCodeSize = 8 // Adjust this for desired size
+            outputStream.write(byteArrayOf(0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x43, qrCodeSize.toByte()))
+
+            // Set error correction level (n: 0-3, 0 is lowest, 3 is highest)
+            val errorCorrectionLevel = 2
+            outputStream.write(byteArrayOf(0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x45, errorCorrectionLevel.toByte()))
+
+            // Store QR code data
+            val qrDataBytes = data.toByteArray()
+            val length = qrDataBytes.size + 3
+            val pL = length and 0xFF
+            val pH = (length shr 8) and 0xFF
+            outputStream.write(byteArrayOf(0x1D, 0x28, 0x6B, pL.toByte(), pH.toByte(), 0x31, 0x50, 0x30))
+            outputStream.write(qrDataBytes)
+
+            // Print QR code
+            outputStream.write(byteArrayOf(0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x51, 0x30))
+
+            // Add a line break for better formatting
+            outputStream.write("\n".toByteArray())
+
+            outputStream.flush()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    fun printDineInItemData(dineInList:List<DineInModel>,isShowModifier:Boolean) {
+        for (i in dineInList.indices) {
+            if (dineInList[i].isHeader == 0) {
+
+                if (i != (dineInList.size - 1) && dineInList[i + 1].isHeader == 1) {
+
+                    if (dineInList[i]?.customer == null) {
+
+                        dineInList[i]?.title?.let {
+                            printCenter(it)
+                            lineBreak()
+                        }
+
+                    } else {
+
+                        val tableName =
+                            dineInList[i]?.customer?.first_name + " " +
+                                    if (dineInList[i]?.customer?.last_name != null) {
+                                        dineInList[i].customer?.last_name
+                                    } else {
+                                        ""
+                                    }
+                        printCenter(tableName)
+
+                    }
+                }
+
+
+            } else {
+                LogUtil.logE("addDineInInner", "22222222")
+                dineInList.get(i).item?.let { item ->
+
+
+                    val itemDataToPrint =
+                        padLineCustomerItem(
+                            item.itemQuantity.toString() + "  " + getItemNameToShow(
+                                item.name
+                            ),
+                            getItemPriceToShow(item.price * item.itemQuantity),
+                            48
+                        )
+
+
+                    printLeft(itemDataToPrint)
+                    lineBreak()
+
+
+                    if (item.modifiers.isNotEmpty() && isShowModifier) {
+                        for (j in 0 until item.modifiers.size) {
+                            val modifierObj = item.modifiers.get(j)
+
+
+                            val modifiersToPrint =
+                                padLineCustomerItem(
+                                    if (modifierObj.modifier_quantity == 1) {
+                                        "     " + getItemNameToShow(
+                                            modifierObj.name
+                                        )
+                                    } else {
+                                        "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(
+                                            modifierObj.name
+                                        )
+                                    },
+                                    getModifierItemPriceToShow(
+                                        modifierObj.price,
+                                        modifierObj.itemQuantity
+                                    ),
+                                    48
+                                )
+
+
+                            printLeft(modifiersToPrint)
+                            lineBreak()
+
+                        }
+
+
+                    }
+
+
+                    if (item.note.isNotEmpty()) {
+                        lineBreak()
+                        printLeft("   Note: " + item.note)
+                        lineBreak()
+                    }
+
+                }
+
+
+            }
+
+        }
     }
 
 

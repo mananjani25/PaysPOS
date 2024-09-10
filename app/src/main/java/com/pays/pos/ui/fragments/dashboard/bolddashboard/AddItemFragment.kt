@@ -240,7 +240,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
     private fun onClick() {
 
-        if(prefProvider.getValueboolean(DINE_IN_UPDATE,false)){
+        if(prefProvider.getValueboolean(DINE_IN_UPDATE,false)) {
             if(item.isFired) {
                 binding.imgMinus.setOnClickListener {
                     AlertUtils.showCustomAlert(requireContext(),
