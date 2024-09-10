@@ -206,8 +206,9 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
     }
 
     fun removeItemAt(pos: Int) {
+        if (pos<dataList.size){
         dataList.removeAt(pos)
-        notifyItemRangeRemoved(pos, dataList.size)
+        notifyItemRangeRemoved(pos, dataList.size)}
     }
 
     fun removeItem(item: PrinterListModel) {

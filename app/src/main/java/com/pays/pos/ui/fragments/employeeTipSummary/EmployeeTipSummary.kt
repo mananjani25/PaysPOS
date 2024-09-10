@@ -50,6 +50,8 @@ import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.statusUtils.Status
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
+import com.pays.pos.utils.addItemsInEmployeeTipsSummaryInnerPrinterNew
+import com.pays.pos.utils.employeeTipSummaryHeaderNew
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
@@ -94,6 +96,8 @@ class EmployeeTipSummary : Fragment() {
     val myCalendar2 = Calendar.getInstance()
     val myCalendar3 = Calendar.getInstance()
 
+    private var sunmiFrameworkVersion: Array<String>? = null //Fetching Sunmi OS version to format printing.
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -103,7 +107,10 @@ class EmployeeTipSummary : Fragment() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
-
+        //        3.3.39
+        sunmiFrameworkVersion =
+            prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".")
+                .toTypedArray()
 
         return binding.root
     }
@@ -751,12 +758,19 @@ class EmployeeTipSummary : Fragment() {
 
 
         //Main part start
-
-        employeeTipSummaryHeader()
-        ETSdataList?.forEach {
-            addItemsInEmployeeTipsSummaryInnerPrinter(it)
+        if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+        ) {
+            employeeTipSummaryHeaderNew()
+            ETSdataList?.forEach {
+                addItemsInEmployeeTipsSummaryInnerPrinterNew(it)
+            }
+        }else {
+            employeeTipSummaryHeader()
+            ETSdataList?.forEach {
+                addItemsInEmployeeTipsSummaryInnerPrinter(it)
+            }
         }
-
         // Main part end
 
         SunmiPrintHelper.getInstance().lineWrap(2)

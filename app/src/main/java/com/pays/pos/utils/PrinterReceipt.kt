@@ -132,6 +132,15 @@ fun addItemWiseSalesHeaderSunmiInner() {
 
 }
 
+//Added for sunmi version 3.3.66 or above.
+fun addItemWiseSalesHeaderSunmiInnerNew() {
+
+    val header = "Item Name" + repeat(" ", 18) + "Quantity" + repeat(" ", 7) + "Amount"
+    Log.e("addItemWiseSalesHeader", "$header")
+    PrintSunmiUtils.normalTextNew(header)
+
+}
+
 fun employeeTipSummaryHeader() {
 
     val header = "Employee Name   Cash Tips  Card Tips  Total Tips"
@@ -140,11 +149,21 @@ fun employeeTipSummaryHeader() {
 
 }
 
+//Added for version 3.3.66 or above.
+fun employeeTipSummaryHeaderNew() {
+
+    val header = "Employee         Cash         Card       External      Total"
+
+    PrintSunmiUtils.normalText(header)
+
+}
+
 fun addPaymentDetailsHeaderInner() {
-
     PrintSunmiUtils.normalText("Details" + repeat(" ", 20) + "Refund" + repeat(" ", 9) + "Amount")
+}
 
-
+fun addPaymentDetailsHeaderInnerNew() {
+    PrintSunmiUtils.normalTextNew("Details" + repeat(" ", 20) + "Refund" + repeat(" ", 9) + "Amount")
 }
 
 fun addPaymentDetailsThreeData(builder: Builder, keyValue: java.util.ArrayList<KeyValue>): Builder {
@@ -321,6 +340,41 @@ fun addPaymentDetailsThreeDataInner(keyValue: java.util.ArrayList<KeyValue>) {
 
 }
 
+fun addPaymentDetailsThreeDataInnerNew(keyValue: java.util.ArrayList<KeyValue>) {
+
+    var title = ""
+    var refund = ""
+    var amount = ""
+
+
+    keyValue.forEach {
+
+
+        if (it.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
+            refund = it.showData()
+        } else {
+            title = it.key.toString()
+            amount = if (it.value?.isNotEmpty() == true) {
+                it.showData()
+            } else {
+                "$0.00"
+            }
+        }
+    }
+
+    var fPart = title + repeat(" ", 27 - title.length) + refund
+    var spaceLastPart = 48 - fPart.length
+    var spaceLast = 0
+    if (spaceLastPart > 1 && amount.length < spaceLastPart) {
+        spaceLast = spaceLastPart - amount.length
+    }
+
+    fPart += repeat(" ", spaceLast) + amount
+
+    PrintSunmiUtils.normalTextNew(fPart)
+
+}
+
 fun employeeGuestDetailsData(builder: Builder, keyValue: KeyValue): Builder {
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
@@ -416,6 +470,25 @@ fun employeeGuestDetailsDataInner(keyValue: KeyValue) {
 
 }
 
+//Added for sunmi version 3.3.66 or above
+fun employeeGuestDetailsDataInnerNew(keyValue: KeyValue) {
+
+    var sPart = if (keyValue.key?.contains("Served", true) == true) {
+        keyValue.value.toString()
+    } else {
+        MethodUtils.roundOffAmount(keyValue.value?.toDouble() ?: 0.0)
+    }
+    PrintSunmiUtils.normalTextNew(
+        padLine(
+            keyValue.key,
+            sPart,
+            48
+        ).toString()
+    )
+
+
+}
+
 fun addPaymentDetailsTwoData(builder: Builder, keyValue: KeyValue): Builder {
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
@@ -480,6 +553,20 @@ fun addPaymentDetailsTwoData(keyValue: KeyValue) {
 fun addPaymentDetailsTwoDataInner(keyValue: KeyValue) {
 
     PrintSunmiUtils.normalText(
+        padLine(
+            keyValue.key,
+            keyValue.showData(),
+            48
+        ).toString()
+    )
+
+
+}
+
+//Added for sunmi version 3.3.66 or above.
+fun addPaymentDetailsTwoDataInnerNew(keyValue: KeyValue) {
+
+    PrintSunmiUtils.normalTextNew(
         padLine(
             keyValue.key,
             keyValue.showData(),
@@ -583,6 +670,24 @@ fun addRefundVoidsMultipleInner(keyValue: java.util.ArrayList<KeyValue>) {
 
 }
 
+//Added for sunmi version 3.3.66 or above
+fun addRefundVoidsMultipleInnerNew(keyValue: java.util.ArrayList<KeyValue>) {
+
+    keyValue.forEach {
+        if (!it.key?.trim().equals("Item Count".trim(), true)) {
+            PrintSunmiUtils.normalTextNew(
+                padLine(
+                    it.key,
+                    MethodUtils.roundOffAmount(it.value.toString().toDouble() ?: 0.0),
+                    48
+                ).toString()
+            )
+        }
+    }
+
+
+}
+
 fun addSixHeaderForOrderSaleDetails(builder: Builder): Builder {
 
 
@@ -656,6 +761,11 @@ fun addSixHeaderForOrderSaleDetailsSunmiInner() {
     PrintSunmiUtils.normalText("OrderId    Tip      SC     PayType     Amount   ")
 }
 
+//Added for sunmi version 3.3.66 or above
+fun addSixHeaderForOrderSaleDetailsSunmiInnerNew() {
+    PrintSunmiUtils.normalTextNew("OrderId    Tip      SC     PayType     Amount   ")
+}
+
 fun addCreditTipAuditHeader(builder: Builder): Builder {
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
@@ -721,6 +831,19 @@ fun addCreditTipAuditHeader() {
 fun addCreditTipAuditHeaderInner() {
 
     PrintSunmiUtils.normalText(
+        "PaymentId" + repeat(" ", 4) + "SubTotal" + repeat(" ", 6) + "Tip" + repeat(
+            " ",
+            8
+        ) + "Total"
+    )
+
+
+}
+
+//Added for sunmi version 3.3.66 or above.
+fun addCreditTipAuditHeaderInnerNew() {
+
+    PrintSunmiUtils.normalTextNew(
         "PaymentId" + repeat(" ", 4) + "SubTotal" + repeat(" ", 6) + "Tip" + repeat(
             " ",
             8
@@ -833,6 +956,25 @@ fun addCreditTipAuditDataInner(
 
 }
 
+//Added for sunmi version 3.3.66 or above.
+fun addCreditTipAuditDataInnerNew(
+    fPArt: String,
+    sPart: String,
+    TPArt: String,
+    lPart: String
+) {
+
+
+    var pOne = TPArt + repeat(" ", 13 - TPArt.length) + fPArt
+
+    pOne += repeat(" ", 27 - pOne.length) + sPart
+    pOne += repeat(" ", 38 - pOne.length) + lPart
+
+
+    PrintSunmiUtils.normalTextNew(pOne)
+
+}
+
 fun addCreditCardBreakDown(builder: Builder): Builder {
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
@@ -885,6 +1027,13 @@ fun addCreditCardBreakDownInner() {
 
 
     PrintSunmiUtils.normalText("CardName" + repeat(" ", 20) + "Tip" + repeat(" ", 11) + "Amount")
+
+}
+
+//Added for sunmi version 3.3.66 or above
+fun addCreditCardBreakDownInnerNew() {
+
+    PrintSunmiUtils.normalTextNew("CardName" + repeat(" ", 20) + "Tip" + repeat(" ", 11) + "Amount")
 
 }
 
@@ -990,6 +1139,27 @@ fun addCreditCardBreakDownDataInner(
     pOne += repeat(" ", spaceLast) + amount
 
     PrintSunmiUtils.normalText(pOne)
+
+}
+
+//Added for sunmi version 3.3.66 or above
+fun addCreditCardBreakDownDataInnerNew(
+    creditCardBreakdown: EodReportResponse.Data.CreditCardBreakdown
+) {
+
+    var pOne = creditCardBreakdown.key + repeat(
+        " ",
+        28 - creditCardBreakdown.key.length
+    ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
+    var lastPart = 48 - pOne.length
+    var amount = creditCardBreakdown.showData()
+    var spaceLast = 0
+    if (lastPart > 1 && amount.length < lastPart) {
+        spaceLast = lastPart - amount.length
+    }
+    pOne += repeat(" ", spaceLast) + amount
+
+    PrintSunmiUtils.normalTextNew(pOne)
 
 }
 
@@ -1111,6 +1281,30 @@ fun addItemWiseSalesSunmiInnerPrinter(it: EodReportResponse.Data.ItemWiseSalesDa
 
 }
 
+fun addItemWiseSalesSunmiInnerPrinterNew(it: EodReportResponse.Data.ItemWiseSalesData) {
+
+    var itemName = ""
+    var quantity = ""
+    var amount = ""
+
+
+    itemName = it.itemName
+    quantity = it.quantity
+    amount = MethodUtils.roundOffAmount(it.amount)
+
+    var fPart = itemName + repeat(" ", 27 - itemName.length) + quantity
+    var spaceLastPart = 48 - fPart.length
+    var spaceLast = 0
+    if (spaceLastPart > 1 && amount.length < spaceLastPart) {
+        spaceLast = spaceLastPart - amount.length
+    }
+
+    fPart += repeat(" ", spaceLast) + amount
+    Log.e("addItemWiseSalesHeader", "$fPart")
+    PrintSunmiUtils.normalTextNew(fPart)
+
+}
+
 fun addItemsInEmployeeTipsSummary(data: EmployeeTipSummaryResponse.Data) {
 
     var items = ""
@@ -1142,6 +1336,25 @@ fun addItemsInEmployeeTipsSummaryInnerPrinter(data: EmployeeTipSummaryResponse.D
 
     Log.e("addItemsInEmployeeTip", "$items")
     PrintSunmiUtils.normalText(items)
+
+}
+
+fun addItemsInEmployeeTipsSummaryInnerPrinterNew(data: EmployeeTipSummaryResponse.Data) {
+
+    var items = ""
+    var emName = data.employee_name
+    if (data.employee_name.length >= 11) {
+        emName = data.employee_name.substring(0, 8).plus("...")
+    }
+    items += repeat(" ", 0 - data.employee_name.length) + emName
+    items += repeat(" ", 13 - items.length) + MethodUtils.roundOffAmount(data.total_cash_tips)
+    items += repeat(" ", 22 - items.length) + MethodUtils.roundOffAmount(data.total_card_tips)
+    items += repeat(" ", 31 - items.length) + MethodUtils.roundOffAmount(data.total_external_tips)
+    items += repeat(" ", 40 - items.length) + MethodUtils.roundOffAmount(data.total_tips)
+
+    Log.e("addItemsInEmployeeTip", "$items")
+
+    PrintSunmiUtils.normalTextNew(items)
 
 }
 
@@ -1221,6 +1434,20 @@ fun addItemsInOrderSalesDetailsInner(
     data += repeat(" ", 39 - data.length) + MethodUtils.roundOffAmount(details.amount)
 
     PrintSunmiUtils.normalText(data)
+}
+
+//Added for sunmi version 3.3.66 or above
+fun addItemsInOrderSalesDetailsInnerNew(
+    details: EodReportResponse.Data.OrderSalesDetails.Details
+) {
+
+    var data = details.orderId
+    data += repeat(" ", 10 - details.orderId.length) + MethodUtils.roundOffAmount(details.tip)
+    data += repeat(" ", 18 - data.length) + MethodUtils.roundOffAmount(details.serviceCharge)
+    data += repeat(" ", 27 - data.length) + details.payType
+    data += repeat(" ", 39 - data.length) + MethodUtils.roundOffAmount(details.amount)
+
+    PrintSunmiUtils.normalTextNew(data)
 }
 
 fun padLineCustomerItem(
@@ -1775,6 +2002,45 @@ fun addHorizontalHalfCustomerReceiptLine(fontSize: String): String {
 fun addHorizontalKitchenLineSunmi(fontSize: String): String {
 
     var int = 48
+    when (fontSize) {
+        Constants.LARGE -> {
+            int = 23
+        }
+    }
+
+    var str: String = ""
+    for (i in 0 until int) {
+        str += "-"
+    }
+
+
+
+    return str
+}
+
+
+fun addHorizontalKitchenLineSunmiSmall(fontSize: String): String {
+
+    var int = 1
+    when (fontSize) {
+        Constants.LARGE -> {
+            int = 23
+        }
+    }
+
+    var str: String = ""
+    for (i in 0 until int) {
+        str += "-"
+    }
+
+
+
+    return str
+}
+
+fun addHorizontalKitchenLineSunmiNew(fontSize: String): String {
+
+    var int = 80
     when (fontSize) {
         Constants.LARGE -> {
             int = 23
@@ -5816,6 +6082,60 @@ fun addOrderItemsTransactionInner(
         }
         if (obj.note.isNotEmpty()) {
             PrintSunmiUtils.normalText("   Note: " + obj.note)
+        }
+    }
+}
+
+
+fun addOrderItemsTransactionInnerNew(
+    list: List<GetOrderDetailsResponse.Data.OrderItem>,
+    font: String,
+    showModifiers: Boolean
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+        val item = padLineCustomerItem(
+            obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
+            getItemPriceToShow(totalPriceTransaction(obj)),
+            if (font == Constants.LARGE) 23 else 48
+        )
+
+        PrintSunmiUtils.normalTextNew(item.toString())
+
+
+
+        if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+
+                /*   var part1 = if (modifierObj.modifier_quantity == 1) {
+                       "       " + getItemNameToShow(modifierObj.name)
+                   } else {
+                       "   " + modifierObj.modifier_quantity.toString() + "x" + "  " + getItemNameToShow(
+                           modifierObj.name
+                       )
+                   }*/
+
+                var part1 =
+                    "   " + modifierObj.modifier_quantity.toString() + "x" + "  " + getItemNameToShow(
+                        modifierObj.name
+                    )
+
+
+                val modifier = padLineCustomerItem(
+                    part1,
+                    getModifierItemPriceToShow(modifierObj.price, modifierObj.quantity),
+                    if (font == Constants.LARGE) 23 else 48
+                )
+                PrintSunmiUtils.normalTextNew(modifier.toString())
+
+
+            }
+
+        }
+        if (obj.note.isNotEmpty()) {
+            PrintSunmiUtils.normalTextNew("   Note: " + obj.note)
         }
     }
 }
