@@ -9260,8 +9260,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                             }
                                         }
+                                        lineBreak()
                                     }
-                                    lineBreak()
+
 
                                     if (order?.orderTypeName?.trim()
                                             .equals("Online Order", true) ||
@@ -9269,9 +9270,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             .equals("OnlineWebOrder", true) ||
                                         order?.orderTypeName?.trim().equals(PHONE_ORDER, true)
                                     ) {
-                                        printCenter(order?.deliveryType.toString(), isBold = true, fontSize = FONT_SIZE_4X)
+                                        order?.deliveryType?.let { printCenter(it, isBold = true, fontSize = FONT_SIZE_4X) }
                                         lineBreak()
                                     }
+                                    lineBreak()
 //                                outputStream.write(LPrint.LINE_FEED)
 //                                outputStream.write(LPrint.NORMAL_SIZE)
 //                                outputStream.write(LPrint.LEFT_ALIGN)
