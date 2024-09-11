@@ -938,6 +938,7 @@
     <string name="external">External</string>
     <string name="remove_note">Remove Note</string>
 
+    <string name="cant_decrease_item_quantity_dinein">Item is already fired to kitchen . You can decrease quantity from table !</string>
 
 </resources>
 

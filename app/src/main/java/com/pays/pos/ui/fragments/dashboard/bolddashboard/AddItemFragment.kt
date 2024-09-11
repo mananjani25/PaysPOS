@@ -53,6 +53,7 @@ import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.notes.NoteListViewModel
 import com.pays.pos.utils.Event
+import com.pays.pos.utils.extensions.runOnUiThread
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
@@ -90,6 +91,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
     private var itemPosition = -1
 
     var dineInItemQunatity = 0
+    var modifiers:List<Modifier> = arrayListOf()
 
     companion object {
         fun newInstance(
@@ -226,28 +228,32 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
         }
     }
 
-
-    private fun onClick() {
+    private fun imgMinusClick() {
         binding.imgMinus.setOnClickListener {
             MethodUtils.hideSoftKeyboard(requireActivity())
-            /* if (prefProvider.getValueboolean(DINE_IN_UPDATE, false) == true && item.isFired) {
-                 if (qty > item.itemQuantity) {
-                     qty -= 1
-                 } else {
-                     qty = qty
-                 }
-             } */
-
             if (qty == 1) {
                 qty = 1
             } else {
                 qty -= 1
             }
-
-
             binding.edttxtQuantity.setText("" + qty)
-
         }
+    }
+
+    private fun onClick() {
+
+        if(prefProvider.getValueboolean(DINE_IN_UPDATE,false)) {
+            if(item.isFired) {
+                binding.imgMinus.setOnClickListener {
+                    AlertUtils.showCustomAlert(requireContext(),
+                        resources.getString(R.string.cant_decrease_item_quantity_dinein))
+                }
+            } else
+                imgMinusClick()
+        }else {
+           imgMinusClick()
+        }
+
         binding.imgPlus.setOnClickListener {
             MethodUtils.hideSoftKeyboard(requireActivity())
             qty += 1
@@ -1132,6 +1138,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 Log.d("AddItemFragment.kt", "txtDone_qty: ${Gson().toJson(qty)}")
 
                 MethodUtils.hideSoftKeyboard(requireActivity())
+                val oldItemQuantity = item.itemQuantity
                 item.itemQuantity = qty
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
                 var isPriceNull = true
@@ -1298,6 +1305,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
 
                 var found = false
+                lateinit var foundItem:TbCartItem
 
                 Log.d("AddItemFragment.kt", "txtDone_before_for (it in viewModel.currentCartItems)")
 
@@ -1305,7 +1313,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
 
 
-                    for (it in viewModel.currentCartItems) {
+                    for(it in viewModel.currentCartItems) {
                         if (it.guestIndexForDineIn == viewModel.dineInHeaderPosition && it.itemId == item.itemId) {
                             if (viewModel.checkModifierNew(it, item)) {
                                 Log.e(
@@ -1317,6 +1325,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                                 //item.itemQuantity += qty
 
+                                foundItem = it
 
                                  dineInItemQunatity =
                                      if(isUpdateItem) {
@@ -1330,9 +1339,39 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                         it.itemQuantity + qty
                                      }
 
+                                val itemOldModifiers = viewModel.cartItemModifiersBeforeUpdate
 
-//                                it.isItemEdited=true
+                                if(itemOldModifiers!=null && itemOldModifiers.isNotEmpty()) {
+                                    if (!it.isFired) {
+                                        modifiers = item.modifiers
+                                    } else {
+                                        modifiers = itemOldModifiers
+
+
+//                                            runOnUiThread {
+//                                                AlertUtils.showCustomAlert(
+//                                                    requireContext(),
+//                                                    "Can't update item modifiers! Item is already fired to the kitchen !"
+//                                                )
+//                                            }
+                                    }
+                                    viewModel.cartItemModifiersBeforeUpdate = null
+                                }
+
+                                if(prefProvider.getValueboolean(DINE_IN_UPDATE, false) && it.isFired) {
+
+                                    if(dineInItemQunatity < oldItemQuantity) {
+                                        dineInItemQunatity = oldItemQuantity
+
+                                        AlertUtils.showCustomAlert(
+                                            requireContext(),
+                                            resources.getString(R.string.cant_decrease_item_quantity_dinein)
+                                        )
+                                    }
+                                }
+
                                 break
+//                                it.isItemEdited=true
                             }
 
                         } else {
@@ -1342,7 +1381,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             )
                         }
                     }
-                } else {
+                } else
+                {
 
                     //Order type other than Dine in
                     for (it in viewModel.currentCartItems) {
@@ -1375,20 +1415,14 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     viewModel.cartFooterNeedToBeUpdated = true
 
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+
                         item.guestIndexForDineIn = viewModel.dineInHeaderPosition
                         val dineInList = cartModelsList[0].dineInList
                         dineInList?.get(0)?.headerPosition = viewModel.dineInSelectedItemHeaderPos
                         dineInList?.get(0)?.selectedPosition = viewModel.dineInSelectedItemHeaderPos
                         LogUtil.logE(TAG, "getItem  ${Gson().toJson(item)}")
                         cartModelsList[0].taxlistDynamic = arrayListOf()
-                        /*cartList[0].dineInList?.forEach { dineInModel ->
-                            dineInModel.items.forEach { items ->
-                                items.taxes?.forEach { taxData ->
-                                    taxData.subTotalAmount = 0.0
-                                    taxData.totalTaxTypePrice = 0.0
-                                }
-                            }
-                        }*/
+
                         viewModel.currentCartItems.forEach {
                             it.taxes?.forEach { taxData ->
                                 taxData.subTotalAmount = 0.0
@@ -1397,50 +1431,36 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         }
 
                         Log.e(TAG, "dineInListWhenUpdate:  ${Gson().toJson(cartModelsList)}")
-                        /*viewModel.newCartLogicModifier(
-                            cartList,
-                            item,
-                            Constants.UPDATE,
-                            false,
-                            dineInList ?: arrayListOf()
-                        )*/
                         Log.d(TAG, "398 dineintest currentCartItems: " + viewModel.currentCartItems)
                         Log.d(TAG, "dineintest item: " + item)
                         Log.d(TAG, "dineintest dineInList: " + dineInList)
 
-//                        item.itemQuantity = qty
+                        CoroutineScope(Dispatchers.IO).launch {
+                            runBlocking {
+                                item.itemQuantity = dineInItemQunatity
 
 
-
-//                        CoroutineScope(Dispatchers.IO).launch {
-//
-//                            runBlocking {
-//
-//                                item.itemQuantity = dineInItemQunatity
-//
-//
-//                                viewModel.deleteCartItemsByIdGuestIndex(item.itemId,item.guestIndexForDineIn?:-1)
-//
-////                                viewModel.updateDineInCartItemsByIdGuestIndex(
-////                                    dineInItemQunatity,
-////                                    item.itemId,
-////                                    item.guestIndexForDineIn ?: -1
-////                                )
-//
-//                                dineInItemQunatity = 0
-//                            }
-//                            viewModel.addItemToCartItems(item)
-//
-//                        }
+                                viewModel.updateDineInCartItemsByIdGuestIndex(
+                                    dineInItemQunatity,
+                                    foundItem.cartItemId,
+                                    Gson().toJson(modifiers),
+                                    item.guestIndexForDineIn ?: -1
+                                )
+                                dineInItemQunatity = 0
 
 
-                        viewModel.updateDineInCart(
-                            viewModel.currentCartItems,
-                            item,
-                            Constants.UPDATE,
-                            false,
-                            dineInList ?: arrayListOf()
-                        )
+                                viewModel.cartModel.let {
+                                    if (it != null) {
+                                        viewModel.taxBifurcationCalculationNew(
+                                            item,
+                                            it, "UPDATE", false
+                                        )
+                                    }
+                                }
+                                viewModel.updateCartModel(viewModel.cartModel!!)
+
+                            }
+                        }
                     } else {
                         item.guestIndexForDineIn = null
                         cartModelsList[0].taxlistDynamic = arrayListOf()
@@ -1489,6 +1509,17 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                     viewModel.addItemToCartItems(it)
                                 }
                             }
+
+                            viewModel.cartModel.let {
+                                if (it != null) {
+                                    viewModel.taxBifurcationCalculationNew(
+                                        item,
+                                        it, "UPDATE", false
+                                    )
+                                }
+                            }
+
+                            viewModel.updateCartModel(viewModel.cartModel!!)
 
 //                            viewModel.updateCart(
 //                                viewModel.currentCartItems,
@@ -1543,7 +1574,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     }
 
 
-                } else {
+                } else
+                {
                     Log.d("AddItemFragment.kt", "txtDone_else_found")
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                         item.guestIndexForDineIn = viewModel.dineInHeaderPosition
@@ -1562,13 +1594,24 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             Log.d(TAG, "dineintest item: " + item)
                             Log.d(TAG, "dineintest dineInList: " + dineInList)
                             item.itemQuantity = qty
-                            viewModel.updateDineInCart(
-                                viewModel.currentCartItems,
-                                item,
-                                Constants.ADD,
-                                false,
-                                dineInList
-                            )
+//                            viewModel.updateDineInCart(
+//                                viewModel.currentCartItems,
+//                                item,
+//                                Constants.ADD,
+//                                false,
+//                                dineInList
+//                            )
+
+                            viewModel.addItemToCartItems(item)
+                            viewModel.cartModel.let {
+                                if (it != null) {
+                                    viewModel.taxBifurcationCalculationNew(
+                                        item,
+                                        it, "ADD", false
+                                    )
+                                }
+                            }
+                            viewModel.updateCartModel(viewModel.cartModel!!)
                         }
                     } else {
                         item.guestIndexForDineIn = null
@@ -1833,9 +1876,19 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     Log.d(TAG, "dineintest item: " + Gson().toJson(item))
                     Log.d(TAG, "dineintest dineInList: " + it1)
 
-                    if(viewModel.currentCartItems.size == 1)
-                        viewModel.duplicateCurrentCartItem.clear()
-                    viewModel.updateDineInCart(viewModel.currentCartItems, item, DELETE, false, it1)
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        if(viewModel.currentCartItems.size == 1) {
+                            viewModel.duplicateCurrentCartItem.clear()
+                            viewModel.currentCartItems.clear()
+
+                            //viewModel.lastItemRemoveFromCart.postValue(Pair(true,item.cartItemId))
+                        }
+
+                        viewModel.deleteCartItem(item.cartItemId)
+                    }
+
+                   // viewModel.updateDineInCart(viewModel.currentCartItems, item, DELETE, false, it1)
                 }
             } else {
                 item.guestIndexForDineIn = null

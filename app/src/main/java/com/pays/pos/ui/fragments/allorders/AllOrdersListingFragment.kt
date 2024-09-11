@@ -965,7 +965,9 @@ class AllOrdersListingFragment(
         }
 
         lifecycleScope.launch {
-            oneItemPerReceipt = dashboardViewModel.getLabelPrinterSettingsData().oneItemPerReciept
+            try {
+                oneItemPerReceipt = dashboardViewModel.getLabelPrinterSettingsData().oneItemPerReciept
+            }catch (e:Exception){}
         }
 
 //        viewModel.setCurrentDate(Calendar.getInstance(), "", "", orderStatus)

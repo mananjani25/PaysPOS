@@ -12,8 +12,6 @@ import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
 import android.view.*
-import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData

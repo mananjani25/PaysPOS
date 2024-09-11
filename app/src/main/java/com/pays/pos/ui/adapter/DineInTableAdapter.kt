@@ -323,6 +323,13 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     binding.btnPay.setBackgroundColor(binding.root.context.getColor(R.color.btnColorDark))
                 }
+
+                /**
+                 * This will only show item prices without any taxes and services charges
+                 */
+                finalAmt =
+                    guestSubTotal + list[0].guestDividedAmt
+
                 binding.txtPay.text = "Pay : " + MethodUtils.roundOffAmount(finalAmt)
             }
 

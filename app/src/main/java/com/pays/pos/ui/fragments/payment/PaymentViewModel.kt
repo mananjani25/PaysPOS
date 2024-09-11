@@ -215,7 +215,7 @@ open class PaymentViewModel @Inject constructor(
                                     )
                                 }
 
-                                if (onlySave || orderRequestModel.completed_all_payments) {
+                                if (onlySave) {
                                     EventBus.getDefault().post(
                                         MessageEvent(
                                             "${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${

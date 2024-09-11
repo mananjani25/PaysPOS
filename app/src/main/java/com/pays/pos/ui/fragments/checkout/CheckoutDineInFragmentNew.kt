@@ -538,6 +538,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             listtextview.add(binding.tvFullAmount)
             setupColorChanges(binding.tvCustom, listtextview)
             val bundle = Bundle()
+
             bundle.putDouble("totalPrice", WholetotalPrice)
             bundle.putInt("splitValue", isSelectedCount)
 
@@ -1229,9 +1230,16 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         binding.tvCustomAmount.setOnSingleClickListener {
 
 
+            val finalCashAmount =  binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
             val bundleVal = Bundle().apply {
                 putDouble("totalprice", ((WholetotalPrice + tipAmount)))
+                putDouble("amountToDisplay", finalCashAmount)
             }
+
+
+
+
+
             findNavController().navigate(
                 R.id.action_paymentBoldPosFragment_to_customAmountFragment,
                 bundleVal
@@ -1764,7 +1772,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             loadPaymentLayout()
             tipAmountCalculation()
         }
-        binding.linearTab2.setOnSingleClickListener {
+
+        if(isGuestPay)
+            binding.linearTab2.gone()
+        else binding.linearTab2.setOnSingleClickListener {
             if (tipAmount != 0.0 && viewModel.tipTransactionAmount != 0.0) {
                 AlertUtils.showCustomAlertWithListenerWithOKCancel(
                     requireContext(),
@@ -1850,44 +1861,44 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         paymentType = "Card"
         paymentviewModel.saveOrder(false)
 
-        ////
-
-        val myRequest = cartList?.let {
-            paymentviewModel.createOrderRequestForCard(
-                it,
-                subTotalPrice,
-                paymentAmount,
-                totalServiceCharge,
-                totalTax,
-                Constants.DINE_IN,
-                future_delivery_date,
-                future_delivery_time,
-                true,
-                totalDiscount,
-                tipAmount,
-                splitValue,
-                redeemLoyaltyInfo,
-                cashDiscountSurcharge,
-                true,
-                paymentType,
-                cardNumber,
-                cashDiscountType,
-                tipID,
-                GlobalUID,
-                RefNumber,
-                ExtData,
-                ECRRefNumber,
-                PAXtoken,
-                cardLastDigits,
-                cardTypeOfTransaction = EDCType
-            )
-        }
-
-        ///
-
-
 
         if (isGuestPay) {
+
+            ////
+
+            val myRequest = cartList?.let {
+                paymentviewModel.createOrderRequestForCard(
+                    it,
+                    subTotalPrice,
+                    paymentAmount,
+                    totalServiceCharge,
+                    totalTax,
+                    Constants.DINE_IN,
+                    future_delivery_date,
+                    future_delivery_time,
+                    true,
+                    totalDiscount,
+                    tipAmount,
+                    splitValue,
+                    redeemLoyaltyInfo,
+                    cashDiscountSurcharge,
+                    true,
+                    paymentType,
+                    cardNumber,
+                    cashDiscountType,
+                    tipID,
+                    GlobalUID,
+                    RefNumber,
+                    ExtData,
+                    ECRRefNumber,
+                    PAXtoken,
+                    cardLastDigits,
+                    cardTypeOfTransaction = EDCType
+                )
+            }
+
+            ///
+
             if (custom_paymentAmount != 0.0) {
                 dineinOrderVieweModel.totalPayAmount(custom_paymentAmount)
             }
@@ -1946,7 +1957,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 paymentviewModel.updateOrder(false, null, null, "", "")
             }
 
-            /*val myRequest = cartList?.let {
+            val myRequest = cartList?.let {
                 paymentviewModel.createOrderRequestForCard(
                     it,
                     subTotalPrice,
@@ -1975,7 +1986,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     cardLastDigits,
                     cardTypeOfTransaction = EDCType
                 )
-            }*/
+            }
             if (myRequest != null) {
                 if (custom_paymentAmount.toDouble() != 0.0) {
                     paymentviewModel.totalPayAmount(custom_paymentAmount)

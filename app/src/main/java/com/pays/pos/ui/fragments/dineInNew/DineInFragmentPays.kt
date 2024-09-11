@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.os.bundleOf
@@ -46,8 +47,12 @@ import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import com.pays.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.pays.pos.ui.fragments.dineInNew.adapter.DineInFloorNameListAdapterPays
+import com.pays.pos.ui.fragments.dineInNew.model.SyncDineInEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -61,7 +66,7 @@ class DineInFragmentPays : Fragment() {
     private val TAG = this.javaClass.name.toString()
     private var floorPlanSelectedPos = 0
     private var dineInFloorTable : GetFloorPlanResponse.Data.FloorPlanTable? = null
-    private val dashBoardCategoryViewModel by activityViewModels<DashBoardCategoryViewModelPaysDineIn>()
+    private val dashBoardCategoryViewModel by activityViewModels<DashBoardCategoryViewModel>()
 
     @Inject
     lateinit var rolePermission: RolePermission
@@ -148,11 +153,34 @@ class DineInFragmentPays : Fragment() {
         tableStatusCheck()
         tableStatusSucess()
         observeShowProgress()
+
         binding.layoutHeader.imgTransferTable?.visible()
         binding.layoutHeader.imgRefreshTables?.visible()
         binding.layoutHeader.txtUserName.text = prefProvider.getValue(Constants.EMPLOYEE_NAME, "")
 
     }
+
+    override fun onStart() {
+        super.onStart()
+
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        EventBus.getDefault().unregister(this)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onSyncDineInEvent(event: SyncDineInEvent) {
+        if (event.doSync) {
+            floorPlanSelectedPos =
+                dineInFloorNameListAdapter.getSelectedPos()
+            loadFloorPlan()
+        }
+    }
+
 
     private fun onClick() {
         binding.layoutHeader.imgTransferTable?.setOnClickListener {
@@ -877,6 +905,7 @@ class DineInFragmentPays : Fragment() {
             prefProvider.setValue(Constants.RECEIPT_CUSTOMER_NAME, "")
             prefProvider.setValue(Constants.PREF_CUSTOMER, "")
             prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+            prefProvider.setValueboolean(DINE_IN_UPDATE,false)
         }
         if (dineInFloorTableModel.status == MERGED) {
             viewModel.getTableStatus(dineInFloorTableModel.id ?:0, MERGED)

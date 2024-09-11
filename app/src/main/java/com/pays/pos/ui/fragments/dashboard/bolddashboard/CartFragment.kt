@@ -11,14 +11,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -39,7 +38,6 @@ import com.pays.pos.data.remote.Constants.DELETE
 import com.pays.pos.data.remote.Constants.DELIVERY
 import com.pays.pos.data.remote.Constants.DELIVERY_TYPE
 import com.pays.pos.data.remote.Constants.DINE_IN
-import com.pays.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.pays.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.pays.pos.data.remote.Constants.EMPLOYEE_ID
 import com.pays.pos.data.remote.Constants.GIFT_CARD
@@ -71,14 +69,11 @@ import com.pays.pos.data.remote.Constants.WHOLE_AMOUNT
 import com.pays.pos.databinding.FragmentCartBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.logger.MessageEvent
-import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.adapter.DineInAdapter
 import com.pays.pos.ui.adapter.OrderTypeAdapter
 import com.pays.pos.ui.adapter.boldpos.CartItemsAdapter
 import com.pays.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.pays.pos.ui.fragments.dineInNew.DashBoardCategoryViewModelPaysDineIn
-import com.pays.pos.ui.fragments.dineInNew.DineInOrderTableViewModelPays
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
@@ -94,6 +89,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.Runnable
 import java.lang.System
+import java.security.spec.ECField
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -291,6 +287,7 @@ class CartFragment(
                 )
             ) {
                 binding.txtAddCustomer.invisible()
+                binding.rvCartDineIn.visible()
             } else {
                 binding.txtAddCustomer.visible()
             }
@@ -840,7 +837,7 @@ class CartFragment(
         }
 
         binding.rvCartDineIn.visibility = View.VISIBLE
-        AlertUtils.showAlert(requireContext(),"CART VISIBILITY = ${binding.rvCartDineIn.visibility == View.VISIBLE}")
+       // AlertUtils.showAlert(requireContext(),"CART VISIBILITY = ${binding.rvCartDineIn.visibility == View.VISIBLE}")
     }
 
     fun setTaxBifurcationData(taxlistData: ArrayList<TaxData>) {
@@ -1148,11 +1145,11 @@ class CartFragment(
                                         Constants.DINE_IN_UPDATE, false
                                     )
                                 ) {
-                                    listOfTax.addAll(arrayListOf())
-                                    setTaxBifurcationData(arrayListOf())
+                                    //listOfTax.addAll(arrayListOf())
+                                    setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
 
                                 } else {
-                                    listOfTax.addAll(it1)
+                                   // listOfTax.addAll(it1)
                                     setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
                                 }
 
@@ -2136,7 +2133,9 @@ class CartFragment(
 
                     cartModel?.discountPrice = totalDiscount
 
-                    binding.txtSubTotal.text = MethodUtils.roundOffAmount(remaining)
+                    try {
+                        binding.txtSubTotal.text = MethodUtils.roundOffAmount(remaining)
+                    }catch (e:Exception) {}
                     subTotalPrice = remaining
                 } else {
                     viewModel.totalDiscount = 0.0
@@ -2402,23 +2401,31 @@ class CartFragment(
 
         } else {
 
-            var listOfCustomersID: ArrayList<Int> = arrayListOf()
-            cartModelsList[0].dineInList?.forEach {
-                if (it.customer != null) {
-                    listOfCustomersID.add(it.customer?.id ?: 0)
+
+            if(cartModelsList.isEmpty())
+                viewModel.cartModel?.let { cartModelsList.add(0, it) }
+
+            if(cartModelsList.isNotEmpty()) {
+
+                var listOfCustomersID: ArrayList<Int> = arrayListOf()
+                cartModelsList[0].dineInList?.forEach {
+                    if (it.customer != null) {
+                        listOfCustomersID.add(it.customer?.id ?: 0)
+
+                    }
 
                 }
-
-            }
-            val bundle = bundleOf(
-                "DINE_IN" to true,
-                "position" to position,
-                "cartList" to cartModelsList,
-                "listOfCustomersID" to listOfCustomersID
-            )
-            findNavController().navigate(
-                R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
-            )
+                val bundle = bundleOf(
+                    "DINE_IN" to true,
+                    "position" to position,
+                    "cartList" to cartModelsList,
+                    "listOfCustomersID" to listOfCustomersID
+                )
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
+                )
+            } else
+                AlertUtils.showCustomAlert(requireContext(),"Unable to assign customer ! Please add at least one Item.")
         }
 
 
@@ -2437,64 +2444,77 @@ class CartFragment(
             }
             return
         }
-        var existing_count = dineInCartAdapter.getList().size - 1
-        var total_count = existing_count + count
-        if (total_count <= 15) {
-            var existinglist: ArrayList<DineInModel> = arrayListOf()
-            cartModelsList[0].dineInList?.forEach {
-                if (!it.isDestroy) {
-                    existinglist.add(it)
-                }
-            }
 
-            val dineInList: java.util.ArrayList<DineInModel> = arrayListOf()
-            if (existinglist.isNotEmpty()) {
-                // List of available counts from list to add new guest
-                var availableName: ArrayList<Int> = arrayListOf()
-                for (i in 1 until 16) {
-                    var filteredList: List<DineInModel> = arrayListOf()
-                    filteredList = dineInCartAdapter.getList()
-                        .filter { item -> item.title?.substringAfter("Guest ") == i.toString() }
-                        ?: arrayListOf()
-                    if (filteredList.isEmpty()) {
-                        availableName.add(i)
-                    }
-                    if (availableName.size >= count) {
-                        break
-                    }
-                }
+        if(cartModelsList.isEmpty())
+            viewModel.cartModel?.let { cartModelsList.add(0, it) }
 
-                for (i in 1..count) {
 
-                    // Check if cartList already contains destroyed guest, if contains change the flag else add new guest
-                    try {
-                        var commonDineInModel =
-                            cartModelsList[0].dineInList?.single { item -> item.title == "Guest ${availableName[i - 1]}" }
-                        if (commonDineInModel != null) {
-                            commonDineInModel.isDestroy = false
-                            dineInList.add(commonDineInModel)
-                        }
-                    } catch (e: Exception) {
-                        dineInList.add(
-                            DineInModel(
-                                0,
-                                false,
-                                0,
-                                "Guest ${availableName[i - 1]}",
-                                floorPlanTable = cartModelsList[0].dineInList!![0].floorPlanTable
-
-                            )
-                        )
-                    }
-                }
-            }
-            existinglist.addAll(dineInList)
-            cartModelsList[0].dineInList = existinglist.toList()
-            viewModel.addGuestFromDashBoard(cartModelsList)
-        } else {
+        if(cartModelsList.isEmpty()){
             AlertUtils.showCustomAlertWithListenerWithOK(
-                requireContext(), "You can't add more than 15 Guest in an order."
+                requireContext(), "Unable to Add Guest !"
             ) { _, _ ->
+            }
+            return
+        } else {
+            var existing_count = dineInCartAdapter.getList().size - 1
+            var total_count = existing_count + count
+            if (total_count <= 15) {
+                var existinglist: ArrayList<DineInModel> = arrayListOf()
+                cartModelsList[0].dineInList?.forEach {
+                    if (!it.isDestroy) {
+                        existinglist.add(it)
+                    }
+                }
+
+                val dineInList: java.util.ArrayList<DineInModel> = arrayListOf()
+                if (existinglist.isNotEmpty()) {
+                    // List of available counts from list to add new guest
+                    var availableName: ArrayList<Int> = arrayListOf()
+                    for (i in 1 until 16) {
+                        var filteredList: List<DineInModel> = arrayListOf()
+                        filteredList = dineInCartAdapter.getList()
+                            .filter { item -> item.title?.substringAfter("Guest ") == i.toString() }
+                            ?: arrayListOf()
+                        if (filteredList.isEmpty()) {
+                            availableName.add(i)
+                        }
+                        if (availableName.size >= count) {
+                            break
+                        }
+                    }
+
+                    for (i in 1..count) {
+
+                        // Check if cartList already contains destroyed guest, if contains change the flag else add new guest
+                        try {
+                            var commonDineInModel =
+                                cartModelsList[0].dineInList?.single { item -> item.title == "Guest ${availableName[i - 1]}" }
+                            if (commonDineInModel != null) {
+                                commonDineInModel.isDestroy = false
+                                dineInList.add(commonDineInModel)
+                            }
+                        } catch (e: Exception) {
+                            dineInList.add(
+                                DineInModel(
+                                    0,
+                                    false,
+                                    0,
+                                    "Guest ${availableName[i - 1]}",
+                                    floorPlanTable = cartModelsList[0].dineInList!![0].floorPlanTable
+
+                                )
+                            )
+                        }
+                    }
+                }
+                existinglist.addAll(dineInList)
+                cartModelsList[0].dineInList = existinglist.toList()
+                viewModel.addGuestFromDashBoard(cartModelsList)
+            } else {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(), "You can't add more than 15 Guest in an order."
+                ) { _, _ ->
+                }
             }
         }
     }
@@ -2528,12 +2548,25 @@ class CartFragment(
 
     // To remove guest from order
     override fun onRemoveGuest(position: Int) {
-        if (dineInCartAdapter.getList().isNotEmpty() && dineInCartAdapter.getList().size > 2) {
+
+        if(cartModelsList.isNotEmpty()){
+            if(viewModel.currentCartItems.any { it.guestIndexForDineIn == position }) {
+                AlertUtils.showCustomAlert(requireContext(),"Can't remove guest as it contains items.")
+                return
+            }
+        }
+
+        if(cartModelsList.isEmpty())
+            viewModel.cartModel?.let { cartModelsList.add(0, it) }
+
+
+        if (dineInCartAdapter.getList().isNotEmpty() && dineInCartAdapter.getList().size > 2 && cartModelsList.isNotEmpty()) {
             if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
                 cartModelsList.get(0).dineInList?.forEach {
                     if (it.title == dineInCartAdapter.getList()[position].title) {
                         it.apply {
                             this.isDestroy = true
+                            viewModel.updateDineInCartItemGuestDineInPositions(position)
                         }
                     }
                 }
@@ -2542,10 +2575,29 @@ class CartFragment(
                 val destroyedGuestsList: ArrayList<DineInModel> = ArrayList()
                 dineIn.filter { (it.title == dineInCartAdapter.getList()[position].title) }
                     .forEach { destroyedGuestsList.add(it) }
+
+                val index = position
+                Toast.makeText(requireContext(),"Removed guest at index $index",Toast.LENGTH_LONG).show()
+
                 dineIn.removeAll(destroyedGuestsList.toSet())
+
+                viewModel.updateDineInCartItemGuestDineInPositions(position)
+
                 cartModelsList[0].dineInList = dineIn
             }
             viewModel.addCart(cartModelsList[0])
+
+            /**
+             * After removing any guest select whole table by default
+             * */
+            try {
+                viewModel.dineInHeaderPosition = 0
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
+
+        } else if(cartModelsList.isEmpty()){
+            AlertUtils.showCustomAlert(requireContext(),"Unable to remove guest")
         } else {
             viewModel.unableToRemoveGuest(getString(R.string.minimum_one_guest_is_required))
         }
@@ -2577,6 +2629,17 @@ class CartFragment(
         dineInCartAdapter.setListner(this)
         dineInCartAdapter.isFromPayment(isFromPayment)
         binding.rvCartDineIn.adapter = dineInCartAdapter
+
+        viewModel.lastItemRemoveFromCart.observe(viewLifecycleOwner) { pair ->
+            if(pair.first) {
+                val dineInList = dineInCartAdapter.getList()
+                val found = dineInList.any { it.items.any { it.cartItemId == pair.second } }
+
+                Toast.makeText(requireContext(),"ITEMS - $found",Toast.LENGTH_LONG).show()
+
+            }
+        }
+
     }
 
     private fun clearCart() {
@@ -2613,9 +2676,9 @@ class CartFragment(
                                     prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
                                     viewModel.removeItemDineInList.clear()
 
-                                    if (cartModelsList.size > 0) {
+                                    //if (cartModelsList.size > 0) {
 
-                                        val dList = cartModelsList[0].dineInList ?: arrayListOf()
+                                        val dList = viewModel.cartModel?.dineInList ?: arrayListOf()
                                         LogUtil.logE(TAG, "dList:  ${Gson().toJson(dList)}")
                                         if (dList.isNotEmpty()) {
                                             dList[0].floorPlanTable?.id?.let {
@@ -2629,7 +2692,7 @@ class CartFragment(
                                                 }
                                             }
                                         }
-                                    }
+                                    //}
 
                                     clearCustomer()
                                     viewModel.deleteCart()
@@ -2769,7 +2832,12 @@ class CartFragment(
     private fun initListeners() {
 
         binding.relPreoceedToFire.setOnClickListener {
+
             if (viewModel.restrictedAmount(binding.txtTotal)) {
+
+                it.isEnabled = false
+                binding.relPreoceedToFire.gone()
+
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 //cartModelsList[0] = viewModel.generateCombinedItems(viewModel.cartModel!!)
 
@@ -2817,13 +2885,18 @@ class CartFragment(
 
                             val valuess = cartModelsList[0]
 
-                            val request = viewModel.updateOrder(cartModelsList[0])
 
-                            var requested = 0
 
-                            viewModel.dineInResult.observe(viewLifecycleOwner) { returnResult ->
 
-                                if(returnResult) {
+
+                                val request = viewModel.updateOrder(cartModelsList[0])
+
+
+                            /***
+                             * Added this delay to resolve items getting added two times after moving items
+                             */
+                                Handler().postDelayed({
+
                                     if (cartModelsList[0].orderId != 0) {
                                         cartModelsList[0].orderId?.let {
                                             viewModel.updateOrderCall(
@@ -2831,13 +2904,40 @@ class CartFragment(
                                             )
                                         }
                                     } else {
-                                        orderId?.let { it1 -> viewModel.updateOrderCall(it1, request) }
+                                        orderId?.let { it1 ->
+                                            viewModel.updateOrderCall(
+                                                it1,
+                                                request
+                                            )
+                                        }
                                     }
+                                },300)
 
-                                    requested = 1
-                                    viewModel.dineInResult.value = false
-                                }
-                            }
+
+
+
+//                                viewModel.dineInResult.observe(viewLifecycleOwner) { returnResult ->
+//
+//                                    if (returnResult) {
+//                                        viewModel.updateRequested = false
+//                                        if (cartModelsList[0].orderId != 0) {
+//                                            cartModelsList[0].orderId?.let {
+//                                                viewModel.updateOrderCall(
+//                                                    it, request
+//                                                )
+//                                            }
+//                                        } else {
+//                                            orderId?.let { it1 ->
+//                                                viewModel.updateOrderCall(
+//                                                    it1,
+//                                                    request
+//                                                )
+//                                            }
+//                                        }
+//
+//                                        // viewModel.dineInResult.value = false
+//                                    }
+//                                }
 //                            prefProvider.setValueboolean(DINE_IN_UPDATE, false)
 //                            prefProvider.setValueboolean(DINE_IN_LIST_EDIT, false)
 //                            prefProvider.setValueboolean(DINE_IN_UPDATE, false)

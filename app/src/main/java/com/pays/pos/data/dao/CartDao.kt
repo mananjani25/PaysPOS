@@ -26,7 +26,7 @@ interface CartDao {
     @Query("DELETE FROM CartModelBackup")
     suspend fun clearCartModelBackup()
 
-    @Query("select * from TbCartItem where orderType = :orderType /*AND isManualSaleItem = 0 AND employeeID=:employee_Id */ ORDER BY timeStamp")
+    @Query("select * from TbCartItem where orderType = :orderType /*AND isManualSaleItem = 0 AND employeeID=:employee_Id */ AND isDestroy = 0 ORDER BY timeStamp")
     fun getAllDineInCartItems(orderType: String): Flow<List<TbCartItem>>
 
     @Query("select * from TbCartItem where orderType = :orderType AND isManualSaleItem = 0 AND employeeID=:employee_Id ORDER BY timeStamp")
@@ -51,11 +51,11 @@ interface CartDao {
     @Query("DELETE FROM TbCartItem WHERE cartItemId=:cartItemId")
     suspend fun deleteCartItems(cartItemId:Int)
 
-    @Query("DELETE FROM TbCartItem WHERE itemId=:itemId AND guestIndexForDineIn=:guestIndexForDineIn")
+    @Query("DELETE FROM TbCartItem WHERE cartItemId=:itemId AND guestIndexForDineIn=:guestIndexForDineIn")
     suspend fun deleteCartItemsByIdGuestIndex(itemId:Int,guestIndexForDineIn:Int)
 
-    @Query("UPDATE TbCartItem SET itemQuantity=:itemQuantity  WHERE itemId=:itemId AND guestIndexForDineIn=:guestIndexForDineIn")
-    suspend fun updateDineInCartItemsByIdGuestIndex(itemQuantity: Int,itemId:Int,guestIndexForDineIn:Int)
+    @Query("UPDATE TbCartItem SET itemQuantity=:itemQuantity, modifiers=:modifier WHERE cartItemId=:itemId AND guestIndexForDineIn=:guestIndexForDineIn")
+    suspend fun updateDineInCartItemsByIdGuestIndex(itemQuantity: Int,itemId:Int,modifier: String,guestIndexForDineIn:Int)
 
     @Query("DELETE FROM cartmodel WHERE isMaual=1")
     suspend fun deleteManualCartModel()
@@ -71,6 +71,9 @@ interface CartDao {
 
     @Query("select * from TbCartItem WHERE guestIndexForDineIn = :guestIndexForDineIn ORDER BY timeStamp")
     fun getDineInCartItems(guestIndexForDineIn:Int): List<TbCartItem>
+
+    @Query("UPDATE TbCartItem set guestIndexForDineIn = guestIndexForDineIn-1 WHERE guestIndexForDineIn > :removedGuestIndex")
+    fun updateDineInCartItemGuestDineInPositions(removedGuestIndex:Int)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addSuspended(cartModel: CartModel): Long?
