@@ -21,6 +21,10 @@ import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
 import com.pays.pos.data.model.responseModel.*
 import com.pays.pos.utils.landi.LPrint
+import com.pays.pos.utils.landi.LPrint.FONT_SIZE_3X
+import com.pays.pos.utils.landi.LPrint.FONT_SIZE_5X
+import com.pays.pos.utils.landi.LPrint.lineBreak
+import com.pays.pos.utils.landi.LPrint.printLeft
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
 import java.io.OutputStream
@@ -2979,6 +2983,39 @@ fun addOrdersForKitchenOnlineOrderSunmi(
     }
 }
 
+fun addOrdersForKitchenOnlineOrderLandi(
+    list: List<OnlineOrderResponseModel.Data.OrderItem>,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null,
+    lprint: LPrint
+) {
+    for (i in 0 until list.size) {
+        printerCat?.forEach {
+            if (it.id == list[i].categoryId && it.printerEnable && it.categoryActive) {
+                val obj = list.get(i)
+                lprint.printLeft(obj.quantity.toString() + " " + obj.itemName.uppercase(), isBold = true, fontSize = FONT_SIZE_5X)
+                lprint.lineBreak()
+                if (obj.orderItemModifiers.isNotEmpty()) {
+                    for (j in 0 until obj.orderItemModifiers.size) {
+                        val modifierObj = obj.orderItemModifiers.get(j)
+                        lprint.printLeft(
+                            "  " + if (modifierObj.modifier_quantity == 1) {
+                                "   "
+                            } else {
+                                "" + modifierObj.modifier_quantity + "x "
+                            } + modifierObj.name.uppercase(), isBold = true, fontSize = FONT_SIZE_5X
+                        )
+                        lineBreak()
+                    }
+                }
+                if (obj.note.isNotEmpty()) {
+                    lprint.printLeft("  Note:" + obj.note, isBold = true, fontSize = FONT_SIZE_5X)
+                    lprint.lineBreak()
+                }
+            }
+        }
+    }
+}
+
 fun addOrdersForKitchenOnlineOrderSunmiKiosk(
     list: List<KioskOrderResponse.Data.OrderItems>,
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
@@ -4370,6 +4407,112 @@ fun addOrdersForKitchenInner(
 
 }
 
+fun addOrdersForKitchenLandiInner(
+    list: List<CreateOrderResponse.Data.Order.OrderItem>,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null,
+    lprint:LPrint
+) {
+    for (i in 0 until list.size) {
+
+        printerCat?.forEach {
+            if (it.id == list[i].categoryId && it.categoryActive && it.printerEnable) {
+
+                val obj = list.get(i)
+
+                if (obj.isItemEdited) {
+                    lprint.printLeft("(U)" + obj.quantity.toString() + " " + obj.itemName.uppercase(),isBold = true,
+                        fontSize = FONT_SIZE_5X
+                    )
+                    lprint.lineBreak()
+                } else {
+                    lprint.printLeft(obj.quantity.toString() + " " + obj.itemName.uppercase(),isBold = true,
+                        fontSize = FONT_SIZE_5X)
+                    lprint.lineBreak()
+                }
+
+//                PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName.uppercase())
+
+                if (obj.orderItemModifiers.isNotEmpty()) {
+                    for (j in 0 until obj.orderItemModifiers.size) {
+                        val modifierObj = obj.orderItemModifiers.get(j)
+                        lprint.printLeft(
+                            if (modifierObj.modifierQuantity == 1) {
+                                "     " + modifierObj.name.uppercase()
+                            } else {
+                                "  " + modifierObj.modifierQuantity + "x " + modifierObj.name.uppercase()
+                            },isBold = true,
+                            fontSize = FONT_SIZE_5X
+                        )
+                        lprint.lineBreak()
+
+                    }
+                }
+                if (obj.note.isNotEmpty()) {
+                    lprint.printLeft("  Note:" + obj.note,isBold = true,
+                        fontSize = FONT_SIZE_5X)
+                    lprint.lineBreak()
+                }
+
+//                lprint.lineBreak()
+            }
+        }
+    }
+
+}
+
+fun addOrdersForKitchenLandiInnerNew(
+    list: List<CreateOrderResponse.Data.Order.OrderItem>,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null,
+    lprint:LPrint
+) {
+    for (i in 0 until list.size) {
+
+        printerCat?.forEach {
+            if (it.id == list[i].categoryId && it.categoryActive && it.printerEnable) {
+
+                val obj = list.get(i)
+
+                if (obj.isItemEdited) {
+                    lprint.printLeft("(U)" + obj.quantity.toString() + " " + obj.itemName.uppercase(),isBold = true,
+                        fontSize = FONT_SIZE_5X
+                    )
+                    lprint.lineBreak()
+                } else {
+                    lprint.printLeft(obj.quantity.toString() + " " + obj.itemName.uppercase(),isBold = true,
+                        fontSize = FONT_SIZE_5X)
+                    lprint.lineBreak()
+                }
+
+//                PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName.uppercase())
+
+                if (obj.orderItemModifiers.isNotEmpty()) {
+                    for (j in 0 until obj.orderItemModifiers.size) {
+                        val modifierObj = obj.orderItemModifiers.get(j)
+                        lprint.printLeft(
+                            if (modifierObj.modifierQuantity == 1) {
+                                "     " + modifierObj.name.uppercase()
+                            } else {
+                                "  " + modifierObj.modifierQuantity + "x " + modifierObj.name.uppercase()
+                            },isBold = true,
+                            fontSize = FONT_SIZE_5X
+                        )
+                        lprint.lineBreak()
+
+                    }
+                }
+                if (obj.note.isNotEmpty()) {
+                    lprint.printLeft("  Note:" + obj.note,isBold = true,
+                        fontSize = FONT_SIZE_5X)
+                    lprint.lineBreak()
+                }
+
+                lprint.lineBreak()
+            }
+        }
+    }
+
+}
+
 
 fun addOrdersForKitchenInner(
     isEdited: Boolean, isOrderUpdate: Boolean,
@@ -4748,6 +4891,72 @@ fun addOrderItemOnlineOrderSunmi(
         if (obj.note.isNotEmpty()) {
 
             PrintSunmiUtils.orderTime("   Note: " + obj.note)
+
+        }
+    }
+
+
+}
+
+fun addOrderItemOnlineOrderLandi(
+    list: List<OnlineOrderResponseModel.Data.OrderItem>,
+    font: String,
+    showModifiers: Boolean,
+    lprint: LPrint
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+        lprint.printLeft(
+            padLineCustomerItem(
+                obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
+                getItemPriceToShow(totalPriceOnlineOrder(obj)),
+                if (font == Constants.LARGE) {
+                    23
+                } else {
+                    48
+                }
+            ).toString()
+        )
+        lineBreak()
+
+
+
+        if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+                var part1 = "   " + if (modifierObj.modifier_quantity == 1) {
+                    "   "
+                } else {
+                    "" + modifierObj.modifier_quantity + "x "
+                } + getItemNameToShow(modifierObj.name)
+                var part2 =
+                    getModifierItemPriceToShow(modifierObj.price, modifierObj.quantity)
+
+                Log.e("CheckPartFM", "part1 ${part1.length}")
+                Log.e("CheckPartFM", "part2 ${part2.length}")
+
+                lprint.printLeft(
+                    padLineCustomerItem(
+                        part1,
+                        part2,
+                        if (font == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+                lineBreak()
+
+            }
+
+        }
+
+        if (obj.note.isNotEmpty()) {
+
+            lprint.printLeft("   Note: " + obj.note)
+            lprint.lineBreak()
 
         }
     }
@@ -5820,6 +6029,67 @@ fun addOrderItemsInner(
 
 }
 
+fun addOrderItemsInnerNewLandi(
+    list: List<CreateOrderResponse.Data.Order.OrderItem>,
+    showModifiers: Boolean,
+    font: String,
+    lprint:LPrint
+) {
+
+    for (i in 0 until list.size) {
+        val obj = list[i]
+
+        val item = padLineCustomerItem(
+            obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
+            getItemPriceToShow(totalPrice(obj)),
+            48
+        )
+//var item=formatTableRow(obj.quantity.toString() ,getItemNameToShow(obj.itemName),getItemPriceToShow(totalPrice(obj)))
+        lprint.printLeft(item.toString())
+
+
+
+        if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+
+                val modifier = padLineCustomerItem(
+                    /*if (modifierObj.modifierQuantity == 1) {
+                        "     "
+                    } else {
+                        "   " + modifierObj.modifierQuantity.toString() + "x"
+                    }*/"   " + modifierObj.modifierQuantity.toString() + "x" + "  " + getItemNameToShow(
+                        modifierObj.name
+                    ),
+                    getModifierItemPriceToShow(modifierObj.price, modifierObj.quantity),
+                    48
+                )
+
+                /*val modifier = padLineCustomerItem(
+                    "   " + modifierObj.name,
+                    "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                    if (font == Constants.LARGE) 22 else 48
+                )
+*/
+                lprint.printLeft(modifier.toString())
+
+            }
+
+        }
+
+        if (obj.note.isNotEmpty()) {
+
+            lprint.printLeft("   Note: " + obj.note)
+            lprint.lineBreak()
+        }
+
+
+    }
+
+
+}
+
+
 fun addOrderItemsInnerNew(
     list: List<CreateOrderResponse.Data.Order.OrderItem>,
     showModifiers: Boolean,
@@ -6086,7 +6356,6 @@ fun addOrderItemsTransactionInner(
     }
 }
 
-
 fun addOrderItemsTransactionInnerNew(
     list: List<GetOrderDetailsResponse.Data.OrderItem>,
     font: String,
@@ -6136,6 +6405,61 @@ fun addOrderItemsTransactionInnerNew(
         }
         if (obj.note.isNotEmpty()) {
             PrintSunmiUtils.normalTextNew("   Note: " + obj.note)
+        }
+    }
+}
+
+fun addOrderItemsTransactionInnerLandi(
+    list: List<GetOrderDetailsResponse.Data.OrderItem>,
+    font: String,
+    showModifiers: Boolean,
+    lprint: LPrint
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+        val item = padLineCustomerItem(
+            obj.quantity.toString() + "  " + getItemNameToShow(obj.itemName),
+            getItemPriceToShow(totalPriceTransaction(obj)),
+            if (font == Constants.LARGE) 23 else 48
+        )
+
+        printLeft(item.toString())
+
+
+
+        if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+
+                /*   var part1 = if (modifierObj.modifier_quantity == 1) {
+                       "       " + getItemNameToShow(modifierObj.name)
+                   } else {
+                       "   " + modifierObj.modifier_quantity.toString() + "x" + "  " + getItemNameToShow(
+                           modifierObj.name
+                       )
+                   }*/
+
+                var part1 =
+                    "   " + modifierObj.modifier_quantity.toString() + "x" + "  " + getItemNameToShow(
+                        modifierObj.name
+                    )
+
+
+                val modifier = padLineCustomerItem(
+                    part1,
+                    getModifierItemPriceToShow(modifierObj.price, modifierObj.quantity),
+                    if (font == Constants.LARGE) 23 else 48
+                )
+                lprint.printLeft(modifier.toString())
+
+
+            }
+
+        }
+        if (obj.note.isNotEmpty()) {
+            printLeft("   Note: " + obj.note)
+            lprint.lineBreak()
         }
     }
 }
