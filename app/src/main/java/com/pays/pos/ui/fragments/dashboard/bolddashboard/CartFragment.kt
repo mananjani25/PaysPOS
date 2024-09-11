@@ -2629,6 +2629,17 @@ class CartFragment(
         dineInCartAdapter.setListner(this)
         dineInCartAdapter.isFromPayment(isFromPayment)
         binding.rvCartDineIn.adapter = dineInCartAdapter
+
+        viewModel.lastItemRemoveFromCart.observe(viewLifecycleOwner) { pair ->
+            if(pair.first) {
+                val dineInList = dineInCartAdapter.getList()
+                val found = dineInList.any { it.items.any { it.cartItemId == pair.second } }
+
+                Toast.makeText(requireContext(),"ITEMS - $found",Toast.LENGTH_LONG).show()
+
+            }
+        }
+
     }
 
     private fun clearCart() {

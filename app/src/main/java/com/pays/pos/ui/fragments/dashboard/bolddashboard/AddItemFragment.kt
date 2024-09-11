@@ -53,6 +53,7 @@ import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.notes.NoteListViewModel
 import com.pays.pos.utils.Event
+import com.pays.pos.utils.extensions.runOnUiThread
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
@@ -90,6 +91,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
     private var itemPosition = -1
 
     var dineInItemQunatity = 0
+    var modifiers:List<Modifier> = arrayListOf()
 
     companion object {
         fun newInstance(
@@ -1337,7 +1339,26 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                         it.itemQuantity + qty
                                      }
 
-                                if(prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
+                                val itemOldModifiers = viewModel.cartItemModifiersBeforeUpdate
+
+                                if(itemOldModifiers!=null && itemOldModifiers.isNotEmpty()) {
+                                    if (!it.isFired) {
+                                        modifiers = item.modifiers
+                                    } else {
+                                        modifiers = itemOldModifiers
+
+
+//                                            runOnUiThread {
+//                                                AlertUtils.showCustomAlert(
+//                                                    requireContext(),
+//                                                    "Can't update item modifiers! Item is already fired to the kitchen !"
+//                                                )
+//                                            }
+                                    }
+                                    viewModel.cartItemModifiersBeforeUpdate = null
+                                }
+
+                                if(prefProvider.getValueboolean(DINE_IN_UPDATE, false) && it.isFired) {
 
                                     if(dineInItemQunatity < oldItemQuantity) {
                                         dineInItemQunatity = oldItemQuantity
@@ -1417,9 +1438,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         CoroutineScope(Dispatchers.IO).launch {
                             runBlocking {
                                 item.itemQuantity = dineInItemQunatity
+
+
                                 viewModel.updateDineInCartItemsByIdGuestIndex(
                                     dineInItemQunatity,
                                     foundItem.cartItemId,
+                                    Gson().toJson(modifiers),
                                     item.guestIndexForDineIn ?: -1
                                 )
                                 dineInItemQunatity = 0
@@ -1851,9 +1875,19 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     Log.d(TAG, "dineintest item: " + Gson().toJson(item))
                     Log.d(TAG, "dineintest dineInList: " + it1)
 
-                    if(viewModel.currentCartItems.size == 1)
-                        viewModel.duplicateCurrentCartItem.clear()
-                    viewModel.updateDineInCart(viewModel.currentCartItems, item, DELETE, false, it1)
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        if(viewModel.currentCartItems.size == 1) {
+                            viewModel.duplicateCurrentCartItem.clear()
+                            viewModel.currentCartItems.clear()
+
+                            //viewModel.lastItemRemoveFromCart.postValue(Pair(true,item.cartItemId))
+                        }
+
+                        viewModel.deleteCartItem(item.cartItemId)
+                    }
+
+                   // viewModel.updateDineInCart(viewModel.currentCartItems, item, DELETE, false, it1)
                 }
             } else {
                 item.guestIndexForDineIn = null

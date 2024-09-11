@@ -142,8 +142,16 @@ class DashBoardCategoryViewModel @Inject constructor(
     var currentCartItems: ArrayList<TbCartItem> = arrayListOf()
     var duplicateCurrentCartItem: ArrayList<TbCartItem> = arrayListOf()
 
+    // used to check if removed last item from the cart
+    val lastItemRemoveFromCart = MutableLiveData<Pair<Boolean,Int>>()
+
     /* This variable is used to track the selected category, if this variable is not 0 then the category will be selected, it was added to solve BIS-4045 */
     var selectedCatetory: Int = 0
+
+    /**
+     * Cart Item modifiers Before Update
+     */
+    var cartItemModifiersBeforeUpdate:List<Modifier>? = null
 
     /**
      * Dine In
@@ -771,12 +779,14 @@ class DashBoardCategoryViewModel @Inject constructor(
     suspend fun updateDineInCartItemsByIdGuestIndex(
         itemQuantity: Int,
         itemId: Int,
-        guestIndexForDineIn: Int
+        modifiers: String,
+        guestIndexForDineIn: Int,
     ) {
         viewModelScope.launch {
             posRepository.updateDineInCartItemsByIdGuestIndex(
                 itemQuantity,
                 itemId,
+                modifiers,
                 guestIndexForDineIn
             )
         }

@@ -933,10 +933,11 @@ class PosRepository @Inject constructor(
     suspend fun updateDineInCartItemsByIdGuestIndex(
         itemQuantity: Int,
         itemId: Int,
+        modifiers: String,
         guestIndexForDineIn: Int
     ) {
         appDatabase.cartDao()
-            .updateDineInCartItemsByIdGuestIndex(itemQuantity, itemId, guestIndexForDineIn)
+            .updateDineInCartItemsByIdGuestIndex(itemQuantity, itemId,  modifiers,guestIndexForDineIn)
     }
 
 

@@ -644,6 +644,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             totalTaxAmount = requireArguments().getDouble(Constants.DINE_IN_TAX)
             totalDiscount = requireArguments().getDouble(Constants.DINE_IN_DISCOUNT)
             serviceCharge = requireArguments().getDouble(Constants.DINE_IN_SERVICECHARGE)
+
+            paymentType.let {
+                binding.txtTitleCash.text = it
+            }
+
         } else {
 
             cartList = requireArguments().getParcelable("cartList")
@@ -866,7 +871,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.linearSplitLayout.visibility = View.VISIBLE
                 binding.linerContent.visibility = View.VISIBLE
                 binding.txtRemainingAmount.visibility = View.VISIBLE
-                binding.txtRemainingAmountLabel.visibility = View.VISIBLE
+                binding.txtRemainingAmountLabel.visible()
+                binding.txtRemainingAmountLabel.text = "Remaining Amount"
                 if (!remainingAmount.toString().contains("$")) {
                     binding.txtRemainingAmount.text = MethodUtils.roundOffAmount(remainingAmount)
                 } else {

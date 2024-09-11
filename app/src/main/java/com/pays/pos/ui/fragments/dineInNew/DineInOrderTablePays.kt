@@ -3115,8 +3115,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     serviceCharge = totalServiceChargeAmount
                     totalDiscount = orderDiscount + totalItemDiscount
                     finalTaxAmt = totalTaxAmount
+
+                    /**
+                     * This is just to show subtotal instead of final amount
+                     */
+                    val amountToShow = subTotalDInin
+
                     binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
-                        finalAmount
+                        amountToShow
                     )
                     toFinalAmt = finalAmount
 
@@ -3213,8 +3219,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                         var finalAmount = subTotalDInin + serviceCharge + finalTaxAmt - orderDis
+
+                        /**
+                         * This is just to display all subtotal without tax or service charges
+                         */
+
                         binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
-                            finalAmount
+                            subTotalDInin
                         )
 
                         toFinalAmt = finalAmount
