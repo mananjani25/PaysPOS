@@ -5573,7 +5573,7 @@ class AllOrdersListingFragment(
 
                                                 actionFeedLine(1)
 
-                                                if (orderData.orderType.contains("Phone", true)) {
+                                                if (orderData.orderType.contains("Phone", true) || (orderData.orderType.equals("OnlineWebOrder",ignoreCase = true))) {
                                                     add(
                                                         PrinterBuilder()
                                                             .styleBold(true)
@@ -5741,7 +5741,7 @@ class AllOrdersListingFragment(
 
                             actionFeedLine(1)
 
-                            if (orderData.orderType == Constants.PHONE_ORDER_) {
+                            if ((orderData.orderType.equals(Constants.PHONE_ORDER_)) || (orderData.orderType.equals("OnlineWebOrder",ignoreCase = true))) {
                                 add(
                                     PrinterBuilder()
                                         .styleBold(true)
