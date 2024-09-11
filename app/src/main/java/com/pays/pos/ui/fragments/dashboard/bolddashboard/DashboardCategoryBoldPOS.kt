@@ -6121,7 +6121,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             val innerPrinterModel: PrinterListModel
 
             val filteredPrintersList =
-                availableDevices.filter { it.name.startsWith(SUNMI_INNER_PRINTER, true) }
+                availableDevices.filter { it.name.startsWith(SUNMI_INNER_PRINTER, true) || it.name.startsWith(
+                    LANDI_INNER_PRINTER, true) }
 
             if (filteredPrintersList.isNotEmpty()) {
                 val foundPrinter = filteredPrintersList[0]
@@ -6161,10 +6162,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
 
         val createPrinter = CreatePrinterRequestModel(
-            name = innerPrinterModel.modelName,
+            name = if (innerPrinterModel.modelName==null) innerPrinterModel.printerName else innerPrinterModel.modelName,
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
             macAddress = innerPrinterModel.deviceModel?.macAddress,
-            modalName = innerPrinterModel.modelName,
+            modalName = if (innerPrinterModel.modelName==null) innerPrinterModel.printerName else innerPrinterModel.modelName,
             terminalIds = listOf(prefProvider.getValueInt(Constants.TERMINAL_ID, 1)),
             status = true,
             locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1),
