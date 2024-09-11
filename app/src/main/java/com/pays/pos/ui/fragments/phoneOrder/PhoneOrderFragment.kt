@@ -349,7 +349,7 @@ class PhoneOrderFragment : Fragment() {
                     data?.first_name = MethodUtils.getText(binding.edtFName)
                     data?.last_name = MethodUtils.getText(binding.edtLName)
                     data?.email = MethodUtils.getText(binding.edtEmail)
-                    data?.enroll_to_loyalty = selectedCustomer?.enroll_to_loyalty ?: false
+                    data?.enroll_to_loyalty = selectedCustomer?.enroll_to_loyalty ?: true
                     data?.final_reward = selectedCustomer?.final_reward ?: 0
 
                     val phone = CreateCustomerRequestModel.Customer.Phone(
