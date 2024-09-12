@@ -24,8 +24,6 @@ import com.pays.pos.utils.scanner.helpers.AvailableScanner
 import com.pays.pos.utils.scanner.helpers.Barcode
 import com.pays.pos.utils.scanner.helpers.Foreground
 import com.pays.pos.utils.scanner.helpers.ScannerAppEngine
-import com.zebra.scannercontrol.DCSScannerInfo
-import com.zebra.scannercontrol.SDKHandler
 import dagger.hilt.android.HiltAndroidApp
 import org.greenrobot.eventbus.EventBus
 import retrofit2.HttpException
@@ -37,7 +35,7 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
-
+/*ALL THE SCAN GUN VARIABLES ARE COMMENTED AND MOVED TO MAINACTIVITY(for solving permission issue), PLEASE UNCOMMENT IT AND REMOVE THE VARIABLES FROM MAINACTIVITY*/
 
 //        CoroutineScope(Dispatchers.IO).launch {
 //
@@ -122,7 +120,7 @@ class MainApplication : Application() {
 
         Foreground.init(this)
         createNotificationChannel()
-        sdkHandler = SDKHandler(this, true)
+//        sdkHandler = SDKHandler(this, true)
         init()
     }
 
@@ -149,17 +147,17 @@ class MainApplication : Application() {
 
 
         //Scanners (both available and active)
-        var mScannerInfoList = ArrayList<DCSScannerInfo>()
-        var mDevListDelegates: ArrayList<ScannerAppEngine.IScannerAppEngineDevListDelegate>? =
-            ArrayList<ScannerAppEngine.IScannerAppEngineDevListDelegate>()
+//        var mScannerInfoList = ArrayList<DCSScannerInfo>()
+//        var mDevListDelegates: ArrayList<ScannerAppEngine.IScannerAppEngineDevListDelegate>? =
+//            ArrayList<ScannerAppEngine.IScannerAppEngineDevListDelegate>()
 
         //Barcode data
-        var barcodeData: ArrayList<Barcode> = ArrayList<Barcode>()
-        var currentConnectedScanner: AvailableScanner? = null
-        var lastConnectedScanner: AvailableScanner? = null
+//        var barcodeData: ArrayList<Barcode> = ArrayList<Barcode>()
+//        var currentConnectedScanner: AvailableScanner? = null
+//        var lastConnectedScanner: AvailableScanner? = null
 
         //Instance of SDK Handler
-        var sdkHandler: SDKHandler? = null
+//        var sdkHandler: SDKHandler? = null
 
         //Handler to handle bluetooth events
         var globalMsgHandler: Handler? = null
@@ -184,21 +182,21 @@ class MainApplication : Application() {
         var MOT_SETTING_NOTIFICATION_VIDEO = true
         var MOT_SETTING_NOTIFICATION_BINARY_DATA = true
 
-        var SCANNER_ID_NONE = -1
-        var currentScannerName = ""
-        var currentScannerAddress = ""
-        var currentScannerId = SCANNER_ID_NONE
-        var currentAutoReconnectionState = true
-        var isAnyScannerConnected = false //True, if currently connected to any scanner
-
-        var currentConnectedScannerID = -1 //Track scannerId of currently connected Scanner
-
-        var isFirmwareUpdateInProgress = false
-        var intentionallyDisconnected = false
-        var virtualTetherHostActivated = false
+//        var SCANNER_ID_NONE = -1
+//        var currentScannerName = ""
+//        var currentScannerAddress = ""
+//        var currentScannerId = SCANNER_ID_NONE
+//        var currentAutoReconnectionState = true
+//        var isAnyScannerConnected = false //True, if currently connected to any scanner
+//
+//        var currentConnectedScannerID = -1 //Track scannerId of currently connected Scanner
+//
+//        var isFirmwareUpdateInProgress = false
+////        var intentionallyDisconnected = false
+//        var virtualTetherHostActivated = false
 
         //bluetooth mac address
-        var btAddress: String? = ""
+//        var btAddress: String? = ""
 
 
         fun clearApplicationData() {

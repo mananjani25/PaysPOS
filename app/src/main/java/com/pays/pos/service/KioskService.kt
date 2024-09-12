@@ -2525,12 +2525,20 @@ class KioskService : Service(), StatusChangeEventListener {
     }
 
     private fun createNotification(): Notification {
-        val contentIntent = PendingIntent.getActivity(
+
+        var contentIntent: PendingIntent? = null
+        contentIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.getActivity(this, 0,  Intent(this, MainActivity::class.java), PendingIntent.FLAG_MUTABLE)
+        } else {
+            PendingIntent.getActivity(this, 0,  Intent(this, MainActivity::class.java), PendingIntent.FLAG_ONE_SHOT)
+        }
+
+      /*  val contentIntent = PendingIntent.getActivity(
             this,
             0,
             Intent(this, MainActivity::class.java),
             0
-        ) // Replace with your activity
+        ) */
 
         val notification = NotificationCompat.Builder(this, notificationChannelId)
             .setContentTitle("Kiosk Sync")
