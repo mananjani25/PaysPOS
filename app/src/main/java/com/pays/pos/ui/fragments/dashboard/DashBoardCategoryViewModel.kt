@@ -7778,6 +7778,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     }
                                 }
 
+                                try {
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept)
+                                    }
+
+                                } catch (e: Exception) {
+
+                                }
 //                                posRepository.deleteTeamRoleFromDb()
 //                                posRepository.addTeamRoleFromDb(it.data.teamRoles)
 //                                posRepository.deleteAllEmployee()
