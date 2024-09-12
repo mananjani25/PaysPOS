@@ -49,6 +49,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.pax.poslink.*
+import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
+import com.pays.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -1279,7 +1281,9 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                                         }
                                     }
 
-                                } else if (data[i].name.startsWith("InnerPrinter", true)) {
+                                } else if (data[i].name.startsWith(/*"InnerPrinter"*/
+                                        SUNMI_INNER_PRINTER, true) || data[i].name.startsWith(
+                                        LANDI_INNER_PRINTER, true)) {
 
                                     if (woyouService != null) {
                                         sendToTransaction()
