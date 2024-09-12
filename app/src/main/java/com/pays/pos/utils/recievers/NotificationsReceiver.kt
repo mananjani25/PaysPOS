@@ -11,8 +11,14 @@ import androidx.core.app.NotificationCompat
 import com.pays.pos.MainApplication
 import com.pays.pos.R
 import com.pays.pos.ui.activities.MainActivity
+import com.pays.pos.ui.activities.MainActivity.Companion.currentAutoReconnectionState
+import com.pays.pos.ui.activities.MainActivity.Companion.currentScannerAddress
+import com.pays.pos.ui.activities.MainActivity.Companion.currentScannerId
+import com.pays.pos.ui.activities.MainActivity.Companion.currentScannerName
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.scanner.helpers.Constants
+
+/*ALL THE SCAN GUN VARIABLES ARE COMMENTED AND MOVED TO MAINACTIVITY(for solving permission issue), PLEASE UNCOMMENT IT AND REMOVE THE VARIABLES FROM MAINACTIVITY*/
 
 /**
  * This class acts as a receiver for the Scanner Events when the app is running in the background.
@@ -54,13 +60,13 @@ class NotificationsReceiver : BroadcastReceiver() {
              resultIntent = Intent(context, HomeActivity::class.java)
          }*/
         resultIntent.putExtra(Constants.SCANNER_ID, intent.getIntExtra(Constants.SCANNER_ID, -1))
-        resultIntent.putExtra(Constants.SCANNER_NAME, MainApplication.currentScannerName)
-        resultIntent.putExtra(Constants.SCANNER_ADDRESS, MainApplication.currentScannerAddress)
-        resultIntent.putExtra(Constants.SCANNER_ID, MainApplication.currentScannerId)
+        resultIntent.putExtra(Constants.SCANNER_NAME, /*MainApplication.*/currentScannerName)
+        resultIntent.putExtra(Constants.SCANNER_ADDRESS, /*MainApplication.*/currentScannerAddress)
+        resultIntent.putExtra(Constants.SCANNER_ID, /*MainApplication.*/currentScannerId)
         resultIntent.addCategory(Intent.CATEGORY_LAUNCHER)
         resultIntent.putExtra(
             Constants.AUTO_RECONNECTION,
-            MainApplication.currentAutoReconnectionState
+            /*MainApplication.*/currentAutoReconnectionState
         )
         val stackBuilder = TaskStackBuilder.create(context)
         // Adds the back stack

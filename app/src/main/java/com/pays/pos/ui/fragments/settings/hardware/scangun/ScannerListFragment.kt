@@ -19,6 +19,8 @@ import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.visible
 import dagger.hilt.android.AndroidEntryPoint
 
+/*ALL THE SCAN GUN VARIABLES ARE COMMENTED AND MOVED TO MAINACTIVITY(for solving permission issue), PLEASE UNCOMMENT IT AND REMOVE THE VARIABLES FROM MAINACTIVITY*/
+
 @AndroidEntryPoint
 class ScannerListFragment : Fragment() {
 
@@ -69,7 +71,7 @@ class ScannerListFragment : Fragment() {
             backPressManage()
         }
 
-        MainApplication.sdkHandler?.dcssdkSetDelegate((activity as MainActivity))
+//        MainActivity.sdkHandler?.dcssdkSetDelegate((activity as MainActivity))
         //get all connected bluetooth devices
         (activity as MainActivity).updateScannerListView()
 

@@ -55,7 +55,8 @@
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup">
 
-        <receiver android:name="com.pays.pos.utils.KioskServiceStarterBroadcast">
+        <receiver android:name="com.pays.pos.utils.KioskServiceStarterBroadcast"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
