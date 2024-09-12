@@ -1457,7 +1457,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                         )
                                     }
                                 }
-                                viewModel.updateCartModel(viewModel.cartModel!!)
+                                try {
+                                    viewModel.updateCartModel(viewModel.cartModel!!)
+                                }catch (e:Exception){}
 
                             }
                         }
@@ -1519,7 +1521,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                 }
                             }
 
-                            viewModel.updateCartModel(viewModel.cartModel!!)
+                            try {
+                                viewModel.updateCartModel(viewModel.cartModel!!)
+                            }catch (e:Exception){
+                                Log.e("NULL POINTER EXCEPTION",e.toString())
+                            }
 
 //                            viewModel.updateCart(
 //                                viewModel.currentCartItems,
@@ -1611,7 +1617,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                     )
                                 }
                             }
-                            viewModel.updateCartModel(viewModel.cartModel!!)
+                            try {
+                                viewModel.updateCartModel(viewModel.cartModel!!)
+                            }catch (e:Exception){}
                         }
                     } else {
                         item.guestIndexForDineIn = null

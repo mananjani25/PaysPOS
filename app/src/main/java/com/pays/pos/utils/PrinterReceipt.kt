@@ -21,6 +21,8 @@ import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
 import com.pays.pos.data.model.responseModel.*
 import com.pays.pos.utils.landi.LPrint
+import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
+import com.starmicronics.stario10.starxpandcommand.printer.Alignment
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
 import java.io.OutputStream
@@ -3160,6 +3162,68 @@ fun addOrdersForKitchenDineIn(
             }
         }
 
+    }
+}
+
+fun addOrdersForKitchenDineInStarPrinter(
+    list: ArrayList<TbCartItem>,
+    listItemWithGuest: HashMap<String, ArrayList<TbCartItem>>,
+    printerBuilder: PrinterBuilder
+) {
+
+
+
+    with(printerBuilder) {
+        listItemWithGuest.forEach {
+
+
+            add(
+                PrinterBuilder()
+                    .styleAlignment(Alignment.Center)
+                    .styleBold(true)
+                    .actionPrintText(
+                        "\n------------------------------------------------\n"
+                    )
+            )
+            add(PrinterBuilder().actionPrintText(it.key.toString()))
+            add(
+                PrinterBuilder()
+                    .styleAlignment(Alignment.Center)
+                    .styleBold(true)
+                    .actionPrintText(
+                        "------------------------------------------------\n"
+                    )
+            )
+
+
+            it.value.forEach { obj ->
+                add(PrinterBuilder().styleAlignment(Alignment.Left).actionPrintText(obj.itemQuantity.toString() + " " + obj.name.uppercase()))
+
+                if (obj.modifiers.isNotEmpty()) {
+                    for (j in 0 until obj.modifiers.size) {
+                        val modifierObj = obj.modifiers.get(j)
+
+
+
+                        add(PrinterBuilder().styleAlignment(Alignment.Left).actionPrintText(
+                            "  " + if (modifierObj.modifier_quantity == 1) {
+                                "   "
+                            } else {
+                                "" + modifierObj.modifier_quantity + "x "
+                            } + modifierObj.name.uppercase()
+                        ))
+
+
+                    }
+                }
+                if (obj.note.isNotEmpty()) {
+
+                    add(PrinterBuilder().styleAlignment(Alignment.Left).actionPrintText("  Note:" + obj.note))
+
+                }
+            }
+
+        }
     }
 }
 

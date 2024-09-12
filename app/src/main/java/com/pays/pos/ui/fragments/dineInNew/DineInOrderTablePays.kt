@@ -91,6 +91,16 @@ import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
 import com.pays.pos.ui.fragments.payment.OrderCompleteFragment
 import com.pays.pos.utils.landi.LPrint
+import com.starmicronics.stario10.InterfaceType
+import com.starmicronics.stario10.StarConnectionSettings
+import com.starmicronics.stario10.StarPrinter
+import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
+import com.starmicronics.stario10.starxpandcommand.MagnificationParameter
+import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
+import com.starmicronics.stario10.starxpandcommand.StarXpandCommandBuilder
+import com.starmicronics.stario10.starxpandcommand.printer.Alignment
+import com.starmicronics.stario10.starxpandcommand.printer.CutType
+import com.starmicronics.stario10.starxpandcommand.printer.InternationalCharacterType
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
@@ -173,6 +183,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
     private var clickedPosition: Int = -1
 
     var dineInCartItemMoved = false
+
+    /*Star label printer - START*/
+    lateinit var settings: StarConnectionSettings
+    lateinit var printer: StarPrinter
+    /*Star label printer - END*/
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -3018,7 +3033,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                             }
                                         }
 
-                                        totalPriceWT = subTotalWT + totalTaxWT + serviceChargeWT
+                                        /**
+                                         * This is implemented to print only items price without any other charges and taxes
+                                         */
+                                        totalPriceWT = subTotalWT
+                                       // totalPriceWT = subTotalWT + totalTaxWT + serviceChargeWT
 
                                         guestShareTotal =
                                             totalPriceWT / eligibleGuestsForDivision
@@ -3119,11 +3138,12 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     /**
                      * This is just to show subtotal instead of final amount
                      */
-                    val amountToShow = subTotalDInin
+                    val amountToShow = totalSubTotal
 
                     binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
                         amountToShow
                     )
+
                     toFinalAmt = finalAmount
 
 
@@ -3602,7 +3622,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             }
 
-            guestShare = (wholeTableAmt + WTServiceCharge + WTTax) / (eligibleGuestsForDivision)
+            /**
+             * This is implemented to print only items price without any other charges and taxes
+             */
+            guestShare = wholeTableAmt / eligibleGuestsForDivision
+           // guestShare = (wholeTableAmt + WTServiceCharge + WTTax) / (eligibleGuestsForDivision)
 
 
             for (i in 0 until oldList.size) {
@@ -3642,7 +3666,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     guestAmt = 0.0
                 }
             }
-            newList.get(0).guestDividedAmt = guestShare
+
+            /**
+             * This is implemented to print only items price without any other charges and taxes
+             */
+            newList.get(0).guestDividedAmt = wholeTableAmt / eligibleGuestsForDivision
+
+            //newList.get(0).guestDividedAmt = guestShare
             newList.get(0).totalGuestCount = guestCount - 1
             newList.get(0).eligibleGuestsForDivision = eligibleGuestsForDivision
             newList.get(0).wholeTableSubTotal =
@@ -9590,7 +9620,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
-    private fun initKitchenPrinter(
+    private fun  initKitchenPrinter(
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
         item: ArrayList<TbCartItem>,
@@ -9650,6 +9680,40 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 delay(100)
                 setService(data, type, item, listItemWithGuest)
             }
+        } else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains(
+                "SP",
+                ignoreCase = true
+            )))
+        ) {
+
+            try {
+                settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
+                printer = StarPrinter(settings, requireContext())
+
+
+                viewLifecycleOwner.lifecycleScope.launch {
+
+                        generateKitchenReceiptStarPrinter(
+                            data,
+                            type,
+                            item,
+                            listItemWithGuest,
+                            settings,
+                            printer
+                        )
+
+                }
+            } catch (e:Exception){
+
+            } finally {
+                GlobalScope.launch {
+                    try {
+                        printer.closeAsync().await()
+                    } catch (e: Exception) {
+                    }
+            }
+        }
+
         } else {
 
             if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
@@ -9704,7 +9768,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
 
 
-            } else {
+            }
+            else {
 
                 PrinterClass.setPrinter(null)
                 if (PrinterClass.getPrinter() == null) {
@@ -11429,6 +11494,169 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             e.printStackTrace()
         }
 
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun generateKitchenReceiptStarPrinter(
+        customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String,
+        item: ArrayList<TbCartItem>,
+        listItemWithGuest: HashMap<String, ArrayList<TbCartItem>>,
+        settings: StarConnectionSettings,
+        printer: StarPrinter
+    ) {
+        try {
+            val builder = StarXpandCommandBuilder()
+
+            var printerBuilder = PrinterBuilder()
+
+            GlobalScope.launch {
+                with(printerBuilder) {
+                    styleInternationalCharacter(InternationalCharacterType.Usa)
+                    styleCharacterSpace(0.0)
+
+                    styleAlignment(Alignment.Center)
+
+                    var orderIdToPrint = ""
+                    orderIdToPrint =
+                        if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false))
+                            "OrderID:" + getOrderDetailsResponse?.custom_order_id
+                        else
+                            "OrderID:" + getOrderDetailsResponse?.id
+
+
+                    add(
+                        PrinterBuilder()
+                            .styleBold(true)
+                            .styleMagnification(
+                                MagnificationParameter(3, 3)
+                            )
+                            .actionPrintText(
+                                orderIdToPrint
+                            )
+                    )
+
+                    actionFeedLine(1)
+
+                    if (kitchenSettingModel.showOrderType) {
+
+                        add(
+                            PrinterBuilder()
+                                .styleBold(true)
+                                .styleMagnification(
+                                    MagnificationParameter(3, 3)
+                                )
+                                .actionPrintText(
+                                    "Dine In"
+                                )
+                        )
+                    }
+
+
+                    add(
+                        PrinterBuilder()
+                            .styleAlignment(Alignment.Center)
+                            .styleMagnification(
+                                MagnificationParameter(2, 2)
+                            )
+                            .actionPrintText(
+                                getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")"
+                            )
+                    )
+
+                   actionFeedLine(1)
+
+
+                    if (kitchenSettingModel.showTeamMember) {
+
+
+                        add(
+                            PrinterBuilder()
+                                .styleAlignment(Alignment.Left)
+                                .actionPrintText("Employee:" + getOrderDetailsResponse?.employee?.name)
+                        )
+                        actionFeedLine(1)
+                    }
+
+                    add(
+                        PrinterBuilder()
+                            .styleAlignment(Alignment.Left)
+                            .actionPrintText(
+                                Constants.getReceiptFormatDateFromUTCServer(
+                                    requireContext(),
+                                getOrderDetailsResponse?.createdAt.toString()
+                            )
+                        )
+                    )
+
+                    actionFeedLine(1)
+
+
+                    add(
+                        PrinterBuilder()
+                            .styleAlignment(Alignment.Left)
+                            .styleBold(true)
+                            .actionPrintText(
+                                "------------------------------------------------"
+                            )
+                    )
+
+
+                    actionFeedLine(1)
+
+                    try {
+                        addOrdersForKitchenDineInStarPrinter(item, listItemWithGuest, this)
+                    }catch (e:Exception){}
+
+                    if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+
+                        add(
+                            PrinterBuilder()
+                                .styleAlignment(Alignment.Center)
+                                .styleBold(true)
+                                .actionPrintText(
+                                    "Order Note\n"
+                                )
+                        )
+
+                        add(
+                            PrinterBuilder()
+                                .styleAlignment(Alignment.Center)
+                                .styleBold(true)
+                                .actionPrintText(
+                                    getOrderDetailsResponse?.note.toString()
+                                )
+                        )
+                    }
+
+
+
+                    actionCut(CutType.Partial)
+
+                    var document = DocumentBuilder()
+                        .addPrinter(printerBuilder)
+                    builder.addDocument(
+                        document
+                    )
+
+                    val commands = builder.getCommands()
+
+                    printer.openAsync().await()
+
+    //                val jobSettings = StarSpoolJobSettings(true, 30, "Print from Android")
+
+                    printer.printAsync(commands).await()
+                }
+            }
+        } catch (e: Exception) {
+            GlobalScope.launch {
+                try {
+                    printer.closeAsync().await()
+                } catch (e: Exception) {
+                }
+            }
+            Log.e("START DINE IN KITCHEN RECEIPT " ,""+e.printStackTrace())
+        }
     }
 
     private fun generateKitchenReceiptSunmiInner(
