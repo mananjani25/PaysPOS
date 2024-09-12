@@ -34,4 +34,7 @@ interface DynamicPaymentDao {
 
     @Query("DELETE from TbDynamicPaymentRecords where TbDynamicPaymentRecords.id = :idList")
     suspend fun deleteDynamicPaymentById(idList: Int)
+
+    @Query("DELETE from TbDynamicPaymentRecords where TbDynamicPaymentRecords.name = :name AND TbDynamicPaymentRecords.createdAt = :createdAt")
+    suspend fun deleteDynamicPaymentByName(name: String, createdAt:String)
 }
