@@ -939,6 +939,7 @@
     <string name="remove_note">Remove Note</string>
 
     <string name="cant_decrease_item_quantity_dinein">Item is already fired to kitchen . You can decrease quantity from table !</string>
+    <string name="cash_received_by">Cash Received by</string>
 
 </resources>
 
