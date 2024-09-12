@@ -1494,6 +1494,10 @@ class PosRepository @Inject constructor(
         appDatabase.dynamicPaymentDao().deleteDynamicPaymentById(idList)
     }
 
+    suspend fun deleteDynamicPaymentByName(name: String, createdAt:String) {
+        appDatabase.dynamicPaymentDao().deleteDynamicPaymentByName(name,createdAt)
+    }
+
 
     suspend fun getAllCartModels(): List<CartModel> {
         return appDatabase.cartDao().getAllCartModels()

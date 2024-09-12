@@ -7784,7 +7784,50 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.employeeListAddAllFromSeeting(it.settingData.data.employee)
 //                                rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
 //                                posRepository.deleteOrderTypeFromDb()
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    var orderTypesList :kotlin.collections.ArrayList<TbOrderType> = posRepository.getAllOrderTypes() as ArrayList<TbOrderType>
+                                    if (orderTypesList.size>=it.settingData.data.orderTypes.size){
+                                        var removedIDs= arrayListOf<Int>()
+                                        orderTypesList.removeAll(it.settingData.data.orderTypes)
+                                        orderTypesList.forEach {
+                                            launch {
+                                                posRepository.deleteOrderTypesById(it.id)
+                                            }
+                                        }
+                                    }
+
+                                }
+
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    it.settingData.data.dynamicPaymentRecords.forEach {
+                                        if (it.deleted_at==null){
+                                            launch {
+                                                insertDynamicPayment(it)
+                                            }
+                                        }else{
+                                            launch {
+                                                posRepository.deleteDynamicPaymentByName(it.name+"", it.createdAt+"")
+                                            }
+                                        }
+                                    }
+//                                    var dynamicPaymentList :kotlin.collections.ArrayList<TbDynamicPaymentRecords> = posRepository.getAllDynamicPayments() as ArrayList<TbDynamicPaymentRecords>
+                                   /* if (dynamicPaymentList.size>=it.settingData.data.dynamicPaymentRecords.size){
+                                        var removedIDs= arrayListOf<Int>()
+                                        dynamicPaymentList.removeAll(it.settingData.data.dynamicPaymentRecords)
+                                        dynamicPaymentList.forEach {
+                                            launch {
+                                                posRepository.deleteDynamicPaymentById(it.id)
+                                            }
+                                        }
+                                    }*/
+                                }
+
                                 posRepository.addOrderType(it.settingData.data.orderTypes)
+
+                               /* CoroutineScope(Dispatchers.IO).launch {
+                                    insertDynamicPayment(it.settingData.data.dynamicPaymentRecords)
+                                }
+*/
                                 posRepository.addAllCountryList(it.settingData.data.phoneCountrylist)
                                 posRepository.addTimeZones(it.settingData.data.time_zone_options)
                                 posRepository.addBusinessDetails(TbBusinessDetails().apply {
