@@ -4,20 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundColor">
+    android:background="@color/backgroundColor"
+    >
+
+    <!--  Dont replace this file with 720dp file as this layout will be used by LANDI CUSTOMER DISPLAY -->
+
 
     <LinearLayout
         android:id="@+id/mainCartLayout"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:background="@color/backgroundColor"
         android:orientation="vertical"
-        android:visibility="visible">
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:id="@+id/topLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
             android:background="@color/color13"
             android:orientation="horizontal"
             android:paddingHorizontal="10dp"
@@ -46,10 +53,10 @@
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_8sdp"
                     android:ellipsize="end"
                     android:gravity="end"
                     android:paddingVertical="@dimen/_5sdp"
-                    android:layout_marginStart="@dimen/_8sdp"
                     android:singleLine="true"
                     android:textColor="@color/btnColorDark"
                     android:textSize="@dimen/_6mdpi"
@@ -61,10 +68,10 @@
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_8sdp"
                     android:ellipsize="end"
                     android:gravity="end"
                     android:paddingVertical="@dimen/_5sdp"
-                    android:layout_marginStart="@dimen/_8sdp"
                     android:singleLine="true"
                     android:textColor="@color/btnColorDark"
                     android:textSize="@dimen/_6mdpi"
@@ -76,11 +83,11 @@
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_8sdp"
                     android:ellipsize="end"
                     android:gravity="end"
                     android:maxLength="40"
                     android:paddingVertical="@dimen/_5sdp"
-                    android:layout_marginStart="@dimen/_8sdp"
                     android:singleLine="true"
                     android:textColor="@color/btnColorDark"
                     android:textSize="@dimen/_6mdpi"
@@ -251,7 +258,7 @@
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearBottomNew"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="170dp"
             android:background="#1d1d1f"
             android:orientation="vertical"
             android:paddingTop="@dimen/_5sdp"
@@ -278,9 +285,9 @@
                     android:id="@+id/txtSubTotalCash"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -290,9 +297,9 @@
                     android:id="@+id/txtSubTotalCard"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -322,9 +329,9 @@
                     android:id="@+id/txtTaxCash"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -334,9 +341,9 @@
                     android:id="@+id/txtTaxCard"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -366,9 +373,9 @@
                     android:id="@+id/txtServiceChargeCash"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -378,9 +385,9 @@
                     android:id="@+id/txtServiceChargeCard"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -410,9 +417,9 @@
                     android:id="@+id/txtDiscountCash"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -422,9 +429,9 @@
                     android:id="@+id/txtDiscountCard"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -436,10 +443,10 @@
                 android:id="@+id/lnrLayoutTip"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 android:layout_marginHorizontal="@dimen/_5sdp"
                 android:layout_marginTop="@dimen/_3sdp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtTipLabel"
@@ -482,10 +489,10 @@
                 android:id="@+id/lnrLayoutCashDiscountSurcharge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 android:layout_marginHorizontal="@dimen/_5sdp"
                 android:layout_marginTop="@dimen/_3sdp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtCashDiscountSurchargeLabel"
@@ -502,22 +509,22 @@
                     android:id="@+id/txtCashDiscountSurchargeCash"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
-                    android:visibility="invisible"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/text_size_medium" />
+                    android:textSize="@dimen/text_size_medium"
+                    android:visibility="invisible" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtCashDiscountSurchargeCard"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -531,8 +538,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="@color/btnColor"
-                android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:padding="@dimen/_5sdp">
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -549,11 +556,11 @@
                 <LinearLayout
                     android:id="@+id/lnrLayoutCashTotal"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
                     android:gravity="end"
-                    android:visibility="gone"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
@@ -578,11 +585,11 @@
                 <LinearLayout
                     android:id="@+id/lnrLayoutCardTotal"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
                     android:gravity="end"
-                    android:visibility="gone"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtTotalCardLabel"
@@ -612,8 +619,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_3sdp"
                     android:layout_weight="2"
-                    android:text="$0.00"
                     android:gravity="end"
+                    android:text="$0.00"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_8mdpi"
                     android:textStyle="bold"
@@ -1575,1136 +1582,3 @@
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-<!--
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/backgroundColor">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/mainCartLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/backgroundColor"
-        android:visibility="gone">
-
-        <LinearLayout
-            android:id="@+id/topLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/color13"
-            android:orientation="horizontal"
-            android:paddingHorizontal="10dp"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/txtCustomerName"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:maxLength="40"
-                android:paddingVertical="@dimen/_5sdp"
-                android:singleLine="true"
-                android:textColor="@color/btnColorDark"
-                android:textSize="@dimen/_6mdpi"
-                android:textStyle="bold"
-                tools:text="Customer Name" />
-
-            <TextView
-                android:id="@+id/tvLoyaltyBalance"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:paddingVertical="@dimen/_5sdp"
-                android:singleLine="true"
-                android:textColor="@color/btnColorDark"
-                android:textSize="@dimen/_6mdpi"
-                android:textStyle="bold"
-                tools:text="@string/applied_loyalty_balance" />
-
-            <TextView
-                android:id="@+id/tvLoyaltyPoints"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:paddingVertical="@dimen/_5sdp"
-                android:singleLine="true"
-                android:textColor="@color/btnColorDark"
-                android:textSize="@dimen/_6mdpi"
-                android:textStyle="bold"
-                tools:text="@string/applied_loyalty_points" />
-
-            <TextView
-                android:id="@+id/txtLoyaltyPointsLabel"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:gravity="end"
-                android:maxLength="40"
-                android:paddingVertical="@dimen/_5sdp"
-                android:singleLine="true"
-                android:textColor="@color/btnColorDark"
-                android:textSize="@dimen/_6mdpi"
-                android:textStyle="bold"
-                tools:text="Loyalty Points: 1000" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/rowHeaderLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/backgroundColor"
-            android:orientation="horizontal"
-            android:padding="@dimen/_5sdp"
-            app:layout_constraintTop_toBottomOf="@id/topLayout">
-
-            <TextView
-                style="@style/CustomFontSemiBold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Item Name"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_6mdpi" />
-
-            <TextView
-                style="@style/CustomFontSemiBold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_weight="0.5"
-                android:gravity="center"
-                android:text="Qty"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_6mdpi" />
-
-            <TextView
-                style="@style/CustomFontSemiBold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_weight="0.5"
-                android:gravity="end"
-                android:text="Each"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_6mdpi" />
-
-            <TextView
-                android:id="@+id/txtTotalLabel"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_weight="1"
-                android:gravity="end"
-                android:visibility="visible"
-                android:text="Total"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_6mdpi" />
-
-            <TextView
-                android:id="@+id/txtCashLabel"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_weight="0.5"
-                android:gravity="end"
-                android:visibility="gone"
-                android:text="Cash"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_6mdpi" />
-
-            <TextView
-                android:id="@+id/txtCardLabel"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_weight="0.5"
-                android:visibility="gone"
-                android:gravity="end"
-                android:text="Card"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_6mdpi" />
-
-        </LinearLayout>
-
-        <include
-            android:id="@+id/dividerView"
-            layout="@layout/divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            app:layout_constraintTop_toBottomOf="@id/rowHeaderLayout" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvCartList"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginBottom="@dimen/_5sdp"
-            android:nestedScrollingEnabled="true"
-            android:orientation="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@id/linearBottom"
-            app:layout_constraintTop_toBottomOf="@id/dividerView"
-            tools:itemCount="5"
-            tools:listitem="@layout/view_item_cart_customer_display" />
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/linearBottom"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/_5sdp"
-            android:background="#1d1d1f"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:id="@+id/liinear_info_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_60sdp"
-                    android:orientation="horizontal"
-                    android:weightSum="2">
-
-                    <ScrollView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical">
-
-                            <androidx.appcompat.widget.LinearLayoutCompat
-                                android:id="@+id/relative_order_notes"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/_1sdp"
-                                android:orientation="horizontal"
-                                android:padding="@dimen/_1sdp"
-                                android:visibility="gone">
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    style="@style/CustomFontMediumStyle"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_alignParentStart="true"
-                                    android:layout_gravity="center"
-                                    android:layout_marginStart="@dimen/_3sdp"
-                                    android:layout_weight="1"
-                                    android:gravity="center_vertical"
-                                    android:text="@string/note"
-                                    android:textColor="@color/dark_gray"
-                                    android:textSize="@dimen/_6mdpi" />
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/txt_order_note"
-                                    style="@style/CustomFontBold"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_alignParentEnd="true"
-                                    android:layout_marginEnd="@dimen/_3sdp"
-                                    android:layout_weight="5"
-                                    android:ellipsize="end"
-                                    android:gravity="end"
-                                    android:maxLines="2"
-                                    android:singleLine="false"
-                                    android:text=""
-                                    android:textColor="@color/white"
-                                    android:textSize="@dimen/text_size_medium" />
-                            </androidx.appcompat.widget.LinearLayoutCompat>
-
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/_1sdp"
-                                android:orientation="horizontal"
-                                android:padding="@dimen/_1sdp">
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    style="@style/CustomFontMediumStyle"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_alignParentStart="true"
-                                    android:layout_marginStart="@dimen/_3sdp"
-                                    android:text="@string/payment_subtotal"
-                                    android:textColor="@color/dark_gray"
-                                    android:textSize="@dimen/_6mdpi"
-                                    tools:ignore="RelativeOverlap" />
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/txtSubTotal"
-                                    style="@style/CustomFontSemiBold"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_alignParentEnd="true"
-                                    android:layout_gravity="end"
-                                    android:layout_marginEnd="@dimen/_3sdp"
-                                    android:gravity="end"
-                                    android:text="@string/_0_00"
-                                    android:textColor="@color/white"
-                                    android:textSize="@dimen/text_size_medium" />
-                            </RelativeLayout>
-
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/_1sdp"
-                                android:orientation="horizontal"
-                                android:padding="@dimen/_1sdp">
-
-                                <androidx.appcompat.widget.LinearLayoutCompat
-                                    android:id="@+id/linear_tax_detail"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_centerVertical="true"
-                                    android:gravity="center_vertical"
-                                    android:orientation="horizontal">
-
-                                    <androidx.appcompat.widget.AppCompatTextView
-                                        style="@style/CustomFontMediumStyle"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="@dimen/_10sdp"
-                                        android:layout_marginStart="@dimen/_3sdp"
-                                        android:text="@string/tv_tax"
-                                        android:textColor="@color/dark_gray"
-                                        android:textSize="@dimen/_6mdpi" />
-
-                                    <ImageView
-                                        android:id="@+id/img_dropdown"
-                                        android:layout_width="@dimen/_10sdp"
-                                        android:layout_height="@dimen/_10sdp"
-                                        android:src="@drawable/ic_arrow_drop_down"
-                                        app:tint="@color/white" />
-                                </androidx.appcompat.widget.LinearLayoutCompat>
-
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/txtTax"
-                                    style="@style/CustomFontSemiBold"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_alignParentEnd="true"
-                                    android:layout_gravity="end"
-                                    android:layout_marginEnd="@dimen/_3sdp"
-                                    android:gravity="end"
-                                    android:text="@string/_0_00"
-                                    android:textColor="@color/white"
-                                    android:textSize="@dimen/text_size_medium" />
-                            </RelativeLayout>
-
-                            <RelativeLayout
-                                android:id="@+id/relative_dynamic_tax"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/_1sdp"
-                                android:layout_marginBottom="@dimen/_1sdp"
-                                android:orientation="horizontal"
-                                android:visibility="gone">
-
-                                <androidx.recyclerview.widget.RecyclerView
-                                    android:id="@+id/rv_tax"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                                    tools:itemCount="3" />
-                            </RelativeLayout>
-
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/_1sdp"
-                                android:layout_marginBottom="@dimen/_1sdp"
-                                android:orientation="horizontal"
-                                android:padding="@dimen/_1sdp">
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    style="@style/CustomFontMediumStyle"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_alignParentStart="true"
-                                    android:layout_marginStart="@dimen/_3sdp"
-                                    android:text="@string/service_charge"
-                                    android:textColor="@color/dark_gray"
-                                    android:textSize="@dimen/_6mdpi" />
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/txtServiceCharge"
-                                    style="@style/CustomFontSemiBold"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_alignParentEnd="true"
-                                    android:layout_marginEnd="@dimen/_3sdp"
-                                    android:gravity="end"
-                                    android:text="@string/_0_00"
-                                    android:textColor="@color/white"
-                                    android:textSize="@dimen/text_size_medium" />
-                            </RelativeLayout>
-
-                            <RelativeLayout
-                                android:id="@+id/tipLayout"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/_1sdp"
-                                android:layout_marginBottom="@dimen/_1sdp"
-                                android:orientation="horizontal"
-                                android:padding="@dimen/_1sdp"
-                                android:visibility="gone">
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/tipPercentLabel"
-                                    style="@style/CustomFontMediumStyle"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_alignParentStart="true"
-                                    android:layout_marginStart="@dimen/_3sdp"
-                                    android:text="Tip (%)"
-                                    android:textColor="@color/dark_gray"
-                                    android:textSize="@dimen/_6mdpi" />
-
-                                <androidx.appcompat.widget.AppCompatTextView
-                                    android:id="@+id/txtTipGiven"
-                                    style="@style/CustomFontSemiBold"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_alignParentEnd="true"
-                                    android:layout_marginEnd="@dimen/_3sdp"
-                                    android:gravity="end"
-                                    android:text="@string/_0_00"
-                                    android:textColor="@color/white"
-                                    android:textSize="@dimen/text_size_medium" />
-                            </RelativeLayout>
-
-
-                        </LinearLayout>
-                    </ScrollView>
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/_5sdp"
-                        android:background="@color/grayBackgroundColor" />
-
-                    <androidx.appcompat.widget.LinearLayoutCompat
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_1sdp"
-                            android:orientation="horizontal"
-                            android:padding="@dimen/_1sdp">
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                style="@style/CustomFontMediumStyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentStart="true"
-                                android:layout_marginStart="@dimen/_3sdp"
-                                android:text="Discount"
-                                android:textColor="@color/dark_gray"
-                                android:textSize="@dimen/_6mdpi" />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/txtDiscount"
-                                style="@style/CustomFontSemiBold"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_marginEnd="@dimen/_5sdp"
-                                android:gravity="end"
-                                android:text="-$0.00"
-                                android:textColor="@color/colorRed"
-                                android:textSize="@dimen/text_size_medium" />
-                        </RelativeLayout>
-
-
-                        <RelativeLayout
-                            android:id="@+id/linear_cash_Discount"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_1sdp"
-                            android:orientation="horizontal"
-                            android:padding="@dimen/_1sdp"
-                            android:visibility="gone">
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/label_cashSurcharge"
-                                style="@style/CustomFontMediumStyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentStart="true"
-                                android:layout_marginStart="@dimen/_3sdp"
-                                android:textColor="@color/dark_gray"
-                                android:textSize="@dimen/_6mdpi" />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/txt_noncashAdj"
-                                style="@style/CustomFontSemiBold"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_marginEnd="@dimen/_5sdp"
-                                android:gravity="end"
-                                android:text="@string/_0_00"
-                                android:textColor="@color/btnColorDark"
-                                android:textSize="@dimen/text_size_medium" />
-                        </RelativeLayout>
-
-                        <RelativeLayout
-                            android:id="@+id/relative_loylatyPoints"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="@dimen/_1sdp"
-                            android:gravity="center"
-                            android:orientation="horizontal"
-                            android:visibility="gone">
-
-                            <CheckBox
-                                android:id="@+id/checkloylaty"
-                                style="@style/CustomFontMediumStyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/_4sdp"
-                                android:layoutDirection="rtl"
-                                android:text="@string/loyalty_rewards"
-                                android:textColor="@color/dark_gray"
-                                android:textSize="@dimen/_6mdpi"
-                                android:visibility="visible" />
-
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/txt_label_loyaltyAmounts"
-                                style="@style/CustomFontMediumStyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/_4sdp"
-                                android:text="@string/loyalty_rewards"
-                                android:textColor="@color/dark_gray"
-                                android:textSize="@dimen/_6mdpi"
-                                android:visibility="gone" />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/txtLoyaltyAmount"
-                                style="@style/CustomFontSemiBold"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_centerVertical="true"
-                                android:layout_marginEnd="@dimen/_6sdp"
-                                android:gravity="end"
-                                android:text="@string/_0_00"
-                                android:textColor="@color/btnColorDark"
-                                android:textSize="@dimen/text_size_medium" />
-                        </RelativeLayout>
-
-                        <RelativeLayout
-                            android:id="@+id/lblLoyaltyPoints"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_1sdp"
-                            android:orientation="horizontal"
-                            android:padding="@dimen/_1sdp"
-                            android:visibility="gone">
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                style="@style/CustomFontMediumStyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentStart="true"
-                                android:layout_marginStart="@dimen/_3sdp"
-                                android:text="@string/used_loyalty_points"
-                                android:textColor="@color/dark_gray"
-                                android:textSize="@dimen/_6mdpi" />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/txtLoyaltyPoints"
-                                style="@style/CustomFontSemiBold"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_marginEnd="@dimen/_5sdp"
-                                android:gravity="end"
-                                android:text="@string/_0_00"
-                                android:textColor="@color/btnColorDark"
-                                android:textSize="@dimen/text_size_medium" />
-                        </RelativeLayout>
-
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_1sdp"
-
-                            android:orientation="horizontal"
-                            android:padding="@dimen/_1sdp">
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                style="@style/CustomFontMediumStyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentStart="true"
-                                android:layout_marginStart="@dimen/_3sdp"
-                                android:text="@string/tv_total"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/_6mdpi" />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/txtTotal"
-                                style="@style/CustomFontBold"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_marginEnd="@dimen/_5sdp"
-                                android:gravity="end"
-                                android:text="@string/_0_00"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/text_size_medium" />
-                        </RelativeLayout>
-
-
-                    </androidx.appcompat.widget.LinearLayoutCompat>
-
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/linear_button_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:visibility="gone"
-                    android:weightSum="2">
-
-                    <TextView
-                        android:id="@+id/tvSave"
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_4sdp"
-                        android:layout_marginEnd="@dimen/_2sdp"
-                        android:layout_weight="1"
-                        android:background="@color/backgroundColor"
-                        android:gravity="center"
-                        android:padding="@dimen/_5sdp"
-                        android:text="@string/save"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/_7mdpi" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvPayNow"
-                        style="@style/CustomFontBold"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_2sdp"
-                        android:layout_marginEnd="@dimen/_4sdp"
-                        android:layout_weight="1"
-                        android:background="@color/btnColorDark"
-                        android:gravity="center"
-                        android:padding="@dimen/_5sdp"
-                        android:text="Pay $0.00"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/_7mdpi" />
-
-
-                </LinearLayout>
-
-                <RelativeLayout
-                    android:id="@+id/relPreoceedToFire"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_4sdp"
-                    android:layout_marginEnd="@dimen/_4sdp"
-                    android:background="@color/btnColorDark"
-                    android:visibility="gone">
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtDineInProceed"
-                        style="@style/CustomFontBold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:layout_marginStart="@dimen/_2sdp"
-                        android:layout_marginEnd="@dimen/_4sdp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:padding="@dimen/_5sdp"
-                        android:text="Proceed To Fire"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/_7mdpi"
-                        android:visibility="visible" />
-
-                    <ImageView
-                        android:id="@+id/imgFire"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_toEndOf="@+id/txtDineInProceed"
-                        android:src="@drawable/fire_active" />
-
-
-                </RelativeLayout>
-
-
-            </LinearLayout>
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/splashLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#1D1D1F"
-        android:visibility="visible">
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="190dp"
-            android:layout_height="100dp"
-            android:src="@mipmap/ic_launcher"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/current_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="40dp"
-            android:textColor="@color/white"
-            android:textSize="25sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="09:10 PM" />
-
-        <TextView
-            android:id="@+id/current_Date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginBottom="10dp"
-            android:textColor="@color/white"
-            android:textSize="12sp"
-            android:textStyle="normal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/current_time"
-            tools:text="Tuesday, 17 Jan" />
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/thankYouLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#1D1D1F"
-        android:visibility="gone">
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/txtPaidAmount"
-            style="@style/CustomFontMediumStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/_15sdp"
-            android:gravity="center"
-            android:padding="@dimen/_5sdp"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_14mdpi"
-            android:textStyle="bold"
-            android:visibility="visible"
-            app:layout_constraintBottom_toTopOf="@id/imageViewThankYou"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="Paid $103.89" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/imageViewThankYou"
-            style="@style/CustomFontMediumStyle"
-            android:layout_width="@dimen/_45sdp"
-            android:layout_height="@dimen/_45sdp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_txn_done" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/txtThankYou"
-            style="@style/CustomFontMediumStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_5sdp"
-            android:gravity="center"
-            android:padding="@dimen/_5sdp"
-            android:text="Thank you!"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_10mdpi"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/imageViewThankYou" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/errorLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#1D1D1F"
-        android:visibility="gone">
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/imageViewError"
-            style="@style/CustomFontMediumStyle"
-            android:layout_width="@dimen/_45sdp"
-            android:layout_height="@dimen/_45sdp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/txtErrorMessage"
-            app:srcCompat="@drawable/ic_info" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/txtErrorMessage"
-            style="@style/CustomFontMediumStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_5sdp"
-            android:gravity="center"
-            android:padding="@dimen/_5sdp"
-            android:text="Some Error Occured"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_10mdpi"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvTryAgain"
-            style="@style/CustomFontBold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:background="@color/btnColorDark"
-            android:gravity="center"
-            android:padding="@dimen/_5sdp"
-            android:text="TRY AGAIN"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_7mdpi"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txtErrorMessage" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/askForTipLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#1D1D1F"
-        android:paddingHorizontal="@dimen/_50sdp"
-        android:visibility="gone">
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/wouldYouLikeToAddTipLabel"
-            style="@style/CustomFontMediumStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:gravity="center"
-            android:padding="@dimen/_5sdp"
-            android:text="Add Tip"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_12ssp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <LinearLayout
-            android:id="@+id/signLinearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="@dimen/_5sdp"
-            android:layout_marginBottom="@dimen/_10sdp"
-            android:gravity="center_vertical"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/wouldYouLikeToAddTipLabel">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvActiveTipsList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="4"
-                tools:listitem="@layout/row_item_active_tips_list" />
-
-            <LinearLayout
-                android:id="@+id/otherNoTipLayout"
-                android:layout_width="match_parent"
-                android:layout_marginHorizontal="5dp"
-                android:layout_height="wrap_content">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/otherRootLayout"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/_20sdp"
-                    android:layout_marginVertical="@dimen/_2sdp"
-                    android:layout_marginEnd="@dimen/_5sdp"
-                    android:layout_weight="1"
-                    android:background="#363636">
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtOtherLabel"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="Other"
-                        android:textColor="@color/btnColor"
-                        android:textSize="@dimen/_7ssp"
-                        android:textStyle="bold"
-                        android:visibility="visible"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/noTipRootLayout"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/_20sdp"
-                    android:layout_marginVertical="@dimen/_2sdp"
-                    android:layout_weight="1"
-                    android:background="#363636">
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtNoTipLabel"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="No Tip"
-                        android:textColor="@color/btnColor"
-                        android:textSize="@dimen/_7ssp"
-                        android:textStyle="bold"
-                        android:visibility="visible"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </LinearLayout>
-
-            <FrameLayout
-                android:id="@+id/signRootLayout"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_margin="5dp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:layout_weight="1"
-                android:visibility="visible"
-                app:layout_constraintTop_toBottomOf="@id/rvActiveTipsList">
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/yourSignatureLabel"
-                    style="@style/CustomFontBold"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="Signature"
-                    android:textColor="#20FFFFFF"
-                    android:textSize="@dimen/_10ssp" />
-
-                <com.github.gcacace.signaturepad.views.SignaturePad
-                    android:id="@+id/signature_pad"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#77363636"
-                    app:penColor="@color/purple_500" />
-
-                <LinearLayout
-                    android:id="@+id/clearSignLayout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end|top"
-                    android:layout_marginVertical="@dimen/_5sdp"
-                    android:layout_marginHorizontal="@dimen/_10sdp"
-                    android:gravity="center_vertical"
-                    android:visibility="gone">
-
-                    <ImageView
-                        android:layout_width="@dimen/_9sdp"
-                        android:layout_height="@dimen/_9sdp"
-                        android:src="@drawable/ic_clear_circle" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/btnClearSignature"
-                        style="@style/CustomFontLight"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_3sdp"
-                        android:paddingVertical="@dimen/_3sdp"
-                        android:text="Clear"
-                        android:textColor="#535354"
-                        android:textSize="@dimen/_7ssp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-            </FrameLayout>
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/tvContinue"
-                style="@style/CustomFontBold"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="5dp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:background="@color/btnColorDark"
-                android:gravity="center"
-                android:paddingHorizontal="@dimen/_5sdp"
-                android:text="CONFIRM"
-                android:enabled="false"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_7mdpi"
-                android:visibility="gone"
-                android:paddingVertical="@dimen/_5sdp"
-                app:layout_constraintTop_toBottomOf="@id/signRootLayout" />
-        </LinearLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/addTipKeypadLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#1D1D1F"
-        android:paddingHorizontal="@dimen/_60sdp"
-        android:visibility="gone">
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/wouldYouLikeToAddTipOtherLabel"
-            style="@style/CustomFontMediumStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_15sdp"
-            android:gravity="center"
-            android:padding="@dimen/_5sdp"
-            android:text="Would you like to add tip?"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_12ssp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/amountLayout"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_22sdp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginTop="@dimen/_15sdp"
-            android:background="@drawable/bg_rect_border_light_grey"
-            android:padding="@dimen/_5sdp"
-            app:layout_constraintTop_toBottomOf="@id/wouldYouLikeToAddTipOtherLabel">
-
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/edtAmount"
-                style="@style/CustomFontBold"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@null"
-                android:digits="0123456789"
-                android:enabled="false"
-                android:gravity="center"
-                android:maxLength="11"
-                android:text="$0.00"
-                android:textColor="@color/btnColor"
-                android:textSize="@dimen/_8sdp"
-                tools:ignore="MissingConstraints,TouchTargetSizeCheck"
-                tools:layout_editor_absoluteX="14dp"
-                tools:layout_editor_absoluteY="14dp" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <include
-            android:id="@+id/incKeypad"
-            layout="@layout/layout_discount_keypad_for_cd"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_3sdp"
-            app:layout_constraintTop_toBottomOf="@id/amountLayout" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/txtContinue"
-            style="@style/CustomFontBold"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_20sdp"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/_5sdp"
-            android:background="@color/btnColor"
-            android:gravity="center"
-            android:text="Continue"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_7mdpi"
-            app:layout_constraintTop_toBottomOf="@id/incKeypad" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <LinearLayout
-        android:id="@+id/progressLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#1D1D1F"
-        android:gravity="center"
-        android:visibility="gone">
-
-        <ProgressBar
-            android:layout_width="@dimen/_10sdp"
-            android:layout_height="@dimen/_10sdp"
-            android:layout_gravity="center"
-            android:indeterminateTint="@color/purple_500"
-            android:layout_marginStart="@dimen/_10sdp" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/CustomFontSemiBold"
-            android:id="@+id/txtMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:paddingStart="@dimen/_10sdp"
-            android:textColor="@color/white"
-            android:paddingTop="@dimen/_5sdp"
-            android:paddingEnd="@dimen/_30sdp"
-            android:paddingBottom="@dimen/_5sdp"
-            android:text="@string/loading"
-            android:textSize="@dimen/_7mdpi" />
-
-    </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>-->
