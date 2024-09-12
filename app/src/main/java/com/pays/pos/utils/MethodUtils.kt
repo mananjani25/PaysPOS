@@ -24,14 +24,12 @@ import com.pays.pos.data.entities.ModifierSet
 import com.pays.pos.data.model.requestModel.CreateCategoryRequestModel
 import com.pays.pos.data.model.requestModel.CreateItemRequestModel
 import com.pays.pos.data.remote.Constants
-import com.pays.pos.di.ApiModule.BASE_URL
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.utils.extensions.toMultiPartRequestBody
 import com.pays.pos.utils.workmanager.UploadWorker2
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
-import java.net.InetAddress
 import java.text.DecimalFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -50,6 +48,14 @@ class MethodUtils {
         private var thirdValue: Double = 0.0
         private var secondValue: Int = 0
 
+
+        fun ellipsize(text: String, maxLength: Int = 4): String {
+            return if (text.length > maxLength) {
+                text.substring(0, maxLength) + "..."
+            } else {
+                text
+            }
+        }
 
 
         fun getCardType(xml: String): String {

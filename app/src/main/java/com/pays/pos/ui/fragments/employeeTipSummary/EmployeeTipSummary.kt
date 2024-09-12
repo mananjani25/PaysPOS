@@ -1,7 +1,9 @@
 package com.pays.pos.ui.fragments.employeeTipSummary
 
+import android.Manifest
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
@@ -13,6 +15,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -29,35 +33,25 @@ import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.adapter.EmployeeTipSummaryAdapter
 import com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
-import com.pays.pos.utils.AlertUtils
-import com.pays.pos.utils.EventObserver
-import com.pays.pos.utils.LogUtil
-import com.pays.pos.utils.MethodUtils
-import com.pays.pos.utils.PrintSunmiUtils
-import com.pays.pos.utils.ProgressUtils
-import com.pays.pos.utils.addBuilderText
-import com.pays.pos.utils.addCustomerTextSize
-import com.pays.pos.utils.addHorizontalLine
-import com.pays.pos.utils.addItemsInEmployeeTipsSummary
-import com.pays.pos.utils.addItemsInEmployeeTipsSummaryInnerPrinter
-import com.pays.pos.utils.addItemsInEmployeeTipsSummaryM30
-import com.pays.pos.utils.addSixHeaderForEmployeeTipSummary
-import com.pays.pos.utils.addSixHeaderForEmployeeTipSummarySunmi
-import com.pays.pos.utils.employeeTipSummaryHeader
 import com.pays.pos.utils.extensions.differenceTrue
 import com.pays.pos.utils.extensions.timeCalculateForStartEndTime
 import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.statusUtils.Status
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
-import com.pays.pos.utils.addItemsInEmployeeTipsSummaryInnerPrinterNew
-import com.pays.pos.utils.employeeTipSummaryHeaderNew
+import com.google.gson.Gson
+import com.pays.pos.logger.MessageEvent
+import com.pays.pos.ui.fragments.payment.OrderCompleteFragment
+import com.pays.pos.utils.*
+import com.pays.pos.utils.landi.LPrint
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.time.LocalDateTime
@@ -96,7 +90,10 @@ class EmployeeTipSummary : Fragment() {
     val myCalendar2 = Calendar.getInstance()
     val myCalendar3 = Calendar.getInstance()
 
-    private var sunmiFrameworkVersion: Array<String>? = null //Fetching Sunmi OS version to format printing.
+    private var sunmiFrameworkVersion: Array<String>? =
+        null //Fetching Sunmi OS version to format printing.
+
+    var onBluetoothPermissionGranted: OrderCompleteFragment.OnBluetoothPermissionGranted? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -174,7 +171,7 @@ class EmployeeTipSummary : Fragment() {
             data.let {
 
                 ETSdataList = it.data
-                ETSdataList?.let {it1->
+                ETSdataList?.let { it1 ->
                     employeeTipSummaryAdapter.add(it1)
 
                 }
@@ -200,7 +197,7 @@ class EmployeeTipSummary : Fragment() {
         ) {
             when (it.status) {
                 Status.SUCCESS -> {
-                   // ProgressUtils.dismissProgressDialog()
+                    // ProgressUtils.dismissProgressDialog()
                     if (it.data != null) {
                         customerList = it.data
                     }
@@ -208,11 +205,11 @@ class EmployeeTipSummary : Fragment() {
                 }
 
                 Status.ERROR -> {
-                   // ProgressUtils.dismissProgressDialog()
+                    // ProgressUtils.dismissProgressDialog()
                 }
 
                 Status.LOADING -> {
-                  //  ProgressUtils.showProgressDialog(requireActivity())
+                    //  ProgressUtils.showProgressDialog(requireActivity())
                 }
 
             }
@@ -240,11 +237,24 @@ class EmployeeTipSummary : Fragment() {
             val timecalender = Calendar.getInstance()
             timecalender.set(Calendar.HOUR_OF_DAY, hour)
             timecalender.set(Calendar.MINUTE, minute)
-            viewModel.startDate.value = requireContext().timeCalculateForStartEndTime(hour, minute, "isstart",myCalendar,myCalendar1)
-            if (requireContext().differenceTrue(viewModel.startDate.value!!, viewModel.endDate.value) <= 30) {
+            viewModel.startDate.value = requireContext().timeCalculateForStartEndTime(
+                hour,
+                minute,
+                "isstart",
+                myCalendar,
+                myCalendar1
+            )
+            if (requireContext().differenceTrue(
+                    viewModel.startDate.value!!,
+                    viewModel.endDate.value
+                ) <= 30
+            ) {
                 // Call API here
                 viewModel.getEmployeeTipSummary()
-                Log.e("setupCalender","1 start date = ${viewModel.startDate.value}, End date = ${viewModel.endDate.value}")
+                Log.e(
+                    "setupCalender",
+                    "1 start date = ${viewModel.startDate.value}, End date = ${viewModel.endDate.value}"
+                )
 
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
@@ -259,11 +269,24 @@ class EmployeeTipSummary : Fragment() {
             val timecalender = Calendar.getInstance()
             timecalender.set(Calendar.HOUR_OF_DAY, hour)
             timecalender.set(Calendar.MINUTE, minute)
-            viewModel.endDate.value = requireContext().timeCalculateForStartEndTime(hour, minute, "isend",myCalendar,myCalendar1)
-            if (requireContext().differenceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30) {
+            viewModel.endDate.value = requireContext().timeCalculateForStartEndTime(
+                hour,
+                minute,
+                "isend",
+                myCalendar,
+                myCalendar1
+            )
+            if (requireContext().differenceTrue(
+                    viewModel.endDate.value!!,
+                    viewModel.startDate.value
+                ) <= 30
+            ) {
                 // Call API here
                 viewModel.getEmployeeTipSummary()
-                Log.e("setupCalender","2 start date = ${viewModel.startDate.value}, End date = ${viewModel.endDate.value}")
+                Log.e(
+                    "setupCalender",
+                    "2 start date = ${viewModel.startDate.value}, End date = ${viewModel.endDate.value}"
+                )
 
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
@@ -308,7 +331,7 @@ class EmployeeTipSummary : Fragment() {
 
     private fun sendEmail() {
 
-        if (viewModel.terminalId!=-1) {
+        if (viewModel.terminalId != -1) {
             viewModel.getEmployeeEmail(viewModel.terminalId)
                 .observe(viewLifecycleOwner) {
 
@@ -348,8 +371,8 @@ class EmployeeTipSummary : Fragment() {
             sendEmail()
         } else if (event.equals("2")) {
             generateEmployeeTipSummaryReceiptPrint()
-        }else {
-            if (event!=null){
+        } else {
+            if (event != null) {
                 viewModel.getEmployeeTipSummary()
             }
         }
@@ -363,6 +386,7 @@ class EmployeeTipSummary : Fragment() {
             }
         }
     }
+
     private fun initPrinter(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters) {
         Log.d("BIS-685", "initPrinter: Called")
 
@@ -407,6 +431,14 @@ class EmployeeTipSummary : Fragment() {
             }
 
 
+        } else if (customerReceiptPrinters.name.startsWith(Constants.LANDI_INNER_PRINTER, true)) {
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(100)
+                createReportFormatETSLandi(customerReceiptPrinters)
+            }
+
+
         } else {
 
 
@@ -448,252 +480,401 @@ class EmployeeTipSummary : Fragment() {
         }
     }
 
+    fun checkBluetoothPermissions(onBluetoothPermissionGranted: OrderCompleteFragment.OnBluetoothPermissionGranted) {
+        this.onBluetoothPermissionGranted = onBluetoothPermissionGranted
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.BLUETOOTH
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf<String>(Manifest.permission.BLUETOOTH),
+                Constants.PERMISSION_BLUETOOTH
+            )
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.BLUETOOTH_ADMIN
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf<String>(Manifest.permission.BLUETOOTH_ADMIN),
+                Constants.PERMISSION_BLUETOOTH_ADMIN
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf<String>(Manifest.permission.BLUETOOTH_CONNECT),
+                Constants.PERMISSION_BLUETOOTH_CONNECT
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.BLUETOOTH_SCAN
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf<String>(Manifest.permission.BLUETOOTH_SCAN),
+                Constants.PERMISSION_BLUETOOTH_SCAN
+            )
+        } else {
+            onBluetoothPermissionGranted.onPermissionsGranted()
+        }
+    }
+
+
+    private fun createReportFormatETSLandi(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters) {
+        this.checkBluetoothPermissions(object : OrderCompleteFragment.OnBluetoothPermissionGranted {
+            override fun onPermissionsGranted() {
+                GlobalScope.launch {
+                    LPrint.connectLandiInnerPrinter(customerReceiptPrinters.macAddress)
+                        ?.let { outputStream ->
+                            LPrint.apply {
+                                setOutputStream(outputStream)
+
+                                try {
+                                    printCenter(
+                                        prefProvider?.getValue(
+                                            Constants.BUSINESS_NAME,
+                                            ""
+                                        ) ?: "",
+                                        fontSize = FONT_SIZE_5X,
+                                        isBold = true,
+                                        printOnNewLine = true
+                                    )
+                                    lineBreak()
+                                    var venueAddress =
+                                        prefProvider?.getValue(Constants.BUSINESS_ADDRESS, "")
+
+                                    var businessPhoneNumber = prefProvider?.getValue(
+                                        Constants.BUSINESS_PHONE_NO,
+                                        ""
+                                    )
+
+                                    printCenter(venueAddress ?: "", fontSize = SMALL_SIZE)
+                                    lineBreak()
+
+                                    businessPhoneNumber?.let {
+                                        if (it.isNotEmpty()) {
+                                            printCenter(it, fontSize = SMALL_SIZE)
+                                            lineBreak()
+                                        }
+                                    }
+
+                                    printCenter(getString(R.string.employee_tip_summary), fontSize = FONT_SIZE_5X)
+                                    lineBreak()
+                                    printCenter("Employee : " + prefProvider?.employeeName())
+                                    lineBreak()
+                                    printDashedLineAndBreak()
+
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                        val current = LocalDateTime.now()
+                                        val formatter =
+                                            DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+                                        val formatted = current.format(formatter)
+                                        printLeft("Print Time:" + formatted, fontSize = RESET_FONT_SIZE)
+                                    }
+
+                                    lineBreak()
+                                    lineBreak()
+
+                                    printCenter("Employee   Cash    Card    External    Total", fontSize = RESET_FONT_SIZE)
+                                    lineBreak()
+                                    ETSdataList?.forEach {
+                                        printLeft("${MethodUtils.ellipsize(it.employee_name,6)}   $${standardAmount(it.total_cash_tips)}    $${standardAmount(it.total_card_tips)}    $${standardAmount(it.total_external_tips)}     $${standardAmount(it.total_tips)}", fontSize = RESET_FONT_SIZE)
+                                        lineBreak()
+                                    }
+                                    lineBreak()
+
+                                    printLeft("${getString(R.string.tv_employee).uppercase()} x _______________________________")
+                                    lineBreak()
+                                    lineBreak()
+                                    printLeft("${getString(R.string.cash_received_by).uppercase()} x __________________________")
+                                    lineBreak()
+
+                                } catch (e: Exception) {
+
+                                    EventBus.getDefault()
+                                        .post(
+                                            MessageEvent(
+                                                "${Constants.LINE_BREAK_TAB} EmployeeTipSummary.kt _createReportFormatETSLandi() -> ${
+                                                    Gson().toJson(
+                                                        e.printStackTrace()
+                                                    )
+                                                }"
+                                            )
+                                        )
+
+                                    e.printStackTrace()
+                                }
+                                lineBreak()
+                                paperCut()
+                                disconnectLandiPrinter()
+                            }
+                        }
+                }
+            }
+
+            private fun standardAmount(value: Double): String {
+                if (value==0.0){
+                    return "0.00"
+                }else
+                    return value.toString()
+            }
+        })
+    }
+
     private fun createReportFormatETSM30(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters) {
 
-      try {
+        try {
 
-          var builder: Builder? = null
-          builder =
-              Builder(
-                  if (customerReceiptPrinters.name.substring(0, 6).toString()
-                          .lowercase() == "TM-m30".lowercase()
-                  ) {
-                      "TM-m30"
-                  } else {
-                      customerReceiptPrinters.name
-                  }, PrinterClass.language, requireActivity()
-              )
+            var builder: Builder? = null
+            builder =
+                Builder(
+                    if (customerReceiptPrinters.name.substring(0, 6).toString()
+                            .lowercase() == "TM-m30".lowercase()
+                    ) {
+                        "TM-m30"
+                    } else {
+                        customerReceiptPrinters.name
+                    }, PrinterClass.language, requireActivity()
+                )
 
-          if (prefProvider?.getValue(
-                  Constants.VENUE_LOGO,
-                  ""
-              )?.isNotEmpty() == true
-          ) {
-              builder.addFeedLine(1)
-              builder.addTextAlign(Builder.ALIGN_CENTER)
+            if (prefProvider?.getValue(
+                    Constants.VENUE_LOGO,
+                    ""
+                )?.isNotEmpty() == true
+            ) {
+                builder.addFeedLine(1)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
 
-              /* var bitmap = getBitmapFromURL(prefProvider.getValue(VENUE_LOGO, ""))*/
+                /* var bitmap = getBitmapFromURL(prefProvider.getValue(VENUE_LOGO, ""))*/
 
-              val decodedString: ByteArray = android.util.Base64.decode(
-                  prefProvider?.getValue(Constants.VENUE_LOGO, ""),
-                  android.util.Base64.DEFAULT
-              )
-              val bitmap: Bitmap =
-                  BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+                val decodedString: ByteArray = android.util.Base64.decode(
+                    prefProvider?.getValue(Constants.VENUE_LOGO, ""),
+                    android.util.Base64.DEFAULT
+                )
+                val bitmap: Bitmap =
+                    BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
 
-              val newBitmap = Bitmap.createScaledBitmap(bitmap!!, 210, 210, true)
-              builder.addImage(
-                  newBitmap, 0, 0,
-                  newBitmap.width, newBitmap.height, Builder.COLOR_1, Builder.MODE_MONO,
-                  Builder.HALFTONE_DITHER, 1.0
-              )
-          }
-
-
-          builder.addFeedLine(1)
-          builder.addTextStyle(
-              Builder.FALSE,
-              Builder.FALSE,
-              Builder.TRUE,
-              Builder.COLOR_1
-          )
-          builder.addTextAlign(Builder.ALIGN_CENTER)
-          builder.addTextSize(2, 2)
-
-          addBuilderText(
-              builder,
-              prefProvider?.getValue(Constants.BUSINESS_NAME, "").toString()
-          )
-          builder.addFeedLine(1)
-          builder.addTextFont(Builder.FONT_E)
-          builder.addTextAlign(Builder.ALIGN_CENTER)
-          builder.addTextLang(Builder.LANG_EN)
-          addCustomerTextSize(builder, Constants.SMALL)
-
-          builder.addTextStyle(
-              Builder.FALSE,
-              Builder.FALSE,
-              Builder.FALSE,
-              Builder.COLOR_1
-          )
-
-          addBuilderText(
-              builder,
-              prefProvider?.getValue(Constants.BUSINESS_ADDRESS, "")
-                  .toString()
-          )
-
-          builder.addFeedLine(1)
-
-          builder.addTextFont(Builder.FONT_E)
-          builder.addTextAlign(Builder.ALIGN_CENTER)
-          builder.addTextLang(Builder.LANG_EN)
-          addCustomerTextSize(builder, Constants.SMALL)
-          builder.addTextStyle(
-              Builder.FALSE,
-              Builder.FALSE,
-              Builder.FALSE,
-              Builder.COLOR_1
-          )
-          addBuilderText(
-              builder,
-              MethodUtils.getUSFormatNumber(
-                  prefProvider?.getValue(
-                      Constants.BUSINESS_PHONE_NO,
-                      ""
-                  ).toString()
-              )
-          )
-
-          builder.addFeedLine(2)
-
-          builder.addTextFont(Builder.FONT_E)
-          builder.addTextAlign(Builder.ALIGN_CENTER)
-          builder.addTextLang(Builder.LANG_EN)
-          addCustomerTextSize(builder, Constants.MEDIUM)
-          builder.addTextStyle(
-              Builder.FALSE,
-              Builder.FALSE,
-              Builder.TRUE,
-              Builder.COLOR_1
-          )
+                val newBitmap = Bitmap.createScaledBitmap(bitmap!!, 210, 210, true)
+                builder.addImage(
+                    newBitmap, 0, 0,
+                    newBitmap.width, newBitmap.height, Builder.COLOR_1, Builder.MODE_MONO,
+                    Builder.HALFTONE_DITHER, 1.0
+                )
+            }
 
 
-          builder.addText("Employee Tips Summary")
+            builder.addFeedLine(1)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+            builder.addTextSize(2, 2)
 
-          builder.addFeedLine(1)
-          builder.addTextStyle(
-              Builder.FALSE,
-              Builder.FALSE,
-              Builder.FALSE,
-              Builder.COLOR_1
-          )
-          addCustomerTextSize(builder, Constants.SMALL)
-          addHorizontalLine(builder)
+            addBuilderText(
+                builder,
+                prefProvider?.getValue(Constants.BUSINESS_NAME, "").toString()
+            )
+            builder.addFeedLine(1)
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, Constants.SMALL)
 
-          builder.addFeedLine(1)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
 
-          builder.addTextFont(Builder.FONT_E)
-          builder.addTextAlign(Builder.ALIGN_CENTER)
-          builder.addTextLang(Builder.LANG_EN)
-          addCustomerTextSize(builder, Constants.SMALL)
-          builder.addTextStyle(
-              Builder.FALSE,
-              Builder.FALSE,
-              Builder.FALSE,
-              Builder.COLOR_1
-          )
+            addBuilderText(
+                builder,
+                prefProvider?.getValue(Constants.BUSINESS_ADDRESS, "")
+                    .toString()
+            )
 
+            builder.addFeedLine(1)
 
-          builder.addText("Employee : " + prefProvider?.employeeName())
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, Constants.SMALL)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            addBuilderText(
+                builder,
+                MethodUtils.getUSFormatNumber(
+                    prefProvider?.getValue(
+                        Constants.BUSINESS_PHONE_NO,
+                        ""
+                    ).toString()
+                )
+            )
 
-          builder.addFeedLine(1)
+            builder.addFeedLine(2)
 
-          addHorizontalLine(builder)
-
-          builder.addFeedLine(1)
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-              val current = LocalDateTime.now()
-              val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
-              val formatted = current.format(formatter)
-
-              builder.addTextLineSpace(30)
-              builder.addFeedUnit(30)
-              builder.addTextFont(Builder.FONT_E)
-              builder.addTextAlign(Builder.ALIGN_LEFT)
-              builder.addTextLang(Builder.LANG_EN)
-              addCustomerTextSize(builder, Constants.SMALL)
-              builder.addTextStyle(
-                  Builder.FALSE,
-                  Builder.FALSE,
-                  Builder.FALSE,
-                  Builder.COLOR_1
-              )
-              builder.addText("Print Time:" + formatted)
-          }
-
-
-          builder.addFeedLine(2)
-          addCustomerTextSize(builder, Constants.SMALL)
-          addHorizontalLine(builder)
-
-          addSixHeaderForEmployeeTipSummary(builder)
-
-          addCustomerTextSize(builder, Constants.SMALL)
-          addHorizontalLine(builder)
-
-          ETSdataList?.forEach {
-              addItemsInEmployeeTipsSummaryM30(it,builder)
-          }
-
-
-          builder.addFeedLine(3)
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, Constants.MEDIUM)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
 
 
-          builder.addTextFont(Builder.FONT_E)
-          builder.addTextAlign(Builder.ALIGN_CENTER)
-          builder.addTextLang(Builder.LANG_EN)
-          addCustomerTextSize(builder, Constants.SMALL)
-          builder.addTextStyle(
-              Builder.FALSE,
-              Builder.FALSE,
-              Builder.TRUE,
-              Builder.COLOR_1
-          )
-          builder.addText("EMPLOYEE x " + com.pays.pos.utils.repeat("_", 37))
+            builder.addText("Employee Tips Summary")
 
-          builder.addFeedLine(2)
-          builder.addTextFont(Builder.FONT_E)
-          builder.addTextAlign(Builder.ALIGN_CENTER)
-          builder.addTextLang(Builder.LANG_EN)
-          addCustomerTextSize(builder, Constants.SMALL)
-          builder.addTextStyle(
-              Builder.FALSE,
-              Builder.FALSE,
-              Builder.TRUE,
-              Builder.COLOR_1
-          )
-          builder.addText("CASH RECEIVED BY" + com.pays.pos.utils.repeat("_", 32))
+            builder.addFeedLine(1)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            addCustomerTextSize(builder, Constants.SMALL)
+            addHorizontalLine(builder)
 
+            builder.addFeedLine(1)
 
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, Constants.SMALL)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
 
 
-          builder.addFeedLine(2)
-          builder.addCut(Builder.CUT_FEED)
+            builder.addText("Employee : " + prefProvider?.employeeName())
 
-          val status = IntArray(1)
-          val battery = IntArray(1)
+            builder.addFeedLine(1)
 
-          try {
+            addHorizontalLine(builder)
+
+            builder.addFeedLine(1)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val current = LocalDateTime.now()
+                val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+                val formatted = current.format(formatter)
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, Constants.SMALL)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                builder.addText("Print Time:" + formatted)
+            }
 
 
-              PrinterClass.getPrinter()?.sendData(
-                  builder,
-                  if (customerReceiptPrinters.name.substring(0, 6).toString()
-                          .lowercase() == "TM-m30".lowercase() || customerReceiptPrinters.name.substring(
-                          0,
-                          6
-                      ).toString().lowercase() == "TM-m10".lowercase()
-                  ) {
-                      10 * 10000
-                  } else {
-                      PrinterClass.BLUETOOTH_TIMEOUT
+            builder.addFeedLine(2)
+            addCustomerTextSize(builder, Constants.SMALL)
+            addHorizontalLine(builder)
 
-                  }, status, battery
-              )
+            addSixHeaderForEmployeeTipSummary(builder)
 
-              PrinterClass.closePrinter()
+            addCustomerTextSize(builder, Constants.SMALL)
+            addHorizontalLine(builder)
 
-              //findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
-              //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
-          } catch (e: Exception) {
-              PrinterClass.closePrinter()
-              e.printStackTrace()
-              LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
-          }
-      }catch (e:Exception){
-          LogUtil.logE(TAG, "PrinterError: 2" + e.localizedMessage)
-      }
+            ETSdataList?.forEach {
+                addItemsInEmployeeTipsSummaryM30(it, builder)
+            }
+
+
+            builder.addFeedLine(3)
+
+
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, Constants.SMALL)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            builder.addText("EMPLOYEE x " + com.pays.pos.utils.repeat("_", 37))
+
+            builder.addFeedLine(2)
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, Constants.SMALL)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            builder.addText("CASH RECEIVED BY" + com.pays.pos.utils.repeat("_", 32))
+
+
+
+
+            builder.addFeedLine(2)
+            builder.addCut(Builder.CUT_FEED)
+
+            val status = IntArray(1)
+            val battery = IntArray(1)
+
+            try {
+
+
+                PrinterClass.getPrinter()?.sendData(
+                    builder,
+                    if (customerReceiptPrinters.name.substring(0, 6).toString()
+                            .lowercase() == "TM-m30".lowercase() || customerReceiptPrinters.name.substring(
+                            0,
+                            6
+                        ).toString().lowercase() == "TM-m10".lowercase()
+                    ) {
+                        10 * 10000
+                    } else {
+                        PrinterClass.BLUETOOTH_TIMEOUT
+
+                    }, status, battery
+                )
+
+                PrinterClass.closePrinter()
+
+                //findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+                //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
+            } catch (e: Exception) {
+                PrinterClass.closePrinter()
+                e.printStackTrace()
+                LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
+            }
+        } catch (e: Exception) {
+            LogUtil.logE(TAG, "PrinterError: 2" + e.localizedMessage)
+        }
 
 
     }
@@ -765,7 +946,7 @@ class EmployeeTipSummary : Fragment() {
             ETSdataList?.forEach {
                 addItemsInEmployeeTipsSummaryInnerPrinterNew(it)
             }
-        }else {
+        } else {
             employeeTipSummaryHeader()
             ETSdataList?.forEach {
                 addItemsInEmployeeTipsSummaryInnerPrinter(it)
@@ -825,7 +1006,7 @@ class EmployeeTipSummary : Fragment() {
         }
         SunmiPrinterApi.getInstance().lineWrap(1)
 
-        if (ETSdataList?.isNotEmpty() == true){
+        if (ETSdataList?.isNotEmpty() == true) {
             PrintSunmiUtils.addHorizontal()
             addSixHeaderForEmployeeTipSummarySunmi()
             PrintSunmiUtils.addHorizontal()

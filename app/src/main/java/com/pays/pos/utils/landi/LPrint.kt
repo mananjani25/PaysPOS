@@ -8,7 +8,6 @@ import com.pays.pos.utils.*
 import java.io.IOException
 import java.io.OutputStream
 import java.util.*
-import kotlin.collections.List
 
 final object LPrint {
     private lateinit var bluetoothAdapter: BluetoothAdapter
@@ -42,6 +41,7 @@ final object LPrint {
     public val UNDERLINE_OFF = byteArrayOf(0x1B, 0x2D, 0x00)
     public val CUT_PAPER = byteArrayOf(0x1D, 0x56, 0x42, 0x00)
 
+    var TAB = byteArrayOf(0x1B, 0x44, 0x08, 0x18, 0x28, 0x00) // Tab stops at columns 8, 24, 40
 
     public val LINE_FEED = "\n".toByteArray()
     public val DASHED_LINE_FEED = "------------------------------------------------\n".toByteArray()
@@ -355,5 +355,10 @@ final object LPrint {
         }
     }
 
+    fun printTab(){
+        outputStream?.apply {
+            write(TAB)
+        }
+    }
 
 }
