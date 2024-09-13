@@ -6177,12 +6177,12 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                             .isNotEmpty()
                                     ) {
 
-                                        PrintSunmiUtils.printLogoInner(
-                                            prefProvider.getValue(
-                                                Constants.VENUE_LOGO,
-                                                ""
-                                            )
-                                        )
+//                                        PrintSunmiUtils.printLogoInner(
+//                                            prefProvider.getValue(
+//                                                Constants.VENUE_LOGO,
+//                                                ""
+//                                            )
+//                                       )
                                     }
 
 

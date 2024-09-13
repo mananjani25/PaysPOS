@@ -327,10 +327,10 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 /**
                  * This will only show item prices without any taxes and services charges
                  */
-                finalAmt =
+                val amountToShow =
                     guestSubTotal + list[0].guestDividedAmt
 
-                binding.txtPay.text = "Pay : " + MethodUtils.roundOffAmount(finalAmt)
+                binding.txtPay.text = "Pay : " + MethodUtils.roundOffAmount(amountToShow)
             }
 
             binding.btnPay.setOnClickListener {
