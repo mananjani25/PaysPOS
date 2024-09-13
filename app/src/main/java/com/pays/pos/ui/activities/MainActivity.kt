@@ -1637,7 +1637,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 Manifest.permission.BLUETOOTH_ADMIN,
                 Manifest.permission.BLUETOOTH,
                 Manifest.permission.READ_PHONE_STATE,
-            ), 1515
+                Manifest.permission.BLUETOOTH_SCAN,
+                ), 1515
         )
 
 
