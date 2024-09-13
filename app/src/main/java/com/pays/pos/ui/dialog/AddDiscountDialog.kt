@@ -77,7 +77,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
         val back = ColorDrawable(ContextCompat.getColor(binding.root.context, R.color.bg_color))
-        val inset = InsetDrawable(back, 150, 100, 150, 100)
+        val inset = InsetDrawable(back, 150, 90, 150, 90)
         dialog?.window?.setBackgroundDrawable(inset);
 
         isOrderDiscount = requireArguments().getBoolean("isOrderDiscount", false)

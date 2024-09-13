@@ -82,7 +82,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
 
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
         val back = ColorDrawable(ContextCompat.getColor(binding.root.context,R.color.bg_color))
-        val inset = InsetDrawable(back, 150, 100, 150, 100)
+        val inset = InsetDrawable(back, 150, 80, 150, 80)
         dialog?.window?.setBackgroundDrawable(inset);
 
         binding.txtTitle.text = getString(R.string.add_tips)
