@@ -10878,7 +10878,75 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 }
                                 lineBreak()
                                 paperCut()
-                                disconnectLandiPrinter()
+                                launch {
+                                    disconnectLandiPrinter()
+                                }
+                                launch {
+                                    if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType.equals(
+                                            "Cash",
+                                            true
+                                        )
+                                    ) {
+
+
+                                        if (woyouService != null) {
+                                            try {
+                                                woyouService!!.sendRAWData(
+                                                    byteArrayOf(0x1B, 0x45, 0x01),
+                                                    this@OrderCompleteFragment
+                                                )
+                                            } catch (e: Exception) {
+                                                e.printStackTrace()
+                                            }
+                                        } else {
+                                            val aa = ByteArray(5)
+
+                                            aa[0] = 0x10
+                                            aa[1] = 0x14
+                                            aa[2] = 0x00
+                                            aa[3] = 0x00
+                                            aa[4] = 0x00
+
+
+                                            try {
+                                                SunmiPrinterApi.getInstance().sendRawData(aa)
+                                            } catch (e: java.lang.Exception) {
+                                                EventBus.getDefault()
+                                                    .post(
+                                                        MessageEvent(
+                                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _sunmiPrintInner(isAutoPrint: Boolean) _ catch (e: Exception)_2 -> ${
+                                                                Gson().toJson(
+                                                                    e.printStackTrace()
+                                                                )
+                                                            }"
+                                                        )
+                                                    )
+                                                e.printStackTrace()
+
+                                            }
+                                            try {
+                                                if (isAutoPrint) {
+                                                    SunmiPrintHelper.getInstance().openCashBox()
+                                                }
+                                            } catch (e: java.lang.Exception) {
+                                                EventBus.getDefault()
+                                                    .post(
+                                                        MessageEvent(
+                                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _sunmiPrintInner(isAutoPrint: Boolean) _ catch (e: Exception)_3 -> ${
+                                                                Gson().toJson(
+                                                                    e.printStackTrace()
+                                                                )
+                                                            }"
+                                                        )
+                                                    )
+                                                e.printStackTrace()
+
+                                            }
+
+
+                                        }
+                                    }
+                                }
                             }
                         }
                 }
