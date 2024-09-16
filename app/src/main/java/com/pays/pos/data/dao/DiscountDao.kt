@@ -23,7 +23,7 @@ interface DiscountDao {
     @get:Query("select * from TbDiscount where TbDiscount.isDeleted  = 0")
     val allDiscount: LiveData<List<TbDiscount>>
 
-    @get:Query("select * from TbDiscount where TbDiscount.isDeleted  = 0 and TbDiscount.isActive = 1")
+    @get:Query("select * from TbDiscount where TbDiscount.isDeleted  = 0 and TbDiscount.isActive = 1 ORDER BY sort")
     val allActiveDiscount: LiveData<List<TbDiscount>>
 
     @Query("select * from TbDiscount where TbDiscount.isDeleted  = 0")
