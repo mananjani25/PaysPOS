@@ -7696,6 +7696,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 if (it.settingData.data.taxes.isNotEmpty()) {
                                     taxServiceChargeRepository.addAllTaxDatabase(it.settingData.data.taxes)
                                 }
+//                                tipDiscountRepository.deleteDiscountsFromDb()
 //                                posRepository.deleteNotesFromDb()
                                 posRepository.addAllNotesDatabase(it.settingData.data.notes)
 //                                tipDiscountRepository.deleteDiscountsFromDb()

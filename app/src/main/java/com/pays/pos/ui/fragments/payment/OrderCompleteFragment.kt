@@ -602,6 +602,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
         }
 
+
         ProgressUtils.showProgressDialog(requireActivity())
         binding.llHome.isEnabled = false
         Handler().postDelayed({
@@ -4907,11 +4908,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
-                try {
+               /* try {
                     SunmiPrintHelper.getInstance().openCashBox()
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
-                }
+                }*/
             }
 
             PrintSunmiUtils.cutPaperInner()
@@ -8010,11 +8011,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
-                try {
+                /*try {
                     SunmiPrintHelper.getInstance().openCashBox()
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
-                }
+                }*/
             }
             LogUtil.logE("printDineReciept", "Staring 2....")
             PrintSunmiUtils.cutPaperInner()
@@ -10925,9 +10926,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                             }
                                             try {
-                                                if (isAutoPrint) {
+                                               /* if (isAutoPrint) {
                                                     SunmiPrintHelper.getInstance().openCashBox()
-                                                }
+                                                }*/
                                             } catch (e: java.lang.Exception) {
                                                 EventBus.getDefault()
                                                     .post(
@@ -18263,9 +18264,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         }
                         try {
-                            if (isAutoPrint) {
+                           /* if (isAutoPrint) {
                                 SunmiPrintHelper.getInstance().openCashBox()
-                            }
+                            }*/
                         } catch (e: java.lang.Exception) {
                             EventBus.getDefault()
                                 .post(
@@ -18662,11 +18663,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     } catch (e: java.lang.Exception) {
                         e.printStackTrace()
                     }
-                    try {
+                    /*try {
                         SunmiPrintHelper.getInstance().openCashBox()
                     } catch (e: java.lang.Exception) {
                         e.printStackTrace()
-                    }
+                    }*/
 
                 }
             }
