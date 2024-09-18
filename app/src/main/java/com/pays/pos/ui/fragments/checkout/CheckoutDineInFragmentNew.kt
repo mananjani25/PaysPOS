@@ -67,6 +67,7 @@ import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
 import com.pays.pos.ui.fragments.dineInNew.DineInOrderTableViewModelPays
+import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import retrofit2.Call
@@ -406,6 +407,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             MethodUtils.setPriceTextView(binding.tvCustomAmount, amount)
             custom_paymentAmount = amount
             binding.tvCustomAmount.text = "Custom (" + binding.tvCustomAmount.text.toString() + ")"
+            SunmiPrintHelper.getInstance().openCashBox()
             cashPaymentWithVariation()
         }
 
@@ -1205,7 +1207,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
                 )
             }
-
+            SunmiPrintHelper.getInstance().openCashBox()
             paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
             Log.d(TAG, "paymentClick: click 1")
             cashPaymentWithVariation()
@@ -1214,17 +1216,20 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
             custom_paymentAmount =
                 binding.tvCash1.text.toString().replace("$", "").trim().toDouble()
+            SunmiPrintHelper.getInstance().openCashBox()
             cashPaymentWithVariation()
         }
         binding.tvCash2.setOnSingleClickListener {
             custom_paymentAmount =
                 binding.tvCash2.text.toString().replace("$", "").trim().toDouble()
+            SunmiPrintHelper.getInstance().openCashBox()
             cashPaymentWithVariation()
         }
         binding.tvCash3.setOnSingleClickListener {
 
             custom_paymentAmount =
                 binding.tvCash3.text.toString().replace("$", "").trim().toDouble()
+            SunmiPrintHelper.getInstance().openCashBox()
             cashPaymentWithVariation()
         }
         binding.tvCustomAmount.setOnSingleClickListener {
