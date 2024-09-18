@@ -151,7 +151,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private var future_delivery_time: String = ""
     var totalDiscount = 0.0
     var cardPaymentAmount = 0.0
-    var retryCount=1
+    var retryCount = 1
 
     // PAX variables
     private lateinit var mPaymentRequest: PaymentRequest
@@ -403,10 +403,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 }
                             } else {
                                 binding.llDynamicLink.children.forEach {
-                                    it.isActivated=false
-                                    it.isClickable=false
-                                    it.isEnabled=false
-                                    it.alpha=0f
+                                    it.isActivated = false
+                                    it.isClickable = false
+                                    it.isEnabled = false
+                                    it.alpha = 0f
                                 }
 
                                 binding.tvOther.invisible()
@@ -820,7 +820,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 ignoreCase = true
                             )
                         ) {
-                            performCashOperation(it,true)
+                            performCashOperation(it, true)
                         } else {
                             performCashOperation(it)
                         }
@@ -1765,7 +1765,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
     }
 
-    private fun performCashOperation(it: CreateOrderResponse, dynamicPayment:Boolean= false) {
+    private fun performCashOperation(it: CreateOrderResponse, dynamicPayment: Boolean = false) {
 
         LogUtil.logE("TipAmount 4:: ", tipAmount.toString())
 
@@ -1831,9 +1831,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
         } else {
             /*Here is the issue*/
-            if (dynamicPayment){
+            if (dynamicPayment) {
                 remainingValue = wholePrice - paymentAmount
-            }else{
+            } else {
                 remainingValue = if (cashDiscountType == "CashDiscount") {
                     wholePrice - String.format(
                         "%.2f",
@@ -2239,17 +2239,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     }
 
-    private fun disconnectSyncChannel(){
+    private fun disconnectSyncChannel() {
         MainActivity.consumer2?.let {
             it.disconnect()
             Log.e("onActionConnected", "onActionConnected: Disconnected")
         }
     }
+
     // manage click of different types of payment methods visible on screen
     private fun paymentClick() {
 
         binding.llCreditCard.setOnSingleClickListener {
-         disconnectSyncChannel()
+            disconnectSyncChannel()
 
             if (InternetUtils.isInternetAvailable(applicationContext = requireActivity().applicationContext)) {
 
@@ -2737,7 +2738,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     // To make card payment using PAX device
     private fun makePaxPaymentRequest() {
         GlobalScope.launch {
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,"/storage/emulated/0/Download/" + SettingINI.FILENAME))
+            posLink.SetCommSetting(
+                SettingINI.getCommSettingFromFile(
+                    context!!,
+                    "/storage/emulated/0/Download/" + SettingINI.FILENAME
+                )
+            )
             val amt = ((paymentAmount - tipAmount) * 100).roundToInt()
             val tip_amt = (tipAmount * 100).roundToInt()
             ECRRefNumber = System.currentTimeMillis().toString()
@@ -2842,8 +2848,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     magtekProViewModel.initPOSLink(requireContext())
                 }else{*/
 //                    retryCount=1
-                    CoroutineScope(Dispatchers.Main).launch {
-                        ProgressUtils.dismissProgressDialog()
+                CoroutineScope(Dispatchers.Main).launch {
+                    ProgressUtils.dismissProgressDialog()
+                    AlertUtils.showCustomAlertWithListenerWithOKCancel(
+                        requireContext(),
+                        getString(R.string.pax_connect_error), getString(R.string.reconnect),
+                    )
+                    { _, _ ->
+                        // Add connect to PAX logic
+                        magtekProViewModel.initPOSLink(requireContext())
+                    }
+
+                    /*if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT"){
                         AlertUtils.showCustomAlertWithListenerWithOKCancel(
                             requireContext(),
                             getString(R.string.pax_connect_error), getString(R.string.reconnect),
@@ -2852,21 +2868,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             // Add connect to PAX logic
                             magtekProViewModel.initPOSLink(requireContext())
                         }
-
-                        /*if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT"){
-                            AlertUtils.showCustomAlertWithListenerWithOKCancel(
-                                requireContext(),
-                                getString(R.string.pax_connect_error), getString(R.string.reconnect),
-                            )
-                            { _, _ ->
-                                // Add connect to PAX logic
-                                magtekProViewModel.initPOSLink(requireContext())
-                            }
-    //                        Toast.makeText(requireContext(), R.string.pax_connect_error, Toast.LENGTH_LONG).show()
-                        } else {
-                            Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
-                        }*/
-                    }
+//                        Toast.makeText(requireContext(), R.string.pax_connect_error, Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
+                    }*/
+                }
 //                }
             }
 
@@ -3201,7 +3207,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun setupPaymentScreen(isSelectCount: Int) {
         MethodUtils.getCashPaymentOptionList(
 //   Commented to solve BIS-4196         getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount,
-            (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount)+ tipAmount,
+            (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount) + tipAmount,
             binding.tvCash1,
             binding.tvCash2,
             binding.tvCash3
@@ -3209,18 +3215,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         MethodUtils.setPriceTextView(
             binding.tvCash,
-            (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount)+ tipAmount
+            (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount) + tipAmount
 //     Commented to solve BIS-4196       getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
         )
         MethodUtils.setPriceTextView(
             binding.tvCash0,
-            (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount)+tipAmount
+            (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount) + tipAmount
             //     Commented to solve BIS-4196  getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
         )
         Log.e(TAG, "WholetotalPrice:   ${WholetotalPrice}")
         MethodUtils.setPriceTextView(
             binding.tvCard,
-            (getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectCount)+tipAmount
+            (getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectCount) + tipAmount
             //     Commented to solve BIS-4196  getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectCount
         )
         if (this::presentation.isInitialized) {
@@ -3241,8 +3247,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
         }
 
-        dashboardViewModel.customerCashAmount.value=binding.tvCash.text.toString()
-        dashboardViewModel.customerCardAmount.value=binding.tvCard.text.toString()
+        dashboardViewModel.customerCashAmount.value = binding.tvCash.text.toString()
+        dashboardViewModel.customerCardAmount.value = binding.tvCard.text.toString()
 
         binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
         binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
@@ -3268,8 +3274,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
             if (this::presentation.isInitialized) {
                 presentation.show()
-                dashboardViewModel.customerCashAmount.value=binding.tvCash.text.toString()
-                dashboardViewModel.customerCardAmount.value=binding.tvCard.text.toString()
+                dashboardViewModel.customerCashAmount.value = binding.tvCash.text.toString()
+                dashboardViewModel.customerCardAmount.value = binding.tvCard.text.toString()
                 presentation.updateTotals(
                     binding.tvCash.text.toString(),
                     binding.tvCard.text.toString()
@@ -3450,8 +3456,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 tipsetupGlobal(tipAmount, isSelectedCount)
                 loadPaymentLayout()
                 tipAmountCalculation()
-            }
-            else{/*
+            } else {/*
                 tipAmount = 0.0
                 viewModel.setTipAmount(0.0)
                 viewModel.totalTipAmount = 0.0
@@ -4141,7 +4146,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     )
                     if (orderTypeId == -1) {
                         runBlocking {
-                            async {
+                            CoroutineScope(Dispatchers.IO).async {
                                 dashboardViewModel.getOrderTypeBackupList(employeeID)?.let {
                                     orderTypeId = (it.get(0).orderType) ?: -1
                                 }
@@ -4246,6 +4251,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         myRequest.order.orderTypeId = it.orderTypeId
                     }
                 }
+
+                /*---------totalAmount was being sent half in case of split, so multiplied if the subtotal is greater than the totalAmount----------*/
+                if (myRequest.order.subTotal>myRequest.order.totalAmount){
+                    myRequest.order.totalAmount=myRequest.order.totalAmount*2
+                }
+                /*---------totalAmount was being sent half in case of split, so multiplied if the subtotal is greater than the totalAmount----------*/
+
                 paymentAttributesRequest(myRequest, dynamicPaymentType, dynamicPaymentId)
             }
         }
