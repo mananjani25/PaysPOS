@@ -4141,7 +4141,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     )
                     if (orderTypeId == -1) {
                         runBlocking {
-                            async {
+                            CoroutineScope(Dispatchers.IO).async {
                                 dashboardViewModel.getOrderTypeBackupList(employeeID)?.let {
                                     orderTypeId = (it.get(0).orderType) ?: -1
                                 }
@@ -4246,6 +4246,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         myRequest.order.orderTypeId = it.orderTypeId
                     }
                 }
+
+                /*---------totalAmount was being sent half in case of split, so multiplied if the subtotal is greater than the totalAmount----------*/
+                if (myRequest.order.subTotal>myRequest.order.totalAmount){
+                    myRequest.order.totalAmount=myRequest.order.totalAmount*2
+                }
+                /*---------totalAmount was being sent half in case of split, so multiplied if the subtotal is greater than the totalAmount----------*/
+
+
                 paymentAttributesRequest(myRequest, dynamicPaymentType, dynamicPaymentId)
             }
         }
@@ -4451,7 +4459,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     )
                     if (orderTypeId == -1) {
                         runBlocking {
-                            async {
+                            CoroutineScope(Dispatchers.IO).async {
                                 dashboardViewModel.getOrderTypeBackupList(employeeID)?.let {
                                     orderTypeId = (it.get(0).orderType) ?: -1
                                 }
