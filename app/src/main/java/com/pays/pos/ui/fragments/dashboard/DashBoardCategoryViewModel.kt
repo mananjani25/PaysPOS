@@ -423,6 +423,9 @@ class DashBoardCategoryViewModel @Inject constructor(
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
 
+    val _removeLastItem = MutableLiveData<Event<Boolean>>()
+    val removeLastItem : LiveData<Event<Boolean>> = _removeLastItem
+
     val updateCartFooter = MutableLiveData<Event<Boolean>>()
 
     val _syncProgressDialog = MutableLiveData<Event<Boolean>>()

@@ -889,6 +889,30 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 //        System.gc()
         onClick()
 
+        viewModel.removeLastItem.observe(viewLifecycleOwner){
+            if (it.getContentIfNotHandled() == true){
+
+                Log.e("HereToCheck","EventTrue  ")
+                getCustomerDisplay(requireContext())?.let {
+                    presentation = CustomDisplay(
+                        it, requireContext(), this, dashBoardCategoryViewModel = viewModel, passcodeViewModel, dineInViewModel
+                    )
+                }
+                    /*if (!presentation.isShowing)
+                        presentation.show()
+                    if (it.isNotEmpty()) {
+                        presentation.updateCustomerDisplay(it)
+                    } else {
+                        Log.e(TAG,"PresentationHide: ")
+                        presentation.onLogOutOrClockOutWithApiService(apiService)
+                    }*/
+
+
+            }
+
+
+        }
+
         viewModel.showClockOutProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
