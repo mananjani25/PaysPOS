@@ -4252,9 +4252,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     }
                 }
 
+                /*---------totalAmount was being sent half in case of split, so multiplied if the subtotal is greater than the totalAmount----------*/
                 if (myRequest.order.subTotal>myRequest.order.totalAmount){
                     myRequest.order.totalAmount=myRequest.order.totalAmount*2
                 }
+                /*---------totalAmount was being sent half in case of split, so multiplied if the subtotal is greater than the totalAmount----------*/
+
                 paymentAttributesRequest(myRequest, dynamicPaymentType, dynamicPaymentId)
             }
         }
