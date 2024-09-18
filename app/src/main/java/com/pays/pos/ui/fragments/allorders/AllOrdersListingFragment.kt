@@ -5947,11 +5947,11 @@ class AllOrdersListingFragment(
 
                     printer.printAsync(commands).await()
 
-                    try {
+                    /*try {
                         SunmiPrintHelper.getInstance().openCashBox()
                     } catch (e: java.lang.Exception) {
                         e.printStackTrace()
-                    }
+                    }*/
 
                     Log.d("Printing", "Success")
                 } catch (e: Exception) {
