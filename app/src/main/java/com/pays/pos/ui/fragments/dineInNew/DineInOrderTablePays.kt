@@ -2319,7 +2319,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             val completePrice = getOrderDetailsResponse?.subTotal?.plus(getOrderDetailsResponse?.totalDiscount?:0.0) ?: 0.0
             val discountSelectdValue = (getOrderDetailsResponse?.totalDiscount?.div(completePrice) ?: 1.0) * 100
 
-            cartList!!.discountSelectdValue = discountSelectdValue
+            cartList!!.discountSelectdValue =
+                if(discountSelectdValue.isNaN())
+                    0.0
+                else
+                    discountSelectdValue
 
             viewModelPayment.addCart(cartList!!)
 

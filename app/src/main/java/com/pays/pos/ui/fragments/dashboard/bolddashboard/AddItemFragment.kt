@@ -1,6 +1,7 @@
 package com.pays.pos.ui.fragments.dashboard.bolddashboard
 
 import android.os.Bundle
+import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -1884,19 +1885,36 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     Log.d(TAG, "dineintest item: " + Gson().toJson(item))
                     Log.d(TAG, "dineintest dineInList: " + it1)
 
+//                    if(viewModel.currentCartItems.size == 1) {
+//
+//                        cartModelsList[0].dineInList = arrayListOf()
+//
+//                    }
+
 
                     CoroutineScope(Dispatchers.IO).launch {
-                        if(viewModel.currentCartItems.size == 1) {
-                            viewModel.duplicateCurrentCartItem.clear()
-                            viewModel.currentCartItems.clear()
+                     //   viewModel.deleteCartItem(item.cartItemId)
 
-                            //viewModel.lastItemRemoveFromCart.postValue(Pair(true,item.cartItemId))
-                        }
 
-                        viewModel.deleteCartItem(item.cartItemId)
+
+
+//                        if(viewModel.currentCartItems.size == 1) {
+//
+//                            viewModel.duplicateCurrentCartItem.remove(item)
+//                            viewModel.currentCartItems.remove(item)
+//
+//                            viewModel.setCurrentCartItems(arrayListOf())
+//                            viewModel.deleteCartItem(item.cartItemId)
+//
+//                            //viewModel.lastItemRemoveFromCart.postValue(Pair(true,item.cartItemId))
+//                        }
+
+
+
+
                     }
 
-                   // viewModel.updateDineInCart(viewModel.currentCartItems, item, DELETE, false, it1)
+                    viewModel.updateDineInCart(viewModel.currentCartItems, item, DELETE, false, it1)
                 }
             } else {
                 item.guestIndexForDineIn = null
