@@ -5355,6 +5355,9 @@ fun addWholeTbItemToGuestInner(
         priceToShow = MethodUtils.roundOffAmount(price)
     }
 
+    if(obj.price <= 0.0)
+        priceToShow = ""
+
     //val finalAmt = MethodUtils.roundOffAmount((subTotal) / guestCount)
 
     PrintSunmiUtils.normalText(
@@ -5375,7 +5378,7 @@ fun addWholeTbItemToGuestInner(
                     } else {
                         "   " + it.modifier_quantity + "x " + it.name
                     },
-                    "" + MethodUtils.roundOffAmount(it.price * it.itemQuantity),
+                    "" + MethodUtils.roundOffAmount(it.price/guestCount * it.itemQuantity),
                     if (font == Constants.LARGE) 23 else 48
                 ).toString()
             )

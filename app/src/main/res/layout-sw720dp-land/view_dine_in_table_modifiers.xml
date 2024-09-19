@@ -141,7 +141,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:text="@{@string/symbole +``+String.format(@string/format,(model.price * model.itemQuantity))}"
+                        android:text="@{@string/symbole +``+String.format(@string/format,(model.price * model.modifier_quantity * model.itemQuantity))}"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi"
                         tools:text="$20.00" />
