@@ -1340,6 +1340,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                         it.itemQuantity + qty
                                      }
 
+
                                 val itemOldModifiers = viewModel.cartItemModifiersBeforeUpdate
 
                                 if(itemOldModifiers!=null && itemOldModifiers.isNotEmpty()) {
@@ -1440,6 +1441,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             runBlocking {
                                 item.itemQuantity = dineInItemQunatity
 
+                                if(modifiers.isEmpty())
+                                    modifiers = item.modifiers
 
                                 viewModel.updateDineInCartItemsByIdGuestIndex(
                                     dineInItemQunatity,
