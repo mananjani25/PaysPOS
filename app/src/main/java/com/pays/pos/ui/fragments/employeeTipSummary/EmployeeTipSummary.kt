@@ -21,6 +21,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.epson.eposprint.Builder
+import com.epson.eposprint.Print
+import com.google.gson.Gson
 import com.pays.pos.R
 import com.pays.pos.data.model.responseModel.PrinterResponse
 import com.pays.pos.data.model.responseModel.employeeTipSummary.EmployeeTipSummaryResponse
@@ -30,20 +33,17 @@ import com.pays.pos.data.remote.Constants.END_DATE
 import com.pays.pos.data.remote.Constants.START_DATE
 import com.pays.pos.databinding.FragmentEmployeeTipSammaryBinding
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.adapter.EmployeeTipSummaryAdapter
+import com.pays.pos.ui.fragments.payment.OrderCompleteFragment
 import com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
+import com.pays.pos.utils.*
 import com.pays.pos.utils.extensions.differenceTrue
 import com.pays.pos.utils.extensions.timeCalculateForStartEndTime
+import com.pays.pos.utils.landi.LPrint
 import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.statusUtils.Status
-import com.epson.eposprint.Builder
-import com.epson.eposprint.Print
-import com.google.gson.Gson
-import com.pays.pos.logger.MessageEvent
-import com.pays.pos.ui.fragments.payment.OrderCompleteFragment
-import com.pays.pos.utils.*
-import com.pays.pos.utils.landi.LPrint
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
@@ -56,9 +56,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.ArrayList
-import java.util.Calendar
-import java.util.Date
+import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -566,7 +564,10 @@ class EmployeeTipSummary : Fragment() {
                                         }
                                     }
 
-                                    printCenter(getString(R.string.employee_tip_summary), fontSize = FONT_SIZE_5X)
+                                    printCenter(
+                                        getString(R.string.employee_tip_summary),
+                                        fontSize = FONT_SIZE_5X
+                                    )
                                     lineBreak()
                                     printCenter("Employee : " + prefProvider?.employeeName())
                                     lineBreak()
@@ -577,18 +578,41 @@ class EmployeeTipSummary : Fragment() {
                                         val formatter =
                                             DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
                                         val formatted = current.format(formatter)
-                                        printLeft("Print Time:" + formatted, fontSize = RESET_FONT_SIZE)
+                                        printLeft(
+                                            "Print Time:" + formatted,
+                                            fontSize = RESET_FONT_SIZE
+                                        )
                                     }
 
                                     lineBreak()
                                     lineBreak()
 
-                                    printCenter("Employee   Cash    Card    External    Total", fontSize = RESET_FONT_SIZE)
+/*-------------------The table should be printed here---------------*/
+                                    val widths = intArrayOf(10, 15, 10,10, 10) // Set the column widths
+                                    printTableRow(outputStream, arrayOf("Employee   Cash    Card    External    Total"), widths)
+                                    lineBreak()
+
+                                    ETSdataList?.forEach {
+                                        printTableRow(
+                                            outputStream, arrayOf(
+                                                "${MethodUtils.ellipsize(it.employee_name, 6)}",
+                                                "$${standardAmount(it.total_cash_tips)}",
+                                                "$${standardAmount(it.total_card_tips)}",
+                                                "$${standardAmount(it.total_external_tips)}",
+                                                "$${standardAmount(it.total_tips)}",
+                                            ), widths
+                                        )
+                                        lineBreak()
+                                    }
+
+/*-------------------The table should be printed here---------------*/
+
+/*                                    printCenter("Employee   Cash    Card    External    Total", fontSize = RESET_FONT_SIZE)
                                     lineBreak()
                                     ETSdataList?.forEach {
                                         printLeft("${MethodUtils.ellipsize(it.employee_name,6)}   $${standardAmount(it.total_cash_tips)}    $${standardAmount(it.total_card_tips)}    $${standardAmount(it.total_external_tips)}     $${standardAmount(it.total_tips)}", fontSize = RESET_FONT_SIZE)
                                         lineBreak()
-                                    }
+                                    }*/
                                     lineBreak()
 
                                     printLeft("${getString(R.string.tv_employee).uppercase()} x _______________________________")
@@ -621,9 +645,9 @@ class EmployeeTipSummary : Fragment() {
             }
 
             private fun standardAmount(value: Double): String {
-                if (value==0.0){
+                if (value == 0.0) {
                     return "0.00"
-                }else
+                } else
                     return value.toString()
             }
         })
