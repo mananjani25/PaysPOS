@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal"
-            android:paddingVertical="@dimen/_4sdp">
+            android:paddingVertical="@dimen/_2sdp">
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
@@ -50,6 +50,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1.2"
                     android:gravity="center"
+                    android:layout_marginStart="3dp"
                     android:orientation="horizontal">
 
                     <androidx.appcompat.widget.AppCompatCheckBox
@@ -73,8 +74,9 @@
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:paddingVertical="5dp"
                     android:layout_weight="3"
                     android:gravity="center"
                     android:orientation="vertical">
@@ -105,7 +107,7 @@
                         android:singleLine="true"
                         android:text="@{@string/add_note_cart +``+model.note}"
 
-                        android:textColor="@color/txtColor"
+                        android:textColor="@color/quantum_orange"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
 
@@ -227,6 +229,7 @@
             </androidx.appcompat.widget.LinearLayoutCompat>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvModifiers"
