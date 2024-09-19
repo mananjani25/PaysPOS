@@ -1344,13 +1344,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                 val itemOldModifiers = viewModel.cartItemModifiersBeforeUpdate
 
                                 if(itemOldModifiers!=null && itemOldModifiers.isNotEmpty()) {
-                                    if (!it.isFired) {
-                                        modifiers = item.modifiers
+                                    modifiers = if (!it.isFired) {
+                                        item.modifiers
                                     } else {
-                                        modifiers = itemOldModifiers
+                                        itemOldModifiers
 
-
-//                                            runOnUiThread {
+//                                             runOnUiThread {
 //                                                AlertUtils.showCustomAlert(
 //                                                    requireContext(),
 //                                                    "Can't update item modifiers! Item is already fired to the kitchen !"
@@ -1358,6 +1357,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 //                                            }
                                     }
                                     viewModel.cartItemModifiersBeforeUpdate = null
+                                }else if(it.isFired) {
+                                    modifiers = it.modifiers
                                 }
 
                                 if(prefProvider.getValueboolean(DINE_IN_UPDATE, false) && it.isFired) {
