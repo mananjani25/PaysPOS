@@ -588,14 +588,16 @@ class EmployeeTipSummary : Fragment() {
                                     lineBreak()
 
 /*-------------------The table should be printed here---------------*/
-                                    val widths = intArrayOf(10, 15, 10,10, 10) // Set the column widths
-                                    printTableRow(outputStream, arrayOf("Employee   Cash    Card    External    Total"), widths)
+                                    val headerWidths = intArrayOf(20, 10, 10, 10, 10) // Set the column widths
+                                    val widths = intArrayOf(13, 9, 9, 9, 8) // Set the column widths
+                                    printTableRow(outputStream, arrayOf("Employee      Cash    Card   External    Total"), headerWidths)
                                     lineBreak()
+                                    printDashedLineAndBreak()
 
                                     ETSdataList?.forEach {
                                         printTableRow(
                                             outputStream, arrayOf(
-                                                "${MethodUtils.ellipsize(it.employee_name, 6)}",
+                                                "${MethodUtils.ellipsize(it.employee_name, 8)}",
                                                 "$${standardAmount(it.total_cash_tips)}",
                                                 "$${standardAmount(it.total_card_tips)}",
                                                 "$${standardAmount(it.total_external_tips)}",
