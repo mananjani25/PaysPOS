@@ -9690,7 +9690,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             )))
         ) {
 
-            try {
+            //remove comments to work on star printer for dine in
+            /*try {
                 settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
                 printer = StarPrinter(settings, requireContext())
 
@@ -9716,7 +9717,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     } catch (e: Exception) {
                     }
             }
-        }
+        }*/
 
         } else {
 
@@ -11608,9 +11609,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     actionFeedLine(1)
 
-                    try {
-                        addOrdersForKitchenDineInStarPrinter(item, listItemWithGuest, this)
-                    }catch (e:Exception){}
+//                    try {
+//                        addOrdersForKitchenDineInStarPrinter(item, listItemWithGuest, this)
+//                    }catch (e:Exception){}
 
                     if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
 
