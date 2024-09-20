@@ -173,7 +173,7 @@ class KioskService : Service(), StatusChangeEventListener {
                         if (it.asJsonObject.has("location_id")) {
                             if ((PrefProvider(baseContext).getLocationId() == it.asJsonObject.get("location_id").asInt) && (it.asJsonObject.get(
                                     "new_order"
-                                ).toString().equals("true", ignoreCase = true))
+                                ).toString().equals("true", ignoreCase = true) && (it.asJsonObject.get("order_type").toString().equals("\"KioskTakeout\"", true)))
                             ) {
                                 getOrderFromServer(it.asJsonObject.get("order_id").asInt)
                             }
