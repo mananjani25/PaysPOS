@@ -361,4 +361,13 @@ final object LPrint {
         }
     }
 
+    fun printTableRow(writer:OutputStream,columns: Array<String>, widths: IntArray) {
+        val outputStream = writer
+        val row = StringBuilder()
+        for (i in columns.indices) {
+            row.append(String.format("%-" + widths[i] + "s", columns[i]))
+        }
+        outputStream?.write(row.toString().toByteArray())
+    }
+
 }
