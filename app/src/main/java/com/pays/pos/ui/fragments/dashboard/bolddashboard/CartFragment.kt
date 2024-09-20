@@ -3426,7 +3426,7 @@ class CartFragment(
                         prefProvider.setValueInt("ORDER_ID", -1)
                     }
 
-                    /*if (viewModel.backupOrderId != null &&
+                    if (viewModel.backupOrderId != null &&
                         viewModel.backupPaymentId != null &&
                         viewModel.backupPaymentOfflineId?.isNotEmpty()?:false &&
                         viewModel.backupOrderOfflineId?.isNotEmpty()?:false
@@ -3437,7 +3437,6 @@ class CartFragment(
                         paymentOfflineId = viewModel.backupPaymentOfflineId?:"Failing"
                         orderOfflineId = viewModel.backupOrderOfflineId?:"Failing"
                     }
-*/
                     if (InternetUtils.isInternetAvailable(requireContext().applicationContext)) {
                         runBlocking {
                             try {
@@ -3865,10 +3864,10 @@ class CartFragment(
     }
 
     private fun cleanOrderBackupDetails() {
-      /*  viewModel.backupOrderId = null
+        viewModel.backupOrderId = null
         viewModel.backupPaymentId = null
         viewModel.backupPaymentOfflineId = ""
-        viewModel.backupOrderOfflineId = ""*/
+        viewModel.backupOrderOfflineId = ""
     }
 
     private fun restrictButtonClick(value: Boolean) {

@@ -90,6 +90,9 @@ import com.pays.pos.ui.fragments.settings.hardware.printer.UpdatePrinters
 import com.pays.pos.utils.*
 import com.pays.pos.utils.FileUtils
 import com.pays.pos.utils.extensions.alert
+import com.pays.pos.utils.scanner.helpers.AvailableScanner
+import com.pays.pos.utils.scanner.helpers.Barcode
+import com.pays.pos.utils.scanner.helpers.ScannerAppEngine
 import com.pays.pos.utils.statusUtils.Status
 import com.pays.pos.utils.workmanager.ThreadPoolManager
 import com.pays.pos.utils.workmanager.UploadWorker2
@@ -113,6 +116,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
+/*import com.zebra.scannercontrol.DCSScannerInfo
+import com.zebra.scannercontrol.SDKHandler*/
 
 
 @AndroidEntryPoint
@@ -167,6 +172,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     private val dashBoardCategoryViewModel by viewModels<DashBoardCategoryViewModel>()
 
+
     @set:Inject
     internal var prefProvider: PrefProvider? = null
 
@@ -202,6 +208,48 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         public var subscription2: Subscription? = null
         private var consumer: Consumer? = null
         public var consumer2: Consumer? = null
+        /*Moved the Zebra scan gun from MainApplication to MainActivity*/
+//        var sdkHandler: SDKHandler? = null
+//        var mScannerInfoList = ArrayList<DCSScannerInfo>()
+        var btAddress: String? = ""
+        var MOT_SETTING_OPMODE = 0
+        var MOT_SETTING_SCANNER_DETECTION = true
+        var MOT_SETTING_EVENT_ACTIVE = true
+        var MOT_SETTING_EVENT_AVAILABLE = true
+        var MOT_SETTING_EVENT_BARCODE = true
+        var MOT_SETTING_EVENT_IMAGE = true
+        var MOT_SETTING_EVENT_VIDEO = true
+        var MOT_SETTING_EVENT_BINARY_DATA = true
+
+        var MOT_SETTING_NOTIFICATION_ACTIVE = true
+        var MOT_SETTING_NOTIFICATION_AVAILABLE = true
+        var MOT_SETTING_NOTIFICATION_BARCODE = true
+        var MOT_SETTING_NOTIFICATION_IMAGE = true
+        var MOT_SETTING_NOTIFICATION_VIDEO = true
+        var MOT_SETTING_NOTIFICATION_BINARY_DATA = true
+
+        var mDevListDelegates: ArrayList<ScannerAppEngine.IScannerAppEngineDevListDelegate>? =
+            ArrayList<ScannerAppEngine.IScannerAppEngineDevListDelegate>()
+        var intentionallyDisconnected = false
+
+        var currentScannerName = ""
+        var currentScannerAddress = ""
+        var currentAutoReconnectionState = true
+        var isAnyScannerConnected = false //True, if currently connected to any scanner
+
+        var currentConnectedScannerID = -1 //Track scannerId of currently connected Scanner
+
+        var isFirmwareUpdateInProgress = false
+        //        var intentionallyDisconnected = false
+        var virtualTetherHostActivated = false
+
+        var barcodeData: ArrayList<Barcode> = ArrayList<Barcode>()
+        var currentConnectedScanner: AvailableScanner? = null
+        var lastConnectedScanner: AvailableScanner? = null
+        var SCANNER_ID_NONE = -1
+        var currentScannerId = SCANNER_ID_NONE
+
+        /*Moved the Zebra scan gun from MainApplication to MainActivity*/
 
         fun workerDisconnect() {
             try {
@@ -1260,7 +1308,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         super.onCreate(savedInstanceState)
         MainApplication.mainActivity = this
         permissionCheck()
-
+//        sdkHandler = SDKHandler(this, true)
         attachFileLogger()
         prefProvider!!.setValue(Constants.DELIVERY_TYPE, "")
 
@@ -1587,8 +1635,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 Manifest.permission.BLUETOOTH_CONNECT,
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.BLUETOOTH_ADMIN,
-                Manifest.permission.BLUETOOTH
-            ), 1515
+                Manifest.permission.BLUETOOTH,
+                Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.BLUETOOTH_SCAN,
+                ), 1515
         )
 
 

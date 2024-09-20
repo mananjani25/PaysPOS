@@ -28,6 +28,7 @@ import com.zebra.scannercontrol.DCSSDKDefs.*
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+/*ALL THE SCAN GUN VARIABLES ARE COMMENTED from MAINAPPLICATION AND MOVED TO MAINACTIVITY(for solving permission issue), PLEASE UNCOMMENT IT AND REMOVE THE VARIABLES FROM MAINACTIVITY*/
 
 @AndroidEntryPoint
 open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkApiDelegate,
@@ -76,29 +77,29 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     lateinit var barcodePrefProvider: BarcodePrefProvider
 
     fun initializeScanner() {
-        mScannerInfoList = MainApplication.mScannerInfoList
+//        mScannerInfoList = MainActivity.mScannerInfoList
         mOfflineScannerInfoList = ArrayList<DCSScannerInfo>()
 
-        if (MainApplication.sdkHandler == null) {
-            MainApplication.sdkHandler = SDKHandler(this, true)
-        }
+//        if (MainActivity.sdkHandler == null) {
+//            MainActivity.sdkHandler = SDKHandler(this, true)
+//        }
 
         //set mac address and protocols
         selectedProtocol = DCSSDK_BT_PROTOCOL.CRD_BT_LE
         selectedConfig = DCSSDK_BT_SCANNER_CONFIG.SET_FACTORY_DEFAULTS
-        MainApplication.sdkHandler?.dcssdkSetBTAddress(getMacAddress())
+//        MainActivity.sdkHandler?.dcssdkSetBTAddress(getMacAddress())
 
         //set the delegates method
-        MainApplication.sdkHandler?.dcssdkSetDelegate(this)
+//        MainActivity.sdkHandler?.dcssdkSetDelegate(this)
 
         initializeDcsSdk()
 
         // enable scanner detection
-        MainApplication.sdkHandler?.dcssdkEnableAvailableScannersDetection(true)
+//        MainActivity.sdkHandler?.dcssdkEnableAvailableScannersDetection(true)
 
         //Synchronous Scanner Retrieval
-        MainApplication.sdkHandler?.dcssdkGetAvailableScannersList(mScannerInfoList)
-        MainApplication.sdkHandler?.dcssdkGetActiveScannersList(mScannerInfoList)
+//        MainActivity.sdkHandler?.dcssdkGetAvailableScannersList(mScannerInfoList)
+//        MainActivity.sdkHandler?.dcssdkGetActiveScannersList(mScannerInfoList)
 
         // ...
         initializeDcsSdkWithAppSettings()
@@ -135,18 +136,18 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         }
         val layoutParams = LinearLayout.LayoutParams(-1, -1)
         // SDK was not able to determine Bluetooth MAC. So call the dcssdkGetPairingBarcode with BT Address.
-        MainApplication.sdkHandler?.dcssdkSetSTCEnabledState(true)
-        MainApplication.btAddress = getMacAddress()
-        if (MainApplication.btAddress?.isNotEmpty() == true) {
-            MainApplication.sdkHandler?.dcssdkSetBTAddress(MainApplication.btAddress)
-            val barCodeView = MainApplication.sdkHandler?.dcssdkGetPairingBarcode(
-                selectedProtocol,
-                selectedConfig,
-                MainApplication.btAddress
-            )
-            if (barCodeView != null) {
-                updateBarcodeView(flBarcode, layoutParams, barCodeView)
-            }
+//        MainActivity.sdkHandler?.dcssdkSetSTCEnabledState(true)
+        MainActivity.btAddress = getMacAddress()
+        if (MainActivity.btAddress?.isNotEmpty() == true) {
+//            MainActivity.sdkHandler?.dcssdkSetBTAddress(MainActivity.btAddress)
+//            val barCodeView = MainActivity.sdkHandler?.dcssdkGetPairingBarcode(
+//                selectedProtocol,
+//                selectedConfig,
+//                MainActivity.btAddress
+//            )
+//            if (barCodeView != null) {
+//                updateBarcodeView(flBarcode, layoutParams, barCodeView)
+//            }
         } else {
             flBarcode?.removeAllViews()
         }
@@ -154,8 +155,8 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
 
     open fun getSnapiBarcode(llBarcode: FrameLayout?) {
         val layoutParams = LinearLayout.LayoutParams(-1, -1)
-        val barCodeView: BarCodeView? =
-            MainApplication.sdkHandler?.dcssdkGetUSBSNAPIWithImagingBarcode()
+//        val barCodeView: BarCodeView? =
+//            MainActivity.sdkHandler?.dcssdkGetUSBSNAPIWithImagingBarcode()
         val display = windowManager.defaultDisplay
         val size = Point()
         display.getSize(size)
@@ -173,8 +174,8 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                 y = x / 3
             }
         }
-        barCodeView?.setSize(x, y)
-        llBarcode?.addView(barCodeView, layoutParams)
+//        barCodeView?.setSize(x, y)
+//        llBarcode?.addView(barCodeView, layoutParams)
     }
 
     fun checkBluetoothAvailable(): Boolean {
@@ -183,7 +184,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
 
     override fun onResume() {
         super.onResume()
-        MainApplication.sdkHandler?.dcssdkSetDelegate(this)
+//        MainActivity.sdkHandler?.dcssdkSetDelegate(this)
         //Register a dynamic receiver to handle the various RFID Reader Events when the app is in foreground
         //Actions to be handled should be registered here
         val filter: IntentFilter = IntentFilter(Constants.ACTION_SCANNER_CONNECTED)
@@ -234,68 +235,68 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         // Restore preferences
         val settings: BarcodePrefProvider = getScannerPref()
         vibrator = ManagedVibrator(this)
-        MainApplication.MOT_SETTING_OPMODE = settings.getValueInt(
+        MainActivity.MOT_SETTING_OPMODE = settings.getValueInt(
             Constants.PREF_OPMODE,
             DCSSDK_CONN_TYPES.DCSSDK_CONNTYPE_BT_NORMAL.value
         )
 
-        MainApplication.MOT_SETTING_SCANNER_DETECTION =
+        MainActivity.MOT_SETTING_SCANNER_DETECTION =
             settings.getValueBoolean(Constants.PREF_SCANNER_DETECTION, true)
-        MainApplication.MOT_SETTING_EVENT_IMAGE =
+        MainActivity.MOT_SETTING_EVENT_IMAGE =
             settings.getValueBoolean(Constants.PREF_EVENT_IMAGE, true)
-        MainApplication.MOT_SETTING_EVENT_VIDEO =
+        MainActivity.MOT_SETTING_EVENT_VIDEO =
             settings.getValueBoolean(Constants.PREF_EVENT_VIDEO, true)
-        MainApplication.MOT_SETTING_EVENT_BINARY_DATA =
+        MainActivity.MOT_SETTING_EVENT_BINARY_DATA =
             settings.getValueBoolean(Constants.PREF_EVENT_BINARY_DATA, true)
 
-        MainApplication.MOT_SETTING_EVENT_ACTIVE =
+        MainActivity.MOT_SETTING_EVENT_ACTIVE =
             settings.getValueBoolean(Constants.PREF_EVENT_ACTIVE, true)
-        MainApplication.MOT_SETTING_EVENT_AVAILABLE =
+        MainActivity.MOT_SETTING_EVENT_AVAILABLE =
             settings.getValueBoolean(Constants.PREF_EVENT_AVAILABLE, true)
-        MainApplication.MOT_SETTING_EVENT_BARCODE =
+        MainActivity.MOT_SETTING_EVENT_BARCODE =
             settings.getValueBoolean(Constants.PREF_EVENT_BARCODE, true)
 
-        /*MainApplication.MOT_SETTING_NOTIFICATION_AVAILABLE = true
+        /*MainActivity.MOT_SETTING_NOTIFICATION_AVAILABLE = true
             //settings.getValueBoolean(Constants.PREF_NOTIFY_AVAILABLE, false)
-        MainApplication.MOT_SETTING_NOTIFICATION_ACTIVE = true
+        MainActivity.MOT_SETTING_NOTIFICATION_ACTIVE = true
            // settings.getValueBoolean(Constants.PREF_NOTIFY_ACTIVE, false)
-        MainApplication.MOT_SETTING_NOTIFICATION_BARCODE = true
+        MainActivity.MOT_SETTING_NOTIFICATION_BARCODE = true
             //settings.getValueBoolean(Constants.PREF_NOTIFY_BARCODE, false)*/
 
-        MainApplication.MOT_SETTING_NOTIFICATION_IMAGE =
+        MainActivity.MOT_SETTING_NOTIFICATION_IMAGE =
             settings.getValueBoolean(Constants.PREF_NOTIFY_IMAGE, false)
-        MainApplication.MOT_SETTING_NOTIFICATION_VIDEO =
+        MainActivity.MOT_SETTING_NOTIFICATION_VIDEO =
             settings.getValueBoolean(Constants.PREF_NOTIFY_VIDEO, false)
-        MainApplication.MOT_SETTING_NOTIFICATION_BINARY_DATA =
+        MainActivity.MOT_SETTING_NOTIFICATION_BINARY_DATA =
             settings.getValueBoolean(Constants.PREF_NOTIFY_BINARY_DATA, false)
 
 
         var notifications_mask = 0
-        if (MainApplication.MOT_SETTING_EVENT_AVAILABLE) {
+        if (MainActivity.MOT_SETTING_EVENT_AVAILABLE) {
             notifications_mask =
                 notifications_mask or (DCSSDKDefs.DCSSDK_EVENT.DCSSDK_EVENT_SCANNER_APPEARANCE.value or DCSSDKDefs.DCSSDK_EVENT.DCSSDK_EVENT_SCANNER_DISAPPEARANCE.value)
         }
-        if (MainApplication.MOT_SETTING_EVENT_ACTIVE) {
+        if (MainActivity.MOT_SETTING_EVENT_ACTIVE) {
             notifications_mask =
                 notifications_mask or (DCSSDKDefs.DCSSDK_EVENT.DCSSDK_EVENT_SESSION_ESTABLISHMENT.value or DCSSDKDefs.DCSSDK_EVENT.DCSSDK_EVENT_SESSION_TERMINATION.value)
         }
-        if (MainApplication.MOT_SETTING_EVENT_BARCODE) {
+        if (MainActivity.MOT_SETTING_EVENT_BARCODE) {
             notifications_mask =
                 notifications_mask or DCSSDKDefs.DCSSDK_EVENT.DCSSDK_EVENT_BARCODE.value
         }
-        if (MainApplication.MOT_SETTING_EVENT_IMAGE) {
+        if (MainActivity.MOT_SETTING_EVENT_IMAGE) {
             notifications_mask =
                 notifications_mask or DCSSDKDefs.DCSSDK_EVENT.DCSSDK_EVENT_IMAGE.value
         }
-        if (MainApplication.MOT_SETTING_EVENT_VIDEO) {
+        if (MainActivity.MOT_SETTING_EVENT_VIDEO) {
             notifications_mask =
                 notifications_mask or DCSSDKDefs.DCSSDK_EVENT.DCSSDK_EVENT_VIDEO.value
         }
-        if (MainApplication.MOT_SETTING_EVENT_BINARY_DATA) {
+        if (MainActivity.MOT_SETTING_EVENT_BINARY_DATA) {
             notifications_mask =
                 notifications_mask or DCSSDKDefs.DCSSDK_EVENT.DCSSDK_EVENT_BINARY_DATA.value
         }
-        MainApplication.sdkHandler?.dcssdkSubsribeForEvents(notifications_mask)
+//        MainActivity.sdkHandler?.dcssdkSubsribeForEvents(notifications_mask)
     }
 
     override fun showMessageBox(message: String?) {
@@ -314,12 +315,12 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     }
 
     override fun addDevListDelegate(delegate: ScannerAppEngine.IScannerAppEngineDevListDelegate?) {
-        if (MainApplication.mDevListDelegates == null) {
-            MainApplication.mDevListDelegates =
+        if (MainActivity.mDevListDelegates == null) {
+            MainActivity.mDevListDelegates =
                 ArrayList<ScannerAppEngine.IScannerAppEngineDevListDelegate>()
         }
         delegate?.let {
-            MainApplication.mDevListDelegates?.add(it)
+            MainActivity.mDevListDelegates?.add(it)
         }
     }
 
@@ -344,8 +345,8 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     }
 
     override fun removeDevListDelegate(delegate: ScannerAppEngine.IScannerAppEngineDevListDelegate?) {
-        if (MainApplication.mDevListDelegates != null) {
-            MainApplication.mDevListDelegates?.remove(delegate)
+        if (MainActivity.mDevListDelegates != null) {
+            MainActivity.mDevListDelegates?.remove(delegate)
         }
     }
 
@@ -383,13 +384,13 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     }
 
     override fun updateScannersList() {
-        if (MainApplication.sdkHandler != null) {
+       /* if (MainActivity.sdkHandler != null) {
             mScannerInfoList.clear()
             val scannerTreeList = ArrayList<DCSScannerInfo>()
-            MainApplication.sdkHandler?.dcssdkGetAvailableScannersList(scannerTreeList)
-            MainApplication.sdkHandler?.dcssdkGetActiveScannersList(scannerTreeList)
+            MainActivity.sdkHandler?.dcssdkGetAvailableScannersList(scannerTreeList)
+            MainActivity.sdkHandler?.dcssdkGetActiveScannersList(scannerTreeList)
             createFlatScannerList(scannerTreeList)
-        }
+        }*/
     }
 
     private fun createFlatScannerList(scannerTreeList: ArrayList<DCSScannerInfo>) {
@@ -408,106 +409,107 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     }
 
     override fun connect(scannerId: Int): DCSSDK_RESULT {
-        return if (MainApplication.sdkHandler != null) {
+        /*return if (MainActivity.sdkHandler != null) {
             if (curAvailableScanner != null) {
                 resetVirtualTetherHostConfigurations()
                 curAvailableScanner?.let {
-                    MainApplication.sdkHandler?.dcssdkTerminateCommunicationSession(it.scannerId)
+                    MainActivity.sdkHandler?.dcssdkTerminateCommunicationSession(it.scannerId)
                 }
             }
-            MainApplication.sdkHandler?.dcssdkEstablishCommunicationSession(scannerId)
+            MainActivity.sdkHandler?.dcssdkEstablishCommunicationSession(scannerId)
                 ?: DCSSDK_RESULT.DCSSDK_RESULT_FAILURE
         } else {
             DCSSDK_RESULT.DCSSDK_RESULT_FAILURE
-        }
+        }*/
+        return DCSSDK_RESULT.DCSSDK_RESULT_FAILURE
     }
 
     override fun disconnect(scannerId: Int) {
-        if (MainApplication.sdkHandler != null) {
+        /*if (MainActivity.sdkHandler != null) {
             val ret: DCSSDK_RESULT? =
-                MainApplication.sdkHandler?.dcssdkTerminateCommunicationSession(scannerId)
+                MainActivity.sdkHandler?.dcssdkTerminateCommunicationSession(scannerId)
             curAvailableScanner = null
-            MainApplication.intentionallyDisconnected = true
+            MainActivity.intentionallyDisconnected = true
             updateScannersList()
-        }
+        }*/
     }
 
     override fun setAutoReconnectOption(scannerId: Int, enable: Boolean): DCSSDK_RESULT {
         val ret: DCSSDK_RESULT
-        MainApplication.sdkHandler?.let {
+        /*MainActivity.sdkHandler?.let {
             ret = it.dcssdkEnableAutomaticSessionReestablishment(
                 enable,
                 scannerId
             )
             return ret
-        }
+        }*/
         return DCSSDK_RESULT.DCSSDK_RESULT_FAILURE
     }
 
     override fun enableScannersDetection(enable: Boolean) {
-        MainApplication.sdkHandler?.dcssdkEnableAvailableScannersDetection(enable)
+//        MainActivity.sdkHandler?.dcssdkEnableAvailableScannersDetection(enable)
     }
 
     override fun enableBluetoothScannerDiscovery(enable: Boolean) {
-        MainApplication.sdkHandler?.dcssdkEnableBluetoothScannersDiscovery(enable)
+//        MainActivity.sdkHandler?.dcssdkEnableBluetoothScannersDiscovery(enable)
     }
 
     override fun configureNotificationAvailable(enable: Boolean) {
-        if (enable) {
-            MainApplication.sdkHandler?.dcssdkSubsribeForEvents(
-                DCSSDK_EVENT.DCSSDK_EVENT_SCANNER_APPEARANCE.value or
-                        DCSSDK_EVENT.DCSSDK_EVENT_SCANNER_DISAPPEARANCE.value
-            )
-        } else {
-            MainApplication.sdkHandler?.dcssdkUnsubsribeForEvents(
-                DCSSDK_EVENT.DCSSDK_EVENT_SCANNER_APPEARANCE.value or
-                        DCSSDK_EVENT.DCSSDK_EVENT_SCANNER_DISAPPEARANCE.value
-            )
-        }
+//        if (enable) {
+//            MainActivity.sdkHandler?.dcssdkSubsribeForEvents(
+//                DCSSDK_EVENT.DCSSDK_EVENT_SCANNER_APPEARANCE.value or
+//                        DCSSDK_EVENT.DCSSDK_EVENT_SCANNER_DISAPPEARANCE.value
+//            )
+//        } else {
+//            MainActivity.sdkHandler?.dcssdkUnsubsribeForEvents(
+//                DCSSDK_EVENT.DCSSDK_EVENT_SCANNER_APPEARANCE.value or
+//                        DCSSDK_EVENT.DCSSDK_EVENT_SCANNER_DISAPPEARANCE.value
+//            )
+//        }
     }
 
     override fun configureNotificationActive(enable: Boolean) {
-        if (enable) {
-            MainApplication.sdkHandler?.dcssdkSubsribeForEvents(
+        /*if (enable) {
+            MainActivity.sdkHandler?.dcssdkSubsribeForEvents(
                 DCSSDK_EVENT.DCSSDK_EVENT_SESSION_ESTABLISHMENT.value or
                         DCSSDK_EVENT.DCSSDK_EVENT_SESSION_TERMINATION.value
             )
         } else {
-            MainApplication.sdkHandler?.dcssdkUnsubsribeForEvents(
+            MainActivity.sdkHandler?.dcssdkUnsubsribeForEvents(
                 DCSSDK_EVENT.DCSSDK_EVENT_SESSION_ESTABLISHMENT.value or
                         DCSSDK_EVENT.DCSSDK_EVENT_SESSION_TERMINATION.value
             )
-        }
+        }*/
     }
 
     override fun configureNotificationBarcode(enable: Boolean) {
-        if (enable) {
-            MainApplication.sdkHandler?.dcssdkSubsribeForEvents(DCSSDK_EVENT.DCSSDK_EVENT_BARCODE.value)
+       /* if (enable) {
+            MainActivity.sdkHandler?.dcssdkSubsribeForEvents(DCSSDK_EVENT.DCSSDK_EVENT_BARCODE.value)
         } else {
-            MainApplication.sdkHandler?.dcssdkUnsubsribeForEvents(DCSSDK_EVENT.DCSSDK_EVENT_BARCODE.value)
-        }
+            MainActivity.sdkHandler?.dcssdkUnsubsribeForEvents(DCSSDK_EVENT.DCSSDK_EVENT_BARCODE.value)
+        }*/
     }
 
     override fun configureNotificationImage(enable: Boolean) {
-        if (enable) {
-            MainApplication.sdkHandler?.dcssdkSubsribeForEvents(DCSSDK_EVENT.DCSSDK_EVENT_IMAGE.value)
+        /*if (enable) {
+            MainActivity.sdkHandler?.dcssdkSubsribeForEvents(DCSSDK_EVENT.DCSSDK_EVENT_IMAGE.value)
         } else {
-            MainApplication.sdkHandler?.dcssdkUnsubsribeForEvents(DCSSDK_EVENT.DCSSDK_EVENT_IMAGE.value)
-        }
+            MainActivity.sdkHandler?.dcssdkUnsubsribeForEvents(DCSSDK_EVENT.DCSSDK_EVENT_IMAGE.value)
+        }*/
     }
 
     override fun configureNotificationVideo(enable: Boolean) {
-        if (enable) {
-            MainApplication.sdkHandler?.dcssdkSubsribeForEvents(DCSSDK_EVENT.DCSSDK_EVENT_VIDEO.value)
+       /* if (enable) {
+            MainActivity.sdkHandler?.dcssdkSubsribeForEvents(DCSSDK_EVENT.DCSSDK_EVENT_VIDEO.value)
         } else {
-            MainApplication.sdkHandler?.dcssdkUnsubsribeForEvents(DCSSDK_EVENT.DCSSDK_EVENT_VIDEO.value)
-        }
+            MainActivity.sdkHandler?.dcssdkUnsubsribeForEvents(DCSSDK_EVENT.DCSSDK_EVENT_VIDEO.value)
+        }*/
     }
 
     override fun configureOperationalMode(mode: DCSSDKDefs.DCSSDK_MODE?) {
         LogUtil.logE(TAG, "")
         initializeDcsSdk()
-        //MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_BT_LE)
+        //MainActivity.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_BT_LE)
     }
 
     override fun executeCommand(
@@ -517,19 +519,19 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         scannerID: Int
     ): Boolean {
         var outXmlNew = outXML
-        MainApplication.sdkHandler?.let {
+        /*MainActivity.sdkHandler?.let {
             if (outXML == null) {
                 outXmlNew = java.lang.StringBuilder()
             }
             val result: DCSSDK_RESULT? =
-                MainApplication.sdkHandler?.dcssdkExecuteCommandOpCodeInXMLForScanner(
+                MainActivity.sdkHandler?.dcssdkExecuteCommandOpCodeInXMLForScanner(
                     opCode,
                     inXML,
                     outXmlNew,
                     scannerID
                 )
             if (result == DCSSDK_RESULT.DCSSDK_RESULT_SUCCESS) return true else if (result == DCSSDK_RESULT.DCSSDK_RESULT_FAILURE) return false
-        }
+        }*/
         return false
     }
 
@@ -540,19 +542,19 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         scannerID: Int
     ): Boolean {
         var outXmlNew = outXML
-        if (MainApplication.sdkHandler != null) {
+        /*if (MainActivity.sdkHandler != null) {
             if (outXML == null) {
                 outXmlNew = java.lang.StringBuilder()
             }
             val result: DCSSDK_RESULT? =
-                MainApplication.sdkHandler?.dcssdkExecuteSSICommandOpCodeInXMLForScanner(
+                MainActivity.sdkHandler?.dcssdkExecuteSSICommandOpCodeInXMLForScanner(
                     opCode,
                     inXML,
                     outXmlNew,
                     scannerID
                 )
             if (result == DCSSDK_RESULT.DCSSDK_RESULT_SUCCESS) return true else if (result == DCSSDK_RESULT.DCSSDK_RESULT_FAILURE) return false
-        }
+        }*/
         return false
     }
 
@@ -595,7 +597,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
             }
             if (!it) {
                 Toast.makeText(
-                    MainApplication.getInstance(),
+                    MainActivity.getInstance(),
                     "Unable to communicate with scanner",
                     Toast.LENGTH_SHORT
                 ).show()
@@ -639,7 +641,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
             }
             if (!it) {
                 Toast.makeText(
-                    MainApplication.getInstance(),
+                    MainActivity.getInstance(),
                     "Unable to communicate with scanner",
                     Toast.LENGTH_SHORT
                 ).show()
@@ -654,7 +656,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
             scannersList.clear()
             lastConnectedScannerList.clear()
             var enableLastScannerConnection = false
-            /*MainApplication.lastConnectedScanner?.let {
+            /*MainActivity.lastConnectedScanner?.let {
                 if (it.isActive) {
                     val device: DCSScannerInfo = it
                     addToLastConnectedScannerList(
@@ -740,16 +742,16 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                             )
                             intent.putExtra(
                                 Constants.SCANNER_NAME,
-                                MainApplication.currentScannerName
+                                MainActivity.currentScannerName
                             )
                             intent.putExtra(
                                 Constants.SCANNER_ADDRESS,
-                                MainApplication.currentScannerAddress
+                                MainActivity.currentScannerAddress
                             )
-                            intent.putExtra(Constants.SCANNER_ID, MainApplication.currentScannerId)
+                            intent.putExtra(Constants.SCANNER_ID, MainActivity.currentScannerId)
                             intent.putExtra(
                                 Constants.AUTO_RECONNECTION,
-                                MainApplication.currentAutoReconnectionState
+                                MainActivity.currentAutoReconnectionState
                             )
                             intent.putExtra(Constants.CONNECTED, true)
                             intent.putExtra(Constants.SHOW_BARCODE_VIEW, false)
@@ -833,7 +835,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                 Constants.BARCODE_RECEIVED -> {
                     LogUtil.logE(TAG, "Barcode Received")
                     val barcode = msg.obj as Barcode
-                    MainApplication.barcodeData.add(barcode)
+                    MainActivity.barcodeData.add(barcode)
                     mDevEventsDelegates?.let {
                         for (delegate in it) {
                             if (delegate != null) {
@@ -846,7 +848,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                             }
                         }
                     }
-                    if (MainApplication.MOT_SETTING_NOTIFICATION_BARCODE && !notificaton_processed) {
+                    if (MainActivity.MOT_SETTING_NOTIFICATION_BARCODE && !notificaton_processed) {
                         var scannerName = ""
                         if (mScannerInfoList != null) {
                             for (ex_info in mScannerInfoList) {
@@ -856,7 +858,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                                 }
                             }
                         }
-                        if (isInBackgroundMode(MainApplication.getInstance())) {
+                        if (isInBackgroundMode(MainActivity.getInstance())) {
                             val intent = Intent()
                             intent.action = Constants.ACTION_SCANNER_BARCODE_RECEIVED
                             intent.putExtra(
@@ -870,7 +872,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                             sendOrderedBroadcast(intent, null)
                         } else {
                             /*Toast.makeText(
-                                MainApplication.getInstance(),
+                                MainActivity.getInstance(),
                                 "Barcode received from $scannerName", Toast.LENGTH_SHORT
                             ).show()*/
                         }
@@ -905,7 +907,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                     for (dcsScannerInfo in mScannerInfoList) {
                         if (dcsScannerInfo.scannerID == activeScanner.scannerID) {
                             mScannerInfoList.remove(dcsScannerInfo)
-                            MainApplication.barcodeData.clear()
+                            MainActivity.barcodeData.clear()
                             found = true
                             break
                         }
@@ -920,7 +922,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                     mScannerInfoList.add(activeScanner)
 
                     /* notify dev list delegates */
-                    MainApplication.mDevListDelegates?.let {
+                    MainActivity.mDevListDelegates?.let {
                         for (delegate in it) {
                             if (delegate != null) {
                                 result = delegate.scannersListHasBeenUpdated()
@@ -937,7 +939,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                     }
 
                     // Showing notifications in foreground and background mode
-                    if (MainApplication.MOT_SETTING_NOTIFICATION_ACTIVE && !notificaton_processed) {
+                    if (MainActivity.MOT_SETTING_NOTIFICATION_ACTIVE && !notificaton_processed) {
                         val notificationMsg = java.lang.StringBuilder()
                         if (!found) {
                             notificationMsg.append(activeScanner.scannerName)
@@ -946,7 +948,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                             notificationMsg.append(activeScanner.scannerName)
                                 .append(" has connected")
                         }
-                        if (isInBackgroundMode(MainApplication.getInstance()?.applicationContext)) {
+                        if (isInBackgroundMode(MainActivity.getInstance()?.applicationContext)) {
                             val intent = Intent()
                             intent.action = Constants.ACTION_SCANNER_CONNECTED
                             intent.putExtra(
@@ -960,7 +962,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                             sendOrderedBroadcast(intent, null)
                         } else {
                             Toast.makeText(
-                                MainApplication.getInstance(),
+                                MainActivity.getInstance(),
                                 notificationMsg.toString(),
                                 Toast.LENGTH_SHORT
                             ).show()
@@ -999,7 +1001,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                     updateScannersList()
 
                     /* notify dev list delegates */
-                    MainApplication.mDevListDelegates?.let {
+                    MainActivity.mDevListDelegates?.let {
                         for (delegate in it) {
                             if (delegate != null) {
                                 result = delegate.scannersListHasBeenUpdated()
@@ -1019,8 +1021,8 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                         Constants.PREF_VIRTUAL_TETHER_SCANNER_SETTINGS,
                         false
                     )
-                    if (MainApplication.MOT_SETTING_NOTIFICATION_ACTIVE && !notificaton_processed && !virtualTetherEnabled) {
-                        if (isInBackgroundMode(MainApplication.getInstance())) {
+                    if (MainActivity.MOT_SETTING_NOTIFICATION_ACTIVE && !notificaton_processed && !virtualTetherEnabled) {
+                        if (isInBackgroundMode(MainActivity.getInstance())) {
                             val intent = Intent()
                             intent.action = Constants.ACTION_SCANNER_DISCONNECTED
                             intent.putExtra(
@@ -1034,7 +1036,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                             sendOrderedBroadcast(intent, null)
                         } else {
                             Toast.makeText(
-                                MainApplication.getInstance(),
+                                MainActivity.getInstance(),
                                 "$scannerName has disconnected", Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -1072,7 +1074,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                     mScannerInfoList.add(availableScanner)
 
                     /* notify dev list delegates */
-                    MainApplication.mDevListDelegates?.let {
+                    MainActivity.mDevListDelegates?.let {
                         for (delegate in it) {
                             if (delegate != null) {
                                 result = delegate.scannersListHasBeenUpdated()
@@ -1088,8 +1090,8 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                     }
 
                     //Showing notifications in foreground and background mode
-                    if (MainApplication.MOT_SETTING_NOTIFICATION_AVAILABLE && !notificaton_processed && !found) {
-                        if (isInBackgroundMode(MainApplication.getInstance())) {
+                    if (MainActivity.MOT_SETTING_NOTIFICATION_AVAILABLE && !notificaton_processed && !found) {
+                        if (isInBackgroundMode(MainActivity.getInstance())) {
                             val intent = Intent()
                             intent.action = Constants.ACTION_SCANNER_CONNECTED
                             intent.putExtra(
@@ -1103,7 +1105,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                             sendOrderedBroadcast(intent, null)
                         } else {
                             Toast.makeText(
-                                MainApplication.getInstance(),
+                                MainActivity.getInstance(),
                                 availableScanner.scannerName + " has appeared",
                                 Toast.LENGTH_SHORT
                             ).show()
@@ -1157,7 +1159,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                     }
 
                     /* notify dev list delegates */
-                    MainApplication.mDevListDelegates?.let {
+                    MainActivity.mDevListDelegates?.let {
                         for (delegate in it) {
                             if (delegate != null) {
                                 result = delegate.scannersListHasBeenUpdated()
@@ -1178,13 +1180,13 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                         false
                     )
                     //Showing notifications in foreground and background mode
-                    if (MainApplication.MOT_SETTING_NOTIFICATION_AVAILABLE
+                    if (MainActivity.MOT_SETTING_NOTIFICATION_AVAILABLE
                         && !notificaton_processed && !found && !virtualTetherEnable
                     ) {
 
                         val notification_Msg = java.lang.StringBuilder()
                         notification_Msg.append(scannerName).append(" has disappeared")
-                        if (isInBackgroundMode(MainApplication.getInstance())) {
+                        if (isInBackgroundMode(MainActivity.getInstance())) {
                             val intent = Intent()
                             intent.action = Constants.ACTION_SCANNER_CONNECTED
                             intent.putExtra(
@@ -1198,7 +1200,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                             sendOrderedBroadcast(intent, null)
                         } else {
                             Toast.makeText(
-                                MainApplication.getInstance(),
+                                MainActivity.getInstance(),
                                 notification_Msg.toString(),
                                 Toast.LENGTH_SHORT
                             ).show()
@@ -1226,11 +1228,11 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     }
 
     private fun initializeDcsSdk() {
-        MainApplication.sdkHandler?.dcssdkEnableAvailableScannersDetection(true)
-        MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_BT_NORMAL)
-        MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_BT_LE)
-        MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_USB_CDC)
-        MainApplication.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_SNAPI)
+        /*MainActivity.sdkHandler?.dcssdkEnableAvailableScannersDetection(true)
+        MainActivity.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_BT_NORMAL)
+        MainActivity.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_BT_LE)
+        MainActivity.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_USB_CDC)
+        MainActivity.sdkHandler?.dcssdkSetOperationalMode(DCSSDK_MODE.DCSSDK_OPMODE_SNAPI)*/
     }
 
     fun connectToScanner(availableScanner: AvailableScanner?) {
@@ -1259,12 +1261,12 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
                 //scanner is already connected.
                 curAvailableScanner = availableScanner
                 if (curAvailableScanner?.isConnected == true) {
-                    MainApplication.currentScannerName = availableScanner.scannerName.toString()
-                    MainApplication.currentScannerAddress =
+                    MainActivity.currentScannerName = availableScanner.scannerName.toString()
+                    MainActivity.currentScannerAddress =
                         availableScanner.scannerAddress.toString()
-                    MainApplication.currentAutoReconnectionState =
+                    MainActivity.currentAutoReconnectionState =
                         availableScanner.isAutoReconnection
-                    MainApplication.currentScannerId = availableScanner.scannerId
+                    MainActivity.currentScannerId = availableScanner.scannerId
 
                     Toast.makeText(this, "Scanner is connected..", Toast.LENGTH_SHORT).show()
                 }
@@ -1456,17 +1458,17 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     //save scanner data
     fun saveScanner(availableScanner: AvailableScanner?, connect: Boolean) {
         if (connect) {
-            MainApplication.isAnyScannerConnected = true
-            MainApplication.currentConnectedScanner = availableScanner
+            MainActivity.isAnyScannerConnected = true
+            MainActivity.currentConnectedScanner = availableScanner
             getScannerPref().saveScannerData(availableScanner)
-            MainApplication.lastConnectedScanner = availableScanner
-            MainApplication.currentConnectedScannerID =
-                availableScanner?.scannerId ?: MainApplication.SCANNER_ID_NONE
+            MainActivity.lastConnectedScanner = availableScanner
+            MainActivity.currentConnectedScannerID =
+                availableScanner?.scannerId ?: MainActivity.SCANNER_ID_NONE
         } else {
-            MainApplication.lastConnectedScanner = MainApplication.currentConnectedScanner
-            MainApplication.currentConnectedScanner = null
-            MainApplication.currentConnectedScannerID = MainApplication.SCANNER_ID_NONE
-            MainApplication.isAnyScannerConnected = false
+            MainActivity.lastConnectedScanner = MainActivity.currentConnectedScanner
+            MainActivity.currentConnectedScanner = null
+            MainActivity.currentConnectedScannerID = MainActivity.SCANNER_ID_NONE
+            MainActivity.isAnyScannerConnected = false
         }
     }
 

@@ -31,9 +31,9 @@
 
 
                 <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="@dimen/_100sdp"
-                    android:layout_height="@dimen/_50sdp"
-                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_width="@dimen/_90sdp"
+                    android:layout_height="@dimen/_45sdp"
+                    android:layout_marginTop="@dimen/_8sdp"
                     android:src="@mipmap/ic_launcher" />
 
                 <androidx.appcompat.widget.AppCompatTextView

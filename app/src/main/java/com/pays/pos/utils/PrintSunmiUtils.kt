@@ -9,6 +9,7 @@ import com.pays.pos.data.remote.Constants.LARGE
 import com.pays.pos.data.remote.Constants.MEDIUM
 import com.pays.pos.data.remote.Constants.SMALL
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
+import com.pays.pos.utils.landi.LPrint
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 
 
@@ -469,6 +470,18 @@ class PrintSunmiUtils {
             }
         }
 
+        fun customerDetailsInnerLandi(isKitchenReceipt: Boolean = false, lprint: LPrint) {
+
+            lprint.printBoldLeft("Customer Details")
+            lprint.lineBreak()
+            if (!isKitchenReceipt) {
+                lprint.printDashedLineAndBreak()
+            } else {
+                lprint.printDashedLineAndBreak()
+            }
+
+        }
+
         fun customerName(value: String) {
 
             SunmiPrinterApi.getInstance().setAlignMode(0)
@@ -920,6 +933,78 @@ class PrintSunmiUtils {
                                 if (font == Constants.LARGE) 23 else 48
                             ).toString()
                             PrintSunmiUtils.normalText(strCardNumber)
+                        }
+                    }
+                }
+            }
+        }
+
+        fun cardDetailsInnerLandi(cardName: String, cardType: String, cardNumber: String, font: String, lprint: LPrint) {
+
+//            for (i in 1..3) {
+//
+//                when (i) {
+//                    1 -> {
+//                        val strCardType = padLine(
+//                            "",
+//                            cardType,
+//                            if (font == Constants.LARGE) 23 else 48
+//                        ).toString()
+//                        normalTextTest(strCardType)
+//                    }
+//                    2 -> {
+//                        val strCardName = padLine(
+//                            "",
+//                            cardName,
+//                            if (font == Constants.LARGE) 23 else 48
+//                        ).toString()
+//                        normalTextTest(strCardName)
+//                    }
+//                    3 -> {
+//                        val strCardNumber = padLine(
+//                            "",
+//                            cardNumber,
+//                            if (font == Constants.LARGE) 23 else 48
+//                        ).toString()
+//                        normalTextTest(strCardNumber)
+//                    }
+//                }
+//            }
+            for (i in 1..3) {
+
+                when (i) {
+                    /*1 -> {
+                        if (!cardName.isNullOrBlank()) {
+                            val strCardName = padLine(
+                                "",
+                                cardName,
+                                if (font == Constants.LARGE) 23 else 48
+                            ).toString()
+                            normalText(strCardName)
+
+                        }
+                    }*/
+
+                    2 -> {
+                        if (!cardType.isNullOrBlank()) {
+                            val strCardType = padLine(
+                                "",
+                                cardType,
+                                if (font == Constants.LARGE) 23 else 48
+                            ).toString()
+                            lprint.printLeft(strCardType)
+                        }
+
+                    }
+
+                    3 -> {
+                        if (!cardNumber.isNullOrBlank()) {
+                            val strCardNumber = padLine(
+                                "",
+                                cardNumber,
+                                if (font == Constants.LARGE) 23 else 48
+                            ).toString()
+                            lprint.printLeft(strCardNumber)
                         }
                     }
                 }

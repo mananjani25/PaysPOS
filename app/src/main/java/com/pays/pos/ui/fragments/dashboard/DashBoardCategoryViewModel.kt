@@ -279,10 +279,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     var boldPosNeedToRefresh = false
 
     /* Below 4 variables are used as backup variables to solve the BIS-3973, when the cart's last item is deleted the the metadata is also getting removed, these variables will keep the metadata with them. */
-    /* public var backupOrderId:Int? = null
+     public var backupOrderId:Int? = null
      public var backupPaymentId:Int? = null
      public var backupPaymentOfflineId: String? = ""
-     public var backupOrderOfflineId: String? = ""*/
+     public var backupOrderOfflineId: String? = ""
 
     /**
      * BIS - 3500 issue resolved
@@ -427,6 +427,9 @@ class DashBoardCategoryViewModel @Inject constructor(
     val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+
+    val _removeLastItem = MutableLiveData<Event<Boolean>>()
+    val removeLastItem : LiveData<Event<Boolean>> = _removeLastItem
 
     val updateCartFooter = MutableLiveData<Event<Boolean>>()
 
@@ -7741,6 +7744,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 if (it.settingData.data.taxes.isNotEmpty()) {
                                     taxServiceChargeRepository.addAllTaxDatabase(it.settingData.data.taxes)
                                 }
+//                                tipDiscountRepository.deleteDiscountsFromDb()
 //                                posRepository.deleteNotesFromDb()
                                 posRepository.addAllNotesDatabase(it.settingData.data.notes)
 //                                tipDiscountRepository.deleteDiscountsFromDb()
@@ -7823,13 +7827,64 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     }
                                 }
 
+                                try {
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept)
+                                    }
+
+                                } catch (e: Exception) {
+
+                                }
 //                                posRepository.deleteTeamRoleFromDb()
 //                                posRepository.addTeamRoleFromDb(it.data.teamRoles)
 //                                posRepository.deleteAllEmployee()
                                 posRepository.employeeListAddAllFromSeeting(it.settingData.data.employee)
 //                                rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
 //                                posRepository.deleteOrderTypeFromDb()
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    var orderTypesList :kotlin.collections.ArrayList<TbOrderType> = posRepository.getAllOrderTypes() as ArrayList<TbOrderType>
+                                    if (orderTypesList.size>=it.settingData.data.orderTypes.size){
+                                        var removedIDs= arrayListOf<Int>()
+                                        orderTypesList.removeAll(it.settingData.data.orderTypes)
+                                        orderTypesList.forEach {
+                                            launch {
+                                                posRepository.deleteOrderTypesById(it.id)
+                                            }
+                                        }
+                                    }
+
+                                }
+
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    it.settingData.data.dynamicPaymentRecords.forEach {
+                                        if (it.deleted_at==null){
+                                            launch {
+                                                insertDynamicPayment(it)
+                                            }
+                                        }else{
+                                            launch {
+                                                posRepository.deleteDynamicPaymentByName(it.name+"", it.createdAt+"")
+                                            }
+                                        }
+                                    }
+//                                    var dynamicPaymentList :kotlin.collections.ArrayList<TbDynamicPaymentRecords> = posRepository.getAllDynamicPayments() as ArrayList<TbDynamicPaymentRecords>
+                                   /* if (dynamicPaymentList.size>=it.settingData.data.dynamicPaymentRecords.size){
+                                        var removedIDs= arrayListOf<Int>()
+                                        dynamicPaymentList.removeAll(it.settingData.data.dynamicPaymentRecords)
+                                        dynamicPaymentList.forEach {
+                                            launch {
+                                                posRepository.deleteDynamicPaymentById(it.id)
+                                            }
+                                        }
+                                    }*/
+                                }
+
                                 posRepository.addOrderType(it.settingData.data.orderTypes)
+
+                               /* CoroutineScope(Dispatchers.IO).launch {
+                                    insertDynamicPayment(it.settingData.data.dynamicPaymentRecords)
+                                }
+*/
                                 posRepository.addAllCountryList(it.settingData.data.phoneCountrylist)
                                 posRepository.addTimeZones(it.settingData.data.time_zone_options)
                                 posRepository.addBusinessDetails(TbBusinessDetails().apply {

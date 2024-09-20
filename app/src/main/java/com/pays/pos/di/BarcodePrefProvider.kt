@@ -7,10 +7,12 @@ import com.pays.pos.R
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.utils.scanner.helpers.AvailableScanner
 import com.google.gson.Gson
+import com.pays.pos.ui.activities.MainActivity
 import com.zebra.scannercontrol.DCSScannerInfo
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
+/*ALL THE SCAN GUN VARIABLES ARE COMMENTED AND MOVED TO MAINACTIVITY(for solving permission issue), PLEASE UNCOMMENT IT AND REMOVE THE VARIABLES FROM MAINACTIVITY*/
 
 @Singleton
 class BarcodePrefProvider @Inject constructor(@ApplicationContext context: Context) {
@@ -119,11 +121,11 @@ class BarcodePrefProvider @Inject constructor(@ApplicationContext context: Conte
     }
 
     fun saveScannerId(scannerId: Int?) {
-        setValueInt(Constants.PREF_CURRENT_SCANNER_ID, scannerId?:MainApplication.SCANNER_ID_NONE)
+        setValueInt(Constants.PREF_CURRENT_SCANNER_ID, scannerId?:MainActivity.SCANNER_ID_NONE)
     }
 
     fun getScannerId(): Int {
-        return getValueInt(Constants.PREF_CURRENT_SCANNER_ID, MainApplication.SCANNER_ID_NONE)
+        return getValueInt(Constants.PREF_CURRENT_SCANNER_ID, MainActivity.SCANNER_ID_NONE)
     }
 
     fun saveScannerData(availableScanner: AvailableScanner?) {

@@ -4,6 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
+    <!--  Dont replace this file with 720dp file as this layout will be used by LANDI CUSTOMER DISPLAY -->
+
+
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -13,11 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingStart="@dimen/_6sdp"
-            android:paddingTop="@dimen/_4sdp"
-            android:paddingEnd="@dimen/_6sdp"
-            android:paddingBottom="@dimen/_4sdp"
-            android:weightSum="3">
+            android:padding="@dimen/_5sdp">
 
 
             <LinearLayout
@@ -31,7 +30,7 @@
                     style="@style/CustomFontSemiBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/txtColor"
+                    android:textColor="@color/white"
                     android:textSize="@dimen/_6mdpi"
                     tools:text="Item Name" />
 
@@ -62,7 +61,7 @@
                 android:layout_weight="0.5"
                 android:gravity="center"
                 android:text="Qty"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi" />
 
             <TextView
@@ -74,7 +73,7 @@
                 android:layout_weight="0.5"
                 android:gravity="end"
                 android:text="Each"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi" />
 
             <LinearLayout
@@ -91,8 +90,8 @@
                     android:layout_gravity="end"
                     android:gravity="end"
                     android:text="Total"
-                    android:visibility="visible"
-                    android:textColor="@color/txtColor"
+                    android:visibility="gone"
+                    android:textColor="@color/white"
                     android:textSize="@dimen/_6mdpi" />
 
                 <TextView
@@ -104,21 +103,21 @@
                     android:layout_gravity="end"
                     android:gravity="end"
                     android:text="Cash"
-                    android:visibility="gone"
-                    android:textColor="@color/txtColor"
+                    android:visibility="visible"
+                    android:textColor="@color/white"
                     android:textSize="@dimen/_6mdpi" />
 
                 <TextView
                     android:id="@+id/txtCardAmount"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:gravity="end"
                     android:text="Card"
-                    android:textColor="@color/txtColor"
+                    android:textColor="@color/white"
                     android:textSize="@dimen/_6mdpi" />
 
 
@@ -131,21 +130,72 @@
             android:id="@+id/rvModifiers"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/view_cart_modifier" />
-        <TextView
-            android:id="@+id/tvDiscountRate"
-            style="@style/CustomFontSemiBold"
+        <!--        <TextView-->
+        <!--            android:id="@+id/tvDiscountRate"-->
+        <!--            style="@style/CustomFontSemiBold"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_gravity="end"-->
+        <!--            android:gravity="end"-->
+        <!--            android:paddingEnd="@dimen/_6sdp"-->
+        <!--            android:paddingBottom="@dimen/_5sdp"-->
+        <!--            android:textColor="@color/btnColor"-->
+        <!--            android:textSize="@dimen/_6mdpi"-->
+        <!--            android:visibility="visible"-->
+        <!--            tools:text="@string/_0_00" />-->
+        <LinearLayout
+            android:id="@+id/lnrDiscountRates"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
+            android:weightSum="6"
             android:gravity="end"
-            android:paddingEnd="@dimen/_6sdp"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_5sdp"
             android:paddingBottom="@dimen/_5sdp"
-            android:textColor="@color/btnColor"
-            android:textSize="@dimen/_6mdpi"
-            android:visibility="visible"
-            tools:text="@string/_0_00" />
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvDiscountRate"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:gravity="end"
+                android:textColor="@color/btnColor"
+                android:textSize="@dimen/_6mdpi"
+                android:visibility="gone"
+                tools:text="@string/_0_00" />
+
+            <TextView
+                android:id="@+id/tvCashDiscountRate"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:gravity="end"
+                android:textColor="@color/btnColor"
+                android:textSize="@dimen/_6mdpi"
+                android:visibility="gone"
+                tools:text="@string/_0_00" />
+
+            <TextView
+                android:id="@+id/tvCardDiscountRate"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:gravity="end"
+                android:textColor="@color/btnColor"
+                android:textSize="@dimen/_6mdpi"
+                android:visibility="gone"
+                tools:text="@string/_0_00" />
+
+
+        </LinearLayout>
     </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

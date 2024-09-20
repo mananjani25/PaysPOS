@@ -1924,13 +1924,14 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 item.guestIndexForDineIn = null
 
                 if(viewModel.currentCartItems.size == 1) {
+                    viewModel._removeLastItem.value= Event(true)
 
                     /*Storing the data into backup variables, these data will be used to solve BIS-3973*/
 //                    ---------------------------------------
-                 /*   viewModel.backupOrderId = paymentViewModel.orderId
+                    viewModel.backupOrderId = paymentViewModel.orderId
                     viewModel.backupPaymentId = paymentViewModel.paymentId
                     viewModel.backupOrderOfflineId = paymentViewModel.orderOfflineId
-                    viewModel.backupPaymentOfflineId = paymentViewModel.paymentOfflineId*/
+                    viewModel.backupPaymentOfflineId = paymentViewModel.paymentOfflineId
 //                    ----------------------------------------
 
                     viewModel.currentCartItems.clear()

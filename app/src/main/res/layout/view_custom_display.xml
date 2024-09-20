@@ -4,19 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundColor">
+    android:background="@color/backgroundColor"
+    >
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <!--  Dont replace this file with 720dp file as this layout will be used by LANDI CUSTOMER DISPLAY -->
+
+
+    <LinearLayout
         android:id="@+id/mainCartLayout"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:background="@color/backgroundColor"
-        android:visibility="gone">
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:id="@+id/topLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
             android:background="@color/color13"
             android:orientation="horizontal"
             android:paddingHorizontal="10dp"
@@ -29,7 +37,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ellipsize="end"
-                android:maxLength="40"
                 android:paddingVertical="@dimen/_5sdp"
                 android:singleLine="true"
                 android:textColor="@color/btnColorDark"
@@ -37,49 +44,56 @@
                 android:textStyle="bold"
                 tools:text="Customer Name" />
 
-            <TextView
-                android:id="@+id/tvLoyaltyBalance"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:paddingVertical="@dimen/_5sdp"
-                android:singleLine="true"
-                android:textColor="@color/btnColorDark"
-                android:textSize="@dimen/_6mdpi"
-                android:textStyle="bold"
-                tools:text="@string/applied_loyalty_balance" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/tvLoyaltyPoints"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:paddingVertical="@dimen/_5sdp"
-                android:singleLine="true"
-                android:textColor="@color/btnColorDark"
-                android:textSize="@dimen/_6mdpi"
-                android:textStyle="bold"
-                tools:text="@string/applied_loyalty_points" />
+                <TextView
+                    android:id="@+id/tvLoyaltyBalance"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_8sdp"
+                    android:ellipsize="end"
+                    android:gravity="end"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:singleLine="true"
+                    android:textColor="@color/btnColorDark"
+                    android:textSize="@dimen/_6mdpi"
+                    android:textStyle="bold"
+                    tools:text="@string/applied_loyalty_balance" />
 
-            <TextView
-                android:id="@+id/txtLoyaltyPointsLabel"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:gravity="end"
-                android:maxLength="40"
-                android:paddingVertical="@dimen/_5sdp"
-                android:singleLine="true"
-                android:textColor="@color/btnColorDark"
-                android:textSize="@dimen/_6mdpi"
-                android:textStyle="bold"
-                tools:text="Loyalty Points: 1000" />
+                <TextView
+                    android:id="@+id/tvLoyaltyPoints"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_8sdp"
+                    android:ellipsize="end"
+                    android:gravity="end"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:singleLine="true"
+                    android:textColor="@color/btnColorDark"
+                    android:textSize="@dimen/_6mdpi"
+                    android:textStyle="bold"
+                    tools:text="@string/applied_loyalty_points" />
+
+                <TextView
+                    android:id="@+id/txtLoyaltyPointsLabel"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_8sdp"
+                    android:ellipsize="end"
+                    android:gravity="end"
+                    android:maxLength="40"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:singleLine="true"
+                    android:textColor="@color/btnColorDark"
+                    android:textSize="@dimen/_6mdpi"
+                    android:textStyle="bold"
+                    tools:text="Loyalty Points: 1000" />
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -90,6 +104,7 @@
             android:background="@color/backgroundColor"
             android:orientation="horizontal"
             android:padding="@dimen/_5sdp"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/topLayout">
 
             <TextView
@@ -131,10 +146,10 @@
                 android:layout_gravity="end"
                 android:layout_weight="1"
                 android:gravity="end"
-                android:visibility="visible"
                 android:text="Total"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_6mdpi"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/txtCashLabel"
@@ -144,10 +159,10 @@
                 android:layout_gravity="end"
                 android:layout_weight="0.5"
                 android:gravity="end"
-                android:visibility="gone"
                 android:text="Cash"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_6mdpi"
+                android:visibility="visible" />
 
             <TextView
                 android:id="@+id/txtCardLabel"
@@ -156,11 +171,66 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:layout_weight="0.5"
-                android:visibility="gone"
                 android:gravity="end"
                 android:text="Card"
                 android:textColor="@color/white"
+                android:textSize="@dimen/_6mdpi"
+                android:visibility="visible" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/rowHeaderLayoutDineIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/backgroundColor"
+            android:orientation="horizontal"
+            android:padding="@dimen/_5sdp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/topLayout">
+
+            <TextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:text="Item Name"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi" />
+
+            <TextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_weight="0.5"
+                android:gravity="center"
+                android:text="Qty"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6mdpi" />
+
+            <TextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="Each"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6mdpi" />
+
+            <TextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_weight="0.7"
+                android:gravity="end"
+                android:text="Total"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6mdpi" />
+
 
         </LinearLayout>
 
@@ -176,13 +246,390 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="@dimen/_5sdp"
+            android:layout_weight="1"
             android:nestedScrollingEnabled="true"
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@id/linearBottom"
+            app:layout_constraintBottom_toTopOf="@id/linearBottomNew"
             app:layout_constraintTop_toBottomOf="@id/dividerView"
             tools:itemCount="5"
             tools:listitem="@layout/view_item_cart_customer_display" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearBottomNew"
+            android:layout_width="match_parent"
+            android:layout_height="170dp"
+            android:background="#1d1d1f"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/_5sdp"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <LinearLayout
+                android:id="@+id/lnrLayoutSubTotal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_5sdp"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="@string/payment_subtotal"
+                    android:textColor="@color/dark_gray"
+                    android:textSize="@dimen/_6mdpi"
+                    tools:ignore="RelativeOverlap" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtSubTotalCash"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_weight="0.5"
+                    android:gravity="end"
+                    android:text="@string/_0_00"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtSubTotalCard"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_weight="0.5"
+                    android:gravity="end"
+                    android:text="@string/_0_00"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_medium" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lnrLayoutTax"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_5sdp"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="@string/tv_tax"
+                    android:textColor="@color/dark_gray"
+                    android:textSize="@dimen/_6mdpi"
+                    tools:ignore="RelativeOverlap" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtTaxCash"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_weight="0.5"
+                    android:gravity="end"
+                    android:text="@string/_0_00"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtTaxCard"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_weight="0.5"
+                    android:gravity="end"
+                    android:text="@string/_0_00"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_medium" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lnrLayoutServiceCharge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_5sdp"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="@string/service_charge"
+                    android:textColor="@color/dark_gray"
+                    android:textSize="@dimen/_6mdpi"
+                    tools:ignore="RelativeOverlap" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtServiceChargeCash"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_weight="0.5"
+                    android:gravity="end"
+                    android:text="@string/_0_00"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtServiceChargeCard"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_weight="0.5"
+                    android:gravity="end"
+                    android:text="@string/_0_00"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_medium" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lnrLayoutDiscount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_5sdp"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="@string/tv_discount"
+                    android:textColor="@color/dark_gray"
+                    android:textSize="@dimen/_6mdpi"
+                    tools:ignore="RelativeOverlap" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtDiscountCash"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_weight="0.5"
+                    android:gravity="end"
+                    android:text="@string/_0_00"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtDiscountCard"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_weight="0.5"
+                    android:gravity="end"
+                    android:text="@string/_0_00"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_medium" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lnrLayoutTip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_5sdp"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtTipLabel"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="@string/tv_tips"
+                    android:textColor="@color/dark_gray"
+                    android:textSize="@dimen/_6mdpi"
+                    tools:ignore="RelativeOverlap" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtTipCash"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_weight="0.5"
+                    android:gravity="end"
+                    android:text="@string/_0_00"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_medium" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtTipCard"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_weight="0.5"
+                    android:gravity="end"
+                    android:text="@string/_0_00"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_medium" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lnrLayoutCashDiscountSurcharge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_5sdp"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtCashDiscountSurchargeLabel"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="@string/cash_discount"
+                    android:textColor="@color/dark_gray"
+                    android:textSize="@dimen/_6mdpi"
+                    tools:ignore="RelativeOverlap" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtCashDiscountSurchargeCash"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_weight="0.5"
+                    android:gravity="end"
+                    android:text="@string/_0_00"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_medium"
+                    android:visibility="invisible" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtCashDiscountSurchargeCard"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_weight="0.5"
+                    android:gravity="end"
+                    android:text="@string/_0_00"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_medium" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lnrLayoutTotal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:background="@color/btnColor"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/_5sdp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="@string/order_total"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_8mdpi"
+                    android:textStyle="bold"
+                    tools:ignore="RelativeOverlap" />
+
+                <LinearLayout
+                    android:id="@+id/lnrLayoutCashTotal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:gravity="end"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:text="@string/cash"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/text_size_medium" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtTotalCash"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:text="@string/_0_00"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/text_size_medium" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lnrLayoutCardTotal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:gravity="end"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtTotalCardLabel"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:text="@string/card"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/text_size_medium" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtTotalCard"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:text="@string/_0_00"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/text_size_medium" />
+                </LinearLayout>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtOrderTotal"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_3sdp"
+                    android:layout_weight="2"
+                    android:gravity="end"
+                    android:text="$0.00"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_8mdpi"
+                    android:textStyle="bold"
+                    tools:ignore="RelativeOverlap" />
+
+
+            </LinearLayout>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearBottom"
@@ -190,6 +637,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/_5sdp"
             android:background="#1d1d1f"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent">
 
             <LinearLayout
@@ -693,23 +1141,28 @@
             </LinearLayout>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/splashLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#1D1D1F"
-        android:visibility="visible">
+        android:visibility="gone">
+
+
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="190dp"
-            android:layout_height="100dp"
-            android:src="@drawable/snacklogo_new"
+            android:layout_width="290dp"
+            android:layout_height="200dp"
+            android:background="@color/white"
+            android:padding="12dp"
+            android:src="@drawable/pays_logo_transparent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
 
         <TextView
             android:id="@+id/current_time"
@@ -806,9 +1259,9 @@
             style="@style/CustomFontMediumStyle"
             android:layout_width="@dimen/_45sdp"
             android:layout_height="@dimen/_45sdp"
+            app:layout_constraintBottom_toTopOf="@id/txtErrorMessage"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/txtErrorMessage"
             app:srcCompat="@drawable/ic_info" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -823,9 +1276,9 @@
             android:textColor="@color/white"
             android:textSize="@dimen/_10mdpi"
             android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -840,8 +1293,8 @@
             android:text="TRY AGAIN"
             android:textColor="@color/white"
             android:textSize="@dimen/_7mdpi"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/txtErrorMessage" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -851,7 +1304,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#1D1D1F"
-        android:paddingHorizontal="@dimen/_50sdp"
+        android:paddingHorizontal="@dimen/_5sdp"
         android:visibility="gone">
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -859,12 +1312,12 @@
             style="@style/CustomFontMediumStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_5sdp"
             android:gravity="center"
             android:padding="@dimen/_5sdp"
             android:text="Add Tip"
             android:textColor="@color/white"
-            android:textSize="@dimen/_12ssp"
+            android:textSize="@dimen/_14ssp"
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -872,8 +1325,7 @@
             android:id="@+id/signLinearLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="@dimen/_5sdp"
-            android:layout_marginBottom="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_2sdp"
             android:gravity="center_vertical"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -892,13 +1344,13 @@
             <LinearLayout
                 android:id="@+id/otherNoTipLayout"
                 android:layout_width="match_parent"
-                android:layout_marginHorizontal="5dp"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/otherRootLayout"
                     android:layout_width="0dp"
-                    android:layout_height="@dimen/_20sdp"
+                    android:layout_height="@dimen/_65sdp"
                     android:layout_marginVertical="@dimen/_2sdp"
                     android:layout_marginEnd="@dimen/_5sdp"
                     android:layout_weight="1"
@@ -911,7 +1363,7 @@
                         android:gravity="center"
                         android:text="Other"
                         android:textColor="@color/btnColor"
-                        android:textSize="@dimen/_7ssp"
+                        android:textSize="@dimen/_14ssp"
                         android:textStyle="bold"
                         android:visibility="visible"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -922,7 +1374,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/noTipRootLayout"
                     android:layout_width="0dp"
-                    android:layout_height="@dimen/_20sdp"
+                    android:layout_height="@dimen/_65sdp"
                     android:layout_marginVertical="@dimen/_2sdp"
                     android:layout_weight="1"
                     android:background="#363636">
@@ -934,7 +1386,7 @@
                         android:gravity="center"
                         android:text="No Tip"
                         android:textColor="@color/btnColor"
-                        android:textSize="@dimen/_7ssp"
+                        android:textSize="@dimen/_14ssp"
                         android:textStyle="bold"
                         android:visibility="visible"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -951,7 +1403,7 @@
                 android:layout_margin="5dp"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:layout_weight="1"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@id/rvActiveTipsList">
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -976,8 +1428,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end|top"
-                    android:layout_marginVertical="@dimen/_5sdp"
                     android:layout_marginHorizontal="@dimen/_10sdp"
+                    android:layout_marginVertical="@dimen/_5sdp"
                     android:gravity="center_vertical"
                     android:visibility="gone">
 
@@ -1010,14 +1462,14 @@
                 android:layout_marginHorizontal="5dp"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="@color/btnColorDark"
+                android:enabled="false"
                 android:gravity="center"
                 android:paddingHorizontal="@dimen/_5sdp"
+                android:paddingVertical="@dimen/_5sdp"
                 android:text="CONFIRM"
-                android:enabled="false"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi"
                 android:visibility="gone"
-                android:paddingVertical="@dimen/_5sdp"
                 app:layout_constraintTop_toBottomOf="@id/signRootLayout" />
         </LinearLayout>
 
@@ -1028,7 +1480,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#1D1D1F"
-        android:paddingHorizontal="@dimen/_60sdp"
+        android:paddingHorizontal="@dimen/_30sdp"
         android:visibility="gone">
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -1048,9 +1500,9 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/amountLayout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_22sdp"
+            android:layout_height="@dimen/_25sdp"
             android:layout_gravity="center_vertical"
-            android:layout_marginTop="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_5sdp"
             android:background="@drawable/bg_rect_border_light_grey"
             android:padding="@dimen/_5sdp"
             app:layout_constraintTop_toBottomOf="@id/wouldYouLikeToAddTipOtherLabel">
@@ -1067,7 +1519,7 @@
                 android:maxLength="11"
                 android:text="$0.00"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_8sdp"
+                android:textSize="@dimen/_10sdp"
                 tools:ignore="MissingConstraints,TouchTargetSizeCheck"
                 tools:layout_editor_absoluteX="14dp"
                 tools:layout_editor_absoluteY="14dp" />
@@ -1086,14 +1538,14 @@
             android:id="@+id/txtContinue"
             style="@style/CustomFontBold"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_20sdp"
+            android:layout_height="@dimen/_25sdp"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/_5sdp"
             android:background="@color/btnColor"
             android:gravity="center"
             android:text="Continue"
             android:textColor="@color/white"
-            android:textSize="@dimen/_7mdpi"
+            android:textSize="@dimen/_10mdpi"
             app:layout_constraintTop_toBottomOf="@id/incKeypad" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -1110,21 +1562,21 @@
             android:layout_width="@dimen/_10sdp"
             android:layout_height="@dimen/_10sdp"
             android:layout_gravity="center"
-            android:indeterminateTint="@color/purple_500"
-            android:layout_marginStart="@dimen/_10sdp" />
+            android:layout_marginStart="@dimen/_10sdp"
+            android:indeterminateTint="@color/purple_500" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            style="@style/CustomFontSemiBold"
             android:id="@+id/txtMessage"
+            style="@style/CustomFontSemiBold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:paddingStart="@dimen/_10sdp"
-            android:textColor="@color/white"
             android:paddingTop="@dimen/_5sdp"
             android:paddingEnd="@dimen/_30sdp"
             android:paddingBottom="@dimen/_5sdp"
             android:text="@string/loading"
+            android:textColor="@color/white"
             android:textSize="@dimen/_7mdpi" />
 
     </LinearLayout>

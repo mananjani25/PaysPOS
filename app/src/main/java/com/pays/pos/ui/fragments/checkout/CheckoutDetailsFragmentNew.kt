@@ -74,6 +74,7 @@ import com.pays.pos.ui.fragments.magtekPro.MTParser
 import com.pays.pos.ui.fragments.magtekPro.SessionManager
 import com.pays.pos.ui.fragments.payment.PaymentBoldPosFragment
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
+import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
 import com.pays.pos.utils.*
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
@@ -592,6 +593,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             custom_paymentAmount = amount
             binding.tvCustomAmount.text = "Custom (" + binding.tvCustomAmount.text.toString() + ")"
             cashPaymentWithVariation()
+
+            SunmiPrintHelper.getInstance().openCashBox()
         }
 
 
@@ -779,6 +782,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     prefProvider.employeeId()
                 )
             }
+
+
         }
 
 
@@ -2434,6 +2439,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 disconnectSyncChannel()
                 restrictTvCashClicks()
 
+                SunmiPrintHelper.getInstance().openCashBox()
                 custom_paymentAmount = 0.0
 
                 paymentviewModel.totalPayAmount(
@@ -2450,6 +2456,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
                 disconnectSyncChannel()
                 restrictTvCashClicks()
+                SunmiPrintHelper.getInstance().openCashBox()
 
                 custom_paymentAmount =
                     binding.tvCash1.text.toString().replace("$", "").trim().toDouble()
@@ -2461,6 +2468,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
                 disconnectSyncChannel()
                 restrictTvCashClicks()
+                SunmiPrintHelper.getInstance().openCashBox()
 
                 custom_paymentAmount =
                     binding.tvCash2.text.toString().replace("$", "").trim().toDouble()
@@ -2473,6 +2481,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
                 disconnectSyncChannel()
                 restrictTvCashClicks()
+                SunmiPrintHelper.getInstance().openCashBox()
 
                 custom_paymentAmount =
                     binding.tvCash3.text.toString().replace("$", "").trim().toDouble()

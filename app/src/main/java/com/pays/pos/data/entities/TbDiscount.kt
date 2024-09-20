@@ -31,5 +31,7 @@ data class TbDiscount(
     var isActive: Boolean = false,
     var isChecked: Boolean = true,
     @SerializedName("is_deleted")
-    var isDeleted: Boolean = false
+    var isDeleted: Boolean = false,
+    @SerializedName("sort")
+    val sort: Int=0,
 ) : Parcelable
