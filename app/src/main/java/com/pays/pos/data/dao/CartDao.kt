@@ -163,4 +163,7 @@ interface CartDao {
     @Query("UPDATE TbCartItem SET itemQuantity=:itemQuantity WHERE cartItemId =:id")
     suspend fun updateItemQuantity(id: Int,itemQuantity:Int)
 
+    @Update
+    suspend fun updateItemDestroy(item:TbCartItem)
+
 }

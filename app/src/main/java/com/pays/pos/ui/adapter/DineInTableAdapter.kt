@@ -327,10 +327,10 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 /**
                  * This will only show item prices without any taxes and services charges
                  */
-                finalAmt =
+                val amountToShow =
                     guestSubTotal + list[0].guestDividedAmt
 
-                binding.txtPay.text = "Pay : " + MethodUtils.roundOffAmount(finalAmt)
+                binding.txtPay.text = "Pay : " + MethodUtils.roundOffAmount(amountToShow)
             }
 
             binding.btnPay.setOnClickListener {
@@ -574,7 +574,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             if (model.item?.modifiers?.isNotEmpty() == true) {
                 binding.rvModifiers.visibility = View.VISIBLE
-                val adapter = DineInModifiersAdapter()
+                val adapter = DineInModifiersAdapter(model.item?.itemQuantity ?:1)
                 binding.rvModifiers.adapter = adapter
                 model.item?.modifiers?.let { adapter.addAll(it) }
             } else {

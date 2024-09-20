@@ -6,13 +6,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.pays.pos.data.entities.Modifier
 import com.pays.pos.databinding.ViewDineInTableModifiersBinding
 
-class DineInModifiersAdapter : RecyclerView.Adapter<DineInModifiersAdapter.MyViewHolder>() {
+class DineInModifiersAdapter(val mainItemQuantity:Int) : RecyclerView.Adapter<DineInModifiersAdapter.MyViewHolder>() {
     var list = ArrayList<Modifier>()
 
     inner class MyViewHolder(private val binding: ViewDineInTableModifiersBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Modifier) {
             binding.model = item
+            binding.mainItemQuantity = mainItemQuantity
             binding.executePendingBindings()
             if (item.modifier_quantity > 1) {
                 if (item.modifier_quantity>9){

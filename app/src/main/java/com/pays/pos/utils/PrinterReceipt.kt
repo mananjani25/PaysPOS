@@ -21,6 +21,8 @@ import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
 import com.pays.pos.data.model.responseModel.*
 import com.pays.pos.utils.landi.LPrint
+import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
+import com.starmicronics.stario10.starxpandcommand.printer.Alignment
 import com.pays.pos.utils.landi.LPrint.FONT_SIZE_3X
 import com.pays.pos.utils.landi.LPrint.FONT_SIZE_5X
 import com.pays.pos.utils.landi.LPrint.lineBreak

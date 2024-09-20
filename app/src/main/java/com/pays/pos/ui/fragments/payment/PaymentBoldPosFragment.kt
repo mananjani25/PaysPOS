@@ -371,15 +371,15 @@ class PaymentBoldPosFragment : Fragment() {
                 prefProvider.setValueboolean(Constants.BACK_FROM_PAYMENT, true)
 
             } else {
-                if (prefProvider.getValueboolean(IS_FROM_ALL_ORDER, false)) {
-                    findNavController().navigate(R.id.action_paymentBoldPosFragment_to_allOrdersFragment)
-                } else {
+//                if (prefProvider.getValueboolean(IS_FROM_ALL_ORDER, false)) {
+//                    findNavController().navigate(R.id.action_paymentBoldPosFragment_to_allOrdersFragment)
+//                } else {
                     if (prefProvider.getValue(REDIRECT_FROM, "") == MANUAL_SALE) {
                         viewModel.cartModel = null
                         viewModel.manualCartOrderNote=""
                     }
                     findNavController().popBackStack()
-                }
+         //       }
             }
 
         }

@@ -9,6 +9,10 @@
         <variable
             name="model"
             type="com.pays.pos.data.entities.Modifier" />
+
+        <variable
+            name="mainItemQuantity"
+            type="Integer" />
     </data>
 
     <LinearLayout
@@ -141,7 +145,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:text="@{@string/symbole +``+String.format(@string/format,(model.price * model.itemQuantity))}"
+                        android:text="@{@string/symbole +``+String.format(@string/format,(model.price * model.modifier_quantity * mainItemQuantity))}"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi"
                         tools:text="$20.00" />

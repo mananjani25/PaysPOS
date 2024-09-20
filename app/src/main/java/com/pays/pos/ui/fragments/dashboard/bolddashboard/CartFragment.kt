@@ -828,7 +828,14 @@ class CartFragment(
 //                    it.taxes = arrayListOf()
 //                    Log.d(TAG, "testDineInUpdate dineInItemsList: " + viewModel.currentCartItems)
 //                }
-                viewModel.updateDineInCart(viewModel.currentCartItems, null, ADD, false, dineInList)
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    viewModel.currentCartItems.forEach {
+                        viewModel.addItemToCartItems(it)
+                    }
+                }
+
+              //  viewModel.updateDineInCart(viewModel.currentCartItems, null, ADD, false, dineInList)
 
 
             }
@@ -1207,6 +1214,7 @@ class CartFragment(
                         }
                     }
                 }
+
 
                 viewModel.getAllDineInCartItems(
                     "DineIn"
@@ -1623,7 +1631,8 @@ class CartFragment(
 
                         } else {
                             Log.e("Cart Blank Tracked", "Cart Going BLANK ->>>>>>")
-
+                          //  getDineInCartList()
+                            if(itemCount > 0)
                             viewModel.setCurrentCartItems(viewModel.duplicateCurrentCartItem )
 
                         }
@@ -1635,6 +1644,8 @@ class CartFragment(
                     prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT),
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                 ).asLiveData().observe(viewLifecycleOwner) { it ->
+
+                    val itemCount = it.size
                     Log.d("BRUNO", "addObserver: CALLED")
                     Log.d("19OCT", "addObserver: CCI 1 = ${Gson().toJson(it)}")
 
@@ -2043,9 +2054,16 @@ class CartFragment(
                         } else {
                             Log.e("Cart Blank Tracked", "Cart Going BLANK ->>>>>>")
 
+                           // if(itemCount > 0)
                             viewModel.setCurrentCartItems(viewModel.duplicateCurrentCartItem )
 
                         }
+                    } else {
+
+                        /**
+                         *  currentDineInItems keeps track of all dine in Items even if they are destroyed
+                         */
+                        viewModel.currentDineInItems = kotlin.collections.ArrayList(it.filter { it.orderType == DINE_IN })
                     }
                 }
             }
@@ -2835,7 +2853,7 @@ class CartFragment(
 
             if (viewModel.restrictedAmount(binding.txtTotal)) {
 
-                it.isEnabled = false
+
                 binding.relPreoceedToFire.gone()
 
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
@@ -2889,13 +2907,17 @@ class CartFragment(
 
 
 
-                                val request = viewModel.updateOrder(cartModelsList[0])
+                            val request = viewModel.updateOrder(cartModelsList[0])
 
 
                             /***
                              * Added this delay to resolve items getting added two times after moving items
                              */
                                 Handler().postDelayed({
+
+                                    request.order.guestsAttributes.forEach {
+                                        it.guestItemsAttributes.forEach { it.Destroy = true }
+                                    }
 
                                     if (cartModelsList[0].orderId != 0) {
                                         cartModelsList[0].orderId?.let {

@@ -1,6 +1,7 @@
 package com.pays.pos.ui.fragments.dashboard.bolddashboard
 
 import android.os.Bundle
+import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -1339,16 +1340,16 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                         it.itemQuantity + qty
                                      }
 
+
                                 val itemOldModifiers = viewModel.cartItemModifiersBeforeUpdate
 
                                 if(itemOldModifiers!=null && itemOldModifiers.isNotEmpty()) {
-                                    if (!it.isFired) {
-                                        modifiers = item.modifiers
+                                    modifiers = if (!it.isFired) {
+                                        item.modifiers
                                     } else {
-                                        modifiers = itemOldModifiers
+                                        itemOldModifiers
 
-
-//                                            runOnUiThread {
+//                                             runOnUiThread {
 //                                                AlertUtils.showCustomAlert(
 //                                                    requireContext(),
 //                                                    "Can't update item modifiers! Item is already fired to the kitchen !"
@@ -1356,6 +1357,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 //                                            }
                                     }
                                     viewModel.cartItemModifiersBeforeUpdate = null
+                                }else if(it.isFired) {
+                                    modifiers = it.modifiers
                                 }
 
                                 if(prefProvider.getValueboolean(DINE_IN_UPDATE, false) && it.isFired) {
@@ -1439,6 +1442,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             runBlocking {
                                 item.itemQuantity = dineInItemQunatity
 
+                                if(modifiers.isEmpty())
+                                    modifiers = item.modifiers
 
                                 viewModel.updateDineInCartItemsByIdGuestIndex(
                                     dineInItemQunatity,
@@ -1457,7 +1462,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                         )
                                     }
                                 }
-                                viewModel.updateCartModel(viewModel.cartModel!!)
+                                try {
+                                    viewModel.updateCartModel(viewModel.cartModel!!)
+                                }catch (e:Exception){}
 
                             }
                         }
@@ -1519,7 +1526,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                 }
                             }
 
-                            viewModel.updateCartModel(viewModel.cartModel!!)
+                            try {
+                                viewModel.updateCartModel(viewModel.cartModel!!)
+                            }catch (e:Exception){
+                                Log.e("NULL POINTER EXCEPTION",e.toString())
+                            }
 
 //                            viewModel.updateCart(
 //                                viewModel.currentCartItems,
@@ -1611,7 +1622,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                     )
                                 }
                             }
-                            viewModel.updateCartModel(viewModel.cartModel!!)
+                            try {
+                                viewModel.updateCartModel(viewModel.cartModel!!)
+                            }catch (e:Exception){}
                         }
                     } else {
                         item.guestIndexForDineIn = null
@@ -1876,19 +1889,36 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     Log.d(TAG, "dineintest item: " + Gson().toJson(item))
                     Log.d(TAG, "dineintest dineInList: " + it1)
 
+//                    if(viewModel.currentCartItems.size == 1) {
+//
+//                        cartModelsList[0].dineInList = arrayListOf()
+//
+//                    }
+
 
                     CoroutineScope(Dispatchers.IO).launch {
-                        if(viewModel.currentCartItems.size == 1) {
-                            viewModel.duplicateCurrentCartItem.clear()
-                            viewModel.currentCartItems.clear()
+                     //   viewModel.deleteCartItem(item.cartItemId)
 
-                            //viewModel.lastItemRemoveFromCart.postValue(Pair(true,item.cartItemId))
-                        }
 
-                        viewModel.deleteCartItem(item.cartItemId)
+
+
+//                        if(viewModel.currentCartItems.size == 1) {
+//
+//                            viewModel.duplicateCurrentCartItem.remove(item)
+//                            viewModel.currentCartItems.remove(item)
+//
+//                            viewModel.setCurrentCartItems(arrayListOf())
+//                            viewModel.deleteCartItem(item.cartItemId)
+//
+//                            //viewModel.lastItemRemoveFromCart.postValue(Pair(true,item.cartItemId))
+//                        }
+
+
+
+
                     }
 
-                   // viewModel.updateDineInCart(viewModel.currentCartItems, item, DELETE, false, it1)
+                    viewModel.updateDineInCart(viewModel.currentCartItems, item, DELETE, false, it1)
                 }
             } else {
                 item.guestIndexForDineIn = null

@@ -46,7 +46,7 @@ class DineInTableItemAdapter : RecyclerView.Adapter<DineInTableItemAdapter.MyVie
 
             if (item.modifiers.isNotEmpty()) {
                 binding.rvModifiers.visibility = View.VISIBLE
-                val adapter = DineInModifiersAdapter()
+                val adapter = DineInModifiersAdapter(item.itemQuantity )
                 binding.rvModifiers.adapter = adapter
                 adapter.addAll(item.modifiers)
             } else {
