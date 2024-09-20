@@ -574,7 +574,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             if (model.item?.modifiers?.isNotEmpty() == true) {
                 binding.rvModifiers.visibility = View.VISIBLE
-                val adapter = DineInModifiersAdapter()
+                val adapter = DineInModifiersAdapter(model.item?.itemQuantity ?:1)
                 binding.rvModifiers.adapter = adapter
                 model.item?.modifiers?.let { adapter.addAll(it) }
             } else {

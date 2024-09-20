@@ -828,7 +828,14 @@ class CartFragment(
 //                    it.taxes = arrayListOf()
 //                    Log.d(TAG, "testDineInUpdate dineInItemsList: " + viewModel.currentCartItems)
 //                }
-                viewModel.updateDineInCart(viewModel.currentCartItems, null, ADD, false, dineInList)
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    viewModel.currentCartItems.forEach {
+                        viewModel.addItemToCartItems(it)
+                    }
+                }
+
+              //  viewModel.updateDineInCart(viewModel.currentCartItems, null, ADD, false, dineInList)
 
 
             }
@@ -1624,7 +1631,7 @@ class CartFragment(
 
                         } else {
                             Log.e("Cart Blank Tracked", "Cart Going BLANK ->>>>>>")
-
+                          //  getDineInCartList()
                             if(itemCount > 0)
                             viewModel.setCurrentCartItems(viewModel.duplicateCurrentCartItem )
 
@@ -2047,7 +2054,7 @@ class CartFragment(
                         } else {
                             Log.e("Cart Blank Tracked", "Cart Going BLANK ->>>>>>")
 
-                            if(itemCount > 0)
+                           // if(itemCount > 0)
                             viewModel.setCurrentCartItems(viewModel.duplicateCurrentCartItem )
 
                         }
@@ -2056,7 +2063,7 @@ class CartFragment(
                         /**
                          *  currentDineInItems keeps track of all dine in Items even if they are destroyed
                          */
-                        viewModel.currentDineInItems = kotlin.collections.ArrayList(it)
+                        viewModel.currentDineInItems = kotlin.collections.ArrayList(it.filter { it.orderType == DINE_IN })
                     }
                 }
             }

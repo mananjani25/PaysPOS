@@ -6768,7 +6768,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-    fun updateOrder(cartModel: CartModel): OrderRequestModel {
+    fun updateOrder(cartModel: CartModel,isFromDineInTable:Boolean = false): OrderRequestModel {
 
         Log.e(TAG, "totalDiscountDineIn  ${totalDiscount}")
         val orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
@@ -6814,7 +6814,10 @@ class DashBoardCategoryViewModel @Inject constructor(
             /**
              *  currentDineInItems keeps track of all dine in Items even if they are destroyed
              */
-            orderItemsAttributes = dineInOrderItemAttributed(cartModel, currentDineInItems)
+            orderItemsAttributes = if(isFromDineInTable)
+                dineInOrderItemAttributed(cartModel, currentCartItems)
+            else
+                dineInOrderItemAttributed(cartModel, currentDineInItems)
             // orderItemsAttributes = dineInOrderItemAttributed(cartModel, currentCartItems)
             offlineId = null
             deletedGuestItems = cartModel.listOfItemRemoved.toCollection(arrayListOf())

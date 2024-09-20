@@ -2863,7 +2863,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 totalSubTotal += (it.quantity * it.price) - it.discountAmount
                                                 if (it.orderItemModifiers.isNotEmpty()) {
                                                     it.orderItemModifiers.forEach { mod ->
-                                                        totalSubTotal += mod.price * mod.quantity * mod.modifier_quantity!!
+                                                        totalSubTotal += mod.price * it.quantity * mod.modifier_quantity!!
 
                                                     }
                                                 }
@@ -2953,7 +2953,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                             subTotalWT += (oi.quantity * oi.price) - oi.discountAmount
                                             if (oi.orderItemModifiers.isNotEmpty()) {
                                                 oi.orderItemModifiers.forEach { mod ->
-                                                    subTotalWT += mod.price * mod.quantity * mod.modifier_quantity!!
+                                                    subTotalWT += mod.price * oi.quantity * mod.modifier_quantity!!
 
                                                 }
                                             }
@@ -2968,7 +2968,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                     (oi.price * oi.quantity)
 
                                                 oi.orderItemModifiers.forEach { mod ->
-                                                    modifierPrice += (mod.price * mod.quantity) * mod.modifier_quantity!!
+                                                    modifierPrice += (mod.price * oi.quantity) * mod.modifier_quantity!!
                                                 }
 
                                                 val totalPrice =
@@ -3740,7 +3740,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         dashboardViewModel.totalDiscount = getOrderDetailsResponse?.totalDiscount ?: 0.0
         dashboardViewModel.subTotalPrice = getOrderDetailsResponse?.subTotal ?: 0.0
         // END RESET
-        val orderRequestModel = dashboardViewModel.updateOrder(cartList!!)
+        val orderRequestModel = dashboardViewModel.updateOrder(cartList!!,true)
         orderId?.let {
             viewModel.updateOrder(
                 it,
@@ -4194,7 +4194,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             guestSubTotal += (it.price * it.itemQuantity) - it.discountPrice
 
             it.modifiers.forEach { mod ->
-                guestSubTotal += (mod.price * mod.itemQuantity) * mod.modifier_quantity!!
+                guestSubTotal += (mod.price * it.itemQuantity) * mod.modifier_quantity!!
             }
 
 
@@ -5468,7 +5468,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             guestSubTotal += (it.price * it.itemQuantity) - it.discountPrice
 
             it.modifiers.forEach { mod ->
-                guestSubTotal += (mod.price * mod.itemQuantity) * mod.modifier_quantity!!
+                guestSubTotal += (mod.price * it.itemQuantity) * mod.modifier_quantity!!
             }
 
 
@@ -6095,7 +6095,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                     guestSubTotal += (it.price * it.itemQuantity) - it.discountPrice
 
                                     it.modifiers.forEach { mod ->
-                                        guestSubTotal += (mod.price * mod.itemQuantity) * mod.modifier_quantity!!
+                                        guestSubTotal += (mod.price * it.itemQuantity) * mod.modifier_quantity!!
                                     }
 
 
@@ -6678,7 +6678,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             guestSubTotal += (it.price * it.itemQuantity) - it.discountPrice
 
             it.modifiers.forEach { mod ->
-                guestSubTotal += (mod.price * mod.itemQuantity) * mod.modifier_quantity!!
+                guestSubTotal += (mod.price * it.itemQuantity) * mod.modifier_quantity!!
             }
 
 
