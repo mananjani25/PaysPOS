@@ -172,8 +172,8 @@ class CustomDisplay(
             object : Observer<Double> {
                 override fun onChanged(t: Double?) {
                     lifecycleOwner.lifecycleScope.launch {
-                        binding.txtDiscountCard?.text = "-${String.format("%.2f", t)}"
-                        binding.txtDiscountCash?.text = "-${String.format("%.2f", t)}"
+                        binding.txtDiscountCard?.text = "-$${String.format("%.2f", t)}"
+                        binding.txtDiscountCash?.text = "-$${String.format("%.2f", t)}"
                     }
                 }
 
