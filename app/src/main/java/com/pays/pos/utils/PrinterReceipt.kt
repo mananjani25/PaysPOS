@@ -3112,6 +3112,44 @@ fun addOrdersForKitchenOnlineOrderSunmiInnerKiosk(
     }
 }
 
+fun addOrdersForKitchenOnlineOrderLandiInnerKiosk(
+    list: ArrayList<KioskOrderResponse.Data.OrderItems>,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null,
+    lprint: LPrint
+) {
+
+    for (i in 0 until list.size) {
+        printerCat?.forEach {
+            if (it.id == list[i].categoryId && it.printerEnable && it.categoryActive) {
+                val obj = list.get(i)
+                lprint.printLeft(obj.quantity.toString() + " " + obj.itemName?.uppercase(), FONT_SIZE_5X, false)
+                lineBreak()
+
+                if (obj.orderItemModifiers.isNotEmpty()) {
+                    for (j in 0 until obj.orderItemModifiers.size) {
+                        val modifierObj = obj.orderItemModifiers.get(j)
+//                         Modifiers are not coming from server, Once Urmit send's it, then we will uncomment the below code
+                        lprint.printLeft(
+                            "  " + if (modifierObj.modifierQuantity == 1) {
+                                "   "
+                            } else {
+                                "" + modifierObj.modifierQuantity + "x "
+                            } + modifierObj.name?.uppercase(),
+                            FONT_SIZE_5X,
+                            false
+                        )
+                        lineBreak()
+                    }
+                }
+                if (obj.note?.isNotEmpty() ?: false) {
+                    lprint.printLeft("  Note:" + obj.note, FONT_SIZE_5X, false)
+                    lineBreak()
+                }
+            }
+        }
+    }
+}
+
 
 
 fun addOrdersForKitchenOnlineOrderSunmiInnerKioskNew(
