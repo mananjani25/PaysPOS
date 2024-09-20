@@ -1312,7 +1312,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         attachFileLogger()
         prefProvider!!.setValue(Constants.DELIVERY_TYPE, "")
 
-
         if (!checkServiceRunning(
                 applicationContext,
                 KioskService::class.java
