@@ -247,7 +247,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                         }else {
                             val index = list.indexOf(KITCHEN)
                             binding.spnPrinterCat.setSelection(index)
-                            AlertUtils.showCustomAlert(requireContext(),"This printer is not compatible with Customer receipts.")
+                            AlertUtils.showCustomAlert(requireContext(),getString(R.string.incompatible_printer))
                         }
                     }
                     KITCHENANDCUSTOMER -> {
@@ -295,7 +295,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                     }else {
                         val index = list.indexOf(KITCHEN)
                         binding.spnPrinterCat.setSelection(index)
-                        AlertUtils.showCustomAlert(requireContext(),"This printer is not compatible with Customer receipts.")
+                        AlertUtils.showCustomAlert(requireContext(),getString(R.string.incompatible_printer))
                     }
                 }}
                 LogUtil.logE(TAG, "oderTypes:  ${Gson().toJson(oderTypes)}")
