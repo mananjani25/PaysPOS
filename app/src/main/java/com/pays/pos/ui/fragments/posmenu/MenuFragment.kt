@@ -186,7 +186,7 @@ class MenuFragment : DialogFragment() {
                     dashBoardCategoryViewModel.cartModel = null
                     dashBoardCategoryViewModel.manualCartOrderNote=""
                     viewModel.destroyedList = arrayListOf()
-                    // To refrain from disconnecting PAX after logout
+                    // To refrain from disconnecting PAX after
                     val paxConnectionStatus = prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)
 
                     viewModel.clearTable()

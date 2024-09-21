@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.epson.epsonio.DevType
+import com.epson.epsonio.DeviceInfo
 import com.google.gson.Gson
 import com.pays.pos.data.db.AppDatabase
 import com.pays.pos.data.model.PrinterListModel
@@ -14,6 +16,10 @@ import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.pays.pos.data.model.responseModel.DeletePrinterResponseModel
 import com.pays.pos.data.model.responseModel.PrinterResponse
 import com.pays.pos.data.remote.Constants
+import com.pays.pos.data.remote.Constants.BLUETOOTH
+import com.pays.pos.data.remote.Constants.CUSTOMER
+import com.pays.pos.data.remote.Constants.KITCHEN
+import com.pays.pos.data.remote.Constants.WIFI
 import com.pays.pos.data.repositories.PosRepository
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.logger.MessageEvent
@@ -58,6 +64,10 @@ class PrinterViewModel @Inject constructor(
 
     private var _update = MutableLiveData<Event<String>>()
     val updatePrinter: LiveData<Event<String>> = _update
+
+    private var _localUpdatePrinter = MutableLiveData<Event<PrinterListModel>>()
+    val localUpdatePrinter:LiveData<Event<PrinterListModel>> = _localUpdatePrinter
+
 
     val orderTypes = posRepository.getORderTypesListDatabase()
 
@@ -157,7 +167,7 @@ class PrinterViewModel @Inject constructor(
 
     }
 
-    fun updatePrinter(id: Int, model: CreatePrinterRequestModel) {
+    fun updatePrinter(id: Int, model: CreatePrinterRequestModel,printerListModel: PrinterListModel) {
         _showProgress.value = Event(true)
         viewModelScope.launch {
 
@@ -165,10 +175,74 @@ class PrinterViewModel @Inject constructor(
                 posRepository.updatePrinter(id, model)
             when (resource.status) {
                 Status.SUCCESS -> {
-                    syncSettingModule()
+                    //syncSettingModule()
                     _showProgress.value = Event(false)
-                    _update.value = Event(resource.data?.message!!)
 
+                   // _localUpdatePrinter.value = Event(printerListModel)
+                    if (printerListModel.currentPrinterType == KITCHEN){
+
+                        var kitchenPrinter = PrinterResponse.Data.KitchenReceiptPrinters(
+                            id = printerListModel.id ?: 0,
+                            name = printerListModel.printerName?:"",
+                            modalName = printerListModel?.modelName ?:"",
+                            printer_type = printerListModel.connectionType,
+                            status = printerListModel.isActive,
+                            receiptPrintType = printerListModel.type,
+                            isCashDrawerOpen = true,
+                            locationId = prefProvider.getLocationId(),
+                            createdAt = "",
+                            updatedAt = "",
+                            ipAddress = printerListModel.deviceModel?.ipAddress,
+                            unpaidReceiptAutoPrinting =true,
+                            isReportPrintEnable = true,
+                            isAutomaticTwoCustomerReceipt = false,
+                            printerCategories = printerListModel.printerCategories?: arrayListOf(),
+                            terminalIds = listOf(),
+                            unpaidReceiptAutoPrintTerminalIds = "",
+                            orderTypes = printerListModel.printerModel?: arrayListOf(),
+                            isDeleted = false,
+                            macAddress = printerListModel.deviceModel?.macAddress?:""
+
+
+
+                        )
+
+
+
+                        appDataBase.printerDao().updateKitchenPrinter(kitchenPrinter)
+                    }
+                    else{
+
+                        var customerPrinter = PrinterResponse.Data.CustomerReceiptPrinters(
+                            id = printerListModel.id ?: 0,
+                            name = printerListModel.printerName?:"",
+                            modalName = printerListModel?.modelName ?:"",
+                            printer_type = printerListModel.connectionType,
+                            status = printerListModel.isActive,
+                            receiptPrintType = printerListModel.type,
+                            isCashDrawerOpen = true,
+                            locationId = prefProvider.getLocationId(),
+                            createdAt = "",
+                            updatedAt = "",
+                            ipAddress = printerListModel.deviceModel?.ipAddress,
+                            unpaidReceiptAutoPrinting =true,
+                            isReportPrintEnable = true,
+                            isAutomaticTwoCustomerReceipt = false,
+                            printerCategories = printerListModel.printerCategories?: arrayListOf(),
+                            terminalIds = listOf(),
+                            unpaidReceiptAutoPrintTerminalIds = "",
+                            orderTypes = printerListModel.printerModel?: arrayListOf(),
+                            isDeleted = false,
+                            macAddress = printerListModel.deviceModel?.macAddress?:""
+
+
+
+                        )
+
+                        appDataBase.printerDao().updateCustomerPrinter(customerPrinter)
+                    }
+
+                    _update.value = Event(resource.data?.message!!)
 
                 }
                 Status.ERROR -> {

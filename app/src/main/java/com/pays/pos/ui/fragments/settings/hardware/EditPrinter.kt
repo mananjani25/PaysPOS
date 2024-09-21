@@ -410,7 +410,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                 model.ip_address = printerModel?.deviceModel?.ipAddress
 
                 viewModel.updatePrinter(
-                    printerModel?.id!!, model
+                    printerModel?.id!!, model, printerModel!!
                 )
 
 
@@ -429,7 +429,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                 model.ip_address = printerModel?.deviceModel?.ipAddress
 
                 viewModel.updatePrinter(
-                    printerModel?.id!!, model
+                    printerModel?.id!!, model, printerModel!!
                 )
             }
 
@@ -469,6 +469,22 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                 }
 
             }
+        })
+
+        viewModel.localUpdatePrinter.observe(requireActivity(),{
+            it.getContentIfNotHandled()?.let { data ->
+
+                if (data.currentPrinterType == KITCHEN){
+
+                }
+                else {
+
+
+                }
+
+
+            }
+
         })
     }
 
