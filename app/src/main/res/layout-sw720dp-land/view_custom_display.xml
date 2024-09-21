@@ -1150,7 +1150,7 @@
             android:layout_height="200dp"
             android:background="@color/white"
             android:padding="12dp"
-            android:src="@mipmap/ic_launcher"
+            android:src="@drawable/pays_logo_transparent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

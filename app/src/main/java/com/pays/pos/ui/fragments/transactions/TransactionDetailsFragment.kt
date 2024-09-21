@@ -6992,10 +6992,10 @@ class TransactionDetailsFragment : Fragment() {
                                             )
 
                                             printLeft(tipsToPrint)
-                                            lineBreak()
+
                                         }
                                     }
-
+                                    lineBreak()
                                     /**
                                      * Print transaction details
                                      */

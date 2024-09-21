@@ -3416,8 +3416,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 }
 
 
-                runBlocking {
+//                runBlocking {
 
+                CoroutineScope(Dispatchers.IO).launch {
                     dashboardViewModel.apply {
 
                         syncInventoryModule(true, isMigrationOn = true)
@@ -3435,8 +3436,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
                         allOrderCounts("", "")
                     }
-                    // allInventoryItems.removeObserver {  }
                 }
+                    // allInventoryItems.removeObserver {  }
+//                }
 
 
             }
