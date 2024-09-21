@@ -653,13 +653,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             when (it.status) {
 
                 Status.SUCCESS -> {
-                    LogUtil.logE(TAG, "SyncPrinterList")
+
                     ProgressUtils.dismissProgressDialog()
 
                     val data = it.data
 
-
-                    LogUtil.logE(TAG, "PrinterREsponseData:  ${Gson().toJson(data)}")
 
                     if (it.data != null) {
 

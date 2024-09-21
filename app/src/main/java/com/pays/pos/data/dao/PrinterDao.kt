@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.pays.pos.data.model.responseModel.PrinterResponse
 
 @Dao
@@ -48,6 +49,12 @@ interface PrinterDao {
 
     @Query("select * from TbKitchenPrint")
     suspend fun getKitchenPrinterForPrinting() : List<PrinterResponse.Data.KitchenReceiptPrinters>
+
+    @Update
+    suspend fun updateKitchenPrinter(kitchenPrinter:PrinterResponse.Data.KitchenReceiptPrinters)
+
+    @Update
+    suspend fun updateCustomerPrinter(customerPrinter:PrinterResponse.Data.CustomerReceiptPrinters)
 
 
 
