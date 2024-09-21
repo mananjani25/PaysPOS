@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.content.ComponentName
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Build
@@ -2183,60 +2184,72 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 var list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> =
                     arrayListOf()
                 LogUtil.logE(TAG, "getOrderTypeList: ${Gson().toJson(orderTypeList)}")
-                when (data) {
-                    KITCHEN -> {
-                        ifKitchenPrinterSelected(list, printerListModel, layoutPosition)
-                    }
+                printerListModel.printerName?.let {
+                    if (((it.contains("TSP",ignoreCase = true)) || (it.contains("SP",ignoreCase = true))) && (data?.contains(CUSTOMER, ignoreCase = true)?:true)) {
+                        AlertUtils.showCustomAlertWithListenerWithOK(requireContext(),getString(R.string.incompatible_printer), object: DialogInterface.OnClickListener{
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                p0?.dismiss()
+                            }
 
-                    CUSTOMER -> {
-                        ifCustomerPrinterSelected(list, printerListModel, layoutPosition)
+                        })
+                    }else{
+                        when (data) {
+                            KITCHEN -> {
+                                ifKitchenPrinterSelected(list, printerListModel, layoutPosition)
+                            }
 
-                    }
+                            CUSTOMER -> {
+                                ifCustomerPrinterSelected(list, printerListModel, layoutPosition)
 
-                    KITCHENANDCUSTOMER -> {
-                        for (i in 0 until orderTypeList.size) {
-                            list.add(
-                                CreatePrinterRequestModel.PrinterSettingsAttributes(
-                                    printType = CUSTOMER,
-                                    orderTypeId = orderTypeList.get(i).id
+                            }
+
+                            KITCHENANDCUSTOMER -> {
+                                for (i in 0 until orderTypeList.size) {
+                                    list.add(
+                                        CreatePrinterRequestModel.PrinterSettingsAttributes(
+                                            printType = CUSTOMER,
+                                            orderTypeId = orderTypeList.get(i).id
+                                        )
+                                    )
+                                    list.add(
+                                        CreatePrinterRequestModel.PrinterSettingsAttributes(
+                                            printType = KITCHEN,
+                                            orderTypeId = orderTypeList.get(i).id
+                                        )
+                                    )
+                                }
+
+                                //ip address for bg printer
+                                //if (printerListModel.connectionType == WIFI) "TCP:" + printerListModel.deviceModel?.ipAddress else "BT:" + printerListModel.deviceModel?.ipAddress,
+
+                                val createBothPrinter = CreatePrinterRequestModel(
+                                    name = printerListModel.printerName,
+                                    terminalId = prefProvider.getValueInt(TERMINAL_ID, 0),
+                                    macAddress = printerListModel.deviceModel?.macAddress,
+                                    modalName = printerListModel.printerName,
+                                    terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
+                                    status = true,
+                                    locationId = prefProvider.getValueInt(LOCATION_ID, 1),
+                                    receiptPrintType = KITCHENANDCUSTOMER,
+                                    printer_type = printerListModel.connectionType,
+                                    ip_address = printerListModel.deviceModel?.ipAddress,
+                                    printerSettingsAttributes = list
                                 )
-                            )
-                            list.add(
-                                CreatePrinterRequestModel.PrinterSettingsAttributes(
-                                    printType = KITCHEN,
-                                    orderTypeId = orderTypeList.get(i).id
-                                )
-                            )
+
+                                viewModel.createPrinter(createBothPrinter, showLoader = false)
+                                availableNetworkAdapter.removeItemAt(layoutPosition)
+
+                                /* Handler(Looper.getMainLooper()).postDelayed({
+                                 syncPrinterList()
+                             },1000)*/
+
+
+                            }
+
                         }
-
-                        //ip address for bg printer
-                        //if (printerListModel.connectionType == WIFI) "TCP:" + printerListModel.deviceModel?.ipAddress else "BT:" + printerListModel.deviceModel?.ipAddress,
-
-                        val createBothPrinter = CreatePrinterRequestModel(
-                            name = printerListModel.printerName,
-                            terminalId = prefProvider.getValueInt(TERMINAL_ID, 0),
-                            macAddress = printerListModel.deviceModel?.macAddress,
-                            modalName = printerListModel.printerName,
-                            terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
-                            status = true,
-                            locationId = prefProvider.getValueInt(LOCATION_ID, 1),
-                            receiptPrintType = KITCHENANDCUSTOMER,
-                            printer_type = printerListModel.connectionType,
-                            ip_address = printerListModel.deviceModel?.ipAddress,
-                            printerSettingsAttributes = list
-                        )
-
-                        viewModel.createPrinter(createBothPrinter, showLoader = false)
-                        availableNetworkAdapter.removeItemAt(layoutPosition)
-
-                        /* Handler(Looper.getMainLooper()).postDelayed({
-                             syncPrinterList()
-                         },1000)*/
-
-
                     }
-
                 }
+
 
             }
             findNavController().navigate(R.id.action_printer_to_printerTypeSelection)
