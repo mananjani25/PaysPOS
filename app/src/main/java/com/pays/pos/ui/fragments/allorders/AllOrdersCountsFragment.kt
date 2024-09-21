@@ -49,7 +49,7 @@ import java.util.Calendar
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
+class AllOrdersCountsFragment : Fragment() {
 
     private var ORDER_TAB_TYPE_ID: String = ""
     private lateinit var ordertypelist: java.util.ArrayList<TbOrderType>
@@ -61,6 +61,7 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
     var startDate: String? = null
     var endDate: String? = null
     private var mPos: Int = 0
+    private var tabPosition: Int = 0
     private val viewModel by viewModels<AllOrdersViewModel>()
     private val ordersViewModel by activityViewModels<AllOrdersViewModel>()
     private var ongoingOrderCount: Int? = 0
@@ -77,8 +78,22 @@ class AllOrdersCountsFragment(val tabPosition: Int) : Fragment() {
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
 
+    companion object {
+        fun newInstance(tabPos: Int): AllOrdersCountsFragment {
+            val fragment = AllOrdersCountsFragment()
+            val args = Bundle()
+            args.putInt("tabPos", tabPos)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        arguments?.let {
+            tabPosition = it.getInt("tabPos")
+        }
+
         viewModel.setCurrentDate(Calendar.getInstance(), "", "", "0")
     }
 
