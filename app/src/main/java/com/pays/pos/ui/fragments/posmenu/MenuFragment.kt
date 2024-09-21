@@ -335,14 +335,15 @@ class MenuFragment : DialogFragment() {
                         currentCartItems = arrayListOf()
                         duplicateCurrentCartItem = arrayListOf()
                         CoroutineScope(Dispatchers.IO).launch{
-                            viewLifecycleOwner.lifecycleScope.async(Dispatchers.IO) {
+
                                 try {
-                                    AppDatabase.getDatabase(requireActivity().applicationContext)
-                                        .itemDao().delete()
+                                    AppDatabase.getDatabase(requireContext()).clearAllTables()
+                                    /*AppDatabase.getDatabase(requireActivity().applicationContext)
+                                        .itemDao().delete()*/
                                 }catch (e:Exception){
                                     e.printStackTrace()
                                 }
-                            }.await()
+
                         }
                     }
 
