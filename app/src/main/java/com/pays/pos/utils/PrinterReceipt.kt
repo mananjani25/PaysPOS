@@ -5581,7 +5581,7 @@ fun addWholeTbItemToGuestInner(
     val price = (subTotal) / guestCount
 
     var priceToShow = ""
-    if (price > 0.0) {
+    if (list.price > 0.0) {
         priceToShow = MethodUtils.roundOffAmount(price)
     }
 

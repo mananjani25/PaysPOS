@@ -2863,7 +2863,10 @@ class CartFragment(
             if (viewModel.restrictedAmount(binding.txtTotal)) {
 
 
-                binding.relPreoceedToFire.gone()
+                if(viewModel.currentCartItems.isNotEmpty())
+                    binding.relPreoceedToFire.gone()
+                else
+                    AlertUtils.showCustomAlert(requireContext(),"Please add at least one Item.")
 
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 //cartModelsList[0] = viewModel.generateCombinedItems(viewModel.cartModel!!)

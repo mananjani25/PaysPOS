@@ -6934,6 +6934,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             PrintSunmiUtils.printHorizontalInnerNew(prefProvider.isOldSunmiFrameworkVersion())
             SunmiPrintHelper.getInstance().lineWrap(1)
 
+            PrintSunmiUtils.printTextCenter("Whole Table")
+
             for (i in 0 until listWTitems.size) {
 
                 var guestCount: Int =
