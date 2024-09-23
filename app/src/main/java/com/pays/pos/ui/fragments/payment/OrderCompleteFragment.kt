@@ -729,9 +729,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 if (isSplitByAmount) {
                     if (paidAmount > WholetotalPrice) {
-                        changeAmtGlobal =
-                            MethodUtils.roundOffAmountDouble(paidAmount - WholetotalPrice)
+                        if(paymentType.equals("cash",true)) {
+                            changeAmtGlobal = MethodUtils.roundOffAmountDouble(paidAmount - WholetotalPrice)
                                 .toDouble()
+                        }
                         if (paymentType.equals("cash", true)) {
                             binding.txtChangeAmount.visible()
                         }
@@ -777,8 +778,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             changeValue = paidAmount - remainingAmount
                         }
                         if (Math.round(changeValue) > 0.0) {
-                            changeAmtGlobal =
-                                MethodUtils.roundOffAmountDouble(changeValue).toDouble()
+                            if (paymentType.equals("cash",true)) {
+                                changeAmtGlobal =
+                                    MethodUtils.roundOffAmountDouble(changeValue).toDouble()
+                            }
                             if (paymentType.equals("cash", true)) {
                                 binding.txtChangeAmount.visible()
                             }
@@ -859,8 +862,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     LogUtil.logE("Change 6", binding.txtChangeAmount.text.toString())
                 } else {
                     if (remainingAmount < 0) {
-                        changeAmtGlobal =
-                            MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount).toDouble()
+                        if (paymentType.equals("cash",true)) {
+                            changeAmtGlobal =
+                                MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount)
+                                    .toDouble()
+                        }
                         if (paymentType.equals("cash", true)) {
                             binding.txtChangeAmount.visible()
                         }
@@ -1006,8 +1012,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         MethodUtils.roundOffAmount(if ((remainingAmount - tipAmount) > 0) remainingAmount - tipAmount else 0.00) + " Change"
                 } else {
                     if (remainingAmount < 0 || remainingAmount == 0.0) {
-                        changeAmtGlobal =
-                            MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount)
+                        if (paymentType.equals("cash",true)) {
+                            changeAmtGlobal =
+                                MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount)
+                        }
                         binding.txtChangeAmount.gone()
                     } else {
                         if (paymentType.equals("cash", true)) {
