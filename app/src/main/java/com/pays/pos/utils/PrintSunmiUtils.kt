@@ -378,13 +378,15 @@ class PrintSunmiUtils {
         fun addTipListInner(
             tipsList: List<GetTipReponse.Data>,
             totalAmount: Double,
-            fonts: String
+            fonts: String,
+            isOldSunmiFrameworkVersion:Boolean = false
         ) {
 
             addTipsListInner(
                 tipsList,
                 totalAmount,
-                fonts
+                fonts,
+                isOldSunmiFrameworkVersion
             )
         }
 
@@ -570,11 +572,13 @@ class PrintSunmiUtils {
 
         fun printTextCenter(value: String) {
 
-            SunmiPrinterApi.getInstance().setAlignMode(1)
-            SunmiPrinterApi.getInstance().enableBold(false)
-            setFontSize()
-            SunmiPrinterApi.getInstance().printText(value)
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            normalTextCenter(value)
+
+//            SunmiPrinterApi.getInstance().setAlignMode(1)
+//            SunmiPrinterApi.getInstance().enableBold(false)
+//            setFontSize()
+//            SunmiPrinterApi.getInstance().printText(value)
+//            SunmiPrinterApi.getInstance().lineWrap(1)
         }
 
         fun deliveryType(value: String) {

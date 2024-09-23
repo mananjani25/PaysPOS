@@ -2328,7 +2328,8 @@ fun addTipsList(
 fun addTipsListInner(
     list: List<GetTipReponse.Data>,
     totalAmt: Double,
-    font: String
+    font: String,
+    isOldSunmiFrameworkVersion:Boolean = false
 ) {
     for (i in 0 until list.size) {
         val obj = list.get(i)
@@ -2354,7 +2355,7 @@ fun addTipsListInner(
             }
         ).toString()
 
-        PrintSunmiUtils.normalText(str)
+        PrintSunmiUtils.printNormalText(isOldSunmiFrameworkVersion,str)
 
     }
 
