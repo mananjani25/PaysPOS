@@ -21,15 +21,11 @@ import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
 import com.pays.pos.data.model.responseModel.*
 import com.pays.pos.utils.landi.LPrint
-import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
-import com.starmicronics.stario10.starxpandcommand.printer.Alignment
-import com.pays.pos.utils.landi.LPrint.FONT_SIZE_3X
 import com.pays.pos.utils.landi.LPrint.FONT_SIZE_5X
 import com.pays.pos.utils.landi.LPrint.lineBreak
 import com.pays.pos.utils.landi.LPrint.printLeft
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
-import java.io.OutputStream
 
 val TAG = "PrinterReceipt"
 
@@ -5524,7 +5520,8 @@ fun addWholeTbItemToGuestInner(
     font: String,
     showModifiers: Boolean,
     guestCount: Int,
-    serviceChargeList: ArrayList<TbServiceCharge>
+    serviceChargeList: ArrayList<TbServiceCharge>,
+    oldSunmiFrameworkVersion: Boolean = false
 ) {
 
     val obj = list
@@ -5589,7 +5586,7 @@ fun addWholeTbItemToGuestInner(
 
     //val finalAmt = MethodUtils.roundOffAmount((subTotal) / guestCount)
 
-    PrintSunmiUtils.normalText(
+    PrintSunmiUtils.printNormalText(oldSunmiFrameworkVersion,
         padLineCustomerItem(
             obj.itemQuantity.toString() + "  " + getItemNameToShow(obj.name),
             "" + priceToShow,
@@ -5600,7 +5597,7 @@ fun addWholeTbItemToGuestInner(
     if (obj.modifiers.isNotEmpty()) {
 
         obj.modifiers.forEach {
-            PrintSunmiUtils.normalText(
+            PrintSunmiUtils.printNormalText(oldSunmiFrameworkVersion,
                 padLineCustomerItem(
                     if (it.modifier_quantity == 1) {
                         "      " + it.name
@@ -5837,14 +5834,15 @@ fun addOrderItemForDineInInnerLandi(
 fun addOrderItemForDineInInner(
     list: TbCartItem,
     font: String,
-    showModifiers: Boolean
+    showModifiers: Boolean,
+    oldSunmiFrameworkVersion: Boolean = false
 ) {
 
 
     val obj = list
 
 
-    PrintSunmiUtils.normalTextDineInItem(
+    PrintSunmiUtils.printNormalText(oldSunmiFrameworkVersion,
         padLineCustomerItem(
             obj.itemQuantity.toString() + "  " + getItemNameToShow(obj.name),
             getItemPriceToShow(totalPriceDineInItem(obj)),
@@ -5859,18 +5857,18 @@ fun addOrderItemForDineInInner(
             val modifierObj = obj.modifiers.get(j)
 
 
-            PrintSunmiUtils.normalText(
-                padLineCustomerItem(
-                    if (modifierObj.modifier_quantity == 1) {
-                        "     " + getItemNameToShow(modifierObj.name)
-                    } else {
-                        "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(modifierObj.name)
-                    },
-                    getModifierItemPriceToShow(modifierObj.price, modifierObj.itemQuantity),
-                    if (font == Constants.LARGE) 23 else 48
-                ).toString()
-            )
+            val modifierText = padLineCustomerItem(
+                if (modifierObj.modifier_quantity == 1) {
+                    "     " + getItemNameToShow(modifierObj.name)
+                } else {
+                    "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(modifierObj.name)
+                },
+                getModifierItemPriceToShow(modifierObj.price, modifierObj.itemQuantity),
+                if (font == Constants.LARGE) 23 else 48
+            ).toString()
 
+
+            PrintSunmiUtils.printNormalText(oldSunmiFrameworkVersion,modifierText)
 
         }
 
@@ -5878,7 +5876,7 @@ fun addOrderItemForDineInInner(
     }
 
     if (obj.note.isNotEmpty()) {
-        PrintSunmiUtils.normalText("   Note: " + obj.note)
+        PrintSunmiUtils.printNormalText(oldSunmiFrameworkVersion,"   Note: " + obj.note)
     }
 
 

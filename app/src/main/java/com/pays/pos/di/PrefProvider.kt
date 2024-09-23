@@ -279,6 +279,13 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         }
     }
 
+    fun isOldSunmiFrameworkVersion():Boolean {
+        val sunmiFrameworkVersion = getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".")
+            .toTypedArray()
+
+       return sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+    }
 
     /* fun setCustomObject(
          context: Context,

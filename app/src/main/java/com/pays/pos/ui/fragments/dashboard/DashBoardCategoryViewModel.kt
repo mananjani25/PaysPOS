@@ -178,6 +178,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     /**
+     * Get SUNMI OS VERSION
+     */
+    fun getSunmiFrameWorkVersion() =
+    prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".")
+    .toTypedArray()
+
+    /**
      * Tracking main cart discount
      */
     var mainCartDiscount = 0.0

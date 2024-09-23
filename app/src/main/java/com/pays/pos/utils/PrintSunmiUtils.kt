@@ -767,6 +767,14 @@ class PrintSunmiUtils {
             SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
+        fun boldTextDineInNew(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance()
+                .printText(value, setFontSizeInner(),true,false,"")
+
+            SunmiPrintHelper.getInstance().lineWrap(1)
+        }
+
 
         fun addHorizontalInner() {
             val st = addHorizontalKitchenLineSunmi(fontSizeInner)
@@ -939,6 +947,33 @@ class PrintSunmiUtils {
             }
         }
 
+        /**
+         * This print functions will check for version changes and then print
+         */
+
+        fun printHorizontalInnerNew(isOldSunmiFrameworkVersion:Boolean = false) {
+            if(isOldSunmiFrameworkVersion)
+                addHorizontalInnerNew()
+            else
+                addHorizontalInner()
+        }
+
+
+        fun printNormalText(isOldSunmiFrameworkVersion:Boolean = false,value: String) {
+            if(isOldSunmiFrameworkVersion)
+                normalTextNew(value)
+            else
+                normalText(value)
+        }
+
+        fun printBoldText(isOldSunmiFrameworkVersion:Boolean = false,value: String) {
+            if(isOldSunmiFrameworkVersion)
+                boldTextDineInNew(value)
+            else
+                boldText(value)
+        }
+
+
         fun cardDetailsInnerLandi(cardName: String, cardType: String, cardNumber: String, font: String, lprint: LPrint) {
 
 //            for (i in 1..3) {
@@ -1029,6 +1064,7 @@ class PrintSunmiUtils {
 
 
     }
+
 
 
 }

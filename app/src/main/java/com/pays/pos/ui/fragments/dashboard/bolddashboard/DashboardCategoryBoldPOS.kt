@@ -1666,17 +1666,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                             dineInList
                                         )
 
-                                        if(viewModel.currentCartItems.size == 1) {
-                                            viewModel.cartModel.let {
-                                                if (it != null) {
-                                                    viewModel.taxBifurcationCalculationNew(
-                                                        item,
-                                                        it, "ADD", false
-                                                    )
+                                        try {
+                                            if (viewModel.currentCartItems.size == 1) {
+                                                viewModel.cartModel.let {
+                                                    if (it != null) {
+                                                        viewModel.taxBifurcationCalculationNew(
+                                                            item,
+                                                            it, "ADD", false
+                                                        )
+                                                    }
                                                 }
+                                                viewModel.updateCartModel(viewModel.cartModel!!)
                                             }
-                                            viewModel.updateCartModel(viewModel.cartModel!!)
-                                        }
+                                        }catch (e:Exception){}
                                     })
 
                                 }

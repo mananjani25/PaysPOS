@@ -64,7 +64,6 @@ import com.pays.pos.data.remote.Constants.GIFT_CARD
 import com.pays.pos.data.remote.Constants.GUEST_POSITION
 import com.pays.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.pays.pos.data.remote.Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED
-import com.pays.pos.data.remote.Constants.KIOSK_OPEN_ORDER
 import com.pays.pos.data.remote.Constants.KITCHEN
 import com.pays.pos.data.remote.Constants.KITCHENANDCUSTOMER
 import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
@@ -141,13 +140,11 @@ import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
-import java.io.OutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
-import java.util.stream.Collectors
 import javax.inject.Inject
 
 
@@ -4614,7 +4611,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     customerSettingModel.fonts,
                     customerSettingModel.showModifiers,
                     dineInList.get(0).totalGuestCount,
-                    dineInList.get(0).serviceChargeList ?: arrayListOf()
+                    dineInList.get(0).serviceChargeList ?: arrayListOf(),
+                    prefProvider.isOldSunmiFrameworkVersion()
                 )
             }
 

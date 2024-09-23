@@ -1103,6 +1103,15 @@ class CartFragment(
                             viewModel.customCartUpdateDiscount = 0.0
                         }
 
+
+                        if(viewModel.currentCartItems.isNotEmpty() && prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN)
+                            latestCartModel.let { cartModel ->
+                                viewModel.taxBifurcationCalculationNew(
+                                    viewModel.currentCartItems.first(),
+                                    cartModel, "UPDATE", false
+                                )
+                            }
+
                         viewModel.setUpdatedCartModel(latestCartModel)
                         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                             viewModel.setCartModel(it)
