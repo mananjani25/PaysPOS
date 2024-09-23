@@ -2353,9 +2353,26 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     override fun onEditSelected(printerListModel: PrinterListModel) {
         LogUtil.logE(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
+        var printerType:String = printerListModel.currentPrinterType ?: ""
+        if (printerListModel.currentPrinterType == KITCHEN){
+           var modelPrinter  =customerAdapter.getList().find { it.modelName == printerListModel.modelName && it.deviceModel?.macAddress == printerListModel.deviceModel?.macAddress}
+            Log.e(TAG,"modelPrinterfindCustomer:  ${Gson().toJson(modelPrinter)}")
+            if (modelPrinter != null) {
+                printerType = KITCHENANDCUSTOMER
+            }
+        }
+        else if(printerListModel.currentPrinterType == CUSTOMER){
+            var modelPrinter = kitchenAdapter.getList().find { it.modelName == printerListModel.modelName && it.deviceModel?.macAddress == printerListModel.deviceModel?.macAddress }
+            Log.e(TAG,"modelPrinterfindKitchen:  ${Gson().toJson(modelPrinter)}")
+            if (modelPrinter != null) {
+                printerType = KITCHENANDCUSTOMER
+            }
+        }
 
+        Log.e(TAG,"checkPrintTypeprinterType: ${printerType}")
         val bundle = Bundle()
         bundle.putParcelable("printerSetting", printerListModel)
+        bundle.putString("currentPrinterType",printerType)
 
         findNavController().navigate(R.id.action_printer_to_editPrinter, bundle)
     }
