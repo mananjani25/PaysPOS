@@ -1678,6 +1678,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.llMessage.background =
                     resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llMessage.setTextColor(resources.getColor(R.color.txtColor))
+
+                viewModelDashBoard.employeeGivenTip = false
                 /*
                                 binding.llPrint.background =
                                     resources.getDrawable(R.drawable.background_square_border_grey)
@@ -8146,6 +8148,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 prefProvider.setValueInt(PAYMENT_ID, 0)
                 navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
                 navController.popBackStack()
+                viewModelDashBoard.employeeGivenTip = false
             }
         } else {
             dashboardViewModel.wholetotalPrice = 0.0

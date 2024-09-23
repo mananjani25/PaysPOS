@@ -1303,7 +1303,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             }
         }
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MainApplication.mainActivity = this
@@ -1311,7 +1310,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 //        sdkHandler = SDKHandler(this, true)
         attachFileLogger()
         prefProvider!!.setValue(Constants.DELIVERY_TYPE, "")
-
 
         if (!checkServiceRunning(
                 applicationContext,
@@ -3417,8 +3415,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 }
 
 
-                runBlocking {
+//                runBlocking {
 
+                CoroutineScope(Dispatchers.IO).launch {
                     dashboardViewModel.apply {
 
                         syncInventoryModule(true, isMigrationOn = true)
@@ -3436,8 +3435,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
                         allOrderCounts("", "")
                     }
-                    // allInventoryItems.removeObserver {  }
                 }
+                    // allInventoryItems.removeObserver {  }
+//                }
 
 
             }

@@ -1,6 +1,7 @@
 package com.pays.pos.ui.fragments.settings.hardware
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -48,6 +49,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
     private var list = arrayListOf<String>(CUSTOMER, KITCHEN, KITCHENANDCUSTOMER)
     private var type = ""
     var orderTypeList: ArrayList<TbOrderType> = arrayListOf()
+    private var currentPrinterType:String = ""
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -83,12 +85,16 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = EditPrinterListAdapter()
+        printerModel = arguments?.getParcelable("printerSetting")
+
+        currentPrinterType = arguments?.getString("currentPrinterType").toString()
+        adapter = EditPrinterListAdapter(currentPrinterType)
+        Log.e(TAG,"checkPrinterListModel  ${Gson().toJson(printerModel?.printerModel)}")
 
 
         binding.rvPrinterList.adapter = adapter
         binding.rvCategoriesList?.adapter = categoryAdapter
-        printerModel = arguments?.getParcelable("printerSetting")
+
         setSpinnnerAdapter()
 
         setCategoryAdapter()
@@ -247,7 +253,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                         }else {
                             val index = list.indexOf(KITCHEN)
                             binding.spnPrinterCat.setSelection(index)
-                            AlertUtils.showCustomAlert(requireContext(),"This printer is not compatible with Customer receipts.")
+                            AlertUtils.showCustomAlert(requireContext(),getString(R.string.incompatible_printer))
                         }
                     }
                     KITCHENANDCUSTOMER -> {
@@ -295,7 +301,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                     }else {
                         val index = list.indexOf(KITCHEN)
                         binding.spnPrinterCat.setSelection(index)
-                        AlertUtils.showCustomAlert(requireContext(),"This printer is not compatible with Customer receipts.")
+                        AlertUtils.showCustomAlert(requireContext(),getString(R.string.incompatible_printer))
                     }
                 }}
                 LogUtil.logE(TAG, "oderTypes:  ${Gson().toJson(oderTypes)}")
@@ -410,7 +416,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                 model.ip_address = printerModel?.deviceModel?.ipAddress
 
                 viewModel.updatePrinter(
-                    printerModel?.id!!, model
+                    printerModel?.id!!, model, printerModel!!
                 )
 
 
@@ -429,7 +435,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                 model.ip_address = printerModel?.deviceModel?.ipAddress
 
                 viewModel.updatePrinter(
-                    printerModel?.id!!, model
+                    printerModel?.id!!, model, printerModel!!
                 )
             }
 
@@ -469,6 +475,22 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                 }
 
             }
+        })
+
+        viewModel.localUpdatePrinter.observe(requireActivity(),{
+            it.getContentIfNotHandled()?.let { data ->
+
+                if (data.currentPrinterType == KITCHEN){
+
+                }
+                else {
+
+
+                }
+
+
+            }
+
         })
     }
 

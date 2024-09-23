@@ -7058,8 +7058,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun syncInventoryModule(b: Boolean, isMigrationOn: Boolean = false) {
         var needToUpdate = false
-        _showProgress.value = Event(true)
-        _syncDone.value = Event(false)
+        CoroutineScope(Dispatchers.Main).launch {
+            _showProgress.value = Event(true)
+            _syncDone.value = Event(false)
+        }
+
         viewModelScope.launch {
             val resource = posRepository.syncInventory(
                 prefProvider.getValueInt(TERMINAL_ID, -1),
@@ -7076,7 +7079,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                     resource.data.let { response ->
                         if (response?.status == 200) {
                             Log.d("BINGE", "syncInventoryModule: START")
-                            _showProgress.value = Event(false)
+                            CoroutineScope(Dispatchers.Main).launch {
+                                _showProgress.value = Event(false)
+                            }
+
 //                            posRepository.saveDatabase(response)
 
                             val mData = response.data
@@ -7300,15 +7306,20 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 Status.ERROR -> {
                     Log.e("SyncInventory", "SyncError")
-                    _snackbarText.value = Event(resource.message.toString())
-                    _showProgress.value = Event(false)
+                    CoroutineScope(Dispatchers.Main).launch {
+                        _snackbarText.value = Event(resource.message.toString())
+                        _showProgress.value = Event(false)
+                    }
 
                     autoSyncEnabled.value = true
                 }
 
                 Status.LOADING -> {
                     Log.e("SyncInventory", "SyncLoading")
-                    _showProgress.value = Event(false)
+                    CoroutineScope(Dispatchers.Main).launch {
+                        _showProgress.value = Event(false)
+
+                    }
 
                     autoSyncEnabled.value = true
                 }

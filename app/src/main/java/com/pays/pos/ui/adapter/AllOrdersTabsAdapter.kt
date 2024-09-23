@@ -15,6 +15,6 @@ class AllOrdersTabsAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycl
     }
 
     override fun createFragment(position: Int): Fragment {
-        return AllOrdersCountsFragment(position)
+        return AllOrdersCountsFragment.newInstance(tabPos = position)
     }
 }

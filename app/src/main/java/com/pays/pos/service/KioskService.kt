@@ -1,14 +1,18 @@
 package com.pays.pos.service
 
+import android.Manifest
 import android.app.*
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
 import androidx.annotation.Nullable
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.android.volley.AuthFailureError
 import com.android.volley.Request
 import com.android.volley.VolleyError
@@ -29,15 +33,23 @@ import com.pays.pos.data.db.AppDatabase
 import com.pays.pos.data.entities.TbLabelPrinterSettings
 import com.pays.pos.data.model.responseModel.*
 import com.pays.pos.data.remote.Constants
+import com.pays.pos.data.remote.Constants.BILLING_ADDRESS
+import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
+import com.pays.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
+import com.pays.pos.data.remote.Constants.PHONE_ORDER
+import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.pays.pos.data.repositories.KioskRepository
 import com.pays.pos.data.repositories.PosRepository
 import com.pays.pos.di.ApiModule
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.activities.MainActivity
+import com.pays.pos.ui.fragments.payment.OrderCompleteFragment.OnBluetoothPermissionGranted
 import com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.utils.*
 import com.pays.pos.utils.InternetUtils.isInternetAvailable
+import com.pays.pos.utils.TimeFormatUtils.prefProvider
+import com.pays.pos.utils.landi.LPrint
 import com.pays.pos.utils.printer.PrinterClass
 import com.starmicronics.stario10.*
 import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
@@ -161,7 +173,7 @@ class KioskService : Service(), StatusChangeEventListener {
                         if (it.asJsonObject.has("location_id")) {
                             if ((PrefProvider(baseContext).getLocationId() == it.asJsonObject.get("location_id").asInt) && (it.asJsonObject.get(
                                     "new_order"
-                                ).toString().equals("true", ignoreCase = true))
+                                ).toString().equals("true", ignoreCase = true) && (it.asJsonObject.get("order_type").toString().equals("\"KioskTakeout\"", true)))
                             ) {
                                 getOrderFromServer(it.asJsonObject.get("order_id").asInt)
                             }
@@ -789,6 +801,8 @@ class KioskService : Service(), StatusChangeEventListener {
                 }
             }
 
+        } else if(data.name.contains(LANDI_INNER_PRINTER, true)){
+            generateKitchenReceiptLandiInner(data, orderData)
         } else {
 
             if (!data.name.substring(0, 6).toString().lowercase()
@@ -894,6 +908,324 @@ class KioskService : Service(), StatusChangeEventListener {
             }
 
         }
+    }
+
+    interface OnBluetoothPermissionGranted {
+        fun onPermissionsGranted()
+    }
+
+    var onBluetoothPermissionGranted: OnBluetoothPermissionGranted? = null
+
+    fun checkBluetoothPermissions(onBluetoothPermissionGranted: OnBluetoothPermissionGranted) {
+        this.onBluetoothPermissionGranted = onBluetoothPermissionGranted
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(
+                applicationContext,
+                Manifest.permission.BLUETOOTH
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                Activity(),
+                arrayOf<String>(Manifest.permission.BLUETOOTH),
+                Constants.PERMISSION_BLUETOOTH
+            )
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(
+                applicationContext,
+                Manifest.permission.BLUETOOTH_ADMIN
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                Activity(),
+                arrayOf<String>(Manifest.permission.BLUETOOTH_ADMIN),
+                Constants.PERMISSION_BLUETOOTH_ADMIN
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(
+                applicationContext,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                Activity(),
+                arrayOf<String>(Manifest.permission.BLUETOOTH_CONNECT),
+                Constants.PERMISSION_BLUETOOTH_CONNECT
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(
+                applicationContext,
+                Manifest.permission.BLUETOOTH_SCAN
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                Activity(),
+                arrayOf<String>(Manifest.permission.BLUETOOTH_SCAN),
+                Constants.PERMISSION_BLUETOOTH_SCAN
+            )
+        } else {
+            onBluetoothPermissionGranted.onPermissionsGranted()
+        }
+    }
+    private fun generateKitchenReceiptLandiInner(kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters, orderData: KioskOrderResponse) {
+//        val printer = com.dantsu.escposprinter.EscPosPrinter(BluetoothPrintersConnections.selectFirstPaired(), 203, 48f, 32)
+
+        val receiptModel = orderData.data
+
+        this.checkBluetoothPermissions(object : OnBluetoothPermissionGranted {
+            override fun onPermissionsGranted() {
+                GlobalScope.launch {
+                    LPrint.connectLandiInnerPrinter(kitchenReceiptPrinters.macAddress)
+                        ?.let { outputStream ->
+
+                            LPrint.apply {
+                                setOutputStream(outputStream)
+                                try {
+                                    // PrintSunmiUtils.fontSizeInner(LARGE)
+//                                    SunmiPrintHelper.getInstance().initPrinter()
+                                    /*Added By Rahul */
+                                    /*try {
+                                        if (isOrderUpdated == true || cartList!!.isEdited == true) {
+                                            printCenter(
+                                                "***** UPDATED *****",
+                                                isBold = true,
+                                                fontSize = FONT_SIZE_5X
+                                            )
+//                                            PrintSunmiUtils.headerText("***** UPDATED *****")
+                                        }
+                                    } catch (e: java.lang.NullPointerException) {
+
+                                    }
+
+                                    lineBreak()
+                                    lineBreak()*/
+
+                                    try {
+
+                                        if (prefProvider.getValueboolean(
+                                                ORDER_NUMBER_STARTING_FROM_ONE,
+                                                false
+                                            )
+                                        ) {
+                                            printCenter(
+                                                "OrderID:" + receiptModel?.customOrderId,
+                                                isBold = true,
+                                                fontSize = FONT_SIZE_5X
+                                            )
+                                        } else {
+                                            printCenter(
+                                                "OrderID:" + receiptModel?.id, isBold = true,
+                                                fontSize = FONT_SIZE_5X
+                                            )
+                                        }
+                                        lineBreak()
+                                    } catch (e: Exception) {
+                                    }
+
+                                    lineBreak()
+
+                                    if (kitchenSettingModel.showOrderType) {
+                                        printCenter(receiptModel?.orderTypeName.toString(), isBold = true,
+                                            fontSize = FONT_SIZE_5X
+                                        )
+                                    }
+                                    lineBreak()
+
+                                    if (receiptModel?.orderType.equals(
+                                            "Online Order",
+                                            true
+                                        ) ||
+                                        receiptModel?.orderType.equals(
+                                            "OnlineWebOrder",
+                                            true
+                                        ) ||
+                                        receiptModel?.orderType.equals(PHONE_ORDER, true)
+                                    ) {
+                                        printCenter(receiptModel?.deliveryType.toString(),isBold = true,
+                                            fontSize = FONT_SIZE_5X
+                                        )
+                                        lineBreak()
+                                    }
+                                    lineBreak()
+
+                                    /*if (kitchenSettingModel.showTeamMember) {
+                                        printLeft("Employee:" + receiptModel?.employee?.name,isBold = true,
+                                            fontSize = FONT_SIZE_5X
+                                        )
+                                    }
+                                    lineBreak()*/
+
+                                    printLeft(
+                                        getReceiptFormatDateFromUTCServer(
+                                            applicationContext,
+                                            receiptModel?.createdAt.toString()
+                                        ),
+                                        isBold = true,
+                                        fontSize = FONT_SIZE_5X
+                                    )
+                                    lineBreak()
+
+                                    printDashedLineAndBreak()
+                                    lineBreak()
+
+//                                    if (sunmiFrameworkVersion?.get(0)
+//                                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+//                                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)
+//                                            ?.toInt() != 39
+//                                    ) {
+//                                        PrintSunmiUtils.addHorizontalInnerNew()
+//                                    } else {
+//                                        PrintSunmiUtils.addHorizontalInner()
+//                                    }
+//                                    SunmiPrintHelper.getInstance().lineWrap(1)
+
+//                                    if (sunmiFrameworkVersion?.get(0)
+//                                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+//                                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)
+//                                            ?.toInt() != 39
+//                                    ) {
+//                                        PrintSunmiUtils.normalText("\n")
+//                                    }
+
+
+                                    receiptModel?.orderItems?.let {
+
+                                        addOrdersForKitchenOnlineOrderLandiInnerKiosk(
+                                            it,
+                                            kitchenReceiptPrinters.printerCategories.toCollection(
+                                                arrayListOf()
+                                            ),
+                                            lprint = LPrint
+                                        )
+                                    }
+
+
+                                    if (receiptModel?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+
+                                        lineBreak()
+                                        printCenter("Order Note",isBold = true,
+                                            fontSize = FONT_SIZE_5X
+                                        )
+                                        lineBreak()
+                                        printCenter(receiptModel?.note.toString(),isBold = false,
+                                            fontSize = FONT_SIZE_5X
+                                        )
+                                        lineBreak()
+                                    }
+
+
+
+                                    if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
+                                        if (receiptModel?.customer != null) {
+
+                                            lineBreak()
+                                            printLeft("Customer Details", isBold = true,
+                                                fontSize = FONT_SIZE_5X
+                                            )
+                                            lineBreak()
+                                            printDashedLineAndBreak()
+
+                                            /*PrintSunmiUtils.customerDetailsInner(
+                                                true,
+                                                sunmiFrameworkVersion
+                                            )
+                                            if (sunmiFrameworkVersion?.get(0)
+                                                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                                                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)
+                                                    ?.toInt() != 39
+                                            ) {
+                                                PrintSunmiUtils.addHorizontalInnerNew()
+                                            } else {
+                                                PrintSunmiUtils.addHorizontalInner()
+                                            }*/
+                                            try {
+                                                if (kitchenSettingModel.showCustomerName) {
+                                                    printLeft(receiptModel?.customer?.firstName + " " + receiptModel?.customer?.lastName,isBold = false,
+                                                        fontSize = FONT_SIZE_5X
+                                                    )
+                                                }
+                                            } catch (e: Exception) {
+                                            }
+
+                                            lineBreak()
+
+                                            try {
+                                                if (kitchenSettingModel.showCustomerPhone) {
+
+                                                    if (receiptModel?.customer?.phones?.isNotEmpty() == true) {
+
+                                                        receiptModel?.customer?.phones?.get(0)?.phoneNumber?.let {
+                                                            printLeft(
+                                                                MethodUtils.formatPhoneNumber(it),
+                                                                isBold = false,
+                                                                fontSize = FONT_SIZE_5X
+                                                            )
+                                                        }
+                                                    }
+
+                                                }
+                                            } catch (e: Exception) {
+                                            }
+
+                                            if (kitchenSettingModel.showCustomerAddress) {
+                                                if (receiptModel?.orderType?.trim()
+                                                        .toString()
+                                                        .lowercase() == "Open Order".trim()
+                                                        .toString().lowercase()
+                                                    && receiptModel?.deliveryType?.trim()
+                                                        .toString()
+                                                        .lowercase() == "Pickup".trim().lowercase()
+                                                ) {
+
+                                                } else {
+                                                    try {
+                                                        if (receiptModel?.customer?.addresses?.isNotEmpty() == true) {
+
+
+//                                receiptModel?.customer?.addresses?.get(0)?.fullAddress?.let {
+//                                    PrintSunmiUtils.normalTextLarge(
+//                                        it
+//                                    )
+//                                }
+
+                                                            receiptModel?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
+                                                                ?.forEach {
+
+                                                                    if (it.typeOfAddress.equals(
+                                                                            BILLING_ADDRESS,
+                                                                            ignoreCase = true
+                                                                        )
+                                                                    ) {
+                                                                        it.fullAddress?.let { it1 ->
+                                                                            printLeft(
+                                                                                it1
+                                                                            )
+                                                                        }
+                                                                    }
+                                                                }
+                                                        }
+                                                    } catch (e: Exception) {
+                                                    }
+                                                }
+                                            }
+
+                                        }
+                                    }
+
+                                    lineBreak()
+                                    lineBreak()
+                                    paperCut()
+                                    disconnectLandiPrinter()
+
+//                                    SunmiPrintHelper.getInstance().lineWrap(1)
+//                                    PrintSunmiUtils.cutPaperInner()
+
+                                    //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
+
+                                } catch (e: Exception) {
+                                    // printerDialog.dismiss()
+                                    e.printStackTrace()
+                                }
+                            }
+                        }
+                }
+            }
+        })
     }
 
 
