@@ -12,8 +12,9 @@ import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.visible
 import com.google.gson.Gson
+import com.pays.pos.data.remote.Constants.KITCHENANDCUSTOMER
 
-class EditPrinterListAdapter : RecyclerView.Adapter<EditPrinterListAdapter.MyViewHolder>() {
+class EditPrinterListAdapter( val printerType:String) : RecyclerView.Adapter<EditPrinterListAdapter.MyViewHolder>() {
     private var list: ArrayList<PrinterResponse.Data.OrderTypes> = arrayListOf()
     private val TAG = "EditPrinterListAdapter"
 
@@ -22,10 +23,10 @@ class EditPrinterListAdapter : RecyclerView.Adapter<EditPrinterListAdapter.MyVie
         fun bind(model: PrinterResponse.Data.OrderTypes) {
             binding.model = model
             binding.txtPrintersLabel.setText(model.orderTypeName)
-            LogUtil.logE(TAG, "printerSettings:  ${Gson().toJson(model.printerSettings)}")
+            LogUtil.logE(TAG, "printerSettings:  ${Gson().toJson(model.printerSettings)} printerType: ${printerType}")
 
 
-            if (model.printerSettings.size == 2 ) {
+            if (printerType.isNotEmpty() && printerType == KITCHENANDCUSTOMER) {
                 binding.txtKitReceipt.visible()
                 binding.txtCustomerReceipt.visible()
                 binding.chBoxCustomerManual2.visible()
@@ -215,6 +216,7 @@ class EditPrinterListAdapter : RecyclerView.Adapter<EditPrinterListAdapter.MyVie
     fun getList(): ArrayList<PrinterResponse.Data.OrderTypes> {
         return list
     }
+
 
 
 }
