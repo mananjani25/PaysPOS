@@ -6944,7 +6944,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
             }
 
-            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),guestName)
+            PrintSunmiUtils.normalTextCenter(guestName)
 
             LogUtil.logE("addDineInInner", "111111111")
             listGuestItem.forEach {
@@ -7199,11 +7199,16 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 SunmiPrintHelper.getInstance().lineWrap(1)
                 PrintSunmiUtils.additionalTipsInner()
+
+                PrintSunmiUtils.printHorizontalInnerNew(prefProvider.isOldSunmiFrameworkVersion())
+                SunmiPrintHelper.getInstance().lineWrap(1)
+
                 if (tipsList.isNotEmpty()) {
                     PrintSunmiUtils.addTipListInner(
                         tipsList,
                         MethodUtils.roundOffAmountDouble(guestSubTotal + guestServiceCharge + guestTaxes),
-                        customerSettingModel.fonts
+                        customerSettingModel.fonts,
+                        prefProvider.isOldSunmiFrameworkVersion()
                     )
                 }
                 SunmiPrintHelper.getInstance().lineWrap(1)
@@ -9493,12 +9498,16 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             if (customerSettingModel.showTipSuggestion) {
 
+
                 PrintSunmiUtils.additionalTipsInner()
+                PrintSunmiUtils.printHorizontalInnerNew(prefProvider.isOldSunmiFrameworkVersion())
+                SunmiPrintHelper.getInstance().lineWrap(1)
                 if (tipsList.isNotEmpty()) {
                     PrintSunmiUtils.addTipListInner(
                         tipsList,
                         totalAmt,
-                        customerSettingModel.fonts
+                        customerSettingModel.fonts,
+                        prefProvider.isOldSunmiFrameworkVersion()
                     )
                 }
                 SunmiPrintHelper.getInstance().lineWrap(1)
@@ -11484,9 +11493,12 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             SunmiPrinterApi.getInstance().enableUnderline(false)
             SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance()
-                .printText(addHorizontalKitchenLineSunmi(PrintSunmiUtils.fontSize))
-            //  SunmiPrinterApi.getInstance().lineWrap(1)
+//            SunmiPrinterApi.getInstance()
+//                .printText(addHorizontalKitchenLineSunmi(PrintSunmiUtils.fontSize))
+
+            PrintSunmiUtils.printHorizontalInnerNew(prefProvider.isOldSunmiFrameworkVersion())
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
             SunmiPrinterApi.getInstance().enableUnderline(false)
             SunmiPrinterApi.getInstance().enableBold(false)
             SunmiPrinterApi.getInstance()
