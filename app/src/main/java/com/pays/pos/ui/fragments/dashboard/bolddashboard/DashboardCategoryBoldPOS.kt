@@ -85,6 +85,7 @@ import com.pays.pos.ui.fragments.allorders.AllOrdersViewModel
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
+import com.pays.pos.ui.fragments.magtek.MagtekViewModel
 import com.pays.pos.ui.fragments.payment.OrderCompleteFragment.OnBluetoothPermissionGranted
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
@@ -153,6 +154,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private var orderTypeObserver: Observer<Resource<List<TbOrderType>>>? = null
     private var dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
     private val dineInViewModel by viewModels<DineInOrderTableViewModel>()
+    private val magTekViewModel by viewModels<MagtekViewModel>()
     private val TAG = "DashboardCategoryBold"
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
@@ -283,6 +285,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 oneItemPerReceipt = false
             }
         }
+
+        magTekViewModel.initPOSLink(requireContext(),makeMerchantDetailsCall = false)
 
     }
 

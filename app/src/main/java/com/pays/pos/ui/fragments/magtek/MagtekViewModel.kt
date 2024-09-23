@@ -122,19 +122,19 @@ class MagtekViewModel @Inject constructor(
         }
     }
 
-    fun initPOSLink(context: Context) {
+    fun initPOSLink(context: Context, makeMerchantDetailsCall:Boolean=true) {
         POSLinkCreatorWrapper.createSync(
             context,
             object : AppThreadPool.FinishInMainThreadCallback<PosLink?> {
                 override fun onFinish(result: PosLink?) {
                     posLink = result!!
                     Log.d("initPOSLink: ", "onFinish")
-                    paxNetworkCall(context)
+                    paxNetworkCall(context, makeMerchantDetailsCall)
                 }
             })
     }
 
-    private fun paxNetworkCall(context: Context) {
+    private fun paxNetworkCall(context: Context, makeMerchantDetailsCall:Boolean=true) {
         ProgressUtils.showProgressDialog("Connecting to PAX", context, View.GONE)
         val srNo = prefProvider.getValue(
             Constants.PAX_SERIAL_NO,
@@ -172,7 +172,9 @@ class MagtekViewModel @Inject constructor(
                     )
                     Log.d("Pax Params: ", "pax $ipAddress $port")
                     setCommSetting(context, ipAddress, port.toString())
-                    getMerchantDetails(context)
+                    if (makeMerchantDetailsCall) {
+                        getMerchantDetails(context)
+                    }
 //                    connectBP()
                 }
             }
