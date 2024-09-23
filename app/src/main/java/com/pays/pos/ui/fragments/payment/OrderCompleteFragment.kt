@@ -732,7 +732,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         changeAmtGlobal =
                             MethodUtils.roundOffAmountDouble(paidAmount - WholetotalPrice)
                                 .toDouble()
-                        binding.txtChangeAmount.visible()
+                        if (paymentType.equals("cash", true)) {
+                            binding.txtChangeAmount.visible()
+                        }
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(if ((paidAmount - WholetotalPrice) > 0) paidAmount - WholetotalPrice else 0.00) + " Change"
                         binding.txtPaymentAmount.text =
@@ -753,7 +755,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 } else if (remainingAmount < paidAmount) {
                     if (isCustomCash && splitChange != 0.0) {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(splitChange).toDouble()
-                        binding.txtChangeAmount.visible()
+                        if (paymentType.equals("cash", true)) {
+                            binding.txtChangeAmount.visible()
+                        }
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(if (splitChange > 0) splitChange else 0.00) + " Change"
                         binding.txtPaymentAmount.text =
@@ -775,7 +779,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         if (Math.round(changeValue) > 0.0) {
                             changeAmtGlobal =
                                 MethodUtils.roundOffAmountDouble(changeValue).toDouble()
-                            binding.txtChangeAmount.visible()
+                            if (paymentType.equals("cash", true)) {
+                                binding.txtChangeAmount.visible()
+                            }
                             binding.txtChangeAmount.text =
                                 MethodUtils.roundOffAmount(if (changeValue > 0) changeValue else 0.00) + " Change"
 
@@ -790,7 +796,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 } else {
                     if (isCustomCash && splitChange != 0.0) {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(splitChange).toDouble()
-                        binding.txtChangeAmount.visible()
+                        if (paymentType.equals("cash", true)) {
+                            binding.txtChangeAmount.visible()
+                        }
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(if (splitChange > 0) splitChange else 0.00) + " Change"
 
@@ -853,7 +861,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (remainingAmount < 0) {
                         changeAmtGlobal =
                             MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount).toDouble()
-                        binding.txtChangeAmount.visible()
+                        if (paymentType.equals("cash", true)) {
+                            binding.txtChangeAmount.visible()
+                        }
                         val ca = remainingAmount - tipAmount
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(if (ca > 0) ca else 0.00) + " Change"
@@ -900,7 +910,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (remainingAmount < paidAmount) {
                     if (isCustomCash && splitChange != 0.0) {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(splitChange)
-                        binding.txtChangeAmount.visible()
+                        if (paymentType.equals("cash", true)) {
+                            binding.txtChangeAmount.visible()
+                        }
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(if (splitChange > 0) splitChange else 0.00) + " Change"
                         binding.txtPaymentAmount.text =
@@ -916,7 +928,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         if (!(temp_Change.equals(0.0) || temp_Change.equals(0) || temp_Change <= 0.0)) {
                             changeAmtGlobal =
                                 MethodUtils.roundOffAmountDouble((paidAmount - noCashAdjGlobal) - remainingAmount)
-                            binding.txtChangeAmount.visible()
+                            if (paymentType.equals("cash", true)) {
+                                binding.txtChangeAmount.visible()
+                            }
                             val ca = (paidAmount - noCashAdjGlobal) - remainingAmount
                             binding.txtChangeAmount.text =
                                 MethodUtils.roundOffAmount(if (ca > 0) ca else 0.00) + " Change"
@@ -996,7 +1010,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount)
                         binding.txtChangeAmount.gone()
                     } else {
-                        binding.txtChangeAmount.visible()
+                        if (paymentType.equals("cash", true)) {
+                            binding.txtChangeAmount.visible()
+                        }
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(if ((remainingAmount - tipAmount) > 0) remainingAmount - tipAmount else 0.00) + " Change"
                     }
