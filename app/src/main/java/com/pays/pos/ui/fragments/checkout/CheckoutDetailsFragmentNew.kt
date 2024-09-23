@@ -2843,19 +2843,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     }
                 }
             } else {
-                /*if (retryCount<=2) {
-                    retryCount++
-                    magtekProViewModel.initPOSLink(requireContext())
-                }else{*/
-//                    retryCount=1
                 CoroutineScope(Dispatchers.Main).launch {
                     ProgressUtils.dismissProgressDialog()
-
-                    if (retryCount <= 2) {
+/*                    if (retryCount <= 1) {
                         retryCount++
                         magtekProViewModel.initPOSLink(requireContext())
                     } else {
-                        retryCount = 1
+                        retryCount = 1*/
                         AlertUtils.showCustomAlertWithListenerWithOKCancel(
                             requireContext(),
                             getString(R.string.pax_connect_error), getString(R.string.reconnect),
@@ -2864,8 +2858,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             // Add connect to PAX logic
                             magtekProViewModel.initPOSLink(requireContext())
                         }
-                    }
-
+//                    }
+//
                     /*if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT"){
                         AlertUtils.showCustomAlertWithListenerWithOKCancel(
                             requireContext(),
@@ -2880,7 +2874,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
                     }*/
                 }
-//                }
             }
 
         }
