@@ -201,6 +201,11 @@ class EditPrinterListAdapter : RecyclerView.Adapter<EditPrinterListAdapter.MyVie
 
     @SuppressLint("NotifyDataSetChanged")
     fun setList(dataList: ArrayList<PrinterResponse.Data.OrderTypes>) {
+        /*---------------Removing the Kiosk Order Types-----------------*/
+        var toRemove=dataList.filter { it.orderTypeName.contains("Kiosk",ignoreCase = true) }
+        dataList.removeAll(toRemove)
+        /*---------------Removing the Kiosk Order Types-----------------*/
+
         list.clear()
         list = arrayListOf()
         this.list = dataList

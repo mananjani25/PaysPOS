@@ -2304,7 +2304,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     override fun onPause() {
         arguments?.clear()
-        super.onPause()
+//        super.onPause()
 
         requireActivity().unregisterReceiver(broadcastReceiver)
 
@@ -2312,6 +2312,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             presentation.show()
             presentation.onLogOutOrClockOutWithApiService(apiService)
         }
+
+        super.onPause()
     }
 
     private fun initKitchenPrinter(
