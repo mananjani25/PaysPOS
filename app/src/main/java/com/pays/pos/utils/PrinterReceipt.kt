@@ -3201,15 +3201,15 @@ fun addOrdersForKitchenDineIn(
 
 fun addOrdersForKitchenDineInInner(
     list: ArrayList<TbCartItem>,
-    listItemWithGuest: HashMap<String, ArrayList<TbCartItem>>
+    listItemWithGuest: HashMap<String, ArrayList<TbCartItem>>,
+    isOldSunmiFrameworkVersion: Boolean = false
 ) {
 
     listItemWithGuest.forEach {
 
-        PrintSunmiUtils.addHorizontalInner()
-
+        PrintSunmiUtils.printHorizontalInnerNew(isOldSunmiFrameworkVersion)
         PrintSunmiUtils.normalTextLarge(it.key.toString())
-        PrintSunmiUtils.addHorizontalInner()
+        PrintSunmiUtils.printHorizontalInnerNew(isOldSunmiFrameworkVersion)
 
 
         it.value.forEach { obj ->

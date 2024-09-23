@@ -817,8 +817,22 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
 
 
+                /***
+                 * Fetch discount percentage from subtotal and discount given
+                 */
+                val completePrice = getOrderDetailsResponse?.subTotal?.plus(getOrderDetailsResponse?.totalDiscount?:0.0) ?: 0.0
+                val discountSelectdValue = (getOrderDetailsResponse?.totalDiscount?.div(completePrice) ?: 1.0) * 100
+
+                cartList!!.discountSelectdValue = if(discountSelectdValue.isNaN()) 0.0 else discountSelectdValue
+
+                try {
+                    viewModelPayment.addCart(cartList!!)
+                }catch (e:Exception) {
+                    cartList!!.discountSelectdValue = 0.0
+                    viewModelPayment.addCart(cartList!!)
+                }
+
                 var alreadyDone = false
-                viewModelPayment.addCart(cartList!!)
                 CoroutineScope(Dispatchers.IO).launch {
 //                    if(listWT.isNotEmpty()) {
 //
@@ -976,14 +990,6 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     "totalServiceCharge",
                     MethodUtils.roundOffAmountDouble(serviceCharge)
                 )
-
-                /***
-                 * Fetch discount percentage from subtotal and discount given
-                 */
-                val completePrice = getOrderDetailsResponse?.subTotal?.plus(getOrderDetailsResponse?.totalDiscount?:0.0) ?: 0.0
-                val discountSelectdValue = (getOrderDetailsResponse?.totalDiscount?.div(completePrice) ?: 1.0) * 100
-
-                cartList!!.discountSelectdValue = discountSelectdValue
 
 
                 bundle.putDouble("totalDiscount", MethodUtils.roundOffAmountDouble(totalDiscount))
@@ -11491,20 +11497,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 ).toString()
             )
 
-            SunmiPrinterApi.getInstance().enableUnderline(false)
-            SunmiPrinterApi.getInstance().enableBold(false)
-//            SunmiPrinterApi.getInstance()
-//                .printText(addHorizontalKitchenLineSunmi(PrintSunmiUtils.fontSize))
 
-            PrintSunmiUtils.printHorizontalInnerNew(prefProvider.isOldSunmiFrameworkVersion())
+            PrintSunmiUtils.printHorizontalInnerNew(false)
             SunmiPrinterApi.getInstance().lineWrap(1)
-
-            SunmiPrinterApi.getInstance().enableUnderline(false)
-            SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance()
-                .printText(addHorizontalKitchenLineSunmiForLastHeaderLine(PrintSunmiUtils.fontSize))
-            SunmiPrinterApi.getInstance().lineWrap(2)
-
 
 
             addOrdersForKitchenDineIn(
@@ -11740,12 +11735,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
             )
 
-            PrintSunmiUtils.addHorizontalInner()
-            PrintSunmiUtils.addHorizontalInner()
+            PrintSunmiUtils.printHorizontalInnerNew(prefProvider.isOldSunmiFrameworkVersion())
 
             SunmiPrintHelper.getInstance().lineWrap(1)
 
-            addOrdersForKitchenDineInInner(item, listItemWithGuest)
+            addOrdersForKitchenDineInInner(item, listItemWithGuest,prefProvider.isOldSunmiFrameworkVersion())
 
             if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
 
