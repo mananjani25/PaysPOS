@@ -1303,7 +1303,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             }
         }
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MainApplication.mainActivity = this

@@ -286,7 +286,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
         }
 
-        magTekViewModel.initPOSLink(requireContext(),makeMerchantDetailsCall = false)
+        if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
+            magTekViewModel.initPOSLink(requireContext(),makeMerchantDetailsCall = false)
+        }
 
     }
 
