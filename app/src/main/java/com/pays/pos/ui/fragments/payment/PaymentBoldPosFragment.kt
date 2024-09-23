@@ -24,6 +24,7 @@ import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.DINE_IN
 import com.pays.pos.data.remote.Constants.IS_FROM_ALL_ORDER
 import com.pays.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
+import com.pays.pos.data.remote.Constants.KIOSK_OPEN_ORDER
 import com.pays.pos.data.remote.Constants.MANUAL_SALE
 import com.pays.pos.data.remote.Constants.OPEN_ORDER
 import com.pays.pos.data.remote.Constants.ORDER_TYPE
@@ -347,7 +348,8 @@ class PaymentBoldPosFragment : Fragment() {
                 getString(R.string.pax_transaction_error_message)
             )
         } else {
-            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == OPEN_ORDER) {
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == OPEN_ORDER || prefProvider.getValue(
+                    ORDER_TYPE, TAKEOUT) == KIOSK_OPEN_ORDER) {
                 val navController = findNavController()
                 var bundle: Bundle = Bundle()
                 if (orderId != null) {
