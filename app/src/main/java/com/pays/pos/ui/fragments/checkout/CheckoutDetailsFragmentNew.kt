@@ -122,7 +122,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     var isSelectedCount = 1
     private val paymentviewModel by activityViewModels<PaymentViewModel>()
     private val giftCardViewModel by activityViewModels<GiftCardViewModel>()
-    private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
+//    private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val magtekProViewModel by viewModels<MagtekViewModel>()
 
     var paymentType = "Cash"
@@ -212,7 +212,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
 
-        viewModel.cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+        dashboardViewModel.cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
         cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
 
         if (device == 0) {
@@ -326,7 +326,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         lifecycleScope.launch {
             delay(100)
             if (cartList == null) {
-                cartList = viewModel.cartModel
+                cartList = dashboardViewModel.cartModel
                 Log.e(TAG, "checkCartDealy:  ${Gson().toJson(cartList)}")
             }
 
@@ -527,7 +527,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val tip = prefProvider.getValue(TIP_ADDED_AMOUNT, "")
             if (tip.isNotEmpty()) {
                 tipAmount = tip.toDouble()
-                viewModel.setTipAmount(tipAmount)
+                dashboardViewModel.setTipAmount(tipAmount)
                 tipID = prefProvider.getValueInt(Constants.TIP_ADDED_ID, tipID)
             }
             tipAmountCalculation()
@@ -553,7 +553,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 customerGivenTip.value = true
             }
 
-            viewModel.setTipAmount(tipAmount)
+            dashboardViewModel.setTipAmount(tipAmount)
             tipID = bundle.getInt("tipId")
 
             prefProvider.setValueboolean(Constants.TIP_ADDED, true)
@@ -604,7 +604,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         binding.linearNextSplit.setOnSingleClickListener {
             PaymentBoldPosFragment.newInstance().addTipHideShow(false)
-            viewModel.setSplitCount(isSelectedCount)
+            dashboardViewModel.setSplitCount(isSelectedCount)
             loadPaymentLayout()
             tipAmountCalculation()
         }
@@ -767,7 +767,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val bundle = Bundle()
             bundle.putDouble("totalPrice", WholetotalPrice)
             bundle.putInt("splitValue", isSelectedCount)
-            viewModel.wholetotalPrice = WholetotalPrice
+            dashboardViewModel.wholetotalPrice = WholetotalPrice
             findNavController().navigate(R.id.action_splitFragment_to_splitdialog)
         }
     }
@@ -775,10 +775,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun observeData() {
         paymentviewModel.orderCreate.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                viewModel.activeOrderTypeName = ""
-                viewModel.activeOrderTypeId = 0
-                viewModel.activeOrderTypeText = ""
-                viewModel.deleteOrderTypeBackupByName(
+                dashboardViewModel.activeOrderTypeName = ""
+                dashboardViewModel.activeOrderTypeId = 0
+                dashboardViewModel.activeOrderTypeText = ""
+                dashboardViewModel.deleteOrderTypeBackupByName(
                     prefProvider.employeeId()
                 )
             }
@@ -790,7 +790,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         paymentviewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 LogUtil.logE(TAG, "receiptData: ${Gson().toJson(it.data)}")
-                viewModel.redeemLoyaltyInfo = RedeemLoyaltyInfo()
+                dashboardViewModel.redeemLoyaltyInfo = RedeemLoyaltyInfo()
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
                 EventBus.getDefault()
                     .post(
@@ -803,7 +803,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         )
                     )
 
-                viewModel.updateActiveOrderFlagClear()
+                dashboardViewModel.updateActiveOrderFlagClear()
                 prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, false)
                 prefProvider.setValueboolean(IS_ORDER_REDEEMABLE_WITH_GIFT_CARD, false)
                 prefProvider.setValue(GIFT_CARD_NUMBER, "")
@@ -812,7 +812,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 isInsert = false
                 isCardRev = false
 
-                viewModel.setTipAmount(0.0)
+                dashboardViewModel.setTipAmount(0.0)
                 when {
                     paymentType == "Cash" -> {
                         if (it.data.order.payments.last().paymentType.equals(
@@ -1076,7 +1076,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     isInsert = false
                     isCardRev = false
 
-                    viewModel.setTipAmount(0.0)
+                    dashboardViewModel.setTipAmount(0.0)
                     when (paymentType) {
                         "Cash" -> {
                             LogUtil.logE("TipAmount 4:: ", tipAmount.toString())
@@ -1428,7 +1428,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     isInsert = false
                     isCardRev = false
 
-                    viewModel.setTipAmount(0.0)
+                    dashboardViewModel.setTipAmount(0.0)
                     when (paymentType) {
                         "Cash" -> {
                             LogUtil.logE("TipAmount 4:: ", tipAmount.toString())
@@ -2061,20 +2061,20 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //        paymentviewModel.tipOnAmount = paymentAmount
         //        Above code is commented, because the split amount was not changing, below code is the solution
         try {
-            paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
-                .substring(0, viewModel.totalPrice.toString().indexOf(".") + 3).toDouble()
+            paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 3).toDouble()
         } catch (e: Exception) {
             try {
-                paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
-                    .substring(0, viewModel.totalPrice.toString().indexOf(".") + 2).toDouble()
+                paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                    .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 2).toDouble()
             } catch (e: Exception) {
                 try {
-                    paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
-                        .substring(0, viewModel.totalPrice.toString().indexOf(".") + 1).toDouble()
+                    paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                        .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 1).toDouble()
                 } catch (e: Exception) {
                     try {
-                        paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
-                            .substring(0, viewModel.totalPrice.toString().indexOf(".")).toDouble()
+                        paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                            .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".")).toDouble()
                     } catch (e: Exception) {
                     }
                 }
@@ -2084,8 +2084,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         EventBus.getDefault().post(
             MessageEvent(
-                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_cashPaymentWithVariation() viewModel.subTotalPrice-> ${
-                    Gson().toJson(viewModel.subTotalPrice)
+                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_cashPaymentWithVariation() dashboardViewModel.subTotalPrice-> ${
+                    Gson().toJson(dashboardViewModel.subTotalPrice)
                 } , isSelectedCount-> ${isSelectedCount}", true
             )
         )
@@ -2137,20 +2137,20 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //        paymentviewModel.tipOnAmount = paymentAmount
         //        Above code is commented, because the split amount was not changing, below code is the solution
         try {
-            paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
-                .substring(0, viewModel.totalPrice.toString().indexOf(".") + 3).toDouble()
+            paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 3).toDouble()
         } catch (e: Exception) {
             try {
-                paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
-                    .substring(0, viewModel.totalPrice.toString().indexOf(".") + 2).toDouble()
+                paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                    .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 2).toDouble()
             } catch (e: Exception) {
                 try {
-                    paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
-                        .substring(0, viewModel.totalPrice.toString().indexOf(".") + 1).toDouble()
+                    paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                        .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 1).toDouble()
                 } catch (e: Exception) {
                     try {
-                        paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
-                            .substring(0, viewModel.totalPrice.toString().indexOf(".")).toDouble()
+                        paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                            .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".")).toDouble()
                     } catch (e: Exception) {
                     }
                 }
@@ -2160,8 +2160,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         EventBus.getDefault().post(
             MessageEvent(
-                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_cashPaymentWithVariation() viewModel.subTotalPrice-> ${
-                    Gson().toJson(viewModel.subTotalPrice)
+                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_cashPaymentWithVariation() dashboardViewModel.subTotalPrice-> ${
+                    Gson().toJson(dashboardViewModel.subTotalPrice)
                 } , isSelectedCount-> ${isSelectedCount}", true
             )
         )
@@ -2202,8 +2202,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         EventBus.getDefault().post(
             MessageEvent(
-                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_redeemGiftCard() viewModel.subTotalPrice-> ${
-                    Gson().toJson(viewModel.subTotalPrice)
+                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_redeemGiftCard() dashboardViewModel.subTotalPrice-> ${
+                    Gson().toJson(dashboardViewModel.subTotalPrice)
                 } , isSelectedCount-> ${isSelectedCount}", true
             )
         )
@@ -2261,8 +2261,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 EventBus.getDefault().post(
                     MessageEvent(
-                        "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_binding.llCreditCard.setOnSingleClickListener viewModel.subTotalPrice-> ${
-                            Gson().toJson(viewModel.subTotalPrice)
+                        "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_binding.llCreditCard.setOnSingleClickListener dashboardViewModel.subTotalPrice-> ${
+                            Gson().toJson(dashboardViewModel.subTotalPrice)
                         } , isSelectedCount-> ${isSelectedCount}", true
                     )
                 )
@@ -2303,30 +2303,30 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //        paymentviewModel.tipOnAmount = paymentAmount
                 //        Above code is commented, because the split amount was not changing, below code is the solution
                 try {
-                    paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
-                        .substring(0, viewModel.totalPrice.toString().indexOf(".") + 3).toDouble()
+                    paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                        .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 3).toDouble()
                 } catch (e: Exception) {
                     try {
-                        paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
-                            .substring(0, viewModel.totalPrice.toString().indexOf(".") + 2)
+                        paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                            .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 2)
                             .toDouble()
                     } catch (e: Exception) {
                         try {
-                            paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
-                                .substring(0, viewModel.totalPrice.toString().indexOf(".") + 1)
+                            paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                                .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 1)
                                 .toDouble()
                         } catch (e: Exception) {
                             try {
-                                paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
-                                    .substring(0, viewModel.totalPrice.toString().indexOf("."))
+                                paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                                    .substring(0, dashboardViewModel.totalPrice.toString().indexOf("."))
                                     .toDouble()
                             } catch (e: Exception) {
                             }
                         }
                     }
                 }
-//                paymentviewModel.tipOnAmount = viewModel.totalPrice.toString()
-//                    .substring(0, viewModel.totalPrice.toString().indexOf(".") + 3).toDouble()
+//                paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+//                    .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 3).toDouble()
 
                 /**
                  * Added to check tip details
@@ -2541,8 +2541,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             EventBus.getDefault().post(
                 MessageEvent(
-                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_binding.txtCharge.setOnSingleClickListener viewModel.subTotalPrice-> ${
-                        Gson().toJson(viewModel.subTotalPrice)
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_binding.txtCharge.setOnSingleClickListener dashboardViewModel.subTotalPrice-> ${
+                        Gson().toJson(dashboardViewModel.subTotalPrice)
                     } , isSelectedCount-> ${isSelectedCount}", true
                 )
             )
@@ -2945,21 +2945,21 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     // To get payment related data srtored in preference
     fun getDataFromPref() {
-        redeemLoyaltyInfo = viewModel.redeemLoyaltyInfo
+        redeemLoyaltyInfo = dashboardViewModel.redeemLoyaltyInfo
         if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "")
                 .isEmpty() || prefProvider.getValue(
                 Constants.WHOLE_AMOUNT,
                 ""
             ) == "0.0"
         ) {
-            Log.e("AmtviewModeltotalPrice", "totalPrice  ${viewModel.totalPrice}")
-            viewModel.totalServiceCharge =
-                String.format("%.2f", viewModel.totalServiceCharge).toDouble()
+            Log.e("AmtviewModeltotalPrice", "totalPrice  ${dashboardViewModel.totalPrice}")
+            dashboardViewModel.totalServiceCharge =
+                String.format("%.2f", dashboardViewModel.totalServiceCharge).toDouble()
 
             EventBus.getDefault().post(
                 MessageEvent(
-                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_getDataFromPref()_before_new_calc viewModel.subTotalPrice-> ${
-                        Gson().toJson(viewModel.subTotalPrice)
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_getDataFromPref()_before_new_calc dashboardViewModel.subTotalPrice-> ${
+                        Gson().toJson(dashboardViewModel.subTotalPrice)
                     }"
                 )
             )
@@ -2967,7 +2967,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             var subTotal = 0.0
             var loyaltyAmt = 0.0
-            viewModel.currentCartItems.forEach {
+            dashboardViewModel.currentCartItems.forEach {
                 subTotal += it.price * it.itemQuantity
                 if (it.modifiers.isNotEmpty()) {
                     it.modifiers.forEach { modifier ->
@@ -2975,73 +2975,73 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     }
                 }
             }
-            viewModel.redeemLoyaltyInfo?.let { loyalty ->
+            dashboardViewModel.redeemLoyaltyInfo?.let { loyalty ->
                 if(loyalty.isLoyaltyApplied == true) loyaltyAmt  = loyalty.usedLoyaltyAmount
             }
-            viewModel.subTotalPrice = subTotal - viewModel.totalDiscount - loyaltyAmt
+            dashboardViewModel.subTotalPrice = subTotal - dashboardViewModel.totalDiscount - loyaltyAmt
 */
 
             EventBus.getDefault().post(
                 MessageEvent(
-                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_getDataFromPref()_after_new_calc viewModel.subTotalPrice-> ${
-                        Gson().toJson(viewModel.subTotalPrice)
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_getDataFromPref()_after_new_calc dashboardViewModel.subTotalPrice-> ${
+                        Gson().toJson(dashboardViewModel.subTotalPrice)
                     }"
                 )
             )
 
             EventBus.getDefault().post(
                 MessageEvent(
-                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_getDataFromPref() viewModel.totalTax-> ${
-                        Gson().toJson(viewModel.totalTax)
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_getDataFromPref() dashboardViewModel.totalTax-> ${
+                        Gson().toJson(dashboardViewModel.totalTax)
                     }"
                 )
             )
 
             EventBus.getDefault().post(
                 MessageEvent(
-                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_getDataFromPref() viewModel.totalServiceCharge-> ${
-                        Gson().toJson(viewModel.totalServiceCharge)
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_getDataFromPref() dashboardViewModel.totalServiceCharge-> ${
+                        Gson().toJson(dashboardViewModel.totalServiceCharge)
                     }"
                 )
             )
 
-            WholetotalPrice = MethodUtils.getTwoDecimal(viewModel.subTotalPrice).toPrecision(2)
-                .toDouble() + viewModel.totalTax + String.format(
+            WholetotalPrice = MethodUtils.getTwoDecimal(dashboardViewModel.subTotalPrice).toPrecision(2)
+                .toDouble() + dashboardViewModel.totalTax + String.format(
                 "%.2f",
-                viewModel.totalServiceCharge
+                dashboardViewModel.totalServiceCharge
             ).toDouble()
 
 
             if (redeemLoyaltyInfo?.needToApplyLoyalty == true) {
                 WholetotalPrice -= redeemLoyaltyInfo?.usedLoyaltyAmount!!
-                viewModel.totalPrice = WholetotalPrice
+                dashboardViewModel.totalPrice = WholetotalPrice
             } else {
-                viewModel.totalPrice = WholetotalPrice
+                dashboardViewModel.totalPrice = WholetotalPrice
             }
             Log.e("checkWhole", "WholetotalPrice:  ${WholetotalPrice}")
-            Log.e("checkWhole", "subTotalPrice:  ${viewModel.subTotalPrice}")
-            Log.e("checkWhole", "totalServiceCharge:  ${viewModel.totalServiceCharge}")
-            Log.e("checkWhole", "totalTax:  ${viewModel.totalTax}")
-            Log.e("checkWhole", "totalDiscount:  ${viewModel.totalDiscount}")
+            Log.e("checkWhole", "subTotalPrice:  ${dashboardViewModel.subTotalPrice}")
+            Log.e("checkWhole", "totalServiceCharge:  ${dashboardViewModel.totalServiceCharge}")
+            Log.e("checkWhole", "totalTax:  ${dashboardViewModel.totalTax}")
+            Log.e("checkWhole", "totalDiscount:  ${dashboardViewModel.totalDiscount}")
             WholetotalPrice = String.format("%.2f", WholetotalPrice).toDouble()
             Log.e("checkWholePrice", "WholetotalPrice:  ${WholetotalPrice}")
 
             prefProvider.setValue(
                 Constants.WHOLE_AMOUNT,
-                String.format("%.2f", getTwoDecimal(viewModel.totalPrice))
+                String.format("%.2f", getTwoDecimal(dashboardViewModel.totalPrice))
             )
         } else {
             WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
 
             EventBus.getDefault().post(
                 MessageEvent(
-                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_getDataFromPref()_WHOLE_AMOUNT in Preference viewModel.subTotalPrice-> ${
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_getDataFromPref()_WHOLE_AMOUNT in Preference dashboardViewModel.subTotalPrice-> ${
                         Gson().toJson(WholetotalPrice)
                     }"
                 )
             )
 
-            viewModel.totalPrice = WholetotalPrice
+            dashboardViewModel.totalPrice = WholetotalPrice
         }
 
         WholetotalPrice = getTwoDecimal(WholetotalPrice)
@@ -3050,24 +3050,24 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 ""
             ) == "0.0"
         ) {
-            subTotalPrice = viewModel.subTotalPrice
+            subTotalPrice = dashboardViewModel.subTotalPrice
             EventBus.getDefault().post(
                 MessageEvent(
-                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_getDataFromPref()_1 viewModel.subTotalPrice-> ${
-                        Gson().toJson(viewModel.subTotalPrice)
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_getDataFromPref()_1 dashboardViewModel.subTotalPrice-> ${
+                        Gson().toJson(dashboardViewModel.subTotalPrice)
                     }", true
                 )
             )
             prefProvider.setValue(
                 Constants.SUB_TOTAL,
-                String.format("%.2f", viewModel.subTotalPrice)
+                String.format("%.2f", dashboardViewModel.subTotalPrice)
             )
         } else {
             subTotalPrice = prefProvider.getValue(Constants.SUB_TOTAL, "").toDouble()
             EventBus.getDefault().post(
                 MessageEvent(
-                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_getDataFromPref()_2 viewModel.subTotalPrice-> ${
-                        Gson().toJson(viewModel.subTotalPrice)
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_getDataFromPref()_2 dashboardViewModel.subTotalPrice-> ${
+                        Gson().toJson(dashboardViewModel.subTotalPrice)
                     }", true
                 )
             )
@@ -3078,10 +3078,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 ""
             ) == "0.0"
         ) {
-            totalTax = viewModel.totalTax
+            totalTax = dashboardViewModel.totalTax
             prefProvider.setValue(
                 Constants.TAX_CHARGE,
-                String.format("%.2f", viewModel.totalTax)
+                String.format("%.2f", dashboardViewModel.totalTax)
             )
         } else {
             totalTax = prefProvider.getValue(Constants.TAX_CHARGE, "").toDouble()
@@ -3094,10 +3094,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 ""
             ) == "0.0"
         ) {
-            totalServiceCharge = viewModel.totalServiceCharge
+            totalServiceCharge = dashboardViewModel.totalServiceCharge
             prefProvider.setValue(
                 Constants.SERVICE_CHARGE,
-                String.format("%.2f", viewModel.totalServiceCharge)
+                String.format("%.2f", dashboardViewModel.totalServiceCharge)
             )
         } else {
             totalServiceCharge = prefProvider.getValue(Constants.SERVICE_CHARGE, "").toDouble()
@@ -3110,10 +3110,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 ""
             ) == "0.0"
         ) {
-            totalDiscount = viewModel.totalDiscount
+            totalDiscount = dashboardViewModel.totalDiscount
             prefProvider.setValue(
                 Constants.TOTAL_DISCOUNT,
-                String.format("%.2f", viewModel.totalDiscount)
+                String.format("%.2f", dashboardViewModel.totalDiscount)
             )
         } else {
             totalDiscount = prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").toDouble()
@@ -3125,8 +3125,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 ""
             ) == "0.0"
         ) {
-            tipAmount = viewModel.tip
-            prefProvider.setValue(Constants.TIP, String.format("%.2f", viewModel.tip))
+            tipAmount = dashboardViewModel.tip
+            prefProvider.setValue(Constants.TIP, String.format("%.2f", dashboardViewModel.tip))
         } else {
             tipAmount = prefProvider.getValue(Constants.TIP, "").toDouble()
         }
@@ -3136,8 +3136,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 ""
             ) == "0.0"
         ) {
-            tipAmount = viewModel.tip
-            prefProvider.setValue(Constants.TIP, String.format("%.2f", viewModel.tip))
+            tipAmount = dashboardViewModel.tip
+            prefProvider.setValue(Constants.TIP, String.format("%.2f", dashboardViewModel.tip))
         } else {
             tipAmount = prefProvider.getValue(Constants.TIP, "").toDouble()
         }
@@ -3156,15 +3156,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             Constants.CASH_DISCOUNT_SURCHARGE,
             String.format("%.2f", cashDiscountSurcharge)
         )
-        cashDiscountType = viewModel.cashDiscountType
+        cashDiscountType = dashboardViewModel.cashDiscountType
 
 
 
 
-        cartList = viewModel.cartModel
+        cartList = dashboardViewModel.cartModel
 
         //Added (&& condition to check name) by Dharmesh to resolve issue BIS-352
-        viewModel.ordertypelist.forEach {
+        dashboardViewModel.ordertypelist.forEach {
             if (prefProvider.getOrderTypeName(
                     Constants.ORDER_TYPE, DEFAULT_ORDER
                 ) == it.orderType && prefProvider.getOrderTypeName(
@@ -3176,14 +3176,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         paymentviewModel.saveActualValue(
-            viewModel.totalPrice,
-            viewModel.subTotalPrice,
-            viewModel.totalTax,
-            viewModel.totalServiceCharge,
-            viewModel.tip,
-            viewModel.totalDiscount,
-            viewModel.cashdiscountAmount,
-            viewModel.totalPrice
+            dashboardViewModel.totalPrice,
+            dashboardViewModel.subTotalPrice,
+            dashboardViewModel.totalTax,
+            dashboardViewModel.totalServiceCharge,
+            dashboardViewModel.tip,
+            dashboardViewModel.totalDiscount,
+            dashboardViewModel.cashdiscountAmount,
+            dashboardViewModel.totalPrice
         )
 
         setupPaymentScreen(isSelectedCount)
@@ -3238,11 +3238,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             presentation.updateTotals(
                 String.format(
                     "%.3f",
-                    (viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge)
+                    (dashboardViewModel.subTotalPrice + dashboardViewModel.totalTax + dashboardViewModel.totalServiceCharge)
                 ).toDouble().toString(),
                 String.format(
                     "%.3f",
-                    (viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge + viewModel.cashdiscountAmount)
+                    (dashboardViewModel.subTotalPrice + dashboardViewModel.totalTax + dashboardViewModel.totalServiceCharge + dashboardViewModel.cashdiscountAmount)
                 ).toDouble().toString()
             )
         }
@@ -3458,9 +3458,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 tipAmountCalculation()
             } else {/*
                 tipAmount = 0.0
-                viewModel.setTipAmount(0.0)
-                viewModel.totalTipAmount = 0.0
-                viewModel.customerGivenTip.value = false
+                dashboardViewModel.setTipAmount(0.0)
+                dashboardViewModel.totalTipAmount = 0.0
+                dashboardViewModel.customerGivenTip.value = false
                 prefProvider.setValueboolean(Constants.TIP_ADDED, false)
                 prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
                 if (this::presentation.isInitialized) {
@@ -3489,16 +3489,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
         binding.linearTab2.setOnSingleClickListener {
 
-            if (tipAmount != 0.0 && viewModel.tipTransactionAmount != 0.0) {
+            if (tipAmount != 0.0 && dashboardViewModel.tipTransactionAmount != 0.0) {
                 AlertUtils.showCustomAlertWithListenerWithOKCancel(
                     requireContext(),
                     "If you are going to do split payment then existing tip will be removed."
                 ) { _, _ ->
                     PaymentBoldPosFragment.newInstance().addTipHideShow(true)
                     tipAmount = 0.0
-                    viewModel.setTipAmount(0.0)
-                    viewModel.totalTipAmount = 0.0
-                    viewModel.customerGivenTip.value = false
+                    dashboardViewModel.setTipAmount(0.0)
+                    dashboardViewModel.totalTipAmount = 0.0
+                    dashboardViewModel.customerGivenTip.value = false
                     prefProvider.setValueboolean(Constants.TIP_ADDED, false)
 
                     if (this::presentation.isInitialized) {
@@ -3633,15 +3633,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
 
             if (cartModel != null) {
-                viewModel.cartModel = cartModel
+                dashboardViewModel.cartModel = cartModel
                 cartList = cartModel
             } else if (cartModel2 != null) {
-                viewModel.cartModel = cartModel2
+                dashboardViewModel.cartModel = cartModel2
                 cartList = cartModel2
-            } else if (viewModel.cartModel == null) {
+            } else if (dashboardViewModel.cartModel == null) {
                 runBlocking {
                     var model =
-                        CoroutineScope(Dispatchers.IO).async { viewModel.getCartModelBackup() }
+                        CoroutineScope(Dispatchers.IO).async { dashboardViewModel.getCartModelBackup() }
                             .await().last().data
 
                     EventBus.getDefault().post(
@@ -3651,7 +3651,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             }", true
                         )
                     )
-                    viewModel.cartModel = Gson().fromJson(model, CartModel::class.java)
+                    dashboardViewModel.cartModel = Gson().fromJson(model, CartModel::class.java)
                 }
             }
         }
@@ -3673,8 +3673,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         if (cartList!!.items == null || cartList!!.items!!.isEmpty()) {
             var items: ArrayList<TbItem>? = ArrayList()
-            /*  for (item in viewModel.currentCartItems) {*/
-            for (item in viewModel.currentCartItems) {
+            /*  for (item in dashboardViewModel.currentCartItems) {*/
+            for (item in dashboardViewModel.currentCartItems) {
                 var tbItem = TbItem()
                 tbItem.apply {
 
@@ -3758,7 +3758,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             if (oldItems.isNotEmpty()) {
 
-                for (item in viewModel.currentCartItems) {
+                for (item in dashboardViewModel.currentCartItems) {
                     try {
                         if (oldItems.isNotEmpty()) {
                             /*Added by Rahul to solve the modifiers not removing issue*/
@@ -3935,11 +3935,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     suspend fun getCartModelsList() {
         CoroutineScope(Dispatchers.IO).async {
-            var cartListFromDb: List<CartModel> = viewModel.getAllCartModels()
+            var cartListFromDb: List<CartModel> = dashboardViewModel.getAllCartModels()
             if (cartListFromDb != null) {
                 try {
                     cartList = cartListFromDb.get(0)
-                    viewModel.cartModel = cartList
+                    dashboardViewModel.cartModel = cartList
                 } catch (e: Exception) {
                 }
 
@@ -4016,11 +4016,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             EventBus.getDefault()
                 .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (cartModel != null)_1"))
 
-            viewModel.cartModel = cartModel
+            dashboardViewModel.cartModel = cartModel
             val myRequest = cartModel.let {
                 paymentviewModel.createOrderRequestNew(
                     oldItems,
-                    viewModel.currentCartItems,
+                    dashboardViewModel.currentCartItems,
                     it,
                     subTotalPrice,
                     paymentAmount,
@@ -4052,11 +4052,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             EventBus.getDefault()
                 .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, else if (cartModel2 != null)_1"))
 
-            viewModel.cartModel = cartModel2
+            dashboardViewModel.cartModel = cartModel2
             val myRequest = cartModel2.let {
                 paymentviewModel.createOrderRequestNew(
                     oldItems,
-                    viewModel.currentCartItems,
+                    dashboardViewModel.currentCartItems,
                     it,
                     subTotalPrice,
                     paymentAmount,
@@ -4100,7 +4100,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     activity!!
                 )
 */
-                viewModel.cartModel?.let {
+                dashboardViewModel.cartModel?.let {
                     if (it.orderTypeId == 9) {
                         myRequest.order.orderTypeId = it.orderTypeId
                     }
@@ -4111,12 +4111,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             /* Added by Rahul to solve the cartModel crash issue, i.e. cartModel is getting null - START*/
 
-            if (viewModel.cartModel == null) {
+            if (dashboardViewModel.cartModel == null) {
                 EventBus.getDefault()
-                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (viewModel.cartModel == null)_1"))
+                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (dashboardViewModel.cartModel == null)_1"))
 
                 var currentCartItems = arrayListOf<TbItem>()
-                for (tbItem in viewModel.currentCartItems) {
+                for (tbItem in dashboardViewModel.currentCartItems) {
                     currentCartItems.add(TbItem().convertCartToItem(tbItem, tbItem))
                 }
                 var isManual = false
@@ -4125,7 +4125,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 } else {
                     isManual = false
                 }
-                viewModel.cartModel = CartModel().apply {
+                dashboardViewModel.cartModel = CartModel().apply {
                     terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
                     employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
                     locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
@@ -4155,13 +4155,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     }
                 }
 
-                dashboardViewModel.addCart(viewModel.cartModel!!)
+                dashboardViewModel.addCart(dashboardViewModel.cartModel!!)
                 EventBus.getDefault()
-                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (viewModel.cartModel == null)_2"))
+                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (dashboardViewModel.cartModel == null)_2"))
                 EventBus.getDefault().post(
                     MessageEvent(
-                        "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (viewModel.cartModel == null) -> ${
-                            Gson().toJson(viewModel.cartModel)
+                        "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (dashboardViewModel.cartModel == null) -> ${
+                            Gson().toJson(dashboardViewModel.cartModel)
                         }"
                     )
                 )
@@ -4179,10 +4179,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     }", true
                 )
             )
-            val myRequest = viewModel.cartModel?.let {
+            val myRequest = dashboardViewModel.cartModel?.let {
                 paymentviewModel.createOrderRequestNew(
                     oldItems,
-                    viewModel.currentCartItems,
+                    dashboardViewModel.currentCartItems,
                     it,
                     subTotalPrice,
                     paymentAmount,
@@ -4246,7 +4246,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     activity!!
                 )
 */
-                viewModel.cartModel?.let {
+                dashboardViewModel.cartModel?.let {
                     if (it.orderTypeId == 9) {
                         myRequest.order.orderTypeId = it.orderTypeId
                     }
@@ -4334,11 +4334,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             EventBus.getDefault()
                 .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (cartModel != null)_1"))
 
-            viewModel.cartModel = cartModel
+            dashboardViewModel.cartModel = cartModel
             val myRequest = cartModel.let {
                 paymentviewModel.createOrderRequestNew(
                     oldItems,
-                    viewModel.currentCartItems,
+                    dashboardViewModel.currentCartItems,
                     it,
                     subTotalPrice,
                     paymentAmount,
@@ -4370,11 +4370,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             EventBus.getDefault()
                 .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, else if (cartModel2 != null)_1"))
 
-            viewModel.cartModel = cartModel2
+            dashboardViewModel.cartModel = cartModel2
             val myRequest = cartModel2.let {
                 paymentviewModel.createOrderRequestNew(
                     oldItems,
-                    viewModel.currentCartItems,
+                    dashboardViewModel.currentCartItems,
                     it,
                     subTotalPrice,
                     paymentAmount,
@@ -4418,7 +4418,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     activity!!
                 )
 */
-                viewModel.cartModel?.let {
+                dashboardViewModel.cartModel?.let {
                     if (it.orderTypeId == 9) {
                         myRequest.order.orderTypeId = it.orderTypeId
                     }
@@ -4429,12 +4429,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             /* Added by Rahul to solve the cartModel crash issue, i.e. cartModel is getting null - START*/
 
-            if (viewModel.cartModel == null) {
+            if (dashboardViewModel.cartModel == null) {
                 EventBus.getDefault()
-                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (viewModel.cartModel == null)_1"))
+                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (dashboardViewModel.cartModel == null)_1"))
 
                 var currentCartItems = arrayListOf<TbItem>()
-                for (tbItem in viewModel.currentCartItems) {
+                for (tbItem in dashboardViewModel.currentCartItems) {
                     currentCartItems.add(TbItem().convertCartToItem(tbItem, tbItem))
                 }
                 var isManual = false
@@ -4443,7 +4443,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 } else {
                     isManual = false
                 }
-                viewModel.cartModel = CartModel().apply {
+                dashboardViewModel.cartModel = CartModel().apply {
                     terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
                     employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
                     locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
@@ -4473,13 +4473,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     }
                 }
 
-                dashboardViewModel.addCart(viewModel.cartModel!!)
+                dashboardViewModel.addCart(dashboardViewModel.cartModel!!)
                 EventBus.getDefault()
-                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (viewModel.cartModel == null)_2"))
+                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (dashboardViewModel.cartModel == null)_2"))
                 EventBus.getDefault().post(
                     MessageEvent(
-                        "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (viewModel.cartModel == null) -> ${
-                            Gson().toJson(viewModel.cartModel)
+                        "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (dashboardViewModel.cartModel == null) -> ${
+                            Gson().toJson(dashboardViewModel.cartModel)
                         }"
                     )
                 )
@@ -4497,10 +4497,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     }", true
                 )
             )
-            val myRequest = viewModel.cartModel?.let {
+            val myRequest = dashboardViewModel.cartModel?.let {
                 paymentviewModel.createOrderRequestNew(
                     oldItems,
-                    viewModel.currentCartItems,
+                    dashboardViewModel.currentCartItems,
                     it,
                     subTotalPrice,
                     paymentAmount,
@@ -4564,7 +4564,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     activity!!
                 )
 */
-                viewModel.cartModel?.let {
+                dashboardViewModel.cartModel?.let {
                     if (it.orderTypeId == 9) {
                         myRequest.order.orderTypeId = it.orderTypeId
                     }
@@ -4628,7 +4628,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
            Log.d("yash", "makeCashPayment: total disc  : " + totalDiscount)
            Log.d("yash", "makeCashPayment: total serv  : " + totalServiceCharge)
            Log.e("checkCartList", "cartList:  ${Gson().toJson(cartList)}")
-           Log.e("checkCartList", "cartList:  ${Gson().toJson(viewModel.cartModel)}")
+           Log.e("checkCartList", "cartList:  ${Gson().toJson(dashboardViewModel.cartModel)}")
            *//*val myRequest = cartList?.let {
             paymentviewModel.createOrderRequest(
                 it,
@@ -4650,9 +4650,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 tipID
             )
         }*//*
-        val myRequest = viewModel.cartModel?.let {
+        val myRequest = dashboardViewModel.cartModel?.let {
             paymentviewModel.createOrderRequestNew(
-                viewModel.currentCartItems,
+                dashboardViewModel.currentCartItems,
                 it,
                 subTotalPrice,
                 paymentAmount,
@@ -5379,15 +5379,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 paymentviewModel.createOrderRequest(
                     it,
-                    viewModel.subTotalPrice,
-                    viewModel.totalPrice,
-                    viewModel.totalServiceCharge,
-                    viewModel.totalTax,
+                    dashboardViewModel.subTotalPrice,
+                    dashboardViewModel.totalPrice,
+                    dashboardViewModel.totalServiceCharge,
+                    dashboardViewModel.totalTax,
                     prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
                     "",
                     "",
                     false,
-                    viewModel.totalDiscount,
+                    dashboardViewModel.totalDiscount,
                     0.0,
                     0,
                     null,
