@@ -1184,6 +1184,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             } else {
                 errorDisplay("Payment Amount is zero.")
             }
+
+            dashboardViewModel.paymentType = "card"
+
         }
         binding.llManualCardEntry.setOnSingleClickListener {
             binding.frameLayoutId.visible()
