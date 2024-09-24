@@ -13,7 +13,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -38,7 +37,6 @@ import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.MagtekModule
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.magtek.MagtekRequestUtils
@@ -2557,11 +2555,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     private fun navigateOnPaymentSuccess() {
         dineinOrderVieweModel.onPayment.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { str ->
-                LogUtil.logE(TAG, "getstr:   $str")
+                LogUtil.logE("DINE IN GUEST PAYMENT", "getstr:   $str")
                 /*AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), str) { _, _ ->*/
 
 
-                gotoPay()
+                gotoPay(str)
 
 
                 /*}*/
@@ -2570,7 +2568,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         }
     }
 
-    private fun gotoPay() {
+    private fun gotoPay(createOrder: CreateOrderResponse) {
         when {
 
             paymentType == "Cash" -> {
@@ -2827,14 +2825,13 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
 
                 orderId?.let { bundle.putInt("orderID", it) }
-                // bundle.putParcelable("receiptData", it.data)
+                bundle.putParcelable("receiptData", createOrder.data)
                 bundle.putInt("splitValue", isSelectedCount)
                 bundle.putBoolean("isSplitByAmount", false)
                 bundle.putString("paymentType", "Card")
                 bundle.putParcelable("cartList", cartList)
                 bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
                 bundle.putDouble("TipAmount", tipAmount)
-
                 bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                 bundle.putBoolean("isFromActiveOrder", false)
                 bundle.putBoolean("isGuestPaymentTotal", isLastPayment)

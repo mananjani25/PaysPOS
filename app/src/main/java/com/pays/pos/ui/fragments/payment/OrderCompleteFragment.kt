@@ -1926,7 +1926,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 generateDineInPrint(customerReceiptPrinters, type, "")
             }
 
-        } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
+        } else
+            if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
             if (isGuest) {
 
@@ -4834,6 +4835,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     SunmiPrintHelper.getInstance().lineWrap(1)
                 }
             }
+
+
+
             if (receiptModel?.order?.payments?.isNotEmpty() == true) {
 
                 val str10 = padLine(
@@ -6963,6 +6967,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                     }
 
+                                    outputStream.write(LPrint.LINE_FEED)
                                     outputStream.write(LPrint.DASHED_LINE_FEED)
 
                                     /**
@@ -7035,7 +7040,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                     } else {
                                                                         "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(modifierObj.name)
                                                                     },
-                                                                    getModifierItemPriceToShow(modifierObj.price, modifierObj.itemQuantity),
+                                                                    getModifierItemPriceToShow(modifierObj.price, obj.itemQuantity * modifierObj.modifier_quantity),
                                                                     48
                                                                 ).toString().toByteArray()
 
@@ -7293,10 +7298,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                      */
 
                                         if (customerSettingModel.showTipSuggestion) {
+                                            write(LPrint.LINE_FEED)
                                             write(LPrint.BOLD_ON)
                                             write("Additional Tips".toByteArray())
-
                                             write(LPrint.NORMAL_SIZE)
+                                            write(LPrint.LINE_FEED)
                                             write(LPrint.DASHED_LINE_FEED)
 
 
@@ -7351,8 +7357,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                      * CARD DETAILS
                                      */
 
-                                    if(order?.payments?.isNotEmpty() == true)
-                                    if (order?.payments?.last()?.paymentType?.lowercase() == "Card".lowercase()) {
+                                    val _order = receiptModel?.order
+
+                                    if(_order?.payments?.isNotEmpty() == true)
+                                    if (_order?.payments?.first()?.paymentType?.lowercase() == "Card".lowercase()) {
                                         /*val str12 = padLine(
                                             "",
                                             receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString(),
@@ -7365,7 +7373,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         }*/
 
                                         var strCardType =
-                                            order.payments.get(order.payments.size!! - 1).cardType.toString()
+                                            _order.payments.get(_order.payments.size!! - 1).cardType.toString()
 
                                         if (!paymentViewModel.extData.isNullOrEmpty()) {
 
@@ -7389,7 +7397,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         }
                                         val str14 = padLine(
                                             "",
-                                            order.payments[order.payments.size - 1].cardNumber.toString(),
+                                            _order.payments[_order.payments.size - 1].cardNumber.toString(),
                                             48
                                         ).toString()
 
