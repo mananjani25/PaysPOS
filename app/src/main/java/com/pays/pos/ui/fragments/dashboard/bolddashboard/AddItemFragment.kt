@@ -123,6 +123,13 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
         binding = FragmentAddItemBinding.inflate(inflater, container, false)
         getServiceCharges()
         binding.lifecycleOwner = this
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         variationAdapter = VariationListAdapter()
         binding.rvVariationList.adapter = variationAdapter
         variationAdapter.setCallback(this)
@@ -131,11 +138,6 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
         binding.txtDone.isEnabled = isUpdateItem
 
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         getData()
         onClick()
         getCartList()
@@ -166,6 +168,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
             }
 
         }
+
         binding.edttxtQuantity.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 binding.edttxtQuantity?.isCursorVisible = true
