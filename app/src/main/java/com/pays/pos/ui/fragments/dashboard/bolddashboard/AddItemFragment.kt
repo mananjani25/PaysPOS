@@ -122,7 +122,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
     ): View? {
         binding = FragmentAddItemBinding.inflate(inflater, container, false)
         getServiceCharges()
-        binding.lifecycleOwner = this
+
+        /*Commented to solve BIS-4451 */
+//        binding.lifecycleOwner = this
+        /*Commented to solve BIS-4451 */
+
+        binding.lifecycleOwner = viewLifecycleOwner
 
         return binding.root
     }
