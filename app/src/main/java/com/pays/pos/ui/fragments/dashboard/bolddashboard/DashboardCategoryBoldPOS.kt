@@ -1485,11 +1485,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     private fun initLandiCashBox() {
-        var omniDriver:OmniDriver = OmniDriver.me(requireContext())
+        var omniDriver:OmniDriver = OmniDriver.me(requireActivity())
+
 
         omniDriver.init(object : OmniConnection {
-            override fun onConnected() {}
-            override fun onDisconnected(error: Int) {}
+            override fun onConnected() {
+                Log.d("OmniDriver:", "Connected")
+            }
+            override fun onDisconnected(error: Int) {
+                Log.d("OmniDriver:", "Disconnected")
+            }
         })
 
         var cashBox: CashBox = omniDriver.getCashBox(Bundle())
