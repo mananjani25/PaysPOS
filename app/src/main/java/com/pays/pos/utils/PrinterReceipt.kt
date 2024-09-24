@@ -5483,7 +5483,7 @@ fun addWholeTbItemToGuestInnerLandi(
                     (obj.price * obj.itemQuantity) - obj.discountPrice
 
                 obj.modifiers.forEach {
-                    modifierPrice += (it.price * it.itemQuantity)
+                    modifierPrice += (it.price * it.modifier_quantity * obj.itemQuantity)
                 }
 
                 val totalPrice = price + modifierPrice
@@ -5517,7 +5517,7 @@ fun addWholeTbItemToGuestInnerLandi(
     val price = (subTotal) / guestCount
 
     var priceToShow = ""
-    if (price > 0.0) {
+    if (list.price > 0.0) {
         priceToShow = MethodUtils.roundOffAmount(price)
     }
 
@@ -5729,7 +5729,7 @@ fun addOrderItemForDineIn(
             builder.addText(
                 padLineCustomerItem(
                     "   " + getItemNameToShow(modifierObj.name),
-                    getModifierItemPriceToShow(modifierObj.price, modifierObj.itemQuantity),
+                    getModifierItemPriceToShow(modifierObj.price, modifierObj.modifier_quantity * obj.itemQuantity),
                     if (font == Constants.LARGE) {
                         23
                     } else {
@@ -5799,7 +5799,7 @@ fun addOrderItemForDineIn(
                     } else {
                         "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(modifierObj.name)
                     },
-                    getModifierItemPriceToShow(modifierObj.price, modifierObj.itemQuantity),
+                    getModifierItemPriceToShow(modifierObj.price, modifierObj.modifier_quantity * obj.itemQuantity),
                     if (font == Constants.LARGE) 23 else 48
                 ).toString()
             )
@@ -5851,7 +5851,7 @@ fun addOrderItemForDineInInnerLandi(
                     } else {
                         "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(modifierObj.name)
                     },
-                    getModifierItemPriceToShow(modifierObj.price, modifierObj.itemQuantity),
+                    getModifierItemPriceToShow(modifierObj.price, modifierObj.modifier_quantity * obj.itemQuantity),
                     48
                 ).toString()
             )
@@ -5902,7 +5902,7 @@ fun addOrderItemForDineInInner(
                 } else {
                     "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(modifierObj.name)
                 },
-                getModifierItemPriceToShow(modifierObj.price, modifierObj.itemQuantity),
+                getModifierItemPriceToShow(modifierObj.price, modifierObj.modifier_quantity * obj.itemQuantity),
                 if (font == Constants.LARGE) 23 else 48
             ).toString()
 

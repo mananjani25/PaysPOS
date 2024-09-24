@@ -77,8 +77,8 @@ class DineInOrderTableViewModel @Inject constructor(
     private val _wastageItemsSuccess = MutableLiveData<Event<String>>()
     val wastageItemsSuccess: LiveData<Event<String>> = _wastageItemsSuccess
 
-    val _guestPayment = MutableLiveData<Event<String>>()
-    val onPayment: LiveData<Event<String>> = _guestPayment
+    val _guestPayment = MutableLiveData<Event<CreateOrderResponse>>()
+    val onPayment: LiveData<Event<CreateOrderResponse>> = _guestPayment
 
     val _unMergeStatus = MutableLiveData<Event<String>>()
     val unMergeStatusUpdate: LiveData<Event<String>> = _unMergeStatus
@@ -147,14 +147,14 @@ class DineInOrderTableViewModel @Inject constructor(
                             cashLogApi(response, "in")
                         } else {
                             _guestPayment.value =
-                                Event(response?.message.toString())
+                                Event(response!!)
                         }
 
                     }
                 }
 
                 Status.ERROR -> {
-                    _guestPayment.value = Event(resource.message.toString())
+                    _guestPayment.value = Event(resource.data!!)
                     if (cashPaymentType(model)) {
                         _showProgressCash.value = Event(false)
                     } else
@@ -606,7 +606,7 @@ class DineInOrderTableViewModel @Inject constructor(
                                 if (order.payments[order.payments.size - 1].amount == totalPayAmounts) {
 
                                     _guestPayment.value =
-                                        Event(createOrderResponse.message.toString())
+                                        Event(createOrderResponse)
 
                                 } else {
                                     cashOutApi(createOrderResponse, "out")
@@ -661,7 +661,7 @@ class DineInOrderTableViewModel @Inject constructor(
                         resource.data?.let {
 
                             _guestPayment.value =
-                                Event(createOrderResponse.message.toString())
+                                Event(createOrderResponse)
 
                         }
 
