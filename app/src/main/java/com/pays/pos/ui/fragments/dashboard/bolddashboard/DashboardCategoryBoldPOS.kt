@@ -47,7 +47,6 @@ import com.pays.pos.data.remote.ApiService
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.ADD_VALUE
 import com.pays.pos.data.remote.Constants.BALANCE_INQUIRY
-import com.pays.pos.data.remote.Constants.BILLING_ADDRESS
 import com.pays.pos.data.remote.Constants.CUSTOMER
 import com.pays.pos.data.remote.Constants.DELIVERY_TYPE
 import com.pays.pos.data.remote.Constants.DINE_IN
@@ -68,14 +67,12 @@ import com.pays.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.pays.pos.data.remote.Constants.ORDER_TYPE
 import com.pays.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.pays.pos.data.remote.Constants.ORDER_TYPE_NAME
-import com.pays.pos.data.remote.Constants.PHONE_ORDER
 import com.pays.pos.data.remote.Constants.SELL_CARD
 import com.pays.pos.data.remote.Constants.SMALL
 import com.pays.pos.data.remote.Constants.SPLIT_ENABLE
 import com.pays.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.remote.Constants.UPDATE
-import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.pays.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
@@ -98,16 +95,15 @@ import com.pays.pos.utils.callback.DineInOrderCallBack
 import com.pays.pos.utils.callback.ItemClickListner
 import com.pays.pos.utils.callback.ItemListner
 import com.pays.pos.utils.callback.SyncDataCallback
-import com.pays.pos.utils.extensions.alert
-import com.pays.pos.utils.extensions.gone
-import com.pays.pos.utils.extensions.runOnUiThread
-import com.pays.pos.utils.extensions.setOnSingleClickListener
-import com.pays.pos.utils.extensions.visible
+import com.pays.pos.utils.extensions.*
 import com.pays.pos.utils.landi.LPrint
 import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.scanner.helpers.ScannerAppEngine
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
+import com.sdksuite.omnidriver.OmniConnection
+import com.sdksuite.omnidriver.OmniDriver
+import com.sdksuite.omnidriver.api.CashBox
 import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
@@ -129,7 +125,6 @@ import java.io.IOException
 import java.lang.Runnable
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -1404,6 +1399,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                         }
 
+                    } else if (customersPrinters[i].name.startsWith(
+                            LANDI_INNER_PRINTER,
+                            true
+                        ) == true
+                    ) {
+                        initLandiCashBox()
+
                     } else {
                         Log.d(TAG, "CASH-DRAWER: STEP 3 in TM-m30 ")
 
@@ -1480,6 +1482,18 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             }
         }
+    }
+
+    private fun initLandiCashBox() {
+        var omniDriver:OmniDriver = OmniDriver.me(requireContext())
+
+        omniDriver.init(object : OmniConnection {
+            override fun onConnected() {}
+            override fun onDisconnected(error: Int) {}
+        })
+
+        var cashBox: CashBox = omniDriver.getCashBox(Bundle())
+        cashBox.openBox()
     }
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
