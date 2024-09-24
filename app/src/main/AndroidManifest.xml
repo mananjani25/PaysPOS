@@ -35,6 +35,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <protected-broadcast android:name="com.landiconnect.systemupdate.MQTT_TimeTask" />
+    <protected-broadcast android:name="com.sunmi.baseservice.TMS_COMPLETED" />
 
     <uses-permission
         android:name="android.permission.READ_LOGS"
