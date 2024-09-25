@@ -12,10 +12,12 @@ import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.visible
 import com.google.gson.Gson
+import com.pays.pos.data.model.requestModel.CreatePrinterRequestModel
 import com.pays.pos.data.remote.Constants.KITCHENANDCUSTOMER
 
 class EditPrinterListAdapter( val printerType:String) : RecyclerView.Adapter<EditPrinterListAdapter.MyViewHolder>() {
     private var list: ArrayList<PrinterResponse.Data.OrderTypes> = arrayListOf()
+    private var originalList: ArrayList<PrinterResponse.Data.OrderTypes> = arrayListOf()
     private val TAG = "EditPrinterListAdapter"
 
     inner class MyViewHolder(private val binding: ViewEditPrinterListBinding) :
@@ -26,7 +28,8 @@ class EditPrinterListAdapter( val printerType:String) : RecyclerView.Adapter<Edi
             LogUtil.logE(TAG, "printerSettings:  ${Gson().toJson(model.printerSettings)} printerType: ${printerType}")
 
 
-            if (printerType.isNotEmpty() && printerType == KITCHENANDCUSTOMER) {
+            if (model.printerSettings.size == 2 ) {
+                Log.e(TAG,"checkAdapterSize 2")
                 binding.txtKitReceipt.visible()
                 binding.txtCustomerReceipt.visible()
                 binding.chBoxCustomerManual2.visible()
@@ -64,6 +67,7 @@ class EditPrinterListAdapter( val printerType:String) : RecyclerView.Adapter<Edi
 
             } else if (model.printerSettings.size == 1) {
 
+                Log.e(TAG,"checkAdapterSize 1")
 
                 if (model.printerSettings.get(0).printType == Constants.CUSTOMER) {
                     binding.chBoxKitchenManual2.gone()
@@ -94,6 +98,9 @@ class EditPrinterListAdapter( val printerType:String) : RecyclerView.Adapter<Edi
 
                 }
 
+            }
+            else{
+                Log.e(TAG,"checkAdapterSize 3")
             }
 
             /*binding.chBoxCustomerManual.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -204,7 +211,18 @@ class EditPrinterListAdapter( val printerType:String) : RecyclerView.Adapter<Edi
     fun setList(dataList: ArrayList<PrinterResponse.Data.OrderTypes>) {
         /*---------------Removing the Kiosk Order Types-----------------*/
         var toRemove=dataList.filter { it.orderTypeName.contains("Kiosk",ignoreCase = true) }
+        var removeSettings:ArrayList<PrinterResponse.Data.PrinterSettings> = arrayListOf()
+        dataList.forEach {
+             removeSettings  = it.printerSettings.filter { it.isDestroy == true }.toCollection(
+                 arrayListOf()
+             )
+        }
         dataList.removeAll(toRemove)
+        dataList.forEach {it->
+            var nonDestroyList = it.printerSettings.filter { it.isDestroy == false }
+            Log.e(TAG,"nonDestroyList:   ${nonDestroyList.size}")
+            it.printerSettings = nonDestroyList
+        }
         /*---------------Removing the Kiosk Order Types-----------------*/
 
         list.clear()
@@ -217,6 +235,10 @@ class EditPrinterListAdapter( val printerType:String) : RecyclerView.Adapter<Edi
         return list
     }
 
+    fun clearList() {
+        list.clear()
+        notifyDataSetChanged()
+    }
 
 
 }

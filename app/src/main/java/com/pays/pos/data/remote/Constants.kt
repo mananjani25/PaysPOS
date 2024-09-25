@@ -545,6 +545,7 @@ object Constants {
 
         model.forEach { it ->
             for (i in 0 until it.printerSettings.size) {
+                Log.e("checkPrinterSettings","printerSettingsID:  ${it.printerSettings.get(i).id}")
                 list.add(
                     CreatePrinterRequestModel.PrinterSettingsAttributes(
                         it.printerSettings.get(i).id,
