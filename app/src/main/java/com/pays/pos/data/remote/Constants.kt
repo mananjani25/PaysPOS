@@ -172,6 +172,8 @@ object Constants {
     const val CASHDIS_SURCHARGEENABLE = "cashdisurchargeenable"
     const val CASH_DIS_STORED = "cashDisStore"
 
+    const val CASHBOX = "CASHBOX"
+
     const val PICK_UP = "Pickup"
     const val DELIVERY = "Delivery"
     const val IS_PAX_CONNECTED = "isPAXConnected"

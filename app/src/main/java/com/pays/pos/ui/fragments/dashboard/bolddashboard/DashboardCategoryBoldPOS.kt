@@ -83,7 +83,6 @@ import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.magtek.MagtekViewModel
-import com.pays.pos.ui.fragments.payment.OrderCompleteFragment.OnBluetoothPermissionGranted
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.pays.pos.ui.fragments.settings.hardware.printer.ESCUtil
@@ -101,9 +100,6 @@ import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.scanner.helpers.ScannerAppEngine
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
-import com.sdksuite.omnidriver.OmniConnection
-import com.sdksuite.omnidriver.OmniDriver
-import com.sdksuite.omnidriver.api.CashBox
 import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
@@ -1404,8 +1400,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             true
                         ) == true
                     ) {
-                        initLandiCashBox()
-
+                        EventBus.getDefault().post(MessageEvent(Constants.CASHBOX,true))
                     } else {
                         Log.d(TAG, "CASH-DRAWER: STEP 3 in TM-m30 ")
 
@@ -1484,22 +1479,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
     }
 
-    private fun initLandiCashBox() {
-        var omniDriver:OmniDriver = OmniDriver.me(requireActivity())
-
-
-        omniDriver.init(object : OmniConnection {
-            override fun onConnected() {
-                Log.d("OmniDriver:", "Connected")
-            }
-            override fun onDisconnected(error: Int) {
-                Log.d("OmniDriver:", "Disconnected")
-            }
-        })
-
-        var cashBox: CashBox = omniDriver.getCashBox(Bundle())
-        cashBox.openBox()
-    }
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(p0: ComponentName?, service: IBinder?) {

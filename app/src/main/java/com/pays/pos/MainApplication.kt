@@ -283,7 +283,7 @@ class MainApplication : Application() {
         return SettingINI.getCommSettingFromFile(context!!,settingIniFile)
     }
 
-    private fun disableProxyForThisVersion(commSetting: CommSetting, settingIniFile: String) {
+    protected fun disableProxyForThisVersion(commSetting: CommSetting, settingIniFile: String) {
         commSetting.isEnableProxy = false
         SettingINI.saveCommSettingToFile(applicationContext, settingIniFile, commSetting)
     }
