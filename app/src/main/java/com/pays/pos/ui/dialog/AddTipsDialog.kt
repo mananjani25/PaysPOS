@@ -144,27 +144,34 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
 
         }
-        binding.llKeypad.txt30.setOnClickListener {
+        binding.llKeypad.txt30.setOnClickListener(object:View.OnClickListener{
+            override fun onClick(p0: View?) {
+                rate = binding.llKeypad.txt30.text.toString().trim()
+                    .substring(0, binding.llKeypad.txt30.text.toString().length - 1).toDouble()
 
+                var price = 0.0
+                price = if (isFromTransaction) {
+                    MethodUtils.percentageCalculation(
+                        totalPrice, rate
+                    )
+                } else {
+                    MethodUtils.percentageCalculation(
+                        prefProvider.getValue(
+                            Constants.WHOLE_AMOUNT,
+                            "0.0"
+                        ).toDouble() / splitCount, rate
+                    )
+                }
+                binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
 
-            rate = binding.llKeypad.txt30.text.toString().trim()
-                .substring(0, binding.llKeypad.txt30.text.toString().length - 1).toDouble()
-
-            var price = 0.0
-            price = if (isFromTransaction) {
-                MethodUtils.percentageCalculation(
-                    totalPrice, rate
-                )
-            } else {
-                MethodUtils.percentageCalculation(
-                    prefProvider.getValue(
-                        Constants.WHOLE_AMOUNT,
-                        "0.0"
-                    ).toDouble() / splitCount, rate
-                )
             }
-            binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
-        }
+        })
+
+//        binding.llKeypad.txt30.setOnClickListener {
+//
+//
+//
+//        }
     }
 
     private fun resetDialogTipsList() {
