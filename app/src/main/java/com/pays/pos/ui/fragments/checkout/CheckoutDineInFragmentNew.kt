@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.content.DialogInterface
 import android.os.Bundle
+import android.os.Handler
 import android.os.Message
 import android.text.Editable
 import android.text.InputType
@@ -1147,6 +1148,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     private fun paymentClick() {
         binding.llCreditCard.setOnSingleClickListener {
 
+            restrictTvCashClicks()
+
             val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
             subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
             totalServiceCharge =
@@ -1196,6 +1199,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         binding.tvCash0.setOnSingleClickListener {
 
+            restrictTvCashClicks()
             custom_paymentAmount = 0.0
             prefProvider.setValue(Constants.OPEN_ORDER_ITEMS_BASE, "")
 
@@ -1214,27 +1218,27 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             cashPaymentWithVariation()
         }
         binding.tvCash1.setOnSingleClickListener {
-
+            restrictTvCashClicks()
             custom_paymentAmount =
                 binding.tvCash1.text.toString().replace("$", "").trim().toDouble()
             SunmiPrintHelper.getInstance().openCashBox()
             cashPaymentWithVariation()
         }
         binding.tvCash2.setOnSingleClickListener {
+            restrictTvCashClicks()
             custom_paymentAmount =
                 binding.tvCash2.text.toString().replace("$", "").trim().toDouble()
             SunmiPrintHelper.getInstance().openCashBox()
             cashPaymentWithVariation()
         }
         binding.tvCash3.setOnSingleClickListener {
-
+            restrictTvCashClicks()
             custom_paymentAmount =
                 binding.tvCash3.text.toString().replace("$", "").trim().toDouble()
             SunmiPrintHelper.getInstance().openCashBox()
             cashPaymentWithVariation()
         }
         binding.tvCustomAmount.setOnSingleClickListener {
-
 
             val finalCashAmount =  binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
             val bundleVal = Bundle().apply {
@@ -1839,6 +1843,27 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         }
     }
+
+    //Restrict user from clicking cash value multiple times
+    private fun restrictTvCashClicks() {
+        binding.apply {
+            tvCash0.isEnabled = false
+            tvCash1.isEnabled = false
+            tvCash2.isEnabled = false
+            tvCash3.isEnabled = false
+        }
+
+        Handler().postDelayed({
+            binding.apply {
+                tvCash0.isEnabled = true
+                tvCash1.isEnabled = true
+                tvCash2.isEnabled = true
+                tvCash3.isEnabled = true
+            }
+        }, 5000)
+
+    }
+
 
     private fun loadSplitLayout() {
         binding.tab2.setTextColor(resources.getColor(R.color.txt_color_blue))

@@ -765,6 +765,8 @@ class CartFragment(
     private fun checkDineInEditOrder() {
 
 
+
+
         if(viewModel.currentCartItems.isEmpty()) {
             val dineInList: ArrayList<DineInModel> = ArrayList(viewModel?.dineInAdapterBackup?.getList()) ?: arrayListOf()
 //
@@ -2488,9 +2490,14 @@ class CartFragment(
         LogUtil.logE(TAG, "onCustomerClicked  ${isRemoved}")
         viewModel.dineInHeaderPosition = position
         if (isRemoved) {
+            if(cartModelsList.isEmpty())
+                viewModel.cartModel?.let { cartModelsList.add(0, it) }
+
             if (cartModelsList.get(0).dineInList?.size!! >= position) {
                 val dineIn = cartModelsList.get(0).dineInList
                 dineIn?.get(position)?.customer = null
+                viewModel.cartModel?.dineInList?.get(position)?.customer = null
+                cartModelsList[0].dineInList?.get(position)?.customer = null
                 viewModel.dineInCartUpdate(cartModelsList, dineIn!!)
             }
 

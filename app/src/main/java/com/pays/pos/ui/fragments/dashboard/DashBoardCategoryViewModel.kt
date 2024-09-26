@@ -950,8 +950,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         cartModel?.orderType = DINE_IN
         cartModel?.let {
             addCart(it)
-
-
         }
 
     }
@@ -6785,7 +6783,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-    fun updateOrder(cartModel: CartModel,isFromDineInTable:Boolean = false): OrderRequestModel {
+    fun updateOrder(cartModel: CartModel,isFromDineInTable:Boolean = false,isAddGuest:Boolean = false): OrderRequestModel {
 
         Log.e(TAG, "totalDiscountDineIn  ${totalDiscount}")
         val orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
@@ -6835,7 +6833,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                 dineInOrderItemAttributed(cartModel, currentCartItems)
             else
                 dineInOrderItemAttributed(cartModel, currentDineInItems)
-            // orderItemsAttributes = dineInOrderItemAttributed(cartModel, currentCartItems)
+
+            /**
+             * This is added only for adding new guest from the DineInTable Pays
+             * */
+            if(isAddGuest)
+                 orderItemsAttributes = dineInOrderItemAttributed(cartModel, currentCartItems)
+
+
             offlineId = null
             deletedGuestItems = cartModel.listOfItemRemoved.toCollection(arrayListOf())
             //            paymentAttributes =
@@ -6849,6 +6854,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 //                )
 
             orderServiceChargesAttributes = orderServiceChargesAttributes(cartModel, subTotalPrice)
+
 
 
             guestsAttributes = getGuestsAttributes(cartModel)

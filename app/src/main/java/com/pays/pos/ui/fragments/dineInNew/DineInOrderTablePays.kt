@@ -1445,7 +1445,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             dashboardViewModel.totalDiscount = getOrderDetailsResponse?.totalDiscount ?: 0.0
             dashboardViewModel.subTotalPrice = getOrderDetailsResponse?.subTotal ?: 0.0
             // END RESET
-            val request = dashboardViewModel.updateOrder(cartList!!)
+            val request = dashboardViewModel.updateOrder(cartList!!, isAddGuest = true)
             orderId?.let {
                 viewModel.updateOrder(it, request)
             }
