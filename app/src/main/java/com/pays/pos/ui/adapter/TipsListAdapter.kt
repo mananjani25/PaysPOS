@@ -48,7 +48,11 @@ class TipsListAdapter(val viewModel: TipListViewModel) : RecyclerView.Adapter<Ti
     }
 
     fun getItem(position:Int): GetTipReponse.Data {
-        return tipList[position]
+        if (position!=-1) {
+            return tipList[position]
+        }else{
+            return tipList[0]
+        }
     }
 
     fun getAll(): ArrayList<GetTipReponse.Data> {
