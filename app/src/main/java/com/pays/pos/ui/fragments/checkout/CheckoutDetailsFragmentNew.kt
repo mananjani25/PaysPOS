@@ -3384,7 +3384,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvsplittip?.text =
                 "(" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
 
-            presentation.onDisplayChanged()
+            if (this::presentation.isInitialized) {
+                presentation.onDisplayChanged()
+            }
 
         }
     }
