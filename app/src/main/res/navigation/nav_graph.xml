@@ -1498,6 +1498,13 @@
         android:label="MenuFragment">
 
         <action
+            android:id="@+id/action_menuFragment_to_dashboardCategoryBoldPOS"
+            app:destination="@id/dashboardCategoryBoldPOS"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpTo="@id/dashboardCategoryBoldPOS"
+            app:popUpToInclusive="true" />
+
+        <action
             android:id="@+id/action_menuFragment_to_printerQueueList"
             app:destination="@id/printerQueueList"
             app:enterAnim="@anim/nav_default_enter_anim"

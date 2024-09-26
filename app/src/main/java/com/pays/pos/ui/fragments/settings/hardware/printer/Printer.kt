@@ -649,6 +649,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     private fun syncPrinterList(saved: Boolean = false, isProgressShow: Boolean = false) {
+        runOnUiThread(kotlinx.coroutines.Runnable {
+            customerAdapter.clearList()
+            kitchenAdapter.clearList()
+
+        })
 
         allPrinterlist.clear()
         addedCustomerPrinters = false
@@ -666,8 +671,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     if (it.data != null) {
 
                         val customerData = data
+                        runOnUiThread(kotlinx.coroutines.Runnable {
                         customerAdapter.clearList()
                         customerAdapter.setList(arrayListOf())
+                        })
 
                         var customerPrintersList: ArrayList<PrinterListModel> = arrayListOf()
                         if (customerData != null) {
@@ -766,7 +773,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                             customerPrintersList = newList
 
 
+                            runOnUiThread(kotlinx.coroutines.Runnable {
                             customerAdapter.setList(customerPrintersList)
+                            })
                             allPrinterlist.addAll(customerPrintersList)
                             addedCustomerPrinters = true
                         } else {
@@ -781,9 +790,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                     } else {
                         LogUtil.logE(TAG, "ITNotNull  ")
-                        kitchenAdapter.clearList()
+                        //kitchenAdapter.clearList()
 
+                        runOnUiThread(kotlinx.coroutines.Runnable {
                         customerAdapter.clearList()
+                        })
                         addedCustomerPrinters = true
                     }
 
@@ -825,23 +836,30 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         }
         getAllKitchenPrintersListFromDB()
-        lifecycleScope.launch {
-            delay(1500)
+       /* lifecycleScope.launch {
+            delay(1000)
             getAllKitchenPrintersListFromDB()
-        }
+            delay(500)
+            getAllKitchenPrintersListFromDB()
+
+        }*/
     }
 
     private fun getAllKitchenPrintersListFromDB() {
         viewModel.viewModelScope.launch {
             ProgressUtils.showProgressDialog(requireActivity())
             try {
-                var kitchenData = viewModel.getKitchenPrintersList()
-                requireActivity()
+                viewModel.getKitchenPrintersList().observe(viewLifecycleOwner,{it->
 
-                Log.e("checkData", "kitchenList  ${kitchenData.size}")
-                if (kitchenData.isNotEmpty()) {
+                    var kitchenData = it.data
+
+
+                        Log.e("checkData", "kitchenList  ${kitchenData?.size}")
+                if (kitchenData?.isNotEmpty() == true) {
+                    runOnUiThread(kotlinx.coroutines.Runnable {
                     kitchenAdapter.clearList()
                     kitchenAdapter.setList(arrayListOf())
+                    })
                     var kitchenPrintersList: ArrayList<PrinterListModel> = arrayListOf()
                     if (kitchenData != null) {
                         for (i in kitchenData.indices) {
@@ -878,7 +896,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                             "kitchenPrintersList",
                             "kitchenPrintersList size = ${kitchenPrintersList.size}"
                         )
+                        runOnUiThread(kotlinx.coroutines.Runnable {
                         kitchenAdapter.setList(kitchenPrintersList)
+                        })
                         allPrinterlist.addAll(kitchenPrintersList)
                         addedKitchenPrinters = true
                     } else {
@@ -896,7 +916,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                 } else {
                     LogUtil.logE(TAG, "ITNotNull  ")
+                    runOnUiThread(kotlinx.coroutines.Runnable {
                     kitchenAdapter.clearList()
+                    })
                     addedKitchenPrinters = true
                     SunmiPrinterManager.getInstance()
                         .searchCloudPrinter(requireContext(), SearchMethod.LAN, this@Printer)
@@ -904,6 +926,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                 hideLoaderAfterDelay()
                 ProgressUtils.dismissProgressDialog()
+                })
             } catch (e: Exception) {
                 ProgressUtils.dismissProgressDialog()
             }

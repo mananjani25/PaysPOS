@@ -268,8 +268,11 @@ class MenuFragment : DialogFragment() {
         }
 
         binding.header.txtSave.setOnClickListener {
-            findNavController().navigateUp()
-            manageCustomerDisplay()
+            if (findNavController().currentDestination?.id == R.id.menuFragment) {
+                findNavController().navigate(R.id.action_menuFragment_to_dashboardCategoryBoldPOS)
+
+                manageCustomerDisplay()
+            }
         }
         binding.linearSettings.setOnClickListener {
             findNavController().navigate(R.id.action_menuFragment_to_settings)

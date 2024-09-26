@@ -25,6 +25,7 @@ import com.pays.pos.di.PrefProvider
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.utils.Event
 import com.pays.pos.utils.LogUtil
+import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -84,8 +85,8 @@ class PrinterViewModel @Inject constructor(
         return posRepository.getKitchenPrinters()
     }
 
-    suspend fun getKitchenPrintersList(): List<PrinterResponse.Data.KitchenReceiptPrinters> {
-        return posRepository.getKitchenPrintersList()
+     fun getKitchenPrintersList(): LiveData<Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>> {
+        return posRepository.getKitchenPrinters()
     }
 
    suspend fun getKitchenPrinterForPrint(): List<PrinterResponse.Data.KitchenReceiptPrinters> {
@@ -274,16 +275,16 @@ class PrinterViewModel @Inject constructor(
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
                     if (status != null) {
-                        if (status.lowercase() == Constants.CUSTOMER.lowercase() && printerListModel.printerName!! == "InnerPrinter") {
+                        if (status.lowercase() == Constants.CUSTOMER.lowercase()) {
                             Log.e("PrinterDelete", "Printer Inner ID: ${printerListModel.id}")
-                            posRepository.deleteKitchenPrinter(printerListModel.id)
+                            posRepository.deleteCustomerPrinter(printerListModel.id)
                         } else if (status.lowercase() == Constants.KITCHEN.lowercase()) {
                             Log.e("PrinterDelete", "Printer ID: ${printerListModel.id}")
 
-                            posRepository.deleteCustomerPrinter(printerListModel.id)
+                            posRepository.deleteKitchenPrinter(printerListModel.id)
                         } else {
                             Log.e("PrinterDeleteElse", "Printer Else ID: ${printerListModel.id}")
-                            posRepository.deleteCustomerPrinter(printerListModel.id)
+                           // posRepository.deleteCustomerPrinter(printerListModel.id)
                         }
 
                     } else {

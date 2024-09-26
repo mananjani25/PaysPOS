@@ -522,66 +522,12 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
 
                                     }
 
-                                } else if (originalPrinterType == KITCHEN) {
-                                    settingList.forEach { it ->
-                                        dataList = arrayListOf()
-                                        it.printerSettings.forEach { it1 ->
-                                            if (!dataList.contains(it1)) {
-                                                dataList.add(it1)
-
-                                            }
-
-                                        }
-
-                                        //to check that print type kitchen and customer both name must exists in list
-                                        if (dataList.size == 2) {
-                                            var prevName = dataList.get(0).printType
-                                            if (dataList.get(1).printType == prevName) {
-                                                if (prevName == KITCHEN) {
-                                                    dataList.get(1).printType = CUSTOMER
-                                                } else {
-                                                    dataList.get(1).printType = KITCHEN
-                                                }
-
-                                            }
-                                        } else if (dataList.size == 1) {
-                                            dataList.add(
-                                                PrinterResponse.Data.PrinterSettings(
-                                                    orderTypeId = it.orderTypeId,
-                                                    printType = if (dataList.get(0).printType == KITCHEN) CUSTOMER else KITCHEN,
-                                                    manualPrinting = false,
-                                                    autoPrinting = true,
-                                                    printerId = 0,
-                                                    createdAt = "",
-                                                    updatedAt = ""
-                                                )
-                                            )
-
-                                        }
-
-
-
-
-
-
-                                        oderTypes.add(
-                                            PrinterResponse.Data.OrderTypes(
-                                               orderTypeId =  it.orderTypeId,
-                                               orderTypeName =  it.orderTypeName,
-                                                orderType = it.orderType,
-                                                dataList
-                                            )
-                                        )
-
-
-                                    }
-
-
-                                } else {
+                                }  else {
 
                                     settingList.forEach { it ->
                                         dataList = arrayListOf()
                                         it.printerSettings.forEach { it1 ->
+                                            it1.isDestroy = true
                                             dataList.add(it1)
 
 
@@ -597,6 +543,20 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                                                 updatedAt = ""
                                             )
                                         )
+
+                                        dataList.add(
+                                            PrinterResponse.Data.PrinterSettings(
+                                                orderTypeId = it.orderTypeId,
+                                                printType = CUSTOMER,
+                                                manualPrinting = false,
+                                                autoPrinting = true,
+                                                printerId = 0,
+                                                createdAt = "",
+                                                updatedAt = ""
+                                            )
+                                        )
+
+
 
 
                                         oderTypes.add(
