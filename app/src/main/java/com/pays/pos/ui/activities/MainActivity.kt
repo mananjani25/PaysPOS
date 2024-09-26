@@ -3405,9 +3405,13 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
 
         updatePrinter = this
-        if (this::presentation.isInitialized) {
-            presentation.show()
-            presentation.onDisplayChanged()
+        try {
+            if (this::presentation.isInitialized) {
+                presentation.show()
+                presentation.onDisplayChanged()
+            }
+        }catch (e:WindowManager.InvalidDisplayException){
+            e.printStackTrace()
         }
         prefProvider?.setValue(UNIQUE_ID, getDeviceId())
 
