@@ -299,7 +299,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                     isClickable = false
                 }
 
-                itemBinding.viewStrikeThrough.visibility = View.VISIBLE
+//                itemBinding.viewStrikeThrough.visibility = View.VISIBLE
 
 
             }
