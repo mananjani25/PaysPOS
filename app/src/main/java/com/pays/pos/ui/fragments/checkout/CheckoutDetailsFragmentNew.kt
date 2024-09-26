@@ -601,7 +601,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvCustomAmount.text = "Custom (" + binding.tvCustomAmount.text.toString() + ")"
             cashPaymentWithVariation()
 
-            SunmiPrintHelper.getInstance().openCashBox()
+//            SunmiPrintHelper.getInstance().openCashBox()
+
+            if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
+                EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+            } else {
+                SunmiPrintHelper.getInstance().openCashBox()
+            }
         }
 
 
@@ -2447,7 +2453,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 disconnectSyncChannel()
                 restrictTvCashClicks()
 
-                SunmiPrintHelper.getInstance().openCashBox()
+                if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
+                    EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+                } else {
+                    SunmiPrintHelper.getInstance().openCashBox()
+                }
+
+
                 custom_paymentAmount = 0.0
 
                 paymentviewModel.totalPayAmount(
@@ -2464,7 +2476,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
                 disconnectSyncChannel()
                 restrictTvCashClicks()
-                SunmiPrintHelper.getInstance().openCashBox()
+//                SunmiPrintHelper.getInstance().openCashBox()
+                if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
+                    EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+                } else {
+                    SunmiPrintHelper.getInstance().openCashBox()
+                }
 
                 custom_paymentAmount =
                     binding.tvCash1.text.toString().replace("$", "").trim().toDouble()
@@ -2476,8 +2493,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
                 disconnectSyncChannel()
                 restrictTvCashClicks()
-                SunmiPrintHelper.getInstance().openCashBox()
-
+//                SunmiPrintHelper.getInstance().openCashBox()
+                if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
+                    EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+                } else {
+                    SunmiPrintHelper.getInstance().openCashBox()
+                }
                 custom_paymentAmount =
                     binding.tvCash2.text.toString().replace("$", "").trim().toDouble()
                 cashPaymentWithVariation()
@@ -2489,7 +2510,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
                 disconnectSyncChannel()
                 restrictTvCashClicks()
-                SunmiPrintHelper.getInstance().openCashBox()
+//                SunmiPrintHelper.getInstance().openCashBox()
+
+                if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
+                    EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+                } else {
+                    SunmiPrintHelper.getInstance().openCashBox()
+                }
 
                 custom_paymentAmount =
                     binding.tvCash3.text.toString().replace("$", "").trim().toDouble()
