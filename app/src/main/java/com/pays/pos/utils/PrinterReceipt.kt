@@ -5381,7 +5381,7 @@ fun addWholeTbItemToGuest(
 
     val obj = list
 
-    var subTotal = (obj.price * obj.itemQuantity).toDouble()
+    var subTotal = (obj.price * obj.itemQuantity).toDouble() / guestCount
 
     if (obj.modifiers.isNotEmpty() && showModifiers) {
         obj.modifiers.forEach {
@@ -5458,7 +5458,8 @@ fun addWholeTbItemToGuestInnerLandi(
     showModifiers: Boolean,
     guestCount: Int,
     serviceChargeList: ArrayList<TbServiceCharge>,
-    lPrint:LPrint
+    lPrint:LPrint,
+    isUnpaid: Boolean = false
 ) {
 
     val obj = list
@@ -5514,7 +5515,10 @@ fun addWholeTbItemToGuestInnerLandi(
         }
     }
 
-    val price = (subTotal) / guestCount
+    var price = (subTotal)
+
+    if(isUnpaid)
+        price = (subTotal) / guestCount
 
     var priceToShow = ""
     if (list.price > 0.0) {
@@ -5560,7 +5564,8 @@ fun addWholeTbItemToGuestInner(
     showModifiers: Boolean,
     guestCount: Int,
     serviceChargeList: ArrayList<TbServiceCharge>,
-    oldSunmiFrameworkVersion: Boolean = false
+    oldSunmiFrameworkVersion: Boolean = false,
+    isUnpaid:Boolean = false
 ) {
 
     val obj = list
@@ -5569,7 +5574,7 @@ fun addWholeTbItemToGuestInner(
 
     if (obj.modifiers.isNotEmpty() && showModifiers) {
         obj.modifiers.forEach {
-            subTotal += it.price * it.itemQuantity
+            subTotal += it.price * it.modifier_quantity * obj.itemQuantity
         }
     }
     var WTTaxes = 0.0
@@ -5616,11 +5621,17 @@ fun addWholeTbItemToGuestInner(
         }
     }
 
-    val price = (subTotal) / guestCount
+
+   // val price = subTotal
+    var price = (subTotal)
+    val actualPrice = subTotal
+
+    if(isUnpaid)
+        price /= guestCount
 
     var priceToShow = ""
     if (list.price > 0.0) {
-        priceToShow = MethodUtils.roundOffAmount(price)
+        priceToShow = "("+ MethodUtils.roundOffAmount(actualPrice) + ")" + MethodUtils.roundOffAmount(price)
     }
 
     //val finalAmt = MethodUtils.roundOffAmount((subTotal) / guestCount)

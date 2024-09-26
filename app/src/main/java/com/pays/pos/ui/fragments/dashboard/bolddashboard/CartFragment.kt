@@ -1105,12 +1105,12 @@ class CartFragment(
 
 
                         if(viewModel.currentCartItems.isNotEmpty() && prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN)
-                            latestCartModel.let { cartModel ->
-                                viewModel.taxBifurcationCalculationNew(
-                                    viewModel.currentCartItems.first(),
-                                    cartModel, "UPDATE", false
-                                )
-                            }
+//                            latestCartModel.let { cartModel ->
+//                                viewModel.taxBifurcationCalculationNew(
+//                                    viewModel.currentCartItems.first(),
+//                                    cartModel, "UPDATE", false
+//                                )
+//                            }
 
                         viewModel.setUpdatedCartModel(latestCartModel)
                         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
@@ -2147,7 +2147,14 @@ class CartFragment(
             }
             binding.txtSubTotal.text = MethodUtils.roundOffAmount(viewModel.subTotalPrice)
             binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
-            binding.txtServiceCharge.text = MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
+
+            if(prefProvider.getValue(ORDER_TYPE ,"") == DINE_IN){
+
+                viewModel.totalServiceCharge = arguments?.getBundle("updateBundle")?.getDouble("serviceChargeB")?.toDouble() ?: 0.0
+
+                binding.txtServiceCharge.text = MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
+            } else
+                binding.txtServiceCharge.text = MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
 
             Log.e("totalDiscount", viewModel.totalDiscount.toString())
 

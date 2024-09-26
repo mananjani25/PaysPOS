@@ -1012,6 +1012,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 bundle.putDouble(DINE_IN_TAX, viewModel.totalTaxAmount)
                 bundle.putDouble(DINE_IN_DISCOUNT, viewModel.totalDiscountAmount)
                 bundle.putDouble(DINE_IN_SERVICECHARGE, serviceCharge)
+                bundle.putDouble("serviceChargeB", serviceCharge)
+                dashboardViewModel.totalServiceCharge = serviceCharge
                 var appliedServiceCharge: ArrayList<OrderServiceChargesAttribute> = arrayListOf()
                 getOrderDetailsResponse?.orderServiceCharges?.forEach { service ->
                     var data: OrderServiceChargesAttribute = OrderServiceChargesAttribute(
@@ -2332,6 +2334,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             viewModelPayment.addCart(cartList!!)
 
+        dashboardViewModel.totalServiceCharge = serviceChargeGuest
 
             Handler().postDelayed({
                 findNavController().navigate(
@@ -2446,7 +2449,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     guestName,
                     listWTitems,
                     subTotalGuest,
-                    total,
+                    subTotalGuest + taxGuest + serviceChargeGuest,
                     taxGuest,
                     serviceChargeGuest,
                     divideDiscount
@@ -2454,7 +2457,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             } else {
                 guestPrint(
                     "Unpaid", listItem, guestName, listWTitems, subTotalGuest,
-                    total,
+                    subTotalGuest + taxGuest + serviceChargeGuest,
                     taxGuest,
                     serviceChargeGuest,
                     divideDiscount
@@ -2464,7 +2467,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         } else if (listItem.isEmpty() && listWTitems.isNotEmpty()) {
             guestPrint(
                 "Unpaid", listItem, guestName, listWTitems, subTotalGuest,
-                total,
+                subTotalGuest + taxGuest + serviceChargeGuest,
                 taxGuest,
                 serviceChargeGuest,
                 divideDiscount
@@ -6299,18 +6302,23 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                     printCenter("Whole Table")
                                     lineBreak()
 
+
+//                                    var guestCount: Int =
+//                                        (getOrderDetailsResponse?.guestAttributes?.size?.minus(1)) ?: 1
+                                      var guestCount: Int =
+                                          getOrderDetailsResponse?.guestAttributes?.count { it.guestItemAttributes.isNotEmpty() && it.name.lowercase() != "whole table" }
+                                            ?: 1
+
+
+                                    if (guestCount < 1) {
+                                        guestCount = 1
+                                    }
+
                                     for (i in 0 until listWTitems.size) {
-
-                                        var guestCount: Int =
-                                            (getOrderDetailsResponse?.guestAttributes?.size?.minus(1)) ?: 1
-                                        if (guestCount < 1) {
-                                            guestCount = 1
-                                        }
-
 
                                         addWholeTbItemToGuestInnerLandi(
                                             listWTitems.get(i), customerSettingModel.fonts,
-                                            customerSettingModel.showModifiers, guestCount, serviceChargeList, LPrint
+                                            customerSettingModel.showModifiers, guestCount, serviceChargeList, LPrint,true
                                         )
                                     }
 
@@ -6366,7 +6374,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     val subTotalToPrint = padLine(
                                         "Sub Total",
-                                        "$" + MethodUtils.roundOffAmountString(subTotalDInin),
+                                        "$" + MethodUtils.roundOffAmountString(subTotalGuest),
                                         if (customerSettingModel.fonts == Constants.LARGE) {
                                             23
                                         } else {
@@ -6388,7 +6396,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         val taxToPrint =
                                             padLine(
                                                 "Tax",
-                                                "$" + MethodUtils.roundOffAmountString(finalTaxAmt),
+                                                "$" + MethodUtils.roundOffAmountString(guestTaxes),
                                                 if (customerSettingModel.fonts == Constants.LARGE) {
                                                     23
                                                 } else {
@@ -6416,7 +6424,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         val serviceChargeToPrint =
                                             padLine(
                                                 "Service Charge",
-                                                "$" + MethodUtils.roundOffAmountString(serviceCharge),
+                                                "$" + MethodUtils.roundOffAmountString(serviceChargeGuest),
                                                 if (customerSettingModel.fonts == Constants.LARGE) {
                                                     23
                                                 } else {
@@ -6936,19 +6944,24 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             PrintSunmiUtils.printTextCenter("Whole Table")
 
+//            var guestCount: Int =
+//                (getOrderDetailsResponse?.guestAttributes?.size?.minus(1)) ?: 1
+
+            var guestCount: Int =
+                getOrderDetailsResponse?.guestAttributes?.count { it.guestItemAttributes.isNotEmpty() && it.name.lowercase() != "whole table" }
+                    ?: 1
+
+            if (guestCount < 1) {
+                guestCount = 1
+            }
+
             for (i in 0 until listWTitems.size) {
-
-                var guestCount: Int =
-                    (getOrderDetailsResponse?.guestAttributes?.size?.minus(1)) ?: 1
-                if (guestCount < 1) {
-                    guestCount = 1
-                }
-
 
                 addWholeTbItemToGuestInner(
                     listWTitems.get(i), customerSettingModel.fonts,
                     customerSettingModel.showModifiers, guestCount, serviceChargeList,
-                    prefProvider.isOldSunmiFrameworkVersion()
+                    prefProvider.isOldSunmiFrameworkVersion(),
+                    true
                 )
             }
 

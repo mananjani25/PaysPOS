@@ -448,6 +448,14 @@ class PaymentBoldPosFragment : Fragment() {
             putInt("fragmentId", binding.frameLayout.id)
             putInt("checkoutHeaderId", binding.layoutHeaderCheckout.rlRoot.id)
             putBoolean("isFromPayment", true)
+
+            if (arguments != null) {
+                putBundle("updateBundle", arguments)
+            }
+
+            viewModel.totalServiceCharge = arguments?.getDouble("serviceChargeB")?.toDouble() ?:0.0
+
+            putDouble("totalServiceCharge",arguments?.getDouble("totalServiceCharge")?:0.0)
             arguments?.getBoolean("isLoyaltyApplied")?.let { putBoolean("isLoyaltyApplied", it) }
             arguments?.getBoolean("isFromActiveOrder")?.let { putBoolean("isFromActiveOrder", it) }
             putString(REDIRECT_FROM, prefProvider.getValue(REDIRECT_FROM, ""))

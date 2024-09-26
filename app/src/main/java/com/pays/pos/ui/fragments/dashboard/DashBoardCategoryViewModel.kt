@@ -4777,7 +4777,10 @@ class DashBoardCategoryViewModel @Inject constructor(
         subTotalPrice = 0.0
         totalDiscount = 0.0
         totalTax = 0.0
-        totalServiceCharge = 0.0
+
+        if(prefProvider.getValue(ORDER_TYPE,"") != DINE_IN)
+            totalServiceCharge = 0.0
+
         var amountToBePaid = 0.0
 
         runBlocking {
@@ -4856,6 +4859,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                     subTotalPrice = 0.0
                     totalDiscount = 0.0
                     totalTax = 0.0
+
+                    if(prefProvider.getValue(ORDER_TYPE,"") != DINE_IN)
                     totalServiceCharge = 0.0
 
                     val itemCount = cartItems.size
@@ -8327,6 +8332,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         subTotalPrice = 0.0
         totalDiscount = 0.0
         totalTax = 0.0
+
+        if(prefProvider.getValue(ORDER_TYPE,"") != DINE_IN)
         totalServiceCharge = 0.0
         var amountToBePaid = 0.0
         if (isGuestPayment) {
