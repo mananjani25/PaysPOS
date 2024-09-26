@@ -7916,6 +7916,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
         LogUtil.logE("printDineReciept", "Staring 1....")
 
+
+        if(getDineInOrderDetails?.payments?.isNotEmpty() == true){
+            printPayment(prefProvider.isOldSunmiFrameworkVersion(),SUNMI_INNER_PRINTER,getDineInOrderDetails!!.payments)
+
+        }
+
+
+
+
         SunmiPrintHelper.getInstance().lineWrap(1)
 
         if (customerSettingModel.showTipSuggestion) {

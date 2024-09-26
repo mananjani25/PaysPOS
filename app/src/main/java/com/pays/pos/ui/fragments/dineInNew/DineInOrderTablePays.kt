@@ -5965,27 +5965,27 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-            if (customerSettingModel.showRefundAmount) {
-
-                if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
-
-                    PrintSunmiUtils.totalPrice(
-                        padLine(
-                            "Change Amount",
-                            "$" + MethodUtils.roundOffAmountString(
-                                (getOrderDetailsResponse?.payments?.get(
-                                    0
-                                )?.amount!! - getOrderDetailsResponse?.totalAmount!!)
-                            ),
-                            if (customerSettingModel.fonts == Constants.LARGE) {
-                                23
-                            } else {
-                                48
-                            }
-                        ).toString()
-                    )
-                }
-            }
+//            if (customerSettingModel.showRefundAmount) {
+//
+//                if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
+//
+//                    PrintSunmiUtils.totalPrice(
+//                        padLine(
+//                            "Change Amount",
+//                            "$" + MethodUtils.roundOffAmountString(
+//                                (getOrderDetailsResponse?.payments?.get(
+//                                    0
+//                                )?.amount!! - getOrderDetailsResponse?.totalAmount!!)
+//                            ),
+//                            if (customerSettingModel.fonts == Constants.LARGE) {
+//                                23
+//                            } else {
+//                                48
+//                            }
+//                        ).toString()
+//                    )
+//                }
+//            }
 
 
             if (customerSettingModel.showTipSuggestion) {
@@ -7187,27 +7187,27 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-            if (customerSettingModel.showRefundAmount) {
-
-                if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
-
-                    PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),
-                        padLine(
-                            "Change Amount",
-                            "$" + MethodUtils.roundOffAmountString(
-                                (getOrderDetailsResponse?.payments?.get(
-                                    0
-                                )?.amount!! - getOrderDetailsResponse?.totalAmount!!)
-                            ),
-                            if (customerSettingModel.fonts == Constants.LARGE) {
-                                23
-                            } else {
-                                48
-                            }
-                        ).toString()
-                    )
-                }
-            }
+//            if (customerSettingModel.showRefundAmount) {
+//
+//                if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
+//
+//                    PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),
+//                        padLine(
+//                            "Change Amount",
+//                            "$" + MethodUtils.roundOffAmountString(
+//                                (getOrderDetailsResponse?.payments?.get(
+//                                    0
+//                                )?.amount!! - getOrderDetailsResponse?.totalAmount!!)
+//                            ),
+//                            if (customerSettingModel.fonts == Constants.LARGE) {
+//                                23
+//                            } else {
+//                                48
+//                            }
+//                        ).toString()
+//                    )
+//                }
+//            }
 
 
             if (customerSettingModel.showTipSuggestion) {
@@ -9493,27 +9493,35 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-            if (customerSettingModel.showRefundAmount) {
+//            if (customerSettingModel.showRefundAmount) {
+//
+//                if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
+//
+//                    PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),
+//                        padLine(
+//                            "Change Amount",
+//                            "$" + MethodUtils.roundOffAmountString(
+//                                (getOrderDetailsResponse?.payments?.get(
+//                                    0
+//                                )?.amount!! - getOrderDetailsResponse?.totalAmount!!)
+//                            ),
+//                            if (customerSettingModel.fonts == Constants.LARGE) {
+//                                23
+//                            } else {
+//                                48
+//                            }
+//                        ).toString())
+//
+//                }
+//            }
 
-                if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
 
-                    PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),
-                        padLine(
-                            "Change Amount",
-                            "$" + MethodUtils.roundOffAmountString(
-                                (getOrderDetailsResponse?.payments?.get(
-                                    0
-                                )?.amount!! - getOrderDetailsResponse?.totalAmount!!)
-                            ),
-                            if (customerSettingModel.fonts == Constants.LARGE) {
-                                23
-                            } else {
-                                48
-                            }
-                        ).toString())
 
-                }
+            if(getOrderDetailsResponse?.payments?.isNotEmpty() == true){
+                printPayment(prefProvider.isOldSunmiFrameworkVersion(),SUNMI_INNER_PRINTER,getOrderDetailsResponse!!.payments)
+
             }
+
 
             SunmiPrintHelper.getInstance().lineWrap(1)
 

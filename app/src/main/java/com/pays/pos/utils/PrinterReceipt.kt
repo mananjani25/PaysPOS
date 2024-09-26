@@ -1452,6 +1452,53 @@ fun addItemsInOrderSalesDetailsInnerNew(
     PrintSunmiUtils.normalTextNew(data)
 }
 
+fun padLineSinglePayment(
+    @Nullable partOne: String?,
+    @Nullable partTwo: String?,
+    columnsPerLine: Int
+): String {
+    var partOne = partOne
+    var partTwo = partTwo
+
+    if (partOne == null) {
+        partOne = ""
+    }
+    if (partTwo == null) {
+        partTwo = ""
+    }
+    val concat: String
+    concat = if (partOne.length + partTwo.length > columnsPerLine) {
+        val strBuffer = StringBuffer()
+
+        strBuffer.append(
+            partOne.substring(0, columnsPerLine - 8) + repeat(
+                " ",
+                8 - partTwo.length
+            ) + partTwo
+        )
+        strBuffer.append("\n")
+        var tempStr = ""
+        var tempPartOne = partOne.substring(columnsPerLine - 8, partOne.length)
+        var tempPadding = 0
+        if (((columnsPerLine - tempPartOne.length) - partTwo.length) < 0) {
+            tempPadding = partTwo.length
+        } else {
+            tempPadding = (columnsPerLine - tempPartOne.length) - partTwo.length
+        }
+        tempStr = tempPartOne + repeat(" ", tempPadding)
+
+        strBuffer.append(tempStr)
+
+        return strBuffer.toString()
+
+        //partOne + " " + partTwo
+    } else {
+        val padding = columnsPerLine - (partOne.length + partTwo.length)
+        partOne + repeat(" ", padding) + partTwo
+    }
+    return concat
+}
+
 fun padLineCustomerItem(
     @Nullable partOne: String?,
     @Nullable partTwo: String?,
@@ -5631,7 +5678,7 @@ fun addWholeTbItemToGuestInner(
 
     var priceToShow = ""
     if (list.price > 0.0) {
-        priceToShow = "("+ MethodUtils.roundOffAmount(actualPrice) + ")" + MethodUtils.roundOffAmount(price)
+        priceToShow = "("+ MethodUtils.roundOffAmount(actualPrice) + ") " + MethodUtils.roundOffAmount(price)
     }
 
     //val finalAmt = MethodUtils.roundOffAmount((subTotal) / guestCount)
@@ -5777,6 +5824,48 @@ fun addOrderItemForDineIn(
     return builder
 }
 
+fun printPayment(
+    isOldSunmiFrameworkVersion: Boolean = false,
+    printerType:String,
+    list: List<GetOrderDetailsResponse.Data.Payment>
+) {
+
+    when(printerType){
+        Constants.SUNMI_INNER_PRINTER ->{
+            PrintSunmiUtils.apply {
+                printHorizontalInnerNew(isOldSunmiFrameworkVersion)
+                normalTextCenter("\nPayment History")
+            }
+        }
+    }
+
+    val obj = list
+
+    list.forEachIndexed {  index,it->
+
+     //   val paymentToPrint = padLineSinglePayment("Payment ${index+1}","${it.amount}",2)
+        val paymentToPrint = "Payment ${index+1}  :   $${it.amount}"
+
+        when(printerType){
+
+            Constants.SUNMI_INNER_PRINTER -> {
+                PrintSunmiUtils.apply {
+                    printNormalText(isOldSunmiFrameworkVersion,paymentToPrint)
+                }
+            }
+        }
+    }
+
+    when(printerType){
+        Constants.SUNMI_INNER_PRINTER ->{
+            PrintSunmiUtils.apply {
+                printHorizontalInnerNew(isOldSunmiFrameworkVersion)
+                normalText("\n")
+            }
+        }
+    }
+
+}
 
 fun addOrderItemForDineIn(
     list: TbCartItem,
