@@ -330,15 +330,7 @@ class PaymentBoldPosFragment : Fragment() {
     private fun onBackPress() {
         Log.d(TAG, "onViewCreated: " + prefProvider.getValueboolean(SPLIT_ENABLE, false))
 
-        viewModel.setTipAmount(0.0)
-        viewModel.customerGivenTip.value=false
 
-        viewModel.customerCardAmount.value=""
-        viewModel.customerCashAmount.value=""
-
-        prefProvider.setValueboolean(Constants.TIP_ADDED, false)
-        prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, "0")
-        prefProvider.setValueInt(Constants.TIP_ADDED_ID, 0)
 
         if (prefProvider.getValueboolean(Constants.SPLIT_ENABLE, false)) {
             AlertUtils.showCustomAlert(requireContext(), "Please complete all payment.")
@@ -348,6 +340,17 @@ class PaymentBoldPosFragment : Fragment() {
                 getString(R.string.pax_transaction_error_message)
             )
         } else {
+            viewModel.setTipAmount(0.0)
+            viewModel.customerGivenTip.value=false
+
+            viewModel.customerCardAmount.value=""
+            viewModel.customerCashAmount.value=""
+
+            prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+            prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, "0")
+            prefProvider.setValueInt(Constants.TIP_ADDED_ID, 0)
+
+
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == OPEN_ORDER || prefProvider.getValue(
                     ORDER_TYPE, TAKEOUT) == KIOSK_OPEN_ORDER) {
                 val navController = findNavController()

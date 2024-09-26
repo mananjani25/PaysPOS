@@ -1772,11 +1772,13 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     private fun setupTabDesign() {
         binding.linearTab1.setOnSingleClickListener {
-            PaymentBoldPosFragment.newInstance().addTipHideShow(false)
-            isSelectedCount = 1
-            tipsetupGlobal(tipAmount, isSelectedCount)
-            loadPaymentLayout()
-            tipAmountCalculation()
+            if(!isPaymentScreen) {
+                PaymentBoldPosFragment.newInstance().addTipHideShow(false)
+                isSelectedCount = 1
+                tipsetupGlobal(tipAmount, isSelectedCount)
+                loadPaymentLayout()
+                tipAmountCalculation()
+            }
         }
 
         if(isGuestPay)
