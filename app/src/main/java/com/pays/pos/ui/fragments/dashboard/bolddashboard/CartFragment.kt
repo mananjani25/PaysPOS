@@ -4142,6 +4142,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
         viewModel.orderTypes().observe(requireActivity()) {
 
+            Log.e(TAG,"checkAllOrderTypes:  ${Gson().toJson(it.data)}")
+
             val orderTypesToShow = it?.data?.let { it1 -> ArrayList(it1) }
 
             /**
@@ -4168,6 +4170,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             orderTypesToShow?.removeIf { orderType ->
                 orderTypesToRemove.contains(orderType.orderType)
             }
+
 
             orderTypesToShow?.let { it1 -> orderTypeAdapter?.addAll(it1.filter { it.primaryOrderType }) }
         }
