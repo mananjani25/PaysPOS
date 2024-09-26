@@ -1857,7 +1857,8 @@ class CustomDisplay(
         paymentViewModel: PaymentViewModel,
         magRequestUtils: MagtekRequestUtils,
         apiModule1: ApiModule1,
-        fromKeypad: Boolean = false
+        fromKeypad: Boolean = false,
+        totalPrice:Double
     ) {
         mTipListViewModel = tipListViewModel
         mOrderID = orderId
@@ -1877,7 +1878,7 @@ class CustomDisplay(
 //            observeActiveTipsList(wholeTotalPrice)
             Log.d("C_Disp_3::", mPaymentViewModel.tipOnAmount.toString())
             if (dashBoardCategoryViewModel.getSplitCount()==1){
-                observeActiveTipsList(/*mPaymentViewModel.tipOnAmount*/wholeTotalPrice / dashBoardCategoryViewModel.getSplitCount())
+                observeActiveTipsList(/*mPaymentViewModel.tipOnAmount*/totalPrice / dashBoardCategoryViewModel.getSplitCount())
             }else{
                 observeActiveTipsList(mPaymentViewModel.tipOnAmount / dashBoardCategoryViewModel.getSplitCount())
             }
