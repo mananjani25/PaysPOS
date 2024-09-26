@@ -6184,6 +6184,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 )
             )
         }
+        EventBus.getDefault()
+            .post(MessageEvent("${Constants.LINE_BREAK_TAB} DashboardCategoryBoldPOS.kt_ setupInnerPrinterAttributes_before_create_printer_model_creation"))
 
         val createPrinter = CreatePrinterRequestModel(
             name = if (innerPrinterModel.modelName==null) innerPrinterModel.printerName else innerPrinterModel.modelName,
@@ -6199,6 +6201,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             printerSettingsAttributes = list
 
         )
+        EventBus.getDefault()
+            .post(MessageEvent("${Constants.LINE_BREAK_TAB} DashboardCategoryBoldPOS.kt_ setupInnerPrinterAttributes_createPrinter= ${Gson().toJson(createPrinter)}"))
+
         printerViewModel.createPrinter(createPrinter)
     }
 

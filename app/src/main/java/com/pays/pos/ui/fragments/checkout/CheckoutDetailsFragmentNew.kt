@@ -1771,6 +1771,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         val bundle = Bundle()
         bundle.putBoolean("isDineIn", false)
+        EventBus.getDefault()
+            .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ performCashOperation_1"))
 
         if (remainingAmount == 0.0) {
             if (custom_paymentAmount != 0.0) {
@@ -1782,10 +1784,26 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             bundle.putDouble("PaidAmount", remainingAmount)
         }
 
+        EventBus.getDefault()
+            .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ performCashOperation_prefProvider.getValue(Constants.WHOLE_AMOUNT....).toDouble()_1: ${prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.00")}"))
+
+        EventBus.getDefault()
+            .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ performCashOperation_prefProvider.getValue(Constants.WHOLE_AMOUNT....).toDouble()_%.1f_2: ${String.format(
+                "%.1f",
+                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.00").toDouble()
+            ).toDouble()}"))
+
+        /*if Below is not executed then then maybe %.2f, is raising the error*/
+  EventBus.getDefault()
+            .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ performCashOperation_prefProvider.getValue(Constants.WHOLE_AMOUNT....).toDouble()_%.2f_3: ${String.format(
+                "%.2f",
+                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.00").toDouble()
+            ).toDouble()}"))
+
         var wholePrice =
             String.format(
                 "%.2f",
-                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
+                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.00").toDouble()
             ).toDouble()
 
         bundle.putDouble("WholetotalPrice", wholePrice)
