@@ -386,6 +386,7 @@ class CreateTax : Fragment() {
 
                                         backPressManage()
                                     }catch (e:Exception){
+                                        dashViewModel._showProgress.value = Event(false)
 
                                     }
 
