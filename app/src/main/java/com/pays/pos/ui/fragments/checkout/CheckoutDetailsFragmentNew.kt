@@ -3318,7 +3318,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
             binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
 
-            presentation.onDisplayChanged()
+            if (this::presentation.isInitialized) {
+                presentation.onDisplayChanged()
+            }
 
             MethodUtils.setPriceTextViewDown(
                 binding.tvAmount,

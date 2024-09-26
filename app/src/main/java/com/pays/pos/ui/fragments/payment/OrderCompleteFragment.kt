@@ -8099,7 +8099,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.setValueboolean(Constants.TIP_ADDED, false)
         prefProvider.deleteValue(Constants.DO_PRINT)
         prefProvider.setValue(Constants.DELIVERY_TYPE, "")
-
+        prefProvider.setValueInt(Constants.ORDER_TYPE_ID, 0)
         viewModelDashBoard.customerCardAmount.value = ""
         viewModelDashBoard.customerCashAmount.value = ""
         if (isSpilt) {

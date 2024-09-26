@@ -8098,6 +8098,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 }
             }
+            prefProvider.setValueInt(Constants.ORDER_TYPE_ID,model.orderTypeId)
             model.items = null
             cartList.add(0, model)
             LogUtil.logE(TAG, "CartIsEmpty::")
