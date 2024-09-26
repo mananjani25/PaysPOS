@@ -7852,7 +7852,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.employeeListAddAllFromSeeting(it.settingData.data.employee)
 //                                rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
 //                                posRepository.deleteOrderTypeFromDb()
-                                CoroutineScope(Dispatchers.IO).launch {
+
+                                Log.e("checkHereDB","OrderTypesComing")
+                                posRepository.deleteOrderTypeFromDb()
+                                //comment this scope due to dine in order type was not reflecting after sync from backend.
+                                /*CoroutineScope(Dispatchers.IO).launch {
                                     var orderTypesList :kotlin.collections.ArrayList<TbOrderType> = posRepository.getAllOrderTypes() as ArrayList<TbOrderType>
                                     if (orderTypesList.size>=it.settingData.data.orderTypes.size){
                                         var removedIDs= arrayListOf<Int>()
@@ -7864,7 +7868,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         }
                                     }
 
-                                }
+                                }*/
+
+
 
                                 CoroutineScope(Dispatchers.IO).launch {
                                     it.settingData.data.dynamicPaymentRecords.forEach {
