@@ -7096,7 +7096,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),
                 padLine(
                     "Total Price",
-                    "$" + MethodUtils.roundOffAmountString(total),
+                    "$" + MethodUtils.roundOffAmountString(totalAmt),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         23
                     } else {
@@ -7106,91 +7106,97 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             )
 
 
-            if (prefProvider.getValue(
-                    Constants.OPTION_TYPE,
-                    "CashDiscount"
-                ) == "CashDiscount"
-            ) {
+            if(!paymentType.lowercase().equals("paid")) {
+                if (prefProvider.getValue(
+                        Constants.OPTION_TYPE,
+                        "CashDiscount"
+                    ) == "CashDiscount"
+                ) {
 
-                var cashdiscountAmount = 0.0
-                if (MethodUtils.isEnableCashDiscount(requireContext())) {
-                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
-                        total,
-                        prefProvider,
-                        requireContext()
+                    var cashdiscountAmount = 0.0
+                    if (MethodUtils.isEnableCashDiscount(requireContext())) {
+                        cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                            total,
+                            prefProvider,
+                            requireContext()
+                        )
+                    } else {
+                        cashdiscountAmount = 0.0
+                    }
+
+                    PrintSunmiUtils.printBoldText(
+                        prefProvider.isOldSunmiFrameworkVersion(),
+                        padLine(
+                            "Pay by Cash",
+                            "$" + MethodUtils.roundOffAmountString(total - cashdiscountAmount),
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                23
+                            } else {
+                                48
+                            }
+                        ).toString()
                     )
-                } else {
-                    cashdiscountAmount = 0.0
-                }
-
-                PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),
-                    padLine(
-                        "Pay by Cash",
-                        "$" + MethodUtils.roundOffAmountString(total - cashdiscountAmount),
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            23
-                        } else {
-                            48
-                        }
-                    ).toString()
-                )
 
 
-                PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),
-                    padLine(
-                        "Pay by Card",
-                        "$" + MethodUtils.roundOffAmountString(total),
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            23
-                        } else {
-                            48
-                        }
-                    ).toString()
-                )
-
-            } else if (prefProvider.getValue(
-                    Constants.OPTION_TYPE,
-                    "CashDiscount"
-                ) == "SurCharge"
-            ) {
-
-
-                var cashdiscountAmount = 0.0
-                if (MethodUtils.isEnableCashDiscount(requireContext())) {
-                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
-                        total,
-                        prefProvider,
-                        requireContext()
+                    PrintSunmiUtils.printBoldText(
+                        prefProvider.isOldSunmiFrameworkVersion(),
+                        padLine(
+                            "Pay by Card",
+                            "$" + MethodUtils.roundOffAmountString(total),
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                23
+                            } else {
+                                48
+                            }
+                        ).toString()
                     )
-                } else {
-                    cashdiscountAmount = 0.0
+
+                } else if (prefProvider.getValue(
+                        Constants.OPTION_TYPE,
+                        "CashDiscount"
+                    ) == "SurCharge"
+                ) {
+
+
+                    var cashdiscountAmount = 0.0
+                    if (MethodUtils.isEnableCashDiscount(requireContext())) {
+                        cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                            total,
+                            prefProvider,
+                            requireContext()
+                        )
+                    } else {
+                        cashdiscountAmount = 0.0
+                    }
+
+                    PrintSunmiUtils.printBoldText(
+                        prefProvider.isOldSunmiFrameworkVersion(),
+                        padLine(
+                            "Pay by Cash",
+                            "$" + MethodUtils.roundOffAmountString(total),
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                23
+                            } else {
+                                48
+                            }
+                        ).toString()
+                    )
+
+
+                    PrintSunmiUtils.printBoldText(
+                        prefProvider.isOldSunmiFrameworkVersion(),
+                        padLine(
+                            "Pay by Card",
+                            "$" + MethodUtils.roundOffAmountString(total + cashdiscountAmount),
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                23
+                            } else {
+                                48
+                            }
+                        ).toString()
+                    )
+
                 }
-
-                PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),
-                    padLine(
-                        "Pay by Cash",
-                        "$" + MethodUtils.roundOffAmountString(total),
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            23
-                        } else {
-                            48
-                        }
-                    ).toString()
-                )
-
-
-                PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),
-                    padLine(
-                        "Pay by Card",
-                        "$" + MethodUtils.roundOffAmountString(total + cashdiscountAmount),
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            23
-                        } else {
-                            48
-                        }
-                    ).toString()
-                )
-
             }
 
 
