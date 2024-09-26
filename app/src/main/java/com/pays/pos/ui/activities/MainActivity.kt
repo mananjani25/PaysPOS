@@ -4016,7 +4016,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
                 LogUtil.logE(TAG, "listIds  ${Gson().toJson(listIds)}")
                 LogUtil.logE(TAG, "printerQueueId  ${printerQueueModelGlobal?.id ?: 0}")
-                ThreadPoolManager.instance.executeTask(Runnable {
+
+                coroutineScope {
                     lifecycleScope.launch {
                         printerQueueModelGlobal?.id?.let {
                             viewModelPrinter.updateStatusPrinterQueue(
@@ -4026,7 +4027,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                             /*delay(2000)*/
                         }
                     }
-                })
+                    }
+
 
             }
             try {
