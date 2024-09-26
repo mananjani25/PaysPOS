@@ -31,6 +31,7 @@ class TbCartItem : Parcelable {
     var name: String = ""
     var id: Int = 0
     var price: Double = 0.0
+    var actualPrice: Double = 0.0
     var quantity: Int = 0
     var sku: String = ""
     var isHide: Boolean = false

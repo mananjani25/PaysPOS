@@ -5671,14 +5671,16 @@ fun addWholeTbItemToGuestInner(
 
    // val price = subTotal
     var price = (subTotal)
-    val actualPrice = subTotal
+    var actualPrice = subTotal
 
-    if(isUnpaid)
+    if(isUnpaid) {
         price /= guestCount
+        obj.actualPrice = subTotal
+    }
 
     var priceToShow = ""
     if (list.price > 0.0) {
-        priceToShow = "("+ MethodUtils.roundOffAmount(actualPrice) + ") " + MethodUtils.roundOffAmount(price)
+        priceToShow = "("+ MethodUtils.roundOffAmount(obj.actualPrice) + ") " + MethodUtils.roundOffAmount(price)
     }
 
     //val finalAmt = MethodUtils.roundOffAmount((subTotal) / guestCount)
@@ -5844,7 +5846,7 @@ fun printPayment(
     list.forEachIndexed {  index,it->
 
      //   val paymentToPrint = padLineSinglePayment("Payment ${index+1}","${it.amount}",2)
-        val paymentToPrint = "Payment ${index+1}  :   $${it.amount}"
+        val paymentToPrint = "Payment ${index+1}  :   ${MethodUtils.roundOffAmount(it.amount)}"
 
         when(printerType){
 

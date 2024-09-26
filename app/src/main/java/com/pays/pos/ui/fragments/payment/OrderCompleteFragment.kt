@@ -4633,16 +4633,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             val guestCount = getDineInOrderDetails?.guestAttributes?.count { it.guestItemAttributes.isNotEmpty() && !it.name.lowercase().contains("whole table") } ?: 1
 
+
             PrintSunmiUtils.normalTextCenter("Whole Table")
             for (i in 0 until listWTitems.size) {
-
                 addWholeTbItemToGuestInner(
                     listWTitems.get(i),
                     customerSettingModel.fonts,
                     customerSettingModel.showModifiers,
                     guestCount,
                     dineInList.get(0).serviceChargeList ?: arrayListOf(),
-                    prefProvider.isOldSunmiFrameworkVersion()
+                    prefProvider.isOldSunmiFrameworkVersion(),
                 )
             }
 
