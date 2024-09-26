@@ -3506,6 +3506,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) != GIFT_CARD) {
                     PaymentBoldPosFragment.newInstance().addTipHideShow(false)
                 }
+                /*Solved BIS-4479*/
+                dashboardViewModel.isSelectCount=1
+                /*Solved BIS-4479*/
+
                 isSelectedCount = 1
                 tipsetupGlobal(tipAmount, isSelectedCount)
                 loadPaymentLayout()
