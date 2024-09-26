@@ -8422,7 +8422,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     var isLoading = MutableLiveData<Boolean>()
 
     fun downloadFinished(value: Boolean) {
-        isLoading.value = value
+//        isLoading.value = value
+        isLoading.postValue(value)
     }
 
 
