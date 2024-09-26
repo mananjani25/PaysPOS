@@ -546,7 +546,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
 
         binding.header.txtSave.setOnClickListener {
-            findNavController().navigate(R.id.action_printer_to_dashboardCategoryNew)
+            if (findNavController().currentDestination?.id == R.id.printer) {
+                findNavController().navigate(R.id.action_printer_to_dashboardCategoryNew)
+            }
+
             // syncPrinterList(true)
 
         }

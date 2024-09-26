@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.os.Message
 import android.text.Editable
 import android.text.TextWatcher
@@ -363,6 +364,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                         it.name
 
                                     itemDynamicButton.setOnSingleClickListener { view ->
+                                        view.isEnabled=false
+                                        Handler(Looper.getMainLooper()).postDelayed(object:java.lang.Runnable{
+                                            override fun run() {
+                                                view.isEnabled=true
+                                            }
+                                        },5000)
                                         startDynamicPayment(it.name, it.id)
                                     }
 

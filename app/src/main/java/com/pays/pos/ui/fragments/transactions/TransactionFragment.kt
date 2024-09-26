@@ -254,13 +254,17 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         //   viewModel.setCurrentDate(myCalendar)
 
         binding.includeView.imgDrawer.setOnSingleClickListener {
-            findNavController().navigate(R.id.action_transactionFragment_to_menfragment)
+            if (findNavController().currentDestination?.id == R.id.transactionFragment) {
+                findNavController().navigate(R.id.action_transactionFragment_to_menfragment)
+            }
+
         }
 
         binding.includeView.txtTitle.text = getString(R.string.transactions)
 
         binding.includeView.txtHome.setOnClickListener {
-            findNavController().navigate(R.id.action_transactionFragment_to_dashboardCategoryNew)
+            if (findNavController().currentDestination?.id == R.id.transactionFragment) {
+                findNavController().navigate(R.id.action_transactionFragment_to_dashboardCategoryNew)            }
         }
 
 
