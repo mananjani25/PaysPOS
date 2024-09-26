@@ -9,6 +9,7 @@ import android.os.Handler
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
+import com.github.anrwatchdog.ANRWatchDog
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.pax.poslink.CommSetting
@@ -35,6 +36,18 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
+
+        /*It will not work in builds that are sent for live */
+        if (Constants.isPaxInDebugMode) {
+            ANRWatchDog().start()
+            ANRWatchDog().setANRListener { error ->
+                // Log or handle the ANR event
+                Log.e("ANR-WatchDog", "Application Not Responding detected!", error)
+
+                // You can also send this information to Crashlytics or another logging service
+                // FirebaseCrashlytics.getInstance().recordException(error)
+            }.start()
+        }
 /*ALL THE SCAN GUN VARIABLES ARE COMMENTED AND MOVED TO MAINACTIVITY(for solving permission issue), PLEASE UNCOMMENT IT AND REMOVE THE VARIABLES FROM MAINACTIVITY*/
 
 //        CoroutineScope(Dispatchers.IO).launch {

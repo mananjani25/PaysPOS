@@ -242,4 +242,7 @@ dependencies {
     implementation "androidx.core:core-splashscreen:1.0.0"
 
     implementation fileTree(dir: 'libs', include: ['*.aar'])
+
+    implementation 'com.github.anrwatchdog:anrwatchdog:1.4.0'
+
 }
