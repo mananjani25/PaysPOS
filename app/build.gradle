@@ -37,6 +37,23 @@ android {
             keyAlias 'snackhq'
             keyPassword 'snackhq'
         }
+
+        applicationVariants.all{
+                // this method is use to rename your all apk weather
+                // it may be signed or unsigned(debug apk)
+            variant ->
+                variant.outputs.each{
+                        // on below line we are setting a
+                        // name to our apk as GFG.apk
+                    output->
+
+                        def formattedDate = new Date().format('dd_MMM_yyyy_HH_mm')
+                        def name = "Pays_${formattedDate}_v${variant.versionName}_PAX_.apk"
+                        // on below line we are setting the
+                        // outputFile Name to our apk file.
+                        output.outputFileName = name
+                }
+        }
     }
 
     buildTypes {
