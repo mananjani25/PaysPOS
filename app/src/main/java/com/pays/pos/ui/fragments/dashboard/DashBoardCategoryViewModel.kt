@@ -84,6 +84,7 @@ import com.pays.pos.data.repositories.TipDiscountRepository
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
 import com.pays.pos.logger.MessageEvent
+import com.pays.pos.ui.adapter.DineInTableAdapter
 import com.pays.pos.utils.*
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
@@ -164,6 +165,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var orderRequestModel: OrderRequestModel? = null
     var orderAttributeRequestModel = OrderAttributeRequestModel()
     var dineInItemClickedFromCart = false
+    var dineInAdapterBackup:DineInTableAdapter? = null
 
     /**
      *  currentDineInItems keeps track of all dine in Items even if they are destroyed

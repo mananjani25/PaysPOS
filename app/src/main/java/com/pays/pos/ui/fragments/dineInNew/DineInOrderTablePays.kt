@@ -1269,6 +1269,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, true)
 
+            if(dashboardViewModel.currentCartItems.isEmpty()) {
+                dashboardViewModel.dineInAdapterBackup = dineInTableAdapter
+            }
+
             try {
                 findNavController().navigate(
                     R.id.action_dineInOrderTable_to_dashboardCategoryNew,
@@ -1442,7 +1446,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             dashboardViewModel.subTotalPrice = getOrderDetailsResponse?.subTotal ?: 0.0
             // END RESET
             val request = dashboardViewModel.updateOrder(cartList!!)
-            orderId?.let { viewModel.updateOrder(it, request) }
+            orderId?.let {
+                viewModel.updateOrder(it, request)
+            }
         } else {
             AlertUtils.showCustomAlertWithListenerWithOK(
                 requireContext(), "You can't add more than 15 Guest in an order."
@@ -1807,7 +1813,6 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-
         val paymentAttr = GuestPaymentAttributes().apply {
                 amount = totalGuest
                 cardName = ""
@@ -1930,6 +1935,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
         LogUtil.logE("AAjeChange", "listItemWT:  ${Gson().toJson(listItemWT)}")
         listItemWT.forEach {
+
+            it.actualPrice = it.price
+
             val obj = it
             wholeNewSubtotal += (obj.price * obj.itemQuantity)
 
