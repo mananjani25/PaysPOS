@@ -36,9 +36,6 @@ import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import com.dantsu.escposprinter.EscPosPrinter
-import com.dantsu.escposprinter.connection.bluetooth.BluetoothPrintersConnections
-import com.dantsu.escposprinter.textparser.PrinterTextParserImg
 import com.epson.epos2.ConnectionListener
 import com.epson.epos2.printer.Printer
 import com.epson.epos2.printer.PrinterStatusInfo
@@ -96,6 +93,9 @@ import com.pays.pos.utils.scanner.helpers.ScannerAppEngine
 import com.pays.pos.utils.statusUtils.Status
 import com.pays.pos.utils.workmanager.ThreadPoolManager
 import com.pays.pos.utils.workmanager.UploadWorker2
+import com.sdksuite.omnidriver.OmniConnection
+import com.sdksuite.omnidriver.OmniDriver
+import com.sdksuite.omnidriver.api.CashBox
 import com.sunmi.externalprinterlibrary2.ConnectCallback
 import com.sunmi.externalprinterlibrary2.ResultCallback
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
@@ -116,6 +116,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
+
+
 /*import com.zebra.scannercontrol.DCSScannerInfo
 import com.zebra.scannercontrol.SDKHandler*/
 
@@ -1296,19 +1298,52 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     fun onMessageEvent(event: MessageEvent?) {
-        log(event?.data.toString())
-        event?.newTrack.let {
-            if (it == true) {
-                logNewTrack(event?.data.toString())
+        event?.let {
+            if (it.data.equals(Constants.CASHBOX, ignoreCase = true) && it.newTrack){
+                openLandiCashBox()
+            }else {
+                log(it.data.toString())
+                it.newTrack.let {
+                    if (it == true) {
+                        logNewTrack(event?.data.toString())
+                    }
+                }
+                    }
+        }
+
+
+    }
+
+    lateinit var omniDriver: OmniDriver
+    private var landiCashboxConnected:Boolean=false
+
+    private fun initLandiCashBox() {
+        omniDriver= OmniDriver.me(this)
+
+        omniDriver.init(object : OmniConnection {
+            override fun onConnected() {
+                landiCashboxConnected=true
             }
+            override fun onDisconnected(error: Int) {
+                Log.d("OmniDriver:", "Disconnected")
+            }
+        })
+    }
+
+    private fun openLandiCashBox(){
+        if (landiCashboxConnected){
+            var cashBox: CashBox = omniDriver.getCashBox(Bundle())
+            cashBox.openBox()
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MainApplication.mainActivity = this
         permissionCheck()
 //        sdkHandler = SDKHandler(this, true)
         attachFileLogger()
+        initLandiCashBox()
         prefProvider!!.setValue(Constants.DELIVERY_TYPE, "")
 
         if (!checkServiceRunning(
@@ -3370,9 +3405,13 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
 
         updatePrinter = this
-        if (this::presentation.isInitialized) {
-            presentation.show()
-            presentation.onDisplayChanged()
+        try {
+            if (this::presentation.isInitialized) {
+                presentation.show()
+                presentation.onDisplayChanged()
+            }
+        }catch (e:WindowManager.InvalidDisplayException){
+            e.printStackTrace()
         }
         prefProvider?.setValue(UNIQUE_ID, getDeviceId())
 
@@ -3981,7 +4020,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
                 LogUtil.logE(TAG, "listIds  ${Gson().toJson(listIds)}")
                 LogUtil.logE(TAG, "printerQueueId  ${printerQueueModelGlobal?.id ?: 0}")
-                ThreadPoolManager.instance.executeTask(Runnable {
+
+                coroutineScope {
                     lifecycleScope.launch {
                         printerQueueModelGlobal?.id?.let {
                             viewModelPrinter.updateStatusPrinterQueue(
@@ -3991,7 +4031,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                             /*delay(2000)*/
                         }
                     }
-                })
+                    }
+
 
             }
             try {

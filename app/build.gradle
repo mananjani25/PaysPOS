@@ -16,8 +16,8 @@ android {
         applicationId "com.pays.pos"
         minSdkVersion 24
         targetSdkVersion 33
-        versionCode 19
-        versionName "1.19"
+        versionCode 20
+        versionName "1.20"
 
 
         sourceSets { main { jniLibs.srcDirs = ['src/main/jniLibs/'] } }
@@ -36,6 +36,23 @@ android {
             storePassword 'snackhq'
             keyAlias 'snackhq'
             keyPassword 'snackhq'
+        }
+
+        applicationVariants.all{
+                // this method is use to rename your all apk weather
+                // it may be signed or unsigned(debug apk)
+            variant ->
+                variant.outputs.each{
+                        // on below line we are setting a
+                        // name to our apk as GFG.apk
+                    output->
+
+                        def formattedDate = new Date().format('dd_MMM_yyyy_HH_mm')
+                        def name = "Pays_${formattedDate}_v${variant.versionName}_PAX_.apk"
+                        // on below line we are setting the
+                        // outputFile Name to our apk file.
+                        output.outputFileName = name
+                }
         }
     }
 
@@ -240,5 +257,9 @@ dependencies {
     implementation 'com.github.DantSu:ESCPOS-ThermalPrinter-Android:3.3.0'
 
     implementation "androidx.core:core-splashscreen:1.0.0"
+
+    implementation fileTree(dir: 'libs', include: ['*.aar'])
+
+    implementation 'com.github.anrwatchdog:anrwatchdog:1.4.0'
 
 }

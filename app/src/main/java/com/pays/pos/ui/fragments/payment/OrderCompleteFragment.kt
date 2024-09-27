@@ -224,6 +224,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var isOrderUpdated: Boolean = false
 
     private var orderTypeToCheckKiosk: String = ""
+    private var totalPayableAmount:Double = 0.0
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -336,6 +337,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 val paymentIdForCustomerDisplay = prefProvider.getValueInt(
                     PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
                 )
+                Log.e(TAG,"checkTotalPrice:  ${totalPayableAmount}")
                 presentation.showWouldYouLikeToAddTipScreen(
                     tipListViewModel,
                     transactionViewModel,
@@ -344,7 +346,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     paymentViewModel = paymentViewModel,
                     magRequestUtils = magtekRequestUtils,
                     apiModule1 = apiModule1,
-                    true
+                    true,
+                    totalPayableAmount
                 )
             }
         }
@@ -620,6 +623,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (isDineIn) {
             paidAmount = requireArguments().getDouble("PaidAmount")
             WholetotalPrice = requireArguments().getDouble("WholetotalPrice")
+            totalPayableAmount = requireArguments().getDouble("WholetotalPrice")
+
             remainingAmount = requireArguments().getDouble("remainingAmount")
             orderID = requireArguments().getInt("orderID")
             receiptModel = requireArguments().getParcelable("receiptData")
@@ -654,6 +659,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             redeemLoyaltyInfo = requireArguments().getParcelable("redeemLoyalty")
             paidAmount = requireArguments().getDouble("PaidAmount")
             WholetotalPrice = requireArguments().getDouble("WholetotalPrice")
+            totalPayableAmount = requireArguments().getDouble("WholetotalPrice")
             remainingAmount = requireArguments().getDouble("remainingAmount")
             splitChange = requireArguments().getDouble("splitChange")
             orderID = requireArguments().getInt("orderID")
@@ -8150,7 +8156,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.setValueboolean(Constants.TIP_ADDED, false)
         prefProvider.deleteValue(Constants.DO_PRINT)
         prefProvider.setValue(Constants.DELIVERY_TYPE, "")
-
+        prefProvider.setValueInt(Constants.ORDER_TYPE_ID, 0)
         viewModelDashBoard.customerCardAmount.value = ""
         viewModelDashBoard.customerCashAmount.value = ""
         if (isSpilt) {

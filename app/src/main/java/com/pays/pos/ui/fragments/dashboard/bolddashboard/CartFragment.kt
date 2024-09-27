@@ -97,15 +97,36 @@ import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
-class CartFragment(
-    val itemClickListner: ItemClickListner?,
-    val itemListner: ItemListner?,
-    val isFromPaymentDinein: Boolean = false,
-    val guestCalModel: GuestPaymentCalculationModel? = null,
-    val isGuestPayment: Boolean = false,
-    val dineInCallback: DineInOrderCallBack? = null,
-    val isFromDashboard: Boolean? = false,
-) : Fragment(), MyCallback, DineInAdapter.DineInCallback, ItemCallback {
+class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCallback {
+
+    constructor(
+        itemClickListner: ItemClickListner?,
+        itemListner: ItemListner?,
+        isFromPaymentDinein: Boolean = false,
+        guestCalModel: GuestPaymentCalculationModel? = null,
+        isGuestPayment: Boolean = false,
+        dineInCallback: DineInOrderCallBack? = null,
+        isFromDashboard: Boolean? = false
+    ) : this() {
+        this.itemClickListner = itemClickListner
+        this.itemListner = itemListner
+        this.isFromPaymentDinein = isFromPaymentDinein
+        this.guestCalModel = guestCalModel
+        this.isGuestPayment = isGuestPayment
+        this.dineInCallback = dineInCallback
+        this.isFromDashboard = isFromDashboard
+    }
+
+    constructor() : super()
+    /*--------------------Constructor params--------------------*/
+    var itemClickListner: ItemClickListner? = null
+    var itemListner: ItemListner? = null
+    var isFromPaymentDinein: Boolean = false
+    var guestCalModel: GuestPaymentCalculationModel? = null
+    var isGuestPayment: Boolean = false
+    var dineInCallback: DineInOrderCallBack? = null
+    var isFromDashboard: Boolean? = false
+    /*--------------------Constructor params--------------------*/
 
     private var oldItemSize: Int? = 0
 
@@ -4208,6 +4229,8 @@ class CartFragment(
 
         viewModel.orderTypes().observe(requireActivity()) {
 
+            Log.e(TAG,"checkAllOrderTypes:  ${Gson().toJson(it.data)}")
+
             val orderTypesToShow = it?.data?.let { it1 -> ArrayList(it1) }
 
             /**
@@ -4234,6 +4257,7 @@ class CartFragment(
             orderTypesToShow?.removeIf { orderType ->
                 orderTypesToRemove.contains(orderType.orderType)
             }
+
 
             orderTypesToShow?.let { it1 -> orderTypeAdapter?.addAll(it1.filter { it.primaryOrderType }) }
         }

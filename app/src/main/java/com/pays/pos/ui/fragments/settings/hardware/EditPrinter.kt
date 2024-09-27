@@ -49,7 +49,8 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
     private var list = arrayListOf<String>(CUSTOMER, KITCHEN, KITCHENANDCUSTOMER)
     private var type = ""
     var orderTypeList: ArrayList<TbOrderType> = arrayListOf()
-    private var currentPrinterType:String = ""
+    private var originalPrinterType: String = ""
+    private var isFirstTimeAdapter: Boolean = false
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -62,9 +63,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
         binding = FragmentEditPrinterBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         categoryAdapter = CategoryPrinterAdapter(arrayListOf(), this)
-        arrayAdapter =
-            ArrayAdapter(binding.root.context, android.R.layout.simple_spinner_item, list)
-        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
         //makeEditAableFalse()
         observeShowProgress()
         updateDate()
@@ -87,9 +86,22 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
 
         printerModel = arguments?.getParcelable("printerSetting")
 
-        currentPrinterType = arguments?.getString("currentPrinterType").toString()
-        adapter = EditPrinterListAdapter(currentPrinterType)
-        Log.e(TAG,"checkPrinterListModel  ${Gson().toJson(printerModel?.printerModel)}")
+
+        originalPrinterType = arguments?.getString("currentPrinterType").toString()
+        adapter = EditPrinterListAdapter(originalPrinterType)
+        if ((printerModel?.printerName?.toLowerCase()
+                ?.contains("tsp") == true) || (printerModel?.printerName?.toLowerCase()
+                ?.contains("sp") == true)
+        ) {
+            list.clear()
+            list = arrayListOf<String>(KITCHEN)
+
+        }
+        arrayAdapter =
+            ArrayAdapter(binding.root.context, android.R.layout.simple_spinner_item, list)
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        Log.e(TAG, "checkPrinterListModel  ${Gson().toJson(printerModel?.printerModel)}  ")
+        Log.e(TAG, "currentPrinterType:  ${originalPrinterType}")
 
 
         binding.rvPrinterList.adapter = adapter
@@ -162,17 +174,17 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
     private fun setSpinnnerAdapter() {
 
 
-        if (prefProvider.getValueboolean(Constants.IS_PRINTER_QUEUE_ENABLE, false)){
+        if (prefProvider.getValueboolean(Constants.IS_PRINTER_QUEUE_ENABLE, false)) {
 
-            if (prefProvider.getValueboolean(Constants.IS_MASTER_TERMINAL, false)){
+            if (prefProvider.getValueboolean(Constants.IS_MASTER_TERMINAL, false)) {
                 if (printerModel?.printerName?.startsWith("CloudPrint", true) == true) {
                     list.clear()
                     list.add(KITCHEN)
-                }else {
+                } else {
                     list.clear()
                     list.add(CUSTOMER)
                 }
-            }else {
+            } else {
                 list.clear()
                 list.add(CUSTOMER)
             }
@@ -185,6 +197,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
             LogUtil.logE(TAG, "gotIndexNAmeType ${printerModel?.type?.lowercase()}")
             if (s.lowercase() == printerModel?.type?.lowercase()) {
                 LogUtil.logE(TAG, "gotindex:  $index")
+                isFirstTimeAdapter = true
                 binding.spnPrinterCat.setSelection(index)
             }
         }
@@ -195,87 +208,107 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                 var oderTypes: ArrayList<PrinterResponse.Data.OrderTypes> = arrayListOf()
                 var dataList: ArrayList<PrinterResponse.Data.PrinterSettings> =
                     arrayListOf()
-                type = selectedValue.toString()
 
-                when (selectedValue) {
-                    KITCHEN -> {
-                        orderTypeList.forEach {
-                            dataList = arrayListOf()
-                            dataList.add(
-                                PrinterResponse.Data.PrinterSettings(
-                                    orderTypeId = it.id,
-                                    printType = KITCHEN,
-                                    manualPrinting = false,
-                                    autoPrinting = true,
-                                    printerId = 0,
-                                    createdAt = "",
-                                    updatedAt = ""
-                                )
-                            )
+                if (isFirstTimeAdapter == false) {
 
-                            oderTypes.add(
-                                PrinterResponse.Data.OrderTypes(
-                                    it.id,
-                                    it.orderType,
-                                    it.name,
-                                    dataList
-                                )
-                            )
-                        }
+                    when (selectedValue) {
+                        KITCHEN -> {
 
-                    }
-                    CUSTOMER -> {
-                        if((printerModel?.printerName?.toLowerCase()?.contains("tsp") == false) || (printerModel?.printerName?.toLowerCase()?.contains("sp") == false)){
-                            orderTypeList.forEach {
-                            dataList = arrayListOf()
-                            dataList.add(
-                                PrinterResponse.Data.PrinterSettings(
-                                    orderTypeId = it.id,
-                                    printType = CUSTOMER,
-                                    manualPrinting = false,
-                                    autoPrinting = true,
-                                    printerId = 0,
-                                    createdAt = "",
-                                    updatedAt = ""
-                                )
-                            )
+                            var settingList = printerModel?.printerModel ?: arrayListOf()
+                            settingList.forEach { it ->
 
-                            oderTypes.add(
-                                PrinterResponse.Data.OrderTypes(
-                                    it.id,
-                                    it.orderType,
-                                    it.name,
-                                    dataList
-                                )
-                            )
-
-                        }
-                        }else {
-                            val index = list.indexOf(KITCHEN)
-                            binding.spnPrinterCat.setSelection(index)
-                            AlertUtils.showCustomAlert(requireContext(),getString(R.string.incompatible_printer))
-                        }
-                    }
-                    KITCHENANDCUSTOMER -> {
-                       if(((printerModel?.printerName?.toLowerCase()?.contains("tsp") == false)) || ((printerModel?.printerName?.toLowerCase()?.contains("sp") == false))){
-                        orderTypeList.forEach {
-                            dataList = arrayListOf()
+                                dataList = arrayListOf()
 
 
+                                if (originalPrinterType != KITCHENANDCUSTOMER) {
+                                    it.printerSettings.forEach { it1 ->
 
-                                dataList.add(
-                                    PrinterResponse.Data.PrinterSettings(
-                                        orderTypeId = it.id,
-                                        printType = CUSTOMER,
-                                        manualPrinting = false,
-                                        autoPrinting = true,
-                                        printerId = 0,
-                                        createdAt = "",
-                                        updatedAt = ""
+                                        dataList.add(
+                                            PrinterResponse.Data.PrinterSettings(
+                                                id = it1.id,
+                                                orderTypeId = it.orderTypeId,
+                                                printType = it1.printType,
+                                                manualPrinting = false,
+                                                autoPrinting = it1.autoPrinting,
+                                                printerId = 0,
+                                                createdAt = "",
+                                                updatedAt = "",
+                                                isDestroy = true
+                                            )
+                                        )
+
+                                    }
+
+                                    dataList.add(
+                                        PrinterResponse.Data.PrinterSettings(
+                                            orderTypeId = it.orderTypeId,
+                                            printType = KITCHEN,
+                                            manualPrinting = false,
+                                            autoPrinting = true,
+                                            printerId = 0,
+                                            createdAt = "",
+                                            updatedAt = ""
+                                        )
                                     )
-                                )
+
+                                    oderTypes.add(
+                                        PrinterResponse.Data.OrderTypes(
+                                            orderTypeId = it.orderTypeId,
+                                            orderTypeName = it.orderTypeName,
+                                            orderType =  it.orderType,
+                                        dataList
+                                    )
+                                    )
+
+                                } else if (originalPrinterType == KITCHENANDCUSTOMER) {
+                                    it.printerSettings.forEach { it1 ->
+
+                                            dataList.add(
+                                                PrinterResponse.Data.PrinterSettings(
+                                                    id = it1.id,
+                                                    orderTypeId = it.orderTypeId,
+                                                    printType = it1.printType,
+                                                    manualPrinting = false,
+                                                    autoPrinting = it1.autoPrinting,
+                                                    printerId = 0,
+                                                    createdAt = "",
+                                                    updatedAt = "",
+                                                    isDestroy = true,
+
+                                                    )
+                                            )
+
+                                    }
+
+                                    dataList.add(
+                                        PrinterResponse.Data.PrinterSettings(
+
+                                            orderTypeId = it.orderTypeId,
+                                            printType = KITCHEN,
+                                            manualPrinting = false,
+                                            autoPrinting = true,
+                                            printerId = 0,
+                                            createdAt = "",
+                                            updatedAt = "",
 
 
+                                            )
+                                    )
+                                    oderTypes.add(
+                                        PrinterResponse.Data.OrderTypes(
+                                            orderTypeId = it.orderTypeId,
+                                            orderTypeName = it.orderTypeName,
+                                            orderType = it.orderType,
+                                            dataList
+                                        )
+                                    )
+
+
+                                }
+
+                            }
+                            /*orderTypeList.forEach {
+                            dataList = arrayListOf()
                             dataList.add(
                                 PrinterResponse.Data.PrinterSettings(
                                     orderTypeId = it.id,
@@ -296,19 +329,307 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                                     dataList
                                 )
                             )
+                        }*/
+                            type = selectedValue.toString()
+                            if (oderTypes.isNotEmpty()) {
+                                Log.e(
+                                    TAG,
+                                    "oderTypesSettings 1:  ${oderTypes.get(0).printerSettings.size}"
+                                )
+                                adapter.setList(oderTypes)
+                                adapter.notifyDataSetChanged()
+                            }
+
                         }
 
-                    }else {
-                        val index = list.indexOf(KITCHEN)
-                        binding.spnPrinterCat.setSelection(index)
-                        AlertUtils.showCustomAlert(requireContext(),getString(R.string.incompatible_printer))
+                        CUSTOMER -> {
+                            if ((printerModel?.printerName?.toLowerCase()
+                                    ?.contains("tsp") == false) || (printerModel?.printerName?.toLowerCase()
+                                    ?.contains("sp") == false)
+                            ) {
+                                var settingList = printerModel?.printerModel ?: arrayListOf()
+                                settingList.forEach { it ->
+
+                                    dataList = arrayListOf()
+
+
+                                    if (originalPrinterType != KITCHENANDCUSTOMER) {
+                                        it.printerSettings.forEach { it1 ->
+
+                                            dataList.add(
+                                                PrinterResponse.Data.PrinterSettings(
+                                                    id = it1.id,
+                                                    orderTypeId = it.orderTypeId,
+                                                    printType = it1.printType,
+                                                    manualPrinting = false,
+                                                    autoPrinting = it1.autoPrinting,
+                                                    printerId = 0,
+                                                    createdAt = "",
+                                                    updatedAt = "",
+                                                    isDestroy = true
+                                                )
+                                            )
+
+                                        }
+
+
+                                        dataList.add(
+                                            PrinterResponse.Data.PrinterSettings(
+                                                orderTypeId = it.orderTypeId,
+                                                printType = CUSTOMER,
+                                                manualPrinting = false,
+                                                autoPrinting = true,
+                                                printerId = 0,
+                                                createdAt = "",
+                                                updatedAt = ""
+                                            )
+                                        )
+
+                                        oderTypes.add(
+                                            PrinterResponse.Data.OrderTypes(
+                                               orderTypeId =  it.orderTypeId,
+                                               orderTypeName =  it.orderTypeName,
+                                               orderType =  it.orderType,
+                                                dataList
+                                            )
+                                        )
+
+                                    } else if (originalPrinterType == KITCHENANDCUSTOMER) {
+                                        it.printerSettings.forEach { it1 ->
+
+                                                dataList.add(
+                                                    PrinterResponse.Data.PrinterSettings(
+                                                        id = it1.id,
+                                                        orderTypeId = it.orderTypeId,
+                                                        printType = it1.printType,
+                                                        manualPrinting = false,
+                                                        autoPrinting = it1.autoPrinting,
+                                                        printerId = 0,
+                                                        createdAt = "",
+                                                        updatedAt = "",
+                                                        isDestroy = true,
+
+                                                        )
+                                                )
+
+
+
+
+
+
+                                        }
+
+                                        dataList.add(
+                                            PrinterResponse.Data.PrinterSettings(
+
+                                                orderTypeId = it.orderTypeId,
+                                                printType = CUSTOMER,
+                                                manualPrinting = false,
+                                                autoPrinting = true,
+                                                printerId = 0,
+                                                createdAt = "",
+                                                updatedAt = "",
+
+
+                                                )
+                                        )
+                                        oderTypes.add(
+                                            PrinterResponse.Data.OrderTypes(
+                                             orderTypeId =    it.orderTypeId,
+                                               orderTypeName =  it.orderTypeName,
+                                               orderType =  it.orderType,
+                                                dataList
+                                            )
+                                        )
+
+
+                                    }
+
+                                }
+
+
+                                /* orderTypeList.forEach {
+                             dataList = arrayListOf()
+                             dataList.add(
+                                 PrinterResponse.Data.PrinterSettings(
+                                     orderTypeId = it.id,
+                                     printType = CUSTOMER,
+                                     manualPrinting = false,
+                                     autoPrinting = true,
+                                     printerId = 0,
+                                     createdAt = "",
+                                     updatedAt = ""
+                                 )
+                             )
+
+                             oderTypes.add(
+                                 PrinterResponse.Data.OrderTypes(
+                                     it.id,
+                                     it.orderType,
+                                     it.name,
+                                     dataList
+                                 )
+                             )
+
+                         }*/
+                                type = selectedValue.toString()
+                                if (oderTypes.isNotEmpty()) {
+                                    Log.e(
+                                        TAG,
+                                        "oderTypesSettings 2:  ${oderTypes.get(0).printerSettings.size}"
+                                    )
+                                    adapter.setList(oderTypes)
+                                    adapter.notifyDataSetChanged()
+                                }
+                            } else {
+                                val index = list.indexOf(KITCHEN)
+                                binding.spnPrinterCat.setSelection(index)
+                                AlertUtils.showCustomAlert(
+                                    requireContext(),
+                                    getString(R.string.incompatible_printer)
+                                )
+                            }
+                        }
+
+                        KITCHENANDCUSTOMER -> {
+                            if (((printerModel?.printerName?.toLowerCase()
+                                    ?.contains("tsp") == false)) || ((printerModel?.printerName?.toLowerCase()
+                                    ?.contains("sp") == false))
+                            ) {
+                                Log.e(TAG, "checkHerePrintSelect 1")
+                                var settingList = printerModel?.printerModel ?: arrayListOf()
+
+                                if (originalPrinterType == KITCHENANDCUSTOMER) {
+                                    settingList.forEach { it ->
+                                        dataList = arrayListOf()
+                                        it.printerSettings.forEach { it1 ->
+                                            it1.isDestroy = false
+                                            dataList.add(it1)
+
+
+                                        }
+
+
+                                        oderTypes.add(
+                                            PrinterResponse.Data.OrderTypes(
+                                                it.orderTypeId,
+                                                it.orderType,
+                                                it.orderTypeName,
+                                                dataList
+                                            )
+                                        )
+
+
+                                    }
+
+                                }  else {
+
+                                    settingList.forEach { it ->
+                                        dataList = arrayListOf()
+                                        it.printerSettings.forEach { it1 ->
+                                            it1.isDestroy = true
+                                            dataList.add(it1)
+
+
+                                        }
+                                        dataList.add(
+                                            PrinterResponse.Data.PrinterSettings(
+                                                orderTypeId = it.orderTypeId,
+                                                printType = KITCHEN,
+                                                manualPrinting = false,
+                                                autoPrinting = true,
+                                                printerId = 0,
+                                                createdAt = "",
+                                                updatedAt = ""
+                                            )
+                                        )
+
+                                        dataList.add(
+                                            PrinterResponse.Data.PrinterSettings(
+                                                orderTypeId = it.orderTypeId,
+                                                printType = CUSTOMER,
+                                                manualPrinting = false,
+                                                autoPrinting = true,
+                                                printerId = 0,
+                                                createdAt = "",
+                                                updatedAt = ""
+                                            )
+                                        )
+
+
+
+
+                                        oderTypes.add(
+                                            PrinterResponse.Data.OrderTypes(
+                                               orderTypeId =  it.orderTypeId,
+                                               orderTypeName =  it.orderTypeName,
+                                               orderType =  it.orderType,
+                                                dataList
+                                            )
+                                        )
+
+
+                                    }
+
+                                }
+
+
+                                /* orderTypeList.forEach {
+                                 dataList = arrayListOf()
+
+
+
+
+                                     dataList.add(
+                                         PrinterResponse.Data.PrinterSettings(
+                                             orderTypeId = it.id,
+                                             printType = CUSTOMER,
+                                             manualPrinting = false,
+                                             autoPrinting = true,
+                                             printerId = 0,
+                                             createdAt = "",
+                                             updatedAt = ""
+                                         )
+                                     )
+
+
+                                 dataList.add(
+                                     PrinterResponse.Data.PrinterSettings(
+                                         orderTypeId = it.id,
+                                         printType = KITCHEN,
+                                         manualPrinting = false,
+                                         autoPrinting = true,
+                                         printerId = 0,
+                                         createdAt = "",
+                                         updatedAt = ""
+                                     )
+                                 )
+
+
+                             }*/
+                                type = selectedValue.toString()
+                                if (oderTypes.isNotEmpty()) {
+                                    Log.e(
+                                        TAG,
+                                        "oderTypesSettings 3:  ${oderTypes.get(0).printerSettings.size}"
+                                    )
+                                    adapter.setList(oderTypes)
+                                    adapter.notifyDataSetChanged()
+                                }
+
+                            } else {
+                                Log.e(TAG, "checkHerePrintSelect 2")
+                                val index = list.indexOf(KITCHEN)
+                                binding.spnPrinterCat.setSelection(index)
+                                AlertUtils.showCustomAlert(
+                                    requireContext(),
+                                    getString(R.string.incompatible_printer)
+                                )
+                            }
+                        }
                     }
-                }}
-                LogUtil.logE(TAG, "oderTypes:  ${Gson().toJson(oderTypes)}")
-                if (oderTypes.isNotEmpty()) {
-                    adapter.setList(oderTypes)
-                    adapter.notifyDataSetChanged()
                 }
+                isFirstTimeAdapter = false
 
 
             }
@@ -321,10 +642,10 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
     }
 
     private fun setPrinterData() {
-        if (printerModel?.printerName!=""){
+        if (printerModel?.printerName != "") {
             binding.txtPrinterName.setText(printerModel?.printerName)
 
-        }else {
+        } else {
             printerModel?.printerName = "InnerPrinter"
             binding.txtPrinterName.setText(printerModel?.printerName)
         }
@@ -346,9 +667,11 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
                 }
+
                 Status.ERROR -> {
                     ProgressUtils.dismissProgressDialog()
                 }
+
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null) {
@@ -371,7 +694,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
         }
         binding.header.txtSave.setOnClickListener {
 
-            if (binding.txtPrinterName.text.trim().isEmpty()){
+            if (binding.txtPrinterName.text.trim().isEmpty()) {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(), "Printer Name can't be empty."
                 ) { _, _ ->
@@ -389,6 +712,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                 }
             }
             LogUtil.logE(TAG, "listIdslistIds  ${Gson().toJson(listIds)}")
+            Log.e(TAG, "checkType: ${type}  printerModelType: ${printerModel?.type}")
 
             if (type != printerModel?.type) {
                 var tempList = adapter.getList()
@@ -421,6 +745,10 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
 
 
             } else {
+                Log.e(
+                    TAG,
+                    "checkSettingsIDS:  ${adapter.getList().get(0).printerSettings.get(0).id}"
+                )
 
                 val model = createRequestModelForUpdatePrinter(
                     adapter.getList(),
@@ -477,13 +805,12 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
             }
         })
 
-        viewModel.localUpdatePrinter.observe(requireActivity(),{
+        viewModel.localUpdatePrinter.observe(requireActivity(), {
             it.getContentIfNotHandled()?.let { data ->
 
-                if (data.currentPrinterType == KITCHEN){
+                if (data.currentPrinterType == KITCHEN) {
 
-                }
-                else {
+                } else {
 
 
                 }

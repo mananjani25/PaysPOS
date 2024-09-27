@@ -7872,7 +7872,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.employeeListAddAllFromSeeting(it.settingData.data.employee)
 //                                rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
 //                                posRepository.deleteOrderTypeFromDb()
-                                CoroutineScope(Dispatchers.IO).launch {
+
+                                Log.e("checkHereDB","OrderTypesComing")
+                                posRepository.deleteOrderTypeFromDb()
+                                //comment this scope due to dine in order type was not reflecting after sync from backend.
+                                /*CoroutineScope(Dispatchers.IO).launch {
                                     var orderTypesList :kotlin.collections.ArrayList<TbOrderType> = posRepository.getAllOrderTypes() as ArrayList<TbOrderType>
                                     if (orderTypesList.size>=it.settingData.data.orderTypes.size){
                                         var removedIDs= arrayListOf<Int>()
@@ -7884,7 +7888,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         }
                                     }
 
-                                }
+                                }*/
+
+
 
                                 CoroutineScope(Dispatchers.IO).launch {
                                     it.settingData.data.dynamicPaymentRecords.forEach {
@@ -8118,6 +8124,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 }
             }
+            prefProvider.setValueInt(Constants.ORDER_TYPE_ID,model.orderTypeId)
             model.items = null
             cartList.add(0, model)
             LogUtil.logE(TAG, "CartIsEmpty::")
@@ -8437,7 +8444,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     var isLoading = MutableLiveData<Boolean>()
 
     fun downloadFinished(value: Boolean) {
-        isLoading.value = value
+//        isLoading.value = value
+        isLoading.postValue(value)
     }
 
 

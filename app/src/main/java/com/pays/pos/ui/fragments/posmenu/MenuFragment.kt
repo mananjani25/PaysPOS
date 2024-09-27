@@ -47,6 +47,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.EventBus
@@ -267,8 +268,11 @@ class MenuFragment : DialogFragment() {
         }
 
         binding.header.txtSave.setOnClickListener {
-            findNavController().navigateUp()
-            manageCustomerDisplay()
+            if (findNavController().currentDestination?.id == R.id.menuFragment) {
+                findNavController().navigate(R.id.action_menuFragment_to_dashboardCategoryBoldPOS)
+
+                manageCustomerDisplay()
+            }
         }
         binding.linearSettings.setOnClickListener {
             findNavController().navigate(R.id.action_menuFragment_to_settings)
@@ -334,6 +338,10 @@ class MenuFragment : DialogFragment() {
                         deleteCart()
                         currentCartItems = arrayListOf()
                         duplicateCurrentCartItem = arrayListOf()
+                        val viewLifecycleOwner = view?.let { getViewLifecycleOwner() }
+
+                        viewLifecycleOwner?.let { lifecycleOwner ->
+
                         CoroutineScope(Dispatchers.IO).launch{
 
                                 try {
@@ -348,12 +356,13 @@ class MenuFragment : DialogFragment() {
                     }
 
                     if (prefProvider.getValue(Constants.ORDER_TYPE, "").isNotEmpty()) {
-                        viewLifecycleOwner.lifecycleScope.launch {
+                        viewLifecycleOwner?.lifecycleScope?.launch {
                             viewModel.decreaseOnGoingOrderCounter(true)
                         }
                     } else {
                         viewModel.logoutAPI()
                     }
+                        }
 
                 }
                 this.negativeButton("Cancel") {
@@ -415,6 +424,11 @@ class MenuFragment : DialogFragment() {
             requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         cm.text = prefProvider.getUniqueId()
         Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
     }
 
 

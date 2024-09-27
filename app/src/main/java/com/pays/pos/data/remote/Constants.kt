@@ -172,6 +172,8 @@ object Constants {
     const val CASHDIS_SURCHARGEENABLE = "cashdisurchargeenable"
     const val CASH_DIS_STORED = "cashDisStore"
 
+    const val CASHBOX = "CASHBOX"
+
     const val PICK_UP = "Pickup"
     const val DELIVERY = "Delivery"
     const val IS_PAX_CONNECTED = "isPAXConnected"
@@ -545,6 +547,7 @@ object Constants {
 
         model.forEach { it ->
             for (i in 0 until it.printerSettings.size) {
+                Log.e("checkPrinterSettings","printerSettingsID:  ${it.printerSettings.get(i).id}")
                 list.add(
                     CreatePrinterRequestModel.PrinterSettingsAttributes(
                         it.printerSettings.get(i).id,

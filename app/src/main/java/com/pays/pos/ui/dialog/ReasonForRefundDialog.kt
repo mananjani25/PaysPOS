@@ -51,9 +51,11 @@ import com.google.gson.JsonArray
 import com.pax.poslink.*
 import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.SUNMI_INNER_PRINTER
+import com.pays.pos.logger.MessageEvent
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
 import org.kobjects.util.Util
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
@@ -1282,8 +1284,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                                     }
 
                                 } else if (data[i].name.startsWith(/*"InnerPrinter"*/
-                                        SUNMI_INNER_PRINTER, true) || data[i].name.startsWith(
-                                        LANDI_INNER_PRINTER, true)) {
+                                        SUNMI_INNER_PRINTER, true)) {
 
                                     if (woyouService != null) {
                                         sendToTransaction()
@@ -1315,6 +1316,14 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                                         }
 
                                     }
+
+                                } else if (data[i].name.startsWith(
+                                        LANDI_INNER_PRINTER, true)) {
+
+//                                    if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
+                                        EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+//                                    }
+                                    sendToTransaction()
 
                                 } else {
                                     try {

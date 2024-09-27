@@ -69,11 +69,11 @@ class Hardware : Fragment() {
             findNavController().navigate(R.id.action_hardware_to_printerQueue)
         }
         binding.txtCardMachine.setOnClickListener {
-            prefProvider.setValueInt(Constants.MAGTEK_HARDWARE, 1)
-            findNavController().navigate(R.id.action_hardware_to_magtekProFragment)
+            if (findNavController().currentDestination?.id == R.id.hardware) {
+                prefProvider.setValueInt(Constants.MAGTEK_HARDWARE, 1)
+                findNavController().navigate(R.id.action_hardware_to_magtekProFragment)
+            }
         }
-
-
     }
 
 }
