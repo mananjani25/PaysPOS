@@ -68,12 +68,14 @@ import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.remote.Constants.WHOLE_AMOUNT
 import com.pays.pos.databinding.FragmentCartBinding
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.di.RolePermission
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.adapter.DineInAdapter
 import com.pays.pos.ui.adapter.OrderTypeAdapter
 import com.pays.pos.ui.adapter.boldpos.CartItemsAdapter
 import com.pays.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS.Companion
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
@@ -185,6 +187,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
     @Inject
     lateinit var prefProvider: PrefProvider
+    @Inject
+    lateinit var rolePermission: RolePermission
     private val TAG = "CartFragment"
 
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
@@ -3165,15 +3169,26 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             }
 
                             if (prefProvider.isAdmin() || prefProvider.isManager()) {
+                                Log.e(TAG,"added in 1")
 
                                 findNavController().navigate(
                                     R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
                                     bundle
                                 )
                             } else {
-                                findNavController().navigate(
+                                Log.e(TAG,"added in 2")
+                                if (rolePermission.hasDiscountPermission(binding.root)){
+
+                                    Log.e(TAG,"added in 3")
+
+                                    findNavController().navigate(
+                                        R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
+                                        bundle
+                                    )
+                                }
+                                /*findNavController().navigate(
                                     R.id.actionboldpos_to_pascodeManagerDailog, bundle
-                                )
+                                )*/
                             }
 
 
