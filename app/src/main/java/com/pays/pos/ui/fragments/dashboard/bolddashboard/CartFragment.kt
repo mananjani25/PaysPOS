@@ -784,85 +784,147 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
     }
 
     private fun checkDineInEditOrder() {
-        if (/*arguments?.getBoolean("is_dine_in_edit") == */true) {
-            val dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
-            val dineInItemsList =
-                arguments?.getParcelableArrayList<TbCartItem>("dine_in_cart_items")
-
-            if (dineInList?.isNotEmpty() == true) {
-                //  binding.layoutCart.txtOrderType.setText("Dine In")
-
-                dineInCartAdapter = DineInAdapter()
-                dineInCartAdapter.setListner(this)
-                //dineInCartAdapter.setList(dineInList)
-                dineInCartAdapter.setList(dineInList, viewModel.currentCartItems)
 
 
-                if (cartModelsList.isEmpty()) {
-                    val cartModel = CartModel().apply {
-                        terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
-                        employeeID = prefProvider.getValueInt(EMPLOYEE_ID, -1)
-                        locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
-                        orderTypeId = 2
-                        orderType = Constants.DINE_IN
-                        orderTypeName = Constants.DINE_IN
 
-                        serviceCharge = serviceChargesList
-                        orderId = arguments?.getInt("orderId")
-                        listOfItemRemoved = dineInList[0].listOfItemsMoved
 
-                    }
+        if(viewModel.currentCartItems.isEmpty()) {
+            val dineInList: ArrayList<DineInModel> = ArrayList(viewModel?.dineInAdapterBackup?.getList()) ?: arrayListOf()
+//
+//            val guestcount = viewModel.dineInAdapterBackup?.getList()?.count { it.isHeader == 0 } ?: 1
+//
+//            dineInList.add(DineInModel(0, true, 0, "Whole Table", floorPlanTable = orderFloorDetails))
+//            for (i in 1..guestcount) {
+//                dineInList.add(
+//                    DineInModel(
+//                        0,
+//                        false,
+//                        0,
+//                        "Guest $i",
+//                        floorPlanTable = orderFloorDetails,
+//
+//                        )
+//                )
+//            }
 
-                    orderId = arguments?.getInt("orderId")
-                    cartModelsList.add(cartModel)
-                }
 
-                var orderTableData: GetOrderDetailsResponse.Data.FloorPlanTable? =
-                    arguments?.getParcelable("tableDetails")
 
-                dineInList.forEach {
-                    it.floorPlanTable = orderTableData
-                }
+            dineInCartAdapter.setList(dineInList, viewModel.currentCartItems)
 
-                prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
-                prefProvider.setValueInt(
-                    ORDER_TYPE_ID, prefProvider.getValueInt(ORDER_TYPE_ID, 0)
-                )
 
-                viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
-                viewModel.totalDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
-                /*viewModel.newCartLogicModifier(
-                    cartlist,
-                    null,
-                    Constants.ADD,
-                    false,
-                    dineInList = dineInList
-                )*/
+            if (cartModelsList.isEmpty()) {
+                val cartModel = CartModel().apply {
+                    terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+                    employeeID = prefProvider.getValueInt(EMPLOYEE_ID, -1)
+                    locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+                    orderTypeId = prefProvider.getValueInt(ORDER_TYPE_ID, -1)
+                    orderType = prefProvider.getValue(ORDER_TYPE, "").toString()
+                    orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
 
-                // IMPORTANT - remove this as this is just for logs
-//                dineInItemsList?.forEach {
-//                    it.taxes = arrayListOf()
-//                    Log.d(TAG, "testDineInUpdate dineInItemsList: " + Gson().toJson(it))
-//                }
-                // IMPORTANT - remove this as this is just for logs
-//                viewModel.currentCartItems.forEach {
-//                    it.taxes = arrayListOf()
-//                    Log.d(TAG, "testDineInUpdate dineInItemsList: " + viewModel.currentCartItems)
-//                }
+                    serviceCharge = getServiceChargeFromGuestCount(numOfGuest)
 
-                CoroutineScope(Dispatchers.IO).launch {
-                    viewModel.currentCartItems.forEach {
-                        viewModel.addItemToCartItems(it)
+                    if (orderTypeId == -1) {
+                        runBlocking {
+                            async {
+                                viewModel.getOrderTypeBackupList(employeeID)?.let {
+                                    orderTypeId = (it.get(0).orderType) ?: -1
+                                }
+                            }.await()
+                        }
                     }
                 }
 
-              //  viewModel.updateDineInCart(viewModel.currentCartItems, null, ADD, false, dineInList)
-
-
+                cartModelsList.add(cartModel)
             }
 
-
+            viewModel.dineInHeaderPosition = 0
+            viewModel.dineInSelectedItemHeaderPos = 0
+            cartModelsList.get(0).orderType = Constants.DINE_IN
+            viewModel.newCartLogicModifier(
+                cartModelsList, null, Constants.ADD, false, dineInList = dineInList
+            )
         }
+
+
+//        if (/*arguments?.getBoolean("is_dine_in_edit") == */false) {
+//            val dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
+//            val dineInItemsList =
+//                arguments?.getParcelableArrayList<TbCartItem>("dine_in_cart_items")
+//
+//            if (dineInList?.isNotEmpty() == true) {
+//                //  binding.layoutCart.txtOrderType.setText("Dine In")
+//
+//                dineInCartAdapter = DineInAdapter()
+//                dineInCartAdapter.setListner(this)
+//                //dineInCartAdapter.setList(dineInList)
+//                dineInCartAdapter.setList(dineInList, viewModel.currentCartItems)
+//
+//
+//                if (cartModelsList.isEmpty()) {
+//                    val cartModel = CartModel().apply {
+//                        terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+//                        employeeID = prefProvider.getValueInt(EMPLOYEE_ID, -1)
+//                        locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+//                        orderTypeId = 2
+//                        orderType = Constants.DINE_IN
+//                        orderTypeName = Constants.DINE_IN
+//
+//                        serviceCharge = serviceChargesList
+//                        orderId = arguments?.getInt("orderId")
+//                        listOfItemRemoved = dineInList[0].listOfItemsMoved
+//
+//                    }
+//
+//                    orderId = arguments?.getInt("orderId")
+//                    cartModelsList.add(cartModel)
+//                }
+//
+//                var orderTableData: GetOrderDetailsResponse.Data.FloorPlanTable? =
+//                    arguments?.getParcelable("tableDetails")
+//
+//                dineInList.forEach {
+//                    it.floorPlanTable = orderTableData
+//                }
+//
+//                prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, ""))
+//                prefProvider.setValueInt(
+//                    ORDER_TYPE_ID, prefProvider.getValueInt(ORDER_TYPE_ID, 0)
+//                )
+//
+//                viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
+//                viewModel.totalDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
+//                /*viewModel.newCartLogicModifier(
+//                    cartlist,
+//                    null,
+//                    Constants.ADD,
+//                    false,
+//                    dineInList = dineInList
+//                )*/
+//
+//                // IMPORTANT - remove this as this is just for logs
+////                dineInItemsList?.forEach {
+////                    it.taxes = arrayListOf()
+////                    Log.d(TAG, "testDineInUpdate dineInItemsList: " + Gson().toJson(it))
+////                }
+//                // IMPORTANT - remove this as this is just for logs
+////                viewModel.currentCartItems.forEach {
+////                    it.taxes = arrayListOf()
+////                    Log.d(TAG, "testDineInUpdate dineInItemsList: " + viewModel.currentCartItems)
+////                }
+//
+//                CoroutineScope(Dispatchers.IO).launch {
+//                    viewModel.currentCartItems.forEach {
+//                        viewModel.addItemToCartItems(it)
+//                    }
+//                }
+//
+//              //  viewModel.updateDineInCart(viewModel.currentCartItems, null, ADD, false, dineInList)
+//
+//
+//            }
+//
+//
+//        }
 
         binding.rvCartDineIn.visibility = View.VISIBLE
        // AlertUtils.showAlert(requireContext(),"CART VISIBILITY = ${binding.rvCartDineIn.visibility == View.VISIBLE}")
@@ -1124,6 +1186,15 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             viewModel.customCartUpdateDiscount = 0.0
                         }
 
+
+                        if(viewModel.currentCartItems.isNotEmpty() && prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN)
+//                            latestCartModel.let { cartModel ->
+//                                viewModel.taxBifurcationCalculationNew(
+//                                    viewModel.currentCartItems.first(),
+//                                    cartModel, "UPDATE", false
+//                                )
+//                            }
+
                         viewModel.setUpdatedCartModel(latestCartModel)
                         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                             viewModel.setCartModel(it)
@@ -1285,6 +1356,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                 }
 
                                 saveVisibility()
+
 
                                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                                     runOnUiThread(Runnable {
@@ -2159,7 +2231,14 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             }
             binding.txtSubTotal.text = MethodUtils.roundOffAmount(viewModel.subTotalPrice)
             binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
-            binding.txtServiceCharge.text = MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
+
+            if(prefProvider.getValue(ORDER_TYPE ,"") == DINE_IN){
+
+                viewModel.totalServiceCharge = arguments?.getBundle("updateBundle")?.getDouble("serviceChargeB")?.toDouble() ?: 0.0
+
+                binding.txtServiceCharge.text = MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
+            } else
+                binding.txtServiceCharge.text = MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
 
             Log.e("totalDiscount", viewModel.totalDiscount.toString())
 
@@ -2432,9 +2511,14 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         LogUtil.logE(TAG, "onCustomerClicked  ${isRemoved}")
         viewModel.dineInHeaderPosition = position
         if (isRemoved) {
+            if(cartModelsList.isEmpty())
+                viewModel.cartModel?.let { cartModelsList.add(0, it) }
+
             if (cartModelsList.get(0).dineInList?.size!! >= position) {
                 val dineIn = cartModelsList.get(0).dineInList
                 dineIn?.get(position)?.customer = null
+                viewModel.cartModel?.dineInList?.get(position)?.customer = null
+                cartModelsList[0].dineInList?.get(position)?.customer = null
                 viewModel.dineInCartUpdate(cartModelsList, dineIn!!)
             }
 
@@ -2875,7 +2959,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             if (viewModel.restrictedAmount(binding.txtTotal)) {
 
 
-                binding.relPreoceedToFire.gone()
+                if(viewModel.currentCartItems.isNotEmpty())
+                    binding.relPreoceedToFire.gone()
+                else
+                    AlertUtils.showCustomAlert(requireContext(),"Please add at least one Item.")
 
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 //cartModelsList[0] = viewModel.generateCombinedItems(viewModel.cartModel!!)

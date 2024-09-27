@@ -955,7 +955,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         cartList =
                             bundle.getParcelableArrayList<CartModel>("cartList") as ArrayList<CartModel>
                     }
-                    val dineInList = cartList[0].dineInList
+                   // val dineInList = cartList[0].dineInList
+                    val dineInList = viewModel.cartModel?.dineInList
                     LogUtil.logE(TAG, "getdineInListSize:  ${dineInList?.size}")
 
                     if (dineInList?.isNotEmpty() == true) {
@@ -1670,17 +1671,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                             dineInList
                                         )
 
-                                        if(viewModel.currentCartItems.size == 1) {
-                                            viewModel.cartModel.let {
-                                                if (it != null) {
-                                                    viewModel.taxBifurcationCalculationNew(
-                                                        item,
-                                                        it, "ADD", false
-                                                    )
+                                        try {
+                                            if (viewModel.currentCartItems.size == 1) {
+                                                viewModel.cartModel.let {
+                                                    if (it != null) {
+                                                        viewModel.taxBifurcationCalculationNew(
+                                                            item,
+                                                            it, "ADD", false
+                                                        )
+                                                    }
                                                 }
+                                                viewModel.updateCartModel(viewModel.cartModel!!)
                                             }
-                                            viewModel.updateCartModel(viewModel.cartModel!!)
-                                        }
+                                        }catch (e:Exception){}
                                     })
 
                                 }

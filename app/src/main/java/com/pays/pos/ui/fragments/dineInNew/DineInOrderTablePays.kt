@@ -91,7 +91,6 @@ import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
 import com.pays.pos.ui.fragments.payment.OrderCompleteFragment
 import com.pays.pos.utils.landi.LPrint
-import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
 import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
@@ -818,8 +817,22 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
 
 
+                /***
+                 * Fetch discount percentage from subtotal and discount given
+                 */
+                val completePrice = getOrderDetailsResponse?.subTotal?.plus(getOrderDetailsResponse?.totalDiscount?:0.0) ?: 0.0
+                val discountSelectdValue = (getOrderDetailsResponse?.totalDiscount?.div(completePrice) ?: 1.0) * 100
+
+                cartList!!.discountSelectdValue = if(discountSelectdValue.isNaN()) 0.0 else discountSelectdValue
+
+                try {
+                    viewModelPayment.addCart(cartList!!)
+                }catch (e:Exception) {
+                    cartList!!.discountSelectdValue = 0.0
+                    viewModelPayment.addCart(cartList!!)
+                }
+
                 var alreadyDone = false
-                viewModelPayment.addCart(cartList!!)
                 CoroutineScope(Dispatchers.IO).launch {
 //                    if(listWT.isNotEmpty()) {
 //
@@ -978,14 +991,6 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     MethodUtils.roundOffAmountDouble(serviceCharge)
                 )
 
-                /***
-                 * Fetch discount percentage from subtotal and discount given
-                 */
-                val completePrice = getOrderDetailsResponse?.subTotal?.plus(getOrderDetailsResponse?.totalDiscount?:0.0) ?: 0.0
-                val discountSelectdValue = (getOrderDetailsResponse?.totalDiscount?.div(completePrice) ?: 1.0) * 100
-
-                cartList!!.discountSelectdValue = discountSelectdValue
-
 
                 bundle.putDouble("totalDiscount", MethodUtils.roundOffAmountDouble(totalDiscount))
                 bundle.putDouble(
@@ -1007,6 +1012,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 bundle.putDouble(DINE_IN_TAX, viewModel.totalTaxAmount)
                 bundle.putDouble(DINE_IN_DISCOUNT, viewModel.totalDiscountAmount)
                 bundle.putDouble(DINE_IN_SERVICECHARGE, serviceCharge)
+                bundle.putDouble("serviceChargeB", serviceCharge)
+                dashboardViewModel.totalServiceCharge = serviceCharge
                 var appliedServiceCharge: ArrayList<OrderServiceChargesAttribute> = arrayListOf()
                 getOrderDetailsResponse?.orderServiceCharges?.forEach { service ->
                     var data: OrderServiceChargesAttribute = OrderServiceChargesAttribute(
@@ -1262,6 +1269,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, true)
 
+            if(dashboardViewModel.currentCartItems.isEmpty()) {
+                dashboardViewModel.dineInAdapterBackup = dineInTableAdapter
+            }
+
             try {
                 findNavController().navigate(
                     R.id.action_dineInOrderTable_to_dashboardCategoryNew,
@@ -1434,8 +1445,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             dashboardViewModel.totalDiscount = getOrderDetailsResponse?.totalDiscount ?: 0.0
             dashboardViewModel.subTotalPrice = getOrderDetailsResponse?.subTotal ?: 0.0
             // END RESET
-            val request = dashboardViewModel.updateOrder(cartList!!)
-            orderId?.let { viewModel.updateOrder(it, request) }
+            val request = dashboardViewModel.updateOrder(cartList!!, isAddGuest = true)
+            orderId?.let {
+                viewModel.updateOrder(it, request)
+            }
         } else {
             AlertUtils.showCustomAlertWithListenerWithOK(
                 requireContext(), "You can't add more than 15 Guest in an order."
@@ -1800,7 +1813,6 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-
         val paymentAttr = GuestPaymentAttributes().apply {
                 amount = totalGuest
                 cardName = ""
@@ -1923,6 +1935,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
         LogUtil.logE("AAjeChange", "listItemWT:  ${Gson().toJson(listItemWT)}")
         listItemWT.forEach {
+
+            it.actualPrice = it.price
+
             val obj = it
             wholeNewSubtotal += (obj.price * obj.itemQuantity)
 
@@ -2327,6 +2342,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             viewModelPayment.addCart(cartList!!)
 
+        dashboardViewModel.totalServiceCharge = serviceChargeGuest
 
             Handler().postDelayed({
                 findNavController().navigate(
@@ -2441,7 +2457,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     guestName,
                     listWTitems,
                     subTotalGuest,
-                    total,
+                    subTotalGuest + taxGuest + serviceChargeGuest,
                     taxGuest,
                     serviceChargeGuest,
                     divideDiscount
@@ -2449,7 +2465,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             } else {
                 guestPrint(
                     "Unpaid", listItem, guestName, listWTitems, subTotalGuest,
-                    total,
+                    subTotalGuest + taxGuest + serviceChargeGuest,
                     taxGuest,
                     serviceChargeGuest,
                     divideDiscount
@@ -2459,7 +2475,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         } else if (listItem.isEmpty() && listWTitems.isNotEmpty()) {
             guestPrint(
                 "Unpaid", listItem, guestName, listWTitems, subTotalGuest,
-                total,
+                subTotalGuest + taxGuest + serviceChargeGuest,
                 taxGuest,
                 serviceChargeGuest,
                 divideDiscount
@@ -5957,27 +5973,27 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-            if (customerSettingModel.showRefundAmount) {
-
-                if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
-
-                    PrintSunmiUtils.totalPrice(
-                        padLine(
-                            "Change Amount",
-                            "$" + MethodUtils.roundOffAmountString(
-                                (getOrderDetailsResponse?.payments?.get(
-                                    0
-                                )?.amount!! - getOrderDetailsResponse?.totalAmount!!)
-                            ),
-                            if (customerSettingModel.fonts == Constants.LARGE) {
-                                23
-                            } else {
-                                48
-                            }
-                        ).toString()
-                    )
-                }
-            }
+//            if (customerSettingModel.showRefundAmount) {
+//
+//                if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
+//
+//                    PrintSunmiUtils.totalPrice(
+//                        padLine(
+//                            "Change Amount",
+//                            "$" + MethodUtils.roundOffAmountString(
+//                                (getOrderDetailsResponse?.payments?.get(
+//                                    0
+//                                )?.amount!! - getOrderDetailsResponse?.totalAmount!!)
+//                            ),
+//                            if (customerSettingModel.fonts == Constants.LARGE) {
+//                                23
+//                            } else {
+//                                48
+//                            }
+//                        ).toString()
+//                    )
+//                }
+//            }
 
 
             if (customerSettingModel.showTipSuggestion) {
@@ -6294,18 +6310,23 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                     printCenter("Whole Table")
                                     lineBreak()
 
+
+//                                    var guestCount: Int =
+//                                        (getOrderDetailsResponse?.guestAttributes?.size?.minus(1)) ?: 1
+                                      var guestCount: Int =
+                                          getOrderDetailsResponse?.guestAttributes?.count { it.guestItemAttributes.isNotEmpty() && it.name.lowercase() != "whole table" }
+                                            ?: 1
+
+
+                                    if (guestCount < 1) {
+                                        guestCount = 1
+                                    }
+
                                     for (i in 0 until listWTitems.size) {
-
-                                        var guestCount: Int =
-                                            (getOrderDetailsResponse?.guestAttributes?.size?.minus(1)) ?: 1
-                                        if (guestCount < 1) {
-                                            guestCount = 1
-                                        }
-
 
                                         addWholeTbItemToGuestInnerLandi(
                                             listWTitems.get(i), customerSettingModel.fonts,
-                                            customerSettingModel.showModifiers, guestCount, serviceChargeList, LPrint
+                                            customerSettingModel.showModifiers, guestCount, serviceChargeList, LPrint,true
                                         )
                                     }
 
@@ -6361,7 +6382,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     val subTotalToPrint = padLine(
                                         "Sub Total",
-                                        "$" + MethodUtils.roundOffAmountString(subTotalDInin),
+                                        "$" + MethodUtils.roundOffAmountString(subTotalGuest),
                                         if (customerSettingModel.fonts == Constants.LARGE) {
                                             23
                                         } else {
@@ -6383,7 +6404,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         val taxToPrint =
                                             padLine(
                                                 "Tax",
-                                                "$" + MethodUtils.roundOffAmountString(finalTaxAmt),
+                                                "$" + MethodUtils.roundOffAmountString(guestTaxes),
                                                 if (customerSettingModel.fonts == Constants.LARGE) {
                                                     23
                                                 } else {
@@ -6411,7 +6432,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         val serviceChargeToPrint =
                                             padLine(
                                                 "Service Charge",
-                                                "$" + MethodUtils.roundOffAmountString(serviceCharge),
+                                                "$" + MethodUtils.roundOffAmountString(serviceChargeGuest),
                                                 if (customerSettingModel.fonts == Constants.LARGE) {
                                                     23
                                                 } else {
@@ -6926,20 +6947,29 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
 
-            PrintSunmiUtils.addHorizontalInner()
+            PrintSunmiUtils.printHorizontalInnerNew(prefProvider.isOldSunmiFrameworkVersion())
+            SunmiPrintHelper.getInstance().lineWrap(1)
+
+            PrintSunmiUtils.printTextCenter("Whole Table")
+
+//            var guestCount: Int =
+//                (getOrderDetailsResponse?.guestAttributes?.size?.minus(1)) ?: 1
+
+            var guestCount: Int =
+                getOrderDetailsResponse?.guestAttributes?.count { it.guestItemAttributes.isNotEmpty() && it.name.lowercase() != "whole table" }
+                    ?: 1
+
+            if (guestCount < 1) {
+                guestCount = 1
+            }
 
             for (i in 0 until listWTitems.size) {
 
-                var guestCount: Int =
-                    (getOrderDetailsResponse?.guestAttributes?.size?.minus(1)) ?: 1
-                if (guestCount < 1) {
-                    guestCount = 1
-                }
-
-
                 addWholeTbItemToGuestInner(
                     listWTitems.get(i), customerSettingModel.fonts,
-                    customerSettingModel.showModifiers, guestCount, serviceChargeList
+                    customerSettingModel.showModifiers, guestCount, serviceChargeList,
+                    prefProvider.isOldSunmiFrameworkVersion(),
+                    true
                 )
             }
 
@@ -6950,7 +6980,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 addOrderItemForDineInInner(
                     it,
                     customerSettingModel.fonts,
-                    customerSettingModel.showModifiers
+                    customerSettingModel.showModifiers,
+                    prefProvider.isOldSunmiFrameworkVersion(),
                 )
 
             }
@@ -6958,7 +6989,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             if (getOrderDetailsResponse?.totalDiscount != null) {
 
-                PrintSunmiUtils.normalText(
+                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),
                     padLine(
                         "Total Discount",
                         if (guestDiscount == 0.0) {
@@ -6978,7 +7009,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
 
-            PrintSunmiUtils.normalText(
+            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),
                 padLine(
                     "Sub Total",
                     "$" + MethodUtils.roundOffAmountString(
@@ -6996,7 +7027,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             if (guestTaxes != null) {
 
 
-                PrintSunmiUtils.normalText(
+                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),
                     padLine(
                         "Tax",
                         "$" + MethodUtils.roundOffAmountString(taxGuest),
@@ -7016,7 +7047,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             ) {
 
 
-                PrintSunmiUtils.normalText(
+                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),
                     padLine(
                         "Service Charge",
                         "$" + MethodUtils.roundOffAmountString(serviceChargeGuest),
@@ -7036,7 +7067,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             1
                         ) ?: 1)
 
-                    PrintSunmiUtils.normalText(
+                    PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),
                         padLine(
                             "Cash Discount",
 
@@ -7062,10 +7093,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-            PrintSunmiUtils.boldText(
+            PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),
                 padLine(
                     "Total Price",
-                    "$" + MethodUtils.roundOffAmountString(total),
+                    "$" + MethodUtils.roundOffAmountString(totalAmt),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         23
                     } else {
@@ -7075,107 +7106,29 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             )
 
 
-            if (prefProvider.getValue(
-                    Constants.OPTION_TYPE,
-                    "CashDiscount"
-                ) == "CashDiscount"
-            ) {
+            if(!paymentType.lowercase().equals("paid")) {
+                if (prefProvider.getValue(
+                        Constants.OPTION_TYPE,
+                        "CashDiscount"
+                    ) == "CashDiscount"
+                ) {
 
-                var cashdiscountAmount = 0.0
-                if (MethodUtils.isEnableCashDiscount(requireContext())) {
-                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
-                        total,
-                        prefProvider,
-                        requireContext()
-                    )
-                } else {
-                    cashdiscountAmount = 0.0
-                }
+                    var cashdiscountAmount = 0.0
+                    if (MethodUtils.isEnableCashDiscount(requireContext())) {
+                        cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                            total,
+                            prefProvider,
+                            requireContext()
+                        )
+                    } else {
+                        cashdiscountAmount = 0.0
+                    }
 
-                PrintSunmiUtils.boldText(
-                    padLine(
-                        "Pay by Cash",
-                        "$" + MethodUtils.roundOffAmountString(total - cashdiscountAmount),
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            23
-                        } else {
-                            48
-                        }
-                    ).toString()
-                )
-
-
-                PrintSunmiUtils.boldText(
-                    padLine(
-                        "Pay by Card",
-                        "$" + MethodUtils.roundOffAmountString(total),
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            23
-                        } else {
-                            48
-                        }
-                    ).toString()
-                )
-
-            } else if (prefProvider.getValue(
-                    Constants.OPTION_TYPE,
-                    "CashDiscount"
-                ) == "SurCharge"
-            ) {
-
-
-                var cashdiscountAmount = 0.0
-                if (MethodUtils.isEnableCashDiscount(requireContext())) {
-                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
-                        total,
-                        prefProvider,
-                        requireContext()
-                    )
-                } else {
-                    cashdiscountAmount = 0.0
-                }
-
-                PrintSunmiUtils.boldText(
-                    padLine(
-                        "Pay by Cash",
-                        "$" + MethodUtils.roundOffAmountString(total),
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            23
-                        } else {
-                            48
-                        }
-                    ).toString()
-                )
-
-
-                PrintSunmiUtils.boldText(
-                    padLine(
-                        "Pay by Card",
-                        "$" + MethodUtils.roundOffAmountString(total + cashdiscountAmount),
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            23
-                        } else {
-                            48
-                        }
-                    ).toString()
-                )
-
-            }
-
-
-
-            if (customerSettingModel.showRefundAmount) {
-
-                if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
-
-                    PrintSunmiUtils.boldText(
+                    PrintSunmiUtils.printBoldText(
+                        prefProvider.isOldSunmiFrameworkVersion(),
                         padLine(
-                            "Change Amount",
-                            "$" + MethodUtils.roundOffAmountString(
-                                (getOrderDetailsResponse?.payments?.get(
-                                    0
-                                )?.amount!! - getOrderDetailsResponse?.totalAmount!!)
-                            ),
+                            "Pay by Cash",
+                            "$" + MethodUtils.roundOffAmountString(total - cashdiscountAmount),
                             if (customerSettingModel.fonts == Constants.LARGE) {
                                 23
                             } else {
@@ -7183,8 +7136,92 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             }
                         ).toString()
                     )
+
+
+                    PrintSunmiUtils.printBoldText(
+                        prefProvider.isOldSunmiFrameworkVersion(),
+                        padLine(
+                            "Pay by Card",
+                            "$" + MethodUtils.roundOffAmountString(total),
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                23
+                            } else {
+                                48
+                            }
+                        ).toString()
+                    )
+
+                } else if (prefProvider.getValue(
+                        Constants.OPTION_TYPE,
+                        "CashDiscount"
+                    ) == "SurCharge"
+                ) {
+
+
+                    var cashdiscountAmount = 0.0
+                    if (MethodUtils.isEnableCashDiscount(requireContext())) {
+                        cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                            total,
+                            prefProvider,
+                            requireContext()
+                        )
+                    } else {
+                        cashdiscountAmount = 0.0
+                    }
+
+                    PrintSunmiUtils.printBoldText(
+                        prefProvider.isOldSunmiFrameworkVersion(),
+                        padLine(
+                            "Pay by Cash",
+                            "$" + MethodUtils.roundOffAmountString(total),
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                23
+                            } else {
+                                48
+                            }
+                        ).toString()
+                    )
+
+
+                    PrintSunmiUtils.printBoldText(
+                        prefProvider.isOldSunmiFrameworkVersion(),
+                        padLine(
+                            "Pay by Card",
+                            "$" + MethodUtils.roundOffAmountString(total + cashdiscountAmount),
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                23
+                            } else {
+                                48
+                            }
+                        ).toString()
+                    )
+
                 }
             }
+
+
+
+//            if (customerSettingModel.showRefundAmount) {
+//
+//                if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
+//
+//                    PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),
+//                        padLine(
+//                            "Change Amount",
+//                            "$" + MethodUtils.roundOffAmountString(
+//                                (getOrderDetailsResponse?.payments?.get(
+//                                    0
+//                                )?.amount!! - getOrderDetailsResponse?.totalAmount!!)
+//                            ),
+//                            if (customerSettingModel.fonts == Constants.LARGE) {
+//                                23
+//                            } else {
+//                                48
+//                            }
+//                        ).toString()
+//                    )
+//                }
+//            }
 
 
             if (customerSettingModel.showTipSuggestion) {
@@ -7197,11 +7234,16 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 SunmiPrintHelper.getInstance().lineWrap(1)
                 PrintSunmiUtils.additionalTipsInner()
+
+                PrintSunmiUtils.printHorizontalInnerNew(prefProvider.isOldSunmiFrameworkVersion())
+                SunmiPrintHelper.getInstance().lineWrap(1)
+
                 if (tipsList.isNotEmpty()) {
                     PrintSunmiUtils.addTipListInner(
                         tipsList,
                         MethodUtils.roundOffAmountDouble(guestSubTotal + guestServiceCharge + guestTaxes),
-                        customerSettingModel.fonts
+                        customerSettingModel.fonts,
+                        prefProvider.isOldSunmiFrameworkVersion()
                     )
                 }
                 SunmiPrintHelper.getInstance().lineWrap(1)
@@ -7209,7 +7251,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
 
-                PrintSunmiUtils.normalText(
+                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),
                     padLine(
                         "Transaction ID",
                         getOrderDetailsResponse?.payments?.get(0)?.transactionId,
@@ -7225,7 +7267,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
 
 
-                PrintSunmiUtils.normalText(
+                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),
                     padLine(
                         "Transaction Type",
                         getOrderDetailsResponse?.payments?.get(0)?.paymentType,
@@ -9066,12 +9108,25 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             )
 
             if (customerSettingModel.showWebsiteAddress) {
-                PrintSunmiUtils.venueWebsiteInner(
+
+                val venueWebsiteText =if(prefProvider.isOldSunmiFrameworkVersion())  {
+
                     prefProvider.getValue(
                         Constants.BUSINESS_WEBSITE,
                         ""
                     )
+                }else {
+                    "\t \t ${
+                        prefProvider.getValue(
+                        Constants.BUSINESS_WEBSITE,
+                        "") 
+                    } \t \t"
+                }
+
+                PrintSunmiUtils.venueWebsiteInner(
+                    venueWebsiteText
                 )
+
             } else {
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
@@ -9203,7 +9258,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
             }
 
-            PrintSunmiUtils.addHorizontalInner()
+
+            PrintSunmiUtils.printHorizontalInnerNew(prefProvider.isOldSunmiFrameworkVersion())
+
+
             SunmiPrintHelper.getInstance().lineWrap(1)
 
             val dineInList = dineInTableAdapter.getList()
@@ -9214,7 +9272,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         if (dineInList[i]?.customer == null) {
 
-                            dineInList[i]?.title?.let { PrintSunmiUtils.normalTextCenter(it) }
+                            dineInList[i]?.title?.let {
+                                PrintSunmiUtils.normalTextCenter(it)
+                            }
 
                         } else {
 
@@ -9236,7 +9296,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         addOrderItemForDineInInner(
                             it,
                             customerSettingModel.fonts,
-                            customerSettingModel.showModifiers
+                            customerSettingModel.showModifiers,
+                            prefProvider.isOldSunmiFrameworkVersion()
                         )
                     }
 
@@ -9245,12 +9306,12 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             }
 
-
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
 
             if (getOrderDetailsResponse?.totalDiscount != null) {
 
-                PrintSunmiUtils.normalText(
+                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),
                     padLine(
                         "Total Discount",
 
@@ -9273,7 +9334,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
 
-            PrintSunmiUtils.normalText(
+            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),
                 padLine(
                     "Sub Total",
                     "$" + MethodUtils.roundOffAmountString(subTotalDInin),
@@ -9282,14 +9343,15 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     } else {
                         48
                     }
-                ).toString()
-            )
+                ).toString())
+
+
 
 
             if (viewModel.totalTaxAmount != null) {
 
 
-                PrintSunmiUtils.normalText(
+              PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),
                     padLine(
                         "Tax",
                         "$" + MethodUtils.roundOffAmountString(finalTaxAmt),
@@ -9298,8 +9360,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         } else {
                             48
                         }
-                    ).toString()
-                )
+                    ).toString())
+
             }
 
             if (serviceCharge != null && (getOrderDetailsResponse?.serviceChargeEnabled == true) && prefProvider.getValueboolean(
@@ -9308,7 +9370,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
             ) {
 
-                PrintSunmiUtils.normalText(
+                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),
                     padLine(
                         "Service Charge",
                         "$" + MethodUtils.roundOffAmountString(serviceCharge),
@@ -9317,14 +9379,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         } else {
                             48
                         }
-                    ).toString()
-                )
+                    ).toString())
+
             }
 
             if (getOrderDetailsResponse?.totalTips != 0.0) {
 
 
-                PrintSunmiUtils.normalText(
+                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),
                     padLine(
                         "Tips",
                         "$" + getOrderDetailsResponse?.totalTips?.let {
@@ -9337,8 +9399,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         } else {
                             48
                         }
-                    ).toString()
-                )
+                    ).toString())
             }
 
             val totalAmt =
@@ -9347,7 +9408,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             SunmiPrintHelper.getInstance().lineWrap(1)
 
-            PrintSunmiUtils.boldText(
+            PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),
                 padLine(
                     "Total Price",
                     "$" + MethodUtils.roundOffAmountString(totalAmt),
@@ -9356,8 +9417,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     } else {
                         48
                     }
-                ).toString()
-            )
+                ).toString())
 
 
 
@@ -9378,7 +9438,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     cashdiscountAmount = 0.0
                 }
 
-                PrintSunmiUtils.boldText(
+                PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),
                     padLine(
                         "Pay by Cash",
                         "$" + MethodUtils.roundOffAmountString(totalAmt - cashdiscountAmount),
@@ -9387,11 +9447,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         } else {
                             48
                         }
-                    ).toString()
-                )
+                    ).toString())
 
 
-                PrintSunmiUtils.boldText(
+
+                PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),
                     padLine(
                         "Pay by Card",
                         "$" + MethodUtils.roundOffAmountString(totalAmt),
@@ -9400,8 +9460,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         } else {
                             48
                         }
-                    ).toString()
-                )
+                    ).toString())
+
 
             } else if (prefProvider.getValue(
                     Constants.OPTION_TYPE,
@@ -9421,7 +9481,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     cashdiscountAmount = 0.0
                 }
 
-                PrintSunmiUtils.boldText(
+                PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),
                     padLine(
                         "Pay by Cash",
                         "$" + MethodUtils.roundOffAmountString(totalAmt),
@@ -9430,11 +9490,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         } else {
                             48
                         }
-                    ).toString()
-                )
+                    ).toString())
 
 
-                PrintSunmiUtils.boldText(
+                PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),
                     padLine(
                         "Pay by Card",
                         "$" + MethodUtils.roundOffAmountString(totalAmt + cashdiscountAmount),
@@ -9443,45 +9502,55 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         } else {
                             48
                         }
-                    ).toString()
-                )
-
+                    ).toString())
             }
 
 
 
-            if (customerSettingModel.showRefundAmount) {
+//            if (customerSettingModel.showRefundAmount) {
+//
+//                if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
+//
+//                    PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),
+//                        padLine(
+//                            "Change Amount",
+//                            "$" + MethodUtils.roundOffAmountString(
+//                                (getOrderDetailsResponse?.payments?.get(
+//                                    0
+//                                )?.amount!! - getOrderDetailsResponse?.totalAmount!!)
+//                            ),
+//                            if (customerSettingModel.fonts == Constants.LARGE) {
+//                                23
+//                            } else {
+//                                48
+//                            }
+//                        ).toString())
+//
+//                }
+//            }
 
-                if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
 
-                    PrintSunmiUtils.boldText(
-                        padLine(
-                            "Change Amount",
-                            "$" + MethodUtils.roundOffAmountString(
-                                (getOrderDetailsResponse?.payments?.get(
-                                    0
-                                )?.amount!! - getOrderDetailsResponse?.totalAmount!!)
-                            ),
-                            if (customerSettingModel.fonts == Constants.LARGE) {
-                                23
-                            } else {
-                                48
-                            }
-                        ).toString()
-                    )
-                }
+
+            if(getOrderDetailsResponse?.payments?.isNotEmpty() == true){
+                printPayment(prefProvider.isOldSunmiFrameworkVersion(),SUNMI_INNER_PRINTER,getOrderDetailsResponse!!.payments)
+
             }
+
 
             SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (customerSettingModel.showTipSuggestion) {
 
+
                 PrintSunmiUtils.additionalTipsInner()
+                PrintSunmiUtils.printHorizontalInnerNew(prefProvider.isOldSunmiFrameworkVersion())
+                SunmiPrintHelper.getInstance().lineWrap(1)
                 if (tipsList.isNotEmpty()) {
                     PrintSunmiUtils.addTipListInner(
                         tipsList,
                         totalAmt,
-                        customerSettingModel.fonts
+                        customerSettingModel.fonts,
+                        prefProvider.isOldSunmiFrameworkVersion()
                     )
                 }
                 SunmiPrintHelper.getInstance().lineWrap(1)
@@ -9490,7 +9559,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
 
-                PrintSunmiUtils.normalText(
+                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),
                     padLine(
                         "Transaction ID",
                         getOrderDetailsResponse?.payments?.get(0)?.transactionId,
@@ -9506,7 +9575,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
 
 
-                PrintSunmiUtils.normalText(
+                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),
                     padLine(
                         "Transaction Type",
                         getOrderDetailsResponse?.payments?.get(0)?.paymentType,
@@ -9526,14 +9595,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
 
-
             SunmiPrintHelper.getInstance().lineWrap(2)
 
             if (paymentStatus.equals("paid", ignoreCase = true)) {
                 if (customerSettingModel.fonts == Constants.LARGE) {
-                    PrintSunmiUtils.boldText("Customer Signature ____")
+                    PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),"Customer Signature ____")
                 } else {
-                    PrintSunmiUtils.boldText("Customer Signature           __________________")
+                    PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),"Customer Signature           __________________")
                 }
             }
 
@@ -11466,17 +11534,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 ).toString()
             )
 
-            SunmiPrinterApi.getInstance().enableUnderline(false)
-            SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance()
-                .printText(addHorizontalKitchenLineSunmi(PrintSunmiUtils.fontSize))
-            //  SunmiPrinterApi.getInstance().lineWrap(1)
-            SunmiPrinterApi.getInstance().enableUnderline(false)
-            SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance()
-                .printText(addHorizontalKitchenLineSunmiForLastHeaderLine(PrintSunmiUtils.fontSize))
-            SunmiPrinterApi.getInstance().lineWrap(2)
 
+            PrintSunmiUtils.printHorizontalInnerNew(false)
+            SunmiPrinterApi.getInstance().lineWrap(1)
 
 
             addOrdersForKitchenDineIn(
@@ -11712,12 +11772,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
             )
 
-            PrintSunmiUtils.addHorizontalInner()
-            PrintSunmiUtils.addHorizontalInner()
+            PrintSunmiUtils.printHorizontalInnerNew(prefProvider.isOldSunmiFrameworkVersion())
 
             SunmiPrintHelper.getInstance().lineWrap(1)
 
-            addOrdersForKitchenDineInInner(item, listItemWithGuest)
+            addOrdersForKitchenDineInInner(item, listItemWithGuest,prefProvider.isOldSunmiFrameworkVersion())
 
             if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
 

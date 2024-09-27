@@ -115,6 +115,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 if (list.get(i).isHeader == 1) {
                     noItem = false
                     list.get(i).item?.let {
+                        val item = it
                         if (!it.isPaid) {
                             guestDiscount += it.discountPrice
                             guestAmt += (it.itemQuantity * it.price) - it.discountPrice
@@ -123,9 +124,9 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                             if (it.modifiers.isNotEmpty()) {
                                 it.modifiers.forEach { it ->
 
-                                    guestAmt += (it.itemQuantity * it.price)
-                                    guestSubTotal += (it.itemQuantity * it.price)
-                                    guestSubTotalWithOutCharges += (it.itemQuantity * it.price)
+                                    guestAmt += (it.modifier_quantity * it.price * item.itemQuantity)
+                                    guestSubTotal += (it.modifier_quantity * it.price * item.itemQuantity)
+                                    guestSubTotalWithOutCharges += (it.modifier_quantity * it.price * item.itemQuantity)
                                 }
                             }
 
@@ -141,7 +142,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                                                 (it.price * it.itemQuantity)
 
                                             it.modifiers.forEach {
-                                                modifierPrice += (it.price * it.itemQuantity)
+                                                modifierPrice += (it.price * it.modifier_quantity  * item.itemQuantity)
                                             }
 
                                             val totalPrice =
@@ -268,14 +269,14 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     }
 
                 }
-                if (!isApplied) {
-                    serviceChargeList.forEach { service ->
-                        if (service.id == checkMaxGuestCountId()) {
-                            totalServiceCharge += (guestSubTotal * service.percentage) / 100
-                            return@forEach
-                        }
-                    }
-                }
+//                if (!isApplied) {
+//                    serviceChargeList.forEach { service ->
+//                        if (service.id == checkMaxGuestCountId()) {
+//                            totalServiceCharge += (guestSubTotal * service.percentage) / 100
+//                            return@forEach
+//                        }
+//                    }
+//                }
 
 
             }

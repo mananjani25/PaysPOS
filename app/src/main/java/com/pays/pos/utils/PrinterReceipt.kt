@@ -21,15 +21,11 @@ import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
 import com.pays.pos.data.model.responseModel.*
 import com.pays.pos.utils.landi.LPrint
-import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
-import com.starmicronics.stario10.starxpandcommand.printer.Alignment
-import com.pays.pos.utils.landi.LPrint.FONT_SIZE_3X
 import com.pays.pos.utils.landi.LPrint.FONT_SIZE_5X
 import com.pays.pos.utils.landi.LPrint.lineBreak
 import com.pays.pos.utils.landi.LPrint.printLeft
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
-import java.io.OutputStream
 
 val TAG = "PrinterReceipt"
 
@@ -1456,6 +1452,53 @@ fun addItemsInOrderSalesDetailsInnerNew(
     PrintSunmiUtils.normalTextNew(data)
 }
 
+fun padLineSinglePayment(
+    @Nullable partOne: String?,
+    @Nullable partTwo: String?,
+    columnsPerLine: Int
+): String {
+    var partOne = partOne
+    var partTwo = partTwo
+
+    if (partOne == null) {
+        partOne = ""
+    }
+    if (partTwo == null) {
+        partTwo = ""
+    }
+    val concat: String
+    concat = if (partOne.length + partTwo.length > columnsPerLine) {
+        val strBuffer = StringBuffer()
+
+        strBuffer.append(
+            partOne.substring(0, columnsPerLine - 8) + repeat(
+                " ",
+                8 - partTwo.length
+            ) + partTwo
+        )
+        strBuffer.append("\n")
+        var tempStr = ""
+        var tempPartOne = partOne.substring(columnsPerLine - 8, partOne.length)
+        var tempPadding = 0
+        if (((columnsPerLine - tempPartOne.length) - partTwo.length) < 0) {
+            tempPadding = partTwo.length
+        } else {
+            tempPadding = (columnsPerLine - tempPartOne.length) - partTwo.length
+        }
+        tempStr = tempPartOne + repeat(" ", tempPadding)
+
+        strBuffer.append(tempStr)
+
+        return strBuffer.toString()
+
+        //partOne + " " + partTwo
+    } else {
+        val padding = columnsPerLine - (partOne.length + partTwo.length)
+        partOne + repeat(" ", padding) + partTwo
+    }
+    return concat
+}
+
 fun padLineCustomerItem(
     @Nullable partOne: String?,
     @Nullable partTwo: String?,
@@ -2332,7 +2375,8 @@ fun addTipsList(
 fun addTipsListInner(
     list: List<GetTipReponse.Data>,
     totalAmt: Double,
-    font: String
+    font: String,
+    isOldSunmiFrameworkVersion:Boolean = false
 ) {
     for (i in 0 until list.size) {
         val obj = list.get(i)
@@ -2358,7 +2402,7 @@ fun addTipsListInner(
             }
         ).toString()
 
-        PrintSunmiUtils.normalText(str)
+        PrintSunmiUtils.printNormalText(isOldSunmiFrameworkVersion,str)
 
     }
 
@@ -3242,15 +3286,15 @@ fun addOrdersForKitchenDineIn(
 
 fun addOrdersForKitchenDineInInner(
     list: ArrayList<TbCartItem>,
-    listItemWithGuest: HashMap<String, ArrayList<TbCartItem>>
+    listItemWithGuest: HashMap<String, ArrayList<TbCartItem>>,
+    isOldSunmiFrameworkVersion: Boolean = false
 ) {
 
     listItemWithGuest.forEach {
 
-        PrintSunmiUtils.addHorizontalInner()
-
+        PrintSunmiUtils.printHorizontalInnerNew(isOldSunmiFrameworkVersion)
         PrintSunmiUtils.normalTextLarge(it.key.toString())
-        PrintSunmiUtils.addHorizontalInner()
+        PrintSunmiUtils.printHorizontalInnerNew(isOldSunmiFrameworkVersion)
 
 
         it.value.forEach { obj ->
@@ -5384,7 +5428,7 @@ fun addWholeTbItemToGuest(
 
     val obj = list
 
-    var subTotal = (obj.price * obj.itemQuantity).toDouble()
+    var subTotal = (obj.price * obj.itemQuantity).toDouble() / guestCount
 
     if (obj.modifiers.isNotEmpty() && showModifiers) {
         obj.modifiers.forEach {
@@ -5461,7 +5505,8 @@ fun addWholeTbItemToGuestInnerLandi(
     showModifiers: Boolean,
     guestCount: Int,
     serviceChargeList: ArrayList<TbServiceCharge>,
-    lPrint:LPrint
+    lPrint:LPrint,
+    isUnpaid: Boolean = false
 ) {
 
     val obj = list
@@ -5486,7 +5531,7 @@ fun addWholeTbItemToGuestInnerLandi(
                     (obj.price * obj.itemQuantity) - obj.discountPrice
 
                 obj.modifiers.forEach {
-                    modifierPrice += (it.price * it.itemQuantity)
+                    modifierPrice += (it.price * it.modifier_quantity * obj.itemQuantity)
                 }
 
                 val totalPrice = price + modifierPrice
@@ -5517,10 +5562,13 @@ fun addWholeTbItemToGuestInnerLandi(
         }
     }
 
-    val price = (subTotal) / guestCount
+    var price = (subTotal)
+
+    if(isUnpaid)
+        price = (subTotal) / guestCount
 
     var priceToShow = ""
-    if (price > 0.0) {
+    if (list.price > 0.0) {
         priceToShow = MethodUtils.roundOffAmount(price)
     }
 
@@ -5562,7 +5610,9 @@ fun addWholeTbItemToGuestInner(
     font: String,
     showModifiers: Boolean,
     guestCount: Int,
-    serviceChargeList: ArrayList<TbServiceCharge>
+    serviceChargeList: ArrayList<TbServiceCharge>,
+    oldSunmiFrameworkVersion: Boolean = false,
+    isUnpaid:Boolean = false
 ) {
 
     val obj = list
@@ -5571,7 +5621,7 @@ fun addWholeTbItemToGuestInner(
 
     if (obj.modifiers.isNotEmpty() && showModifiers) {
         obj.modifiers.forEach {
-            subTotal += it.price * it.itemQuantity
+            subTotal += it.price * it.modifier_quantity * obj.itemQuantity
         }
     }
     var WTTaxes = 0.0
@@ -5618,16 +5668,24 @@ fun addWholeTbItemToGuestInner(
         }
     }
 
-    val price = (subTotal) / guestCount
+
+   // val price = subTotal
+    var price = (subTotal)
+    var actualPrice = subTotal
+
+    if(isUnpaid) {
+        price /= guestCount
+        obj.actualPrice = subTotal
+    }
 
     var priceToShow = ""
-    if (price > 0.0) {
-        priceToShow = MethodUtils.roundOffAmount(price)
+    if (list.price > 0.0) {
+        priceToShow = "("+ MethodUtils.roundOffAmount(obj.actualPrice) + ") " + MethodUtils.roundOffAmount(price)
     }
 
     //val finalAmt = MethodUtils.roundOffAmount((subTotal) / guestCount)
 
-    PrintSunmiUtils.normalText(
+    PrintSunmiUtils.printNormalText(oldSunmiFrameworkVersion,
         padLineCustomerItem(
             obj.itemQuantity.toString() + "  " + getItemNameToShow(obj.name),
             "" + priceToShow,
@@ -5638,7 +5696,7 @@ fun addWholeTbItemToGuestInner(
     if (obj.modifiers.isNotEmpty()) {
 
         obj.modifiers.forEach {
-            PrintSunmiUtils.normalText(
+            PrintSunmiUtils.printNormalText(oldSunmiFrameworkVersion,
                 padLineCustomerItem(
                     if (it.modifier_quantity == 1) {
                         "      " + it.name
@@ -5731,7 +5789,7 @@ fun addOrderItemForDineIn(
             builder.addText(
                 padLineCustomerItem(
                     "   " + getItemNameToShow(modifierObj.name),
-                    getModifierItemPriceToShow(modifierObj.price, modifierObj.itemQuantity),
+                    getModifierItemPriceToShow(modifierObj.price, modifierObj.modifier_quantity * obj.itemQuantity),
                     if (font == Constants.LARGE) {
                         23
                     } else {
@@ -5768,6 +5826,48 @@ fun addOrderItemForDineIn(
     return builder
 }
 
+fun printPayment(
+    isOldSunmiFrameworkVersion: Boolean = false,
+    printerType:String,
+    list: List<GetOrderDetailsResponse.Data.Payment>
+) {
+
+    when(printerType){
+        Constants.SUNMI_INNER_PRINTER ->{
+            PrintSunmiUtils.apply {
+                printHorizontalInnerNew(isOldSunmiFrameworkVersion)
+                normalTextCenter("\nPayment History")
+            }
+        }
+    }
+
+    val obj = list
+
+    list.forEachIndexed {  index,it->
+
+     //   val paymentToPrint = padLineSinglePayment("Payment ${index+1}","${it.amount}",2)
+        val paymentToPrint = "Payment ${index+1}  :   ${MethodUtils.roundOffAmount(it.amount)}"
+
+        when(printerType){
+
+            Constants.SUNMI_INNER_PRINTER -> {
+                PrintSunmiUtils.apply {
+                    printNormalText(isOldSunmiFrameworkVersion,paymentToPrint)
+                }
+            }
+        }
+    }
+
+    when(printerType){
+        Constants.SUNMI_INNER_PRINTER ->{
+            PrintSunmiUtils.apply {
+                printHorizontalInnerNew(isOldSunmiFrameworkVersion)
+                normalText("\n")
+            }
+        }
+    }
+
+}
 
 fun addOrderItemForDineIn(
     list: TbCartItem,
@@ -5801,7 +5901,7 @@ fun addOrderItemForDineIn(
                     } else {
                         "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(modifierObj.name)
                     },
-                    getModifierItemPriceToShow(modifierObj.price, modifierObj.itemQuantity),
+                    getModifierItemPriceToShow(modifierObj.price, modifierObj.modifier_quantity * obj.itemQuantity),
                     if (font == Constants.LARGE) 23 else 48
                 ).toString()
             )
@@ -5853,7 +5953,7 @@ fun addOrderItemForDineInInnerLandi(
                     } else {
                         "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(modifierObj.name)
                     },
-                    getModifierItemPriceToShow(modifierObj.price, modifierObj.itemQuantity),
+                    getModifierItemPriceToShow(modifierObj.price, modifierObj.modifier_quantity * obj.itemQuantity),
                     48
                 ).toString()
             )
@@ -5875,14 +5975,15 @@ fun addOrderItemForDineInInnerLandi(
 fun addOrderItemForDineInInner(
     list: TbCartItem,
     font: String,
-    showModifiers: Boolean
+    showModifiers: Boolean,
+    oldSunmiFrameworkVersion: Boolean = false
 ) {
 
 
     val obj = list
 
 
-    PrintSunmiUtils.normalTextDineInItem(
+    PrintSunmiUtils.printNormalText(oldSunmiFrameworkVersion,
         padLineCustomerItem(
             obj.itemQuantity.toString() + "  " + getItemNameToShow(obj.name),
             getItemPriceToShow(totalPriceDineInItem(obj)),
@@ -5897,18 +5998,18 @@ fun addOrderItemForDineInInner(
             val modifierObj = obj.modifiers.get(j)
 
 
-            PrintSunmiUtils.normalText(
-                padLineCustomerItem(
-                    if (modifierObj.modifier_quantity == 1) {
-                        "     " + getItemNameToShow(modifierObj.name)
-                    } else {
-                        "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(modifierObj.name)
-                    },
-                    getModifierItemPriceToShow(modifierObj.price, modifierObj.itemQuantity),
-                    if (font == Constants.LARGE) 23 else 48
-                ).toString()
-            )
+            val modifierText = padLineCustomerItem(
+                if (modifierObj.modifier_quantity == 1) {
+                    "     " + getItemNameToShow(modifierObj.name)
+                } else {
+                    "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(modifierObj.name)
+                },
+                getModifierItemPriceToShow(modifierObj.price, modifierObj.modifier_quantity * obj.itemQuantity),
+                if (font == Constants.LARGE) 23 else 48
+            ).toString()
 
+
+            PrintSunmiUtils.printNormalText(oldSunmiFrameworkVersion,modifierText)
 
         }
 
@@ -5916,7 +6017,7 @@ fun addOrderItemForDineInInner(
     }
 
     if (obj.note.isNotEmpty()) {
-        PrintSunmiUtils.normalText("   Note: " + obj.note)
+        PrintSunmiUtils.printNormalText(oldSunmiFrameworkVersion,"   Note: " + obj.note)
     }
 
 

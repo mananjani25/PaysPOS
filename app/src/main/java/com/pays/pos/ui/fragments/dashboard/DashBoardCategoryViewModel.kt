@@ -84,6 +84,7 @@ import com.pays.pos.data.repositories.TipDiscountRepository
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
 import com.pays.pos.logger.MessageEvent
+import com.pays.pos.ui.adapter.DineInTableAdapter
 import com.pays.pos.utils.*
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
@@ -164,6 +165,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var orderRequestModel: OrderRequestModel? = null
     var orderAttributeRequestModel = OrderAttributeRequestModel()
     var dineInItemClickedFromCart = false
+    var dineInAdapterBackup:DineInTableAdapter? = null
 
     /**
      *  currentDineInItems keeps track of all dine in Items even if they are destroyed
@@ -176,6 +178,13 @@ class DashBoardCategoryViewModel @Inject constructor(
     var updateRequested = true
     var currentDestination = ""
 
+
+    /**
+     * Get SUNMI OS VERSION
+     */
+    fun getSunmiFrameWorkVersion() =
+    prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".")
+    .toTypedArray()
 
     /**
      * Tracking main cart discount
@@ -941,8 +950,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         cartModel?.orderType = DINE_IN
         cartModel?.let {
             addCart(it)
-
-
         }
 
     }
@@ -4770,7 +4777,10 @@ class DashBoardCategoryViewModel @Inject constructor(
         subTotalPrice = 0.0
         totalDiscount = 0.0
         totalTax = 0.0
-        totalServiceCharge = 0.0
+
+        if(prefProvider.getValue(ORDER_TYPE,"") != DINE_IN)
+            totalServiceCharge = 0.0
+
         var amountToBePaid = 0.0
 
         runBlocking {
@@ -4849,6 +4859,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                     subTotalPrice = 0.0
                     totalDiscount = 0.0
                     totalTax = 0.0
+
+                    if(prefProvider.getValue(ORDER_TYPE,"") != DINE_IN)
                     totalServiceCharge = 0.0
 
                     val itemCount = cartItems.size
@@ -6771,7 +6783,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-    fun updateOrder(cartModel: CartModel,isFromDineInTable:Boolean = false): OrderRequestModel {
+    fun updateOrder(cartModel: CartModel,isFromDineInTable:Boolean = false,isAddGuest:Boolean = false): OrderRequestModel {
 
         Log.e(TAG, "totalDiscountDineIn  ${totalDiscount}")
         val orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
@@ -6821,7 +6833,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                 dineInOrderItemAttributed(cartModel, currentCartItems)
             else
                 dineInOrderItemAttributed(cartModel, currentDineInItems)
-            // orderItemsAttributes = dineInOrderItemAttributed(cartModel, currentCartItems)
+
+            /**
+             * This is added only for adding new guest from the DineInTable Pays
+             * */
+            if(isAddGuest)
+                 orderItemsAttributes = dineInOrderItemAttributed(cartModel, currentCartItems)
+
+
             offlineId = null
             deletedGuestItems = cartModel.listOfItemRemoved.toCollection(arrayListOf())
             //            paymentAttributes =
@@ -6835,6 +6854,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 //                )
 
             orderServiceChargesAttributes = orderServiceChargesAttributes(cartModel, subTotalPrice)
+
 
 
             guestsAttributes = getGuestsAttributes(cartModel)
@@ -8327,6 +8347,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         subTotalPrice = 0.0
         totalDiscount = 0.0
         totalTax = 0.0
+
+        if(prefProvider.getValue(ORDER_TYPE,"") != DINE_IN)
         totalServiceCharge = 0.0
         var amountToBePaid = 0.0
         if (isGuestPayment) {

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.content.DialogInterface
 import android.os.Bundle
+import android.os.Handler
 import android.os.Message
 import android.text.Editable
 import android.text.InputType
@@ -13,7 +14,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -38,7 +38,6 @@ import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.MagtekModule
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.magtek.MagtekRequestUtils
@@ -1149,6 +1148,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     private fun paymentClick() {
         binding.llCreditCard.setOnSingleClickListener {
 
+            restrictTvCashClicks()
+
             val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
             subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
             totalServiceCharge =
@@ -1184,6 +1185,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             } else {
                 errorDisplay("Payment Amount is zero.")
             }
+
+            dashboardViewModel.paymentType = "card"
+
         }
         binding.llManualCardEntry.setOnSingleClickListener {
             binding.frameLayoutId.visible()
@@ -1195,6 +1199,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         binding.tvCash0.setOnSingleClickListener {
 
+            restrictTvCashClicks()
             custom_paymentAmount = 0.0
             prefProvider.setValue(Constants.OPEN_ORDER_ITEMS_BASE, "")
 
@@ -1213,27 +1218,27 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             cashPaymentWithVariation()
         }
         binding.tvCash1.setOnSingleClickListener {
-
+            restrictTvCashClicks()
             custom_paymentAmount =
                 binding.tvCash1.text.toString().replace("$", "").trim().toDouble()
             SunmiPrintHelper.getInstance().openCashBox()
             cashPaymentWithVariation()
         }
         binding.tvCash2.setOnSingleClickListener {
+            restrictTvCashClicks()
             custom_paymentAmount =
                 binding.tvCash2.text.toString().replace("$", "").trim().toDouble()
             SunmiPrintHelper.getInstance().openCashBox()
             cashPaymentWithVariation()
         }
         binding.tvCash3.setOnSingleClickListener {
-
+            restrictTvCashClicks()
             custom_paymentAmount =
                 binding.tvCash3.text.toString().replace("$", "").trim().toDouble()
             SunmiPrintHelper.getInstance().openCashBox()
             cashPaymentWithVariation()
         }
         binding.tvCustomAmount.setOnSingleClickListener {
-
 
             val finalCashAmount =  binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
             val bundleVal = Bundle().apply {
@@ -1771,11 +1776,13 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     private fun setupTabDesign() {
         binding.linearTab1.setOnSingleClickListener {
-            PaymentBoldPosFragment.newInstance().addTipHideShow(false)
-            isSelectedCount = 1
-            tipsetupGlobal(tipAmount, isSelectedCount)
-            loadPaymentLayout()
-            tipAmountCalculation()
+            if(!isPaymentScreen) {
+                PaymentBoldPosFragment.newInstance().addTipHideShow(false)
+                isSelectedCount = 1
+                tipsetupGlobal(tipAmount, isSelectedCount)
+                loadPaymentLayout()
+                tipAmountCalculation()
+            }
         }
 
         if(isGuestPay)
@@ -1836,6 +1843,27 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         }
     }
+
+    //Restrict user from clicking cash value multiple times
+    private fun restrictTvCashClicks() {
+        binding.apply {
+            tvCash0.isEnabled = false
+            tvCash1.isEnabled = false
+            tvCash2.isEnabled = false
+            tvCash3.isEnabled = false
+        }
+
+        Handler().postDelayed({
+            binding.apply {
+                tvCash0.isEnabled = true
+                tvCash1.isEnabled = true
+                tvCash2.isEnabled = true
+                tvCash3.isEnabled = true
+            }
+        }, 5000)
+
+    }
+
 
     private fun loadSplitLayout() {
         binding.tab2.setTextColor(resources.getColor(R.color.txt_color_blue))
@@ -2554,11 +2582,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     private fun navigateOnPaymentSuccess() {
         dineinOrderVieweModel.onPayment.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { str ->
-                LogUtil.logE(TAG, "getstr:   $str")
+                LogUtil.logE("DINE IN GUEST PAYMENT", "getstr:   $str")
                 /*AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), str) { _, _ ->*/
 
 
-                gotoPay()
+                gotoPay(str)
 
 
                 /*}*/
@@ -2567,7 +2595,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         }
     }
 
-    private fun gotoPay() {
+    private fun gotoPay(createOrder: CreateOrderResponse) {
         when {
 
             paymentType == "Cash" -> {
@@ -2824,14 +2852,13 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
 
                 orderId?.let { bundle.putInt("orderID", it) }
-                // bundle.putParcelable("receiptData", it.data)
+                bundle.putParcelable("receiptData", createOrder.data)
                 bundle.putInt("splitValue", isSelectedCount)
                 bundle.putBoolean("isSplitByAmount", false)
                 bundle.putString("paymentType", "Card")
                 bundle.putParcelable("cartList", cartList)
                 bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
                 bundle.putDouble("TipAmount", tipAmount)
-
                 bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                 bundle.putBoolean("isFromActiveOrder", false)
                 bundle.putBoolean("isGuestPaymentTotal", isLastPayment)
