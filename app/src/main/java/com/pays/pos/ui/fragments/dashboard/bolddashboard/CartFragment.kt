@@ -1116,6 +1116,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 viewModel.observeLatestCartModel().observe(viewLifecycleOwner) {
                     var latestCartModel: CartModel? = null
 
+                    Log.e("AddItemFragment.kt","currentCartItems:    ${Gson().toJson(viewModel.currentCartItems)}")
+
                     if(it.isNotEmpty())
                         cartModelsList = ArrayList(it)
 
@@ -1673,6 +1675,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     val itemCount = it.size
                     Log.d("BRUNO", "addObserver: CALLED")
                     Log.d("19OCT", "addObserver: CCI 1 = ${Gson().toJson(it)}")
+                    if (it.isNotEmpty()) {
+                        Log.e("checkFirstItemQty", "itemQuantity:  ${it.get(0).itemQuantity}")
+                    }
 
                     if(prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) != "DineIn") {
 

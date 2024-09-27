@@ -1317,6 +1317,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 lateinit var foundItem:TbCartItem
 
                 Log.d("AddItemFragment.kt", "txtDone_before_for (it in viewModel.currentCartItems)")
+                Log.d("AddItemFragment.kt", "CheckQuantityItem: ${item.itemQuantity}  checkQty ${qty}")
 
                 //Check if item already present in Dine In
                 if(prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
@@ -1405,7 +1406,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                         "SAME ITEM  ${it.cartItemId} && ${item.cartItemId}"
                                     )
                                     found = true
-                                    it.itemQuantity += item.itemQuantity
+                                    Log.e("AddItemFragment.kt","checkQuantity:  ${item.itemQuantity}  originalExistQty${it.itemQuantity}")
+                                    it.itemQuantity = item.itemQuantity
 //                                it.isItemEdited=true
                                     break
                                 }
@@ -1535,6 +1537,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             }
 
                             try {
+                                Log.e("AddItemFragment.kt","getItemBeforeUpdate:  ${viewModel.cartModel?.items?.get(0)?.itemQuantity}  ")
                                 viewModel.updateCartModel(viewModel.cartModel!!)
                             }catch (e:Exception){
                                 Log.e("NULL POINTER EXCEPTION",e.toString())
@@ -1578,6 +1581,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                 viewModel.deleteCartItems()
 
                                 viewModel.currentCartItems.forEach {
+                                    Log.e("AddItemFragment.kt","checkAddedItemQty: ${it.itemQuantity} itemName:${it.name}")
                                     viewModel.addItemToCartItems(it)
                                 }
                             }
@@ -1637,19 +1641,13 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     } else {
                         item.guestIndexForDineIn = null
 
-                        Log.e("cshffasf", "checkElsee")
                         //val tbItem = TbCartItem().convertToCartItem(item, item)
 
                         var newFound = false
 
-                        Log.d(
-                            "AddItemFragment.kt",
-                            "txtDone_before_currentCartItems: ${Gson().toJson(viewModel.currentCartItems)}"
-                        )
 
                         viewModel.currentCartItems.forEach {
 
-                            Log.e("Tracking Cart", "Each Item ${it.name}")
 
                             if (it.name == item.name && it.cartItemId == item.cartItemId) {
                                 Log.e("Tracking Cart", "SAME ITEM")
@@ -1662,10 +1660,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             }
                         }
 
-                        Log.d(
-                            "AddItemFragment.kt",
-                            "txtDone_before_isUpdateItem: ${Gson().toJson(isUpdateItem)}"
-                        )
+
+                        Log.e("ThisIsMyTAG","newFound:  ${newFound}")
+
+
 
                         if (isUpdateItem) {
 
@@ -1717,10 +1715,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                 }
                             }
 
-                            Log.d(
-                                "AddItemFragment.kt",
-                                "txtDone_before_item = newItem: ${Gson().toJson(newItem)}"
-                            )
+
 
                             item = newItem
 
@@ -1733,6 +1728,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                 }
                             }
                             if (updatedIndex != -1) {
+
                                 viewModel.currentCartItems.set(updatedIndex, newItem)
                             }
 
@@ -1748,15 +1744,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         )
 
                         if (!newFound) {
-                            Log.d(
-                                "AddItemFragment.kt",
-                                "txtDone_before_updateCart: ${Gson().toJson(item)}"
-                            )
+                            Log.e("AddItemFragment.kt", "isUpdateItem:   ${isUpdateItem}")
 
                             viewModel.updateCart(
                                 viewModel.currentCartItems,
                                 item,
-                                Constants.ADD,
+                              if(isUpdateItem)Constants.UPDATE else  Constants.ADD,
                                 false
                             )
                             Log.d("AddItemFragment.kt", "txtDone_before_updateCart: Sent")
@@ -1769,10 +1762,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                 viewModel.deleteCartItems()
                                 Log.d("AddItemFragment.kt", "txtDone_runBlocking_1")
                                 viewModel.currentCartItems.forEach {
-                                    Log.d(
-                                        "AddItemFragment.kt",
-                                        "txtDone_runBlocking_item: ${Gson().toJson(it)}"
-                                    )
+
                                     viewModel.addItemToCartItems(it)
                                 }
                             }
