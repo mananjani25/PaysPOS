@@ -8683,8 +8683,11 @@ class AllOrdersListingFragment(
             )
 
 
-
-            PrintSunmiUtils.addHorizontalInner()
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                PrintSunmiUtils.addHorizontalInnerNew()
+            }else{
+                PrintSunmiUtils.addHorizontalInner()
+            }
 
             if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
                 PrintSunmiUtils.normalText("\n")
@@ -8716,7 +8719,7 @@ class AllOrdersListingFragment(
                         ) {
                             PrintSunmiUtils.addHorizontalInnerNew()
                         }else{
-                            PrintSunmiUtils.addHorizontalInner()
+                            PrintSunmiUtils.addHorizontalInnerSmall()
                         }
                         if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
                             PrintSunmiUtils.normalText("\n")
