@@ -2,15 +2,27 @@ package com.pays.pos.ui.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.*
-import android.content.*
+import android.app.ActivityManager
+import android.app.Dialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.BroadcastReceiver
+import android.content.ClipData
+import android.content.ComponentCallbacks2
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.StrictMode
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
@@ -55,7 +67,10 @@ import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
 import com.pays.pos.MainApplication
 import com.pays.pos.R
-import com.pays.pos.data.model.*
+import com.pays.pos.data.model.GuestAttrQueue
+import com.pays.pos.data.model.PrinterJSONElementData
+import com.pays.pos.data.model.PrinterQueueModel
+import com.pays.pos.data.model.TmpPrinterModel
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.pays.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.pays.pos.data.model.responseModel.PrinterResponse
@@ -84,14 +99,23 @@ import com.pays.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.Hardware
 import com.pays.pos.ui.fragments.settings.hardware.printer.UpdatePrinters
-import com.pays.pos.utils.*
+import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.FileUtils
+import com.pays.pos.utils.LogUtil
+import com.pays.pos.utils.ProgressUtils
+import com.pays.pos.utils.addDoubleDotLineForSunmiQueue
+import com.pays.pos.utils.addHorizontalLineNew
+import com.pays.pos.utils.addOrdersForKitchenCustomerNewPrinter
+import com.pays.pos.utils.disconnectSocket
+import com.pays.pos.utils.executeAsyncTask
 import com.pays.pos.utils.extensions.alert
+import com.pays.pos.utils.getCustomerDisplay
+import com.pays.pos.utils.padLine
+import com.pays.pos.utils.printGuestByItemForSunmiQueue
 import com.pays.pos.utils.scanner.helpers.AvailableScanner
 import com.pays.pos.utils.scanner.helpers.Barcode
 import com.pays.pos.utils.scanner.helpers.ScannerAppEngine
 import com.pays.pos.utils.statusUtils.Status
-import com.pays.pos.utils.workmanager.ThreadPoolManager
 import com.pays.pos.utils.workmanager.UploadWorker2
 import com.sdksuite.omnidriver.OmniConnection
 import com.sdksuite.omnidriver.OmniDriver
@@ -104,7 +128,13 @@ import com.sunmi.externalprinterlibrary2.style.AlignStyle
 import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
 import com.sunmi.externalprinterlibrary2.style.UnderlineStyle
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -114,7 +144,7 @@ import java.io.IOException
 import java.net.URI
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Calendar
 import javax.inject.Inject
 
 
@@ -1340,11 +1370,16 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MainApplication.mainActivity = this
+
         permissionCheck()
 //        sdkHandler = SDKHandler(this, true)
-        attachFileLogger()
+        CoroutineScope(Dispatchers.IO).launch {
+            attachFileLogger()
+        }
         initLandiCashBox()
+        CoroutineScope(Dispatchers.IO).launch {
         prefProvider!!.setValue(Constants.DELIVERY_TYPE, "")
+        }
 
         if (!checkServiceRunning(
                 applicationContext,
@@ -1377,7 +1412,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
         //demoPrinterQueue()
-        getKitOne()
+        CoroutineScope(Dispatchers.IO).launch {
+            getKitOne()
+        }
         masterTerminalObserver()
         Log.e(
             TAG, "checkPrinterQueue ${
@@ -1614,17 +1651,19 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     public fun log(text: String) {
         /* This function will log the data to a file*/
         try {
+            CoroutineScope(Dispatchers.IO).launch {
 
-            val folder = externalCacheDir
-            val file = File(folder, "log_steps.txt")
+                val folder = externalCacheDir
+                val file = File(folder, "log_steps.txt")
 
-            val stream = FileOutputStream(file, true)
-            try {
-                stream.write(text.toByteArray())
-            } finally {
-                stream.close()
+                val stream = FileOutputStream(file, true)
+                try {
+                    stream.write(text.toByteArray())
+                } finally {
+                    stream.close()
+                }
+
             }
-
 
         } catch (e: IOException) {
             Log.e("Exception", "File write failed: $e")

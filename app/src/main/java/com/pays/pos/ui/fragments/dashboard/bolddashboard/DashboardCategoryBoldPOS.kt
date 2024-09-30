@@ -267,6 +267,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.clearCartModelBackup()
+        Log.e("ThisISInit","InitStarted")
 
         lifecycleScope.launch {
             try {
@@ -2331,54 +2332,56 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         if (data.name.startsWith("CloudPrint", true)) {
 
-            try {
-                SunmiPrinterApi.getInstance()
-                    .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
-                Log.d("initKitchenPrinter", "SunmiBlueToothPrinter is ${data.ipAddress}")
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    SunmiPrinterApi.getInstance()
+                        .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
+                    Log.d("initKitchenPrinter", "SunmiBlueToothPrinter is ${data.ipAddress}")
 
-            } catch (e: Exception) {
-                SunmiPrinterApi.getInstance()
-                    .setPrinter(SunmiPrinter.SunmiNetPrinter, data.ipAddress)
-                Log.d("initKitchenPrinter", "SunmiNetPrinter")
+                } catch (e: Exception) {
+                    SunmiPrinterApi.getInstance()
+                        .setPrinter(SunmiPrinter.SunmiNetPrinter, data.ipAddress)
+                    Log.d("initKitchenPrinter", "SunmiNetPrinter")
 
-            }
+                }
 
 
-            if (!SunmiPrinterApi.getInstance().isConnected) {
-                SunmiPrinterApi.getInstance()
-                    .connectPrinter(requireContext(), object : ConnectCallback {
+                if (!SunmiPrinterApi.getInstance().isConnected) {
+                    SunmiPrinterApi.getInstance()
+                        .connectPrinter(requireContext(), object : ConnectCallback {
 
-                        override fun onFound() {
-                            println("onFound")
-                        }
-
-                        override fun onUnfound() {
-                            println("onUnfound")
-
-                            viewModel.downloadFinished(false)
-                            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
+                            override fun onFound() {
+                                println("onFound")
                             }
-                        }
 
-                        override fun onConnect() {
-                            println("onConnect")
-                            generateKitchenReceiptSunmi(
-                                data,
-                                type,
-                                createOrderResponse.data,
-                                cartModel
-                            )
+                            override fun onUnfound() {
+                                println("onUnfound")
 
-                        }
+                                viewModel.downloadFinished(false)
+                                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
+                                }
+                            }
 
-                        override fun onDisconnect() {
-                            println("onDisconnect")
-                        }
+                            override fun onConnect() {
+                                println("onConnect")
+                                generateKitchenReceiptSunmi(
+                                    data,
+                                    type,
+                                    createOrderResponse.data,
+                                    cartModel
+                                )
 
-                    })
-            } else {
-                generateKitchenReceiptSunmi(data, type, createOrderResponse.data, cartModel)
+                            }
+
+                            override fun onDisconnect() {
+                                println("onDisconnect")
+                            }
+
+                        })
+                } else {
+                    generateKitchenReceiptSunmi(data, type, createOrderResponse.data, cartModel)
+                }
             }
 
         } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
@@ -2392,7 +2395,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
             printer = StarPrinter(settings, requireContext())
 
-            runBlocking {
+            CoroutineScope(Dispatchers.IO).launch{
                 try {
                     val builder = StarXpandCommandBuilder()
 
