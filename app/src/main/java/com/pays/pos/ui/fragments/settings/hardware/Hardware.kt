@@ -56,7 +56,9 @@ class Hardware : Fragment() {
             findNavController().navigateUp()
         }
         binding.header.txtSave.setOnClickListener {
-            findNavController().navigate(R.id.action_hardware_to_dashboardCategoryNew)
+            if (findNavController().currentDestination?.id == R.id.hardware) {
+                findNavController().navigate(R.id.action_hardware_to_dashboardCategoryNew)
+            }
         }
         binding.txtPrinter.setOnClickListener {
             findNavController().navigate(R.id.action_hardware_to_printer)
