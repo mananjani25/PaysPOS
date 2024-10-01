@@ -1416,7 +1416,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                     )
                                     found = true
                                     Log.e("AddItemFragment.kt","checkQuantity:  ${item.itemQuantity}  originalExistQty${it.itemQuantity}")
-                                    it.itemQuantity = item.itemQuantity
+                                    it.itemQuantity += item.itemQuantity
 //                                it.isItemEdited=true
                                     break
                                 }
