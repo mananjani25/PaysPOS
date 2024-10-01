@@ -2238,7 +2238,28 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
             if(prefProvider.getValue(ORDER_TYPE ,"") == DINE_IN){
 
-                viewModel.totalServiceCharge = arguments?.getBundle("updateBundle")?.getDouble("serviceChargeB")?.toDouble() ?: 0.0
+                if(prefProvider.getValueboolean(DINE_IN_UPDATE,false))
+                    viewModel.totalServiceCharge = arguments?.getBundle("updateBundle")?.getDouble("serviceChargeB")?.toDouble() ?: 0.0
+                else {
+
+                    val total = viewModel.subTotalPrice + viewModel.totalTax
+
+                    val guestCount = dineInCartAdapter.getList().count{
+                        it.isHeader == 0
+                    }
+                    val serviceChargesList = getServiceChargeFromGuestCount(guestCount-1)
+
+                    var serviceCharge = 0.0
+
+                    serviceChargesList.forEach {
+                        if(it.isEnabled ){
+                            serviceCharge += (total * it.percentage) / 100
+                        }
+                    }
+
+                    viewModel.totalServiceCharge = serviceCharge
+
+                }
 
                 binding.txtServiceCharge.text = MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
             } else
@@ -2802,6 +2823,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
                                     prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
                                     viewModel.removeItemDineInList.clear()
+                                    viewModel.dineInAdapterBackup = null
+                                    viewModel.cartModel = null
 
                                     //if (cartModelsList.size > 0) {
 
