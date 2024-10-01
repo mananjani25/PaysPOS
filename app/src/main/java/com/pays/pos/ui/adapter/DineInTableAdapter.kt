@@ -911,7 +911,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 //                list[clickedPos].item?.isFired = true
 //            }
 //        }
-        notifyDataSetChanged()
+
+      //  notifyDataSetChanged()
     }
 
     fun setSurchargeList(serviceChargeListt: java.util.ArrayList<TbServiceCharge>) {

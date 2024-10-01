@@ -86,6 +86,7 @@ import com.epson.eposprint.Print
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
@@ -572,14 +573,19 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.btnPayNew.setOnClickListener {
             try {
 
-                prefProvider.setValue(ORDER_TYPE, DINE_IN)
-//                dashboardViewModel.currentCartItems = arrayListOf()
-                dashboardViewModel.deleteCartItems()
-
                 //new Calculation for total Discount
                 var listWT: ArrayList<TbCartItem> = arrayListOf()
                 var list = dineInTableAdapter.getList()
 
+                if(dineInTableAdapter.getList().count { it.isHeader == 1 } == 0) {
+                    AlertUtils.showCustomAlert(requireContext(),"Please Add at least one item to table.")
+                } else {
+
+
+
+                prefProvider.setValue(ORDER_TYPE, DINE_IN)
+//                dashboardViewModel.currentCartItems = arrayListOf()
+                dashboardViewModel.deleteCartItems()
 
                 /**
                  * Adding guestDineInPosition for Each Item
@@ -1076,7 +1082,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     200)
 
 
-
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -9752,7 +9758,39 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 delay(100)
                 setService(data, type, item, listItemWithGuest)
             }
-        } else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains(
+        } else if(data.name.startsWith(LANDI_INNER_PRINTER,true)){
+
+            viewLifecycleOwner.lifecycleScope.launch {
+
+                checkBluetoothPermissions(object :
+                    OrderCompleteFragment.OnBluetoothPermissionGranted {
+                    override fun onPermissionsGranted() {
+                        GlobalScope.launch {
+                            LPrint.connectLandiInnerPrinter(data.macAddress)
+                                ?.let { outputStream ->
+
+                                    LPrint.apply {
+
+                                        LPrint.printKitchenReceiptDineInLandi(
+                                            requireContext(),
+                                            outputStream,
+                                            data,
+                                            type,
+                                            item,
+                                            listItemWithGuest,
+                                            kitchenSettingModel,
+                                            prefProvider,
+                                            getOrderDetailsResponse
+                                        )
+                                    }
+                                }
+                        }
+                    }
+                })
+            }
+
+
+        }else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains(
                 "SP",
                 ignoreCase = true
             )))
@@ -12231,6 +12269,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
+            CoroutineScope(Dispatchers.IO).launch {
                 var autoPrintEnable = false
                 kitchenPrinterList.forEach { kit ->
                     if (kit.status) {
@@ -12321,6 +12360,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                 dineInTableAdapter.updateStatus(0, true)
+            }
 
         }
 
