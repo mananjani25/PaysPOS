@@ -275,10 +275,11 @@ class PrinterViewModel @Inject constructor(
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
                     if (status != null) {
-                        if (status.lowercase() == Constants.CUSTOMER.lowercase()) {
+                        Log.e(TAG,"checkStatus:  ${status}")
+                        if (status.lowercase() == Constants.KITCHEN.lowercase()) {
                             Log.e("PrinterDelete", "Printer Inner ID: ${printerListModel.id}")
                             posRepository.deleteCustomerPrinter(printerListModel.id)
-                        } else if (status.lowercase() == Constants.KITCHEN.lowercase()) {
+                        } else if (status.lowercase() == Constants.CUSTOMER.lowercase()) {
                             Log.e("PrinterDelete", "Printer ID: ${printerListModel.id}")
 
                             posRepository.deleteKitchenPrinter(printerListModel.id)
