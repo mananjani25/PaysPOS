@@ -14,7 +14,7 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
 
-        <item name="android:windowSplashScreenBrandingImage">@mipmap/ic_launcher</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/pays_logo_transparent</item>
 
     </style>
 </resources>
