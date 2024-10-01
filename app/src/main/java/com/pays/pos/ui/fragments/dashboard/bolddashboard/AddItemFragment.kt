@@ -1442,7 +1442,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         val dineInList = cartModelsList[0].dineInList
                         dineInList?.get(0)?.headerPosition = viewModel.dineInSelectedItemHeaderPos
                         dineInList?.get(0)?.selectedPosition = viewModel.dineInSelectedItemHeaderPos
-                        LogUtil.logE(TAG, "getItem  ${Gson().toJson(item)}")
+
                         cartModelsList[0].taxlistDynamic = arrayListOf()
 
                         viewModel.currentCartItems.forEach {
@@ -1451,11 +1451,6 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                 taxData.totalTaxTypePrice = 0.0
                             }
                         }
-
-                        Log.e(TAG, "dineInListWhenUpdate:  ${Gson().toJson(cartModelsList)}")
-                        Log.d(TAG, "398 dineintest currentCartItems: " + viewModel.currentCartItems)
-                        Log.d(TAG, "dineintest item: " + item)
-                        Log.d(TAG, "dineintest dineInList: " + dineInList)
 
                         CoroutineScope(Dispatchers.IO).launch {
                             runBlocking {
@@ -1501,7 +1496,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                         if (checkVar()) {
 
-                            LogUtil.logE("NewItem", "ItemSame ${Gson().toJson(item)}")
+
 
                             // if(!isUpdateItem)
                             prefProvider.setValue(
@@ -1547,7 +1542,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             }
 
                             try {
-                                Log.e("AddItemFragment.kt","getItemBeforeUpdate:  ${viewModel.cartModel?.items?.get(0)?.itemQuantity}  ")
+
                                 viewModel.updateCartModel(viewModel.cartModel!!)
                             } catch (e: Exception) {
                                 Log.e("NULL POINTER EXCEPTION", e.toString())
@@ -1591,7 +1586,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                 viewModel.deleteCartItems()
 
                                 viewModel.currentCartItems.forEach {
-                                    Log.e("AddItemFragment.kt","checkAddedItemQty: ${it.itemQuantity} itemName:${it.name}")
+
                                     viewModel.addItemToCartItems(it)
                                 }
                             }
@@ -1619,12 +1614,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(dineInList)}")
                         if (dineInList?.isNotEmpty() == true && dineInList != null) {
                             dineInList[0].selectedPosition = viewModel.dineInHeaderPosition
-                            Log.d(
-                                TAG,
-                                "448 dineintest currentCartItems: " + viewModel.currentCartItems
-                            )
-                            Log.d(TAG, "dineintest item: " + item)
-                            Log.d(TAG, "dineintest dineInList: " + dineInList)
+
+
                             item.itemQuantity = qty
 //                            viewModel.updateDineInCart(
 //                                viewModel.currentCartItems,
@@ -1671,7 +1662,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         }
 
 
-                        Log.e("ThisIsMyTAG","newFound:  ${newFound}")
+
 
 
 
@@ -1685,10 +1676,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             )
                             var newItem = item
 
-                            Log.d(
-                                "AddItemFragment.kt",
-                                "txtDone_if (prefProvider.getValue(Constants.OPEN_ORDER_ITEMS)"
-                            )
+
 
                             if (prefProvider.getValue(Constants.OPEN_ORDER_ITEMS, "")
                                     .isNotEmpty()
@@ -1754,7 +1742,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                         )
 
                         if (!newFound) {
-                            Log.e("AddItemFragment.kt", "isUpdateItem:   ${isUpdateItem}")
+
 
                             viewModel.updateCart(
                                 viewModel.currentCartItems,
@@ -1762,7 +1750,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                               if(isUpdateItem)Constants.UPDATE else  Constants.ADD,
                                 false
                             )
-                            Log.d("AddItemFragment.kt", "txtDone_before_updateCart: Sent")
+
 
                         } else {
 
