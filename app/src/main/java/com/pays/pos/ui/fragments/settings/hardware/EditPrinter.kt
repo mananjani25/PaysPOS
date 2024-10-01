@@ -745,10 +745,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
 
 
             } else {
-                Log.e(
-                    TAG,
-                    "checkSettingsIDS:  ${adapter.getList().get(0).printerSettings.get(0).id}"
-                )
+
 
                 val model = createRequestModelForUpdatePrinter(
                     adapter.getList(),
