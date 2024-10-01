@@ -8445,7 +8445,12 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun downloadFinished(value: Boolean) {
 //        isLoading.value = value
-        isLoading.postValue(value)
+        try {
+            isLoading.postValue(value)
+        }catch (e:Exception){
+            e.printStackTrace()
+
+        }
     }
 
 
