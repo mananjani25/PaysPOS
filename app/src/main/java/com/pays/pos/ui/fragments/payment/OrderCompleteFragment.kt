@@ -8355,7 +8355,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                         if (kitchenPrinterList[i].status) {
                                                             kitchenPrinterList[i].orderTypes.forEach {
 
-                                                                if (it.orderTypeId == receiptModel?.order?.orderTypeId
+                                                                if (it.orderTypeId == receiptModel?.order?.orderTypeId || it.orderType == receiptModel?.order?.orderType
 
                                                                 ) {
 
@@ -8479,7 +8479,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             if (kitchenPrinterList[i].status) {
                                                                 kitchenPrinterList[i].orderTypes.forEach {
 
-                                                                    if (it.orderTypeId == receiptModel?.order?.orderTypeId
+                                                                    if (it.orderTypeId == receiptModel?.order?.orderTypeId  || it.orderType == receiptModel?.order?.orderType
 
                                                                     ) {
 
@@ -8590,7 +8590,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         if (kitchenPrinterList[i].status) {
                                             kitchenPrinterList[i].orderTypes.forEach {
 
-                                                if (it.orderTypeId == receiptModel?.order?.orderTypeId
+                                                if (it.orderTypeId == receiptModel?.order?.orderTypeId  || it.orderType == receiptModel?.order?.orderType
 
                                                 ) {
 
@@ -8936,7 +8936,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 )
 
 
-                                            if (it.orderTypeId == receiptModel?.order?.orderTypeId) {
+                                            if (it.orderTypeId == receiptModel?.order?.orderTypeId || it.orderType == receiptModel?.order?.orderType) {
 
                                                 EventBus.getDefault()
                                                     .post(
