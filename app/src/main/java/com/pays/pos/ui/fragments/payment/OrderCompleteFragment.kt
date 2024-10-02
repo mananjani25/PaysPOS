@@ -223,8 +223,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     /*Added By Rahul */
     private var isOrderUpdated: Boolean = false
 
+    private var printingCustomer: Boolean = false
+    private var printingKitchen: Boolean = false
+
     private var orderTypeToCheckKiosk: String = ""
-    private var totalPayableAmount:Double = 0.0
+    private var totalPayableAmount: Double = 0.0
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -337,7 +340,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 val paymentIdForCustomerDisplay = prefProvider.getValueInt(
                     PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
                 )
-                Log.e(TAG,"checkTotalPrice:  ${totalPayableAmount}")
+                Log.e(TAG, "checkTotalPrice:  ${totalPayableAmount}")
                 presentation.showWouldYouLikeToAddTipScreen(
                     tipListViewModel,
                     transactionViewModel,
@@ -613,7 +616,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             orderTypeToCheckKiosk = it.getString("orderType_to_check_kiosk", "")
         }
 
-        if(orderTypeToCheckKiosk.isNullOrEmpty()) {
+        if (orderTypeToCheckKiosk.isNullOrEmpty()) {
             orderTypeToCheckKiosk = prefProvider.getValue(ORDER_TYPE, "")
         }
 
@@ -735,9 +738,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 if (isSplitByAmount) {
                     if (paidAmount > WholetotalPrice) {
-                        if(paymentType.equals("cash",true)) {
-                            changeAmtGlobal = MethodUtils.roundOffAmountDouble(paidAmount - WholetotalPrice)
-                                .toDouble()
+                        if (paymentType.equals("cash", true)) {
+                            changeAmtGlobal =
+                                MethodUtils.roundOffAmountDouble(paidAmount - WholetotalPrice)
+                                    .toDouble()
                         }
                         if (paymentType.equals("cash", true)) {
                             binding.txtChangeAmount.visible()
@@ -784,7 +788,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             changeValue = paidAmount - remainingAmount
                         }
                         if (Math.round(changeValue) > 0.0) {
-                            if (paymentType.equals("cash",true)) {
+                            if (paymentType.equals("cash", true)) {
                                 changeAmtGlobal =
                                     MethodUtils.roundOffAmountDouble(changeValue).toDouble()
                             }
@@ -868,7 +872,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     LogUtil.logE("Change 6", binding.txtChangeAmount.text.toString())
                 } else {
                     if (remainingAmount < 0) {
-                        if (paymentType.equals("cash",true)) {
+                        if (paymentType.equals("cash", true)) {
                             changeAmtGlobal =
                                 MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount)
                                     .toDouble()
@@ -1018,7 +1022,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         MethodUtils.roundOffAmount(if ((remainingAmount - tipAmount) > 0) remainingAmount - tipAmount else 0.00) + " Change"
                 } else {
                     if (remainingAmount < 0 || remainingAmount == 0.0) {
-                        if (paymentType.equals("cash",true)) {
+                        if (paymentType.equals("cash", true)) {
                             changeAmtGlobal =
                                 MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount)
                         }
@@ -1592,10 +1596,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     private fun cleanOrderBackupDetails() {
-         dashboardViewModel.backupOrderId = null
-         dashboardViewModel.backupPaymentId = null
-         dashboardViewModel.backupPaymentOfflineId = ""
-         dashboardViewModel.backupOrderOfflineId = ""
+        dashboardViewModel.backupOrderId = null
+        dashboardViewModel.backupPaymentId = null
+        dashboardViewModel.backupPaymentOfflineId = ""
+        dashboardViewModel.backupOrderOfflineId = ""
     }
 
     override fun onClick(v: View?) {
@@ -1935,131 +1939,131 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         } else
             if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
-            if (isGuest) {
+                if (isGuest) {
 
-                val checkOutDineInModel =
-                    requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
-                LogUtil.logE(
-                    TAG,
-                    "checkOutDineInModel:  ${Gson().toJson(checkOutDineInModel)}"
-                )
-
-
-                if (checkOutDineInModel != null) {
-                    generateGuestPrint(
-                        customerReceiptPrinters,
-                        type,
-                        paymentType,
-                        listGuestItem,
-                        guestName,
-                        listWTitems,
-                        checkOutDineInModel
+                    val checkOutDineInModel =
+                        requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
+                    LogUtil.logE(
+                        TAG,
+                        "checkOutDineInModel:  ${Gson().toJson(checkOutDineInModel)}"
                     )
+
+
+                    if (checkOutDineInModel != null) {
+                        generateGuestPrint(
+                            customerReceiptPrinters,
+                            type,
+                            paymentType,
+                            listGuestItem,
+                            guestName,
+                            listWTitems,
+                            checkOutDineInModel
+                        )
+                    }
+
+                } else {
+
+
+                    generateDineInPrint(customerReceiptPrinters, type, "")
                 }
 
+            } else if (customerReceiptPrinters.name.startsWith(LANDI_INNER_PRINTER, true)) {
+
+                if (isGuest) {
+
+                    val checkOutDineInModel =
+                        requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
+                    LogUtil.logE(
+                        TAG,
+                        "checkOutDineInModel:  ${Gson().toJson(checkOutDineInModel)}"
+                    )
+
+
+                    if (checkOutDineInModel != null) {
+                        generateGuestPrint(
+                            customerReceiptPrinters,
+                            type,
+                            paymentType,
+                            listGuestItem,
+                            guestName,
+                            listWTitems,
+                            checkOutDineInModel
+                        )
+                    }
+
+                } else generateDineInPrintForLandi(customerReceiptPrinters, type, "")
             } else {
 
-
-                generateDineInPrint(customerReceiptPrinters, type, "")
-            }
-
-        } else if(customerReceiptPrinters.name.startsWith(LANDI_INNER_PRINTER, true)) {
-
-            if(isGuest) {
-
-                val checkOutDineInModel =
-                    requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
-                LogUtil.logE(
-                    TAG,
-                    "checkOutDineInModel:  ${Gson().toJson(checkOutDineInModel)}"
-                )
-
-
-                if (checkOutDineInModel != null) {
-                    generateGuestPrint(
-                        customerReceiptPrinters,
-                        type,
-                        paymentType,
-                        listGuestItem,
-                        guestName,
-                        listWTitems,
-                        checkOutDineInModel
-                    )
-                }
-
-            }else generateDineInPrintForLandi(customerReceiptPrinters, type, "")
-        } else {
-
-            PrinterClass.closePrinter()
-            if (PrinterClass.getPrinter() == null) {
-                var printer: Print? = Print(requireContext())
-                if (printer != null) {
+                PrinterClass.closePrinter()
+                if (PrinterClass.getPrinter() == null) {
+                    var printer: Print? = Print(requireContext())
+                    if (printer != null) {
 //                printer.setStatusChangeEventCallback(this)
 //                printer.setBatteryStatusChangeEventCallback(this)
-                }
-
-                val enabled = Print.FALSE
-
-                try {
-                    var interval: Int = 1000
-                    if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
-                        interval = PrinterClass.BLUETOOTH_TIMEOUT
                     }
-                    printer?.openPrinter(
 
+                    val enabled = Print.FALSE
+
+                    try {
+                        var interval: Int = 1000
                         if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
-                            Print.DEVTYPE_BLUETOOTH
-                        } else {
-                            Print.DEVTYPE_TCP
-                        },
-                        customerReceiptPrinters.ipAddress,
-                        enabled,
-                        interval
-                    )
-                    //printer?.setStatusChangeEventCallback(this)
+                            interval = PrinterClass.BLUETOOTH_TIMEOUT
+                        }
+                        printer?.openPrinter(
 
-                } catch (e: Exception) {
-                    LogUtil.logE(TAG, "PrinterException: " + e.message)
-                    printer = null
-                    return
-                }
-                try {
+                            if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
+                                Print.DEVTYPE_BLUETOOTH
+                            } else {
+                                Print.DEVTYPE_TCP
+                            },
+                            customerReceiptPrinters.ipAddress,
+                            enabled,
+                            interval
+                        )
+                        //printer?.setStatusChangeEventCallback(this)
 
-                    if (printer != null) {
-                        PrinterClass.setPrinter(printer)
-                        if (isGuest) {
+                    } catch (e: Exception) {
+                        LogUtil.logE(TAG, "PrinterException: " + e.message)
+                        printer = null
+                        return
+                    }
+                    try {
 
-                            val checkOutDineInModel =
-                                requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
+                        if (printer != null) {
+                            PrinterClass.setPrinter(printer)
+                            if (isGuest) {
+
+                                val checkOutDineInModel =
+                                    requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
 
 
-                            if (checkOutDineInModel != null) {
-                                generateGuestPrint(
-                                    customerReceiptPrinters,
-                                    type,
-                                    paymentType,
-                                    listGuestItem,
-                                    guestName,
-                                    listWTitems,
-                                    checkOutDineInModel
-                                )
+                                if (checkOutDineInModel != null) {
+                                    generateGuestPrint(
+                                        customerReceiptPrinters,
+                                        type,
+                                        paymentType,
+                                        listGuestItem,
+                                        guestName,
+                                        listWTitems,
+                                        checkOutDineInModel
+                                    )
+                                }
+
+                            } else {
+
+
+                                generateDineInPrint(customerReceiptPrinters, type, "")
                             }
 
-                        } else {
-
-
-                            generateDineInPrint(customerReceiptPrinters, type, "")
                         }
 
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
-
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                } else {
+                    LogUtil.logE(TAG, "PrinterIsNotNull:")
                 }
-            } else {
-                LogUtil.logE(TAG, "PrinterIsNotNull:")
             }
-        }
 
     }
 
@@ -2184,7 +2188,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         } else if (customerReceiptPrinters.name.startsWith(LANDI_INNER_PRINTER, true)) {
 
-            printLandiDineinInner(paymentType,
+            printLandiDineinInner(
+                paymentType,
                 listWTitems,
                 listGuestItem,
                 guestName,
@@ -2193,10 +2198,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 orderDiscount,
                 guestTaxes,
                 guestSubTotal,
-                guestServiceCharge ,
-                customerReceiptPrinters)
+                guestServiceCharge,
+                customerReceiptPrinters
+            )
 
-        } else{
+        } else {
 
 
             var builder: Builder? = null
@@ -3589,7 +3595,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             PrintSunmiUtils.addHorizontal()
 
 
-            if(listWTitems.isNotEmpty())
+            if (listWTitems.isNotEmpty())
                 PrintSunmiUtils.printTextCenter("Whole Table")
 
             for (i in 0 until listWTitems.size) {
@@ -3896,7 +3902,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters
     ) {
         val order = getDineInOrderDetails
-        this.checkBluetoothPermissions(object: OrderCompleteFragment.OnBluetoothPermissionGranted {
+        this.checkBluetoothPermissions(object : OrderCompleteFragment.OnBluetoothPermissionGranted {
             override fun onPermissionsGranted() {
                 GlobalScope.launch {
                     LPrint.connectLandiInnerPrinter(customerReceiptPrinters.macAddress)
@@ -4066,8 +4072,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                                         addWholeTbItemToGuestInnerLandi(
-                                            listWTitems.get(i), customerSettingModel.fonts,
-                                            customerSettingModel.showModifiers, guestCount, arrayListOf(), LPrint
+                                            listWTitems.get(i),
+                                            customerSettingModel.fonts,
+                                            customerSettingModel.showModifiers,
+                                            guestCount,
+                                            arrayListOf(),
+                                            LPrint
                                         )
                                     }
 
@@ -4129,8 +4139,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     lineBreak()
 
 
-
-
                                     /**
                                      * Print Tax Amount
                                      */
@@ -4149,7 +4157,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         printLeft(taxToPrint)
                                         lineBreak()
                                     }
-
 
 
                                     /**
@@ -4241,7 +4248,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     }
 
 
-                                    var totalAmt = checkOutDineInModel?.totalAmount?:0.0 + tipAmount
+                                    var totalAmt =
+                                        checkOutDineInModel?.totalAmount ?: 0.0 + tipAmount
 
                                     if (payTypeGlb.lowercase() == "Cash".lowercase() && prefProvider.getValue(
                                             OPTION_TYPE,
@@ -4264,7 +4272,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     val str5 = padLine(
                                         "Total Price",
                                         "$" + MethodUtils.roundOffAmountString(totalAmt),
-                                       48
+                                        48
                                     ).toString()
 
                                     printBoldLeft(str5)
@@ -4276,7 +4284,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         "$" + MethodUtils.roundOffAmountString(
                                             paidAmount + tipAmount
                                         ),
-                                       48
+                                        48
                                     ).toString()
 
                                     printBoldLeft(str6)
@@ -4637,7 +4645,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             SunmiPrintHelper.getInstance().lineWrap(1)
 
 
-            val guestCount = getDineInOrderDetails?.guestAttributes?.count { it.guestItemAttributes.isNotEmpty() && !it.name.lowercase().contains("whole table") } ?: 1
+            val guestCount = getDineInOrderDetails?.guestAttributes?.count {
+                it.guestItemAttributes.isNotEmpty() && !it.name.lowercase().contains("whole table")
+            } ?: 1
 
 
             PrintSunmiUtils.normalTextCenter("Whole Table")
@@ -4683,7 +4693,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         )
                     }, if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
-                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str1)
+                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(), str1)
             }
 
 
@@ -4693,7 +4703,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     (checkOutDineInModel?.subTotal!!) - orderDiscount
                 ), if (customerSettingModel.fonts == LARGE) 23 else 48
             ).toString()
-            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str2)
+            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(), str2)
 
 
 
@@ -4704,7 +4714,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalTax),
                     if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
-                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str3)
+                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(), str3)
             }
 
             if (getDineInOrderDetails?.serviceChargeEnabled == true && prefProvider.getValueboolean(
@@ -4718,7 +4728,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
 
-                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str4)
+                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(), str4)
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
@@ -4729,7 +4739,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     "$" + MethodUtils.roundOffAmountString(tipAmount),
                     if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
-                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str8)
+                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(), str8)
             }
 
             if (noCashAdjGlobal != 0.0 && customerSettingModel.showCashDisSurCharg) {
@@ -4747,7 +4757,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }, if (customerSettingModel.fonts == LARGE) 23 else 48
                     ).toString()
 
-                    PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str8)
+                    PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(), str8)
 
 
                 } else if (prefProvider.getValue(OPTION_TYPE, "")
@@ -4763,13 +4773,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         },
                         if (customerSettingModel.fonts == LARGE) 23 else 48
                     ).toString()
-                    PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str8)
+                    PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(), str8)
 
                 }
             }
 
 
-            var totalAmt = checkOutDineInModel.subTotal + checkOutDineInModel.totalTax + checkOutDineInModel.totalServiceCharge - checkOutDineInModel.totalDiscount + tipAmount
+            var totalAmt =
+                checkOutDineInModel.subTotal + checkOutDineInModel.totalTax + checkOutDineInModel.totalServiceCharge - checkOutDineInModel.totalDiscount + tipAmount
 
             if (payTypeGlb.lowercase() == "Cash".lowercase() && prefProvider.getValue(
                     OPTION_TYPE,
@@ -4793,7 +4804,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (customerSettingModel.fonts == LARGE) 23 else 48
             ).toString()
 
-            PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),str5)
+            PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(), str5)
 
 
             val str6 = padLine(
@@ -4808,7 +4819,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             ).toString()
 
-            PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),str6)
+            PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(), str6)
 
             //ADDCHANGE
 
@@ -4818,7 +4829,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (customerSettingModel.fonts == LARGE) 23 else 48
             ).toString()
 
-            PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),str7)
+            PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(), str7)
             SunmiPrintHelper.getInstance().lineWrap(2)
 
             if (customerSettingModel.showRefundAmount) {
@@ -4854,14 +4865,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         ?.let { receiptModel?.order?.payments?.get(it)?.id },
                     if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
-                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str10)
+                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(), str10)
 
                 val str11 = padLine(
                     "Transaction Type",
                     receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType,
                     if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
-                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str11)
+                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(), str11)
             }
 
             if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType?.lowercase() == "Card".lowercase()) {
@@ -4888,14 +4899,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         )
                 }
 
-                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),
+                PrintSunmiUtils.printNormalText(
+                    prefProvider.isOldSunmiFrameworkVersion(),
                     padLine(
                         "",
                         strCardType,
                         if (customerSettingModel.fonts == LARGE) 23 else 48
                     ).toString()
                 )
-                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),
+                PrintSunmiUtils.printNormalText(
+                    prefProvider.isOldSunmiFrameworkVersion(),
                     padLine(
                         "",
                         receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber,
@@ -4916,9 +4929,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             SunmiPrintHelper.getInstance().lineWrap(2)
             if (customerSettingModel.fonts == Constants.LARGE) {
-                PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),"Customer Signature ____")
+                PrintSunmiUtils.printBoldText(
+                    prefProvider.isOldSunmiFrameworkVersion(),
+                    "Customer Signature ____"
+                )
             } else {
-                PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),"Customer Signature           __________________")
+                PrintSunmiUtils.printBoldText(
+                    prefProvider.isOldSunmiFrameworkVersion(),
+                    "Customer Signature           __________________"
+                )
             }
 
             SunmiPrintHelper.getInstance().lineWrap(2)
@@ -4944,11 +4963,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
-               /* try {
-                    SunmiPrintHelper.getInstance().openCashBox()
-                } catch (e: java.lang.Exception) {
-                    e.printStackTrace()
-                }*/
+                /* try {
+                     SunmiPrintHelper.getInstance().openCashBox()
+                 } catch (e: java.lang.Exception) {
+                     e.printStackTrace()
+                 }*/
             }
 
             PrintSunmiUtils.cutPaperInner()
@@ -6834,17 +6853,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
 
+    private fun generateDineInPrintForLandi(
+        customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
+        type: String,
+        s: String
+    ) {
 
-
-    private fun generateDineInPrintForLandi(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,type: String,s: String) {
-
-        this.checkBluetoothPermissions(object: OrderCompleteFragment.OnBluetoothPermissionGranted {
+        this.checkBluetoothPermissions(object : OrderCompleteFragment.OnBluetoothPermissionGranted {
             override fun onPermissionsGranted() {
                 GlobalScope.launch {
                     LPrint.connectLandiInnerPrinter(customerReceiptPrinters.macAddress)
                         ?.let { outputStream ->
 
-                            try{
+                            try {
 //                                    outputStream.write(LPrint.CENTER_ALIGN)  // Center align
 //                                    outputStream.write(LPrint.BOLD_ON)  // Center align
 //                                    outputStream.write(LPrint.FONT_SIZE_5X)
@@ -6874,7 +6895,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                      * Print Logo
                                      */
 
-                                    if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
+                                    if (customerSettingModel.showVenueLogo && prefProvider.getValue(
+                                            VENUE_LOGO,
+                                            ""
+                                        )
                                             .isNotEmpty()
                                     ) {
 
@@ -7025,7 +7049,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                                     val itemDataToPrint =
                                                         padLineCustomerItem(
-                                                            obj.itemQuantity.toString() + "  " + getItemNameToShow(obj.name),
+                                                            obj.itemQuantity.toString() + "  " + getItemNameToShow(
+                                                                obj.name
+                                                            ),
                                                             getItemPriceToShow(obj.price * obj.itemQuantity),
                                                             48
                                                         ).toString().toByteArray()
@@ -7044,11 +7070,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             val modifiersToPrint =
                                                                 padLineCustomerItem(
                                                                     if (modifierObj.modifier_quantity == 1) {
-                                                                        "     " + getItemNameToShow(modifierObj.name)
+                                                                        "     " + getItemNameToShow(
+                                                                            modifierObj.name
+                                                                        )
                                                                     } else {
-                                                                        "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(modifierObj.name)
+                                                                        "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(
+                                                                            modifierObj.name
+                                                                        )
                                                                     },
-                                                                    getModifierItemPriceToShow(modifierObj.price, obj.itemQuantity * modifierObj.modifier_quantity),
+                                                                    getModifierItemPriceToShow(
+                                                                        modifierObj.price,
+                                                                        obj.itemQuantity * modifierObj.modifier_quantity
+                                                                    ),
                                                                     48
                                                                 ).toString().toByteArray()
 
@@ -7074,7 +7107,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         }
 
                                     }
-
 
 
                                     /**
@@ -7104,14 +7136,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     }
 
 
-
                                     /**
                                      * Print Subtotal
                                      */
 
                                     val subTotalToPrint = padLine(
                                         "Sub Total",
-                                        "$" + MethodUtils.roundOffAmountString(order?.subTotal ?: 0.0),
+                                        "$" + MethodUtils.roundOffAmountString(
+                                            order?.subTotal ?: 0.0
+                                        ),
                                         if (customerSettingModel.fonts == Constants.LARGE) {
                                             23
                                         } else {
@@ -7207,8 +7240,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                      */
 
                                     val totalAmt =
-                                        MethodUtils.roundOffAmountDouble(order?.subTotal?:0.0 + serviceCharge + order?.totalTaxAmount!!
-                                        ?: 0.0)
+                                        MethodUtils.roundOffAmountDouble(
+                                            order?.subTotal
+                                                ?: 0.0 + serviceCharge + order?.totalTaxAmount!!
+                                                ?: 0.0
+                                        )
 
                                     val totalAmountToPrint =
                                         padLine(
@@ -7279,7 +7315,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     }
 
 
-
                                     /**
                                      * TIPS
                                      */
@@ -7305,27 +7340,27 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                      * TIP SUGGESTION
                                      */
 
-                                        if (customerSettingModel.showTipSuggestion) {
+                                    if (customerSettingModel.showTipSuggestion) {
+                                        write(LPrint.LINE_FEED)
+                                        write(LPrint.BOLD_ON)
+                                        write("Additional Tips".toByteArray())
+                                        write(LPrint.NORMAL_SIZE)
+                                        write(LPrint.LINE_FEED)
+                                        write(LPrint.DASHED_LINE_FEED)
+
+
+                                        if (tipsList.isNotEmpty()) {
+                                            val tipsToPrint = addTipsListInnerLandi(
+                                                tipsList,
+                                                totalAmt,
+                                                customerSettingModel.fonts
+                                            )
+
+                                            write(tipsToPrint.toByteArray())
                                             write(LPrint.LINE_FEED)
-                                            write(LPrint.BOLD_ON)
-                                            write("Additional Tips".toByteArray())
-                                            write(LPrint.NORMAL_SIZE)
-                                            write(LPrint.LINE_FEED)
-                                            write(LPrint.DASHED_LINE_FEED)
-
-
-                                            if (tipsList.isNotEmpty()) {
-                                                val tipsToPrint =  addTipsListInnerLandi(
-                                                    tipsList,
-                                                    totalAmt,
-                                                    customerSettingModel.fonts
-                                                )
-
-                                                write(tipsToPrint.toByteArray())
-                                                write(LPrint.LINE_FEED)
-                                            }
-
                                         }
+
+                                    }
 
 
                                     /**
@@ -7367,53 +7402,55 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                     val _order = receiptModel?.order
 
-                                    if(_order?.payments?.isNotEmpty() == true)
-                                    if (_order?.payments?.first()?.paymentType?.lowercase() == "Card".lowercase()) {
-                                        /*val str12 = padLine(
-                                            "",
-                                            receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString(),
-                                            if (customerSettingModel.fonts == LARGE) 23 else 48
-                                        ).toString()
+                                    if (_order?.payments?.isNotEmpty() == true)
+                                        if (_order?.payments?.first()?.paymentType?.lowercase() == "Card".lowercase()) {
+                                            /*val str12 = padLine(
+                                                "",
+                                                receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString(),
+                                                if (customerSettingModel.fonts == LARGE) 23 else 48
+                                            ).toString()
 
-                                        if (!str12.isNullOrBlank()) {
-                                            PrintSunmiUtils.normalTextTest(str12)
-                                            SunmiPrintHelper.getInstance().lineWrap(1)
-                                        }*/
+                                            if (!str12.isNullOrBlank()) {
+                                                PrintSunmiUtils.normalTextTest(str12)
+                                                SunmiPrintHelper.getInstance().lineWrap(1)
+                                            }*/
 
-                                        var strCardType =
-                                            _order.payments.get(_order.payments.size!! - 1).cardType.toString()
+                                            var strCardType =
+                                                _order.payments.get(_order.payments.size!! - 1).cardType.toString()
 
-                                        if (!paymentViewModel.extData.isNullOrEmpty()) {
+                                            if (!paymentViewModel.extData.isNullOrEmpty()) {
 
-                                            var applabStartIndex = paymentViewModel.extData.indexOf("<APPLAB>")
-                                            var applabEndIndex = paymentViewModel.extData.indexOf("</APPLAB>")
-                                            strCardType =
-                                                paymentViewModel.extData.substring(
-                                                    applabStartIndex + "<APPLAB>".length,
-                                                    applabEndIndex
-                                                )
+                                                var applabStartIndex =
+                                                    paymentViewModel.extData.indexOf("<APPLAB>")
+                                                var applabEndIndex =
+                                                    paymentViewModel.extData.indexOf("</APPLAB>")
+                                                strCardType =
+                                                    paymentViewModel.extData.substring(
+                                                        applabStartIndex + "<APPLAB>".length,
+                                                        applabEndIndex
+                                                    )
+                                            }
+
+                                            val str13 = padLine(
+                                                "",
+                                                strCardType, 48
+                                            ).toString()
+
+                                            if (!str13.isBlank()) {
+                                                write(str13.toByteArray())
+                                                write(LPrint.LINE_FEED)
+                                            }
+                                            val str14 = padLine(
+                                                "",
+                                                _order.payments[_order.payments.size - 1].cardNumber.toString(),
+                                                48
+                                            ).toString()
+
+                                            if (!str14.isBlank()) {
+                                                write(str14.toByteArray())
+                                                write(LPrint.LINE_FEED)
+                                            }
                                         }
-
-                                        val str13 = padLine(
-                                            "",
-                                            strCardType,48
-                                        ).toString()
-
-                                        if (!str13.isBlank()) {
-                                            write(str13.toByteArray())
-                                            write(LPrint.LINE_FEED)
-                                        }
-                                        val str14 = padLine(
-                                            "",
-                                            _order.payments[_order.payments.size - 1].cardNumber.toString(),
-                                            48
-                                        ).toString()
-
-                                        if (!str14.isBlank()) {
-                                            write(str14.toByteArray())
-                                            write(LPrint.LINE_FEED)
-                                        }
-                                    }
 
 
 
@@ -7433,11 +7470,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     write(LPrint.LINE_FEED)
                                     if (customerSettingModel.showQrCode) {
 
-                                        LPrint.printQRCode(outputStream,order?.digitalReceiptUrl.toString(),LPrint.CENTER_ALIGN)
+                                        LPrint.printQRCode(
+                                            outputStream,
+                                            order?.digitalReceiptUrl.toString(),
+                                            LPrint.CENTER_ALIGN
+                                        )
 
                                         // getDineInOrderDetails?.digitalReceiptUrl.toString().let { PrintSunmiUtils.qrCode(it) }
                                     }
-
 
 
                                     /**
@@ -7445,10 +7485,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                      */
                                     write(LPrint.CUT_PAPER)
                                     LPrint.disconnectLandiPrinter()
+                                    printingCustomer = false
                                 }
 
-                            }catch (e:Exception){
-                                Log.e("PRINTING ERROR WHILE DINE IN _ LANDI INNER PRINTER",e.printStackTrace().toString())
+                            } catch (e: Exception) {
+                                printingCustomer = false
+                                Log.e(
+                                    "PRINTING ERROR WHILE DINE IN _ LANDI INNER PRINTER",
+                                    e.printStackTrace().toString()
+                                )
                             }
                         }
                 }
@@ -7698,7 +7743,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             ).toString()
 
-            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str1)
+            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(), str1)
 
         }
 
@@ -7716,7 +7761,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         ).toString()
 
 
-        PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str2)
+        PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(), str2)
 
 
         if (totalTaxAmount != null) {
@@ -7733,11 +7778,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
             ).toString()
-            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str3)
+            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(), str3)
         }
 
         var finalServiceCharges = 0.0
-        getDineInOrderDetails?.orderServiceCharges?.forEach { if(it.order_type.lowercase().contains("dinein")) finalServiceCharges += it.amount }
+        getDineInOrderDetails?.orderServiceCharges?.forEach {
+            if (it.order_type.lowercase().contains("dinein")) finalServiceCharges += it.amount
+        }
 
 
         if ((getDineInOrderDetails?.serviceChargeEnabled == true) && prefProvider.getValueboolean(
@@ -7756,7 +7803,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     48
                 }
             ).toString()
-            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str4)
+            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(), str4)
         }
 
 
@@ -7773,7 +7820,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             ).toString()
 
-            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str8)
+            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(), str8)
         }
 
 
@@ -7801,7 +7848,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             ).toString()
 
-            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str8)
+            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(), str8)
 
 
         } else if (payTypeGlb.lowercase() == "Card".lowercase() && customerSettingModel.showCashDisSurCharg) {
@@ -7818,7 +7865,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             ).toString()
 
-            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str8)
+            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(), str8)
             SunmiPrintHelper.getInstance().lineWrap(1)
 
         }
@@ -7856,7 +7903,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             "$" + MethodUtils.roundOffAmountString(totalAmt + finalServiceCharges),
             if (customerSettingModel.fonts == LARGE) 23 else 48
         ).toString()
-        PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),str5)
+        PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(), str5)
 
         val str6 = padLine(
             "Paid Amount",
@@ -7866,7 +7913,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (customerSettingModel.fonts == LARGE) 23 else 48
         ).toString()
 
-        PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),str6)
+        PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(), str6)
 
 
         //ADDCHANGE
@@ -7876,7 +7923,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             "$" + MethodUtils.roundOffAmountString(changeAmtGlobal),
             if (customerSettingModel.fonts == LARGE) 23 else 48
         ).toString()
-        PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),str7)
+        PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(), str7)
 
         SunmiPrintHelper.getInstance().lineWrap(2)
 
@@ -7888,7 +7935,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 "$" + MethodUtils.roundOffAmountString(remainingAmount),
                 if (customerSettingModel.fonts == LARGE) 23 else 48
             ).toString()
-            PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),str7)
+            PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(), str7)
 
             SunmiPrintHelper.getInstance().lineWrap(2)
         }
@@ -7908,12 +7955,24 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (customerSettingModel.showTipLineForCash) {
 
                 if (customerSettingModel.fonts == LARGE) {
-                    PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),"Tips      _____________")
-                    PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),"Total     _____________")
+                    PrintSunmiUtils.printBoldText(
+                        prefProvider.isOldSunmiFrameworkVersion(),
+                        "Tips      _____________"
+                    )
+                    PrintSunmiUtils.printBoldText(
+                        prefProvider.isOldSunmiFrameworkVersion(),
+                        "Total     _____________"
+                    )
                     SunmiPrintHelper.getInstance().lineWrap(1)
                 } else {
-                    PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),"Tips                              _____________")
-                    PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),"Total                             _____________")
+                    PrintSunmiUtils.printBoldText(
+                        prefProvider.isOldSunmiFrameworkVersion(),
+                        "Tips                              _____________"
+                    )
+                    PrintSunmiUtils.printBoldText(
+                        prefProvider.isOldSunmiFrameworkVersion(),
+                        "Total                             _____________"
+                    )
                 }
 
 
@@ -7923,8 +7982,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         LogUtil.logE("printDineReciept", "Staring 1....")
 
 
-        if(getDineInOrderDetails?.payments?.isNotEmpty() == true){
-            printPayment(prefProvider.isOldSunmiFrameworkVersion(),SUNMI_INNER_PRINTER,getDineInOrderDetails!!.payments)
+        if (getDineInOrderDetails?.payments?.isNotEmpty() == true) {
+            printPayment(
+                prefProvider.isOldSunmiFrameworkVersion(),
+                SUNMI_INNER_PRINTER,
+                getDineInOrderDetails!!.payments
+            )
 
         }
 
@@ -7961,7 +8024,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (customerSettingModel.fonts == LARGE) 23 else 48
             ).toString()
 
-            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str10)
+            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(), str10)
 
         } else {
             SunmiPrintHelper.getInstance().lineWrap(1)
@@ -7975,7 +8038,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (customerSettingModel.fonts == LARGE) 23 else 48
             ).toString()
 
-            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str11)
+            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(), str11)
 
         }
 
@@ -8012,7 +8075,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             ).toString()
 
             if (!str13.isNullOrBlank()) {
-                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str13)
+                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(), str13)
             }
             val str14 = padLine(
                 "",
@@ -8022,7 +8085,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (!str14.isNullOrBlank()) {
                 SunmiPrintHelper.getInstance().lineWrap(1)
-                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str14)
+                PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(), str14)
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
         }
@@ -8033,14 +8096,23 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
 
         SunmiPrintHelper.getInstance().lineWrap(2)
-        PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),"__________________________")
+        PrintSunmiUtils.printNormalText(
+            prefProvider.isOldSunmiFrameworkVersion(),
+            "__________________________"
+        )
         SunmiPrintHelper.getInstance().lineWrap(1)
 
         SunmiPrintHelper.getInstance().lineWrap(2)
         if (customerSettingModel.fonts == Constants.LARGE) {
-            PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),"Customer Signature ____")
+            PrintSunmiUtils.printBoldText(
+                prefProvider.isOldSunmiFrameworkVersion(),
+                "Customer Signature ____"
+            )
         } else {
-            PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(),"Customer Signature           __________________")
+            PrintSunmiUtils.printBoldText(
+                prefProvider.isOldSunmiFrameworkVersion(),
+                "Customer Signature           __________________"
+            )
         }
 
         SunmiPrintHelper.getInstance().lineWrap(2)
@@ -8479,7 +8551,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             if (kitchenPrinterList[i].status) {
                                                                 kitchenPrinterList[i].orderTypes.forEach {
 
-                                                                    if (it.orderTypeId == receiptModel?.order?.orderTypeId  || it.orderType == receiptModel?.order?.orderType
+                                                                    if (it.orderTypeId == receiptModel?.order?.orderTypeId || it.orderType == receiptModel?.order?.orderType
 
                                                                     ) {
 
@@ -8590,7 +8662,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         if (kitchenPrinterList[i].status) {
                                             kitchenPrinterList[i].orderTypes.forEach {
 
-                                                if (it.orderTypeId == receiptModel?.order?.orderTypeId  || it.orderType == receiptModel?.order?.orderType
+                                                if (it.orderTypeId == receiptModel?.order?.orderTypeId || it.orderType == receiptModel?.order?.orderType
 
                                                 ) {
 
@@ -9100,14 +9172,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             onBluetoothPermissionGranted.onPermissionsGranted()
         }
     }
+
     private fun initPrinter(
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
         type: String,
         isAutoPrint: Boolean
     ) {
-        Log.e(TAG, "checkAutoPrint  ${isAutoPrint}")
+        Log.v("Check:: ", "1")
         pd?.show()
-
         EventBus.getDefault()
             .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _initPrinter(customerRecei..."))
 
@@ -9140,10 +9212,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 setService1(isAutoPrint)
             }
 
-        }else if (customerReceiptPrinters.name.startsWith(LANDI_INNER_PRINTER, true)) {
-            printFromLandiInnerPrinter(isAutoPrint,customerReceiptPrinters)
-        }
-        else {
+        } else if (customerReceiptPrinters.name.startsWith(LANDI_INNER_PRINTER, true)) {
+            Log.v("Check:: ", "2")
+            printFromLandiInnerPrinter(isAutoPrint, customerReceiptPrinters)
+        } else {
 
 
             PrinterClass.closePrinter()
@@ -9206,7 +9278,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 LogUtil.logE(TAG, "PrinterIsNotNull:")
             }
         }
-
     }
 
     private fun printFromLandiInnerPrinter(
@@ -9214,16 +9285,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters
     ) {
 //        val printer = com.dantsu.escposprinter.EscPosPrinter(BluetoothPrintersConnections.selectFirstPaired(), 203, 48f, 32)
+        if (!printingCustomer) {
+            printingCustomer = true
 
-        val order = receiptModel?.order
+            val order = receiptModel?.order
+            Log.v("Check:: ", "3")
 
-        this.checkBluetoothPermissions(object : OnBluetoothPermissionGranted {
-            override fun onPermissionsGranted() {
-                GlobalScope.launch {
-                    LPrint.connectLandiInnerPrinter(customerReceiptPrinters.macAddress)
-                        ?.let { outputStream ->
-                            /*---------------------Sample---------------------*/
-                            /*   outputStream.write(LPrint.CENTER_ALIGN)  // Center align
+            this.checkBluetoothPermissions(object : OnBluetoothPermissionGranted {
+                override fun onPermissionsGranted() {
+                    GlobalScope.launch {
+                        LPrint.connectLandiInnerPrinter(customerReceiptPrinters.macAddress)
+                            ?.let { outputStream ->
+                                /*---------------------Sample---------------------*/
+                                /*   outputStream.write(LPrint.CENTER_ALIGN)  // Center align
                         outputStream.write(LPrint.BOLD_ON)       // Enable bold
                         outputStream.write("Bold Text\n".toByteArray())
                         outputStream.write(LPrint.BOLD_OFF)     // Disable bold
@@ -9238,427 +9312,441 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         outputStream.write("Normal Text\n".toByteArray())
 */
-                            /*---------------------Sample---------------------*/
-                            LPrint.apply {
-                                setOutputStream(outputStream)
+                                /*---------------------Sample---------------------*/
+                                LPrint.apply {
+                                    setOutputStream(outputStream)
 
-                                try {
-                                    if (customerSettingModel.showOrderIdTop) {
+                                    try {
+                                        if (customerSettingModel.showOrderIdTop) {
 
-                                        val orderIdToPrint = if (prefProvider.getValueboolean(
-                                                ORDER_NUMBER_STARTING_FROM_ONE,
-                                                false
+                                            val orderIdToPrint = if (prefProvider.getValueboolean(
+                                                    ORDER_NUMBER_STARTING_FROM_ONE,
+                                                    false
+                                                )
+                                            ) {
+                                                "OrderID: ${order?.custom_order_id}"
+                                            } else {
+                                                "OrderID: ${order?.id}"
+                                            }
+
+                                            lineBreak()
+                                            printCenter(
+                                                orderIdToPrint,
+                                                FONT_SIZE_5X,
+                                                isBold = true
                                             )
-                                        ) {
-                                            "OrderID: ${order?.custom_order_id}"
-                                        } else {
-                                            "OrderID: ${order?.id}"
+                                            lineBreak()
+
                                         }
 
-                                        lineBreak()
-                                        printCenter(
-                                            orderIdToPrint,
-                                            FONT_SIZE_5X,
-                                            isBold = true
-                                        )
-                                        lineBreak()
-
-                                    }
-
-                                    if (customerSettingModel.showVenueLogo && prefProvider.getValue(
-                                            VENUE_LOGO,
-                                            ""
-                                        )
-                                            .isNotEmpty()
-                                    ) {
+                                        if (customerSettingModel.showVenueLogo && prefProvider.getValue(
+                                                VENUE_LOGO,
+                                                ""
+                                            )
+                                                .isNotEmpty()
+                                        ) {
 
 //                            PrintSunmiUtils.printLogoInner(prefProvider.getValue(VENUE_LOGO, ""))
 
-                                    }
-                                    printCenter(
-                                        prefProvider.getValue(
-                                            Constants.BUSINESS_NAME,
+                                        }
+                                        printCenter(
+                                            prefProvider.getValue(
+                                                Constants.BUSINESS_NAME,
+                                                ""
+                                            ),
+                                            fontSize = FONT_SIZE_5X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+                                        Log.v("Check:: ", "4")
+
+                                        var venueAddress =
+                                            if (customerSettingModel.showVenueAddress) {
+                                                prefProvider.getValue(BUSINESS_ADDRESS, "")
+                                            } else ""
+
+                                        var businessPhoneNumber = prefProvider.getValue(
+                                            BUSINESS_PHONE_NO,
                                             ""
-                                        ),
-                                        fontSize = FONT_SIZE_5X,
-                                        isBold = true,
-                                        printOnNewLine = true
-                                    )
-                                    lineBreak()
+                                        )
 
-                                    var venueAddress = if (customerSettingModel.showVenueAddress) {
-                                        prefProvider.getValue(BUSINESS_ADDRESS, "")
-                                    } else ""
+                                        printCenter(venueAddress, fontSize = SMALL_SIZE)
+                                        lineBreak()
 
-                                    var businessPhoneNumber = prefProvider.getValue(
-                                        BUSINESS_PHONE_NO,
-                                        ""
-                                    )
-
-                                    printCenter(venueAddress, fontSize = SMALL_SIZE)
-                                    lineBreak()
-
-                                    printCenter(businessPhoneNumber, fontSize = SMALL_SIZE)
-                                    lineBreak()
+                                        printCenter(businessPhoneNumber, fontSize = SMALL_SIZE)
+                                        lineBreak()
 
 
-                                    printCenter(
-                                        prefProvider.getValue(
-                                            Constants.BUSINESS_WEBSITE,
-                                            ""
-                                        ), fontSize = SMALL_SIZE
-                                    )
-                                    lineBreak()
+                                        printCenter(
+                                            prefProvider.getValue(
+                                                Constants.BUSINESS_WEBSITE,
+                                                ""
+                                            ), fontSize = SMALL_SIZE
+                                        )
+                                        lineBreak()
 
-                                    if (customerSettingModel.showOrderType) {
-                                        receiptModel?.order?.orderTypeName?.trim()?.let {
+                                        if (customerSettingModel.showOrderType) {
+                                            receiptModel?.order?.orderTypeName?.trim()?.let {
 //                                        outputStream.write(LPrint.FONT_SIZE_5X)
 //
 //                                        outputStream.write(it.toByteArray())
-                                            printCenter(
-                                                it,
-                                                isBold = true,
-                                                fontSize = FONT_SIZE_5X
-                                            )
+                                                printCenter(
+                                                    it,
+                                                    isBold = true,
+                                                    fontSize = FONT_SIZE_5X
+                                                )
 
-                                            if (!it.contains("Phone", true)) {
+                                                if (!it.contains("Phone", true)) {
 //                                            outputStream.write(LPrint.LINE_FEED)
-                                                lineBreak()
+                                                    lineBreak()
 
+                                                }
                                             }
+                                            lineBreak()
+                                        }
+
+
+                                        if (order?.orderTypeName?.trim()
+                                                .equals("Online Order", true) ||
+                                            order?.orderTypeName?.trim()
+                                                .equals("OnlineWebOrder", true) ||
+                                            order?.orderTypeName?.trim().equals(PHONE_ORDER, true)
+                                        ) {
+                                            order?.deliveryType?.let {
+                                                printCenter(
+                                                    it,
+                                                    isBold = true,
+                                                    fontSize = FONT_SIZE_4X
+                                                )
+                                            }
+                                            lineBreak()
                                         }
                                         lineBreak()
-                                    }
-
-
-                                    if (order?.orderTypeName?.trim()
-                                            .equals("Online Order", true) ||
-                                        order?.orderTypeName?.trim()
-                                            .equals("OnlineWebOrder", true) ||
-                                        order?.orderTypeName?.trim().equals(PHONE_ORDER, true)
-                                    ) {
-                                        order?.deliveryType?.let { printCenter(it, isBold = true, fontSize = FONT_SIZE_4X) }
-                                        lineBreak()
-                                    }
-                                    lineBreak()
 //                                outputStream.write(LPrint.LINE_FEED)
 //                                outputStream.write(LPrint.NORMAL_SIZE)
 //                                outputStream.write(LPrint.LEFT_ALIGN)
 //                                outputStream.write("ReceiptID: ${receiptModel?.order?.offlineId?.trim()}".toByteArray())
-                                    printLeft("ReceiptID : ${order?.offlineId?.trim()}")
-                                    lineBreak()
+                                        printLeft("ReceiptID : ${order?.offlineId?.trim()}")
+                                        lineBreak()
 
-                                    printLeft("Employee : ${order?.employee?.name?.trim()}")
-                                    lineBreak()
+                                        printLeft("Employee : ${order?.employee?.name?.trim()}")
+                                        lineBreak()
+                                        Log.v("Check:: ", "5")
 
-                                    printLeft(
-                                        "Order Time : ${
-                                            getReceiptFormatDateFromUTCServer(
-                                                requireContext(),
-                                                order?.createdAt.toString()
-                                            )
-                                        }"
-                                    )
-
-                                    if (customerSettingModel.showPrintTime) {
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-                                            lineBreak()
-
-                                            printLeft(
-                                                "Print Time : ${
-                                                    getCurrentTimeFromTimeZone(
-                                                        requireContext(),
-                                                        MethodUtils.formatted()
-                                                    )
-                                                }"
-                                            )
-
-                                        }
-                                    }
-
-                                    lineBreak()
-                                    printDashedLineAndBreak()
-
-                                    receiptModel?.order?.orderItems?.let {
-                                        addOrderItemsInnerNewLandi(
-                                            it,
-                                            customerSettingModel.showModifiers,
-                                            customerSettingModel.fonts,
-                                            LPrint
+                                        printLeft(
+                                            "Order Time : ${
+                                                getReceiptFormatDateFromUTCServer(
+                                                    requireContext(),
+                                                    order?.createdAt.toString()
+                                                )
+                                            }"
                                         )
-                                    }
-                                    lineBreak()
 
-                                    /**
-                                     * Print Discount
-                                     */
-                                    lineBreak()
+                                        if (customerSettingModel.showPrintTime) {
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-                                    if (order?.totalDiscount != null) {
+                                                lineBreak()
 
-                                        val discountToPrint =
-                                            padLine(
-                                                "Total Discount",
-
-                                                if (order?.totalDiscount == 0.0) {
-//                            "-$" + MethodUtils.roundOffAmountString(0.00)
-                                                    "$" + MethodUtils.roundOffAmountString(0.00)
-                                                } else {
-                                                    order?.totalDiscount?.let {
-                                                        "-$" + MethodUtils.roundOffAmountString(it)
-                                                    }
-                                                },
-                                                48
-                                            ).toString()
-
-                                        printLeft(discountToPrint)
-                                        lineBreak()
-                                    }
-
-                                    /**
-                                     * Print Subtotal
-                                     */
-
-                                    val subTotalToPrint = padLine(
-                                        "Sub Total",
-                                        "$" + order?.subTotal?.let {
-                                            MethodUtils.roundOffAmountString(
-                                                it
-                                            )
-                                        },
-                                        if (customerSettingModel.fonts == Constants.LARGE) {
-                                            23
-                                        } else {
-                                            48
-                                        }
-                                    ).toString()
-
-                                    printLeft(subTotalToPrint)
-                                    lineBreak()
-
-                                    /**
-                                     * Print Tax Amount
-                                     */
-
-                                    if (order?.totalTaxAmount != null) {
-
-
-                                        val taxToPrint =
-                                            padLine(
-                                                "Tax",
-                                                "$" + MethodUtils.roundOffAmountString(order.totalTaxAmount),
-                                                if (customerSettingModel.fonts == Constants.LARGE) {
-                                                    23
-                                                } else {
-                                                    48
-                                                }
-                                            ).toString()
-
-
-                                        printLeft(taxToPrint)
-                                        lineBreak()
-                                    }
-
-                                    /**
-                                     * Print Serivce charge
-                                     */
-
-                                    if (serviceCharge != null && (order?.serviceChargeEnabled == true)) {
-
-                                        val serviceChargeToPrint =
-                                            padLine(
-                                                "Service Charge",
-                                                "$" + MethodUtils.roundOffAmountString(order?.totalServiceCharges),
-                                                if (customerSettingModel.fonts == Constants.LARGE) {
-                                                    23
-                                                } else {
-                                                    48
-                                                }
-                                            ).toString()
-
-                                        printLeft(serviceChargeToPrint)
-                                        lineBreak()
-                                    }
-
-                                    /**
-                                     * Print Tips
-                                     */
-
-                                    if (order?.totalTips != 0.0) {
-
-
-                                        val tipsToPrint =
-                                            padLine(
-                                                "Tips",
-                                                "$" + order?.totalTips?.let {
-                                                    MethodUtils.roundOffAmountString(
-                                                        it
-                                                    )
-                                                },
-                                                48
-                                            ).toString()
-
-                                        printLeft(tipsToPrint)
-                                        lineBreak()
-                                    }
-
-                                    /**
-                                     * Print cash discount or surcharge details
-                                     */
-
-                                    if (customerSettingModel.showCashDisSurCharg) {
-                                        if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
-                                                receiptModel?.order?.payments?.size!! - 1
-                                            )?.paymentType?.lowercase() == "Card".lowercase() && receiptModel?.order?.payments?.get(
-                                                receiptModel?.order?.payments?.size!! - 1
-                                            )?.cash_discount_type?.lowercase() == "SurCharge".lowercase()
-                                        ) {
-
-                                            if (receiptModel?.order?.totalCashDiscountFee != null) {
-
-
-                                                val str8 = padLine(
-                                                    Constants.SURCHARGE_TEXT,
-                                                    "$" + MethodUtils.roundOffAmountString(
-                                                        receiptModel?.order?.payments?.get(
-                                                            receiptModel?.order?.payments?.size?.minus(
-                                                                1
-                                                            ) ?: 0
-                                                        )?.cash_discount_or_surcharge ?: 0.0
-                                                    ),
-                                                    if (customerSettingModel.fonts == LARGE) 23 else 48
-                                                ).toString()
-
-                                                printLeft(str8)
+                                                printLeft(
+                                                    "Print Time : ${
+                                                        getCurrentTimeFromTimeZone(
+                                                            requireContext(),
+                                                            MethodUtils.formatted()
+                                                        )
+                                                    }"
+                                                )
 
                                             }
+                                        }
 
+                                        lineBreak()
+                                        printDashedLineAndBreak()
 
-                                        } else if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
-                                                receiptModel?.order?.payments?.size!! - 1
-                                            )?.cash_discount_type?.lowercase() == "CashDiscount".lowercase() && !receiptModel?.order?.payments?.get(
-                                                receiptModel?.order?.payments?.size?.minus(1)!!
-                                            )!!.paymentType.equals(
-                                                getString(R.string.external),
-                                                ignoreCase = true
+                                        receiptModel?.order?.orderItems?.let {
+                                            addOrderItemsInnerNewLandi(
+                                                it,
+                                                customerSettingModel.showModifiers,
+                                                customerSettingModel.fonts,
+                                                LPrint
                                             )
-                                        ) {
+                                        }
+                                        lineBreak()
 
-                                            if (receiptModel?.order?.totalCashDiscountFee != null) {
+                                        /**
+                                         * Print Discount
+                                         */
+                                        lineBreak()
 
-                                                val str8 = padLine(
-                                                    "Cash Discount",
-                                                    if (receiptModel?.order?.totalCashDiscountFee == 0.0) {
+                                        if (order?.totalDiscount != null) {
+
+                                            val discountToPrint =
+                                                padLine(
+                                                    "Total Discount",
+
+                                                    if (order?.totalDiscount == 0.0) {
+//                            "-$" + MethodUtils.roundOffAmountString(0.00)
+                                                        "$" + MethodUtils.roundOffAmountString(0.00)
+                                                    } else {
+                                                        order?.totalDiscount?.let {
+                                                            "-$" + MethodUtils.roundOffAmountString(
+                                                                it
+                                                            )
+                                                        }
+                                                    },
+                                                    48
+                                                ).toString()
+
+                                            printLeft(discountToPrint)
+                                            lineBreak()
+                                        }
+
+                                        /**
+                                         * Print Subtotal
+                                         */
+                                        Log.v("Check:: ", "6")
+
+                                        val subTotalToPrint = padLine(
+                                            "Sub Total",
+                                            "$" + order?.subTotal?.let {
+                                                MethodUtils.roundOffAmountString(
+                                                    it
+                                                )
+                                            },
+                                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                                23
+                                            } else {
+                                                48
+                                            }
+                                        ).toString()
+
+                                        printLeft(subTotalToPrint)
+                                        lineBreak()
+
+                                        /**
+                                         * Print Tax Amount
+                                         */
+
+                                        if (order?.totalTaxAmount != null) {
+
+
+                                            val taxToPrint =
+                                                padLine(
+                                                    "Tax",
+                                                    "$" + MethodUtils.roundOffAmountString(order.totalTaxAmount),
+                                                    if (customerSettingModel.fonts == Constants.LARGE) {
+                                                        23
+                                                    } else {
+                                                        48
+                                                    }
+                                                ).toString()
+
+
+                                            printLeft(taxToPrint)
+                                            lineBreak()
+                                        }
+
+                                        /**
+                                         * Print Serivce charge
+                                         */
+
+                                        if (serviceCharge != null && (order?.serviceChargeEnabled == true)) {
+
+                                            val serviceChargeToPrint =
+                                                padLine(
+                                                    "Service Charge",
+                                                    "$" + MethodUtils.roundOffAmountString(order?.totalServiceCharges),
+                                                    if (customerSettingModel.fonts == Constants.LARGE) {
+                                                        23
+                                                    } else {
+                                                        48
+                                                    }
+                                                ).toString()
+
+                                            printLeft(serviceChargeToPrint)
+                                            lineBreak()
+                                        }
+
+                                        /**
+                                         * Print Tips
+                                         */
+                                        Log.v("Check:: ", "7")
+
+                                        if (order?.totalTips != 0.0) {
+
+
+                                            val tipsToPrint =
+                                                padLine(
+                                                    "Tips",
+                                                    "$" + order?.totalTips?.let {
+                                                        MethodUtils.roundOffAmountString(
+                                                            it
+                                                        )
+                                                    },
+                                                    48
+                                                ).toString()
+
+                                            printLeft(tipsToPrint)
+                                            lineBreak()
+                                        }
+
+                                        /**
+                                         * Print cash discount or surcharge details
+                                         */
+
+                                        if (customerSettingModel.showCashDisSurCharg) {
+                                            if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
+                                                    receiptModel?.order?.payments?.size!! - 1
+                                                )?.paymentType?.lowercase() == "Card".lowercase() && receiptModel?.order?.payments?.get(
+                                                    receiptModel?.order?.payments?.size!! - 1
+                                                )?.cash_discount_type?.lowercase() == "SurCharge".lowercase()
+                                            ) {
+
+                                                if (receiptModel?.order?.totalCashDiscountFee != null) {
+
+
+                                                    val str8 = padLine(
+                                                        Constants.SURCHARGE_TEXT,
                                                         "$" + MethodUtils.roundOffAmountString(
                                                             receiptModel?.order?.payments?.get(
                                                                 receiptModel?.order?.payments?.size?.minus(
                                                                     1
                                                                 ) ?: 0
                                                             )?.cash_discount_or_surcharge ?: 0.0
-                                                        )
-                                                    } else {
-                                                        "-$" + MethodUtils.roundOffAmountString(
-                                                            receiptModel?.order?.payments?.get(
-                                                                receiptModel?.order?.payments?.size?.minus(
-                                                                    1
-                                                                ) ?: 0
-                                                            )?.cash_discount_or_surcharge ?: 0.0
-                                                        )
-                                                    },
+                                                        ),
+                                                        if (customerSettingModel.fonts == LARGE) 23 else 48
+                                                    ).toString()
+
+                                                    printLeft(str8)
+
+                                                }
+
+
+                                            } else if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
+                                                    receiptModel?.order?.payments?.size!! - 1
+                                                )?.cash_discount_type?.lowercase() == "CashDiscount".lowercase() && !receiptModel?.order?.payments?.get(
+                                                    receiptModel?.order?.payments?.size?.minus(1)!!
+                                                )!!.paymentType.equals(
+                                                    getString(R.string.external),
+                                                    ignoreCase = true
+                                                )
+                                            ) {
+
+                                                if (receiptModel?.order?.totalCashDiscountFee != null) {
+
+                                                    val str8 = padLine(
+                                                        "Cash Discount",
+                                                        if (receiptModel?.order?.totalCashDiscountFee == 0.0) {
+                                                            "$" + MethodUtils.roundOffAmountString(
+                                                                receiptModel?.order?.payments?.get(
+                                                                    receiptModel?.order?.payments?.size?.minus(
+                                                                        1
+                                                                    ) ?: 0
+                                                                )?.cash_discount_or_surcharge ?: 0.0
+                                                            )
+                                                        } else {
+                                                            "-$" + MethodUtils.roundOffAmountString(
+                                                                receiptModel?.order?.payments?.get(
+                                                                    receiptModel?.order?.payments?.size?.minus(
+                                                                        1
+                                                                    ) ?: 0
+                                                                )?.cash_discount_or_surcharge ?: 0.0
+                                                            )
+                                                        },
+                                                        if (customerSettingModel.fonts == LARGE) 23 else 48
+                                                    ).toString()
+
+                                                    printLeft(str8)
+
+                                                }
+                                            }
+                                            lineBreak()
+                                        }
+
+                                        /**
+                                         * Print used loyalty details
+                                         */
+                                        Log.v("Check:: ", "8")
+
+                                        if (receiptModel?.order?.payments?.isNotEmpty() == true) {
+                                            if (receiptModel?.order?.payments?.get(0)?.isLoyaltyApplied == true && receiptModel?.order?.payments!![0].loyaltyUSedPoints != 0) {
+                                                if (receiptModel?.order?.loyaltyAmount != 0.0) {
+
+
+                                                    val loyaltyAmt = padLine(
+                                                        "Used Loyalty Amount",
+                                                        "-$" + receiptModel?.order?.loyaltyAmount?.let {
+                                                            MethodUtils.roundOffAmountString(
+                                                                it
+                                                            )
+                                                        }, 48
+                                                    ).toString()
+
+                                                    printLeft(loyaltyAmt)
+
+                                                }
+
+
+                                                val loyaltyPnt = padLine(
+                                                    "Used Loyalty Points",
+                                                    receiptModel?.order?.payments!![0].loyaltyUSedPoints.toString(),
                                                     if (customerSettingModel.fonts == LARGE) 23 else 48
                                                 ).toString()
 
-                                                printLeft(str8)
+                                                printLeft(loyaltyPnt)
+                                                lineBreak()
 
                                             }
                                         }
+
                                         lineBreak()
-                                    }
 
-                                    /**
-                                     * Print used loyalty details
-                                     */
+                                        /**
+                                         * Print total amount
+                                         */
 
-                                    if (receiptModel?.order?.payments?.isNotEmpty() == true) {
-                                        if (receiptModel?.order?.payments?.get(0)?.isLoyaltyApplied == true && receiptModel?.order?.payments!![0].loyaltyUSedPoints != 0) {
-                                            if (receiptModel?.order?.loyaltyAmount != 0.0) {
-
-
-                                                val loyaltyAmt = padLine(
-                                                    "Used Loyalty Amount",
-                                                    "-$" + receiptModel?.order?.loyaltyAmount?.let {
-                                                        MethodUtils.roundOffAmountString(
-                                                            it
-                                                        )
-                                                    }, 48
-                                                ).toString()
-
-                                                printLeft(loyaltyAmt)
-
-                                            }
+                                        val calculateTotal = order?.let {
+                                            it.subTotal + it.totalServiceCharges + it.totalTaxAmount
+                                        }
+                                        val totalAmt =
+                                            MethodUtils.roundOffAmountDouble(calculateTotal)
 
 
-                                            val loyaltyPnt = padLine(
-                                                "Used Loyalty Points",
-                                                receiptModel?.order?.payments!![0].loyaltyUSedPoints.toString(),
-                                                if (customerSettingModel.fonts == LARGE) 23 else 48
+                                        val totalAmountToPrint =
+                                            padLine(
+                                                "Total Price",
+                                                "$" + MethodUtils.roundOffAmountString(totalAmt),
+                                                48
                                             ).toString()
 
-                                            printLeft(loyaltyPnt)
-                                            lineBreak()
+                                        printBoldLeft(totalAmountToPrint)
 
+                                        /**
+                                         * Print paid amount
+                                         */
+
+
+                                        val newPaidAmount = if (isCustomCash) {
+                                            paidAmount
+                                        } else {
+                                            paidAmount + tipAmount
                                         }
-                                    }
 
-                                    lineBreak()
-
-                                    /**
-                                     * Print total amount
-                                     */
-
-                                    val calculateTotal = order?.let {
-                                        it.subTotal + it.totalServiceCharges + it.totalTaxAmount
-                                    }
-                                    val totalAmt =
-                                        MethodUtils.roundOffAmountDouble(calculateTotal)
-
-
-                                    val totalAmountToPrint =
-                                        padLine(
-                                            "Total Price",
-                                            "$" + MethodUtils.roundOffAmountString(totalAmt),
-                                            48
+                                        val paidAmt = padLine(
+                                            "Paid Amount",
+                                            "$" + MethodUtils.roundOffAmountString(
+                                                newPaidAmount
+                                            ), 48
                                         ).toString()
 
-                                    printBoldLeft(totalAmountToPrint)
+                                        printBoldLeft(paidAmt)
+                                        lineBreak()
 
-                                    /**
-                                     * Print paid amount
-                                     */
+                                        /**
+                                         * Print cash and card bifurcation
+                                         */
 
-
-                                    val newPaidAmount = if (isCustomCash) {
-                                        paidAmount
-                                    } else {
-                                        paidAmount + tipAmount
-                                    }
-
-                                    val paidAmt = padLine(
-                                        "Paid Amount",
-                                        "$" + MethodUtils.roundOffAmountString(
-                                            newPaidAmount
-                                        ), 48
-                                    ).toString()
-
-                                    printBoldLeft(paidAmt)
-                                    lineBreak()
-
-                                    /**
-                                     * Print cash and card bifurcation
-                                     */
-
-                                    /*if (prefProvider.getValue(
+                                        /*if (prefProvider.getValue(
                                             Constants.OPTION_TYPE,
                                             "CashDiscount"
                                         ) == "CashDiscount"
@@ -9737,103 +9825,105 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                     lineBreak()*/
 
-                                    /**
-                                     * Print change amount
-                                     */
+                                        /**
+                                         * Print change amount
+                                         */
 
-                                    val changeAmt = padLine(
-                                        "Change Amount",
-                                        "$" + MethodUtils.roundOffAmountString(changeAmtGlobal),
-                                        if (customerSettingModel.fonts == LARGE) 23 else 48
-                                    ).toString()
-
-                                    printBoldLeft(changeAmt)
-                                    lineBreak()
-
-                                    /**
-                                     * Print remaining amount
-                                     */
-                                    if (isSpilt) {
-                                        lineBreak()
-
-                                        val remainAmt = padLine(
-                                            "Remaining Amount",
-                                            "$" + MethodUtils.roundOffAmountString(remainingAmount),
+                                        val changeAmt = padLine(
+                                            "Change Amount",
+                                            "$" + MethodUtils.roundOffAmountString(changeAmtGlobal),
                                             if (customerSettingModel.fonts == LARGE) 23 else 48
                                         ).toString()
 
-                                        printBoldLeft(remainAmt)
-                                        lineBreak()
-                                    }
-
-                                    /**
-                                     * Tip line
-                                     */
-
-                                    if (receiptModel?.order?.totalTips == 0.0) {
+                                        printBoldLeft(changeAmt)
                                         lineBreak()
 
-                                        if (customerSettingModel.showTipLineForCash) {
-                                            printLeft("Tips                              _____________")
+                                        /**
+                                         * Print remaining amount
+                                         */
+                                        if (isSpilt) {
                                             lineBreak()
-                                            printLeft("Total                             _____________")
 
-                                        }
-                                        lineBreak()
-                                    }
+                                            val remainAmt = padLine(
+                                                "Remaining Amount",
+                                                "$" + MethodUtils.roundOffAmountString(
+                                                    remainingAmount
+                                                ),
+                                                if (customerSettingModel.fonts == LARGE) 23 else 48
+                                            ).toString()
 
-                                    /**
-                                     * Tips suggestion
-                                     */
-
-
-                                    if (customerSettingModel.showTipSuggestion) {
-                                        lineBreak()
-                                        printBoldLeft("Additional Tips")
-                                        lineBreak()
-
-                                        printDashedLineAndBreak()
-
-
-                                        if (tipsList.isNotEmpty()) {
-                                            val tipsToPrint = addTipsListInnerLandi(
-                                                tipsList,
-                                                totalAmt,
-                                                customerSettingModel.fonts
-                                            )
-
-                                            printLeft(tipsToPrint)
+                                            printBoldLeft(remainAmt)
                                             lineBreak()
                                         }
 
-                                    }
+                                        /**
+                                         * Tip line
+                                         */
 
-                                    /**
-                                     * Print transaction details
-                                     */
-                                    if (receiptModel?.order?.payments?.isNotEmpty() == true) {
+                                        if (receiptModel?.order?.totalTips == 0.0) {
+                                            lineBreak()
 
-                                        val str10 = padLine(
-                                            "Transaction ID",
-                                            "" + receiptModel?.order?.payments?.size?.minus(1)
-                                                ?.let { receiptModel?.order?.payments?.get(it)?.id },
-                                            48
-                                        ).toString()
-                                        printLeft(str10)
-                                        lineBreak()
+                                            if (customerSettingModel.showTipLineForCash) {
+                                                printLeft("Tips                              _____________")
+                                                lineBreak()
+                                                printLeft("Total                             _____________")
 
-                                        val str11 = padLine(
-                                            "Transaction Type",
-                                            receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType,
-                                            48
-                                        ).toString()
-                                        printLeft(str11)
-                                        lineBreak()
-                                    }
+                                            }
+                                            lineBreak()
+                                        }
 
-                                    if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType?.lowercase() == "Card".lowercase()) {
+                                        /**
+                                         * Tips suggestion
+                                         */
 
-                                        /*PrintSunmiUtils.normalText(
+
+                                        if (customerSettingModel.showTipSuggestion) {
+                                            lineBreak()
+                                            printBoldLeft("Additional Tips")
+                                            lineBreak()
+
+                                            printDashedLineAndBreak()
+
+
+                                            if (tipsList.isNotEmpty()) {
+                                                val tipsToPrint = addTipsListInnerLandi(
+                                                    tipsList,
+                                                    totalAmt,
+                                                    customerSettingModel.fonts
+                                                )
+
+                                                printLeft(tipsToPrint)
+                                                lineBreak()
+                                            }
+
+                                        }
+
+                                        /**
+                                         * Print transaction details
+                                         */
+                                        if (receiptModel?.order?.payments?.isNotEmpty() == true) {
+
+                                            val str10 = padLine(
+                                                "Transaction ID",
+                                                "" + receiptModel?.order?.payments?.size?.minus(1)
+                                                    ?.let { receiptModel?.order?.payments?.get(it)?.id },
+                                                48
+                                            ).toString()
+                                            printLeft(str10)
+                                            lineBreak()
+
+                                            val str11 = padLine(
+                                                "Transaction Type",
+                                                receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType,
+                                                48
+                                            ).toString()
+                                            printLeft(str11)
+                                            lineBreak()
+                                        }
+
+                                        if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType?.lowercase() == "Card".lowercase()) {
+
+                                            /*PrintSunmiUtils.normalText(
                             padLine(
                                 "",
                                 receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName,
@@ -9841,142 +9931,147 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             ).toString()
                         )*/
 
-                                        var strCardType =
-                                            receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType
+                                            var strCardType =
+                                                receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType
 
-                                        if (paymentViewModel.extData != null && !paymentViewModel.extData.isNullOrEmpty()) {
+                                            if (paymentViewModel.extData != null && !paymentViewModel.extData.isNullOrEmpty()) {
 
-                                            var applabStartIndex =
-                                                paymentViewModel.extData.indexOf("<APPLAB>")
-                                            var applabEndIndex =
-                                                paymentViewModel.extData.indexOf("</APPLAB>")
-                                            strCardType =
-                                                paymentViewModel.extData.substring(
-                                                    applabStartIndex + "<APPLAB>".length,
-                                                    applabEndIndex
-                                                )
-                                        }
-
-                                        printLeft(
-                                            padLine(
-                                                "",
-                                                strCardType,
-                                                48
-                                            ).toString()
-                                        )
-                                        lineBreak()
-
-                                        printLeft(
-                                            padLine(
-                                                "",
-                                                receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber,
-                                                48
-                                            ).toString()
-                                        )
-
-                                    }
-                                    lineBreak()
-
-                                    /**
-                                     * Print Customer details
-                                     */
-                                    if (customerSettingModel.showCustomerAddress or customerSettingModel.showCustomerPhone or customerSettingModel.showCustomerName) {
-
-
-                                        if (order?.customer != null) {
-
-                                            PrintSunmiUtils.customerDetailsInnerLandi(false,LPrint)
-
-                                            if (customerSettingModel.showCustomerName) {
-
-                                                printLeft(order?.customer.firstName + " " + order?.customer.lastName)
-                                                lineBreak()
-                                            }
-
-                                            if (customerSettingModel.showCustomerPhone) {
-                                                if (order?.customer?.phones?.isNotEmpty()) {
-
-                                                    val phoneNoFormatted = MethodUtils.getUSFormatNumber(
-                                                        order.customer.phones.get(
-                                                            order.customer.phones.size - 1
-                                                        ).phoneNumber
+                                                var applabStartIndex =
+                                                    paymentViewModel.extData.indexOf("<APPLAB>")
+                                                var applabEndIndex =
+                                                    paymentViewModel.extData.indexOf("</APPLAB>")
+                                                strCardType =
+                                                    paymentViewModel.extData.substring(
+                                                        applabStartIndex + "<APPLAB>".length,
+                                                        applabEndIndex
                                                     )
-                                                    printLeft(phoneNoFormatted)
-                                                    lineBreak()
-
-                                                }
-
-
                                             }
 
-                                            if (customerSettingModel.showCustomerAddress) {
-                                                if (order?.customer?.addresses?.isNotEmpty() == true) {
+                                            printLeft(
+                                                padLine(
+                                                    "",
+                                                    strCardType,
+                                                    48
+                                                ).toString()
+                                            )
+                                            lineBreak()
 
-
-                                                    order.customer.addresses.filter { it.typeOfAddress == SHIPPING_ADDRESS }
-                                                        .forEach {
-
-                                                            if (it.typeOfAddress.equals(
-                                                                    SHIPPING_ADDRESS,
-                                                                    ignoreCase = true
-                                                                )
-                                                            ) {
-                                                                printLeft(
-                                                                    it.fullAddress
-                                                                )
-                                                                lineBreak()
-                                                            }
-                                                        }
-                                                }
-                                            }
+                                            printLeft(
+                                                padLine(
+                                                    "",
+                                                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber,
+                                                    48
+                                                ).toString()
+                                            )
 
                                         }
                                         lineBreak()
-                                    }
+
+                                        /**
+                                         * Print Customer details
+                                         */
+                                        if (customerSettingModel.showCustomerAddress or customerSettingModel.showCustomerPhone or customerSettingModel.showCustomerName) {
 
 
-                                    lineBreak()
+                                            if (order?.customer != null) {
 
-                                    /**
-                                     * Print order note
-                                     */
-                                    if (order?.note != null && order?.note != "" && customerSettingModel.showOrderNote) {
-                                        //  lineBreak()
+                                                PrintSunmiUtils.customerDetailsInnerLandi(
+                                                    false,
+                                                    LPrint
+                                                )
 
-                                        printCenter(
-                                            "Order Note\n${order.note}",
-                                            printOnNewLine = true
-                                        )
+                                                if (customerSettingModel.showCustomerName) {
+
+                                                    printLeft(order?.customer.firstName + " " + order?.customer.lastName)
+                                                    lineBreak()
+                                                }
+
+                                                if (customerSettingModel.showCustomerPhone) {
+                                                    if (order?.customer?.phones?.isNotEmpty()) {
+
+                                                        val phoneNoFormatted =
+                                                            MethodUtils.getUSFormatNumber(
+                                                                order.customer.phones.get(
+                                                                    order.customer.phones.size - 1
+                                                                ).phoneNumber
+                                                            )
+                                                        printLeft(phoneNoFormatted)
+                                                        lineBreak()
+
+                                                    }
+
+
+                                                }
+
+                                                if (customerSettingModel.showCustomerAddress) {
+                                                    if (order?.customer?.addresses?.isNotEmpty() == true) {
+
+
+                                                        order.customer.addresses.filter { it.typeOfAddress == SHIPPING_ADDRESS }
+                                                            .forEach {
+
+                                                                if (it.typeOfAddress.equals(
+                                                                        SHIPPING_ADDRESS,
+                                                                        ignoreCase = true
+                                                                    )
+                                                                ) {
+                                                                    printLeft(
+                                                                        it.fullAddress
+                                                                    )
+                                                                    lineBreak()
+                                                                }
+                                                            }
+                                                    }
+                                                }
+
+                                            }
+                                            lineBreak()
+                                        }
+
+
                                         lineBreak()
+
+                                        /**
+                                         * Print order note
+                                         */
+                                        if (order?.note != null && order?.note != "" && customerSettingModel.showOrderNote) {
+                                            //  lineBreak()
+
+                                            printCenter(
+                                                "Order Note\n${order.note}",
+                                                printOnNewLine = true
+                                            )
+                                            lineBreak()
 //                                        printCenter()
+                                            lineBreak()
+                                        }
+
+                                        /**
+                                         * Customer Signature
+                                         */
+
+                                        if (customerSettingModel.fonts == Constants.LARGE) {
+                                            printBoldLeft("Customer Signature ____")
+                                        } else {
+                                            printBoldLeft("Customer Signature           __________________")
+                                        }
+
                                         lineBreak()
-                                    }
+                                        lineBreak()
 
-                                    /**
-                                     * Customer Signature
-                                     */
+                                        Log.v("Check:: ", "9")
 
-                                    if (customerSettingModel.fonts == Constants.LARGE) {
-                                        printBoldLeft("Customer Signature ____")
-                                    } else {
-                                        printBoldLeft("Customer Signature           __________________")
-                                    }
-
-                                    lineBreak()
-                                    lineBreak()
-
-
-                                    /**
-                                     * Print QR
-                                     */
-                                    if (customerSettingModel.showQrCode) {
-                                        LPrint.printQRCode(
-                                            outputStream,
-                                            order?.digital_receipt_url.toString(),
-                                            LPrint.CENTER_ALIGN
-                                        )
-                                    }
-                                    /*  PrintSunmiUtils.printBusinessDetailsInner(
+                                        /**
+                                         * Print QR
+                                         */
+                                        if (customerSettingModel.showQrCode) {
+                                            LPrint.printQRCode(
+                                                outputStream,
+                                                order?.digital_receipt_url.toString(),
+                                                LPrint.CENTER_ALIGN
+                                            )
+                                        }
+                                        /*  PrintSunmiUtils.printBusinessDetailsInner(
                                   prefProvider.getValue(BUSINESS_NAME, ""),
                                   if (customerSettingModel.showVenueAddress) {
                                       prefProvider.getValue(BUSINESS_ADDRESS, "")
@@ -10919,102 +11014,112 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //                                LPrint.disconnectLandiPrinter()
 
 
-                                    pd?.dismiss()
+                                        pd?.dismiss()
 
-                                } catch (e: Exception) {
-                                    pd?.dismiss()
+                                    } catch (e: Exception) {
+                                        Log.v("Check:: ", "10")
+                                        Log.v("Check:: ", Gson().toJson(e.printStackTrace()))
 
-                                    EventBus.getDefault()
-                                        .post(
-                                            MessageEvent(
-                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _sunmiPrintInner(isAutoPrint: Boolean) _ catch (e: Exception) -> ${
-                                                    Gson().toJson(
-                                                        e.printStackTrace()
-                                                    )
-                                                }"
-                                            )
-                                        )
+                                        pd?.dismiss()
 
-                                    e.printStackTrace()
-                                }
-                                lineBreak()
-                                paperCut()
-                                launch {
-                                    disconnectLandiPrinter()
-                                }
-                                launch {
-                                    if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType.equals(
-                                            "Cash",
-                                            true
-                                        )
-                                    ) {
-
-
-                                        if (woyouService != null) {
-                                            try {
-                                                woyouService!!.sendRAWData(
-                                                    byteArrayOf(0x1B, 0x45, 0x01),
-                                                    this@OrderCompleteFragment
-                                                )
-                                            } catch (e: Exception) {
-                                                e.printStackTrace()
-                                            }
-                                        } else {
-                                            val aa = ByteArray(5)
-
-                                            aa[0] = 0x10
-                                            aa[1] = 0x14
-                                            aa[2] = 0x00
-                                            aa[3] = 0x00
-                                            aa[4] = 0x00
-
-
-                                            try {
-                                                SunmiPrinterApi.getInstance().sendRawData(aa)
-                                            } catch (e: java.lang.Exception) {
-                                                EventBus.getDefault()
-                                                    .post(
-                                                        MessageEvent(
-                                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _sunmiPrintInner(isAutoPrint: Boolean) _ catch (e: Exception)_2 -> ${
-                                                                Gson().toJson(
-                                                                    e.printStackTrace()
-                                                                )
-                                                            }"
+                                        EventBus.getDefault()
+                                            .post(
+                                                MessageEvent(
+                                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _sunmiPrintInner(isAutoPrint: Boolean) _ catch (e: Exception) -> ${
+                                                        Gson().toJson(
+                                                            e.printStackTrace()
                                                         )
-                                                    )
-                                                e.printStackTrace()
+                                                    }"
+                                                )
+                                            )
 
-                                            }
-                                            try {
-                                               /* if (isAutoPrint) {
+                                        e.printStackTrace()
+                                    }
+                                    lineBreak()
+                                    paperCut()
+                                    Log.v("Check:: ", "11")
+                                    printingCustomer = false
+                                    launch {
+                                        disconnectLandiPrinter()
+                                    }
+                                    launch {
+                                        Log.v("Check:: ", "12")
+
+                                        if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType.equals(
+                                                "Cash",
+                                                true
+                                            )
+                                        ) {
+
+
+                                            if (woyouService != null) {
+                                                try {
+                                                    woyouService!!.sendRAWData(
+                                                        byteArrayOf(0x1B, 0x45, 0x01),
+                                                        this@OrderCompleteFragment
+                                                    )
+                                                } catch (e: Exception) {
+                                                    e.printStackTrace()
+                                                }
+                                            } else {
+                                                val aa = ByteArray(5)
+
+                                                aa[0] = 0x10
+                                                aa[1] = 0x14
+                                                aa[2] = 0x00
+                                                aa[3] = 0x00
+                                                aa[4] = 0x00
+
+
+                                                try {
+                                                    SunmiPrinterApi.getInstance().sendRawData(aa)
+                                                } catch (e: java.lang.Exception) {
+                                                    EventBus.getDefault()
+                                                        .post(
+                                                            MessageEvent(
+                                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _sunmiPrintInner(isAutoPrint: Boolean) _ catch (e: Exception)_2 -> ${
+                                                                    Gson().toJson(
+                                                                        e.printStackTrace()
+                                                                    )
+                                                                }"
+                                                            )
+                                                        )
+                                                    e.printStackTrace()
+
+                                                }
+                                                try {
+                                                    /* if (isAutoPrint) {
                                                     SunmiPrintHelper.getInstance().openCashBox()
                                                 }*/
-                                            } catch (e: java.lang.Exception) {
-                                                EventBus.getDefault()
-                                                    .post(
-                                                        MessageEvent(
-                                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _sunmiPrintInner(isAutoPrint: Boolean) _ catch (e: Exception)_3 -> ${
-                                                                Gson().toJson(
-                                                                    e.printStackTrace()
-                                                                )
-                                                            }"
+                                                } catch (e: java.lang.Exception) {
+                                                    Log.v("Check:: ", "13")
+                                                    EventBus.getDefault()
+                                                        .post(
+                                                            MessageEvent(
+                                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _sunmiPrintInner(isAutoPrint: Boolean) _ catch (e: Exception)_3 -> ${
+                                                                    Gson().toJson(
+                                                                        e.printStackTrace()
+                                                                    )
+                                                                }"
+                                                            )
                                                         )
-                                                    )
-                                                e.printStackTrace()
+                                                    e.printStackTrace()
+
+                                                }
+
 
                                             }
-
-
                                         }
                                     }
                                 }
                             }
-                        }
+
+
+                    }
                 }
-            }
-        })
+            })
 
-
+        }
     }
 
 
@@ -13651,11 +13756,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                         )
                                                                 )
 
-                                                                var phone=""
+                                                                var phone = ""
                                                                 receiptModel?.order?.customer?.phones?.let {
                                                                     it.forEach {
-                                                                    if (it.phoneNumber.isNotEmpty())
-                                                                        phone=it.phoneNumber
+                                                                        if (it.phoneNumber.isNotEmpty())
+                                                                            phone = it.phoneNumber
                                                                         return@let
                                                                     }
                                                                 }
@@ -13953,7 +14058,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             }
 
-        } else if (data.name.contains(LANDI_INNER_PRINTER, true)){
+        } else if (data.name.contains(LANDI_INNER_PRINTER, true)) {
             printKitchenFromLandiInner(data)
         } else {
 
@@ -14099,99 +14204,110 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters
     ) {
 //        val printer = com.dantsu.escposprinter.EscPosPrinter(BluetoothPrintersConnections.selectFirstPaired(), 203, 48f, 32)
+if (!printingKitchen) {
+    printingKitchen = true
 
-        this.checkBluetoothPermissions(object : OnBluetoothPermissionGranted {
-            override fun onPermissionsGranted() {
-                GlobalScope.launch {
-                    LPrint.connectLandiInnerPrinter(kitchenReceiptPrinters.macAddress)
-                        ?.let { outputStream ->
+    this.checkBluetoothPermissions(object : OnBluetoothPermissionGranted {
+        override fun onPermissionsGranted() {
+            GlobalScope.launch {
+                LPrint.connectLandiInnerPrinter(kitchenReceiptPrinters.macAddress)
+                    ?.let { outputStream ->
 
-                            LPrint.apply {
-                                setOutputStream(outputStream)
-                                try {
-                                    // PrintSunmiUtils.fontSizeInner(LARGE)
+                        LPrint.apply {
+                            setOutputStream(outputStream)
+                            try {
+                                // PrintSunmiUtils.fontSizeInner(LARGE)
 //                                    SunmiPrintHelper.getInstance().initPrinter()
-                                    /*Added By Rahul */
-                                    try {
-                                        if (isOrderUpdated == true || cartList!!.isEdited == true) {
-                                            printCenter(
-                                                "***** UPDATED *****",
-                                                isBold = true,
-                                                fontSize = FONT_SIZE_5X
-                                            )
+                                /*Added By Rahul */
+                                try {
+                                    if (isOrderUpdated == true || cartList!!.isEdited == true) {
+                                        printCenter(
+                                            "***** UPDATED *****",
+                                            isBold = true,
+                                            fontSize = FONT_SIZE_5X
+                                        )
 //                                            PrintSunmiUtils.headerText("***** UPDATED *****")
-                                        }
-                                    } catch (e: java.lang.NullPointerException) {
-
                                     }
+                                } catch (e: java.lang.NullPointerException) {
 
-                                    lineBreak()
-                                    lineBreak()
+                                }
 
-                                    try {
+                                lineBreak()
+                                lineBreak()
 
-                                        if (prefProvider.getValueboolean(
-                                                ORDER_NUMBER_STARTING_FROM_ONE,
-                                                false
-                                            )
-                                        ) {
-                                            printCenter(
-                                                "OrderID:" + receiptModel?.order?.custom_order_id,
-                                                isBold = true,
-                                                fontSize = FONT_SIZE_5X
-                                            )
-                                        } else {
-                                            printCenter(
-                                                "OrderID:" + receiptModel?.order?.id, isBold = true,
-                                                fontSize = FONT_SIZE_5X
-                                            )
-                                        }
-                                        lineBreak()
-                                    } catch (e: Exception) {
-                                    }
+                                try {
 
-                                    lineBreak()
-
-                                    if (kitchenSettingModel.showOrderType) {
-                                        printCenter(receiptModel?.order?.orderTypeName.toString(), isBold = true,
-                                            fontSize = FONT_SIZE_5X)
-                                    }
-                                    lineBreak()
-
-                                    if (receiptModel?.order?.orderType.equals(
-                                            "Online Order",
-                                            true
-                                        ) ||
-                                        receiptModel?.order?.orderType.equals(
-                                            "OnlineWebOrder",
-                                            true
-                                        ) ||
-                                        receiptModel?.order?.orderType.equals(PHONE_ORDER, true)
+                                    if (prefProvider.getValueboolean(
+                                            ORDER_NUMBER_STARTING_FROM_ONE,
+                                            false
+                                        )
                                     ) {
-                                        printCenter(receiptModel?.order?.deliveryType.toString(),isBold = true,
-                                            fontSize = FONT_SIZE_5X)
-                                        lineBreak()
+                                        printCenter(
+                                            "OrderID:" + receiptModel?.order?.custom_order_id,
+                                            isBold = true,
+                                            fontSize = FONT_SIZE_5X
+                                        )
+                                    } else {
+                                        printCenter(
+                                            "OrderID:" + receiptModel?.order?.id, isBold = true,
+                                            fontSize = FONT_SIZE_5X
+                                        )
                                     }
                                     lineBreak()
+                                } catch (e: Exception) {
+                                }
 
-                                    if (kitchenSettingModel.showTeamMember) {
-                                        printLeft("Employee:" + receiptModel?.order?.employee?.name,isBold = true,
-                                            fontSize = FONT_SIZE_5X)
-                                    }
-                                    lineBreak()
+                                lineBreak()
 
-                                    printLeft(
-                                        getReceiptFormatDateFromUTCServer(
-                                            requireContext(),
-                                            receiptModel?.order?.createdAt.toString()
-                                        ),
+                                if (kitchenSettingModel.showOrderType) {
+                                    printCenter(
+                                        receiptModel?.order?.orderTypeName.toString(),
+                                        isBold = true,
+                                        fontSize = FONT_SIZE_5X
+                                    )
+                                }
+                                lineBreak()
+
+                                if (receiptModel?.order?.orderType.equals(
+                                        "Online Order",
+                                        true
+                                    ) ||
+                                    receiptModel?.order?.orderType.equals(
+                                        "OnlineWebOrder",
+                                        true
+                                    ) ||
+                                    receiptModel?.order?.orderType.equals(PHONE_ORDER, true)
+                                ) {
+                                    printCenter(
+                                        receiptModel?.order?.deliveryType.toString(),
                                         isBold = true,
                                         fontSize = FONT_SIZE_5X
                                     )
                                     lineBreak()
+                                }
+                                lineBreak()
 
-                                    printDashedLineAndBreak()
-                                    lineBreak()
+                                if (kitchenSettingModel.showTeamMember) {
+                                    printLeft(
+                                        "Employee:" + receiptModel?.order?.employee?.name,
+                                        isBold = true,
+                                        fontSize = FONT_SIZE_5X
+                                    )
+                                }
+                                lineBreak()
+
+                                printLeft(
+                                    getReceiptFormatDateFromUTCServer(
+                                        requireContext(),
+                                        receiptModel?.order?.createdAt.toString()
+                                    ),
+                                    isBold = true,
+                                    fontSize = FONT_SIZE_5X
+                                )
+                                lineBreak()
+
+                                printDashedLineAndBreak()
+                                lineBreak()
 
 //                                    if (sunmiFrameworkVersion?.get(0)
 //                                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
@@ -14213,41 +14329,47 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //                                    }
 
 
-                                    receiptModel?.order?.orderItems?.let {
+                                receiptModel?.order?.orderItems?.let {
 
-                                        addOrdersForKitchenLandiInner(
-                                            it,
-                                            kitchenReceiptPrinters.printerCategories.toCollection(
-                                                arrayListOf()
-                                            ),
-                                            lprint = LPrint
+                                    addOrdersForKitchenLandiInner(
+                                        it,
+                                        kitchenReceiptPrinters.printerCategories.toCollection(
+                                            arrayListOf()
+                                        ),
+                                        lprint = LPrint
+                                    )
+                                }
+
+
+                                if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+
+                                    lineBreak()
+                                    printCenter(
+                                        "Order Note", isBold = true,
+                                        fontSize = FONT_SIZE_5X
+                                    )
+                                    lineBreak()
+                                    printCenter(
+                                        receiptModel?.order?.note.toString(), isBold = false,
+                                        fontSize = FONT_SIZE_5X
+                                    )
+                                    lineBreak()
+                                }
+
+
+
+                                if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
+                                    if (receiptModel?.order?.customer != null) {
+
+                                        lineBreak()
+                                        printLeft(
+                                            "Customer Details", isBold = true,
+                                            fontSize = FONT_SIZE_5X
                                         )
-                                    }
-
-
-                                    if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
-
                                         lineBreak()
-                                        printCenter("Order Note",isBold = true,
-                                            fontSize = FONT_SIZE_5X)
-                                        lineBreak()
-                                        printCenter(receiptModel?.order?.note.toString(),isBold = false,
-                                            fontSize = FONT_SIZE_5X)
-                                        lineBreak()
-                                    }
+                                        printDashedLineAndBreak()
 
-
-
-                                    if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
-                                        if (receiptModel?.order?.customer != null) {
-
-                                            lineBreak()
-                                            printLeft("Customer Details", isBold = true,
-                                                fontSize = FONT_SIZE_5X)
-                                            lineBreak()
-                                            printDashedLineAndBreak()
-
-                                            /*PrintSunmiUtils.customerDetailsInner(
+                                        /*PrintSunmiUtils.customerDetailsInner(
                                                 true,
                                                 sunmiFrameworkVersion
                                             )
@@ -14260,47 +14382,50 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             } else {
                                                 PrintSunmiUtils.addHorizontalInner()
                                             }*/
-                                            try {
-                                                if (kitchenSettingModel.showCustomerName) {
-                                                    printLeft(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName,isBold = false,
-                                                        fontSize = FONT_SIZE_5X)
-                                                }
-                                            } catch (e: Exception) {
+                                        try {
+                                            if (kitchenSettingModel.showCustomerName) {
+                                                printLeft(
+                                                    receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName,
+                                                    isBold = false,
+                                                    fontSize = FONT_SIZE_5X
+                                                )
                                             }
+                                        } catch (e: Exception) {
+                                        }
 
-                                            lineBreak()
+                                        lineBreak()
 
-                                            try {
-                                                if (kitchenSettingModel.showCustomerPhone) {
+                                        try {
+                                            if (kitchenSettingModel.showCustomerPhone) {
 
-                                                    if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
+                                                if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
 
-                                                        receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
-                                                            printLeft(
-                                                                MethodUtils.formatPhoneNumber(it),
-                                                                isBold = false,
-                                                                fontSize = FONT_SIZE_5X
-                                                            )
-                                                        }
+                                                    receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
+                                                        printLeft(
+                                                            MethodUtils.formatPhoneNumber(it),
+                                                            isBold = false,
+                                                            fontSize = FONT_SIZE_5X
+                                                        )
                                                     }
-
                                                 }
-                                            } catch (e: Exception) {
+
                                             }
+                                        } catch (e: Exception) {
+                                        }
 
-                                            if (kitchenSettingModel.showCustomerAddress) {
-                                                if (receiptModel?.order?.orderType?.trim()
-                                                        .toString()
-                                                        .lowercase() == "Open Order".trim()
-                                                        .toString().lowercase()
-                                                    && receiptModel?.order?.deliveryType?.trim()
-                                                        .toString()
-                                                        .lowercase() == "Pickup".trim().lowercase()
-                                                ) {
+                                        if (kitchenSettingModel.showCustomerAddress) {
+                                            if (receiptModel?.order?.orderType?.trim()
+                                                    .toString()
+                                                    .lowercase() == "Open Order".trim()
+                                                    .toString().lowercase()
+                                                && receiptModel?.order?.deliveryType?.trim()
+                                                    .toString()
+                                                    .lowercase() == "Pickup".trim().lowercase()
+                                            ) {
 
-                                                } else {
-                                                    try {
-                                                        if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
+                                            } else {
+                                                try {
+                                                    if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
 
 
 //                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
@@ -14309,47 +14434,50 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //                                    )
 //                                }
 
-                                                            receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
-                                                                ?.forEach {
+                                                        receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
+                                                            ?.forEach {
 
-                                                                    if (it.typeOfAddress.equals(
-                                                                            BILLING_ADDRESS,
-                                                                            ignoreCase = true
-                                                                        )
-                                                                    ) {
-                                                                        printLeft(
-                                                                            it.fullAddress
-                                                                        )
-                                                                    }
+                                                                if (it.typeOfAddress.equals(
+                                                                        BILLING_ADDRESS,
+                                                                        ignoreCase = true
+                                                                    )
+                                                                ) {
+                                                                    printLeft(
+                                                                        it.fullAddress
+                                                                    )
                                                                 }
-                                                        }
-                                                    } catch (e: Exception) {
+                                                            }
                                                     }
+                                                } catch (e: Exception) {
                                                 }
                                             }
-
                                         }
-                                    }
 
-                                    lineBreak()
-                                    lineBreak()
-                                    paperCut()
-                                    disconnectLandiPrinter()
+                                    }
+                                }
+
+                                lineBreak()
+                                lineBreak()
+                                paperCut()
+                                disconnectLandiPrinter()
 
 //                                    SunmiPrintHelper.getInstance().lineWrap(1)
 //                                    PrintSunmiUtils.cutPaperInner()
 
-                                    //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
+                                //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
+                                printingKitchen = false
 
-                                } catch (e: Exception) {
-                                    // printerDialog.dismiss()
-                                    e.printStackTrace()
-                                }
+                            } catch (e: Exception) {
+                                // printerDialog.dismiss()
+                                printingKitchen = false
+                                e.printStackTrace()
                             }
                         }
-                }
+                    }
             }
-        })
+        }
+    })
+}
     }
 
 
@@ -15746,134 +15874,139 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String
     ) {
-        try {
-            // PrintSunmiUtils.fontSizeInner(LARGE)
-            SunmiPrintHelper.getInstance().initPrinter()
-            /*Added By Rahul */
+        if (!printingKitchen) {
+            printingKitchen = true
             try {
-                if (isOrderUpdated == true || cartList!!.isEdited == true) {
-                    PrintSunmiUtils.headerText("***** UPDATED *****")
+                // PrintSunmiUtils.fontSizeInner(LARGE)
+                SunmiPrintHelper.getInstance().initPrinter()
+                /*Added By Rahul */
+                try {
+                    if (isOrderUpdated == true || cartList!!.isEdited == true) {
+                        PrintSunmiUtils.headerText("***** UPDATED *****")
+                    }
+                } catch (e: java.lang.NullPointerException) {
+
                 }
-            } catch (e: java.lang.NullPointerException) {
 
-            }
+                try {
+                    SunmiPrintHelper.getInstance().lineWrap(4)
+                    if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                        PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.custom_order_id)
+                    } else {
+                        PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
+                    }
+                } catch (e: Exception) {
+                }
 
-            try {
-                SunmiPrintHelper.getInstance().lineWrap(4)
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
-                    PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.custom_order_id)
+                SunmiPrintHelper.getInstance().lineWrap(1)
+
+                if (kitchenSettingModel.showOrderType) {
+                    PrintSunmiUtils.headerText(receiptModel?.order?.orderTypeName.toString())
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+                }
+
+                if (receiptModel?.order?.orderType.equals("Online Order", true) ||
+                    receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                    receiptModel?.order?.orderType.equals(PHONE_ORDER, true)
+                ) {
+                    PrintSunmiUtils.headerText(receiptModel?.order?.deliveryType.toString())
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+                }
+
+                if (kitchenSettingModel.showTeamMember) {
+                    PrintSunmiUtils.normalTextLarge("Employee:" + receiptModel?.order?.employee?.name)
+                }
+                PrintSunmiUtils.normalTextLarge(
+                    getReceiptFormatDateFromUTCServer(
+                        requireContext(),
+                        receiptModel?.order?.createdAt.toString()
+                    )
+                )
+                SunmiPrintHelper.getInstance().lineWrap(1)
+
+
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                ) {
+                    PrintSunmiUtils.addHorizontalInnerNew()
                 } else {
-                    PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
+                    PrintSunmiUtils.addHorizontalInner()
                 }
-            } catch (e: Exception) {
-            }
-
-            SunmiPrintHelper.getInstance().lineWrap(1)
-
-            if (kitchenSettingModel.showOrderType) {
-                PrintSunmiUtils.headerText(receiptModel?.order?.orderTypeName.toString())
                 SunmiPrintHelper.getInstance().lineWrap(1)
-            }
 
-            if (receiptModel?.order?.orderType.equals("Online Order", true) ||
-                receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
-                receiptModel?.order?.orderType.equals(PHONE_ORDER, true)
-            ) {
-                PrintSunmiUtils.headerText(receiptModel?.order?.deliveryType.toString())
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                ) {
+                    PrintSunmiUtils.normalText("\n")
+                }
+
+
+                receiptModel?.order?.orderItems?.let {
+
+                    addOrdersForKitchenInner(
+                        it,
+                        kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf())
+                    )
+                }
+
+
+                if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+
+                    PrintSunmiUtils.orderNoteInnerLarge(receiptModel?.order?.note.toString())
+
+                }
+
                 SunmiPrintHelper.getInstance().lineWrap(1)
-            }
-
-            if (kitchenSettingModel.showTeamMember) {
-                PrintSunmiUtils.normalTextLarge("Employee:" + receiptModel?.order?.employee?.name)
-            }
-            PrintSunmiUtils.normalTextLarge(
-                getReceiptFormatDateFromUTCServer(
-                    requireContext(),
-                    receiptModel?.order?.createdAt.toString()
-                )
-            )
-            SunmiPrintHelper.getInstance().lineWrap(1)
+                if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
+                    if (receiptModel?.order?.customer != null) {
 
 
-            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
-                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
-            ) {
-                PrintSunmiUtils.addHorizontalInnerNew()
-            }else{
-                PrintSunmiUtils.addHorizontalInner()
-            }
-            SunmiPrintHelper.getInstance().lineWrap(1)
-
-            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
-                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
-            ) {
-                PrintSunmiUtils.normalText("\n")
-            }
-
-
-            receiptModel?.order?.orderItems?.let {
-
-                addOrdersForKitchenInner(
-                    it,
-                    kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf())
-                )
-            }
-
-
-            if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
-
-                PrintSunmiUtils.orderNoteInnerLarge(receiptModel?.order?.note.toString())
-
-            }
-
-            SunmiPrintHelper.getInstance().lineWrap(1)
-            if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
-                if (receiptModel?.order?.customer != null) {
-
-
-                    PrintSunmiUtils.customerDetailsInner(true,sunmiFrameworkVersion)
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
-                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
-                    ) {
-                        PrintSunmiUtils.addHorizontalInnerNew()
-                    }else{
-                        PrintSunmiUtils.addHorizontalInner()
-                    }
-                    try {
-                        if (kitchenSettingModel.showCustomerName) {
-                            PrintSunmiUtils.normalTextLarge(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
-                        }
-                    } catch (e: Exception) {
-                    }
-
-
-                    try {
-                        if (kitchenSettingModel.showCustomerPhone) {
-
-                            if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
-
-                                receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
-                                    PrintSunmiUtils.normalTextLarge(
-                                        MethodUtils.formatPhoneNumber(it)
-                                    )
-                                }
-                            }
-
-                        }
-                    } catch (e: Exception) {
-                    }
-
-                    if (kitchenSettingModel.showCustomerAddress) {
-                        if (receiptModel?.order?.orderType?.trim().toString()
-                                .lowercase() == "Open Order".trim()
-                                .toString().lowercase()
-                            && receiptModel?.order?.deliveryType?.trim().toString()
-                                .lowercase() == "Pickup".trim().lowercase()
+                        PrintSunmiUtils.customerDetailsInner(true, sunmiFrameworkVersion)
+                        if (sunmiFrameworkVersion?.get(0)
+                                ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                                1
+                            )
+                                ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                         ) {
-
+                            PrintSunmiUtils.addHorizontalInnerNew()
                         } else {
-                            try {
-                                if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
+                            PrintSunmiUtils.addHorizontalInner()
+                        }
+                        try {
+                            if (kitchenSettingModel.showCustomerName) {
+                                PrintSunmiUtils.normalTextLarge(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+                            }
+                        } catch (e: Exception) {
+                        }
+
+
+                        try {
+                            if (kitchenSettingModel.showCustomerPhone) {
+
+                                if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
+
+                                    receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
+                                        PrintSunmiUtils.normalTextLarge(
+                                            MethodUtils.formatPhoneNumber(it)
+                                        )
+                                    }
+                                }
+
+                            }
+                        } catch (e: Exception) {
+                        }
+
+                        if (kitchenSettingModel.showCustomerAddress) {
+                            if (receiptModel?.order?.orderType?.trim().toString()
+                                    .lowercase() == "Open Order".trim()
+                                    .toString().lowercase()
+                                && receiptModel?.order?.deliveryType?.trim().toString()
+                                    .lowercase() == "Pickup".trim().lowercase()
+                            ) {
+
+                            } else {
+                                try {
+                                    if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
 
 
 //                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
@@ -15882,38 +16015,40 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //                                    )
 //                                }
 
-                                    receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
-                                        ?.forEach {
+                                        receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
+                                            ?.forEach {
 
-                                            if (it.typeOfAddress.equals(
-                                                    BILLING_ADDRESS,
-                                                    ignoreCase = true
-                                                )
-                                            ) {
-                                                PrintSunmiUtils.normalTextLarge(
-                                                    it.fullAddress
-                                                )
+                                                if (it.typeOfAddress.equals(
+                                                        BILLING_ADDRESS,
+                                                        ignoreCase = true
+                                                    )
+                                                ) {
+                                                    PrintSunmiUtils.normalTextLarge(
+                                                        it.fullAddress
+                                                    )
+                                                }
                                             }
-                                        }
+                                    }
+                                } catch (e: Exception) {
                                 }
-                            } catch (e: Exception) {
                             }
                         }
+
                     }
-
                 }
+
+                SunmiPrintHelper.getInstance().lineWrap(1)
+                PrintSunmiUtils.cutPaperInner()
+                printingKitchen = false
+
+                //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
+
+            } catch (e: Exception) {
+                // printerDialog.dismiss()
+                printingKitchen = false
+                e.printStackTrace()
             }
-
-            SunmiPrintHelper.getInstance().lineWrap(1)
-            PrintSunmiUtils.cutPaperInner()
-
-            //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
-
-        } catch (e: Exception) {
-            // printerDialog.dismiss()
-            e.printStackTrace()
         }
-
     }
 
 
@@ -16565,49 +16700,51 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun sunmiPrint() {
 
+        if (!printingCustomer) {
+            printingCustomer = true
 
-        try {
+            try {
 
-            PrintSunmiUtils.fontSize(customerSettingModel.fonts)
+                PrintSunmiUtils.fontSize(customerSettingModel.fonts)
 
-            SunmiPrinterApi.getInstance().printerInit()
+                SunmiPrinterApi.getInstance().printerInit()
 
-            if (customerSettingModel.showOrderIdTop) {
-                if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
-                    PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.custom_order_id)
-                } else {
-                    PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
+                if (customerSettingModel.showOrderIdTop) {
+                    if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                        PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.custom_order_id)
+                    } else {
+                        PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
+
+                    }
+                    SunmiPrinterApi.getInstance().lineWrap(1)
 
                 }
-                SunmiPrinterApi.getInstance().lineWrap(1)
 
-            }
+                LogUtil.logE(TAG, "getVanueLogo:  ${prefProvider.getValue(VENUE_LOGO, "")}")
+                if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
+                        .isNotEmpty()
+                ) {
 
-            LogUtil.logE(TAG, "getVanueLogo:  ${prefProvider.getValue(VENUE_LOGO, "")}")
-            if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
-                    .isNotEmpty()
-            ) {
+                    printBusinessLogo()
 
-                printBusinessLogo()
+                }
 
-            }
-
-            PrintSunmiUtils.printBusinessDetails(
-                prefProvider.getValue(BUSINESS_NAME, ""),
-                if (customerSettingModel.showVenueAddress) prefProvider.getValue(
-                    BUSINESS_ADDRESS,
-                    ""
-                ) else "",
-                if (customerSettingModel.showVenuePhone) prefProvider.getValue(
-                    BUSINESS_PHONE_NO,
-                    ""
-                ) else ""
-            )
-            if (customerSettingModel.showWebsiteAddress) {
-                PrintSunmiUtils.venueWebsite(prefProvider.getValue(BUSINESS_WEBSITE, ""))
-            } else {
-                SunmiPrinterApi.getInstance().lineWrap(1)
-            }
+                PrintSunmiUtils.printBusinessDetails(
+                    prefProvider.getValue(BUSINESS_NAME, ""),
+                    if (customerSettingModel.showVenueAddress) prefProvider.getValue(
+                        BUSINESS_ADDRESS,
+                        ""
+                    ) else "",
+                    if (customerSettingModel.showVenuePhone) prefProvider.getValue(
+                        BUSINESS_PHONE_NO,
+                        ""
+                    ) else ""
+                )
+                if (customerSettingModel.showWebsiteAddress) {
+                    PrintSunmiUtils.venueWebsite(prefProvider.getValue(BUSINESS_WEBSITE, ""))
+                } else {
+                    SunmiPrinterApi.getInstance().lineWrap(1)
+                }
 
 //            SunmiPrinterApi.getInstance().setAlignMode(1)
 //            SunmiPrinterApi.getInstance().enableBold(false)
@@ -16616,116 +16753,96 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //            SunmiPrinterApi.getInstance().lineWrap(1)
 
 
-            if (customerSettingModel.showOrderType) {
-                SunmiPrinterApi.getInstance().lineWrap(1)
+                if (customerSettingModel.showOrderType) {
+                    SunmiPrinterApi.getInstance().lineWrap(1)
 
-                receiptModel?.order?.orderTypeName?.trim()
-                    ?.let { PrintSunmiUtils.printOrderType(it) }
-            }
-
-
-            if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
-                receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
-                receiptModel?.order?.orderType.equals("Online Order", true) ||
-                receiptModel?.order?.orderType.equals("OnlineOrder", true)
-            ) {
-                SunmiPrinterApi.getInstance().lineWrap(1)
-                receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.deliveryType(it) }
-                SunmiPrinterApi.getInstance().lineWrap(1)
-            }
-
-
-
-            if (customerSettingModel.fonts == LARGE) {
-
-
-                PrintSunmiUtils.receiptID("ReceiptID:" + receiptModel?.order?.offlineId)
-
-
-                if (customerSettingModel.showTeam) {
-
-                    PrintSunmiUtils.employee("Employee:" + receiptModel?.order?.employee?.name)
+                    receiptModel?.order?.orderTypeName?.trim()
+                        ?.let { PrintSunmiUtils.printOrderType(it) }
                 }
 
-                if (customerSettingModel.showOrderTime) {
 
-                    PrintSunmiUtils.orderTime(
-                        "Order Time:" + getReceiptFormatDateFromUTCServer(
-                            requireContext(),
-                            receiptModel?.order?.createdAt.toString()
-                        )
-                    )
-
+                if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
+                    receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                    receiptModel?.order?.orderType.equals("Online Order", true) ||
+                    receiptModel?.order?.orderType.equals("OnlineOrder", true)
+                ) {
+                    SunmiPrinterApi.getInstance().lineWrap(1)
+                    receiptModel?.order?.deliveryType?.let { PrintSunmiUtils.deliveryType(it) }
+                    SunmiPrinterApi.getInstance().lineWrap(1)
                 }
 
-                if (customerSettingModel.showPrintTime) {
 
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                if (customerSettingModel.fonts == LARGE) {
+
+
+                    PrintSunmiUtils.receiptID("ReceiptID:" + receiptModel?.order?.offlineId)
+
+
+                    if (customerSettingModel.showTeam) {
+
+                        PrintSunmiUtils.employee("Employee:" + receiptModel?.order?.employee?.name)
+                    }
+
+                    if (customerSettingModel.showOrderTime) {
 
                         PrintSunmiUtils.orderTime(
-                            "Print Time:" + getCurrentTimeFromTimeZone(
+                            "Order Time:" + getReceiptFormatDateFromUTCServer(
                                 requireContext(),
-                                MethodUtils.formatted()
+                                receiptModel?.order?.createdAt.toString()
                             )
                         )
 
                     }
 
-
-                }
-            } else {
+                    if (customerSettingModel.showPrintTime) {
 
 
-                val str = padLine(
-                    "ReceiptID:" + receiptModel?.order?.offlineId?.trim(),
-                    "",
-                    if (customerSettingModel.fonts == LARGE) 23 else 48
-                ).toString().trim()
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-                PrintSunmiUtils.orderId(str)
-
-                if (customerSettingModel.showTeam) {
-
-                    val empName = padLine(
-                        if (customerSettingModel.showTeam) {
-                            "Employee:" + receiptModel?.order?.employee?.name
-                        } else {
-                            ""
-                        },
-                        "", if (customerSettingModel.fonts == LARGE) 23 else 48
-                    ).toString()
-                    PrintSunmiUtils.employee(empName)
-
-                }
-                if (customerSettingModel.showOrderTime && receiptModel?.order?.createdAt?.isNotEmpty() == true) {
-
-
-                    val orderTime = padLine(
-                        if (customerSettingModel.showOrderTime) {
-                            "Order Time:" + getReceiptFormatDateFromUTCServer(
-                                requireContext(),
-                                receiptModel?.order?.createdAt.toString()
-                            )
-                        } else {
-                            ""
-                        },
-                        "", if (customerSettingModel.fonts == LARGE) 23 else 48
-                    ).toString()
-
-                    PrintSunmiUtils.orderTime(orderTime)
-
-                }
-
-                if (customerSettingModel.showPrintTime && receiptModel?.order?.createdAt?.isNotEmpty() == true) {
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-                        val printTime = padLine(
-                            if (customerSettingModel.showPrintTime) {
+                            PrintSunmiUtils.orderTime(
                                 "Print Time:" + getCurrentTimeFromTimeZone(
                                     requireContext(),
                                     MethodUtils.formatted()
+                                )
+                            )
+
+                        }
+
+
+                    }
+                } else {
+
+
+                    val str = padLine(
+                        "ReceiptID:" + receiptModel?.order?.offlineId?.trim(),
+                        "",
+                        if (customerSettingModel.fonts == LARGE) 23 else 48
+                    ).toString().trim()
+
+                    PrintSunmiUtils.orderId(str)
+
+                    if (customerSettingModel.showTeam) {
+
+                        val empName = padLine(
+                            if (customerSettingModel.showTeam) {
+                                "Employee:" + receiptModel?.order?.employee?.name
+                            } else {
+                                ""
+                            },
+                            "", if (customerSettingModel.fonts == LARGE) 23 else 48
+                        ).toString()
+                        PrintSunmiUtils.employee(empName)
+
+                    }
+                    if (customerSettingModel.showOrderTime && receiptModel?.order?.createdAt?.isNotEmpty() == true) {
+
+
+                        val orderTime = padLine(
+                            if (customerSettingModel.showOrderTime) {
+                                "Order Time:" + getReceiptFormatDateFromUTCServer(
+                                    requireContext(),
+                                    receiptModel?.order?.createdAt.toString()
                                 )
                             } else {
                                 ""
@@ -16733,495 +16850,518 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             "", if (customerSettingModel.fonts == LARGE) 23 else 48
                         ).toString()
 
-                        PrintSunmiUtils.orderTime(printTime)
+                        PrintSunmiUtils.orderTime(orderTime)
 
+                    }
+
+                    if (customerSettingModel.showPrintTime && receiptModel?.order?.createdAt?.isNotEmpty() == true) {
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                            val printTime = padLine(
+                                if (customerSettingModel.showPrintTime) {
+                                    "Print Time:" + getCurrentTimeFromTimeZone(
+                                        requireContext(),
+                                        MethodUtils.formatted()
+                                    )
+                                } else {
+                                    ""
+                                },
+                                "", if (customerSettingModel.fonts == LARGE) 23 else 48
+                            ).toString()
+
+                            PrintSunmiUtils.orderTime(printTime)
+
+                        }
                     }
                 }
-            }
 
 
-            PrintSunmiUtils.addHorizontal()
+                PrintSunmiUtils.addHorizontal()
 
 
-            Log.e(TAG, "orderItemsGetD:  ${Gson().toJson(receiptModel?.order?.orderItems)}")
-            receiptModel?.order?.orderItems?.let {
-                addOrderItems(
-                    it,
-                    customerSettingModel.showModifiers,
-                    customerSettingModel.fonts
-                )
-            }
-            SunmiPrinterApi.getInstance().lineWrap(1)
+                Log.e(TAG, "orderItemsGetD:  ${Gson().toJson(receiptModel?.order?.orderItems)}")
+                receiptModel?.order?.orderItems?.let {
+                    addOrderItems(
+                        it,
+                        customerSettingModel.showModifiers,
+                        customerSettingModel.fonts
+                    )
+                }
+                SunmiPrinterApi.getInstance().lineWrap(1)
 
 
-            if (receiptModel?.order?.totalDiscount != null) {
+                if (receiptModel?.order?.totalDiscount != null) {
 
-                val str1 = padLine(
-                    "Total Discount",
-                    if (receiptModel?.order?.totalDiscount == 0.0) {
+                    val str1 = padLine(
+                        "Total Discount",
+                        if (receiptModel?.order?.totalDiscount == 0.0) {
 //                        "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
-                        "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
-                    } else {
-                        "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
-                    }, if (customerSettingModel.fonts == LARGE) 23 else 48
-                ).toString()
+                            "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
+                        } else {
+                            "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalDiscount!!)
+                        }, if (customerSettingModel.fonts == LARGE) 23 else 48
+                    ).toString()
 
-                PrintSunmiUtils.totalDiscount(str1)
+                    PrintSunmiUtils.totalDiscount(str1)
 
-            }
-
-
-            var totalDiscount: Double = 0.0
-            receiptModel?.order?.totalDiscount?.let {
-                totalDiscount = it
-            }
+                }
 
 
-            val str2 = padLine(
-                "Sub Total",
-                "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.subTotal!!),
-                if (customerSettingModel.fonts == LARGE) 23 else 48
-            ).toString()
-            PrintSunmiUtils.subTotal(str2)
-
-            if (receiptModel?.order?.totalTaxAmount != null) {
+                var totalDiscount: Double = 0.0
+                receiptModel?.order?.totalDiscount?.let {
+                    totalDiscount = it
+                }
 
 
-                val str3 = padLine(
-                    "Tax",
-                    "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalTaxAmount!!),
+                val str2 = padLine(
+                    "Sub Total",
+                    "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.subTotal!!),
                     if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
-                PrintSunmiUtils.tax(str3)
+                PrintSunmiUtils.subTotal(str2)
 
-            }
-
-            if (receiptModel?.order?.totalServiceCharges != null && (receiptModel?.order?.serviceChargeEnabled == true) && prefProvider.getValueboolean(
-                    Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false
-                )
-            ) {
+                if (receiptModel?.order?.totalTaxAmount != null) {
 
 
-                val str4 = padLine(
-                    "Service Charge",
-                    "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalServiceCharges!!),
-                    if (customerSettingModel.fonts == LARGE) 23 else 48
-                ).toString()
-                PrintSunmiUtils.serviceCharge(str4)
-            }
+                    val str3 = padLine(
+                        "Tax",
+                        "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalTaxAmount!!),
+                        if (customerSettingModel.fonts == LARGE) 23 else 48
+                    ).toString()
+                    PrintSunmiUtils.tax(str3)
 
+                }
 
-            if (tipAmount > 0) {
-
-                val str8 = padLine(
-                    "Tips",
-                    "$" + MethodUtils.roundOffAmountString(tipAmount.toDouble()),
-                    if (customerSettingModel.fonts == LARGE) 23 else 48
-                ).toString()
-                PrintSunmiUtils.tips(str8)
-
-            }
-
-            if (customerSettingModel.showCashDisSurCharg) {
-
-                if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
-                        receiptModel?.order?.payments?.size!! - 1
-                    )?.paymentType?.lowercase() == "Card".lowercase() && receiptModel?.order?.payments?.get(
-                        receiptModel?.order?.payments?.size!! - 1
-                    )?.cash_discount_type?.lowercase() == "SurCharge".lowercase()
+                if (receiptModel?.order?.totalServiceCharges != null && (receiptModel?.order?.serviceChargeEnabled == true) && prefProvider.getValueboolean(
+                        Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false
+                    )
                 ) {
 
-                    if (receiptModel?.order?.totalCashDiscountFee != null) {
+
+                    val str4 = padLine(
+                        "Service Charge",
+                        "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalServiceCharges!!),
+                        if (customerSettingModel.fonts == LARGE) 23 else 48
+                    ).toString()
+                    PrintSunmiUtils.serviceCharge(str4)
+                }
 
 
-                        val str8 = padLine(
-                            Constants.SURCHARGE_TEXT,
-                            "$" + MethodUtils.roundOffAmountString(
-                                receiptModel?.order?.payments?.get(
-                                    receiptModel?.order?.payments?.size?.minus(1) ?: 0
-                                )?.cash_discount_or_surcharge ?: 0.0
-                            ), if (customerSettingModel.fonts == LARGE) 23 else 48
-                        ).toString()
-                        PrintSunmiUtils.cashDiscount(str8)
+                if (tipAmount > 0) {
 
-                    }
+                    val str8 = padLine(
+                        "Tips",
+                        "$" + MethodUtils.roundOffAmountString(tipAmount.toDouble()),
+                        if (customerSettingModel.fonts == LARGE) 23 else 48
+                    ).toString()
+                    PrintSunmiUtils.tips(str8)
+
+                }
+
+                if (customerSettingModel.showCashDisSurCharg) {
+
+                    if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
+                            receiptModel?.order?.payments?.size!! - 1
+                        )?.paymentType?.lowercase() == "Card".lowercase() && receiptModel?.order?.payments?.get(
+                            receiptModel?.order?.payments?.size!! - 1
+                        )?.cash_discount_type?.lowercase() == "SurCharge".lowercase()
+                    ) {
+
+                        if (receiptModel?.order?.totalCashDiscountFee != null) {
 
 
-                } else if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
-                        receiptModel?.order?.payments?.size!! - 1
-                    )?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()
-                ) {
-
-                    if (receiptModel?.order?.totalCashDiscountFee != null) {
-
-                        val str8 = padLine(
-                            "Cash Discount",
-                            if (receiptModel?.order?.totalCashDiscountFee == 0.0) {
+                            val str8 = padLine(
+                                Constants.SURCHARGE_TEXT,
                                 "$" + MethodUtils.roundOffAmountString(
                                     receiptModel?.order?.payments?.get(
                                         receiptModel?.order?.payments?.size?.minus(1) ?: 0
                                     )?.cash_discount_or_surcharge ?: 0.0
-                                )
-                            } else {
-                                "-$" + MethodUtils.roundOffAmountString(
-                                    receiptModel?.order?.payments?.get(
-                                        receiptModel?.order?.payments?.size?.minus(1) ?: 0
-                                    )?.cash_discount_or_surcharge ?: 0.0
-                                )
-                            }, if (customerSettingModel.fonts == LARGE) 23 else 48
-                        ).toString()
-                        PrintSunmiUtils.cashDiscount(str8)
+                                ), if (customerSettingModel.fonts == LARGE) 23 else 48
+                            ).toString()
+                            PrintSunmiUtils.cashDiscount(str8)
+
+                        }
 
 
+                    } else if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
+                            receiptModel?.order?.payments?.size!! - 1
+                        )?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()
+                    ) {
+
+                        if (receiptModel?.order?.totalCashDiscountFee != null) {
+
+                            val str8 = padLine(
+                                "Cash Discount",
+                                if (receiptModel?.order?.totalCashDiscountFee == 0.0) {
+                                    "$" + MethodUtils.roundOffAmountString(
+                                        receiptModel?.order?.payments?.get(
+                                            receiptModel?.order?.payments?.size?.minus(1) ?: 0
+                                        )?.cash_discount_or_surcharge ?: 0.0
+                                    )
+                                } else {
+                                    "-$" + MethodUtils.roundOffAmountString(
+                                        receiptModel?.order?.payments?.get(
+                                            receiptModel?.order?.payments?.size?.minus(1) ?: 0
+                                        )?.cash_discount_or_surcharge ?: 0.0
+                                    )
+                                }, if (customerSettingModel.fonts == LARGE) 23 else 48
+                            ).toString()
+                            PrintSunmiUtils.cashDiscount(str8)
+
+
+                        }
                     }
                 }
-            }
 
 
 
 
-            if (receiptModel?.order?.payments?.isNotEmpty() == true) {
-                if (receiptModel?.order?.payments?.get(0)?.isLoyaltyApplied == true && receiptModel?.order?.payments!![0].loyaltyUSedPoints != 0) {
-                    if (receiptModel?.order?.loyaltyAmount != 0.0) {
+                if (receiptModel?.order?.payments?.isNotEmpty() == true) {
+                    if (receiptModel?.order?.payments?.get(0)?.isLoyaltyApplied == true && receiptModel?.order?.payments!![0].loyaltyUSedPoints != 0) {
+                        if (receiptModel?.order?.loyaltyAmount != 0.0) {
+
+
+                            val str8 = padLine(
+                                "Used Loyalty Amount",
+                                "-$" + receiptModel?.order?.loyaltyAmount?.let {
+                                    MethodUtils.roundOffAmountString(
+                                        it
+                                    )
+                                }, if (customerSettingModel.fonts == LARGE) 23 else 48
+                            ).toString()
+                            PrintSunmiUtils.loyaltyAmount(str8)
+
+                        }
 
 
                         val str8 = padLine(
-                            "Used Loyalty Amount",
-                            "-$" + receiptModel?.order?.loyaltyAmount?.let {
-                                MethodUtils.roundOffAmountString(
-                                    it
-                                )
-                            }, if (customerSettingModel.fonts == LARGE) 23 else 48
+                            "Used Loyalty Points",
+                            receiptModel?.order?.payments!![0].loyaltyUSedPoints.toString(),
+                            if (customerSettingModel.fonts == LARGE) 23 else 48
                         ).toString()
-                        PrintSunmiUtils.loyaltyAmount(str8)
+                        PrintSunmiUtils.loyaltyPoint(str8)
 
                     }
-
-
-                    val str8 = padLine(
-                        "Used Loyalty Points",
-                        receiptModel?.order?.payments!![0].loyaltyUSedPoints.toString(),
-                        if (customerSettingModel.fonts == LARGE) 23 else 48
-                    ).toString()
-                    PrintSunmiUtils.loyaltyPoint(str8)
-
                 }
-            }
 
 
-            var totalfamount = 0.0
+                var totalfamount = 0.0
 
-            if (receiptModel?.order?.totalAmount != null) {
-                SunmiPrinterApi.getInstance().lineWrap(1)
+                if (receiptModel?.order?.totalAmount != null) {
+                    SunmiPrinterApi.getInstance().lineWrap(1)
 
-                if (paymentType == "Cash") {
+                    if (paymentType == "Cash") {
 
-                    var finalAmt: Double = (receiptModel?.order?.subTotal
-                        ?: 0.0).plus(receiptModel?.order?.totalTaxAmount ?: 0.0)
-                        .plus(receiptModel?.order?.totalServiceCharges ?: 0.0).plus(
-                            receiptModel?.order?.payments?.get(
-                                receiptModel?.order?.payments?.size?.minus(1) ?: 0
-                            )?.tips ?: 0.0
-                        )
+                        var finalAmt: Double = (receiptModel?.order?.subTotal
+                            ?: 0.0).plus(receiptModel?.order?.totalTaxAmount ?: 0.0)
+                            .plus(receiptModel?.order?.totalServiceCharges ?: 0.0).plus(
+                                receiptModel?.order?.payments?.get(
+                                    receiptModel?.order?.payments?.size?.minus(1) ?: 0
+                                )?.tips ?: 0.0
+                            )
 
-                    if (receiptModel?.order?.payments?.isNotEmpty() == true) {
-                        if (receiptModel?.order?.payments?.get(0)?.isLoyaltyApplied == true && receiptModel?.order?.payments!![0].loyaltyUSedPoints != 0) {
-                            finalAmt -= receiptModel?.order?.loyaltyAmount ?: 0.0
+                        if (receiptModel?.order?.payments?.isNotEmpty() == true) {
+                            if (receiptModel?.order?.payments?.get(0)?.isLoyaltyApplied == true && receiptModel?.order?.payments!![0].loyaltyUSedPoints != 0) {
+                                finalAmt -= receiptModel?.order?.loyaltyAmount ?: 0.0
+                            }
                         }
-                    }
 
-                    //PLZCHECK
-                    if (receiptModel?.order?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()) {
+                        //PLZCHECK
+                        if (receiptModel?.order?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()) {
 
-                        val str5 = padLine(
-                            "Total Price",
-                            "$" + MethodUtils.roundOffAmountString(
+                            val str5 = padLine(
+                                "Total Price",
+                                "$" + MethodUtils.roundOffAmountString(
+                                    finalAmt - (receiptModel?.order?.payments?.get(
+                                        receiptModel?.order?.payments?.size?.minus(1) ?: 0
+                                    )?.cash_discount_or_surcharge ?: 0.0)
+                                ), if (customerSettingModel.fonts == LARGE) 23 else 48
+                            ).toString()
+
+                            PrintSunmiUtils.totalPrice(str5)
+
+
+                            totalfamount = MethodUtils.roundOffAmountDouble(
                                 finalAmt - (receiptModel?.order?.payments?.get(
                                     receiptModel?.order?.payments?.size?.minus(1) ?: 0
                                 )?.cash_discount_or_surcharge ?: 0.0)
-                            ), if (customerSettingModel.fonts == LARGE) 23 else 48
-                        ).toString()
-
-                        PrintSunmiUtils.totalPrice(str5)
+                            )
+                        } else {
 
 
-                        totalfamount = MethodUtils.roundOffAmountDouble(
-                            finalAmt - (receiptModel?.order?.payments?.get(
-                                receiptModel?.order?.payments?.size?.minus(1) ?: 0
-                            )?.cash_discount_or_surcharge ?: 0.0)
-                        )
-                    } else {
+                            val str5 = padLine(
+                                "Total Price",
+                                "$" + MethodUtils.roundOffAmountString(finalAmt),
+                                if (customerSettingModel.fonts == LARGE) 23 else 48
+                            ).toString()
+                            PrintSunmiUtils.totalPrice(str5)
 
 
-                        val str5 = padLine(
-                            "Total Price",
-                            "$" + MethodUtils.roundOffAmountString(finalAmt),
-                            if (customerSettingModel.fonts == LARGE) 23 else 48
-                        ).toString()
-                        PrintSunmiUtils.totalPrice(str5)
+                            totalfamount = MethodUtils.roundOffAmountDouble(finalAmt)
 
-
-                        totalfamount = MethodUtils.roundOffAmountDouble(finalAmt)
-
-                    }
-
-                } else {
-                    var finalAmt: Double = (receiptModel?.order?.subTotal
-                        ?: 0.0).plus(receiptModel?.order?.totalTaxAmount ?: 0.0)
-                        .plus(receiptModel?.order?.totalServiceCharges ?: 0.0).plus(
-                            receiptModel?.order?.payments?.get(
-                                receiptModel?.order?.payments?.size?.minus(1) ?: 0
-                            )?.tips ?: 0.0
-                        )
-
-                    totalfamount = finalAmt
-
-                    if (receiptModel?.order?.payments?.isNotEmpty() == true) {
-                        if (receiptModel?.order?.payments?.get(0)?.isLoyaltyApplied == true && receiptModel?.order?.payments!![0].loyaltyUSedPoints != 0) {
-                            finalAmt -= receiptModel?.order?.loyaltyAmount ?: 0.0
                         }
-                    }
 
-                    if (receiptModel?.order?.cash_discount_type?.lowercase() == "SurCharge".lowercase()) {
+                    } else {
+                        var finalAmt: Double = (receiptModel?.order?.subTotal
+                            ?: 0.0).plus(receiptModel?.order?.totalTaxAmount ?: 0.0)
+                            .plus(receiptModel?.order?.totalServiceCharges ?: 0.0).plus(
+                                receiptModel?.order?.payments?.get(
+                                    receiptModel?.order?.payments?.size?.minus(1) ?: 0
+                                )?.tips ?: 0.0
+                            )
+
+                        totalfamount = finalAmt
+
+                        if (receiptModel?.order?.payments?.isNotEmpty() == true) {
+                            if (receiptModel?.order?.payments?.get(0)?.isLoyaltyApplied == true && receiptModel?.order?.payments!![0].loyaltyUSedPoints != 0) {
+                                finalAmt -= receiptModel?.order?.loyaltyAmount ?: 0.0
+                            }
+                        }
+
+                        if (receiptModel?.order?.cash_discount_type?.lowercase() == "SurCharge".lowercase()) {
 
 
-                        val str5 = padLine(
-                            "Total Price",
-                            "$" + MethodUtils.roundOffAmountString(
+                            val str5 = padLine(
+                                "Total Price",
+                                "$" + MethodUtils.roundOffAmountString(
+                                    finalAmt.plus(
+                                        (receiptModel?.order?.payments?.get(
+                                            receiptModel?.order?.payments?.size?.minus(1) ?: 0
+                                        )?.cash_discount_or_surcharge ?: 0.0)
+                                    )
+                                ), if (customerSettingModel.fonts == LARGE) 23 else 48
+                            ).toString()
+                            PrintSunmiUtils.totalPrice(str5)
+
+
+                            totalfamount = MethodUtils.roundOffAmountDouble(
                                 finalAmt.plus(
                                     (receiptModel?.order?.payments?.get(
                                         receiptModel?.order?.payments?.size?.minus(1) ?: 0
                                     )?.cash_discount_or_surcharge ?: 0.0)
                                 )
-                            ), if (customerSettingModel.fonts == LARGE) 23 else 48
-                        ).toString()
-                        PrintSunmiUtils.totalPrice(str5)
-
-
-                        totalfamount = MethodUtils.roundOffAmountDouble(
-                            finalAmt.plus(
-                                (receiptModel?.order?.payments?.get(
-                                    receiptModel?.order?.payments?.size?.minus(1) ?: 0
-                                )?.cash_discount_or_surcharge ?: 0.0)
                             )
-                        )
-                    } else {
-
-                        val str5 = padLine(
-                            "Total Price",
-                            "$" + MethodUtils.roundOffAmountString(finalAmt),
-                            if (customerSettingModel.fonts == LARGE) 23 else 48
-                        ).toString()
-                        PrintSunmiUtils.totalPrice(str5)
-
-
-                        totalfamount = MethodUtils.roundOffAmountDouble(finalAmt)
-                    }
-                }
-
-
-            }
-
-            val newPaidAmount = if (isCustomCash) {
-                paidAmount
-            } else {
-                paidAmount + tipAmount
-            }
-
-            val str6 = padLine(
-                "Paid Amount",
-                "$" + MethodUtils.roundOffAmountString(
-                    newPaidAmount
-                ), if (customerSettingModel.fonts == LARGE) 23 else 48
-            ).toString()
-            PrintSunmiUtils.totalPrice(str6)
-
-
-
-            if (customerSettingModel.showRefundAmount) {
-
-                val str7 = padLine(
-                    "Change Amount",
-                    "$" + MethodUtils.roundOffAmountString(changeAmtGlobal),
-                    if (customerSettingModel.fonts == LARGE) 23 else 48
-                ).toString()
-
-                PrintSunmiUtils.changeAmount(str7)
-                SunmiPrinterApi.getInstance().lineWrap(2)
-
-            }
-
-
-            if (isSpilt) {
-
-                val str7 = padLine(
-                    "Remaining Amount",
-                    "$" + MethodUtils.roundOffAmountString(remainingAmount),
-                    if (customerSettingModel.fonts == LARGE) 23 else 48
-                ).toString()
-
-                PrintSunmiUtils.refundAmount(str7)
-                SunmiPrinterApi.getInstance().lineWrap(2)
-
-            }
-
-
-
-            if (receiptModel?.order?.totalTips == 0.0) {
-
-
-                if (customerSettingModel.showTipLineForCash) {
-
-                    if (customerSettingModel.fonts == LARGE) {
-                        PrintSunmiUtils.tips("Tips      _____________")
-                        PrintSunmiUtils.tips("Total     _____________")
-                        SunmiPrinterApi.getInstance().lineWrap(1)
-                    } else {
-                        PrintSunmiUtils.tips("Tips                              _____________")
-                        PrintSunmiUtils.tips("Total                             _____________")
-                    }
-
-
-                }
-
-
-            }
-
-
-            if (customerSettingModel.showTipSuggestion) {
-
-                PrintSunmiUtils.additionalTips()
-
-                if (tipsList.isNotEmpty()) {
-                    addTipsList(
-                        tipsList,
-                        if (receiptModel?.order?.totalDiscount != 0.0 && receiptModel?.order?.totalAmount ?: 0.0 > receiptModel?.order?.totalDiscount ?: 0.0) {
-                            (totalfamount)
                         } else {
-                            receiptModel?.order?.totalAmount!!
-                        },
-                        customerSettingModel.fonts
-                    )
+
+                            val str5 = padLine(
+                                "Total Price",
+                                "$" + MethodUtils.roundOffAmountString(finalAmt),
+                                if (customerSettingModel.fonts == LARGE) 23 else 48
+                            ).toString()
+                            PrintSunmiUtils.totalPrice(str5)
+
+
+                            totalfamount = MethodUtils.roundOffAmountDouble(finalAmt)
+                        }
+                    }
+
+
+                }
+
+                val newPaidAmount = if (isCustomCash) {
+                    paidAmount
+                } else {
+                    paidAmount + tipAmount
+                }
+
+                val str6 = padLine(
+                    "Paid Amount",
+                    "$" + MethodUtils.roundOffAmountString(
+                        newPaidAmount
+                    ), if (customerSettingModel.fonts == LARGE) 23 else 48
+                ).toString()
+                PrintSunmiUtils.totalPrice(str6)
+
+
+
+                if (customerSettingModel.showRefundAmount) {
+
+                    val str7 = padLine(
+                        "Change Amount",
+                        "$" + MethodUtils.roundOffAmountString(changeAmtGlobal),
+                        if (customerSettingModel.fonts == LARGE) 23 else 48
+                    ).toString()
+
+                    PrintSunmiUtils.changeAmount(str7)
                     SunmiPrinterApi.getInstance().lineWrap(2)
 
                 }
-            }
 
 
-            val str10 = padLine(
-                "Transaction ID",
-                "" + receiptModel?.order?.payments?.size?.minus(1)
-                    ?.let { receiptModel?.order?.payments?.get(it)?.id },
-                if (customerSettingModel.fonts == LARGE) 23 else 48
-            ).toString()
-            PrintSunmiUtils.transactionId(str10)
+                if (isSpilt) {
 
-            val str11 = padLine(
-                "Transaction Type",
-                receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType,
-                if (customerSettingModel.fonts == LARGE) 23 else 48
-            ).toString()
-            PrintSunmiUtils.transactionType(str11)
+                    val str7 = padLine(
+                        "Remaining Amount",
+                        "$" + MethodUtils.roundOffAmountString(remainingAmount),
+                        if (customerSettingModel.fonts == LARGE) 23 else 48
+                    ).toString()
 
+                    PrintSunmiUtils.refundAmount(str7)
+                    SunmiPrinterApi.getInstance().lineWrap(2)
 
-            if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType?.lowercase() == "Card".lowercase()) {
-
-
-                val str12 =
-                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString()
-
-
-                var str13 =
-                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType.toString()
-
-
-                if (paymentViewModel.extData != null && !paymentViewModel.extData.isNullOrEmpty()) {
-
-                    var applabStartIndex = paymentViewModel.extData.indexOf("<APPLAB>")
-                    var applabEndIndex = paymentViewModel.extData.indexOf("</APPLAB>")
-                    str13 =
-                        paymentViewModel.extData.substring(
-                            applabStartIndex + "<APPLAB>".length,
-                            applabEndIndex
-                        )
                 }
 
 
-                val str14 =
-                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber.toString()
 
-                PrintSunmiUtils.cardDetails(str12, str13, str14)
-                SunmiPrinterApi.getInstance().lineWrap(1)
-            }
-
-            if (customerSettingModel.showCustomerAddress || customerSettingModel.showCustomerPhone || customerSettingModel.showCustomerName) {
-
-                if (receiptModel?.order?.customer != null && !prefProvider.getValue(
-                        Constants.RECEIPT_CUSTOMER_NAME,
-                        ""
-                    ).toString()
-                        .equals("") && !prefProvider.getValue(Constants.RECEIPT_CUSTOMER_NAME, "")
-                        .toString().equals("kotlin.Unit", true)
-                ) {
+                if (receiptModel?.order?.totalTips == 0.0) {
 
 
-                    PrintSunmiUtils.customerDetails()
+                    if (customerSettingModel.showTipLineForCash) {
 
-                    if (customerSettingModel.showCustomerName) {
-
-                        PrintSunmiUtils.customerName(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
-
-                    }
-                    if (customerSettingModel.showCustomerPhone) {
-
-                        if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
-
-                            val number = receiptModel?.order?.customer?.phones?.size?.minus(
-                                1
-                            )?.let {
-                                receiptModel?.order?.customer?.phones?.get(
-                                    it
-                                )?.phoneNumber
-                            }
-                            PrintSunmiUtils.customerPhone(
-                                padLine(
-                                    number?.let { MethodUtils.formatPhoneNumber(it) },
-                                    "",
-                                    if (customerSettingModel.fonts == LARGE) 23 else 48
-                                ).toString()
-                            )
-
-
+                        if (customerSettingModel.fonts == LARGE) {
+                            PrintSunmiUtils.tips("Tips      _____________")
+                            PrintSunmiUtils.tips("Total     _____________")
+                            SunmiPrinterApi.getInstance().lineWrap(1)
+                        } else {
+                            PrintSunmiUtils.tips("Tips                              _____________")
+                            PrintSunmiUtils.tips("Total                             _____________")
                         }
 
 
                     }
 
 
+                }
 
-                    if (customerSettingModel.showCustomerAddress && !prefProvider.getValue(
+
+                if (customerSettingModel.showTipSuggestion) {
+
+                    PrintSunmiUtils.additionalTips()
+
+                    if (tipsList.isNotEmpty()) {
+                        addTipsList(
+                            tipsList,
+                            if (receiptModel?.order?.totalDiscount != 0.0 && receiptModel?.order?.totalAmount ?: 0.0 > receiptModel?.order?.totalDiscount ?: 0.0) {
+                                (totalfamount)
+                            } else {
+                                receiptModel?.order?.totalAmount!!
+                            },
+                            customerSettingModel.fonts
+                        )
+                        SunmiPrinterApi.getInstance().lineWrap(2)
+
+                    }
+                }
+
+
+                val str10 = padLine(
+                    "Transaction ID",
+                    "" + receiptModel?.order?.payments?.size?.minus(1)
+                        ?.let { receiptModel?.order?.payments?.get(it)?.id },
+                    if (customerSettingModel.fonts == LARGE) 23 else 48
+                ).toString()
+                PrintSunmiUtils.transactionId(str10)
+
+                val str11 = padLine(
+                    "Transaction Type",
+                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType,
+                    if (customerSettingModel.fonts == LARGE) 23 else 48
+                ).toString()
+                PrintSunmiUtils.transactionType(str11)
+
+
+                if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType?.lowercase() == "Card".lowercase()) {
+
+
+                    val str12 =
+                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString()
+
+
+                    var str13 =
+                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType.toString()
+
+
+                    if (paymentViewModel.extData != null && !paymentViewModel.extData.isNullOrEmpty()) {
+
+                        var applabStartIndex = paymentViewModel.extData.indexOf("<APPLAB>")
+                        var applabEndIndex = paymentViewModel.extData.indexOf("</APPLAB>")
+                        str13 =
+                            paymentViewModel.extData.substring(
+                                applabStartIndex + "<APPLAB>".length,
+                                applabEndIndex
+                            )
+                    }
+
+
+                    val str14 =
+                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber.toString()
+
+                    PrintSunmiUtils.cardDetails(str12, str13, str14)
+                    SunmiPrinterApi.getInstance().lineWrap(1)
+                }
+
+                if (customerSettingModel.showCustomerAddress || customerSettingModel.showCustomerPhone || customerSettingModel.showCustomerName) {
+
+                    if (receiptModel?.order?.customer != null && !prefProvider.getValue(
                             Constants.RECEIPT_CUSTOMER_NAME,
                             ""
-                        ).toString().equals("") && !prefProvider.getValue(
+                        ).toString()
+                            .equals("") && !prefProvider.getValue(
                             Constants.RECEIPT_CUSTOMER_NAME,
                             ""
-                        ).toString().equals("kotlin.Unit", true)
+                        )
+                            .toString().equals("kotlin.Unit", true)
                     ) {
-                        if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
 
-                            receiptModel?.order?.customer?.addresses!!.filter { it.typeOfAddress == SHIPPING_ADDRESS }
-                                .forEach {
 
-                                    if (it.typeOfAddress.equals(
-                                            SHIPPING_ADDRESS,
-                                            ignoreCase = true
-                                        )
-                                    ) {
-                                        PrintSunmiUtils.customerAddress(
-                                            it.fullAddress
-                                        )
-                                    }
+                        PrintSunmiUtils.customerDetails()
+
+                        if (customerSettingModel.showCustomerName) {
+
+                            PrintSunmiUtils.customerName(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+
+                        }
+                        if (customerSettingModel.showCustomerPhone) {
+
+                            if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
+
+                                val number = receiptModel?.order?.customer?.phones?.size?.minus(
+                                    1
+                                )?.let {
+                                    receiptModel?.order?.customer?.phones?.get(
+                                        it
+                                    )?.phoneNumber
                                 }
+                                PrintSunmiUtils.customerPhone(
+                                    padLine(
+                                        number?.let { MethodUtils.formatPhoneNumber(it) },
+                                        "",
+                                        if (customerSettingModel.fonts == LARGE) 23 else 48
+                                    ).toString()
+                                )
+
+
+                            }
+
+
+                        }
+
+
+
+                        if (customerSettingModel.showCustomerAddress && !prefProvider.getValue(
+                                Constants.RECEIPT_CUSTOMER_NAME,
+                                ""
+                            ).toString().equals("") && !prefProvider.getValue(
+                                Constants.RECEIPT_CUSTOMER_NAME,
+                                ""
+                            ).toString().equals("kotlin.Unit", true)
+                        ) {
+                            if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
+
+                                receiptModel?.order?.customer?.addresses!!.filter { it.typeOfAddress == SHIPPING_ADDRESS }
+                                    .forEach {
+
+                                        if (it.typeOfAddress.equals(
+                                                SHIPPING_ADDRESS,
+                                                ignoreCase = true
+                                            )
+                                        ) {
+                                            PrintSunmiUtils.customerAddress(
+                                                it.fullAddress
+                                            )
+                                        }
+                                    }
 
 
 //                            PrintSunmiUtils.customerAddress(
@@ -17234,54 +17374,56 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //                                ).toString()
 //                            )
 
+                            }
                         }
+
                     }
+                    SunmiPrinterApi.getInstance().lineWrap(1)
+                }
+
+
+                LogUtil.logE(TAG, "showOrderNote:  ${receiptModel?.order?.note}")
+                if (receiptModel?.order?.note != null && receiptModel?.order?.note != "" && customerSettingModel.showOrderNote) {
+
+                    PrintSunmiUtils.orderNote(receiptModel?.order?.note!!)
 
                 }
-                SunmiPrinterApi.getInstance().lineWrap(1)
+
+                /*  PrintSunmiUtils.tips("__________________________")
+                  SunmiPrinterApi.getInstance().lineWrap(1)*/
+
+                SunmiPrinterApi.getInstance().lineWrap(2)
+                val str8 = padLine(
+                    "Customer Signature",
+                    "     _________________________",
+                    48
+                ).toString()
+
+                PrintSunmiUtils.customerSignature(str8)
+
+                if (customerSettingModel.showQrCode) {
+                    SunmiPrinterApi.getInstance().lineWrap(1)
+                    receiptModel?.order?.digital_receipt_url?.let { PrintSunmiUtils.qrCode(it) }
+
+                }
+
+                PrintSunmiUtils.cutPaper()
+                //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
+
+
+                pd?.dismiss()
+                printingCustomer = false
+            } catch (e: Exception) {
+                pd?.dismiss()
+                printingCustomer = false
+                e.printStackTrace()
             }
-
-
-            LogUtil.logE(TAG, "showOrderNote:  ${receiptModel?.order?.note}")
-            if (receiptModel?.order?.note != null && receiptModel?.order?.note != "" && customerSettingModel.showOrderNote) {
-
-                PrintSunmiUtils.orderNote(receiptModel?.order?.note!!)
-
-            }
-
-            /*  PrintSunmiUtils.tips("__________________________")
-              SunmiPrinterApi.getInstance().lineWrap(1)*/
-
-            SunmiPrinterApi.getInstance().lineWrap(2)
-            val str8 = padLine(
-                "Customer Signature",
-                "     _________________________",
-                48
-            ).toString()
-
-            PrintSunmiUtils.customerSignature(str8)
-
-            if (customerSettingModel.showQrCode) {
-                SunmiPrinterApi.getInstance().lineWrap(1)
-                receiptModel?.order?.digital_receipt_url?.let { PrintSunmiUtils.qrCode(it) }
-
-            }
-
-            PrintSunmiUtils.cutPaper()
-            //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
-
-
-            pd?.dismiss()
-
-        } catch (e: Exception) {
-            pd?.dismiss()
-            e.printStackTrace()
         }
-
     }
 
     private fun sunmiPrintInner(isAutoPrint: Boolean) {
-
+        if (!printingCustomer){
+        printingCustomer = true
         EventBus.getDefault()
             .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _sunmiPrintInner(isAutoPrint: Boolean) -> Here_2"))
 
@@ -17495,7 +17637,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                 ) {
                     PrintSunmiUtils.addHorizontalInnerNew()
-                }else{
+                } else {
                     PrintSunmiUtils.addHorizontalInner()
                 }
 
@@ -17970,7 +18112,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     if (customerSettingModel.showTipLineForCash) {
 
-                        if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                        if (sunmiFrameworkVersion?.get(0)
+                                ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
                                 1
                             )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                         ) {
@@ -18005,11 +18148,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.additionalTipsInner()
-                        if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                        if (sunmiFrameworkVersion?.get(0)
+                                ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
                                 ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                         ) {
                             PrintSunmiUtils.addHorizontalInnerNew()
-                        }else{
+                        } else {
                             PrintSunmiUtils.addHorizontalInner()
                         }
                         PrintSunmiUtils.normalText("\n")
@@ -18046,11 +18190,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     } else {
                         PrintSunmiUtils.additionalTipsInner()
 
-                        if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                        if (sunmiFrameworkVersion?.get(0)
+                                ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
                                 ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                         ) {
                             PrintSunmiUtils.addHorizontalInnerNew()
-                        }else{
+                        } else {
                             PrintSunmiUtils.addHorizontalInner()
                         }
 
@@ -18180,7 +18325,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     ) {
 
                         SunmiPrintHelper.getInstance().lineWrap(1)
-                        PrintSunmiUtils.customerDetailsInner(false,sunmiFrameworkVersion)
+                        PrintSunmiUtils.customerDetailsInner(false, sunmiFrameworkVersion)
 
                         if (sunmiFrameworkVersion?.get(0)
                                 ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
@@ -18324,9 +18469,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         }
                         try {
-                           /* if (isAutoPrint) {
-                                SunmiPrintHelper.getInstance().openCashBox()
-                            }*/
+                            /* if (isAutoPrint) {
+                                 SunmiPrintHelper.getInstance().openCashBox()
+                             }*/
                         } catch (e: java.lang.Exception) {
                             EventBus.getDefault()
                                 .post(
@@ -18349,12 +18494,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
 
-
+                printingCustomer = false
                 pd?.dismiss()
 
             } catch (e: Exception) {
                 pd?.dismiss()
-
+                printingCustomer = false
                 EventBus.getDefault()
                     .post(
                         MessageEvent(
@@ -18369,7 +18514,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 e.printStackTrace()
             }
         }
-
+        }
     }
 
     /**
@@ -18532,7 +18677,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
             ) {
                 PrintSunmiUtils.addHorizontalInnerNew()
-            }else{
+            } else {
                 PrintSunmiUtils.addHorizontalInner()
             }
 
@@ -18631,7 +18776,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (giftCardReceiptModel?.gift_card?.customer != null) {
 
                     SunmiPrintHelper.getInstance().lineWrap(1)
-                    PrintSunmiUtils.customerDetailsInner(false,sunmiFrameworkVersion)
+                    PrintSunmiUtils.customerDetailsInner(false, sunmiFrameworkVersion)
 
                     if (customerSettingModel.showCustomerName) {
 
