@@ -115,6 +115,7 @@ import com.pays.pos.utils.MethodUtils.Companion.toDoubleWithPrecision
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.liveSnackBar
+import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.landi.LPrint
 import com.pays.pos.utils.printer.PrinterClass
@@ -539,10 +540,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 .toString() + " to collect more" else "$" + Math.abs(changeAmount)
                                 .toString() + " Change"
 
-                            binding.txtChangeAmount.apply {
-                                visible()
-                                text = _title
-                            }
+                            runOnUiThread(object :java.lang.Runnable{
+                                override fun run() {
+                                    binding.txtChangeAmount.apply {
+                                        visible()
+                                        text = _title
+                                    }
+                                }
+                            })
+
                         } else {
                             employeeGivenTip = false
                             binding.txtChangeAmount.gone()
