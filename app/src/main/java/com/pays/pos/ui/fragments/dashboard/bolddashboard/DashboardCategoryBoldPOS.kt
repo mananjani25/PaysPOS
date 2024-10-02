@@ -5459,6 +5459,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         receiptModel: CreateOrderResponse.Data,
         cartModel: CartModel?
     ) {
+
         try {
 
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
@@ -5617,15 +5618,22 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             viewModel.downloadFinished(false)
 
-            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS)
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
-
+            runOnUiThread(object :Runnable{
+                override fun run() {
+                    if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS)
+                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
+                }
+            })
 
         } catch (e: Exception) {
             e.printStackTrace()
             viewModel.downloadFinished(false)
-            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS)
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
+            runOnUiThread(object:Runnable{
+                override fun run() {
+                    if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS)
+                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
+                }
+            })
         }
 
     }
