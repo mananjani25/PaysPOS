@@ -1,7 +1,9 @@
 package com.pays.pos.ui.fragments.report
 
+import android.Manifest
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
@@ -16,6 +18,8 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -36,6 +40,7 @@ import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.MEDIUM
 import com.pays.pos.data.remote.Constants.SMALL
 import com.pays.pos.data.remote.Constants.SUNMI_INNER_PRINTER
+import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.SUNMI_PRINTER
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.adapter.ClockInClockOutAdapter
@@ -62,32 +67,42 @@ import com.pays.pos.utils.addBuilderText
 import com.pays.pos.utils.addCreditCardBreakDown
 import com.pays.pos.utils.addCreditCardBreakDownData
 import com.pays.pos.utils.addCreditCardBreakDownDataInner
+import com.pays.pos.utils.addCreditCardBreakDownDataLandiInner
 import com.pays.pos.utils.addCreditCardBreakDownInner
+import com.pays.pos.utils.addCreditCardBreakDownLandiInner
 import com.pays.pos.utils.addCreditTipAuditData
 import com.pays.pos.utils.addCreditTipAuditDataInner
+import com.pays.pos.utils.addCreditTipAuditDataLandiInner
 import com.pays.pos.utils.addCreditTipAuditHeader
 import com.pays.pos.utils.addCreditTipAuditHeaderInner
+import com.pays.pos.utils.addCreditTipAuditHeaderLandiInner
 import com.pays.pos.utils.addCustomerTextSize
 import com.pays.pos.utils.addHorizontalLine
 import com.pays.pos.utils.addItemWiseSales
 import com.pays.pos.utils.addItemWiseSalesHeader
 import com.pays.pos.utils.addItemWiseSalesHeaderSunmiInner
 import com.pays.pos.utils.addItemWiseSalesSunmiInnerPrinter
+import com.pays.pos.utils.addItemWiseSalesLandiInnerPrinter
 import com.pays.pos.utils.addItemsInOrderSalesDetails
 import com.pays.pos.utils.addItemsInOrderSalesDetailsInner
 import com.pays.pos.utils.addPaymentDetailsHeader
 import com.pays.pos.utils.addPaymentDetailsHeaderInner
+import com.pays.pos.utils.addPaymentDetailsHeaderLandiInnerNew
 import com.pays.pos.utils.addPaymentDetailsThreeData
 import com.pays.pos.utils.addPaymentDetailsThreeDataInner
+import com.pays.pos.utils.addPaymentDetailsThreeDataLandiInner
 import com.pays.pos.utils.addPaymentDetailsTwoData
 import com.pays.pos.utils.addPaymentDetailsTwoDataInner
+import com.pays.pos.utils.addPaymentDetailsTwoDataLandiInner
 import com.pays.pos.utils.addRefundVoidsMultiple
 import com.pays.pos.utils.addRefundVoidsMultipleInner
+import com.pays.pos.utils.addRefundVoidsMultipleLandiInner
 import com.pays.pos.utils.addSixHeaderForOrderSaleDetails
 import com.pays.pos.utils.addSixHeaderForOrderSaleDetailsSunmi
 import com.pays.pos.utils.addSixHeaderForOrderSaleDetailsSunmiInner
 import com.pays.pos.utils.employeeGuestDetailsData
 import com.pays.pos.utils.employeeGuestDetailsDataInner
+import com.pays.pos.utils.employeeGuestDetailsDataLandiInner
 import com.pays.pos.utils.extensions.alert
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.liveSnackBar
@@ -104,24 +119,34 @@ import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import com.pays.pos.data.remote.Constants.BUSINESS_ADDRESS
+import com.pays.pos.data.remote.Constants.BUSINESS_PHONE_NO
+import com.pays.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.pays.pos.ui.adapter.ExternalPaymentDetailsAdapter
+import com.pays.pos.ui.fragments.payment.OrderCompleteFragment.OnBluetoothPermissionGranted
 import com.pays.pos.utils.addCreditCardBreakDownDataInnerNew
 import com.pays.pos.utils.addCreditCardBreakDownInnerNew
 import com.pays.pos.utils.addCreditTipAuditDataInnerNew
 import com.pays.pos.utils.addCreditTipAuditHeaderInnerNew
 import com.pays.pos.utils.addItemWiseSalesHeaderSunmiInnerNew
+import com.pays.pos.utils.addItemWiseSalesHeaderLandiInner
 import com.pays.pos.utils.addItemWiseSalesSunmiInnerPrinterNew
 import com.pays.pos.utils.addItemsInOrderSalesDetailsInnerNew
+import com.pays.pos.utils.addItemsInOrderSalesDetailsLandiInner
+import com.pays.pos.utils.addPaymentDetailsHeaderLandiInner
 import com.pays.pos.utils.addPaymentDetailsHeaderInnerNew
 import com.pays.pos.utils.addPaymentDetailsThreeDataInnerNew
 import com.pays.pos.utils.addPaymentDetailsTwoDataInnerNew
 import com.pays.pos.utils.addRefundVoidsMultipleInnerNew
 import com.pays.pos.utils.addSixHeaderForOrderSaleDetailsSunmiInnerNew
+import com.pays.pos.utils.addSixHeaderForOrderSaleDetailsLandiInner
 import com.pays.pos.utils.employeeGuestDetailsDataInnerNew
+import com.pays.pos.utils.landi.LPrint
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
@@ -352,6 +377,14 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
         }
     }
 
+    private fun generateLANDIEODReport() {
+        customerList.forEach {
+            if (it.status) {
+                printFromLandiInnerPrinter(true, it)
+            }
+        }
+    }
+
     private fun initPrinter(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters) {
         Log.d("BIS-685", "initPrinter: Called")
 
@@ -396,6 +429,15 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
             }
 
 
+        } else if (customerReceiptPrinters.name.startsWith(LANDI_INNER_PRINTER, true)) {
+
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(100)
+                printFromLandiInnerPrinter(true, customerReceiptPrinters)
+            }
+
+
         } else {
 
 
@@ -437,6 +479,811 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
             }
         }
     }
+
+    interface OnBluetoothPermissionGranted {
+        fun onPermissionsGranted()
+    }
+
+    var onBluetoothPermissionGranted: OnBluetoothPermissionGranted? = null
+
+    fun checkBluetoothPermissions(onBluetoothPermissionGranted: OnBluetoothPermissionGranted) {
+        this.onBluetoothPermissionGranted = onBluetoothPermissionGranted
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.BLUETOOTH
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf<String>(Manifest.permission.BLUETOOTH),
+                Constants.PERMISSION_BLUETOOTH
+            )
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.BLUETOOTH_ADMIN
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf<String>(Manifest.permission.BLUETOOTH_ADMIN),
+                Constants.PERMISSION_BLUETOOTH_ADMIN
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf<String>(Manifest.permission.BLUETOOTH_CONNECT),
+                Constants.PERMISSION_BLUETOOTH_CONNECT
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.BLUETOOTH_SCAN
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf<String>(Manifest.permission.BLUETOOTH_SCAN),
+                Constants.PERMISSION_BLUETOOTH_SCAN
+            )
+        } else {
+            onBluetoothPermissionGranted.onPermissionsGranted()
+        }
+    }
+
+    private fun printFromLandiInnerPrinter(
+        isAutoPrint: Boolean,
+        customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters
+    ) {
+
+        this.checkBluetoothPermissions(object : OnBluetoothPermissionGranted {
+            override fun onPermissionsGranted() {
+                GlobalScope.launch {
+                    LPrint.connectLandiInnerPrinter(customerReceiptPrinters.macAddress)
+                        ?.let { outputStream ->
+                            LPrint.apply {
+                                setOutputStream(outputStream)
+
+                                try {
+                                    Log.d("BIS-685", "createReportFormatEODLandiInner: Called")
+
+                                    printCenter(
+                                        prefProvider?.getValue(
+                                            Constants.BUSINESS_NAME,
+                                            ""
+                                        )!!,
+                                        fontSize = FONT_SIZE_5X,
+                                        isBold = true,
+                                        printOnNewLine = true
+                                    )
+
+                                    printCenter(
+                                        prefProvider?.getValue(
+                                            Constants.BUSINESS_ADDRESS,
+                                            ""
+                                        )!!,
+                                        fontSize = NORMAL_SIZE,
+                                        isBold = true,
+                                        printOnNewLine = true
+                                    )
+
+                                     printCenter(
+                                        MethodUtils.getUSFormatNumber(
+                                            prefProvider?.getValue(
+                                                Constants.BUSINESS_PHONE_NO,
+                                                ""
+                                            )!!
+                                        ).toString(),
+                                            fontSize = NORMAL_SIZE,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                    )
+
+                                    printCenter(
+                                        "Employee End of Day Report",
+                                        fontSize = FONT_SIZE_3X,
+                                        isBold = true,
+                                        printOnNewLine = true
+                                    )
+
+                                    if (binding.spTerminals.selectedItem.toString().isNotEmpty()) {
+                                        printCenter(
+                                            "Employee : " + binding.spTerminals.selectedItem.toString(),
+                                            fontSize = FONT_SIZE_4X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+                                    } else {
+
+                                        printCenter(
+                                            "Employee : " + prefProvider?.getValue(
+                                                Constants.EMPLOYEE_NAME,
+                                                ""
+                                            )!!,
+                                            fontSize = NORMAL_SIZE,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+                                    }
+
+                                    printDashedLineAndBreak()
+
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                                        lineBreak()
+
+                                        printLeft(
+                                            "Print Time : ${
+                                                getCurrentTimeFromTimeZone(
+                                                    requireContext(),
+                                                    MethodUtils.formatted()
+                                                )
+                                            }"
+                                        )
+                                    }
+                                    lineBreak()
+
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                        printLeft(
+                                            "Employee Report:" + eodReportData?.reportTime
+
+                                        )
+                                    }
+                                    lineBreak()
+
+                                    if (eodReportData?.orderSalesDetails?.data?.isNotEmpty() == true && eodReportConfiguration?.orderSalesDetails == true) {
+
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                            printCenter(
+                                                "ORDER SALES DETAILS",
+                                                fontSize = FONT_SIZE_4X,
+                                                isBold = true,
+                                                printOnNewLine = true
+                                            )
+
+                                            lineBreak()
+
+                                            addSixHeaderForOrderSaleDetailsLandiInner()
+                                            lineBreak()
+
+                                            printDashedLineAndBreak()
+                                            eodReportData?.orderSalesDetails?.data?.forEach {
+                                                addItemsInOrderSalesDetailsLandiInner(it)
+                                                lineBreak()
+                                            }
+                                        }
+                                        lineBreak()
+                                    }
+
+                                    if (eodReportData?.salesSummary?.isNotEmpty() == true && eodReportConfiguration?.salesSummary == true) {
+
+                                        printCenter(
+                                            "SALES SUMMARY",
+                                            fontSize = FONT_SIZE_4X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        printDashedLineAndBreak()
+                                        lineBreak()
+
+                                        eodReportData?.salesSummary?.forEach {
+
+
+                                        print(
+                                            padLine(
+                                                it.key,
+                                                it.showData(),
+                                                48
+                                            ).toString()
+                                        )
+
+                                    }
+                                        lineBreak()
+
+                                    if (eodReportData?.salesAndTaxesSummary?.isNotEmpty() == true && eodReportConfiguration?.salesAndTaxSummary == true) {
+
+                                        printCenter(
+                                            "SALES AND TAXES SUMMARY",
+                                            fontSize = FONT_SIZE_4X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+
+                                        print(
+                                            padLine(
+                                                "Category(Quantity)",
+                                                "Amount",
+                                                48
+                                            ).toString()
+                                        )
+
+                                        printDashedLineAndBreak()
+
+                                        eodReportData?.salesAndTaxesSummary?.forEach {
+
+                                            print(
+                                                padLine(
+                                                    it.key,
+                                                    it.showData(),
+                                                    48
+                                                ).toString()
+                                            )
+                                        }
+
+                                        lineBreak()
+                                    }
+
+                                    if (eodReportData?.itemWiseSales?.isNotEmpty() == true && eodReportConfiguration?.isItemWiseSales == true){
+
+                                        printCenter(
+                                            "ITEM WISE SALES",
+                                            fontSize = FONT_SIZE_4X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                            addItemWiseSalesHeaderLandiInner()
+                                            printDashedLineAndBreak()
+                                            eodReportData?.itemWiseSales?.forEach {
+                                                addItemWiseSalesLandiInnerPrinter(it)
+                                            }
+
+
+                                        }
+                                        lineBreak()
+                                    }
+
+                                    if (eodReportData?.paymentDetails?.isNotEmpty() == true && eodReportConfiguration?.paymentDetails == true) {
+
+                                        printCenter(
+                                            "PAYMENT DETAILS",
+                                            fontSize = FONT_SIZE_4X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                                            addPaymentDetailsHeaderLandiInner()
+                                            printDashedLineAndBreak()
+
+
+                                            eodReportData?.paymentDetails?.forEach {
+
+                                                if (it.size == 2) {
+
+
+                                                    addPaymentDetailsThreeDataLandiInner(it)
+
+                                                } else if (it.size == 1) {
+                                                    it.forEach {
+                                                        addPaymentDetailsTwoDataLandiInner(it)
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        lineBreak()
+                                    }
+
+                                    if (eodReportData?.tipDetails?.isNotEmpty() == true && eodReportConfiguration?.tipsDetails == true) {
+
+                                        printCenter(
+                                            "TIPS DETAILS",
+                                            fontSize = FONT_SIZE_4X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                                            addPaymentDetailsHeaderLandiInnerNew()
+                                            printDashedLineAndBreak()
+
+                                            eodReportData?.tipDetails?.forEach {
+
+                                                if (it.size == 2) {
+                                                    addPaymentDetailsThreeDataLandiInner(it)
+
+                                                } else if (it.size == 1) {
+                                                    it.forEach {
+                                                        addPaymentDetailsTwoDataLandiInner(it)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        lineBreak()
+                                    }
+
+                                    if (eodReportData?.taxDetails?.isNotEmpty() == true && eodReportConfiguration?.taxDetails == true) {
+
+                                        printCenter(
+                                            "TAX DETAILS",
+                                            fontSize = FONT_SIZE_4X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+
+                                        eodReportData?.taxDetails?.forEach {
+
+                                            printLeft(
+                                                padLine(
+                                                    it.key,
+                                                    it.showData(),
+                                                    48
+                                                ).toString()
+                                            )
+                                        }
+
+                                        lineBreak()
+                                    }
+
+                                    if (eodReportData?.refundAndVoidDetails?.isNotEmpty() == true && eodReportConfiguration?.refundOrVoids == true) {
+
+                                        printCenter(
+                                            "REFUNDS/VOIDS",
+                                            fontSize = FONT_SIZE_4X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                            print(
+                                                padLine(
+                                                    "Order Id(Employee Name)",
+                                                    "Amount",
+                                                    48
+                                                ).toString()
+                                            )
+
+                                            printDashedLineAndBreak()
+
+                                            eodReportData?.refundAndVoidDetails?.forEach {
+
+                                                if (it.size > 1) {
+                                                    addRefundVoidsMultipleLandiInner(it)
+                                                } else if (it.size == 1) {
+                                                    it.forEach {
+                                                        addPaymentDetailsTwoDataLandiInner(it)
+                                                    }
+
+                                                }
+                                            }
+                                        }
+
+                                        lineBreak()
+                                    }
+
+
+                                    if (eodReportData?.refundDetails?.isNotEmpty() == true && eodReportConfiguration?.refundDetails == true) {
+
+                                        printCenter(
+                                            "REFUND DETAILS",
+                                            fontSize = FONT_SIZE_4X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+
+
+                                        eodReportData?.refundDetails?.forEach {
+
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                                print(
+                                                    padLine(
+                                                        it.key,
+                                                        it.showData(),
+                                                        48
+                                                    ).toString()
+                                                )
+                                            }
+
+                                        }
+
+                                        lineBreak()
+                                    }
+
+                                    if (eodReportData?.discountDetails?.isNotEmpty() == true && eodReportConfiguration?.discountDetails == true) {
+
+                                        printCenter(
+                                            "DISCOUNT DETAILS",
+                                            fontSize = FONT_SIZE_4X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+
+
+
+                                        eodReportData?.discountDetails?.forEach {
+
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                                print(
+                                                    padLine(
+                                                        it.key,
+                                                        it.showData(),
+                                                        48
+                                                    ).toString()
+                                                )
+                                            }
+                                        }
+                                        lineBreak()
+                                    }
+
+                                    if (eodReportData?.totalCreditPaymentDetails?.isNotEmpty() == true && eodReportConfiguration?.totalCreditPayments == true) {
+
+                                        printCenter(
+                                            "TOTAL CREDIT PAYMENT",
+                                            fontSize = FONT_SIZE_4X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+
+
+                                        eodReportData?.totalCreditPaymentDetails?.forEach {
+
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                                print(
+                                                    padLine(
+                                                        it.key,
+                                                        it.showData(),
+                                                        48
+                                                    ).toString()
+                                                )
+
+                                            }
+                                        }
+                                        lineBreak()
+
+                                    }
+                                    if (eodReportData?.totalCashPayments?.isNotEmpty() == true && eodReportConfiguration?.totalCashPayments == true) {
+
+                                        printCenter(
+                                            "TOTAL CASH PAYMENT",
+                                            fontSize = FONT_SIZE_4X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+
+
+                                        eodReportData?.totalCashPayments?.forEach {
+
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                                print(
+                                                    padLine(
+                                                        it.key,
+                                                        it.showData(),
+                                                        48
+                                                    ).toString()
+                                                )
+                                            }
+                                        }
+                                        lineBreak()
+                                    }
+
+                                    if (eodReportData?.externalPayments?.isNotEmpty() == true && eodReportConfiguration?.totalCashPayments == true) {
+
+                                        printCenter(
+                                            "TOTAL EXTERNAL PAYMENT",
+                                            fontSize = FONT_SIZE_4X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+
+
+                                        eodReportData?.externalPayments?.forEach { report ->
+                                            report.forEach {
+                                                if(it.key?.contains("Name", true) == true){
+                                                    lineBreak()
+                                                }
+
+                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                                    print(
+                                                        padLine(
+                                                            it.key,
+                                                            it.showData(),
+                                                            48
+                                                        ).toString()
+                                                    )
+                                                }
+                                            }
+                                        }
+                                        lineBreak()
+                                    }
+                                    if (eodReportData?.totalPayments?.isNotEmpty() == true && eodReportConfiguration?.totalPayments == true) {
+
+                                        printCenter(
+                                            "TOTAL PAYMENTS",
+                                            fontSize = FONT_SIZE_4X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+
+                                        eodReportData?.totalPayments?.forEach {
+
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                                print(
+                                                    padLine(
+                                                        it.key,
+                                                        it.showData(),
+                                                        48
+                                                    ).toString()
+                                                )
+                                            }
+                                        }
+                                        lineBreak()
+                                    }
+
+                                    if (eodReportData?.creditCardBreakdown?.isNotEmpty() == true && eodReportConfiguration?.creditCardBreakdown == true) {
+
+                                        printCenter(
+                                            "CREDIT CARD BREAKDOWN",
+                                            fontSize = FONT_SIZE_4X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                            addCreditCardBreakDownLandiInner()
+
+                                            printDashedLineAndBreak()
+
+                                            eodReportData?.creditCardBreakdown?.forEach {
+
+                                                addCreditCardBreakDownDataLandiInner(it)
+                                            }
+                                        }
+                                        lineBreak()
+
+                                    }
+
+                                    if (eodReportData?.serviceChargeDetails?.isNotEmpty() == true && eodReportConfiguration?.serviceChargeDetails == true) {
+
+                                        printCenter(
+                                            "SERVICE CHARGE DETAILS",
+                                            fontSize = FONT_SIZE_4X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+
+                                        eodReportData?.serviceChargeDetails?.forEach {
+
+                                            it.forEach {
+                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                                    addPaymentDetailsTwoDataLandiInner(it)
+                                                }
+                                            }
+                                        }
+
+                                        lineBreak()
+                                    }
+                                    if (eodReportData?.creditTipAudit?.isNotEmpty() == true && eodReportConfiguration?.creditTipAudit == true) {
+
+                                        printCenter(
+                                            "CREDIT TIP AUDIT",
+                                            fontSize = FONT_SIZE_4X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                            addCreditTipAuditHeaderLandiInner()
+                                            lineBreak()
+                                            printDashedLineAndBreak()
+                                        }
+
+                                        eodReportData?.creditTipAudit?.forEach { it ->
+                                            var FPArt = ""
+                                            var SPart = ""
+                                            var LPart = ""
+                                            var TPArt = ""
+
+                                            it.forEach {
+
+
+                                                when {
+                                                    it.key?.contains("Subtotal", true) == true -> {
+                                                        FPArt = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
+                                                    }
+
+                                                    it.key?.contains("Tip", true) == true -> {
+                                                        SPart = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
+                                                    }
+
+                                                    it.key?.contains("Total", true) == true -> {
+                                                        LPart = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
+                                                    }
+
+                                                    it.key?.contains("Payment Id", true) == true -> {
+                                                        TPArt = it.value.toString()
+                                                    }
+                                                }
+
+                                            }
+
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                                addCreditTipAuditDataLandiInner(FPArt, SPart, TPArt, LPart)
+                                                lineBreak()
+                                            }
+                                        }
+                                        lineBreak()
+                                    }
+                                    if (eodReportData?.employeeGuestDetails?.isNotEmpty() == true && eodReportConfiguration?.employeeGuestReport == true) {
+
+                                        printCenter(
+                                            "EMPLOYEE GUEST DETAILS",
+                                            fontSize = FONT_SIZE_4X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+
+                                        eodReportData?.employeeGuestDetails?.forEach {
+                                            it.forEach {
+
+                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                                    employeeGuestDetailsDataLandiInner(it)
+                                                }
+                                            }
+                                        }
+                                        lineBreak()
+                                    }
+                                    if (eodReportData?.salesPerCategorySummary?.isNotEmpty() == true && eodReportConfiguration?.cashCreditPerSalesCategorySummary == true) {
+
+                                        printCenter(
+                                            "SALES PER CATEGORY SUMMARY\n(MIXED-PAYMENT ORDER ITEMS NOT INCLUDED)",
+                                            fontSize = FONT_SIZE_4X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+
+                                        eodReportData?.salesPerCategorySummary?.forEachIndexed { index, arrayList ->
+                                            if (index == 0) {
+                                                printCenter("Cash Sales")
+                                                lineBreak()
+                                                printDashedLineAndBreak()
+                                                lineBreak()
+                                                arrayList.forEach {
+                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                                        addPaymentDetailsTwoDataLandiInner(it)
+                                                    }
+                                                }
+                                                lineBreak()
+
+                                                printDashedLineAndBreak()
+                                                lineBreak()
+                                                print("\n")
+
+                                            } else if (index == 1) {
+                                                printCenter("Credit/Non Cash Sales")
+                                                lineBreak()
+                                                printDashedLineAndBreak()
+                                                lineBreak()
+
+                                                arrayList.forEach {
+                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                                        addPaymentDetailsTwoDataLandiInner(it)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        lineBreak()
+                                    }
+
+                                    // Clock in-out report
+                                    if (eodReportData?.clockInClockOut?.isNotEmpty() == true && eodReportConfiguration?.clockInOut == true) {
+
+                                        printCenter(
+                                            "CLOCK IN-CLOCK OUT",
+                                            fontSize = FONT_SIZE_4X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+
+                                        eodReportData?.clockInClockOut?.forEach {
+                                            it.forEach { data ->
+                                                if (data.key != "Total") {
+                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                                        print(
+                                                            padLine(
+                                                                if (data.key == "Total Working Hour") {
+                                                                    "Total"
+                                                                } else {
+                                                                    data.key
+                                                                },
+                                                                data.value.toString(),
+                                                                48
+                                                            ).toString()
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                            lineBreak()
+                                        }
+                                    }
+
+                                    if (eodReportData?.cashLogDetails?.isNotEmpty() == true && eodReportConfiguration?.cashLogDetails == true) {
+
+                                        printCenter(
+                                            "CASH LOG DETAILS",
+                                            fontSize = FONT_SIZE_4X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+
+                                        eodReportData?.cashLogDetails?.forEach {
+
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                                addPaymentDetailsTwoDataLandiInner(it)
+                                            }
+                                        }
+                                        lineBreak()
+                                    }
+                                    if (eodReportData?.otherDetails?.isNotEmpty() == true && eodReportConfiguration?.otherDetails == true) {
+
+                                        printCenter(
+                                            "OTHER DETAILS",
+                                            fontSize = FONT_SIZE_4X,
+                                            isBold = true,
+                                            printOnNewLine = true
+                                        )
+                                        lineBreak()
+
+                                        eodReportData?.otherDetails?.forEach {
+
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                                addPaymentDetailsTwoDataLandiInner(it)
+                                            }
+
+                                        }
+
+                                    }
+                                        lineBreak()
+                                        lineBreak()
+
+                                        print("EMPLOYEE x " + repeat("_", 36))
+                                        lineBreak()
+
+                                        print("CASH RECEIVED BY" + repeat("_", 31))
+
+                                        lineBreak()
+                                        lineBreak()
+                                        lineBreak()
+                                        lineBreak()
+
+                                        paperCut()
+                                }
+                                    }catch (e: java.lang.Exception) {
+                                    e.printStackTrace()
+                                    }
+                                }
+                            }
+                    }
+                }
+            })
+    }
+
 
     private fun setService(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters) {
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
@@ -4059,4 +4906,4 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
     }
-}
+    }

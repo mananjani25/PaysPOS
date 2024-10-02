@@ -22,6 +22,7 @@ import com.epson.eposprint.Builder
 import com.pays.pos.data.model.responseModel.*
 import com.pays.pos.utils.landi.LPrint
 import com.pays.pos.utils.landi.LPrint.FONT_SIZE_5X
+import com.pays.pos.utils.landi.LPrint.SMALL_SIZE
 import com.pays.pos.utils.landi.LPrint.lineBreak
 import com.pays.pos.utils.landi.LPrint.printLeft
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
@@ -52,6 +53,14 @@ fun padLine(
         partOne + repeat(" ", padding) + partTwo
     }
     return concat
+}
+
+fun addDot(item: String): String {
+    return if (item.length > 17) {
+        item.substring(0, 16) + "..."
+    } else {
+        item
+    }
 }
 
 
@@ -143,6 +152,14 @@ fun addItemWiseSalesHeaderSunmiInnerNew() {
 
 }
 
+fun addItemWiseSalesHeaderLandiInner() {
+
+    val header = "Item Name" + repeat(" ", 18) + "Quantity" + repeat(" ", 7) + "Amount"
+    Log.e("addItemWiseSalesHeader", "$header")
+    LPrint.print(header)
+
+}
+
 fun employeeTipSummaryHeader() {
 
     val header = "Employee Name   Cash Tips  Card Tips  Total Tips"
@@ -162,6 +179,14 @@ fun employeeTipSummaryHeaderNew() {
 
 fun addPaymentDetailsHeaderInner() {
     PrintSunmiUtils.normalText("Details" + repeat(" ", 20) + "Refund" + repeat(" ", 9) + "Amount")
+}
+
+fun addPaymentDetailsHeaderLandiInner() {
+    LPrint.print("Details" + repeat(" ", 20) + "Refund" + repeat(" ", 9) + "Amount")
+}
+
+fun addPaymentDetailsHeaderLandiInnerNew() {
+    LPrint.print("Details" + repeat(" ", 20) + "Refund" + repeat(" ", 9) + "Amount")
 }
 
 fun addPaymentDetailsHeaderInnerNew() {
@@ -342,6 +367,41 @@ fun addPaymentDetailsThreeDataInner(keyValue: java.util.ArrayList<KeyValue>) {
 
 }
 
+fun addPaymentDetailsThreeDataLandiInner(keyValue: java.util.ArrayList<KeyValue>) {
+
+    var title = ""
+    var refund = ""
+    var amount = ""
+
+
+    keyValue.forEach {
+
+
+        if (it.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
+            refund = it.showData()
+        } else {
+            title = it.key.toString()
+            amount = if (it.value?.isNotEmpty() == true) {
+                it.showData()
+            } else {
+                "$0.00"
+            }
+        }
+    }
+
+    var fPart = title + repeat(" ", 27 - title.length) + refund
+    var spaceLastPart = 48 - fPart.length
+    var spaceLast = 0
+    if (spaceLastPart > 1 && amount.length < spaceLastPart) {
+        spaceLast = spaceLastPart - amount.length
+    }
+
+    fPart += repeat(" ", spaceLast) + amount
+
+    LPrint.print(fPart)
+
+}
+
 fun addPaymentDetailsThreeDataInnerNew(keyValue: java.util.ArrayList<KeyValue>) {
 
     var title = ""
@@ -469,6 +529,22 @@ fun employeeGuestDetailsDataInner(keyValue: KeyValue) {
         ).toString()
     )
 
+}
+
+fun employeeGuestDetailsDataLandiInner(keyValue: KeyValue) {
+
+    var sPart = if (keyValue.key?.contains("Served", true) == true) {
+        keyValue.value.toString()
+    } else {
+        MethodUtils.roundOffAmount(keyValue.value?.toDouble() ?: 0.0)
+    }
+    LPrint.print(
+        padLine(
+            keyValue.key,
+            sPart,
+            48
+        ).toString()
+    )
 
 }
 
@@ -555,6 +631,19 @@ fun addPaymentDetailsTwoData(keyValue: KeyValue) {
 fun addPaymentDetailsTwoDataInner(keyValue: KeyValue) {
 
     PrintSunmiUtils.normalText(
+        padLine(
+            keyValue.key,
+            keyValue.showData(),
+            48
+        ).toString()
+    )
+
+
+}
+
+fun addPaymentDetailsTwoDataLandiInner(keyValue: KeyValue) {
+
+    LPrint.print(
         padLine(
             keyValue.key,
             keyValue.showData(),
@@ -672,6 +761,23 @@ fun addRefundVoidsMultipleInner(keyValue: java.util.ArrayList<KeyValue>) {
 
 }
 
+fun addRefundVoidsMultipleLandiInner(keyValue: java.util.ArrayList<KeyValue>) {
+
+    keyValue.forEach {
+        if (!it.key?.trim().equals("Item Count".trim(), true)) {
+            LPrint.print(
+                padLine(
+                    it.key,
+                    MethodUtils.roundOffAmount(it.value.toString().toDouble() ?: 0.0),
+                    48
+                ).toString()
+            )
+        }
+    }
+
+
+}
+
 //Added for sunmi version 3.3.66 or above
 fun addRefundVoidsMultipleInnerNew(keyValue: java.util.ArrayList<KeyValue>) {
 
@@ -768,6 +874,11 @@ fun addSixHeaderForOrderSaleDetailsSunmiInnerNew() {
     PrintSunmiUtils.normalTextNew("OrderId    Tip      SC     PayType     Amount   ")
 }
 
+fun addSixHeaderForOrderSaleDetailsLandiInner(){
+    LPrint.print("OrderId    Tip      SC     PayType     Amount   ")
+}
+
+
 fun addCreditTipAuditHeader(builder: Builder): Builder {
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
@@ -839,6 +950,16 @@ fun addCreditTipAuditHeaderInner() {
         ) + "Total"
     )
 
+}
+
+fun addCreditTipAuditHeaderLandiInner() {
+
+    LPrint.print(
+        "PaymentId" + repeat(" ", 4) + "SubTotal" + repeat(" ", 6) + "Tip" + repeat(
+            " ",
+            8
+        ) + "Total"
+    )
 
 }
 
@@ -958,6 +1079,24 @@ fun addCreditTipAuditDataInner(
 
 }
 
+fun addCreditTipAuditDataLandiInner(
+    fPArt: String,
+    sPart: String,
+    TPArt: String,
+    lPart: String
+) {
+
+
+    var pOne = TPArt + repeat(" ", 13 - TPArt.length) + fPArt
+
+    pOne += repeat(" ", 27 - pOne.length) + sPart
+    pOne += repeat(" ", 38 - pOne.length) + lPart
+
+
+    LPrint.print(pOne)
+
+}
+
 //Added for sunmi version 3.3.66 or above.
 fun addCreditTipAuditDataInnerNew(
     fPArt: String,
@@ -1029,6 +1168,13 @@ fun addCreditCardBreakDownInner() {
 
 
     PrintSunmiUtils.normalText("CardName" + repeat(" ", 20) + "Tip" + repeat(" ", 11) + "Amount")
+
+}
+
+fun addCreditCardBreakDownLandiInner() {
+
+
+    LPrint.print("CardName" + repeat(" ", 20) + "Tip" + repeat(" ", 11) + "Amount")
 
 }
 
@@ -1141,6 +1287,26 @@ fun addCreditCardBreakDownDataInner(
     pOne += repeat(" ", spaceLast) + amount
 
     PrintSunmiUtils.normalText(pOne)
+
+}
+
+fun addCreditCardBreakDownDataLandiInner(
+    creditCardBreakdown: EodReportResponse.Data.CreditCardBreakdown
+) {
+
+    var pOne = creditCardBreakdown.key + repeat(
+        " ",
+        28 - creditCardBreakdown.key.length
+    ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
+    var lastPart = 48 - pOne.length
+    var amount = creditCardBreakdown.showData()
+    var spaceLast = 0
+    if (lastPart > 1 && amount.length < lastPart) {
+        spaceLast = lastPart - amount.length
+    }
+    pOne += repeat(" ", spaceLast) + amount
+
+    LPrint.print(pOne)
 
 }
 
@@ -1266,7 +1432,7 @@ fun addItemWiseSalesSunmiInnerPrinter(it: EodReportResponse.Data.ItemWiseSalesDa
     var amount = ""
 
 
-    itemName = it.itemName
+    itemName = addDot(it.itemName)
     quantity = it.quantity
     amount = MethodUtils.roundOffAmount(it.amount)
 
@@ -1283,6 +1449,30 @@ fun addItemWiseSalesSunmiInnerPrinter(it: EodReportResponse.Data.ItemWiseSalesDa
 
 }
 
+fun addItemWiseSalesLandiInnerPrinter(it: EodReportResponse.Data.ItemWiseSalesData) {
+
+    var itemName = ""
+    var quantity = ""
+    var amount = ""
+
+
+    itemName = addDot(it.itemName)
+    quantity = it.quantity
+    amount = MethodUtils.roundOffAmount(it.amount)
+
+    var fPart = itemName + repeat(" ", 27 - itemName.length) + quantity
+    var spaceLastPart = 48 - fPart.length
+    var spaceLast = 0
+    if (spaceLastPart > 1 && amount.length < spaceLastPart) {
+        spaceLast = spaceLastPart - amount.length
+    }
+
+    fPart += repeat(" ", spaceLast) + amount
+    Log.e("addItemWiseSalesHeader", "$fPart")
+    LPrint.print(fPart)
+
+}
+
 fun addItemWiseSalesSunmiInnerPrinterNew(it: EodReportResponse.Data.ItemWiseSalesData) {
 
     var itemName = ""
@@ -1290,7 +1480,7 @@ fun addItemWiseSalesSunmiInnerPrinterNew(it: EodReportResponse.Data.ItemWiseSale
     var amount = ""
 
 
-    itemName = it.itemName
+    itemName = addDot(it.itemName)
     quantity = it.quantity
     amount = MethodUtils.roundOffAmount(it.amount)
 
@@ -1436,6 +1626,19 @@ fun addItemsInOrderSalesDetailsInner(
     data += repeat(" ", 39 - data.length) + MethodUtils.roundOffAmount(details.amount)
 
     PrintSunmiUtils.normalText(data)
+}
+
+fun addItemsInOrderSalesDetailsLandiInner(
+    details: EodReportResponse.Data.OrderSalesDetails.Details
+){
+
+    var data = details.orderId
+    data += repeat(" ", 10 - details.orderId.length) + MethodUtils.roundOffAmount(details.tip)
+    data += repeat(" ", 18 - data.length) + MethodUtils.roundOffAmount(details.serviceCharge)
+    data += repeat(" ", 27 - data.length) + details.payType
+    data += repeat(" ", 39 - data.length) + MethodUtils.roundOffAmount(details.amount)
+
+    LPrint.print(data)
 }
 
 //Added for sunmi version 3.3.66 or above

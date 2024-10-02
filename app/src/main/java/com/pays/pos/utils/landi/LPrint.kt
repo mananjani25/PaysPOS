@@ -21,13 +21,13 @@ final object LPrint {
     public val MEDIUM_SIZE = byteArrayOf(0x1B, 0x21, 0x12)
     public var NORMAL_SIZE = byteArrayOf(0x1B, 0x21, 0x00) // ESC ! 0
     public var DOUBLE_HEIGHT_WIDTH = byteArrayOf(0x1B, 0x21, 0x11) // ESC ! 17 (0x11)
-    val FONT_SIZE_3X = byteArrayOf(0x1B, 0x21, 0x11)
+    val FONT_SIZE_3X = byteArrayOf(0x1B, 0x21, 0x22)
     val FONT_SIZE_4X = byteArrayOf(0x1B, 0x21, 0x22) // Width: 4, Height: 4
     val FONT_B = byteArrayOf(0x1D, 0x21, 0x11) // Font B0x1B, 0x4D, 0x01
     val FONT_SIZE_10X = byteArrayOf(0x1B, 0x21, 0xAA.toByte()) // Width: 10, Height: 10
     val FONT_SIZE_DOUBLE_HEIGHT = byteArrayOf(0x1B, 0x21, 0x31) // Double height
     val FONT_SIZE_DOUBLE_BOTH = byteArrayOf(0x1B, 0x21, 0x11) // Double width and height
-    val FONT_SIZE_5X = byteArrayOf(0x1B, 0x21, 0x32) // Width: 4, Height: 4
+    val FONT_SIZE_5X = byteArrayOf(0x1B, 0x21, 0x32) // Width: 5, Height: 5
 
 
     public var LEFT_ALIGN = byteArrayOf(0x1B, 0x61, 0x00) // ESC a 0
@@ -223,6 +223,7 @@ final object LPrint {
         }
 
     }
+
 
     public fun printQRCode(writer: OutputStream, data: String,align :ByteArray= CENTER_ALIGN) {
         try {
