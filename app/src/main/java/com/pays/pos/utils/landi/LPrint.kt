@@ -3,8 +3,16 @@ package com.pays.pos.utils.landi
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
+import android.content.Context
+import com.pays.pos.data.entities.TbCartItem
 import com.pays.pos.data.model.DineInModel
+import com.pays.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
+import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.pays.pos.data.model.responseModel.PrinterResponse
+import com.pays.pos.data.remote.Constants
+import com.pays.pos.di.PrefProvider
 import com.pays.pos.utils.*
+import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import java.io.IOException
 import java.io.OutputStream
 import java.util.*
@@ -207,6 +215,12 @@ final object LPrint {
         outputStream?.write(text.toByteArray())
     }
 
+    public fun printWithFontSize(text: String,fontSize: ByteArray) {
+
+        outputStream?.write(fontSize)
+        outputStream?.write(text.toByteArray())
+    }
+
     public fun lineBreak() {
         outputStream?.write(LINE_FEED)
     }
@@ -355,6 +369,158 @@ final object LPrint {
 
         }
     }
+
+    fun printKitchenReceiptDineInLandi(
+        context: Context,
+        outputStream: OutputStream,
+        customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String,
+        item: ArrayList<TbCartItem>,
+        listItemWithGuest: HashMap<String, ArrayList<TbCartItem>> = hashMapOf(),
+        kitchenSettingModel: GetKitchenReceiptSettingsResponse.Data,
+        prefProvider: PrefProvider,
+        getOrderDetailsResponse: GetOrderDetailsResponse.Data?
+    ) {
+        try {
+            //ProgressUtils.showProgressDialog(requireActivity())
+
+            lineBreak()
+
+            if (prefProvider.getValueboolean(Constants.ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                printCenter("OrderID:" + getOrderDetailsResponse?.custom_order_id, isBold = true, fontSize = FONT_B)
+            } else {
+                printCenter("OrderID:" + getOrderDetailsResponse?.id, isBold = true, fontSize = FONT_B)
+            }
+
+
+
+            lineBreak()
+
+            if (kitchenSettingModel.showOrderType) {
+
+                printCenter(getOrderDetailsResponse?.orderTypeName.toString(), isBold = true, fontSize = FONT_B)
+
+                lineBreak()
+            }
+
+            if(prefProvider.getValueboolean(Constants.DINE_IN_UPDATE,false)) {
+                lineBreak()
+                printCenter("*** Updated ***", fontSize = FONT_B)
+            }
+
+            lineBreak()
+            lineBreak()
+
+            printCenter(getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")", fontSize = FONT_B)
+
+            lineBreak()
+            lineBreak()
+
+            if (kitchenSettingModel.showTeamMember) {
+
+
+                printLeft(
+                    padLine(
+                        "Employee:" + getOrderDetailsResponse?.employee?.name, "",
+                        if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
+                    ).toString()
+                )
+
+            }
+
+            lineBreak()
+
+            printLeft(
+                padLine(
+                    Constants.getReceiptFormatDateFromUTCServer(
+                        context,
+                        getOrderDetailsResponse?.createdAt.toString()
+                    ),
+                    "",
+                    48
+                ).toString()
+            )
+
+            printDashedLineAndBreak()
+            lineBreak()
+
+
+            addOrdersForKitchenDineInLandi(
+                item, customerReceiptPrinters.printerCategories.toCollection(
+                    arrayListOf()
+                ), listItemWithGuest
+            )
+
+
+            if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+
+                lineBreak()
+                printCenter(getOrderDetailsResponse.note)
+                lineBreak()
+            }
+
+            paperCut()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    fun addOrdersForKitchenDineInLandi(
+        list: ArrayList<TbCartItem>,
+        printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null,
+        listItemWithGuest: HashMap<String, ArrayList<TbCartItem>> = hashMapOf()
+    ) {
+
+        listItemWithGuest.forEach { it ->
+
+            lineBreak()
+            printDashedLineAndBreak()
+
+            printText(it.key + "\n")
+
+            printDashedLineAndBreak()
+            lineBreak()
+
+            it.value.forEach { obj ->
+
+                printerCat?.forEach {
+                    if (it.id == obj.categoryId && it.printerEnable && it.categoryActive) {
+
+                        printWithFontSize(obj.itemQuantity.toString() + " " + obj.name.uppercase(),
+                            FONT_B)
+
+                        if (obj.modifiers.isNotEmpty()) {
+                            for (j in 0 until obj.modifiers.size) {
+                                val modifierObj = obj.modifiers.get(j)
+
+
+                                lineBreak()
+                                printText(
+                                    "  " + if (modifierObj.modifier_quantity == 1) {
+                                        "   "
+                                    } else {
+                                        "" + modifierObj.modifier_quantity + "x "
+                                    } + modifierObj.name.uppercase()
+                                )
+
+
+                            }
+                        }
+                        if (obj.note.isNotEmpty()) {
+                            lineBreak()
+                            printText("  Note:" + obj.note)
+                        }
+
+                        lineBreak()
+                    }
+                }
+            }
+
+        }
+    }
+
 
     fun printTab(){
         outputStream?.apply {

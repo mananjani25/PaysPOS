@@ -195,7 +195,8 @@ class DineInOrderTableViewModelPays @Inject constructor(
         item: TbCartItem? = null
     ) {
         Log.d("###17MAR23", "fireItemToKitchen: Called - Start")
-        _showProgress.value = Event(true)
+       // _showProgress.value = Event(true)
+        _showProgress.postValue(Event(true))
 
         viewModelScope.launch {
             val resource: Resource<BaseResponse> =

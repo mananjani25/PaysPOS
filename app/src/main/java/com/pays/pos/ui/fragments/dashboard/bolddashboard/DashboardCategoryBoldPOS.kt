@@ -50,6 +50,7 @@ import com.pays.pos.data.remote.Constants.BALANCE_INQUIRY
 import com.pays.pos.data.remote.Constants.CUSTOMER
 import com.pays.pos.data.remote.Constants.DELIVERY_TYPE
 import com.pays.pos.data.remote.Constants.DINE_IN
+import com.pays.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.pays.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.pays.pos.data.remote.Constants.GIFT_CARD
 import com.pays.pos.data.remote.Constants.IS_FROM_ALL_ORDER
@@ -1201,10 +1202,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
                         }
                     }
+
+                    if(prefProvider.getValue(ORDER_TYPE,"") != DINE_IN) {
                         clearCustomer()
-                        viewModel.updateActiveOrderFlagClear()
                         viewModel.clearListTax()
                         viewModel.deleteCart()
+                    }
+
+                    viewModel.updateActiveOrderFlagClear()
+
                         EventBus.getDefault().post(
                             MessageEvent(
                                 "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
