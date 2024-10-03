@@ -7341,7 +7341,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    fun syncTaxes() {
+    fun syncTaxes(closeSpinner: Boolean = true) {
 //        _taxSyncDone.value = Event(false)
         viewModelScope.launch {
 
@@ -7512,7 +7512,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 CoroutineScope(Dispatchers.Main).launch {
                                     delay(1000)
-                                    _syncProgressDialog.postValue(Event(false))
+                                    if (closeSpinner) {
+                                        _syncProgressDialog.postValue(Event(false))
+                                    }
+//                                    _syncProgressDialog.postValue(Event(false))
                                     _taxSyncDone.value = Event(true)
                                 }
 
