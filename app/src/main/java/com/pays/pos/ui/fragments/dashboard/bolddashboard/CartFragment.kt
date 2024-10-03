@@ -2828,8 +2828,6 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
                                     prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
                                     viewModel.removeItemDineInList.clear()
-                                    viewModel.dineInAdapterBackup = null
-                                    viewModel.cartModel = null
 
                                     //if (cartModelsList.size > 0) {
 

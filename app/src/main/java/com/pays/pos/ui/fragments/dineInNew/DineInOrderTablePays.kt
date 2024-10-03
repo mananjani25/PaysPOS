@@ -1071,7 +1071,6 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-
                 Handler().postDelayed({
                     if (findNavController().currentDestination?.id == R.id.dineInOrderTable)
                         findNavController().navigate(
@@ -1079,7 +1078,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             bundle
                         )
                                       },
-                    200)
+                    500)
 
 
                 }
@@ -2355,7 +2354,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     R.id.action_dineInOrderTable_to_checkoutDineIN,
                     bundle
                 )},
-                300)
+                500)
 
     }
 

@@ -1318,6 +1318,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
 
                 var found = false
+                var foundItemCartId = -1
+                var itemTobeMerge:TbCartItem? = null
                 lateinit var foundItem: TbCartItem
 
                 Log.d("AddItemFragment.kt", "txtDone_before_for (it in viewModel.currentCartItems)")
@@ -1342,7 +1344,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                 foundItem = it
 
                                 dineInItemQunatity =
-                                    if (isUpdateItem) {
+                                    if (isUpdateItem && it.cartItemId == item.cartItemId) {
 
                                         Log.e("ITEM QUANTITY, ----", "ITEM UPDATE -> YES QTY= $qty")
 
@@ -1352,6 +1354,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                             "ITEM QUANTITY, ----",
                                             "ITEM UPDATE -> NO QTY= $qty -- ITEM QUNANTITY = ${it.itemQuantity} "
                                         )
+                                        itemTobeMerge = item
+
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            viewModel.deleteCartItem(itemTobeMerge.cartItemId)
+                                        }
+
                                         it.itemQuantity + qty
                                     }
 
@@ -1362,14 +1370,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                     modifiers = if (!it.isFired) {
                                         item.modifiers
                                     } else {
-                                        itemOldModifiers
-
-//                                             runOnUiThread {
-//                                                AlertUtils.showCustomAlert(
-//                                                    requireContext(),
-//                                                    "Can't update item modifiers! Item is already fired to the kitchen !"
-//                                                )
-//                                            }
+                                        if(it.cartItemId == item.cartItemId)
+                                            itemOldModifiers
+                                        else
+                                            it.modifiers
                                     }
                                     viewModel.cartItemModifiersBeforeUpdate = null
                                 } else if (it.isFired) {
@@ -1476,6 +1480,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                         )
                                     }
                                 }
+
                                 try {
                                     viewModel.updateCartModel(viewModel.cartModel!!)
                                 } catch (e: Exception) {
