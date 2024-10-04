@@ -2462,7 +2462,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     guestName,
                     listWTitems,
                     subTotalGuest,
-                    subTotalGuest + taxGuest + serviceChargeGuest,
+                    total,
                     taxGuest,
                     serviceChargeGuest,
                     divideDiscount
@@ -6370,7 +6370,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                     "$" + MethodUtils.roundOffAmountString(0.00)
                                                 } else {
                                                     getOrderDetailsResponse?.totalDiscount?.let {
-                                                        "-$" + MethodUtils.roundOffAmountString(it)
+                                                        "-$" + MethodUtils.roundOffAmountString(divideDiscount)
                                                     }
                                                 },
                                                 48
@@ -6409,7 +6409,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         val taxToPrint =
                                             padLine(
                                                 "Tax",
-                                                "$" + MethodUtils.roundOffAmountString(guestTaxes),
+                                                "$" + MethodUtils.roundOffAmountString(taxGuest),
                                                 if (customerSettingModel.fonts == Constants.LARGE) {
                                                     23
                                                 } else {
@@ -6997,11 +6997,12 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),
                     padLine(
                         "Total Discount",
-                        if (guestDiscount == 0.0) {
+                        if (divideDiscount == 0.0) {
+
 //                            "-$" + MethodUtils.roundOffAmountString(0.00)
                             "$" + MethodUtils.roundOffAmountString(0.00)
                         } else {
-                            "-$" + MethodUtils.roundOffAmountString(guestDiscount)
+                            "-$" + MethodUtils.roundOffAmountString(divideDiscount)
                         },
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             23
