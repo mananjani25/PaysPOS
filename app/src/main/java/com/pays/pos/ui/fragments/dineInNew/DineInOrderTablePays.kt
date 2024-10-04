@@ -1711,7 +1711,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 if (it.toString() != "null") {
                     AlertUtils.showCustomAlert(requireContext(), it)
                 }
-              //  dineInTableAdapter.updateStatus(clickedPos, isFireAll)
+                try {
+                    dineInTableAdapter.notifyDataSetChanged()
+                }catch (e:Exception){}
             }
         }
 
