@@ -16,11 +16,14 @@ import com.pays.pos.data.model.DineInModel
 import com.pays.pos.databinding.ViewDineInItemBinding
 import com.pays.pos.ui.activities.SwipeHelper
 import com.pays.pos.ui.adapter.boldpos.CartAdapter
+import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
+import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.callback.MyCallback
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 
-class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
+class DineInAdapter(val dashBoardCategoryViewModel: DashBoardCategoryViewModel? = null) : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
     private var list: ArrayList<DineInModel> = arrayListOf()
     private var itemList: ArrayList<TbCartItem> = arrayListOf()
     private lateinit var listner: DineInCallback
@@ -169,12 +172,16 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
             }
 
             binding.constraintHeader.setOnClickListener {
-                if (binding.llCustomerDialog.visibility == View.VISIBLE) {
-                    binding.llCustomerDialog.visibility = View.GONE
-                }
 
+                if(dashBoardCategoryViewModel?.isItemEditInProgress != true) {
+
+                    if (binding.llCustomerDialog.visibility == View.VISIBLE) {
+                        binding.llCustomerDialog.visibility = View.GONE
+                    }
+                    list.get(0).selectedPosition = layoutPosition
+                }
                 listner.onHeaderSelected(layoutPosition)
-                list.get(0).selectedPosition = layoutPosition
+
                 notifyDataSetChanged()
             }
         }
