@@ -2464,7 +2464,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     guestName,
                     listWTitems,
                     subTotalGuest,
-                    total,
+                    subTotalGuest + taxGuest + serviceChargeGuest,
                     taxGuest,
                     serviceChargeGuest,
                     divideDiscount
@@ -6188,8 +6188,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                             isBold = true
                                         )
 
+
+                                        val typeToPrint = if(paymentType.isNotEmpty()) paymentType else type
+
                                         printCenter(
-                                            "Unpaid",
+                                            typeToPrint,
                                             FONT_SIZE_5X,
                                             isBold = true,
                                             printOnNewLine = true
@@ -6372,7 +6375,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                     "$" + MethodUtils.roundOffAmountString(0.00)
                                                 } else {
                                                     getOrderDetailsResponse?.totalDiscount?.let {
-                                                        "-$" + MethodUtils.roundOffAmountString(divideDiscount)
+                                                        "-$" + MethodUtils.roundOffAmountString(it)
                                                     }
                                                 },
                                                 48
@@ -6411,7 +6414,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         val taxToPrint =
                                             padLine(
                                                 "Tax",
-                                                "$" + MethodUtils.roundOffAmountString(taxGuest),
+                                                "$" + MethodUtils.roundOffAmountString(guestTaxes),
                                                 if (customerSettingModel.fonts == Constants.LARGE) {
                                                     23
                                                 } else {
@@ -6610,7 +6613,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         }
                                     }
 
-                                    if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
+                                    if (getOrderDetailsResponse?.payments?.isNotEmpty() == true && type.lowercase() != "unpaid") {
 
                                         printLeft(
                                             padLine(
@@ -6621,7 +6624,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         )
                                     }
 
-                                    if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
+                                    if (getOrderDetailsResponse?.payments?.isNotEmpty() == true && type.lowercase() != "unpaid") {
 
 
                                         printLeft(
@@ -6641,11 +6644,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         lineBreak()
 
                                         printCenter("Order Note")
+                                        lineBreak()
                                         printCenter( order_note)
+                                        lineBreak()
                                     }
 
 
                                     if (paymentType.equals("paid", ignoreCase = true)) {
+                                        lineBreak()
                                         if (customerSettingModel.fonts == Constants.LARGE) {
                                             printBoldLeft("Customer Signature ____")
                                         } else {
@@ -6999,12 +7005,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),
                     padLine(
                         "Total Discount",
-                        if (divideDiscount == 0.0) {
-
+                        if (guestDiscount == 0.0) {
 //                            "-$" + MethodUtils.roundOffAmountString(0.00)
                             "$" + MethodUtils.roundOffAmountString(0.00)
                         } else {
-                            "-$" + MethodUtils.roundOffAmountString(divideDiscount)
+                            "-$" + MethodUtils.roundOffAmountString(guestDiscount)
                         },
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             23
@@ -9540,8 +9545,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             if(getOrderDetailsResponse?.payments?.isNotEmpty() == true){
-                printPayment(prefProvider.isOldSunmiFrameworkVersion(),SUNMI_INNER_PRINTER,getOrderDetailsResponse!!.payments)
-
+                printPayment(prefProvider.isOldSunmiFrameworkVersion(), printerType = SUNMI_INNER_PRINTER, list = getOrderDetailsResponse!!.payments)
             }
 
 
@@ -10820,6 +10824,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     }
 
+
+
+                                    if(getOrderDetailsResponse?.payments?.isNotEmpty() == true){
+                                        printPayment(false,outputStream,
+                                            LANDI_INNER_PRINTER,getOrderDetailsResponse!!.payments)
+                                    }
+
                                     lineBreak()
 
                                     /**
@@ -10856,7 +10867,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         lineBreak()
 
                                         printCenter("Order Note")
+                                        lineBreak()
                                         printCenter( order_note)
+                                        lineBreak()
                                     }
 
 

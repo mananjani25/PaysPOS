@@ -24,9 +24,13 @@ import com.pays.pos.utils.landi.LPrint
 import com.pays.pos.utils.landi.LPrint.FONT_SIZE_5X
 import com.pays.pos.utils.landi.LPrint.SMALL_SIZE
 import com.pays.pos.utils.landi.LPrint.lineBreak
+import com.pays.pos.utils.landi.LPrint.printCenter
+import com.pays.pos.utils.landi.LPrint.printDashedLineAndBreak
 import com.pays.pos.utils.landi.LPrint.printLeft
+import com.pays.pos.utils.landi.LPrint.printText
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
+import java.io.OutputStream
 
 val TAG = "PrinterReceipt"
 
@@ -6031,6 +6035,7 @@ fun addOrderItemForDineIn(
 
 fun printPayment(
     isOldSunmiFrameworkVersion: Boolean = false,
+    outputStream: OutputStream? = null,
     printerType:String,
     list: List<GetOrderDetailsResponse.Data.Payment>
 ) {
@@ -6041,6 +6046,13 @@ fun printPayment(
                 printHorizontalInnerNew(isOldSunmiFrameworkVersion)
                 normalTextCenter("\nPayment History")
             }
+        }
+
+        Constants.LANDI_INNER_PRINTER ->{
+                printDashedLineAndBreak()
+                printCenter("\nPayment History")
+                lineBreak()
+
         }
     }
 
@@ -6058,6 +6070,11 @@ fun printPayment(
                     printNormalText(isOldSunmiFrameworkVersion,paymentToPrint)
                 }
             }
+
+            Constants.LANDI_INNER_PRINTER -> {
+                printLeft(paymentToPrint)
+                lineBreak()
+            }
         }
     }
 
@@ -6067,6 +6084,10 @@ fun printPayment(
                 printHorizontalInnerNew(isOldSunmiFrameworkVersion)
                 normalText("\n")
             }
+        }
+
+        Constants.LANDI_INNER_PRINTER ->{
+            printDashedLineAndBreak()
         }
     }
 
