@@ -304,6 +304,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     //  listner.onCancelItemSelected(false)
 
                 }
+                viewModel.isItemEditInProgress = false
             }
         })
 
@@ -1785,6 +1786,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                 //   viewModel.fragmentNeedToBeUpdated.value = true
 
+                viewModel.isItemEditInProgress = false
             }
         })
 
