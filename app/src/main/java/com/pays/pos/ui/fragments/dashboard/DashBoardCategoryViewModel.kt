@@ -121,6 +121,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     private var syncMarkeup: Boolean = false
     private var isGuestPay: Boolean = false
     var dineInHeaderPosition: Int = 0
+    var currentSelectedHeaderDineIn: Int = 0
     var listItems: ArrayList<TbCartItem> = arrayListOf()
     var dineInSelectedItemHeaderPos: Int = 0
     var selectedItemPositionDine: Int = 0
@@ -142,6 +143,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     var manualCartOrderNote: String? = ""
     var currentCartItems: ArrayList<TbCartItem> = arrayListOf()
     var duplicateCurrentCartItem: ArrayList<TbCartItem> = arrayListOf()
+
+    var isItemEditInProgress = false
 
     // used to check if removed last item from the cart
     val lastItemRemoveFromCart = MutableLiveData<Pair<Boolean, Int>>()
