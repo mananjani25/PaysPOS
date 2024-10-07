@@ -11649,7 +11649,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             ), listItemWithGuest
                         )
                         SunmiPrinterApi.getInstance().lineWrap(1)
-                        orderNote(orderNote)
+
+                        if(orderNote.isNotEmpty())
+                            orderNote(orderNote)
 
                     }
 
@@ -11680,7 +11682,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         addOrdersForKitchenDineInInner(item, listItemWithGuest,prefProvider.isOldSunmiFrameworkVersion())
                         SunmiPrintHelper.getInstance().lineWrap(1)
 
-                        orderNoteInnerLarge(orderNote)
+                        if(orderNote.isNotEmpty())
+                            orderNoteInnerLarge(orderNote)
                     }
                 }
 
@@ -11722,7 +11725,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         )
 
                         lineBreak()
-                        printCenter(orderNote)
+                        if(orderNote.isNotEmpty())
+                            printCenter(orderNote)
+                        lineBreak()
                         lineBreak()
 
                     }

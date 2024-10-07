@@ -7205,15 +7205,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         MethodUtils.roundOffAmountDouble(order?.subTotal?:0.0 + serviceCharge + order?.totalTaxAmount!!
                                         ?: 0.0)
 
-                                    val totalAmountToPrint =
-                                        padLine(
-                                            "Total Price",
-                                            "$" + MethodUtils.roundOffAmountString(totalAmt),
-                                            48
-                                        ).toString().toByteArray()
-
-                                    outputStream.write(totalAmountToPrint)
-                                    outputStream.write(LPrint.LINE_FEED)
+//                                    val totalAmountToPrint =
+//                                        padLine(
+//                                            "Total Price",
+//                                            "$" + MethodUtils.roundOffAmountString(totalAmt),
+//                                            48
+//                                        ).toString().toByteArray()
+//
+//                                    outputStream.write(totalAmountToPrint)
+//                                    outputStream.write(LPrint.LINE_FEED)
 
 
                                     /***
