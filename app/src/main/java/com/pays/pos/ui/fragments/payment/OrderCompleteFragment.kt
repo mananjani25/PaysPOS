@@ -3950,12 +3950,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         )
                                     }
 
-                                    printCenter(
-                                        "Paid",
-                                        FONT_SIZE_5X,
-                                        isBold = true,
-                                        printOnNewLine = true
-                                    )
 
                                     /**
                                      * Print Business Name
@@ -4390,6 +4384,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     if (getDineInOrderDetails?.note != null && getDineInOrderDetails?.note != "" && customerSettingModel.showOrderNote) {
                                         lineBreak()
                                         printCenter("Order Note")
+                                        lineBreak()
                                         printCenter(getDineInOrderDetails?.note.toString())
                                     }
 
@@ -7924,7 +7919,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
         if(getDineInOrderDetails?.payments?.isNotEmpty() == true){
-            printPayment(prefProvider.isOldSunmiFrameworkVersion(),SUNMI_INNER_PRINTER,getDineInOrderDetails!!.payments)
+            printPayment(prefProvider.isOldSunmiFrameworkVersion(), printerType = SUNMI_INNER_PRINTER, list = getDineInOrderDetails!!.payments)
 
         }
 
