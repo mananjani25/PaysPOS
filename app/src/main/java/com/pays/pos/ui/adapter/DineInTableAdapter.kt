@@ -184,6 +184,25 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 }
             }
 
+            var guestOrderDisShare = 0.0
+            if (list.get(0).orderDiscount > 0) {
+
+                // Distributed order discount among guest based on discount percentage (To resolve minus guest amount issue)
+                guestOrderDisShare = MethodUtils.roundOffAmountDouble(
+                    MethodUtils.percentageCalculation(MethodUtils.roundOffAmountDouble(guestSubTotalWithOutCharges +
+                            list.get(0).wholeTableSubTotal), list[0].orderDiscountPercentage))
+
+//                guestOrderDisShare =
+//                    MethodUtils.roundOffAmountDouble(list[0].orderDiscount / (list[0].totalGuestCount))
+                /*  guestOrderDisShare =
+                      (finalAmt * list.get(0).orderDiscount) / (list.get(0).orderTotalAmount + list.get(0).orderDiscount)*/
+
+                LogUtil.logE("TODAY", "guestOrderDisShare  ${guestOrderDisShare}")
+
+            }
+
+            var totalGuestDiscount = guestOrderDisShare + guestDiscount + list[0].wholeTableDiscont
+
 
             guestAmt += list.get(0).guestDividedAmt
 
@@ -262,7 +281,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                             )
                         ) {
                             isApplied = true
-                            totalServiceCharge += (guestSubTotal * it.percentage) / 100
+                            totalServiceCharge += ((guestSubTotal - totalGuestDiscount) * it.percentage) / 100
                             return@forEach
 
                         }
@@ -283,7 +302,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
             var finalAmt =
-                guestSubTotal + totalServiceCharge + totalTaxAmt + list.get(0).guestDividedAmt
+                guestSubTotal - totalGuestDiscount + totalServiceCharge + totalTaxAmt + list[0].wholeTableSurTax
 
             finalAmt = String.format("%.2f", finalAmt).toDouble()
             LogUtil.logE("TODAY", "guestSubTotal  ${guestSubTotal}")
@@ -293,23 +312,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             LogUtil.logE("TODAY", "orderTotalAmount  ${list.get(0).orderTotalAmount}")
             LogUtil.logE("TODAY", "orderfinalAmt:  ${finalAmt}")
 
-            var guestOrderDisShare = 0.0
-            if (list.get(0).orderDiscount > 0) {
 
-                // Distributed order discount among guest based on discount percentage (To resolve minus guest amount issue)
-                guestOrderDisShare = MethodUtils.roundOffAmountDouble(
-                   MethodUtils.percentageCalculation(MethodUtils.roundOffAmountDouble(guestSubTotalWithOutCharges +
-                           list.get(0).wholeTableSubTotal), list[0].orderDiscountPercentage))
-
-//                guestOrderDisShare =
-//                    MethodUtils.roundOffAmountDouble(list[0].orderDiscount / (list[0].totalGuestCount))
-                /*  guestOrderDisShare =
-                      (finalAmt * list.get(0).orderDiscount) / (list.get(0).orderTotalAmount + list.get(0).orderDiscount)*/
-
-                LogUtil.logE("TODAY", "guestOrderDisShare  ${guestOrderDisShare}")
-
-            }
-            finalAmt = finalAmt - guestOrderDisShare
+            finalAmt = guestSubTotal + totalTaxAmt + totalServiceCharge + list[0].wholeTableSurTax - totalGuestDiscount
 
             LogUtil.logE("TODAY", "GuestguestSubTotal  ${guestSubTotal}")
             LogUtil.logE("TODAY", "GuesttotalServiceCharge  ${totalServiceCharge}")
@@ -435,12 +439,13 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
                     LogUtil.logE("AAjeCje", "orderDiscount  ${list[0].orderDiscount}")
                     LogUtil.logE("AAjeCje", "guestDiscount  ${guestDiscount}")
+                    LogUtil.logE("TODAY", "OnGuestPrint:  ${finalAmt}")
                     listner.onGuestPrint(
                         listItem,
                         guestName,
                         listItemWT,
                         MethodUtils.roundOffAmountDouble(guestSubTotal + list.get(0).wholeTableSubTotal - guestOrderDisShare),
-                        MethodUtils.roundOffAmountDouble(finalAmt),
+                        total = MethodUtils.roundOffAmountDouble(finalAmt),
                         MethodUtils.roundOffAmountDouble(totalTaxAmt + list.get(0).wholeTableTax),
                         MethodUtils.roundOffAmountDouble(totalServiceCharge + list.get(0).wholeTableSurTax),
                         guestOrderDisShare + guestDiscount + list[0].wholeTableDiscont

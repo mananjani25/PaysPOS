@@ -121,6 +121,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     private var syncMarkeup: Boolean = false
     private var isGuestPay: Boolean = false
     var dineInHeaderPosition: Int = 0
+    var currentSelectedHeaderDineIn: Int = 0
     var listItems: ArrayList<TbCartItem> = arrayListOf()
     var dineInSelectedItemHeaderPos: Int = 0
     var selectedItemPositionDine: Int = 0
@@ -142,6 +143,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     var manualCartOrderNote: String? = ""
     var currentCartItems: ArrayList<TbCartItem> = arrayListOf()
     var duplicateCurrentCartItem: ArrayList<TbCartItem> = arrayListOf()
+
+    var isItemEditInProgress = false
 
     // used to check if removed last item from the cart
     val lastItemRemoveFromCart = MutableLiveData<Pair<Boolean, Int>>()
@@ -645,7 +648,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun addItemToCartItems(tbCartItem: TbCartItem) {
-        CoroutineScope(Dispatchers.Default).launch {
+//        CoroutineScope(Dispatchers.Default).launch { //the dispatcher was default, the code inside the dispatcher was not executing, so I(Rahul Sharma) changed it to Dispatcher.IO
+        CoroutineScope(Dispatchers.IO).launch {
 
             posRepository.addItemToCart(tbCartItem)
             destroyedCartItemsList.clear()
@@ -2415,7 +2419,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         dineInList: List<DineInModel> = arrayListOf(),
         isFromDineInScreen: Boolean = false,
         position: Int = -1,
-    ) {
+    ) { //Item came correct upto here
         prefProvider.setValueboolean(
             IS_LAST_ITEM_DELETE, false
         )  // reset flag in case of adding or updating item
@@ -2733,11 +2737,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                             //This is for adding the item after deleting it after coming from all orders update order click
                             var newItem: TbCartItem? = null
                             var indexToRemove = -1
-                            list.forEachIndexed { index, tbItem ->
+                            list.forEachIndexed { index, tbItem -> //Item came correct upto here
                                 if (tbItem.isDestroy && tbItem.itemId == item?.itemId) {
                                     newItem = tbItem
                                     indexToRemove = index
                                 }
+//                                if (!tbItem.isDestroy && tbItem.itemId==item?.itemId){
+//                                    item.itemQuantity=tbItem.itemQuantity
+//                                }
                             }
 
                             if (indexToRemove != -1) {
@@ -7341,7 +7348,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    fun syncTaxes() {
+    fun syncTaxes(closeSpinner: Boolean = true) {
 //        _taxSyncDone.value = Event(false)
         viewModelScope.launch {
 
@@ -7512,7 +7519,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 CoroutineScope(Dispatchers.Main).launch {
                                     delay(1000)
-                                    _syncProgressDialog.postValue(Event(false))
+                                    if (closeSpinner) {
+                                        _syncProgressDialog.postValue(Event(false))
+                                    }
+//                                    _syncProgressDialog.postValue(Event(false))
                                     _taxSyncDone.value = Event(true)
                                 }
 

@@ -1613,6 +1613,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1).toString()
             )
 
+            if(prefProvider.getValue(ORDER_TYPE,"") == DINE_IN) {
+                tabCartItemModel.orderType = "DineIn"
+                tabCartItemModel.guestIndexForDineIn = viewModel.dineInHeaderPosition
+            }
+
             viewModel.manualSaleCartLogicNew(cartItemsList, tabCartItemModel, ADD)
             binding.llKeypad.edtItemName.text?.clear()
 
