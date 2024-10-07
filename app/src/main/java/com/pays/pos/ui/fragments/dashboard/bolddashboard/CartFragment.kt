@@ -2514,9 +2514,15 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
     }
 
     override fun onHeaderSelected(position: Int) {
-        prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, position)
-        Log.d(TAG, "onHeaderSelected: header position : $position")
-        viewModel.dineInHeaderPosition = position
+
+        if(!viewModel.isItemEditInProgress) {
+
+            prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, position)
+            Log.d(TAG, "onHeaderSelected: header position : $position")
+            viewModel.dineInHeaderPosition = position
+            viewModel.currentSelectedHeaderDineIn = position
+        }else
+            AlertUtils.showCustomAlert(requireContext(),"Cannot change guest as already updating another item")
     }
 
     override fun onItemSelected(headerPosition: Int, position: Int, item: TbCartItem) {
@@ -2778,7 +2784,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         cartItemsAdapter.setCallback(this)
         binding.rvCartList.adapter = cartItemsAdapter
         binding.rvCartList.itemAnimator = null
-        dineInCartAdapter = DineInAdapter()
+        dineInCartAdapter = DineInAdapter(viewModel)
         dineInCartAdapter.setListner(this)
         dineInCartAdapter.isFromPayment(isFromPayment)
         binding.rvCartDineIn.adapter = dineInCartAdapter
@@ -2828,8 +2834,6 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
                                     prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
                                     viewModel.removeItemDineInList.clear()
-                                    viewModel.dineInAdapterBackup = null
-                                    viewModel.cartModel = null
 
                                     //if (cartModelsList.size > 0) {
 
