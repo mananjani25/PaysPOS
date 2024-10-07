@@ -2,6 +2,7 @@ package com.pays.pos.ui.fragments.allorders
 
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,6 +42,7 @@ class AllOrdersFragment : Fragment() {
         val onBackPressedCallback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
+                    Log.e("CheckOnBackPress","CheckOnBackPress")
                     findNavController().navigate(R.id.action_allOrder_to_dashboarCategorynew)
                 }
 
@@ -114,7 +116,8 @@ class AllOrdersFragment : Fragment() {
         binding.commonToolbar.txtHome.setOnClickListener {
             try {
                 dashboardViewModel.fromAllOrderFragment = true
-                findNavController().navigate(R.id.action_allOrder_to_dashboarCategorynew)
+                requireActivity().onBackPressed()
+               // findNavController().navigate(R.id.action_allOrder_to_dashboarCategorynew)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
