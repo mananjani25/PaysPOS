@@ -371,11 +371,23 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     @SuppressLint("SetTextI18n")
     private fun callback() {
+
         requireActivity().supportFragmentManager.setFragmentResultListener(
             "request_key_tips",
             viewLifecycleOwner
         ) { _: String, bundle: Bundle ->
             tipAmount = bundle.getDouble("tipAmount")
+
+            /**
+             * Used to show Given TIPS on OrderCompleted Fragment
+             */
+            dashboardViewModel.apply {
+                totalTipAmount = tipAmount
+                employeeGivenTip = true
+                customerGivenTip.value = true
+            }
+
+
             viewModel.setTipAmount(tipAmount)
             tipID = bundle.getInt("tipId")
 //            isSelectedCount = 1
@@ -907,6 +919,12 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             }
             paymentType = "Cash"
             guestAttributeCalculation(-1, "")
+
+            dashboardViewModel.apply {
+                totalAmount = paymentAmount
+                paymentTypeForTip = "cash"
+            }
+
             guestRequestModel?.paymentAttributes?.let { logPrintGuest(it) }
             if (dineInDataModel.isLastPayment) {
                 dineinOrderVieweModel.payByGuest(
@@ -1166,6 +1184,18 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
             }
             //  makePaymentCreditCard()
+
+
+            /**
+             * Added to check tip details
+             * **/
+
+            dashboardViewModel.apply {
+                totalAmount = paymentAmount
+                paymentTypeForTip = "card"
+            }
+
+
             paymentAmount += tipAmount
 
             if (paymentAmount != 0.0) {
@@ -2031,6 +2061,15 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     // make order request with payment attributes on cash payment to reflect on server
     private fun makeCashPayment() {
+
+        /**
+         * Added to check tip details
+         * **/
+
+        dashboardViewModel.apply {
+            totalAmount = paymentAmount
+            paymentTypeForTip = "cash"
+        }
 
         paymentType = "Cash"
 

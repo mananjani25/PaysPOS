@@ -1985,7 +1985,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     override fun onItemUpdate(item: TbCartItem, position: Int) {
 
-
+        viewModel.isItemEditInProgress = true
         viewModel.dineInHeaderPosition = item.guestIndexForDineIn ?:-1
 
         viewModel.isCartItemClicked = true
@@ -2364,9 +2364,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 println("onUnfound")
 
                                 viewModel.downloadFinished(false)
-                                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
-                                }
+                                runOnUiThread(object:Runnable{
+                                    override fun run() {
+                                        if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
+                                        }
+                                    }
+                                })
+
                             }
 
                             override fun onConnect() {
