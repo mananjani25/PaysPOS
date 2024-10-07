@@ -351,7 +351,7 @@ class CreateTax : Fragment() {
                     message = createTaxResponse.message
                     runBlocking {
                         lifecycleScope.async  {
-                            dashViewModel.syncTaxes()
+                            dashViewModel.syncTaxes(false)
                         }.await()
 
                     }
