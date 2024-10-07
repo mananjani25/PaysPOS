@@ -538,9 +538,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         if (!employeeGivenTip && changeAmount < 0.0 || changeAmount > 0.0) {
 
+                            var changeAmountFormatted="0"
+                            if (changeAmount.toString().substring(changeAmount.toString().indexOf('.')).length==2){
+                                changeAmountFormatted=Math.abs(changeAmount).toString()+"0"
+                            }else{
+                                changeAmountFormatted=Math.abs(changeAmount).toString()
+                            }
 
-                            val _title = if (changeAmount < 0) "$" + Math.abs(changeAmount)
-                                .toString() + " to collect more" else "$" + Math.abs(changeAmount)
+                            val _title = if (changeAmount < 0) "$" + /*Math.abs(changeAmount)*/ changeAmountFormatted
+                                .toString() + " to collect more" else "$" + /*Math.abs(changeAmount)*/ changeAmountFormatted
                                 .toString() + " Change"
 
                             runOnUiThread(object :java.lang.Runnable{
