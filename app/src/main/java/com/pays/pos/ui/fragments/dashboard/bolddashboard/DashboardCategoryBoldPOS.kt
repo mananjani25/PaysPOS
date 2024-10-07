@@ -1985,7 +1985,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     override fun onItemUpdate(item: TbCartItem, position: Int) {
 
-
+        viewModel.isItemEditInProgress = true
         viewModel.dineInHeaderPosition = item.guestIndexForDineIn ?:-1
 
         viewModel.isCartItemClicked = true
