@@ -92,6 +92,9 @@ import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
 import com.pays.pos.ui.fragments.payment.OrderCompleteFragment
 import com.pays.pos.utils.landi.LPrint
+import com.pays.pos.utils.landi.LPrint.FONT_B
+import com.pays.pos.utils.landi.LPrint.printCenter
+import com.pays.pos.utils.printer.CommonPrinterTypes
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
 import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
@@ -1071,7 +1074,6 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-
                 Handler().postDelayed({
                     if (findNavController().currentDestination?.id == R.id.dineInOrderTable)
                         findNavController().navigate(
@@ -1079,7 +1081,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             bundle
                         )
                                       },
-                    200)
+                    500)
 
 
                 }
@@ -1712,7 +1714,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 if (it.toString() != "null") {
                     AlertUtils.showCustomAlert(requireContext(), it)
                 }
-              //  dineInTableAdapter.updateStatus(clickedPos, isFireAll)
+                try {
+                    dineInTableAdapter.notifyDataSetChanged()
+                }catch (e:Exception){}
             }
         }
 
@@ -2355,7 +2359,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     R.id.action_dineInOrderTable_to_checkoutDineIN,
                     bundle
                 )},
-                300)
+                500)
 
     }
 
@@ -6187,8 +6191,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                             isBold = true
                                         )
 
+
+                                        val typeToPrint = if(paymentType.isNotEmpty()) paymentType else type
+
                                         printCenter(
-                                            "Unpaid",
+                                            typeToPrint,
                                             FONT_SIZE_5X,
                                             isBold = true,
                                             printOnNewLine = true
@@ -6609,7 +6616,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         }
                                     }
 
-                                    if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
+                                    if (getOrderDetailsResponse?.payments?.isNotEmpty() == true && type.lowercase() != "unpaid") {
 
                                         printLeft(
                                             padLine(
@@ -6620,7 +6627,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         )
                                     }
 
-                                    if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
+                                    if (getOrderDetailsResponse?.payments?.isNotEmpty() == true && type.lowercase() != "unpaid") {
 
 
                                         printLeft(
@@ -6640,11 +6647,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         lineBreak()
 
                                         printCenter("Order Note")
+                                        lineBreak()
                                         printCenter( order_note)
+                                        lineBreak()
                                     }
 
 
                                     if (paymentType.equals("paid", ignoreCase = true)) {
+                                        lineBreak()
                                         if (customerSettingModel.fonts == Constants.LARGE) {
                                             printBoldLeft("Customer Signature ____")
                                         } else {
@@ -9538,8 +9548,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             if(getOrderDetailsResponse?.payments?.isNotEmpty() == true){
-                printPayment(prefProvider.isOldSunmiFrameworkVersion(),SUNMI_INNER_PRINTER,getOrderDetailsResponse!!.payments)
-
+                printPayment(prefProvider.isOldSunmiFrameworkVersion(), printerType = SUNMI_INNER_PRINTER, list = getOrderDetailsResponse!!.payments)
             }
 
 
@@ -9735,7 +9744,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             println("onConnect")
                             Log.d("###17MAR23", "SunmiPrinterConnect: Called")
                             //ProgressUtils.dismissProgressDialog()
-                            generateKitchenReceiptSunmi(data, type, item, listItemWithGuest)
+                            //generateKitchenReceiptSunmi(data, type, item, listItemWithGuest)
+
+                            generateKitchenReceiptCommon(CommonPrinterTypes.SunmiCloudPrinter,data, type, item, listItemWithGuest)
 
                         }
 
@@ -9748,7 +9759,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             } else {
 
                 if (SunmiPrinterApi.getInstance().isConnected)
-                    generateKitchenReceiptSunmi(data, type, item, listItemWithGuest)
+                    generateKitchenReceiptCommon(CommonPrinterTypes.SunmiCloudPrinter,data, type, item, listItemWithGuest)
+                    //generateKitchenReceiptSunmi(data, type, item, listItemWithGuest)
             }
 
         } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
@@ -9756,7 +9768,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(100)
-                setService(data, type, item, listItemWithGuest)
+                //setService(data, type, item, listItemWithGuest)
+                generateKitchenReceiptCommon(CommonPrinterTypes.SunmiInnerPrinter,data, type, item, listItemWithGuest)
+
             }
         } else if(data.name.startsWith(LANDI_INNER_PRINTER,true)){
 
@@ -9771,17 +9785,21 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     LPrint.apply {
 
-                                        LPrint.printKitchenReceiptDineInLandi(
-                                            requireContext(),
-                                            outputStream,
-                                            data,
-                                            type,
-                                            item,
-                                            listItemWithGuest,
-                                            kitchenSettingModel,
-                                            prefProvider,
-                                            getOrderDetailsResponse
-                                        )
+//                                        LPrint.printKitchenReceiptDineInLandi(
+//                                            requireContext(),
+//                                            outputStream,
+//                                            data,
+//                                            type,
+//                                            item,
+//                                            listItemWithGuest,
+//                                            kitchenSettingModel,
+//                                            prefProvider,
+//                                            getOrderDetailsResponse
+//                                        )
+
+                                        LPrint.setOutputStream(outputStream)
+
+                                        generateKitchenReceiptCommon(CommonPrinterTypes.LandiInnerPrinter,data, type, item, listItemWithGuest)
                                     }
                                 }
                         }
@@ -10818,6 +10836,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     }
 
+
+
+                                    if(getOrderDetailsResponse?.payments?.isNotEmpty() == true){
+                                        printPayment(false,outputStream,
+                                            LANDI_INNER_PRINTER,getOrderDetailsResponse!!.payments)
+                                    }
+
                                     lineBreak()
 
                                     /**
@@ -10854,7 +10879,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         lineBreak()
 
                                         printCenter("Order Note")
+                                        lineBreak()
                                         printCenter( order_note)
+                                        lineBreak()
                                     }
 
 
@@ -11388,9 +11415,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
-                generateKitchenReceiptSunmiInner(data, type, item, listItemWithGuest)
+              //  generateKitchenReceiptSunmiInner(data, type, item, listItemWithGuest)
 
-
+             //   generateKitchenReceiptCommon(CommonPrinterTypes.SunmiInnerPrinter,data, type, item, listItemWithGuest)
             }
 
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
@@ -11495,6 +11522,241 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             LogUtil.logE("SunmiPrintHelper", "ELSE")
         }
     }
+
+
+    private fun generateKitchenReceiptCommon(
+        printerType: CommonPrinterTypes,
+        customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String,
+        item: ArrayList<TbCartItem>,
+        listItemWithGuest: HashMap<String, ArrayList<TbCartItem>> = hashMapOf()
+    ) {
+        try {
+            //ProgressUtils.showProgressDialog(requireActivity())
+
+            /**
+             * Get Order ID
+             */
+
+            var orderIdToPrint = ""
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false))
+                orderIdToPrint = "OrderID:" + getOrderDetailsResponse?.custom_order_id
+            else
+                orderIdToPrint = "OrderID:" + getOrderDetailsResponse?.id
+
+
+            /***
+             * Get Order Type
+             */
+
+            val orderTypeToPrint = getOrderDetailsResponse?.orderTypeName.toString()
+
+
+            var isUpdatedLabel = ""
+            if(prefProvider.getValueboolean(Constants.DINE_IN_UPDATE,false)) {
+                isUpdatedLabel = "*** Updated ***"
+            }
+
+
+
+
+            val tableNameToPrint = getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")"
+
+
+            val receiptId =
+                padLine(
+                    "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
+                        "ENTJKOIJH8745"
+                    } else {
+                        getOrderDetailsResponse?.offlineId
+                    },
+                    "",
+                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
+                ).toString()
+
+
+            var employee = padLine(
+                "Employee:" + getOrderDetailsResponse?.employee?.name, "",
+                if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
+            ).toString()
+
+
+            val orderTime =
+                padLine(
+                    Constants.getReceiptFormatDateFromUTCServer(
+                        requireContext(),
+                        getOrderDetailsResponse?.createdAt.toString()
+                    ),
+                    "",
+                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
+                ).toString()
+
+
+
+
+
+
+            var orderNote = ""
+            if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+
+                orderNote = getOrderDetailsResponse?.note.toString()
+            }
+
+
+
+
+
+
+
+            when(printerType) {
+                CommonPrinterTypes.SunmiCloudPrinter -> {
+                    PrintSunmiUtils.apply {
+                        fontSize(kitchenSettingModel.fonts)
+                        SunmiPrinterApi.getInstance().printerInit()
+                        SunmiPrinterApi.getInstance().lineWrap(1)
+
+                        orderIdLarge(orderIdToPrint)
+
+                        printOrderType(orderTypeToPrint)
+                        SunmiPrinterApi.getInstance().lineWrap(1)
+
+                        if(isUpdatedLabel.isNotEmpty())
+                            addValue("*** Updated ***")
+
+                        SunmiPrinterApi.getInstance().lineWrap(1)
+
+                        addValue(tableNameToPrint)
+
+                        SunmiPrinterApi.getInstance().lineWrap(1)
+
+                        receiptID(receiptId)
+
+                        SunmiPrinterApi.getInstance().lineWrap(1)
+
+                        if(kitchenSettingModel.showTeamMember){
+                            addValue(employee)
+                            SunmiPrinterApi.getInstance().lineWrap(1)
+                        }
+
+                        orderTime(orderTime)
+                        SunmiPrinterApi.getInstance().lineWrap(1)
+
+                        printHorizontalInnerNew(false)
+
+                        addOrdersForKitchenDineIn(
+                            item, customerReceiptPrinters.printerCategories.toCollection(
+                                arrayListOf()
+                            ), listItemWithGuest
+                        )
+                        SunmiPrinterApi.getInstance().lineWrap(1)
+                        orderNote(orderNote)
+
+                    }
+
+                }
+
+                CommonPrinterTypes.SunmiInnerPrinter -> {
+                    SunmiPrintHelper.getInstance().initPrinter()
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+
+                    PrintSunmiUtils.apply {
+                        headerText(orderIdToPrint)
+
+                        headerText(orderTypeToPrint)
+                        SunmiPrintHelper.getInstance().lineWrap(1)
+
+                        if (isUpdatedLabel.isNotEmpty())
+                            headerText(isUpdatedLabel)
+
+                        normalTextCenterLarge(tableNameToPrint)
+
+                        SunmiPrintHelper.getInstance().lineWrap(1)
+                        normalTextLarge(receiptId)
+                        normalTextLarge(employee)
+                        normalTextLarge(orderTime)
+
+                        printHorizontalInnerNew(prefProvider.isOldSunmiFrameworkVersion())
+
+                        addOrdersForKitchenDineInInner(item, listItemWithGuest,prefProvider.isOldSunmiFrameworkVersion())
+                        SunmiPrintHelper.getInstance().lineWrap(1)
+
+                        orderNoteInnerLarge(orderNote)
+                    }
+                }
+
+                CommonPrinterTypes.LandiInnerPrinter -> {
+
+                    LPrint.apply {
+                        printCenter(orderIdToPrint, isBold = true, fontSize = FONT_B)
+
+                        lineBreak()
+
+                        printCenter(orderTypeToPrint, isBold = true, fontSize = FONT_B)
+                        lineBreak()
+
+                        if(isUpdatedLabel.isNotEmpty())
+                        {
+                            printCenter(isUpdatedLabel, isBold = true, fontSize = FONT_B)
+                            lineBreak()
+                        }
+
+                        printCenter(tableNameToPrint, isBold = true, fontSize=FONT_B)
+                        lineBreak()
+
+                        printLeft(receiptId)
+                        lineBreak()
+
+                        printLeft(employee)
+                        lineBreak()
+
+                        printLeft(orderTime)
+                        lineBreak()
+
+                        printDashedLineAndBreak()
+
+
+                        addOrdersForKitchenDineInLandi(
+                            item, customerReceiptPrinters.printerCategories.toCollection(
+                                arrayListOf()
+                            ), listItemWithGuest
+                        )
+
+                        lineBreak()
+                        printCenter(orderNote)
+                        lineBreak()
+
+                    }
+
+
+
+                }
+            }
+
+            when(printerType) {
+                CommonPrinterTypes.SunmiCloudPrinter -> {
+                    PrintSunmiUtils.cutPaper()
+                }
+
+                CommonPrinterTypes.SunmiInnerPrinter -> {
+                    PrintSunmiUtils.cutPaperInner()
+                }
+
+                CommonPrinterTypes.LandiInnerPrinter -> {
+                    LPrint.paperCut()
+                }
+            }
+
+
+
+
+            //ProgressUtils.dismissProgressDialog()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
 
     private fun generateKitchenReceiptSunmi(
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
