@@ -3956,12 +3956,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         )
                                     }
 
-                                    printCenter(
-                                        "Paid",
-                                        FONT_SIZE_5X,
-                                        isBold = true,
-                                        printOnNewLine = true
-                                    )
 
                                     /**
                                      * Print Business Name
@@ -4396,6 +4390,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     if (getDineInOrderDetails?.note != null && getDineInOrderDetails?.note != "" && customerSettingModel.showOrderNote) {
                                         lineBreak()
                                         printCenter("Order Note")
+                                        lineBreak()
                                         printCenter(getDineInOrderDetails?.note.toString())
                                     }
 
@@ -7216,15 +7211,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         MethodUtils.roundOffAmountDouble(order?.subTotal?:0.0 + serviceCharge + order?.totalTaxAmount!!
                                         ?: 0.0)
 
-                                    val totalAmountToPrint =
-                                        padLine(
-                                            "Total Price",
-                                            "$" + MethodUtils.roundOffAmountString(totalAmt),
-                                            48
-                                        ).toString().toByteArray()
-
-                                    outputStream.write(totalAmountToPrint)
-                                    outputStream.write(LPrint.LINE_FEED)
+//                                    val totalAmountToPrint =
+//                                        padLine(
+//                                            "Total Price",
+//                                            "$" + MethodUtils.roundOffAmountString(totalAmt),
+//                                            48
+//                                        ).toString().toByteArray()
+//
+//                                    outputStream.write(totalAmountToPrint)
+//                                    outputStream.write(LPrint.LINE_FEED)
 
 
                                     /***
@@ -7930,7 +7925,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
         if(getDineInOrderDetails?.payments?.isNotEmpty() == true){
-            printPayment(prefProvider.isOldSunmiFrameworkVersion(),SUNMI_INNER_PRINTER,getDineInOrderDetails!!.payments)
+            printPayment(prefProvider.isOldSunmiFrameworkVersion(), printerType = SUNMI_INNER_PRINTER, list = getDineInOrderDetails!!.payments)
 
         }
 

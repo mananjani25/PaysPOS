@@ -163,6 +163,7 @@ dependencies {
     //Dagger Hilt
     implementation 'com.google.dagger:hilt-android:2.37'
     kapt 'com.google.dagger:hilt-compiler:2.37'
+//    annotationProcessor "com.google.dagger:dagger-android-processor:2.11"
 
     //ViewPager2
     implementation "androidx.viewpager2:viewpager2:1.0.0"
