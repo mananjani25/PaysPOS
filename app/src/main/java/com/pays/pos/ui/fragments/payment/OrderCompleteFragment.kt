@@ -24,6 +24,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -237,6 +238,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var tipsList: List<GetTipReponse.Data> = listOf()
     private lateinit var splitAdapter: SplitListAdapter
 
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
@@ -308,6 +310,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.rvSplits.adapter = splitAdapter
         noCashAdjGlobal =
             MethodUtils.roundOffAmountDouble(requireArguments().getDouble("noCashAdj"))
+
+        dashboardViewModel.changeAvailable.observe(this,object : Observer<Event<String>>{
+            override fun onChanged(t: Event<String>?) {
+                t?.getContentIfNotHandled()?.let{
+                    runOnUiThread(object:java.lang.Runnable{
+                        override fun run() {
+                            binding.txtChangeAmount.visible()
+                            binding.txtChangeAmount.text = it
+                        }
+                    })
+                }
+            }
+        })
+
 
         return binding.root
 
@@ -549,12 +565,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 .toString() + " to collect more" else "$" + /*Math.abs(changeAmount)*/ changeAmountFormatted
                                 .toString() + " Change"
 
-                            runOnUiThread(object :java.lang.Runnable{
+//                            dashboardViewModel.setCollectMore(_title)
+                            runOnUiThread(object:java.lang.Runnable{
                                 override fun run() {
-                                    binding.txtChangeAmount.apply {
-                                        visible()
-                                        text = _title
-                                    }
+                                    binding.txtChangeAmount.visible()
+                                    binding.txtChangeAmount.text = _title
+
+                                    binding.txtChangeAmount.invalidate()
                                 }
                             })
 

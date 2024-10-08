@@ -21,6 +21,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.*
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
@@ -278,6 +279,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 oneItemPerReceipt = false
             }
         }
+
 
         if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
             magTekViewModel.initPOSLink(requireContext(),makeMerchantDetailsCall = false)

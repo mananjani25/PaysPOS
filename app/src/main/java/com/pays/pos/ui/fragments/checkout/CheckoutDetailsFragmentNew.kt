@@ -3562,6 +3562,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     dashboardViewModel.totalTipAmount = 0.0
                     dashboardViewModel.customerGivenTip.value = false
                     prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+                    dashboardViewModel.employeeGivenTip = false
 
                     if (this::presentation.isInitialized) {
                         presentation.show()

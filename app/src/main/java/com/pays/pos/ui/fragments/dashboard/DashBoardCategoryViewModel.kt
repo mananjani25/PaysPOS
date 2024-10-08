@@ -168,7 +168,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var orderRequestModel: OrderRequestModel? = null
     var orderAttributeRequestModel = OrderAttributeRequestModel()
     var dineInItemClickedFromCart = false
-    var dineInAdapterBackup:DineInTableAdapter? = null
+    var dineInAdapterBackup: DineInTableAdapter? = null
 
     /**
      *  currentDineInItems keeps track of all dine in Items even if they are destroyed
@@ -186,8 +186,8 @@ class DashBoardCategoryViewModel @Inject constructor(
      * Get SUNMI OS VERSION
      */
     fun getSunmiFrameWorkVersion() =
-    prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".")
-    .toTypedArray()
+        prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".")
+            .toTypedArray()
 
     /**
      * Tracking main cart discount
@@ -291,10 +291,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     var boldPosNeedToRefresh = false
 
     /* Below 4 variables are used as backup variables to solve the BIS-3973, when the cart's last item is deleted the the metadata is also getting removed, these variables will keep the metadata with them. */
-     public var backupOrderId:Int? = null
-     public var backupPaymentId:Int? = null
-     public var backupPaymentOfflineId: String? = ""
-     public var backupOrderOfflineId: String? = ""
+    public var backupOrderId: Int? = null
+    public var backupPaymentId: Int? = null
+    public var backupPaymentOfflineId: String? = ""
+    public var backupOrderOfflineId: String? = ""
 
     /**
      * BIS - 3500 issue resolved
@@ -310,6 +310,12 @@ class DashBoardCategoryViewModel @Inject constructor(
     val customerCardAmount = MutableLiveData<String>()
     val customerCashAmount = MutableLiveData<String>()
 //    val cashAmount: LiveData<Event<String>> = _cashAmount
+
+    public val changeAvailable = MutableLiveData<Event<String>>()
+
+    fun setCollectMore(title: String) {
+        changeAvailable.postValue(Event(title))
+    }
 
     //Fetch all orders count
     fun allOrderCounts(
@@ -441,7 +447,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     val _removeLastItem = MutableLiveData<Event<Boolean>>()
-    val removeLastItem : LiveData<Event<Boolean>> = _removeLastItem
+    val removeLastItem: LiveData<Event<Boolean>> = _removeLastItem
 
     val updateCartFooter = MutableLiveData<Event<Boolean>>()
 
@@ -3650,7 +3656,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     item?.isEdited = true
                                     cartModel?.dineInList?.forEach {
 
-                                        it.items.forEach { it->
+                                        it.items.forEach { it ->
                                             if (it.cartItemId == item?.cartItemId) {
                                                 it.isDestroy = true
                                                 it.isEdited = true
@@ -3663,7 +3669,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         cartModel?.dineInList!!.forEach { it ->
 
                                             it.items.forEach { tbItem ->
-                                                if(tbItem.cartItemId == item?.cartItemId)
+                                                if (tbItem.cartItemId == item?.cartItemId)
                                                     tbItem.isDestroy = true
                                             }
                                         }
@@ -4785,7 +4791,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalDiscount = 0.0
         totalTax = 0.0
 
-        if(prefProvider.getValue(ORDER_TYPE,"") != DINE_IN)
+        if (prefProvider.getValue(ORDER_TYPE, "") != DINE_IN)
             totalServiceCharge = 0.0
 
         var amountToBePaid = 0.0
@@ -4867,8 +4873,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                     totalDiscount = 0.0
                     totalTax = 0.0
 
-                    if(prefProvider.getValue(ORDER_TYPE,"") != DINE_IN)
-                    totalServiceCharge = 0.0
+                    if (prefProvider.getValue(ORDER_TYPE, "") != DINE_IN)
+                        totalServiceCharge = 0.0
 
                     val itemCount = cartItems.size
                     var taxList: ArrayList<TaxData> = arrayListOf()
@@ -6263,17 +6269,22 @@ class DashBoardCategoryViewModel @Inject constructor(
                     cartItems.sortedBy { it.dineInSort }
                     cartItems.forEach { tb ->
 
-                        Log.e(TAG, "dineInListDestory: IS_DESTROY: ${it.isDestroy} IS_DESTROY: ${tb.isDestroy}")
+                        Log.e(
+                            TAG,
+                            "dineInListDestory: IS_DESTROY: ${it.isDestroy} IS_DESTROY: ${tb.isDestroy}"
+                        )
 
                         listItems.add(
-                            GuestItemsAttributes(id = tb.guestItemId,
+                            GuestItemsAttributes(
+                                id = tb.guestItemId,
                                 orderItemId = tb.orderItemId,
                                 quantity = tb.itemQuantity,
                                 itemId = tb.itemId,
                                 amount = tb.price,
                                 timestamp = tb.timeStamp,
                                 guestId = it.id?.let { it },
-                                Destroy = tb.isDestroy)
+                                Destroy = tb.isDestroy
+                            )
                         )
 
 
@@ -6790,7 +6801,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-    fun updateOrder(cartModel: CartModel,isFromDineInTable:Boolean = false,isAddGuest:Boolean = false): OrderRequestModel {
+    fun updateOrder(
+        cartModel: CartModel,
+        isFromDineInTable: Boolean = false,
+        isAddGuest: Boolean = false
+    ): OrderRequestModel {
 
         Log.e(TAG, "totalDiscountDineIn  ${totalDiscount}")
         val orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
@@ -6836,7 +6851,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             /**
              *  currentDineInItems keeps track of all dine in Items even if they are destroyed
              */
-            orderItemsAttributes = if(isFromDineInTable)
+            orderItemsAttributes = if (isFromDineInTable)
                 dineInOrderItemAttributed(cartModel, currentCartItems)
             else
                 dineInOrderItemAttributed(cartModel, currentDineInItems)
@@ -6844,8 +6859,8 @@ class DashBoardCategoryViewModel @Inject constructor(
             /**
              * This is added only for adding new guest from the DineInTable Pays
              * */
-            if(isAddGuest)
-                 orderItemsAttributes = dineInOrderItemAttributed(cartModel, currentCartItems)
+            if (isAddGuest)
+                orderItemsAttributes = dineInOrderItemAttributed(cartModel, currentCartItems)
 
 
             offlineId = null
@@ -7883,7 +7898,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 //                                rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
 //                                posRepository.deleteOrderTypeFromDb()
 
-                                Log.e("checkHereDB","OrderTypesComing")
+                                Log.e("checkHereDB", "OrderTypesComing")
                                 posRepository.deleteOrderTypeFromDb()
                                 //comment this scope due to dine in order type was not reflecting after sync from backend.
                                 /*CoroutineScope(Dispatchers.IO).launch {
@@ -7904,34 +7919,37 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 CoroutineScope(Dispatchers.IO).launch {
                                     it.settingData.data.dynamicPaymentRecords.forEach {
-                                        if (it.deleted_at==null){
+                                        if (it.deleted_at == null) {
                                             launch {
                                                 insertDynamicPayment(it)
                                             }
-                                        }else{
+                                        } else {
                                             launch {
-                                                posRepository.deleteDynamicPaymentByName(it.name+"", it.createdAt+"")
+                                                posRepository.deleteDynamicPaymentByName(
+                                                    it.name + "",
+                                                    it.createdAt + ""
+                                                )
                                             }
                                         }
                                     }
 //                                    var dynamicPaymentList :kotlin.collections.ArrayList<TbDynamicPaymentRecords> = posRepository.getAllDynamicPayments() as ArrayList<TbDynamicPaymentRecords>
-                                   /* if (dynamicPaymentList.size>=it.settingData.data.dynamicPaymentRecords.size){
-                                        var removedIDs= arrayListOf<Int>()
-                                        dynamicPaymentList.removeAll(it.settingData.data.dynamicPaymentRecords)
-                                        dynamicPaymentList.forEach {
-                                            launch {
-                                                posRepository.deleteDynamicPaymentById(it.id)
-                                            }
-                                        }
-                                    }*/
+                                    /* if (dynamicPaymentList.size>=it.settingData.data.dynamicPaymentRecords.size){
+                                         var removedIDs= arrayListOf<Int>()
+                                         dynamicPaymentList.removeAll(it.settingData.data.dynamicPaymentRecords)
+                                         dynamicPaymentList.forEach {
+                                             launch {
+                                                 posRepository.deleteDynamicPaymentById(it.id)
+                                             }
+                                         }
+                                     }*/
                                 }
 
                                 posRepository.addOrderType(it.settingData.data.orderTypes)
 
-                               /* CoroutineScope(Dispatchers.IO).launch {
-                                    insertDynamicPayment(it.settingData.data.dynamicPaymentRecords)
-                                }
-*/
+                                /* CoroutineScope(Dispatchers.IO).launch {
+                                     insertDynamicPayment(it.settingData.data.dynamicPaymentRecords)
+                                 }
+ */
                                 posRepository.addAllCountryList(it.settingData.data.phoneCountrylist)
                                 posRepository.addTimeZones(it.settingData.data.time_zone_options)
                                 posRepository.addBusinessDetails(TbBusinessDetails().apply {
@@ -8134,7 +8152,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 }
             }
-            prefProvider.setValueInt(Constants.ORDER_TYPE_ID,model.orderTypeId)
+            prefProvider.setValueInt(Constants.ORDER_TYPE_ID, model.orderTypeId)
             model.items = null
             cartList.add(0, model)
             LogUtil.logE(TAG, "CartIsEmpty::")
@@ -8358,8 +8376,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalDiscount = 0.0
         totalTax = 0.0
 
-        if(prefProvider.getValue(ORDER_TYPE,"") != DINE_IN)
-        totalServiceCharge = 0.0
+        if (prefProvider.getValue(ORDER_TYPE, "") != DINE_IN)
+            totalServiceCharge = 0.0
         var amountToBePaid = 0.0
         if (isGuestPayment) {
 
@@ -8457,7 +8475,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 //        isLoading.value = value
         try {
             isLoading.postValue(value)
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
 
         }
