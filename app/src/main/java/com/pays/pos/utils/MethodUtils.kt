@@ -497,9 +497,9 @@ class MethodUtils {
             tvCash3: AppCompatTextView
         ) {
             LogUtil.logE(TAG, "totalPrice  $totalPrice")
-            secondValue = floor(totalPrice + 1).toInt()
+            secondValue = floor(totalPrice + 2).toInt()
             LogUtil.logE(TAG, "secondValue  $secondValue")
-            val newVal = totalPrice + 1
+            val newVal = totalPrice + 2
             thirdValue = calculateCashOption(newVal)
             LogUtil.logE(TAG, "thirdValuethirdValue:   ${thirdValue}")
             if (secondValue.toDouble() == thirdValue) {
