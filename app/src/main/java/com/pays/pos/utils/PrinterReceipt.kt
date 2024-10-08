@@ -3396,6 +3396,7 @@ fun addOrdersForKitchenOnlineOrderLandiInnerKiosk(
                     lprint.printLeft("  Note:" + obj.note, FONT_SIZE_5X, false)
                     lineBreak()
                 }
+                lineBreak()
             }
         }
     }
@@ -3430,6 +3431,7 @@ fun addOrdersForKitchenOnlineOrderSunmiInnerKioskNew(
                 if (obj.note?.isNotEmpty() ?: false) {
                     PrintSunmiUtils.normalTextLargeNew("  Note:" + obj.note)
                 }
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
         }
     }
