@@ -70,6 +70,10 @@ class PrinterViewModel @Inject constructor(
     val localUpdatePrinter:LiveData<Event<PrinterListModel>> = _localUpdatePrinter
 
 
+    private var _disableCompleteTouch = MutableLiveData<Event<Boolean>>()
+    val disableCompleteTouch:LiveData<Event<Boolean>> = _disableCompleteTouch
+
+
     val orderTypes = posRepository.getORderTypesListDatabase()
 
 
@@ -328,7 +332,7 @@ class PrinterViewModel @Inject constructor(
             _showProgress.value = Event(true)
         }
 
-
+        _disableCompleteTouch.postValue(Event(false))
         viewModelScope.launch {
             val resource: com.pays.pos.utils.statusUtils.Resource<PrinterResponse> =
                 posRepository.createPrinter(data)
@@ -344,7 +348,7 @@ class PrinterViewModel @Inject constructor(
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message)
                     _showProgress.value = Event(false)
-
+                    _disableCompleteTouch.postValue(Event(true))
                 }
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
@@ -352,7 +356,7 @@ class PrinterViewModel @Inject constructor(
                         _printerCreated.value = Event(it)
                     }
                     printerList()
-
+                    _disableCompleteTouch.postValue(Event(true))
                 }
 
             }

@@ -6236,8 +6236,32 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         )
         EventBus.getDefault()
             .post(MessageEvent("${Constants.LINE_BREAK_TAB} DashboardCategoryBoldPOS.kt_ setupInnerPrinterAttributes_createPrinter= ${Gson().toJson(createPrinter)}"))
-
+        disableTouch()
+        setCreatePrintersObserver()
         printerViewModel.createPrinter(createPrinter)
+    }
+
+    private fun setCreatePrintersObserver() {
+        printerViewModel.disableCompleteTouch.observe(viewLifecycleOwner,object:Observer<Event<Boolean>>{
+            override fun onChanged(t: Event<Boolean>?) {
+                t?.getContentIfNotHandled()?.let {
+                    if (it){
+                        enableTouch()
+                    }else{
+                        disableTouch()
+                    }
+                }
+            }
+        })
+    }
+
+    private fun disableTouch(){
+        requireActivity().window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private fun enableTouch(){
+        requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
     private fun printByBluTooth(content: String) {
