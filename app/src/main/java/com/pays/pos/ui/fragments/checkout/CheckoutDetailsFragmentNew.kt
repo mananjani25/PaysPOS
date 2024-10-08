@@ -2314,17 +2314,19 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     }
                 paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
 
-                EventBus.getDefault().post(
-                    MessageEvent(
-                        "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_paymentClick() paymentAmount-> ${
-                            Gson().toJson(paymentAmount)
-                        }, WholetotalPrice -> ${Gson().toJson(WholetotalPrice)}, isSelectedCount -> ${
-                            Gson().toJson(
-                                isSelectedCount
-                            )
-                        }", true
+                lifecycleScope.launch(Dispatchers.IO) {
+                    EventBus.getDefault().post(
+                        MessageEvent(
+                            "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_paymentClick() paymentAmount-> ${
+                                Gson().toJson(paymentAmount)
+                            }, WholetotalPrice -> ${Gson().toJson(WholetotalPrice)}, isSelectedCount -> ${
+                                Gson().toJson(
+                                    isSelectedCount
+                                )
+                            }", true
+                        )
                     )
-                )
+                }
 
                 if (cashDiscountType == "SurCharge") {
                     paymentAmount =
