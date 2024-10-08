@@ -2333,6 +2333,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     )
                 }
 
+
                 if (cashDiscountType == "SurCharge") {
                     paymentAmount =
                         String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
