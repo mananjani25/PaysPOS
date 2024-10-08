@@ -1517,10 +1517,10 @@ class CustomDisplay(
                 }
                 binding.rvActiveTipsList.layoutManager = GridLayoutManager(context, it.data.size)
 //                activeTipsListAdapter?.setList(it.data, wholeTotalPrice)
-                Log.d("Payment_TYPE:: ", dashBoardCategoryViewModel.paymentType)
-                if (dashBoardCategoryViewModel.paymentType.equals("cash", ignoreCase = true)){
+                Log.d("Payment_TYPE:: ", dashBoardCategoryViewModel.paymentTypeForTip)
+                if (dashBoardCategoryViewModel.paymentTypeForTip.equals("cash", ignoreCase = true)){
                     activeTipsListAdapter?.setList(it.data, binding.txtTotalCash.text.toString().trim().replace('$',' ').trim().toDouble())
-                }else if (dashBoardCategoryViewModel.paymentType.equals("card", ignoreCase = true)){
+                }else if (dashBoardCategoryViewModel.paymentTypeForTip.equals("card", ignoreCase = true)){
                     activeTipsListAdapter?.setList(it.data, binding.txtTotalCard.text.toString().trim().replace('$',' ').trim().toDouble())
                 }else{
                     activeTipsListAdapter?.setList(it.data, wholeTotalPrice)
