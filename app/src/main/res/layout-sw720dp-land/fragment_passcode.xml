@@ -14,10 +14,10 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:paddingBottom="@dimen/_10sdp"
         android:background="#1D1D1F"
-        android:orientation="vertical">
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/_10sdp">
 
         <LinearLayout
             android:id="@+id/llChild"
@@ -81,18 +81,20 @@
                     android:orientation="vertical">
 
                     <ImageView
-                        android:visibility="gone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/_2sdp"
-                        android:src="@drawable/ic_lock" />
+                        android:src="@drawable/ic_lock"
+                        android:visibility="gone" />
 
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:layout_width="@dimen/_50sdp"
                         android:layout_height="@dimen/_50sdp"
+                        android:background="@drawable/bg_round"
+                        android:padding="20dp"
                         android:maxHeight="@dimen/_50sdp"
-                        android:src="@mipmap/ic_launcher" />
+                        android:src="@drawable/pays_logo_transparent" />
 
 
                     <TextView
@@ -102,18 +104,19 @@
                         android:text="@string/serving_efficiency"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_8sdp"
-                        android:visibility="invisible"
-                        android:textStyle="normal" />
+                        android:textStyle="normal"
+                        android:visibility="invisible" />
+
                     <TextView
                         android:id="@+id/txtLocationName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/_5sdp"
-                        tools:text="@string/blockchain_point_of_sale"
-                        android:textColor="@color/white"
                         android:padding="@dimen/_5sdp"
+                        android:textColor="@color/white"
                         android:textSize="@dimen/_8sdp"
-                        android:textStyle="normal" />
+                        android:textStyle="normal"
+                        tools:text="@string/blockchain_point_of_sale" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -133,20 +136,20 @@
                         android:gravity="center">
 
                         <ImageView
-                            android:visibility="gone"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="@dimen/_10sdp"
-                            android:src="@drawable/day" />
+                            android:src="@drawable/day"
+                            android:visibility="gone" />
 
                         <TextView
                             android:id="@+id/current_time"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/white"
-                            tools:text="06:30 PM"
                             android:textSize="@dimen/_20sdp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            tools:text="06:30 PM" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <TextView
@@ -156,10 +159,10 @@
                         android:layout_gravity="center"
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:gravity="start"
-                        tools:text="Thursday, 19 January"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_7sdp"
-                        android:textStyle="normal" />
+                        android:textStyle="normal"
+                        tools:text="Thursday, 19 January" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -183,38 +186,38 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/llChild"
-                android:gravity="center_horizontal"
                 android:layout_marginEnd="@dimen/_40sdp"
+                android:gravity="center_horizontal"
                 android:orientation="vertical">
 
                 <LinearLayout
+                    android:id="@+id/llStationName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:padding="@dimen/_5mdpi"
                     android:gravity="center"
-                    android:id="@+id/llStationName"
-                    android:visibility="gone"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_5mdpi"
+                    android:visibility="gone">
 
                     <TextView
+                        style="@style/CustomFontBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Station Name:"
-                        android:visibility="gone"
                         android:padding="@dimen/_1sdp"
-                        style="@style/CustomFontBold"
+                        android:text="Station Name:"
                         android:textColor="@color/white"
-                        android:textSize="@dimen/_8mdpi" />
+                        android:textSize="@dimen/_8mdpi"
+                        android:visibility="gone" />
 
                     <TextView
                         android:id="@+id/txtStationName"
                         style="@style/CustomFontBold"
-                        android:padding="@dimen/_1sdp"
                         android:layout_width="wrap_content"
-                        android:singleLine="true"
-                        android:ellipsize="end"
                         android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:padding="@dimen/_1sdp"
+                        android:singleLine="true"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_8mdpi" />
 
