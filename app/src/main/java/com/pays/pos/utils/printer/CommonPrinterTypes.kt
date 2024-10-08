@@ -98,7 +98,7 @@ class SunmiInnerPrinterPays() {
             val businessPhone = _dataMap.find { it.first == BUSINESS_PHONE_NO }?.second
 
             if (businessName != null && businessAddress != null && businessPhone != null) {
-                PrintSunmiUtils.printBusinessDetailsInner(businessName, businessAddress, businessPhone)
+                PrintSunmiUtils.printBusinessDetailsInner(businessName+"\n", businessAddress, businessPhone)
             }
         }
     }

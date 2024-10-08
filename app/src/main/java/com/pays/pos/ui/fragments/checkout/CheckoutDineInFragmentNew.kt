@@ -454,6 +454,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             setupColorChanges(binding.tvFullAmount, listtextview)
             binding.tvCustom.text = "Custom"
             isSelectedCount = 1
+            viewModel.isSelectCount = 1
             tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvwaysplit?.visibility = View.INVISIBLE
             binding.tvFullAMounttxt.visibility = View.VISIBLE
@@ -1809,6 +1810,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             if(!isPaymentScreen) {
                 PaymentBoldPosFragment.newInstance().addTipHideShow(false)
                 isSelectedCount = 1
+                viewModel.isSelectCount = 1
                 tipsetupGlobal(tipAmount, isSelectedCount)
                 loadPaymentLayout()
                 tipAmountCalculation()
@@ -1826,6 +1828,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     PaymentBoldPosFragment.newInstance().addTipHideShow(true)
                     tipAmount = 0.0
                     viewModel.setTipAmount(0.0)
+
                     loadSplitLayout()
                     binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
                     binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))

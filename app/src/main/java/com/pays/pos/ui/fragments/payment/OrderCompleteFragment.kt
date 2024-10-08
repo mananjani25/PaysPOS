@@ -7522,6 +7522,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
 
 
+        printerTasks.add(Pair(BREAK_LINE,""))
+
         if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
                 .isNotEmpty()
         ) {
@@ -8156,167 +8158,167 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         LogUtil.logE("printDineReciept", "Staring 2....")
 
-            when(printerType){
+        when(printerType){
 
-                CommonPrinterTypes.SunmiCloudPrinter -> {
+            CommonPrinterTypes.SunmiCloudPrinter -> {
 
-                }
+            }
 
-                CommonPrinterTypes.SunmiInnerPrinter -> {
+            CommonPrinterTypes.SunmiInnerPrinter -> {
 
-                    val sunmiPrinter = SunmiInnerPrinterPays()
-                    sunmiPrinter.apply {
+                val sunmiPrinter = SunmiInnerPrinterPays()
+                sunmiPrinter.apply {
 
-                        initPrinter(customerSettingModel.fonts)
-                        isOldSunmiPrinterVersion(prefProvider.isOldSunmiFrameworkVersion())
-                        setDataMap(printerTasks)
+                    initPrinter(customerSettingModel.fonts)
+                    isOldSunmiPrinterVersion(prefProvider.isOldSunmiFrameworkVersion())
+                    setDataMap(printerTasks)
 
-                        printerTasks.forEach {
+                    printerTasks.forEach {
 
-                            if(it.first.contains(PRINT_GUEST_NAME)) {
-                                printGuest(it.second)
-                            } else if(it.first.contains(PRINT_ITEM)) {
-                                printItem(it.second)
-                            } else if(it.first.contains(PRINT_MODIFIER)) {
-                                printModifier(it.second)
-                            } else if(it.first.contains(PRINTER_ITEM_NOTE)) {
-                                printItemNote(it.second)
-                            } else if(it.first.contains(PRINT_SINGLE_PAYMENT)) {
-                                printSinglePayment(it.second)
-                            } else if(it.first.contains(PRINT_SINGLE_ADDITIONAL_TIP)) {
-                                printSingleAdditionalTip(it.second)
-                            } else if(it.first.contains(PRINT_DATA)) {
-                                printData(it.second)
-                        }
+                        if(it.first.contains(PRINT_GUEST_NAME)) {
+                            printGuest(it.second)
+                        } else if(it.first.contains(PRINT_ITEM)) {
+                            printItem(it.second)
+                        } else if(it.first.contains(PRINT_MODIFIER)) {
+                            printModifier(it.second)
+                        } else if(it.first.contains(PRINTER_ITEM_NOTE)) {
+                            printItemNote(it.second)
+                        } else if(it.first.contains(PRINT_SINGLE_PAYMENT)) {
+                            printSinglePayment(it.second)
+                        } else if(it.first.contains(PRINT_SINGLE_ADDITIONAL_TIP)) {
+                            printSingleAdditionalTip(it.second)
+                        } else if(it.first.contains(PRINT_DATA)) {
+                            printData(it.second)
+                    }
 
-                            else {
+                        else {
 
-                                when (it.first) {
-                                    ORDER_ID -> printOrderId()
-                                    BREAK_LINE -> breakLine()
-                                    BUSINESS_ADDRESS -> printBusinessDetails()
-                                    ORDER_TYPE -> printOrderType()
-                                    RECEIPT_ID -> printReceiptId()
-                                    EMPLOYEE_NAME -> printEmployeeName()
-                                    ORDER_TIME -> printOrderTime()
-                                    PRINT_HORIZONTAL_LINE -> printHorizontalLine()
-                                    PRINT_TIME -> printTime()
-                                    PRINT_TOTAL_DISCOUNT -> printTotalDiscount()
-                                    PRINT_TAX -> printTotalTax()
-                                    PRINT_SUB_TOTAL -> printSubTotal()
-                                    PRINT_SERVICE_CHARGES -> printTotalServiceCharges()
-                                    PRINT_TIPS -> printTips()
-                                    PRINT_SURCHARGE -> printSurCharges()
-                                    PRINT_CASH_DISCOUNT -> printCashDiscount()
-                                    PRINT_TOTAL_PRICE -> printTotalPrice()
-                                    PRINT_PAID_AMOUNT -> printPaidAmount()
-                                    PRINT_CHANGE_AMOUNT -> printChangeAmount()
-                                    PRINT_REMAINING_AMOUNT -> printRemainingAmount()
-                                    PRINT_TIPS_CUSTOM -> printTipCustom()
-                                    PRINT_TOTAL_CUSTOM -> printTotalCustoms()
-                                    PRINT_PAYMENT_HISTORY_LABEL -> printPaymentsHistoryLabel()
-                                    PRINT_ADDITIONAL_TIPS_LABEL -> printAdditionalTipsLabel()
-                                    PRINT_TRANSACTION_TYPE -> printTransactionType()
-                                    PRINT_TRANSACTION_ID -> printTransactionId()
-                                    PRINT_CARD_TYPE -> printCardType()
-                                    PRINT_MASKED_CARD_NO -> printCardMaskedNo()
-                                    PRINT_CUSTOMER_SIGNATURE -> printCustomerSignature()
-                                    PRINT_ORDER_NOTE -> printOrderNote()
-                                    PRINT_QR_CODE -> printQRCode()
+                            when (it.first) {
+                                ORDER_ID -> printOrderId()
+                                BREAK_LINE -> breakLine()
+                                BUSINESS_ADDRESS -> printBusinessDetails()
+                                ORDER_TYPE -> printOrderType()
+                                RECEIPT_ID -> printReceiptId()
+                                EMPLOYEE_NAME -> printEmployeeName()
+                                ORDER_TIME -> printOrderTime()
+                                PRINT_HORIZONTAL_LINE -> printHorizontalLine()
+                                PRINT_TIME -> printTime()
+                                PRINT_TOTAL_DISCOUNT -> printTotalDiscount()
+                                PRINT_TAX -> printTotalTax()
+                                PRINT_SUB_TOTAL -> printSubTotal()
+                                PRINT_SERVICE_CHARGES -> printTotalServiceCharges()
+                                PRINT_TIPS -> printTips()
+                                PRINT_SURCHARGE -> printSurCharges()
+                                PRINT_CASH_DISCOUNT -> printCashDiscount()
+                                PRINT_TOTAL_PRICE -> printTotalPrice()
+                                PRINT_PAID_AMOUNT -> printPaidAmount()
+                                PRINT_CHANGE_AMOUNT -> printChangeAmount()
+                                PRINT_REMAINING_AMOUNT -> printRemainingAmount()
+                                PRINT_TIPS_CUSTOM -> printTipCustom()
+                                PRINT_TOTAL_CUSTOM -> printTotalCustoms()
+                                PRINT_PAYMENT_HISTORY_LABEL -> printPaymentsHistoryLabel()
+                                PRINT_ADDITIONAL_TIPS_LABEL -> printAdditionalTipsLabel()
+                                PRINT_TRANSACTION_TYPE -> printTransactionType()
+                                PRINT_TRANSACTION_ID -> printTransactionId()
+                                PRINT_CARD_TYPE -> printCardType()
+                                PRINT_MASKED_CARD_NO -> printCardMaskedNo()
+                                PRINT_CUSTOMER_SIGNATURE -> printCustomerSignature()
+                                PRINT_ORDER_NOTE -> printOrderNote()
+                                PRINT_QR_CODE -> printQRCode()
 
-                                }
                             }
                         }
-
                     }
-                    PrintSunmiUtils.cutPaperInner()
 
                 }
+                PrintSunmiUtils.cutPaperInner()
 
-                CommonPrinterTypes.LandiInnerPrinter -> {
+            }
+
+            CommonPrinterTypes.LandiInnerPrinter -> {
 
 
-                    GlobalScope.launch {
-                        LPrint.connectLandiInnerPrinter(customerReceiptPrinters!!.macAddress)
-                            ?.let { outputStream ->
+                GlobalScope.launch {
+                    LPrint.connectLandiInnerPrinter(customerReceiptPrinters!!.macAddress)
+                        ?.let { outputStream ->
 
-                                LPrint.setOutputStream(outputStream)
+                            LPrint.setOutputStream(outputStream)
 
-                                val printer = LandiInnerPrinterPays()
-                                printer.apply {
+                            val printer = LandiInnerPrinterPays()
+                            printer.apply {
 
-                                    initPrinter(customerSettingModel.fonts)
-                                    setDataMap(printerTasks)
+                                initPrinter(customerSettingModel.fonts)
+                                setDataMap(printerTasks)
 
-                                    printerTasks.forEach {
+                                printerTasks.forEach {
 
-                                        if(it.first.contains(PRINT_GUEST_NAME)) {
-                                            printGuest(it.second)
-                                        } else if(it.first.contains(PRINT_ITEM)) {
-                                            printItem(it.second)
-                                        } else if(it.first.contains(PRINT_MODIFIER)) {
-                                            printModifier(it.second)
-                                        } else if(it.first.contains(PRINTER_ITEM_NOTE)) {
-                                            printItemNote(it.second)
-                                        } else if(it.first.contains(PRINT_SINGLE_PAYMENT)) {
-                                            printSinglePayment(it.second)
-                                        } else if(it.first.contains(PRINT_SINGLE_ADDITIONAL_TIP)) {
-                                            printSingleAdditionalTip(it.second)
-                                        } else if(it.first.contains(PRINT_DATA)) {
-                                            printData(it.second)
-                                        }
-
-                                        else {
-
-                                            when (it.first) {
-                                                ORDER_ID -> printOrderId()
-                                                BREAK_LINE -> breakLine()
-                                                BUSINESS_ADDRESS -> printBusinessDetails()
-                                                ORDER_TYPE -> printOrderType()
-                                                RECEIPT_ID -> printReceiptId()
-                                                EMPLOYEE_NAME -> printEmployeeName()
-                                                ORDER_TIME -> printOrderTime()
-                                                PRINT_HORIZONTAL_LINE -> printHorizontalLine()
-                                                PRINT_TIME -> printTime()
-                                                PRINT_TOTAL_DISCOUNT -> printTotalDiscount()
-                                                PRINT_TAX -> printTotalTax()
-                                                PRINT_SUB_TOTAL -> printSubTotal()
-                                                PRINT_SERVICE_CHARGES -> printTotalServiceCharges()
-                                                PRINT_TIPS -> printTips()
-                                                PRINT_SURCHARGE -> printSurCharges()
-                                                PRINT_CASH_DISCOUNT -> printCashDiscount()
-                                                PRINT_TOTAL_PRICE -> printTotalPrice()
-                                                PRINT_PAID_AMOUNT -> printPaidAmount()
-                                                PRINT_CHANGE_AMOUNT -> printChangeAmount()
-                                                PRINT_REMAINING_AMOUNT -> printRemainingAmount()
-                                                PRINT_TIPS_CUSTOM -> printTipCustom()
-                                                PRINT_TOTAL_CUSTOM -> printTotalCustoms()
-                                                PRINT_PAYMENT_HISTORY_LABEL -> printPaymentsHistoryLabel()
-                                                PRINT_ADDITIONAL_TIPS_LABEL -> printAdditionalTipsLabel()
-                                                PRINT_TRANSACTION_TYPE -> printTransactionType()
-                                                PRINT_TRANSACTION_ID -> printTransactionId()
-                                                PRINT_CARD_TYPE -> printCardType()
-                                                PRINT_MASKED_CARD_NO -> printCardMaskedNo()
-                                                PRINT_CUSTOMER_SIGNATURE -> printCustomerSignature()
-                                                PRINT_ORDER_NOTE -> printOrderNote()
-                                                PRINT_QR_CODE -> printQRCode()
-
-                                            }
-                                        }
+                                    if(it.first.contains(PRINT_GUEST_NAME)) {
+                                        printGuest(it.second)
+                                    } else if(it.first.contains(PRINT_ITEM)) {
+                                        printItem(it.second)
+                                    } else if(it.first.contains(PRINT_MODIFIER)) {
+                                        printModifier(it.second)
+                                    } else if(it.first.contains(PRINTER_ITEM_NOTE)) {
+                                        printItemNote(it.second)
+                                    } else if(it.first.contains(PRINT_SINGLE_PAYMENT)) {
+                                        printSinglePayment(it.second)
+                                    } else if(it.first.contains(PRINT_SINGLE_ADDITIONAL_TIP)) {
+                                        printSingleAdditionalTip(it.second)
+                                    } else if(it.first.contains(PRINT_DATA)) {
+                                        printData(it.second)
                                     }
 
+                                    else {
+
+                                        when (it.first) {
+                                            ORDER_ID -> printOrderId()
+                                            BREAK_LINE -> breakLine()
+                                            BUSINESS_ADDRESS -> printBusinessDetails()
+                                            ORDER_TYPE -> printOrderType()
+                                            RECEIPT_ID -> printReceiptId()
+                                            EMPLOYEE_NAME -> printEmployeeName()
+                                            ORDER_TIME -> printOrderTime()
+                                            PRINT_HORIZONTAL_LINE -> printHorizontalLine()
+                                            PRINT_TIME -> printTime()
+                                            PRINT_TOTAL_DISCOUNT -> printTotalDiscount()
+                                            PRINT_TAX -> printTotalTax()
+                                            PRINT_SUB_TOTAL -> printSubTotal()
+                                            PRINT_SERVICE_CHARGES -> printTotalServiceCharges()
+                                            PRINT_TIPS -> printTips()
+                                            PRINT_SURCHARGE -> printSurCharges()
+                                            PRINT_CASH_DISCOUNT -> printCashDiscount()
+                                            PRINT_TOTAL_PRICE -> printTotalPrice()
+                                            PRINT_PAID_AMOUNT -> printPaidAmount()
+                                            PRINT_CHANGE_AMOUNT -> printChangeAmount()
+                                            PRINT_REMAINING_AMOUNT -> printRemainingAmount()
+                                            PRINT_TIPS_CUSTOM -> printTipCustom()
+                                            PRINT_TOTAL_CUSTOM -> printTotalCustoms()
+                                            PRINT_PAYMENT_HISTORY_LABEL -> printPaymentsHistoryLabel()
+                                            PRINT_ADDITIONAL_TIPS_LABEL -> printAdditionalTipsLabel()
+                                            PRINT_TRANSACTION_TYPE -> printTransactionType()
+                                            PRINT_TRANSACTION_ID -> printTransactionId()
+                                            PRINT_CARD_TYPE -> printCardType()
+                                            PRINT_MASKED_CARD_NO -> printCardMaskedNo()
+                                            PRINT_CUSTOMER_SIGNATURE -> printCustomerSignature()
+                                            PRINT_ORDER_NOTE -> printOrderNote()
+                                            PRINT_QR_CODE -> printQRCode()
+
+                                        }
+                                    }
                                 }
 
-
-
-                                LPrint.paperCut()
-
                             }
-                    }
 
+
+
+                            LPrint.paperCut()
+
+                        }
                 }
 
             }
+
+        }
 
      }catch (e: Exception) {
         e.printStackTrace()

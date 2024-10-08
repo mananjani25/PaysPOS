@@ -1506,23 +1506,28 @@ class CustomDisplay(
     private fun observeActiveTipsList(wholeTotalPrice: Double) {
         tipsListViewModel.getTipActiveList.observe(lifecycleOwner) {
 
-            Log.d("C_Disp_2::", wholeTotalPrice.toString())
+            try {
+                Log.d("C_Disp_2::", wholeTotalPrice.toString())
 
-            if (it.data?.isNotEmpty() == true) {
+                if (it.data?.isNotEmpty() == true) {
 
-                activeTipsListAdapter?.clearAll()
+                    activeTipsListAdapter?.clearAll()
 
-                it.data.forEach { data ->
-                    data.isChecked = false
-                }
-                binding.rvActiveTipsList.layoutManager = GridLayoutManager(context, it.data.size)
+                    it.data.forEach { data ->
+                        data.isChecked = false
+                    }
+                    binding.rvActiveTipsList.layoutManager =
+                        GridLayoutManager(context, it.data.size)
 //                activeTipsListAdapter?.setList(it.data, wholeTotalPrice)
-                activeTipsListAdapter?.setList(it.data, wholeTotalPrice)
-                activeTipsListAdapter?.setListner(this)
-                lifecycleOwner.lifecycleScope.launch {
-                    //delay(5000)
-                    //binding.rvActiveTipsList.smoothScrollToPosition(tipsList.size - 1)
+                    activeTipsListAdapter?.setList(it.data, wholeTotalPrice)
+                    activeTipsListAdapter?.setListner(this)
+                    lifecycleOwner.lifecycleScope.launch {
+                        //delay(5000)
+                        //binding.rvActiveTipsList.smoothScrollToPosition(tipsList.size - 1)
+                    }
                 }
+            }catch (e:Exception) {
+               Log.e("CRASH CUSTOMER DISPLAY - GET TIP LIST ACTIVE  ","observeActiveTipsList "+e.message)
             }
         }
     }
