@@ -1,5 +1,6 @@
 package com.pays.pos.ui.fragments.customer
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -22,7 +23,7 @@ import com.pays.pos.utils.Event
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
@@ -87,14 +88,17 @@ public class CustomerListViewModel @Inject constructor(
         }
     }
 
+    var searchJob: Job?=null
     fun searchByTextCustomer(query: String) {
-        viewModelScope.launch {
+        searchJob?.cancel()
+        searchJob=viewModelScope.launch {
             val resource: Resource<CustomerSearchList> = posRepository.searchCustomer(query)
             when (resource.status) {
                 Status.SUCCESS -> {
                     resource.data?.let { response ->
                         if (response.status == 200) {
                             resource.data?.let { customerlist ->
+
                                 var customerdatalist: ArrayList<TbCustomer?> =
                                     arrayListOf<TbCustomer?>()
                                 customerlist.data.forEach {
