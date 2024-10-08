@@ -4418,7 +4418,9 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalServiceCharge = 0.0
             var amountToBePaid = 0.0
 
-            if (cartModel?.orderType == DINE_IN) {
+            if (cartModel?.orderType == " ") {
+
+                // for dine in changes , replace if with cartModel?.orderType == DINE_IN
 
             } else {
 
@@ -5430,13 +5432,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                         itemtype.totalTaxTypePrice = ttaxPrice
 
 
-                        cartModel.taxlistDynamic =
-                            concatenate(cartModel.taxlistDynamic!!, listOf(itemtype))
+                        try {
+                            cartModel.taxlistDynamic =
+                                concatenate(cartModel.taxlistDynamic!!, listOf(itemtype))
 
-                        prefProvider.setValue(
-                            Constants.taxListDynamic,
-                            Gson().toJson(cartModel.taxlistDynamic)
-                        )
+
+                            prefProvider.setValue(
+                                Constants.taxListDynamic,
+                                Gson().toJson(cartModel.taxlistDynamic)
+                            )
+                        }catch (E:Exception) {}
 
                     } else {
                         if (itemtype.taxType != "Percentage") {
