@@ -576,6 +576,20 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.btnPayNew.setOnClickListener {
             try {
 
+
+                dashboardViewModel.setTipAmount(0.0)
+                dashboardViewModel.customerGivenTip.value=false
+
+                dashboardViewModel.customerCardAmount.value=""
+                dashboardViewModel.customerCashAmount.value=""
+
+                prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+                prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, "0")
+                prefProvider.setValueInt(Constants.TIP_ADDED_ID, 0)
+
+
+
+
                 //new Calculation for total Discount
                 var listWT: ArrayList<TbCartItem> = arrayListOf()
                 var list = dineInTableAdapter.getList()
@@ -1742,6 +1756,17 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         listItemGuestSelected: ArrayList<TbCartItem>,
         guestIndexForDineIn: Int
     ) {
+
+        dashboardViewModel.setTipAmount(0.0)
+        dashboardViewModel.customerGivenTip.value=false
+
+        dashboardViewModel.customerCardAmount.value=""
+        dashboardViewModel.customerCashAmount.value=""
+
+        prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+        prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, "0")
+        prefProvider.setValueInt(Constants.TIP_ADDED_ID, 0)
+
 
         //New Drag and Drop
 

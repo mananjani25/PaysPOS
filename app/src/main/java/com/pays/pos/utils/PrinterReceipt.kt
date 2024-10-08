@@ -20,14 +20,20 @@ import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
 import com.pays.pos.data.model.responseModel.*
+import com.pays.pos.data.remote.BREAK_LINE
+import com.pays.pos.data.remote.PRINT_HORIZONTAL_LINE
+import com.pays.pos.data.remote.PRINTER_ITEM_NOTE
+import com.pays.pos.data.remote.PRINT_ITEM
+import com.pays.pos.data.remote.PRINT_MODIFIER
+import com.pays.pos.data.remote.PRINT_PAYMENT_HISTORY_LABEL
+import com.pays.pos.data.remote.PRINT_SINGLE_ADDITIONAL_TIP
+import com.pays.pos.data.remote.PRINT_SINGLE_PAYMENT
 import com.pays.pos.utils.landi.LPrint
 import com.pays.pos.utils.landi.LPrint.FONT_SIZE_5X
-import com.pays.pos.utils.landi.LPrint.SMALL_SIZE
 import com.pays.pos.utils.landi.LPrint.lineBreak
 import com.pays.pos.utils.landi.LPrint.printCenter
 import com.pays.pos.utils.landi.LPrint.printDashedLineAndBreak
 import com.pays.pos.utils.landi.LPrint.printLeft
-import com.pays.pos.utils.landi.LPrint.printText
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
 import java.io.OutputStream
@@ -2573,6 +2579,44 @@ fun addTipsList(
         ).toString()
 
         PrintSunmiUtils.orderTime(str)
+
+    }
+
+
+}
+
+fun addTipsListInnerCommon(
+    printerTasks: MutableList<Pair<String, String>>,
+    list: List<GetTipReponse.Data>,
+    totalAmt: Double,
+    font: String
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+
+        val tipName = obj.name + "(" + MethodUtils.roundOffAmountString(obj.rate) + "%)"
+
+        val price = "(Tip $" + calculateTipAmt(
+            obj.rate,
+            totalAmt
+        ) + " Total $" + MethodUtils.roundOffAmountString(
+            (totalAmt + calculateTipAmt(
+                obj.rate,
+                totalAmt
+            ))
+        ) + ")"
+
+        val str = padLine(
+            tipName, price, if (font == Constants.LARGE) {
+                23
+            } else {
+                48
+            }
+        ).toString()
+
+        printerTasks.add(Pair(PRINT_SINGLE_ADDITIONAL_TIP,str))
+       // PrintSunmiUtils.printNormalText(isOldSunmiFrameworkVersion,str)
 
     }
 
@@ -6033,6 +6077,35 @@ fun addOrderItemForDineIn(
     return builder
 }
 
+fun printPaymentCommon(
+    printerTasks:MutableList<Pair<String,String>>,
+    list: List<GetOrderDetailsResponse.Data.Payment>
+) {
+
+
+    printerTasks.add(Pair(PRINT_HORIZONTAL_LINE,""))
+    printerTasks.add(Pair(PRINT_PAYMENT_HISTORY_LABEL,"Payment History"))
+
+
+    val obj = list
+
+    list.forEachIndexed {  index,it->
+
+        //   val paymentToPrint = padLineSinglePayment("Payment ${index+1}","${it.amount}",2)
+        val paymentToPrint = "Payment ${index+1}  :   ${MethodUtils.roundOffAmount(it.amount)}"
+
+
+        printerTasks.add(Pair(PRINT_SINGLE_PAYMENT,paymentToPrint))
+
+    }
+
+    printerTasks.add(Pair(PRINT_HORIZONTAL_LINE,""))
+    printerTasks.add(Pair(BREAK_LINE,""))
+
+
+
+}
+
 fun printPayment(
     isOldSunmiFrameworkVersion: Boolean = false,
     outputStream: OutputStream? = null,
@@ -6195,6 +6268,57 @@ fun addOrderItemForDineInInnerLandi(
 
 
 }
+
+fun addOrderItemForDineInInnerCommon(
+    printerTasks:MutableList<Pair<String,String>>,
+    list: TbCartItem,
+    font: String,
+    showModifiers: Boolean
+){
+
+
+    val obj = list
+
+
+    printerTasks.add(
+        Pair(
+        PRINT_ITEM,    padLineCustomerItem(
+            obj.itemQuantity.toString() + "  " + getItemNameToShow(obj.name),
+            getItemPriceToShow(totalPriceDineInItem(obj)),
+            if (font == Constants.LARGE) 23 else 48
+        ).toString()))
+
+
+
+
+    if (obj.modifiers.isNotEmpty() && showModifiers) {
+        for (j in 0 until obj.modifiers.size) {
+            val modifierObj = obj.modifiers.get(j)
+
+
+            val modifierText = padLineCustomerItem(
+                if (modifierObj.modifier_quantity == 1) {
+                    "     " + getItemNameToShow(modifierObj.name)
+                } else {
+                    "  " + modifierObj.modifier_quantity + "x " + getItemNameToShow(modifierObj.name)
+                },
+                getModifierItemPriceToShow(modifierObj.price, modifierObj.modifier_quantity * obj.itemQuantity),
+                if (font == Constants.LARGE) 23 else 48
+            ).toString()
+
+            printerTasks.add(Pair(PRINT_MODIFIER,modifierText))
+
+        }
+
+
+    }
+
+    if (obj.note.isNotEmpty()) {
+        printerTasks.add(Pair(PRINTER_ITEM_NOTE,"   Note: " + obj.note))
+    }
+
+}
+
 
 fun addOrderItemForDineInInner(
     list: TbCartItem,
