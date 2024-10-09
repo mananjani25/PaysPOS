@@ -313,7 +313,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         noCashAdjGlobal =
             MethodUtils.roundOffAmountDouble(requireArguments().getDouble("noCashAdj"))
 
-        dashboardViewModel.changeAvailable.observe(this, object : Observer<Event<String>> {
+        dashboardViewModel.changeAvailable.observe(viewLifecycleOwner, object : Observer<Event<String>> {
             override fun onChanged(t: Event<String>?) {
                 t?.getContentIfNotHandled()?.let {
                     runOnUiThread(object : java.lang.Runnable {
@@ -8580,7 +8580,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             if (kitchenPrinterList[i].status) {
                                                                 kitchenPrinterList[i].orderTypes.forEach {
 
-                                                                    if (it.orderTypeId == receiptModel?.order?.orderTypeId || it.orderType == receiptModel?.order?.orderType
+                                                                    if (it.orderTypeId == receiptModel?.order?.orderTypeId || it.orderTypeName == receiptModel?.order?.orderTypeName
 
                                                                     ) {
 
