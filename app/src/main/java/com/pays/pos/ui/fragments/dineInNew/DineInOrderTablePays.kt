@@ -1058,7 +1058,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                 prefProvider.setValue("PaidAmount", "")
-                prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+                prefProvider.setValue(Constants.WHOLE_AMOUNT,"")
                 prefProvider.setValueInt("cardCount", 0)
                 prefProvider.setValue(Constants.SUB_TOTAL, "")
                 prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
@@ -3338,11 +3338,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                             val kitchenDineInPrinters = kitchenPrinterList
                                 .filter { kitchenPrinter ->
-                                    kitchenPrinter.orderTypes.any { orderType ->
-                                        orderType.orderType == "DineIn" && orderType.printerSettings.any { printerSetting ->
-                                            printerSetting.autoPrinting && printerSetting.printType == "Kitchen"
+
+                                        kitchenPrinter.orderTypes.any { orderType ->
+                                            orderType.orderType == "DineIn" && orderType.printerSettings.any { printerSetting ->
+                                                printerSetting.autoPrinting && printerSetting.printType == "Kitchen" && kitchenPrinter.status
+                                            }
                                         }
-                                    }
+
                                 }
 
 

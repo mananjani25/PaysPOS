@@ -2128,13 +2128,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         Log.d(TAG, "1633 dineintest currentCartItems: " + viewModel.currentCartItems)
         Log.d(TAG, "dineintest dineinlist: " + dineInList)
-        viewModel.updateDineInCart(
-            viewModel.currentCartItems,
-            null,
-            Constants.ADD,
-            false,
-            dineInList
-        )
+//        viewModel.updateDineInCart(
+//            viewModel.currentCartItems,
+//            viewModel.currentCartItems.first(),
+//            Constants.ADD,
+//            false,
+//            dineInList
+//        )
+
+        CoroutineScope(Dispatchers.IO).launch {
+            viewModel.currentCartItems.forEach { item ->
+                viewModel.addItemToCartItems(item)
+            }
+        }
 
     }
 

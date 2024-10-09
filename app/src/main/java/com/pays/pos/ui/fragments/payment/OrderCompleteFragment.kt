@@ -7899,6 +7899,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 (getDineInOrderDetails?.totalAmount!! + getDineInOrderDetails?.totalServiceCharges!!)
             )
 
+//        var totalAmt = dashboardViewModel.totalPriceUpdated.value ?: 0.0
+
         if (payTypeGlb.lowercase() == "Card".lowercase() && prefProvider.getValue(
                 OPTION_TYPE,
                 ""
@@ -7920,9 +7922,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             printerTasks.add(Pair(BREAK_LINE,""))
         val str5 = padLine(
             "Total Price",
-            "$" + MethodUtils.roundOffAmountString(totalAmt + finalServiceCharges),
+            "$" + MethodUtils.roundOffAmountString(totalAmt ),
             if (customerSettingModel.fonts == LARGE) 23 else 48
         ).toString()
+
+//            val str5 = padLine(
+//            "Total Price",
+//            "$" + MethodUtils.roundOffAmountString(totalAmt ),
+//            if (customerSettingModel.fonts == LARGE) 23 else 48
+//        ).toString()
 
         printerTasks.add(Pair(PRINT_TOTAL_PRICE,str5))
 

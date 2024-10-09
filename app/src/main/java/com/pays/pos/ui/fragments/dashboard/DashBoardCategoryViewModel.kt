@@ -127,6 +127,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var selectedItemPositionDine: Int = 0
     val TAG = "DashBoardCateViewModel"
     var totalPrice: Double = 0.0
+    var totalPriceUpdated = MutableLiveData<Double>()
     var totalCount = 0
     var subTotalPrice = 0.0
     var totalTax = 0.0
