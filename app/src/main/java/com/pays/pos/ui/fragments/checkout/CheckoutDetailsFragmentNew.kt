@@ -2285,6 +2285,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             if (InternetUtils.isInternetAvailable(applicationContext = requireActivity().applicationContext)) {
 
+                runOnUiThread(object:java.lang.Runnable{
+                    override fun run() {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
+                })
                 restrictTvCashClicks()
 
                 val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
@@ -2696,6 +2701,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     //Restrict user from clicking cash value multiple times
     private fun restrictTvCashClicks() {
         binding.apply {
+            llCreditCard.isEnabled = false
             tvCash0.isEnabled = false
             tvCash1.isEnabled = false
             tvCash2.isEnabled = false
@@ -2704,6 +2710,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         Handler().postDelayed({
             binding.apply {
+                llCreditCard.isEnabled = true
                 tvCash0.isEnabled = true
                 tvCash1.isEnabled = true
                 tvCash2.isEnabled = true
@@ -2806,9 +2813,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 Constants.BROADPOS_VERSION,
                 ""
             )
-            CoroutineScope(Dispatchers.Main).launch {
-                ProgressUtils.showProgressDialog(requireActivity())
-            }
+
+          /*  runOnUiThread(object:java.lang.Runnable{
+                override fun run() {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                }
+            })*/
+
             mPaymentRequest = PaymentRequest()
             mPaymentRequest.TransType = mPaymentRequest.ParseTransType("SALE")
             mPaymentRequest.TenderType = mPaymentRequest.ParseTenderType("CREDIT")
@@ -2822,7 +2833,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
             posLink.PaymentRequest = mPaymentRequest
             val result = posLink.ProcessTrans()
-            Log.d("result: ", result.Code.toString() + " " + result.Msg)
+            Log.d("PAX_LOADER:: ", result.Code.toString() + " " + result.Msg)
             if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
                 val msg = Message()
                 msg.what = Constants.TRANSACTION_SUCCESSED
@@ -2872,13 +2883,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     paymentviewModel.savePaxPaymentDataLocally(paxData)
 
                     CoroutineScope(Dispatchers.Main).launch {
-                        ProgressUtils.dismissProgressDialog()
+//                        ProgressUtils.dismissProgressDialog()
                         coroutineScope {
                             makePaymentCreditCard()
                         }
                     }
                 } else {
                     CoroutineScope(Dispatchers.Main).launch {
+                        Log.d("PAX_LOADER_1:: ", "result.Code.toString() result.Msg")
+
                         ProgressUtils.dismissProgressDialog()
                         AlertUtils.showCustomAlertWithListenerWithOK(
                             requireContext(),
@@ -2904,12 +2917,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         magtekProViewModel.initPOSLink(requireContext())
                     } else {
                         retryCount = 1*/
-                        AlertUtils.showCustomAlertWithListenerWithOKCancel(
+                    Log.d("PAX_LOADER_2:: ", "result.Code.toString() result.Msg")
+                    AlertUtils.showCustomAlertWithListenerWithOKCancel(
                             requireContext(),
                             getString(R.string.pax_connect_error), getString(R.string.reconnect),
                         )
                         { _, _ ->
                             // Add connect to PAX logic
+                            Log.d("PAX_LOADER_3:: ", "result.Code.toString() result.Msg")
                             magtekProViewModel.initPOSLink(requireContext())
                         }
 //                    }
