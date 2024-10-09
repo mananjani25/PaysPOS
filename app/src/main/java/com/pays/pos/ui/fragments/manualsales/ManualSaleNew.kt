@@ -939,12 +939,15 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
                     prefProvider.setValue(Constants.TIP, "")
                     prefProvider.setValue(Constants.TAX_CHARGE, "")
-                    prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+                    prefProvider.setValue(Constants.SERVICE_CHARGE, /*viewModel.totalServiceCharge.toString()*/"")
                     prefProvider.setValue("CART_MODEL1", Gson().toJson(manualCartModel))
                     prefProvider.setValue("CART_MODEL2", Gson().toJson(cartModelsList))
                     prefProvider.setValueboolean(IS_FROM_ALL_ORDER, false)
+                    val bundle = Bundle()
+                        bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
                     findNavController().navigate(
-                        R.id.action_manualSaleCart_to_paymentBoldPosFragment
+                        R.id.action_manualSaleCart_to_paymentBoldPosFragment,
+                        bundle
                     )
                     viewModel.boldPosNeedToRefresh = true
                 } else {

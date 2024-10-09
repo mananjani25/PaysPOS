@@ -458,7 +458,13 @@ class PaymentBoldPosFragment : Fragment() {
 
             viewModel.totalServiceCharge = arguments?.getDouble("serviceChargeB")?.toDouble() ?:0.0
 
-            putDouble("totalServiceCharge",arguments?.getDouble("totalServiceCharge")?:0.0)
+            if (viewModel.totalServiceCharge==0.0){
+                if (arguments?.getDouble("totalServiceCharge", 0.0)!=0.0){
+                    viewModel.totalServiceCharge=arguments?.getDouble("totalServiceCharge", 0.0)?:0.0
+                }
+            }
+
+            arguments?.putDouble("totalServiceCharge",arguments?.getDouble("totalServiceCharge")?:0.0)
             arguments?.getBoolean("isLoyaltyApplied")?.let { putBoolean("isLoyaltyApplied", it) }
             arguments?.getBoolean("isFromActiveOrder")?.let { putBoolean("isFromActiveOrder", it) }
             putString(REDIRECT_FROM, prefProvider.getValue(REDIRECT_FROM, ""))

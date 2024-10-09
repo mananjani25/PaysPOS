@@ -1061,6 +1061,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                     binding.txtSubTotal.text = MethodUtils.roundOffAmount(viewModel.subTotalPrice)
                     binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
+                    Log.d("S_CHARGE_1::", viewModel.totalServiceCharge.toString())
                     binding.txtServiceCharge.text =
                         MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                     binding.tvPayNow.text =
@@ -1501,6 +1502,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                 MethodUtils.roundOffAmount(viewModel.subTotalPrice)
                                             binding.txtTax.text =
                                                 MethodUtils.roundOffAmount(viewModel.totalTax)
+                                            Log.d("S_CHARGE_2::", viewModel.totalServiceCharge.toString())
                                             binding.txtServiceCharge.text =
                                                 MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                                             binding.txtDiscount.text =
@@ -1926,6 +1928,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                 MethodUtils.roundOffAmount(viewModel.subTotalPrice)
                                             binding.txtTax.text =
                                                 MethodUtils.roundOffAmount(viewModel.totalTax)
+                                            Log.d("S_CHARGE_3::", viewModel.totalServiceCharge.toString())
                                             binding.txtServiceCharge.text =
                                                 MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                                             binding.txtDiscount.text =
@@ -2265,11 +2268,13 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     viewModel.totalServiceCharge = serviceCharge
 
                 }
-
+                Log.d("S_CHARGE_4::", viewModel.totalServiceCharge.toString())
                 binding.txtServiceCharge.text = MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
-            } else
-                binding.txtServiceCharge.text = MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
-
+            } else {
+                Log.d("S_CHARGE_5::", viewModel.totalServiceCharge.toString())
+                binding.txtServiceCharge.text =
+                    MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
+            }
             Log.e("totalDiscount", viewModel.totalDiscount.toString())
 
             var cartCompletePrice = getCompleteCartPrice()
