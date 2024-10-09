@@ -39,14 +39,14 @@ class MainApplication : Application() {
 
         /*It will not work in builds that are sent for live */
         if (Constants.isPaxInDebugMode) {
-           /* ANRWatchDog().start()
+            ANRWatchDog().start()
             ANRWatchDog().setANRListener { error ->
                 // Log or handle the ANR event
                 Log.e("ANR-WatchDog", "Application Not Responding detected!", error)
 
                 // You can also send this information to Crashlytics or another logging service
                 // FirebaseCrashlytics.getInstance().recordException(error)
-            }.start()*/
+            }.start()
         }
 /*ALL THE SCAN GUN VARIABLES ARE COMMENTED AND MOVED TO MAINACTIVITY(for solving permission issue), PLEASE UNCOMMENT IT AND REMOVE THE VARIABLES FROM MAINACTIVITY*/
 

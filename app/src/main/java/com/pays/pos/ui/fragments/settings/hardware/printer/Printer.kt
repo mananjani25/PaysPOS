@@ -15,6 +15,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
+import android.provider.Settings.Global
 import android.text.Html
 import android.util.Log
 import android.view.LayoutInflater
@@ -344,12 +345,20 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         modelName = printer.information?.model?.name
 
                     )
-                    var found=false
-                    for (it in kitchenAdapter.dataList){
-                        if (it.modelName.equals(printer.information?.model?.name,ignoreCase = true)){
-                            found=true
-                            availableNetworkAdapter.dataList.forEachIndexed{index,it->
-                                if (it.modelName.equals(printer.information?.model?.name,ignoreCase = true)){
+                    var found = false
+                    for (it in kitchenAdapter.dataList) {
+                        if (it.modelName.equals(
+                                printer.information?.model?.name,
+                                ignoreCase = true
+                            )
+                        ) {
+                            found = true
+                            availableNetworkAdapter.dataList.forEachIndexed { index, it ->
+                                if (it.modelName.equals(
+                                        printer.information?.model?.name,
+                                        ignoreCase = true
+                                    )
+                                ) {
                                     availableNetworkAdapter.dataList.removeAt(index)
                                     availableNetworkAdapter.notifyItemChanged(index)
                                 }
@@ -358,16 +367,20 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         }
                     }
 
-                    if (!found){
-                        var flagFound=false
-                        for (data in availableNetworkAdapter.dataList){
-                            if (data.modelName.equals(starPrinterData.modelName,ignoreCase = true)){
-                                flagFound=true
+                    if (!found) {
+                        var flagFound = false
+                        for (data in availableNetworkAdapter.dataList) {
+                            if (data.modelName.equals(
+                                    starPrinterData.modelName,
+                                    ignoreCase = true
+                                )
+                            ) {
+                                flagFound = true
                                 break
                             }
                         }
 
-                        if (!flagFound){
+                        if (!flagFound) {
                             availableNetworkAdapter.addItem(
                                 starPrinterData
                             )
@@ -658,7 +671,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         allPrinterlist.clear()
         addedCustomerPrinters = false
         addedKitchenPrinters = false
-        viewModel.printerList().observe(parentFragment?.viewLifecycleOwner?:viewLifecycleOwner) {
+        viewModel.printerList().observe(parentFragment?.viewLifecycleOwner ?: viewLifecycleOwner) {
             when (it.status) {
 
                 Status.SUCCESS -> {
@@ -672,8 +685,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                         val customerData = data
                         runOnUiThread(kotlinx.coroutines.Runnable {
-                        customerAdapter.clearList()
-                        customerAdapter.setList(arrayListOf())
+                            customerAdapter.clearList()
+                            customerAdapter.setList(arrayListOf())
                         })
 
                         var customerPrintersList: ArrayList<PrinterListModel> = arrayListOf()
@@ -774,7 +787,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
                             runOnUiThread(kotlinx.coroutines.Runnable {
-                            customerAdapter.setList(customerPrintersList)
+                                customerAdapter.setList(customerPrintersList)
                             })
                             allPrinterlist.addAll(customerPrintersList)
                             addedCustomerPrinters = true
@@ -793,7 +806,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         //kitchenAdapter.clearList()
 
                         runOnUiThread(kotlinx.coroutines.Runnable {
-                        customerAdapter.clearList()
+                            customerAdapter.clearList()
                         })
                         addedCustomerPrinters = true
                     }
@@ -836,96 +849,106 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         }
         getAllKitchenPrintersListFromDB()
-       /* lifecycleScope.launch {
-            delay(1000)
-            getAllKitchenPrintersListFromDB()
-            delay(500)
-            getAllKitchenPrintersListFromDB()
+        /* lifecycleScope.launch {
+             delay(1000)
+             getAllKitchenPrintersListFromDB()
+             delay(500)
+             getAllKitchenPrintersListFromDB()
 
-        }*/
+         }*/
     }
 
     private fun getAllKitchenPrintersListFromDB() {
         viewModel.viewModelScope.launch {
             ProgressUtils.showProgressDialog(requireActivity())
             try {
-                viewModel.getKitchenPrintersList().observe(viewLifecycleOwner,{it->
+                viewModel.getKitchenPrintersList().observe(viewLifecycleOwner, { it ->
 
                     var kitchenData = it.data
 
 
-                        Log.e("checkData", "kitchenList  ${kitchenData?.size}")
-                if (kitchenData?.isNotEmpty() == true) {
-                    runOnUiThread(kotlinx.coroutines.Runnable {
-                    kitchenAdapter.clearList()
-                    kitchenAdapter.setList(arrayListOf())
-                    })
-                    var kitchenPrintersList: ArrayList<PrinterListModel> = arrayListOf()
-                    if (kitchenData != null) {
-                        for (i in kitchenData.indices) {
+                    Log.e("checkData", "kitchenList  ${kitchenData?.size}")
+                    if (kitchenData?.isNotEmpty() == true) {
+                        runOnUiThread(kotlinx.coroutines.Runnable {
+                            kitchenAdapter.clearList()
+                            kitchenAdapter.setList(arrayListOf())
+                        })
+                        var kitchenPrintersList: ArrayList<PrinterListModel> = arrayListOf()
+                        if (kitchenData != null) {
+                            for (i in kitchenData.indices) {
 
 
-                            if (prefProvider.getValueboolean(
-                                    IS_PRINTER_QUEUE_ENABLE,
-                                    false
-                                ) && prefProvider.getValueboolean(IS_MASTER_TERMINAL, false)
-                            ) {
-                                if (kitchenData[i].printer_type == Constants.BLUETOOTH) {
-                                    viewModel.deleteKitchenPrinter(kitchenData[i].id)
-                                } else {
-                                    addPrinters(kitchenPrintersList, kitchenData, i)
-                                }
-                            } else {
-                                if (kitchenData[i].printer_type == Constants.WIFI) {
-                                    if (kitchenData[i].name.equals(
-                                            "TM-L100",
-                                            ignoreCase = true
-                                        ) || kitchenData[i].name.contains("TSP", ignoreCase = true) || kitchenData[i].name.contains("SP", ignoreCase = true)
-                                    ) {
-                                        addPrinters(kitchenPrintersList, kitchenData, i)
-                                    } else {
+                                if (prefProvider.getValueboolean(
+                                        IS_PRINTER_QUEUE_ENABLE,
+                                        false
+                                    ) && prefProvider.getValueboolean(IS_MASTER_TERMINAL, false)
+                                ) {
+                                    if (kitchenData[i].printer_type == Constants.BLUETOOTH) {
                                         viewModel.deleteKitchenPrinter(kitchenData[i].id)
+                                    } else {
+                                        addPrinters(kitchenPrintersList, kitchenData, i)
                                     }
                                 } else {
-                                    addPrinters(kitchenPrintersList, kitchenData, i)
+                                    if (kitchenData[i].printer_type == Constants.WIFI) {
+                                        if (kitchenData[i].name.equals(
+                                                "TM-L100",
+                                                ignoreCase = true
+                                            ) || kitchenData[i].name.contains(
+                                                "TSP",
+                                                ignoreCase = true
+                                            ) || kitchenData[i].name.contains(
+                                                "SP",
+                                                ignoreCase = true
+                                            )
+                                        ) {
+                                            addPrinters(kitchenPrintersList, kitchenData, i)
+                                        } else {
+                                            viewModel.deleteKitchenPrinter(kitchenData[i].id)
+                                        }
+                                    } else {
+                                        addPrinters(kitchenPrintersList, kitchenData, i)
+                                    }
                                 }
+
                             }
-
+                            Log.d(
+                                "kitchenPrintersList",
+                                "kitchenPrintersList size = ${kitchenPrintersList.size}"
+                            )
+                            runOnUiThread(kotlinx.coroutines.Runnable {
+                                kitchenAdapter.setList(kitchenPrintersList)
+                            })
+                            allPrinterlist.addAll(kitchenPrintersList)
+                            addedKitchenPrinters = true
+                        } else {
+                            addedKitchenPrinters = true
                         }
-                        Log.d(
-                            "kitchenPrintersList",
-                            "kitchenPrintersList size = ${kitchenPrintersList.size}"
-                        )
-                        runOnUiThread(kotlinx.coroutines.Runnable {
-                        kitchenAdapter.setList(kitchenPrintersList)
-                        })
-                        allPrinterlist.addAll(kitchenPrintersList)
-                        addedKitchenPrinters = true
-                    } else {
-                        addedKitchenPrinters = true
-                    }
 
-                    if (addedCustomerPrinters && addedKitchenPrinters) {
-                        availableNetworkAdapter.clearList()
-                        searchBluetooth()
-                        startFinder()
+                        if (addedCustomerPrinters && addedKitchenPrinters) {
+                            availableNetworkAdapter.clearList()
+                            searchBluetooth()
+                            startFinder()
+                            SunmiPrinterManager.getInstance()
+                                .searchCloudPrinter(
+                                    requireContext(),
+                                    SearchMethod.LAN,
+                                    this@Printer
+                                )
+                        }
+
+
+                    } else {
+                        LogUtil.logE(TAG, "ITNotNull  ")
+                        runOnUiThread(kotlinx.coroutines.Runnable {
+                            kitchenAdapter.clearList()
+                        })
+                        addedKitchenPrinters = true
                         SunmiPrinterManager.getInstance()
                             .searchCloudPrinter(requireContext(), SearchMethod.LAN, this@Printer)
                     }
 
-
-                } else {
-                    LogUtil.logE(TAG, "ITNotNull  ")
-                    runOnUiThread(kotlinx.coroutines.Runnable {
-                    kitchenAdapter.clearList()
-                    })
-                    addedKitchenPrinters = true
-                    SunmiPrinterManager.getInstance()
-                        .searchCloudPrinter(requireContext(), SearchMethod.LAN, this@Printer)
-                }
-
-                hideLoaderAfterDelay()
-                ProgressUtils.dismissProgressDialog()
+                    hideLoaderAfterDelay()
+                    ProgressUtils.dismissProgressDialog()
                 })
             } catch (e: Exception) {
                 ProgressUtils.dismissProgressDialog()
@@ -1671,7 +1694,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                     } else {
 
-                        printerListModel.deviceModel?.let { sunmiPrinterInit(it.ipAddress) }
+                        printerListModel.deviceModel?.let {
+                        GlobalScope.launch(Dispatchers.IO) {
+                            sunmiPrinterInit(it.ipAddress)
+                        }
+                        }
                     }
 
                 } else if (it?.startsWith("Printer", true) == true) {
@@ -1718,15 +1745,19 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                 } else if (it?.startsWith("InnerPrinter", true) == true) {
                     sunmiInnerPrinter(printerListModel.deviceModel?.ipAddress)
-                } else if (it?.equals("Inner Printer",ignoreCase = true)){
+                } else if (it?.equals("Inner Printer", ignoreCase = true)) {
                     landiTestPrint(printerListModel)
-                }else if (it?.equals(
+                } else if (it?.equals(
                         "TM-L100",
                         ignoreCase = true
                     ) == true
                 ) {
                     initLabelPrinter(printerListModel)
-                } else if (it?.contains("TSP", ignoreCase = true) == true || it?.contains("SP", ignoreCase = true) == true) {
+                } else if (it?.contains("TSP", ignoreCase = true) == true || it?.contains(
+                        "SP",
+                        ignoreCase = true
+                    ) == true
+                ) {
                     initStarPrinter(printerListModel)
                 } else {
                     Log.e(TAG, "printerListModel  ${Gson().toJson(printerListModel)}")
@@ -2090,35 +2121,39 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     fun connect() {
-        if (!SunmiPrinterApi.getInstance().isConnected) {
-            SunmiPrinterApi.getInstance()
-                .connectPrinter(requireContext(), object : ConnectCallback {
+        GlobalScope.launch(Dispatchers.IO) {
+            if (!SunmiPrinterApi.getInstance().isConnected) {
+                SunmiPrinterApi.getInstance()
+                    .connectPrinter(requireContext(), object : ConnectCallback {
 
-                    override fun onFound() {
-                        println("onFound")
-                    }
+                        override fun onFound() {
+                            println("onFound")
+                        }
 
-                    override fun onUnfound() {
-                        println("onUnfound")
-                    }
+                        override fun onUnfound() {
+                            println("onUnfound")
+                        }
 
-                    override fun onConnect() {
-                        println("onConnect")
-                        test()
-                    }
+                        override fun onConnect() {
+                            println("onConnect")
+                            test()
+                        }
 
-                    override fun onDisconnect() {
-                        println("onDisconnect")
-                    }
+                        override fun onDisconnect() {
+                            println("onDisconnect")
+                        }
 
-                })
-        } else {
-            test()
+                    })
+            } else {
+                test()
+            }
         }
+
     }
 
+
     fun test() {
-        try{
+        try {
             if (SunmiPrinterApi.getInstance().isConnected) {
                 SunmiPrinterApi.getInstance().printerInit()
                 SunmiPrinterApi.getInstance().printText("")
@@ -2169,7 +2204,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
             }
-        }catch (e:Exception){
+        } catch (e: Exception) {
 
         }
     }
@@ -2211,14 +2246,21 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     arrayListOf()
                 LogUtil.logE(TAG, "getOrderTypeList: ${Gson().toJson(orderTypeList)}")
                 printerListModel.printerName?.let {
-                    if (((it.contains("TSP",ignoreCase = true)) || (it.contains("SP",ignoreCase = true))) && (data?.contains(CUSTOMER, ignoreCase = true)?:true)) {
-                        AlertUtils.showCustomAlertWithListenerWithOK(requireContext(),getString(R.string.incompatible_printer), object: DialogInterface.OnClickListener{
-                            override fun onClick(p0: DialogInterface?, p1: Int) {
-                                p0?.dismiss()
-                            }
+                    if (((it.contains("TSP", ignoreCase = true)) || (it.contains(
+                            "SP",
+                            ignoreCase = true
+                        ))) && (data?.contains(CUSTOMER, ignoreCase = true) ?: true)
+                    ) {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(),
+                            getString(R.string.incompatible_printer),
+                            object : DialogInterface.OnClickListener {
+                                override fun onClick(p0: DialogInterface?, p1: Int) {
+                                    p0?.dismiss()
+                                }
 
-                        })
-                    }else{
+                            })
+                    } else {
                         when (data) {
                             KITCHEN -> {
                                 ifKitchenPrinterSelected(list, printerListModel, layoutPosition)
@@ -2379,26 +2421,27 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     override fun onEditSelected(printerListModel: PrinterListModel) {
         LogUtil.logE(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
-        var printerType:String = printerListModel.currentPrinterType ?: ""
-        if (printerListModel.currentPrinterType == KITCHEN){
-           var modelPrinter  =customerAdapter.getList().find { it.modelName == printerListModel.modelName && it.deviceModel?.macAddress == printerListModel.deviceModel?.macAddress}
-            Log.e(TAG,"modelPrinterfindCustomer:  ${Gson().toJson(modelPrinter)}")
+        var printerType: String = printerListModel.currentPrinterType ?: ""
+        if (printerListModel.currentPrinterType == KITCHEN) {
+            var modelPrinter = customerAdapter.getList()
+                .find { it.modelName == printerListModel.modelName && it.deviceModel?.macAddress == printerListModel.deviceModel?.macAddress }
+            Log.e(TAG, "modelPrinterfindCustomer:  ${Gson().toJson(modelPrinter)}")
             if (modelPrinter != null) {
                 printerType = KITCHENANDCUSTOMER
             }
-        }
-        else if(printerListModel.currentPrinterType == CUSTOMER){
-            var modelPrinter = kitchenAdapter.getList().find { it.modelName == printerListModel.modelName && it.deviceModel?.macAddress == printerListModel.deviceModel?.macAddress }
-            Log.e(TAG,"modelPrinterfindKitchen:  ${Gson().toJson(modelPrinter)}")
+        } else if (printerListModel.currentPrinterType == CUSTOMER) {
+            var modelPrinter = kitchenAdapter.getList()
+                .find { it.modelName == printerListModel.modelName && it.deviceModel?.macAddress == printerListModel.deviceModel?.macAddress }
+            Log.e(TAG, "modelPrinterfindKitchen:  ${Gson().toJson(modelPrinter)}")
             if (modelPrinter != null) {
                 printerType = KITCHENANDCUSTOMER
             }
         }
 
-        Log.e(TAG,"checkPrintTypeprinterType: ${printerType}")
+        Log.e(TAG, "checkPrintTypeprinterType: ${printerType}")
         val bundle = Bundle()
         bundle.putParcelable("printerSetting", printerListModel)
-        bundle.putString("currentPrinterType",printerType)
+        bundle.putString("currentPrinterType", printerType)
 
         findNavController().navigate(R.id.action_printer_to_editPrinter, bundle)
     }
