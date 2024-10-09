@@ -1992,6 +1992,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         viewModel.cartItemModifiersBeforeUpdate = item.modifiers
 
+        Log.e("ITEM MODIFIER SIZE",Gson().toJson(item.modifiers))
+
+
         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
         val backStateName: String = AddItemFragment.javaClass.getName()
         val fragment = AddItemFragment.newInstance(item, this, cartList, true, position)
