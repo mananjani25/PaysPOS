@@ -576,6 +576,20 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.btnPayNew.setOnClickListener {
             try {
 
+
+                dashboardViewModel.setTipAmount(0.0)
+                dashboardViewModel.customerGivenTip.value=false
+
+                dashboardViewModel.customerCardAmount.value=""
+                dashboardViewModel.customerCashAmount.value=""
+
+                prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+                prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, "0")
+                prefProvider.setValueInt(Constants.TIP_ADDED_ID, 0)
+
+
+
+
                 //new Calculation for total Discount
                 var listWT: ArrayList<TbCartItem> = arrayListOf()
                 var list = dineInTableAdapter.getList()
@@ -1044,7 +1058,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                 prefProvider.setValue("PaidAmount", "")
-                prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+                prefProvider.setValue(Constants.WHOLE_AMOUNT,"")
                 prefProvider.setValueInt("cardCount", 0)
                 prefProvider.setValue(Constants.SUB_TOTAL, "")
                 prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
@@ -1742,6 +1756,17 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         listItemGuestSelected: ArrayList<TbCartItem>,
         guestIndexForDineIn: Int
     ) {
+
+        dashboardViewModel.setTipAmount(0.0)
+        dashboardViewModel.customerGivenTip.value=false
+
+        dashboardViewModel.customerCardAmount.value=""
+        dashboardViewModel.customerCashAmount.value=""
+
+        prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+        prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, "0")
+        prefProvider.setValueInt(Constants.TIP_ADDED_ID, 0)
+
 
         //New Drag and Drop
 
@@ -3313,11 +3338,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                             val kitchenDineInPrinters = kitchenPrinterList
                                 .filter { kitchenPrinter ->
-                                    kitchenPrinter.orderTypes.any { orderType ->
-                                        orderType.orderType == "DineIn" && orderType.printerSettings.any { printerSetting ->
-                                            printerSetting.autoPrinting && printerSetting.printType == "Kitchen"
+
+                                        kitchenPrinter.orderTypes.any { orderType ->
+                                            orderType.orderType == "DineIn" && orderType.printerSettings.any { printerSetting ->
+                                                printerSetting.autoPrinting && printerSetting.printType == "Kitchen" && kitchenPrinter.status
+                                            }
                                         }
-                                    }
+
                                 }
 
 

@@ -2218,7 +2218,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                                                 modifierSet.modifiers.forEach { modifier ->
                                                                     item.modifiers.forEach { oldmodifier ->
 
-                                                                        if (oldmodifier.name.lowercase() == modifier.name.lowercase()) {
+                                                                        if (oldmodifier.id == modifier.id && oldmodifier.name.lowercase() == modifier.name.lowercase()) {
                                                                             modifier.isChecked =
                                                                                 true
                                                                             modifier.itemQuantity =
