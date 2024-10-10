@@ -117,7 +117,7 @@ class PaymentBoldPosFragment : Fragment() {
         orderId = arguments?.getInt("orderId")
         oldItems = arguments?.getString(Constants.OLD_ITEM) + ""
         viewModel.setSplitCount(1)
-        getServiceCharges()
+
         LogUtil.logE("orderId :: ", orderId.toString())
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
@@ -150,6 +150,8 @@ class PaymentBoldPosFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        getServiceCharges()
 
         viewModel.setTipAmount(0.0)
         if (prefProvider.getValue(
