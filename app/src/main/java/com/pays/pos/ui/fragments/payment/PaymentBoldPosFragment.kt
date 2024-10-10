@@ -117,6 +117,7 @@ class PaymentBoldPosFragment : Fragment() {
         orderId = arguments?.getInt("orderId")
         oldItems = arguments?.getString(Constants.OLD_ITEM) + ""
         viewModel.setSplitCount(1)
+        getServiceCharges()
         LogUtil.logE("orderId :: ", orderId.toString())
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(

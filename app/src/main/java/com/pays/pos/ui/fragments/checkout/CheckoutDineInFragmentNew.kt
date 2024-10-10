@@ -299,9 +299,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             orderOfflineId = arguments?.getString("orderOfflineId").toString()
         }
 
-       // dashboardViewModel.totalPriceUpdated.observe(viewLifecycleOwner) {
+        dashboardViewModel.totalPriceUpdated.observe(viewLifecycleOwner) {
             getDataFromPref()
-       // }
+        }
         setupTabDesign()
         paymentClick()
         splitClick()
@@ -1508,7 +1508,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     fun getDataFromPref() {
 
-       // viewModel.totalPrice = viewModel.totalPriceUpdated.value ?: viewModel.totalPrice
+        viewModel.totalPrice = viewModel.totalPriceUpdated.value ?: viewModel.totalPrice
 
         redeemLoyaltyInfo = viewModel.redeemLoyaltyInfo
         prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
