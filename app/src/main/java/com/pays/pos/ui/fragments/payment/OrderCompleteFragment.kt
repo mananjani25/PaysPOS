@@ -7574,8 +7574,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         })
 
     }
-
-    private fun printDineInTableCommon(
+      private fun printDineInTableCommon(
         printerType: CommonPrinterTypes,
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters ? = null
     ) = try {
