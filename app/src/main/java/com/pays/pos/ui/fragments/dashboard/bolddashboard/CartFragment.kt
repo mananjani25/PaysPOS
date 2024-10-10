@@ -2343,6 +2343,11 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                 viewModel.totalPriceUpdated.value = viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge
 
+                Log.e(
+                    "Service charges",
+                    "Toatal updated price = subtotal = ${viewModel.subTotalPrice} - Tax = ${viewModel.totalTax} - Service charge ${viewModel.totalServiceCharge} AND THEN final total = ${viewModel.totalPriceUpdated.value}"
+                )
+
             } else {
 
                 viewModel.itemCalculationCartModelNew(

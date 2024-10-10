@@ -299,9 +299,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             orderOfflineId = arguments?.getString("orderOfflineId").toString()
         }
 
-        dashboardViewModel.totalPriceUpdated.observe(viewLifecycleOwner) {
+       // dashboardViewModel.totalPriceUpdated.observe(viewLifecycleOwner) {
             getDataFromPref()
-        }
+        //}
         setupTabDesign()
         paymentClick()
         splitClick()
@@ -1527,9 +1527,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 Constants.WHOLE_AMOUNT,
                 String.format("%.2f", viewModel.totalPrice)
             )
-        } else {
-            WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
         }
+
+//        else {
+//            WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
+//        }
 
         if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty() || prefProvider.getValue(
                 Constants.SUB_TOTAL,
