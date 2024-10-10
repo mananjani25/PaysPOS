@@ -2264,46 +2264,51 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             binding.txtSubTotal.text = MethodUtils.roundOffAmount(viewModel.subTotalPrice)
             binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
 
-            if(prefProvider.getValue(ORDER_TYPE ,"") == DINE_IN){
+            if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
 
 //                if(prefProvider.getValueboolean(DINE_IN_UPDATE,false))
 //                    viewModel.totalServiceCharge = arguments?.getBundle("updateBundle")?.getDouble("serviceChargeB")?.toDouble() ?: 0.0
 //                else {
 
-                    val total = viewModel.subTotalPrice + viewModel.totalTax
+                val total = viewModel.subTotalPrice + viewModel.totalTax
 
-                    val guestCount = dineInCartAdapter.getList().count{
-                        it.isHeader == 0
-                    }
-                    val serviceChargesList = getServiceChargeFromGuestCount(guestCount-1)
-
-                    var serviceCharge = 0.0
-
-                    Log.e("Service charges","Service charges size ${serviceChargesList.size}  AND guest count is $guestCount")
-                    serviceChargesList.forEach {
-
-                        Log.e("Service charges","Service charges for each iteration AND IS CHECKED = ${it.isChecked}")
-
-
-
-                        if(!it.isChecked){
-                            serviceCharge += ( viewModel.subTotalPrice * it.percentage) / 100
-                            Log.e("Service charges","Service charges for each iteration $serviceCharge on percentage ${it.percentage} and subtotal ${viewModel.subTotalPrice}")
-                        }
-                    }
-
-                    viewModel.totalServiceCharge = serviceCharge
-
+                val guestCount = dineInCartAdapter.getList().count {
+                    it.isHeader == 0
                 }
-                Log.d("S_CHARGE_4::", viewModel.totalServiceCharge.toString())
-              //  }
+                val serviceChargesList = getServiceChargeFromGuestCount(guestCount - 1)
+
+                var serviceCharge = 0.0
+
+                Log.e(
+                    "Service charges",
+                    "Service charges size ${serviceChargesList.size}  AND guest count is $guestCount"
+                )
+                serviceChargesList.forEach {
+
+                    Log.e(
+                        "Service charges",
+                        "Service charges for each iteration AND IS CHECKED = ${it.isChecked}"
+                    )
+
+
+
+                    if (!it.isChecked) {
+                        serviceCharge += (viewModel.subTotalPrice * it.percentage) / 100
+                        Log.e(
+                            "Service charges",
+                            "Service charges for each iteration $serviceCharge on percentage ${it.percentage} and subtotal ${viewModel.subTotalPrice}"
+                        )
+                    }
+                }
+
+                viewModel.totalServiceCharge = serviceCharge
 
                 binding.txtServiceCharge.text = MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
-            } else {
+            }  else {
                 Log.d("S_CHARGE_5::", viewModel.totalServiceCharge.toString())
                 binding.txtServiceCharge.text =
                     MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
-            }
+             }
             Log.e("totalDiscount", viewModel.totalDiscount.toString())
 
             var cartCompletePrice = getCompleteCartPrice()
@@ -2440,7 +2445,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 binding.relativeLoylatyPoints.visibility = View.GONE
                 binding.lblLoyaltyPoints.visibility = View.GONE
                 binding.lblLoyaltyBalance.visibility = View.GONE
-
+            }
+        } else {
             cartModelsList = arrayListOf()
             binding.liinearInfoLayout.layoutParams.height =
                 resources.getDimension(R.dimen._50sdp).toInt()
