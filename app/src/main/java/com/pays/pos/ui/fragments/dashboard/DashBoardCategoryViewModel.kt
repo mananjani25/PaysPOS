@@ -145,9 +145,14 @@ class DashBoardCategoryViewModel @Inject constructor(
     var currentCartItems: ArrayList<TbCartItem> = arrayListOf()
     var duplicateCurrentCartItem: ArrayList<TbCartItem> = arrayListOf()
 
+    /**
+     * When item update is in progress , restrict other actions like switch guest
+     */
     var isItemEditInProgress = false
 
-    // used to check if removed last item from the cart
+    /**
+     * To check if removed last item from the cart
+     */
     val lastItemRemoveFromCart = MutableLiveData<Pair<Boolean, Int>>()
 
     /* This variable is used to track the selected category, if this variable is not 0 then the category will be selected, it was added to solve BIS-4045 */
