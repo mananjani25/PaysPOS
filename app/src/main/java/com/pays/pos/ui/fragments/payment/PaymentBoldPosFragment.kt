@@ -10,9 +10,11 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.*
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import com.pays.pos.R
+import com.pays.pos.data.entities.TbServiceCharge
 import com.pays.pos.data.model.CheckOutDineInDataModel
 import com.pays.pos.data.model.DineinCartPaymentModel
 import com.pays.pos.data.model.GuestDataModel
@@ -52,6 +54,8 @@ import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.getCustomerDisplay
+import com.pays.pos.utils.statusUtils.Resource
+import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
@@ -71,6 +75,8 @@ class PaymentBoldPosFragment : Fragment() {
     public var oldItems = ""
     private val dineInPaymentViewModel by viewModels<CheckoutDineInPaymentViewModel>()
     private var isFromActiveOrder: Boolean = false
+    private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
+    private var serviceChargesList: java.util.ArrayList<TbServiceCharge>? = null
 
 
     companion object {
@@ -111,6 +117,7 @@ class PaymentBoldPosFragment : Fragment() {
         orderId = arguments?.getInt("orderId")
         oldItems = arguments?.getString(Constants.OLD_ITEM) + ""
         viewModel.setSplitCount(1)
+
         LogUtil.logE("orderId :: ", orderId.toString())
         getCustomerDisplay(requireContext())?.let { display ->
             presentation = CustomDisplay(
@@ -143,6 +150,8 @@ class PaymentBoldPosFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        getServiceCharges()
 
         viewModel.setTipAmount(0.0)
         if (prefProvider.getValue(
@@ -538,6 +547,58 @@ class PaymentBoldPosFragment : Fragment() {
         )
         prefProvider.setValue(Constants.TAX_CHARGE_ACTUAL, "0.0")
         prefProvider.setValue(Constants.TIPS_AMOUNT_ACTUAL, "0.0")
+    }
+
+    private fun getServiceCharges() {
+
+        serviceChargesObserve = Observer {
+            if (it.status == Status.SUCCESS) {
+                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                    if (prefProvider.getValueboolean(
+                            Constants.SERVICECHARGE_DINEIN_ORDER,
+                            false
+                        )
+                    ) {
+                        LogUtil.logE(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                        serviceChargesList = java.util.ArrayList()
+                        viewModel.serviceChargesList.clear()
+                        it.data?.forEach { service ->
+                            if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                                serviceChargesList?.add(service)
+                                viewModel.serviceChargesList.add(service)
+                            }
+                        }
+                    }
+                    Log.d(
+                        TAG,
+                        "getServiceCharges: finall " + Gson().toJson(viewModel.serviceChargesList)
+                    )
+                } else {
+                    if (prefProvider.getValueboolean(
+                            Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
+                            false
+                        )
+                    ) {
+                        LogUtil.logE(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                        serviceChargesList = java.util.ArrayList()
+                        viewModel.serviceChargesList.clear()
+                        it.data?.forEach { service ->
+                            if (service.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                                serviceChargesList?.add(service)
+                                viewModel.serviceChargesList.add(service)
+                            }
+                        }
+                        Log.d(
+                            TAG,
+                            "getServiceCharges: finall " + Gson().toJson(viewModel.serviceChargesList)
+                        )
+
+                    }
+                }
+            }
+
+        }
+        viewModel.serviceCharges.observe(requireActivity(), serviceChargesObserve!!)
     }
 
 }

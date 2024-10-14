@@ -850,6 +850,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         }
 
 
+
+
+
+
 //        if (/*arguments?.getBoolean("is_dine_in_edit") == */false) {
 //            val dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
 //            val dineInItemsList =
@@ -1244,6 +1248,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                             var listOfTax: ArrayList<TaxData> = arrayListOf()
 
+
                             latestCartModel.taxlistDynamic?.let { it1 ->
                                 if (prefProvider.getValue(
                                         ORDER_TYPE, ""
@@ -1259,6 +1264,21 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
                                 }
 
+                            }
+
+                            if (viewModel.currentCartItems.isEmpty()) {
+                                viewModel.getAllCartItems(
+                                    prefProvider.getValue(
+                                        Constants.ORDER_TYPE, TAKEOUT
+                                    ), prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                                ).asLiveData().value?.let { it1 ->
+                                    viewModel.cartModel =
+                                        taxBifurcationCalculationUpdate(it[0], it1)
+                                }
+                            } else {
+                                viewModel.cartModel = taxBifurcationCalculationUpdate(
+                                    it[0], viewModel.currentCartItems
+                                )
                             }
 
                             updateCartFooter(
@@ -2244,37 +2264,51 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             binding.txtSubTotal.text = MethodUtils.roundOffAmount(viewModel.subTotalPrice)
             binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
 
-            if(prefProvider.getValue(ORDER_TYPE ,"") == DINE_IN){
+            if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
 
-                if(prefProvider.getValueboolean(DINE_IN_UPDATE,false))
-                    viewModel.totalServiceCharge = arguments?.getBundle("updateBundle")?.getDouble("serviceChargeB")?.toDouble() ?: 0.0
-                else {
+//                if(prefProvider.getValueboolean(DINE_IN_UPDATE,false))
+//                    viewModel.totalServiceCharge = arguments?.getBundle("updateBundle")?.getDouble("serviceChargeB")?.toDouble() ?: 0.0
+//                else {
 
-                    val total = viewModel.subTotalPrice + viewModel.totalTax
+                val total = viewModel.subTotalPrice + viewModel.totalTax
 
-                    val guestCount = dineInCartAdapter.getList().count{
-                        it.isHeader == 0
-                    }
-                    val serviceChargesList = getServiceChargeFromGuestCount(guestCount-1)
-
-                    var serviceCharge = 0.0
-
-                    serviceChargesList.forEach {
-                        if(it.isEnabled ){
-                            serviceCharge += (total * it.percentage) / 100
-                        }
-                    }
-
-                    viewModel.totalServiceCharge = serviceCharge
-
+                val guestCount = dineInCartAdapter.getList().count {
+                    it.isHeader == 0
                 }
-                Log.d("S_CHARGE_4::", viewModel.totalServiceCharge.toString())
+                val serviceChargesList = getServiceChargeFromGuestCount(guestCount - 1)
+
+                var serviceCharge = 0.0
+
+                Log.e(
+                    "Service charges",
+                    "Service charges size ${serviceChargesList.size}  AND guest count is $guestCount"
+                )
+                serviceChargesList.forEach {
+
+                    Log.e(
+                        "Service charges",
+                        "Service charges for each iteration AND IS CHECKED = ${it.isChecked}"
+                    )
+
+
+
+                    if (!it.isChecked) {
+                        serviceCharge += (viewModel.subTotalPrice * it.percentage) / 100
+                        Log.e(
+                            "Service charges",
+                            "Service charges for each iteration $serviceCharge on percentage ${it.percentage} and subtotal ${viewModel.subTotalPrice}"
+                        )
+                    }
+                }
+
+                viewModel.totalServiceCharge = serviceCharge
+
                 binding.txtServiceCharge.text = MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
-            } else {
+            }  else {
                 Log.d("S_CHARGE_5::", viewModel.totalServiceCharge.toString())
                 binding.txtServiceCharge.text =
                     MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
-            }
+             }
             Log.e("totalDiscount", viewModel.totalDiscount.toString())
 
             var cartCompletePrice = getCompleteCartPrice()
@@ -2303,9 +2337,24 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
             binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
 
-            viewModel.itemCalculationCartModelNew(
-                it, binding.txtTotal, requireContext()
-            )
+
+            if(prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+                binding.txtTotal.text = MethodUtils.roundOffAmount(viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge)
+
+                viewModel.totalPriceUpdated.value = viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge
+
+                Log.e(
+                    "Service charges",
+                    "Toatal updated price = subtotal = ${viewModel.subTotalPrice} - Tax = ${viewModel.totalTax} - Service charge ${viewModel.totalServiceCharge} AND THEN final total = ${viewModel.totalPriceUpdated.value}"
+                )
+
+            } else {
+
+                viewModel.itemCalculationCartModelNew(
+                    it, binding.txtTotal, requireContext()
+                )
+            }
+
             binding.tvPayNow.text = "Pay " + binding.txtTotal.text.toString()
 
             if (prefProvider.getValue(
@@ -2315,6 +2364,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
                 binding.txtNoncashAdj.text =
                     "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+
             } else {
                 binding.txtNoncashAdj.text =
                     MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)

@@ -299,7 +299,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             orderOfflineId = arguments?.getString("orderOfflineId").toString()
         }
 
-        getDataFromPref()
+       // dashboardViewModel.totalPriceUpdated.observe(viewLifecycleOwner) {
+            getDataFromPref()
+        //}
         setupTabDesign()
         paymentClick()
         splitClick()
@@ -454,6 +456,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             setupColorChanges(binding.tvFullAmount, listtextview)
             binding.tvCustom.text = "Custom"
             isSelectedCount = 1
+            viewModel.isSelectCount = 1
             tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvwaysplit?.visibility = View.INVISIBLE
             binding.tvFullAMounttxt.visibility = View.VISIBLE
@@ -1504,6 +1507,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     }
 
     fun getDataFromPref() {
+
+        viewModel.totalPrice = viewModel.totalPriceUpdated.value ?: viewModel.totalPrice
+
         redeemLoyaltyInfo = viewModel.redeemLoyaltyInfo
         prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
         if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty() || prefProvider.getValue(
@@ -1521,9 +1527,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 Constants.WHOLE_AMOUNT,
                 String.format("%.2f", viewModel.totalPrice)
             )
-        } else {
-            WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
         }
+
+//        else {
+//            WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
+//        }
 
         if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty() || prefProvider.getValue(
                 Constants.SUB_TOTAL,
@@ -1809,6 +1817,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             if(!isPaymentScreen) {
                 PaymentBoldPosFragment.newInstance().addTipHideShow(false)
                 isSelectedCount = 1
+                viewModel.isSelectCount = 1
                 tipsetupGlobal(tipAmount, isSelectedCount)
                 loadPaymentLayout()
                 tipAmountCalculation()
@@ -1826,6 +1835,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     PaymentBoldPosFragment.newInstance().addTipHideShow(true)
                     tipAmount = 0.0
                     viewModel.setTipAmount(0.0)
+
                     loadSplitLayout()
                     binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
                     binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
