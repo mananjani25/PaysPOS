@@ -609,6 +609,40 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     // store updated cart in database
+    var currentCartIdWhenInserted = 0L
+    fun addCartGetId(cartModel: CartModel) {
+        var mCartModel = cartModel
+        System.currentTimeMillis()
+        CoroutineScope(Dispatchers.IO).launch {
+
+            var listItems: ArrayList<TbCartItem> = arrayListOf()
+            cartModel.items?.forEach {
+                listItems.add(TbCartItem().convertToCartItem(it, it))
+
+            }
+            Log.e(TAG, "checkConvertedItem: ${listItems.size}")
+
+            for (i in 0 until listItems.size) {
+                listItems.get(i).taxes?.let { it ->
+                    for (j in 0 until it.size) {
+                        mCartModel = taxBifurcationCalculationNew(
+                            cartModel = mCartModel,
+                            item = listItems.get(i),
+                            type = ADD,
+                            orderTaxID = false
+                        )
+                    }
+                }
+
+            }
+
+            currentCartIdWhenInserted= posRepository.addItemCartGetId(mCartModel)!!
+            destroyedList.clear()
+
+        }
+
+    }
+
     fun addCart(cartModel: CartModel) {
         var mCartModel = cartModel
         System.currentTimeMillis()
@@ -5452,7 +5486,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 Constants.taxListDynamic,
                                 Gson().toJson(cartModel.taxlistDynamic)
                             )
-                        }catch (E:Exception) {}
+                        } catch (E: Exception) {
+                        }
 
                     } else {
                         if (itemtype.taxType != "Percentage") {

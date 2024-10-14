@@ -785,6 +785,14 @@ class PosRepository @Inject constructor(
         return appDatabase.cartDao().getManualSaleFromCart(employeeId)
     }
 
+    fun addItemCartGetId(cartModel: CartModel):Long? {
+        synchronized(this) {
+            //  appDatabase.beginTransaction()
+            return appDatabase.cartDao().addSuspended(cartModel)
+            // appDatabase.endTransaction()
+        }
+
+    }
     fun addItemCart(cartModel: CartModel) {
         synchronized(this) {
             //  appDatabase.beginTransaction()
