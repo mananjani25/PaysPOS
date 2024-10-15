@@ -8400,6 +8400,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
+            CommonPrinterTypes.TspStarPrinter -> {}
+
         }
 
     }catch (e: Exception) {

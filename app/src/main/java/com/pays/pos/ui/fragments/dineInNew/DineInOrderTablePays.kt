@@ -96,6 +96,7 @@ import com.pays.pos.utils.landi.LPrint
 import com.pays.pos.utils.landi.LPrint.FONT_B
 import com.pays.pos.utils.landi.LPrint.printCenter
 import com.pays.pos.utils.printer.CommonPrinterTypes
+import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
 import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
@@ -9848,12 +9849,12 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         ) {
 
             //remove comments to work on star printer for dine in
-            /*try {
+            try {
                 settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
                 printer = StarPrinter(settings, requireContext())
 
 
-                viewLifecycleOwner.lifecycleScope.launch {
+                /*viewLifecycleOwner.lifecycleScope.launch {
 
                         generateKitchenReceiptStarPrinter(
                             data,
@@ -9864,7 +9865,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             printer
                         )
 
-                }
+                }*/
+                generateKitchenReceiptCommon(CommonPrinterTypes.TspStarPrinter,data, type, item, listItemWithGuest)
             } catch (e:Exception){
 
             } finally {
@@ -9874,7 +9876,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     } catch (e: Exception) {
                     }
             }
-        }*/
+        }
 
         } else {
 
@@ -11775,6 +11777,247 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                 }
+
+                CommonPrinterTypes.TspStarPrinter -> {
+                    try {
+                        val builder = StarXpandCommandBuilder()
+
+                        var printerBuilder = PrinterBuilder()
+
+                        GlobalScope.launch {
+                            with(printerBuilder) {
+                                styleInternationalCharacter(InternationalCharacterType.Usa)
+                                styleCharacterSpace(0.0)
+
+                                styleAlignment(Alignment.Center)
+
+                                add(
+                                    PrinterBuilder()
+                                        .styleBold(true)
+                                        .styleMagnification(
+                                            MagnificationParameter(3, 3)
+                                        )
+                                        .actionPrintText(
+                                            orderIdToPrint
+                                        )
+                                )
+
+                                actionFeedLine(1)
+
+                                if (kitchenSettingModel.showOrderType) {
+
+                                    add(
+                                        PrinterBuilder()
+                                            .styleBold(true)
+                                            .styleMagnification(
+                                                MagnificationParameter(3, 3)
+                                            )
+                                            .actionPrintText(
+                                                orderTypeToPrint
+                                            )
+                                    )
+                                }
+
+                                if (isUpdatedLabel.isNotEmpty())
+                                    add(
+                                        PrinterBuilder()
+                                            .styleAlignment(Alignment.Center)
+                                            .styleMagnification(
+                                                MagnificationParameter(2, 2)
+                                            )
+                                            .actionPrintText(
+                                                isUpdatedLabel
+                                            )
+                                    )
+
+
+                                add(
+                                    PrinterBuilder()
+                                        .styleAlignment(Alignment.Center)
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
+                                        )
+                                        .actionPrintText(
+                                            tableNameToPrint
+                                        )
+                                )
+
+                                actionFeedLine(1)
+
+
+                                if (kitchenSettingModel.showTeamMember) {
+
+
+                                    add(
+                                        PrinterBuilder()
+                                            .styleAlignment(Alignment.Left)
+                                            .actionPrintText(employee)
+                                    )
+                                    actionFeedLine(1)
+                                }
+
+                                add(
+                                    PrinterBuilder()
+                                        .styleAlignment(Alignment.Left)
+                                        .actionPrintText(
+                                            orderTime
+                                        )
+                                )
+
+                                actionFeedLine(1)
+
+
+                                add(
+                                    PrinterBuilder()
+                                        .styleAlignment(Alignment.Left)
+                                        .styleBold(true)
+                                        .actionPrintText(
+                                            "------------------------------------------------"
+                                        )
+                                )
+
+
+                                actionFeedLine(1)
+
+
+                                listItemWithGuest.forEach {
+
+                                    add(
+                                        PrinterBuilder()
+                                            .styleAlignment(Alignment.Left)
+                                            .styleBold(true)
+                                            .actionPrintText(
+                                                "------------------------------------------------"
+                                            )
+                                    )
+
+                                    add(
+                                        PrinterBuilder()
+                                            .styleAlignment(Alignment.Center)
+                                            .styleMagnification(
+                                                MagnificationParameter(2, 2)
+                                            )
+                                            .actionPrintText(
+                                                it.key
+                                            )
+                                    )
+
+                                    add(
+                                        PrinterBuilder()
+                                            .styleAlignment(Alignment.Left)
+                                            .styleBold(true)
+                                            .actionPrintText(
+                                                "------------------------------------------------"
+                                            )
+                                    )
+
+
+                                    it.value.forEach { obj ->
+                                        add(
+
+                                            PrinterBuilder()
+                                                .styleAlignment(Alignment.Left)
+                                                .styleMagnification(
+                                                    MagnificationParameter(2, 2)
+                                                )
+                                                .actionPrintText(
+                                                    obj.itemQuantity.toString() + " " + obj.name.uppercase()
+                                                )
+                                        )
+
+                                        if (obj.modifiers.isNotEmpty()) {
+                                            for (j in 0 until obj.modifiers.size) {
+                                                val modifierObj = obj.modifiers.get(j)
+
+
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleAlignment(Alignment.Left)
+                                                        .styleBold(true)
+                                                        .styleMagnification(
+                                                            MagnificationParameter(1, 1)
+                                                        )
+                                                        .actionPrintText(
+                                                            "  " + if (modifierObj.modifier_quantity == 1) {
+                                                                "   "
+                                                            } else {
+                                                                "" + modifierObj.modifier_quantity + "x "
+                                                            } + modifierObj.name.uppercase()
+                                                        )
+                                                )
+
+                                            }
+                                        }
+                                        if (obj.note.isNotEmpty()) {
+
+                                            add(
+                                                PrinterBuilder()
+                                                    .styleAlignment(Alignment.Left)
+                                                    .styleBold(true)
+                                                    .styleMagnification(
+                                                        MagnificationParameter(1, 1)
+                                                    )
+                                                    .actionPrintText(
+                                                        "  Note:" + obj.note
+                                                    )
+                                            )
+
+
+                                        }
+                                    }
+
+                                }
+
+                                actionFeedLine(1)
+
+                                if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+                                if(orderNote.isNotEmpty())
+                                    add(
+                                        PrinterBuilder()
+                                            .styleAlignment(Alignment.Center)
+                                            .styleBold(true)
+                                            .styleMagnification(
+                                                MagnificationParameter(2, 2)
+                                            )
+                                            .actionPrintText(
+                                               "Order Note \n"+ orderNote
+                                            )
+                                    )
+                                    actionFeedLine(1)
+                                }
+
+
+                                dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(true)
+
+
+
+                                actionCut(CutType.Partial)
+
+                                var document = DocumentBuilder()
+                                    .addPrinter(printerBuilder)
+                                builder.addDocument(
+                                    document
+                                )
+
+                                val commands = builder.getCommands()
+
+                                printer.openAsync().await()
+
+
+                                printer.printAsync(commands).await()
+                                printer.closeAsync().await()
+                            }
+                        }
+                    } catch (e: Exception) {
+                        GlobalScope.launch {
+                            try {
+                                printer.closeAsync().await()
+                            } catch (e: Exception) {
+                            }
+                        }
+                        Log.e("START DINE IN KITCHEN RECEIPT " ,""+e.printStackTrace())
+                    }
+                }
             }
 
             when(printerType) {
@@ -11788,6 +12031,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 CommonPrinterTypes.LandiInnerPrinter -> {
                     LPrint.paperCut()
+                }
+
+                CommonPrinterTypes.TspStarPrinter -> {
+
                 }
             }
 
@@ -12056,6 +12303,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
     //                val jobSettings = StarSpoolJobSettings(true, 30, "Print from Android")
 
                     printer.printAsync(commands).await()
+                    printer.closeAsync().await()
                 }
             }
         } catch (e: Exception) {
