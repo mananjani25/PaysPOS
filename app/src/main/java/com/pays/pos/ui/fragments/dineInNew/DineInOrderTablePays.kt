@@ -478,7 +478,6 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         dineInTableAdapter.setListner(this)
 
         listOfMoveItemIds.clear()
-        itemsPrintedObsever()
 
         if (arguments?.getBoolean("isFromFloor") == true || arguments?.getBoolean("isGuestPaid") == true) {
             floorPlanModel = arguments?.getParcelable("floorPlan")
@@ -12311,31 +12310,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
 
-    /**
-     * This will notify items already printed to kitchen
-     */
-    private fun itemsPrintedObsever() {
-        dashboardViewModel.itemsFiredToTheKitchenSuccesfully.observe(viewLifecycleOwner) { it ->
 
-            if (firedItemsList.isNotEmpty()) {
-                Log.e("Items fired call","Items fired observe call in SUNMI where fired list size = ${firedItemsList.size} and isFired = ${it}")
-                if (it) {
-                    dashboardViewModel.itemsFiredToTheKitchenSuccesfully.value = false
-
-                    val list = dineInTableAdapter.getList()
-
-                    firedItemsList.forEach { index ->
-                        list[index].item?.isFired = true
-                        Log.e("DATA ", Gson().toJson(list[index]))
-                    }
-
-
-                        dineInTableAdapter.setList(ArrayList(list))
-                    firedItemsList = mutableListOf()
-                }
-            }
-        }
-    }
 
     fun checkForAutoFire(isCheckAndFire: Boolean, fireAll:Boolean = false) {
         Log.d("###17MAR23", "checkForAutoFire: Called - Start - $isCheckAndFire")
@@ -12674,40 +12649,49 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
 
 
+                    CoroutineScope(Dispatchers.Main).launch {
+
+                        /**
+                         * This will notify items already printed to kitchen
+                         */
+
+                        dashboardViewModel.itemsFiredToTheKitchenSuccesfully.observe(
+                            viewLifecycleOwner
+                        ) { it ->
+
+                            if (firedItemsList.isNotEmpty()) {
+                                if (it) {
+                                    dashboardViewModel.itemsFiredToTheKitchenSuccesfully.value =
+                                        false
+
+                                    val list = dineInTableAdapter.getList()
+
+                                    firedItemsList.forEach { index ->
+                                        list[index].item?.isFired = true
+                                        Log.e("DATA ", Gson().toJson(list[index]))
+                                    }
 
 
-                    if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
-                        var fireAllIds = android.text.TextUtils.join(",", builder)
+                                    dineInTableAdapter.setList(ArrayList(list))
+                                    firedItemsList = mutableListOf()
 
-                        viewModel.fireItemToKitchen(orderId ?: 0, true, fireAllIds, true)
-
-
-//                    if (fireAll && !isCheckAndFire) {
-//
-//                        listItem.forEach { firedItem ->
-//                            val item = list.filter { it.item?.itemId == firedItem.itemId && it.item?.cartItemId == firedItem.cartItemId  }
-//
-//                            if( item.isNotEmpty() ) {
-//                                item.first().isFired = true
-//                            }
-//                        }
-//
-//                        dineInTableAdapter.setList(ArrayList(list))
-//                    } else if(!fireAll){
-//                        listItem.forEach { firedItem ->
-//                            val item = list.filter { it.item?.itemId == firedItem.itemId && it.item?.cartItemId == firedItem.cartItemId  }
-//
-//                            if( item.isNotEmpty() ) {
-//                                item.first().isFired = true
-//                            }
-//                        }
-//                        dineInTableAdapter.setList(ArrayList(list))
-//                    }
-
+                                    if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
+                                        var fireAllIds = android.text.TextUtils.join(",", builder)
+                                        viewModel.fireItemToKitchen(
+                                            orderId ?: 0,
+                                            true,
+                                            fireAllIds,
+                                            true
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
 
 
-                    dineInTableAdapter.updateStatus(0, true)
+
+
                 } else {
                     runOnUiThread {
                         AlertUtils.showCustomAlert(
