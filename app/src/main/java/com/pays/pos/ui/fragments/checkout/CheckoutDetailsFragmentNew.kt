@@ -3696,14 +3696,25 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             paymentviewModel.updateOrder(false, null, null, "", "")
         }
         paymentviewModel.saveOrder(false)
-        var cartModel = Gson().fromJson<CartModel?>(
-            prefProvider.getValue("CART_MODEL1", ""),
-            CartModel::class.java
-        )
-        var cartModel2 = Gson().fromJson<CartModel?>(
-            prefProvider.getValue("CART_MODEL2", ""),
-            CartModel::class.java
-        )
+        var cartModel: CartModel? =null
+        try {
+             cartModel =
+                Gson().fromJson<CartModel?>(
+                    prefProvider.getValue("CART_MODEL1", ""),
+                    CartModel::class.java
+                )
+        }catch (e:Exception){
+
+        }
+        var cartModel2:CartModel? = null
+        try{
+            cartModel2=Gson().fromJson<CartModel?>(
+                prefProvider.getValue("CART_MODEL2", ""),
+                CartModel::class.java
+            )
+        }catch (e:Exception){
+
+        }
 
         if (cartList == null) {
             CoroutineScope(Dispatchers.Main).launch {
