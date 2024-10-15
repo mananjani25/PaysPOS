@@ -253,6 +253,7 @@ class DashBoardCategoryViewModel @Inject constructor(
      * */
     var isCartItemClicked = false
 
+    val itemsFiredToTheKitchenSuccesfully = MutableLiveData<Boolean>(false)
 
     /**
      * Tip has been added , Either from customer display or from checkoutFragment

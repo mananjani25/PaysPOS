@@ -91,6 +91,7 @@ import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
 import com.pays.pos.ui.fragments.payment.OrderCompleteFragment
+import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.landi.LPrint
 import com.pays.pos.utils.landi.LPrint.FONT_B
 import com.pays.pos.utils.landi.LPrint.printCenter
@@ -186,6 +187,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
     private var clickedPosition: Int = -1
 
     var dineInCartItemMoved = false
+
+    /**
+     * List of index of items fired to kitchen
+     */
+    var firedItemsList = mutableListOf<Int>()
 
     /*Star label printer - START*/
     lateinit var settings: StarConnectionSettings
@@ -472,6 +478,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         dineInTableAdapter.setListner(this)
 
         listOfMoveItemIds.clear()
+        itemsPrintedObsever()
 
         if (arguments?.getBoolean("isFromFloor") == true || arguments?.getBoolean("isGuestPaid") == true) {
             floorPlanModel = arguments?.getParcelable("floorPlan")
@@ -11680,6 +11687,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         if(orderNote.isNotEmpty())
                             orderNote(orderNote)
 
+                        dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(true)
+
                     }
 
                 }
@@ -11705,12 +11714,16 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         normalTextLarge(orderTime)
 
                         printHorizontalInnerNew(prefProvider.isOldSunmiFrameworkVersion())
+                        SunmiPrintHelper.getInstance().lineWrap(1)
 
                         addOrdersForKitchenDineInInner(item, listItemWithGuest,prefProvider.isOldSunmiFrameworkVersion())
                         SunmiPrintHelper.getInstance().lineWrap(1)
 
                         if(orderNote.isNotEmpty())
                             orderNoteInnerLarge(orderNote)
+
+                        Log.e("Items fired call","Items fired call in SUNMI")
+                        dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(true)
                     }
                 }
 
@@ -11757,6 +11770,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         lineBreak()
                         lineBreak()
 
+                        dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(true)
                     }
 
 
@@ -12296,6 +12310,33 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
+
+    /**
+     * This will notify items already printed to kitchen
+     */
+    private fun itemsPrintedObsever() {
+        dashboardViewModel.itemsFiredToTheKitchenSuccesfully.observe(viewLifecycleOwner) { it ->
+
+            if (firedItemsList.isNotEmpty()) {
+                Log.e("Items fired call","Items fired observe call in SUNMI where fired list size = ${firedItemsList.size} and isFired = ${it}")
+                if (it) {
+                    dashboardViewModel.itemsFiredToTheKitchenSuccesfully.value = false
+
+                    val list = dineInTableAdapter.getList()
+
+                    firedItemsList.forEach { index ->
+                        list[index].item?.isFired = true
+                        Log.e("DATA ", Gson().toJson(list[index]))
+                    }
+
+
+                        dineInTableAdapter.setList(ArrayList(list))
+                    firedItemsList = mutableListOf()
+                }
+            }
+        }
+    }
+
     fun checkForAutoFire(isCheckAndFire: Boolean, fireAll:Boolean = false) {
         Log.d("###17MAR23", "checkForAutoFire: Called - Start - $isCheckAndFire")
         var list: List<DineInModel> = arrayListOf()
@@ -12365,7 +12406,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     if ( (!it.isFired && it.isChecked) || (!it.isFired && isCheckAndFire)) {
                         fireItemsList.add(it)
                         listItem.add(it)
-                        it.isFired = true
+                        //it.isFired = true
+                        firedItemsList.add(itemIndex)
 
                         //add items ids for api call
                         it.orderItemId?.let {
@@ -12406,7 +12448,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     fireItemsList.add(it)
                                     listItem.add(it)
-                                    it.isFired = true
+                                    //it.isFired = true
+                                    firedItemsList.add(itemIndex)
 
                                      //add items ids for api call
                                     it.orderItemId?.let {
@@ -12422,7 +12465,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                 if(fireAll &&  it.isChecked && !it.isFired ) {
                                     fireItemsList.add(it)
                                     listItem.add(it)
-                                    it.isFired = true
+                                    //it.isFired = true
+                                    firedItemsList.add(itemIndex)
 
                                     //add items ids for api call
                                     it.orderItemId?.let {
@@ -12563,69 +12607,79 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
+
             CoroutineScope(Dispatchers.IO).launch {
-                var autoPrintEnable = false
-                kitchenPrinterList.forEach { kit ->
-                    if (kit.status) {
 
 
-                        if (isCheckAndFire) {
-                            kit.orderTypes.forEach {
-                                if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
-                                    LogUtil.logE(
-                                        TAG,
-                                        "printerSettings  ${Gson().toJson(it.printerSettings)}"
-                                    )
-                                    it.printerSettings.forEach {
-                                        if (it.printType.lowercase()
-                                                .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
-                                        ) {
 
-                                            if (checkItemsforPrinterDineIn(
-                                                    listItem, kit.printerCategories.toCollection(
-                                                        arrayListOf()
-                                                    )
-                                                )
+                if(kitchenPrinterList.isNotEmpty() ){
+
+                    var autoPrintEnable = false
+                    kitchenPrinterList.forEach { kit ->
+                        if (kit.status) {
+
+
+                            if (isCheckAndFire) {
+                                kit.orderTypes.forEach {
+                                    if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
+                                        LogUtil.logE(
+                                            TAG,
+                                            "printerSettings  ${Gson().toJson(it.printerSettings)}"
+                                        )
+                                        it.printerSettings.forEach {
+                                            if (it.printType.lowercase()
+                                                    .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
                                             ) {
-                                                LogUtil.logE(TAG, "printerName  ${kit.name} ")
-                                                autoPrintEnable = true
-                                                if (!prefProvider.getValueboolean(
-                                                        IS_PRINTER_QUEUE_ENABLE,
-                                                        false
+
+                                                if (checkItemsforPrinterDineIn(
+                                                        listItem,
+                                                        kit.printerCategories.toCollection(
+                                                            arrayListOf()
+                                                        )
                                                     )
                                                 ) {
-                                                    initKitchenPrinter(
-                                                        kit,
-                                                        Constants.KITCHEN,
-                                                        listItem,
-                                                        listItemWithGuest
-                                                    )
+                                                    LogUtil.logE(TAG, "printerName  ${kit.name} ")
+                                                    autoPrintEnable = true
+                                                    if (!prefProvider.getValueboolean(
+                                                            IS_PRINTER_QUEUE_ENABLE,
+                                                            false
+                                                        )
+                                                    ) {
+                                                        initKitchenPrinter(
+                                                            kit,
+                                                            Constants.KITCHEN,
+                                                            listItem,
+                                                            listItemWithGuest
+                                                        )
+                                                    }
                                                 }
                                             }
                                         }
                                     }
+
+                                }
+                            } else {
+                                if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+                                    initKitchenPrinter(
+                                        kit,
+                                        Constants.KITCHEN,
+                                        listItem,
+                                        listItemWithGuest
+                                    )
                                 }
 
-                            }
-                        } else {
-                            if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
-                                initKitchenPrinter(
-                                    kit,
-                                    Constants.KITCHEN,
-                                    listItem,
-                                    listItemWithGuest
-                                )
-                            }
 
-
+                            }
                         }
                     }
-                }
 
-                if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
-                    var fireAllIds = android.text.TextUtils.join(",", builder)
 
-                    viewModel.fireItemToKitchen(orderId ?: 0, true, fireAllIds, true)
+
+
+                    if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
+                        var fireAllIds = android.text.TextUtils.join(",", builder)
+
+                        viewModel.fireItemToKitchen(orderId ?: 0, true, fireAllIds, true)
 
 
 //                    if (fireAll && !isCheckAndFire) {
@@ -12650,10 +12704,18 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 //                        dineInTableAdapter.setList(ArrayList(list))
 //                    }
 
+                    }
+
+
+                    dineInTableAdapter.updateStatus(0, true)
+                } else {
+                    runOnUiThread {
+                        AlertUtils.showCustomAlert(
+                            requireContext(),
+                            "Please connect kitchen printer!"
+                        )
+                    }
                 }
-
-
-                dineInTableAdapter.updateStatus(0, true)
             }
 
         }
