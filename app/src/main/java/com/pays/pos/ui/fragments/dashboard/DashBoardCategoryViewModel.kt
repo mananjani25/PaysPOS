@@ -7726,28 +7726,30 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 Constants.VENUE_LOGO_URL, ""
                                             ).equals(it.settingData.data.logo.thumb.thumbUrl)
                                         ) {
-                                            val policy: StrictMode.ThreadPolicy =
-                                                StrictMode.ThreadPolicy.Builder().permitAll()
-                                                    .build()
+                                            CoroutineScope(Dispatchers.IO).launch {
+                                                val policy: StrictMode.ThreadPolicy =
+                                                    StrictMode.ThreadPolicy.Builder().permitAll()
+                                                        .build()
 
-                                            StrictMode.setThreadPolicy(policy)
+                                                StrictMode.setThreadPolicy(policy)
 
-                                            val bitmap =
-                                                getBitmapFromURL(it.settingData.data.logo.thumb.thumbUrl)
-                                            var baseBitmap =
-                                                bitmap?.let { it1 -> encodeTobase64(it1) }
-                                            if (baseBitmap?.isNotEmpty() == true) {
-                                                Log.d(TAG, "syncSettingModule: " + baseBitmap)
-                                                baseBitmap?.let { it1 ->
-                                                    prefProvider.setValue(
-                                                        VENUE_LOGO, it1
-                                                    )
+                                                val bitmap =
+                                                    getBitmapFromURL(it.settingData.data.logo.thumb.thumbUrl)
+                                                var baseBitmap =
+                                                    bitmap?.let { it1 -> encodeTobase64(it1) }
+                                                if (baseBitmap?.isNotEmpty() == true) {
+                                                    Log.d(TAG, "syncSettingModule: " + baseBitmap)
+                                                    baseBitmap?.let { it1 ->
+                                                        prefProvider.setValue(
+                                                            VENUE_LOGO, it1
+                                                        )
+                                                    }
                                                 }
+                                                prefProvider.setValue(
+                                                    Constants.VENUE_LOGO_URL,
+                                                    it.settingData.data.logo.thumb.thumbUrl
+                                                )
                                             }
-                                            prefProvider.setValue(
-                                                Constants.VENUE_LOGO_URL,
-                                                it.settingData.data.logo.thumb.thumbUrl
-                                            )
                                         }
 
 
