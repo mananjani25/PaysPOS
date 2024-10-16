@@ -5538,4 +5538,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         onDestroy()
 
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+    }
 }
