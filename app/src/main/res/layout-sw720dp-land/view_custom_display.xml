@@ -301,9 +301,9 @@
                     android:id="@+id/txtSubTotalCash"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -313,9 +313,9 @@
                     android:id="@+id/txtSubTotalCard"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -345,9 +345,9 @@
                     android:id="@+id/txtTaxCash"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -357,9 +357,9 @@
                     android:id="@+id/txtTaxCard"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -389,9 +389,9 @@
                     android:id="@+id/txtServiceChargeCash"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -401,9 +401,9 @@
                     android:id="@+id/txtServiceChargeCard"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -433,9 +433,9 @@
                     android:id="@+id/txtDiscountCash"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -445,9 +445,9 @@
                     android:id="@+id/txtDiscountCard"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -459,10 +459,10 @@
                 android:id="@+id/lnrLayoutTip"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 android:layout_marginHorizontal="@dimen/_5sdp"
                 android:layout_marginTop="@dimen/_3sdp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtTipLabel"
@@ -505,10 +505,10 @@
                 android:id="@+id/lnrLayoutCashDiscountSurcharge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 android:layout_marginHorizontal="@dimen/_5sdp"
                 android:layout_marginTop="@dimen/_3sdp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtCashDiscountSurchargeLabel"
@@ -525,22 +525,22 @@
                     android:id="@+id/txtCashDiscountSurchargeCash"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
-                    android:visibility="invisible"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/text_size_medium" />
+                    android:textSize="@dimen/text_size_medium"
+                    android:visibility="invisible" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtCashDiscountSurchargeCard"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -554,8 +554,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="@color/btnColor"
-                android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:padding="@dimen/_5sdp">
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -572,11 +572,11 @@
                 <LinearLayout
                     android:id="@+id/lnrLayoutCashTotal"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
                     android:gravity="end"
-                    android:visibility="gone"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
@@ -601,11 +601,11 @@
                 <LinearLayout
                     android:id="@+id/lnrLayoutCardTotal"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
                     android:gravity="end"
-                    android:visibility="gone"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtTotalCardLabel"
@@ -635,8 +635,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_3sdp"
                     android:layout_weight="2"
-                    android:text="$0.00"
                     android:gravity="end"
+                    android:text="$0.00"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_8mdpi"
                     android:textStyle="bold"
@@ -1187,6 +1187,18 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Business Name Placeholder" />
 
+
+            <ImageView
+                android:id="@+id/imgBusiness"
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_round"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
             <TextView
                 android:id="@+id/tvMessage"
                 style="@style/CustomFontMediumStyle"
@@ -1219,8 +1231,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginBottom="@dimen/_25sdp"
                 android:layout_marginTop="@dimen/_15sdp"
+                android:layout_marginBottom="@dimen/_25sdp"
                 app:cardBackgroundColor="@color/btnColor"
                 app:cardCornerRadius="30dp">
 
@@ -1256,8 +1268,8 @@
             android:layout_height="200dp"
             android:background="@color/white"
             android:padding="12dp"
-            android:visibility="gone"
             android:src="@drawable/pays_logo_transparent"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -1358,6 +1370,25 @@
                         app:layout_constraintEnd_toEndOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
+<!--
+                <com.santalu.maskedittext.MaskEditText
+                    android:id="@+id/tvPhoneNumber"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:hint="(201) 555-0123"
+                    android:inputType="number"
+                    android:maxLength="20"
+                    android:fontFamily="@font/sf_pro_display_semibold"
+                    android:padding="@dimen/_9sdp"
+                    android:textColor="@color/txtColor"
+                    android:textColorHint="@color/hint_color_"
+                    android:textSize="@dimen/_7mdpi"
+                    app:met_mask="(###) ###-####"
+                    app:layout_constraintEnd_toEndOf="@+id/constraintLayout"
+                    app:layout_constraintStart_toStartOf="@+id/constraintLayout"
+                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />-->
 
                 <TextView
                     android:id="@+id/tvPhoneNumber"
@@ -1368,15 +1399,14 @@
                     android:background="@drawable/background_sales_button"
                     android:fontFamily="@font/sf_pro_display_semibold"
                     android:hint="@string/phone_number"
+                    android:maxLength="15"
                     android:padding="@dimen/_9sdp"
                     android:textColor="@color/white"
-                    android:maxLength="15"
                     android:textColorHint="@color/gray_color"
                     android:textSize="@dimen/_6mdpi"
                     app:layout_constraintEnd_toEndOf="@+id/constraintLayout"
                     app:layout_constraintStart_toStartOf="@+id/constraintLayout"
                     app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
-
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -1405,10 +1435,10 @@
                                     android:layout_height="wrap_content"
                                     android:layout_margin="5dp"
                                     android:layout_weight="1"
-                                    android:gravity="center"
                                     android:background="@drawable/background_sales_button"
-                                    android:text="1"
+                                    android:gravity="center"
                                     android:padding="10dp"
+                                    android:text="1"
                                     android:textColor="@color/white" />
 
                                 <androidx.appcompat.widget.AppCompatButton
@@ -1417,22 +1447,22 @@
                                     android:layout_height="wrap_content"
                                     android:layout_margin="5dp"
                                     android:layout_weight="1"
-                                    android:gravity="center"
                                     android:background="@drawable/background_sales_button"
-                                    android:text="2"
+                                    android:gravity="center"
                                     android:padding="10dp"
+                                    android:text="2"
                                     android:textColor="@color/white" />
 
                                 <androidx.appcompat.widget.AppCompatButton
                                     android:id="@+id/btnThree"
                                     android:layout_width="0dp"
-                                    android:gravity="center"
                                     android:layout_height="wrap_content"
                                     android:layout_margin="5dp"
                                     android:layout_weight="1"
                                     android:background="@drawable/background_sales_button"
-                                    android:text="3"
+                                    android:gravity="center"
                                     android:padding="10dp"
+                                    android:text="3"
                                     android:textColor="@color/white" />
                             </TableRow>
 
@@ -1444,11 +1474,11 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_margin="5dp"
-                                    android:gravity="center"
                                     android:layout_weight="1"
                                     android:background="@drawable/background_sales_button"
-                                    android:text="4"
+                                    android:gravity="center"
                                     android:padding="10dp"
+                                    android:text="4"
                                     android:textColor="@color/white" />
 
                                 <androidx.appcompat.widget.AppCompatButton
@@ -1456,11 +1486,11 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_margin="5dp"
-                                    android:gravity="center"
                                     android:layout_weight="1"
                                     android:background="@drawable/background_sales_button"
-                                    android:text="5"
+                                    android:gravity="center"
                                     android:padding="10dp"
+                                    android:text="5"
                                     android:textColor="@color/white" />
 
                                 <androidx.appcompat.widget.AppCompatButton
@@ -1469,10 +1499,10 @@
                                     android:layout_height="wrap_content"
                                     android:layout_margin="5dp"
                                     android:layout_weight="1"
-                                    android:gravity="center"
                                     android:background="@drawable/background_sales_button"
-                                    android:text="6"
+                                    android:gravity="center"
                                     android:padding="10dp"
+                                    android:text="6"
                                     android:textColor="@color/white" />
                             </TableRow>
 
@@ -1485,10 +1515,10 @@
                                     android:layout_height="wrap_content"
                                     android:layout_margin="5dp"
                                     android:layout_weight="1"
-                                    android:gravity="center"
                                     android:background="@drawable/background_sales_button"
-                                    android:text="7"
+                                    android:gravity="center"
                                     android:padding="10dp"
+                                    android:text="7"
                                     android:textColor="@color/white" />
 
                                 <androidx.appcompat.widget.AppCompatButton
@@ -1498,9 +1528,9 @@
                                     android:layout_margin="5dp"
                                     android:layout_weight="1"
                                     android:background="@drawable/background_sales_button"
-                                    android:text="8"
                                     android:gravity="center"
                                     android:padding="10dp"
+                                    android:text="8"
                                     android:textColor="@color/white" />
 
                                 <androidx.appcompat.widget.AppCompatButton
@@ -1509,9 +1539,9 @@
                                     android:layout_height="wrap_content"
                                     android:layout_margin="5dp"
                                     android:layout_weight="1"
+                                    android:background="@drawable/background_sales_button"
                                     android:gravity="center"
                                     android:padding="10dp"
-                                    android:background="@drawable/background_sales_button"
                                     android:text="9"
                                     android:textColor="@color/white" />
                             </TableRow>
@@ -1524,9 +1554,9 @@
                                     android:layout_height="wrap_content"
                                     android:layout_margin="5dp"
                                     android:layout_weight="1"
+                                    android:background="@drawable/background_sales_button"
                                     android:gravity="center"
                                     android:padding="10dp"
-                                    android:background="@drawable/background_sales_button"
                                     android:text="C"
                                     android:textColor="@color/white" />
 
@@ -1536,9 +1566,9 @@
                                     android:layout_height="wrap_content"
                                     android:layout_margin="5dp"
                                     android:layout_weight="1"
+                                    android:background="@drawable/background_sales_button"
                                     android:gravity="center"
                                     android:padding="10dp"
-                                    android:background="@drawable/background_sales_button"
                                     android:text="0"
                                     android:textColor="@color/white" />
 
@@ -1548,9 +1578,9 @@
                                     android:layout_height="wrap_content"
                                     android:layout_margin="5dp"
                                     android:layout_weight="1"
-                                    android:padding="10dp"
                                     android:background="@drawable/background_sales_button"
                                     android:gravity="center"
+                                    android:padding="10dp"
                                     android:text="Delete"
                                     android:textColor="@color/white" />
 
@@ -1560,14 +1590,14 @@
 
                         <androidx.appcompat.widget.AppCompatButton
                             android:id="@+id/tvDone"
-                            android:layout_marginTop="20dp"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
                             android:layout_weight="1"
-                            android:padding="10dp"
                             android:background="@drawable/bg_button_border"
-                            android:text="@string/tv_done"
                             android:gravity="center"
+                            android:padding="10dp"
+                            android:text="@string/tv_done"
                             android:textColor="@color/white" />
 
                     </LinearLayout>

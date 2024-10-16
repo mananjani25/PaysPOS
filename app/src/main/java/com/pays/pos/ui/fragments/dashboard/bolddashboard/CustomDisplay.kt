@@ -4,20 +4,32 @@ import android.app.Presentation
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.os.Message
-import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
-import android.view.*
+import android.view.Display
+import android.view.Gravity
+import android.view.View
+import android.view.Window
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
+import com.github.gcacace.signaturepad.views.SignaturePad.OnSignedListener
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.pax.poslink.PaymentRequest
+import com.pax.poslink.PosLink
+import com.pax.poslink.ProcessTransResult
 import com.pays.pos.R
 import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.DineInModel
@@ -38,6 +50,8 @@ import com.pays.pos.data.remote.Constants.TERMINAL_ID
 import com.pays.pos.databinding.ViewCustomDisplayBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.CreateCustomerEvent
+import com.pays.pos.logger.SyncCustomerEvent
 import com.pays.pos.ui.adapter.ActiveTipsListAdapter
 import com.pays.pos.ui.adapter.DineInAdapter
 import com.pays.pos.ui.adapter.DineInTableAdapterCD
@@ -59,21 +73,13 @@ import com.pays.pos.utils.paxUtils.AppThreadPool
 import com.pays.pos.utils.paxUtils.POSLinkCreatorWrapper
 import com.pays.pos.utils.paxUtils.SettingINI
 import com.pays.pos.utils.statusUtils.Status
-import com.github.gcacace.signaturepad.views.SignaturePad.OnSignedListener
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.pax.poslink.PaymentRequest
-import com.pax.poslink.PosLink
-import com.pax.poslink.ProcessTransResult
-import com.pays.pos.logger.CreateCustomerEvent
-import com.pays.pos.logger.SyncCustomerEvent
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayOutputStream
-import java.io.File
+
 
 class CustomDisplay(
     display: Display,
@@ -160,6 +166,28 @@ class CustomDisplay(
     private fun initViews() {
         with(binding) {
 
+            if (prefProvider.getValue(
+                Constants.VENUE_LOGO,
+                ""
+            ).isNotEmpty()){
+                imgBusiness?.let {
+                    val decodedString: ByteArray = Base64.decode(prefProvider.getValue(
+                        Constants.VENUE_LOGO,
+                        ""
+                    ), Base64.DEFAULT)
+                    val decodedByte: Bitmap =
+                        BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+
+                    var requestOptions = RequestOptions()
+                    requestOptions = requestOptions.transforms(CenterCrop(), RoundedCorners(100))
+                    Glide.with(context).load(decodedByte)
+                        .apply(requestOptions).into(it)
+                    it.visible()
+                }
+
+            }else{
+                imgBusiness?.gone()
+            }
             if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isNotEmpty()) {
                 btnSignUpOrCheckIn?.text = "Change phone number"
                 tvMessage?.text = "Customer added successfully"
