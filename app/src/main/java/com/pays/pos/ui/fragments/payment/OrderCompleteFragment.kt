@@ -12,10 +12,10 @@ import android.content.pm.PackageManager
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.os.*
-import android.provider.Settings.Global
 import android.util.Base64
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
@@ -25,7 +25,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -35,7 +34,6 @@ import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
 import com.epson.eposprint.StatusChangeEventListener
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.platforminfo.GlobalLibraryVersionRegistrar
 import com.google.firebase.analytics.FirebaseAnalytics.Param.PAYMENT_TYPE
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -54,8 +52,7 @@ import com.pays.pos.data.model.SplitDetailListModel
 import com.pays.pos.data.model.requestModel.giftCard.response.GiftCardAddValueResponse
 import com.pays.pos.data.model.requestModel.giftCard.response.SellGiftCardResponseModel
 import com.pays.pos.data.model.responseModel.*
-import com.pays.pos.data.remote.BREAK_LINE
-import com.pays.pos.data.remote.Constants
+import com.pays.pos.data.remote.*
 import com.pays.pos.data.remote.Constants.BILLING_ADDRESS
 import com.pays.pos.data.remote.Constants.BLUETOOTH
 import com.pays.pos.data.remote.Constants.BUSINESS_ADDRESS
@@ -103,39 +100,6 @@ import com.pays.pos.data.remote.Constants.VENUE_LOGO
 import com.pays.pos.data.remote.Constants.WHOLE_AMOUNT
 import com.pays.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
-import com.pays.pos.data.remote.PRINT_GUEST_NAME
-import com.pays.pos.data.remote.PRINT_HORIZONTAL_LINE
-import com.pays.pos.data.remote.ORDER_TIME
-import com.pays.pos.data.remote.PRINTER_ITEM_NOTE
-import com.pays.pos.data.remote.PRINT_ADDITIONAL_TIPS_LABEL
-import com.pays.pos.data.remote.PRINT_CARD_TYPE
-import com.pays.pos.data.remote.PRINT_CASH_DISCOUNT
-import com.pays.pos.data.remote.PRINT_CHANGE_AMOUNT
-import com.pays.pos.data.remote.PRINT_CUSTOMER_SIGNATURE
-import com.pays.pos.data.remote.PRINT_DATA
-import com.pays.pos.data.remote.PRINT_ITEM
-import com.pays.pos.data.remote.PRINT_MASKED_CARD_NO
-import com.pays.pos.data.remote.PRINT_MODIFIER
-import com.pays.pos.data.remote.PRINT_ORDER_NOTE
-import com.pays.pos.data.remote.PRINT_PAID_AMOUNT
-import com.pays.pos.data.remote.PRINT_PAYMENT_HISTORY_LABEL
-import com.pays.pos.data.remote.PRINT_QR_CODE
-import com.pays.pos.data.remote.PRINT_REMAINING_AMOUNT
-import com.pays.pos.data.remote.PRINT_SERVICE_CHARGES
-import com.pays.pos.data.remote.PRINT_SINGLE_ADDITIONAL_TIP
-import com.pays.pos.data.remote.PRINT_SINGLE_PAYMENT
-import com.pays.pos.data.remote.PRINT_SUB_TOTAL
-import com.pays.pos.data.remote.PRINT_SURCHARGE
-import com.pays.pos.data.remote.PRINT_TAX
-import com.pays.pos.data.remote.PRINT_TIME
-import com.pays.pos.data.remote.PRINT_TIPS
-import com.pays.pos.data.remote.PRINT_TIPS_CUSTOM
-import com.pays.pos.data.remote.PRINT_TOTAL_CUSTOM
-import com.pays.pos.data.remote.PRINT_TOTAL_DISCOUNT
-import com.pays.pos.data.remote.PRINT_TOTAL_PRICE
-import com.pays.pos.data.remote.PRINT_TRANSACTION_ID
-import com.pays.pos.data.remote.PRINT_TRANSACTION_TYPE
-import com.pays.pos.data.remote.RECEIPT_ID
 import com.pays.pos.databinding.FragmentOrderCompletBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.PrefProvider
@@ -165,6 +129,8 @@ import com.pays.pos.utils.printer.PrinterClass.BLUETOOTH_TIMEOUT
 import com.pays.pos.utils.printer.SunmiInnerPrinterPays
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
+import com.sdksuite.omnidriver.OmniConnection
+import com.sdksuite.omnidriver.OmniDriver
 import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
@@ -188,7 +154,6 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
 import javax.inject.Inject
 
 
@@ -257,6 +222,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var pd: Dialog? = null
     private var sunmiFrameworkVersion: Array<String>? = null
 
+    var omniDriver: OmniDriver? = null
+
     /*Star label printer - START*/
     lateinit var settings: StarConnectionSettings
     lateinit var printer: StarPrinter
@@ -285,6 +252,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         super.onAttach(context)
 
     }
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        omniDriver = OmniDriver.me(requireContext())
+        omniDriver?.init(object : OmniConnection {
+            override fun onConnected() {
+            }
+
+            override fun onDisconnected(error: Int) {
+            }
+        })
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -353,18 +334,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         noCashAdjGlobal =
             MethodUtils.roundOffAmountDouble(requireArguments().getDouble("noCashAdj"))
 
-        dashboardViewModel.changeAvailable.observe(viewLifecycleOwner, object : Observer<Event<String>> {
-            override fun onChanged(t: Event<String>?) {
-                t?.getContentIfNotHandled()?.let {
-                    runOnUiThread(object : java.lang.Runnable {
-                        override fun run() {
-                            binding.txtChangeAmount.visible()
-                            binding.txtChangeAmount.text = it
-                        }
-                    })
+        dashboardViewModel.changeAvailable.observe(
+            viewLifecycleOwner,
+            object : Observer<Event<String>> {
+                override fun onChanged(t: Event<String>?) {
+                    t?.getContentIfNotHandled()?.let {
+                        runOnUiThread(object : java.lang.Runnable {
+                            override fun run() {
+                                binding.txtChangeAmount.visible()
+                                binding.txtChangeAmount.text = it
+                            }
+                        })
+                    }
                 }
-            }
-        })
+            })
 
 
         return binding.root
@@ -5100,7 +5083,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     })
             } else {
-               // printDineInTable1()
+                // printDineInTable1()
                 printDineInTableCommon(
                     CommonPrinterTypes.SunmiCloudPrinter
                 )
@@ -5116,8 +5099,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-        } else
-        {
+        } else {
             var builder: Builder? = null
             try {
                 builder =
@@ -7574,39 +7556,44 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         })
 
     }
-      private fun printDineInTableCommon(
+
+    private fun printDineInTableCommon(
         printerType: CommonPrinterTypes,
-        customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters ? = null
+        customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters? = null
     ) = try {
         LogUtil.logE("printDineReciept", "Staring....")
 
 
-
-        var printerTasks = mutableListOf<Pair<String,String>>()
+        var printerTasks = mutableListOf<Pair<String, String>>()
 
 
 
 
         if (customerSettingModel.showOrderIdTop) {
             if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
-                printerTasks.add(Pair(ORDER_ID,"OrderID:" + getDineInOrderDetails?.custom_order_id))
+                printerTasks.add(
+                    Pair(
+                        ORDER_ID,
+                        "OrderID:" + getDineInOrderDetails?.custom_order_id
+                    )
+                )
             } else {
-                printerTasks.add(Pair(ORDER_ID,"OrderID:"+ getDineInOrderDetails?.id))
+                printerTasks.add(Pair(ORDER_ID, "OrderID:" + getDineInOrderDetails?.id))
             }
         }
 
 
-        printerTasks.add(Pair(BREAK_LINE,""))
+        printerTasks.add(Pair(BREAK_LINE, ""))
 
         if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
                 .isNotEmpty()
         ) {
 
-            printerTasks.add(Pair("Logo",prefProvider.getValue(VENUE_LOGO, "").toString()))
+            printerTasks.add(Pair("Logo", prefProvider.getValue(VENUE_LOGO, "").toString()))
         }
 
 
-        printerTasks.add(Pair(PAYMENT_TYPE,"Paid"))
+        printerTasks.add(Pair(PAYMENT_TYPE, "Paid"))
 
         printerTasks.add(Pair(BUSINESS_NAME, prefProvider.getValue(BUSINESS_NAME, "")))
         printerTasks.add(Pair(BUSINESS_ADDRESS, prefProvider.getValue(BUSINESS_ADDRESS, "")))
@@ -7671,16 +7658,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //
 //
 //            }
-        } else
-        {
+        } else {
 
 
             printerTasks.apply {
-                add(Pair(RECEIPT_ID,"ReceiptID:" + if (getDineInOrderDetails?.offlineId?.isEmpty() == true) {
-                    "ENTJKOIJH8745"
-                } else {
-                    getDineInOrderDetails?.offlineId
-                }))
+                add(
+                    Pair(
+                        RECEIPT_ID,
+                        "ReceiptID:" + if (getDineInOrderDetails?.offlineId?.isEmpty() == true) {
+                            "ENTJKOIJH8745"
+                        } else {
+                            getDineInOrderDetails?.offlineId
+                        }
+                    )
+                )
             }
 
 
@@ -7703,7 +7694,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                 ).toString()
 
-                printerTasks.add(Pair(ORDER_TIME,orderTime))
+                printerTasks.add(Pair(ORDER_TIME, orderTime))
             }
 
 
@@ -7724,8 +7715,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                 ).toString()
 
-                printerTasks.add(Pair(EMPLOYEE_NAME,empName))
-                Log.d("Employee Name 22344",empName)
+                printerTasks.add(Pair(EMPLOYEE_NAME, empName))
+                Log.d("Employee Name 22344", empName)
             }
 
 
@@ -7753,14 +7744,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                    printerTasks.add(Pair(PRINT_TIME,printTime))
+                    printerTasks.add(Pair(PRINT_TIME, printTime))
 
                 }
             }
 
 
-            printerTasks.add(Pair(PRINT_HORIZONTAL_LINE,""))
-            printerTasks.add(Pair(BREAK_LINE,""))
+            printerTasks.add(Pair(PRINT_HORIZONTAL_LINE, ""))
+            printerTasks.add(Pair(BREAK_LINE, ""))
 
 
             for (i in 0 until dineInList?.size) {
@@ -7769,10 +7760,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (i != (dineInList.size - 1) && dineInList[i + 1].isHeader == 1) {
 
 
-
                         if (dineInList[i]?.customer == null) {
 
-                            dineInList[i]?.title?.let { printerTasks.add(Pair(PRINT_GUEST_NAME,it)) }
+                            dineInList[i]?.title?.let {
+                                printerTasks.add(
+                                    Pair(
+                                        PRINT_GUEST_NAME,
+                                        it
+                                    )
+                                )
+                            }
 
                         } else {
 
@@ -7781,7 +7778,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             if (dineInList[i]?.customer?.last_name != null) {
                                 customerName += dineInList[i].customer?.last_name
                             }
-                            printerTasks.add(Pair(PRINT_GUEST_NAME,customerName))
+                            printerTasks.add(Pair(PRINT_GUEST_NAME, customerName))
 
 
                         }
@@ -7809,7 +7806,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-            printerTasks.add(Pair(BREAK_LINE,""))
+            printerTasks.add(Pair(BREAK_LINE, ""))
 
             if (getDineInOrderDetails?.totalDiscount != null) {
 
@@ -7831,7 +7828,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                 ).toString()
 
-                printerTasks.add(Pair(PRINT_TOTAL_DISCOUNT,str1))
+                printerTasks.add(Pair(PRINT_TOTAL_DISCOUNT, str1))
                 // PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str1)
 
             }
@@ -7849,7 +7846,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             ).toString()
 
-            printerTasks.add(Pair(PRINT_SUB_TOTAL,str2))
+            printerTasks.add(Pair(PRINT_SUB_TOTAL, str2))
             // PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str2)
 
 
@@ -7867,12 +7864,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
 
                 ).toString()
-                printerTasks.add(Pair(PRINT_TAX,str3))
+                printerTasks.add(Pair(PRINT_TAX, str3))
                 // PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str3)
             }
 
             var finalServiceCharges = 0.0
-            getDineInOrderDetails?.orderServiceCharges?.forEach { if(it.order_type.lowercase().contains("dinein")) finalServiceCharges += it.amount }
+            getDineInOrderDetails?.orderServiceCharges?.forEach {
+                if (it.order_type.lowercase().contains("dinein")) finalServiceCharges += it.amount
+            }
 
 
             if ((getDineInOrderDetails?.serviceChargeEnabled == true) && prefProvider.getValueboolean(
@@ -7891,7 +7890,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         48
                     }
                 ).toString()
-                printerTasks.add(Pair(PRINT_SERVICE_CHARGES,str4))
+                printerTasks.add(Pair(PRINT_SERVICE_CHARGES, str4))
                 // PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str4)
             }
 
@@ -7910,7 +7909,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 ).toString()
 
 
-                printerTasks.add(Pair(PRINT_TIPS,str8))
+                printerTasks.add(Pair(PRINT_TIPS, str8))
                 // PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str8)
             }
 
@@ -7939,12 +7938,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                 ).toString()
 
-                printerTasks.add(Pair(PRINT_CASH_DISCOUNT,str8))
+                printerTasks.add(Pair(PRINT_CASH_DISCOUNT, str8))
 //            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str8)
 
 
-            } else if (payTypeGlb.lowercase() == "Card".lowercase() && customerSettingModel.showCashDisSurCharg)
-            {
+            } else if (payTypeGlb.lowercase() == "Card".lowercase() && customerSettingModel.showCashDisSurCharg) {
 
 
                 val str8 = padLine(
@@ -7958,7 +7956,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 ).toString()
 
-                printerTasks.add(Pair(PRINT_SURCHARGE,str8))
+                printerTasks.add(Pair(PRINT_SURCHARGE, str8))
 //            PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str8)
 //            SunmiPrintHelper.getInstance().lineWrap(1)
 
@@ -7993,10 +7991,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-            printerTasks.add(Pair(BREAK_LINE,""))
+            printerTasks.add(Pair(BREAK_LINE, ""))
             val str5 = padLine(
                 "Total Price",
-                "$" + MethodUtils.roundOffAmountString(totalAmt ),
+                "$" + MethodUtils.roundOffAmountString(totalAmt),
                 if (customerSettingModel.fonts == LARGE) 23 else 48
             ).toString()
 
@@ -8006,7 +8004,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //            if (customerSettingModel.fonts == LARGE) 23 else 48
 //        ).toString()
 
-            printerTasks.add(Pair(PRINT_TOTAL_PRICE,str5))
+            printerTasks.add(Pair(PRINT_TOTAL_PRICE, str5))
 
 
             val str6 = padLine(
@@ -8017,7 +8015,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (customerSettingModel.fonts == LARGE) 23 else 48
             ).toString()
 
-            printerTasks.add(Pair(PRINT_PAID_AMOUNT,str6))
+            printerTasks.add(Pair(PRINT_PAID_AMOUNT, str6))
 
 
             //ADDCHANGE
@@ -8028,8 +8026,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (customerSettingModel.fonts == LARGE) 23 else 48
             ).toString()
 
-            printerTasks.add(Pair(PRINT_CHANGE_AMOUNT,str7))
-            printerTasks.add(Pair(BREAK_LINE,"2"))
+            printerTasks.add(Pair(PRINT_CHANGE_AMOUNT, str7))
+            printerTasks.add(Pair(BREAK_LINE, "2"))
 
 
 
@@ -8041,9 +8039,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
 
-                printerTasks.add(Pair(PRINT_REMAINING_AMOUNT,str7))
+                printerTasks.add(Pair(PRINT_REMAINING_AMOUNT, str7))
 
-                printerTasks.add(Pair(BREAK_LINE,"2"))
+                printerTasks.add(Pair(BREAK_LINE, "2"))
             }
 
 
@@ -8063,14 +8061,24 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (customerSettingModel.fonts == LARGE) {
 
                         printerTasks.add(Pair(PRINT_TIPS_CUSTOM, "Tips      _____________"))
-                        printerTasks.add(Pair(PRINT_TOTAL_CUSTOM,"Total     _____________"))
+                        printerTasks.add(Pair(PRINT_TOTAL_CUSTOM, "Total     _____________"))
 
-                        printerTasks.add(Pair(BREAK_LINE,"1"))
+                        printerTasks.add(Pair(BREAK_LINE, "1"))
 
                     } else {
 
-                        printerTasks.add(Pair(PRINT_TIPS_CUSTOM, "Tips                              _____________"))
-                        printerTasks.add(Pair(PRINT_TOTAL_CUSTOM,"Total                             _____________"))
+                        printerTasks.add(
+                            Pair(
+                                PRINT_TIPS_CUSTOM,
+                                "Tips                              _____________"
+                            )
+                        )
+                        printerTasks.add(
+                            Pair(
+                                PRINT_TOTAL_CUSTOM,
+                                "Total                             _____________"
+                            )
+                        )
 
                     }
 
@@ -8081,20 +8089,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             LogUtil.logE("printDineReciept", "Staring 1....")
 
 
-            if(getDineInOrderDetails?.payments?.isNotEmpty() == true){
-                printPaymentCommon(printerTasks,list = getDineInOrderDetails!!.payments)
+            if (getDineInOrderDetails?.payments?.isNotEmpty() == true) {
+                printPaymentCommon(printerTasks, list = getDineInOrderDetails!!.payments)
             }
 
 
 
-            printerTasks.add(Pair(BREAK_LINE,"1"))
+            printerTasks.add(Pair(BREAK_LINE, "1"))
 
 
             if (customerSettingModel.showTipSuggestion) {
 
-                printerTasks.add(Pair(PRINT_ADDITIONAL_TIPS_LABEL,""))
-                printerTasks.add(Pair(PRINT_HORIZONTAL_LINE,""))
-                printerTasks.add(Pair(BREAK_LINE,""))
+                printerTasks.add(Pair(PRINT_ADDITIONAL_TIPS_LABEL, ""))
+                printerTasks.add(Pair(PRINT_HORIZONTAL_LINE, ""))
+                printerTasks.add(Pair(BREAK_LINE, ""))
 
                 if (tipsList.isNotEmpty()) {
                     addTipsListInnerCommon(
@@ -8103,7 +8111,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         receiptModel?.order?.totalAmount?.toDouble() ?: 0.0,
                         customerSettingModel.fonts
                     )
-                    printerTasks.add(Pair(BREAK_LINE,""))
+                    printerTasks.add(Pair(BREAK_LINE, ""))
                 }
 
             }
@@ -8118,10 +8126,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 ).toString()
 
                 // PrintSunmiUtils.printNormalText(prefProvider.isOldSunmiFrameworkVersion(),str10)
-                printerTasks.add(Pair(PRINT_TRANSACTION_ID,str10))
+                printerTasks.add(Pair(PRINT_TRANSACTION_ID, str10))
 
             } else {
-                printerTasks.add(Pair(BREAK_LINE,""))
+                printerTasks.add(Pair(BREAK_LINE, ""))
             }
 
             if (receiptModel?.order?.payments?.isNotEmpty() == true) {
@@ -8132,7 +8140,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
 
-                printerTasks.add(Pair(PRINT_TRANSACTION_TYPE,str11))
+                printerTasks.add(Pair(PRINT_TRANSACTION_TYPE, str11))
 
             }
 
@@ -8169,7 +8177,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 ).toString()
 
                 if (!str13.isNullOrBlank()) {
-                    printerTasks.add(Pair(PRINT_CARD_TYPE,str13))
+                    printerTasks.add(Pair(PRINT_CARD_TYPE, str13))
                 }
                 val str14 = padLine(
                     "",
@@ -8178,32 +8186,42 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 ).toString()
 
                 if (!str14.isNullOrBlank()) {
-                    printerTasks.add(Pair(BREAK_LINE,""))
-                    printerTasks.add(Pair(PRINT_MASKED_CARD_NO,str14))
-                    printerTasks.add(Pair(BREAK_LINE,""))
+                    printerTasks.add(Pair(BREAK_LINE, ""))
+                    printerTasks.add(Pair(PRINT_MASKED_CARD_NO, str14))
+                    printerTasks.add(Pair(BREAK_LINE, ""))
                 }
             }
 
             if (getDineInOrderDetails?.note != null && getDineInOrderDetails?.note != "" && customerSettingModel.showOrderNote) {
-                printerTasks.add(Pair(PRINT_ORDER_NOTE,getDineInOrderDetails?.note ?: ""))
+                printerTasks.add(Pair(PRINT_ORDER_NOTE, getDineInOrderDetails?.note ?: ""))
             }
 
-            printerTasks.add(Pair(BREAK_LINE,""))
-            printerTasks.add(Pair(PRINT_DATA,"__________________________"))
-            printerTasks.add(Pair(BREAK_LINE,""))
+            printerTasks.add(Pair(BREAK_LINE, ""))
+            printerTasks.add(Pair(PRINT_DATA, "__________________________"))
+            printerTasks.add(Pair(BREAK_LINE, ""))
 
 
             if (customerSettingModel.fonts == Constants.LARGE) {
-                printerTasks.add(Pair(PRINT_CUSTOMER_SIGNATURE,"Customer Signature ____"))
+                printerTasks.add(Pair(PRINT_CUSTOMER_SIGNATURE, "Customer Signature ____"))
             } else {
-                printerTasks.add(Pair(PRINT_CUSTOMER_SIGNATURE,"Customer Signature           __________________"))
+                printerTasks.add(
+                    Pair(
+                        PRINT_CUSTOMER_SIGNATURE,
+                        "Customer Signature           __________________"
+                    )
+                )
             }
 
-            printerTasks.add(Pair(BREAK_LINE,""))
+            printerTasks.add(Pair(BREAK_LINE, ""))
 
             if (customerSettingModel.showQrCode) {
-                printerTasks.add(Pair(BREAK_LINE,""))
-                printerTasks.add(Pair(PRINT_QR_CODE,receiptModel?.order?.digital_receipt_url.toString()))
+                printerTasks.add(Pair(BREAK_LINE, ""))
+                printerTasks.add(
+                    Pair(
+                        PRINT_QR_CODE,
+                        receiptModel?.order?.digital_receipt_url.toString()
+                    )
+                )
             }
 
             if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType.equals(
@@ -8220,7 +8238,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 aa[4] = 0x00
 
 
-                when(printerType) {
+                when (printerType) {
                     CommonPrinterTypes.SunmiInnerPrinter ->
                         try {
                             SunmiPrinterApi.getInstance().sendRawData(aa)
@@ -8240,7 +8258,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         LogUtil.logE("printDineReciept", "Staring 2....")
 
-        when(printerType){
+        when (printerType) {
 
             CommonPrinterTypes.SunmiCloudPrinter -> {
 
@@ -8257,23 +8275,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     printerTasks.forEach {
 
-                        if(it.first.contains(PRINT_GUEST_NAME)) {
+                        if (it.first.contains(PRINT_GUEST_NAME)) {
                             printGuest(it.second)
-                        } else if(it.first.contains(PRINT_ITEM)) {
+                        } else if (it.first.contains(PRINT_ITEM)) {
                             printItem(it.second)
-                        } else if(it.first.contains(PRINT_MODIFIER)) {
+                        } else if (it.first.contains(PRINT_MODIFIER)) {
                             printModifier(it.second)
-                        } else if(it.first.contains(PRINTER_ITEM_NOTE)) {
+                        } else if (it.first.contains(PRINTER_ITEM_NOTE)) {
                             printItemNote(it.second)
-                        } else if(it.first.contains(PRINT_SINGLE_PAYMENT)) {
+                        } else if (it.first.contains(PRINT_SINGLE_PAYMENT)) {
                             printSinglePayment(it.second)
-                        } else if(it.first.contains(PRINT_SINGLE_ADDITIONAL_TIP)) {
+                        } else if (it.first.contains(PRINT_SINGLE_ADDITIONAL_TIP)) {
                             printSingleAdditionalTip(it.second)
-                        } else if(it.first.contains(PRINT_DATA)) {
+                        } else if (it.first.contains(PRINT_DATA)) {
                             printData(it.second)
-                        }
-
-                        else {
+                        } else {
 
                             when (it.first) {
                                 ORDER_ID -> printOrderId()
@@ -8334,23 +8350,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                 printerTasks.forEach {
 
-                                    if(it.first.contains(PRINT_GUEST_NAME)) {
+                                    if (it.first.contains(PRINT_GUEST_NAME)) {
                                         printGuest(it.second)
-                                    } else if(it.first.contains(PRINT_ITEM)) {
+                                    } else if (it.first.contains(PRINT_ITEM)) {
                                         printItem(it.second)
-                                    } else if(it.first.contains(PRINT_MODIFIER)) {
+                                    } else if (it.first.contains(PRINT_MODIFIER)) {
                                         printModifier(it.second)
-                                    } else if(it.first.contains(PRINTER_ITEM_NOTE)) {
+                                    } else if (it.first.contains(PRINTER_ITEM_NOTE)) {
                                         printItemNote(it.second)
-                                    } else if(it.first.contains(PRINT_SINGLE_PAYMENT)) {
+                                    } else if (it.first.contains(PRINT_SINGLE_PAYMENT)) {
                                         printSinglePayment(it.second)
-                                    } else if(it.first.contains(PRINT_SINGLE_ADDITIONAL_TIP)) {
+                                    } else if (it.first.contains(PRINT_SINGLE_ADDITIONAL_TIP)) {
                                         printSingleAdditionalTip(it.second)
-                                    } else if(it.first.contains(PRINT_DATA)) {
+                                    } else if (it.first.contains(PRINT_DATA)) {
                                         printData(it.second)
-                                    }
-
-                                    else {
+                                    } else {
 
                                         when (it.first) {
                                             ORDER_ID -> printOrderId()
@@ -8404,7 +8418,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         }
 
-    }catch (e: Exception) {
+    } catch (e: Exception) {
         e.printStackTrace()
         LogUtil.logE("printDineReciept", "Staring error....")
     }
@@ -10203,6 +10217,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             this.checkBluetoothPermissions(object : OnBluetoothPermissionGranted {
                 override fun onPermissionsGranted() {
+                    try {
+                       var printer = omniDriver!!.getPrinter(Bundle())
+                        printer.openDevice(1)
+                    } catch (ex: java.lang.Exception) {
+                        Toast.makeText(activity, "Printer is not available...", Toast.LENGTH_LONG)
+                            .show()
+                        return
+                    }
                     GlobalScope.launch {
                         LPrint.connectLandiInnerPrinter(customerReceiptPrinters.macAddress)
                             ?.let { outputStream ->
@@ -10300,6 +10322,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //                                        outputStream.write(LPrint.FONT_SIZE_5X)
 //
 //                                        outputStream.write(it.toByteArray())
+
+                                                /*ORDER TYPE is printed below */
                                                 printCenter(
                                                     it,
                                                     isBold = true,
@@ -10997,8 +11021,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                         e.printStackTrace()
                                     }
-                                    lineBreak()
-                                    paperCut()
+                                    try {
+                                        lineBreak()
+                                        paperCut()
+                                    } catch (e: Exception) {
+
+                                    }
                                     printingCustomer = false
                                     launch {
                                         disconnectLandiPrinter()

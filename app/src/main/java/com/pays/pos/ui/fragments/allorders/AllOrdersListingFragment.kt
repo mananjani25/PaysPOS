@@ -1624,8 +1624,17 @@ class AllOrdersListingFragment(
                 /*---------------BIS-4189---------------*/
 
 
-                dashboardViewModel.addCart(updatedCartModel)
+//                dashboardViewModel.addCart(updatedCartModel)
+                runBlocking {
+                dashboardViewModel.addCartGetId(updatedCartModel)
+                updatedCartModel.apply {
+                    if (dashboardViewModel.currentCartIdWhenInserted.toInt()>0) {
+                        cartId = dashboardViewModel.currentCartIdWhenInserted.toInt()
+                        dashboardViewModel.currentCartIdWhenInserted=0L
+                    }
+                }
                 dashboardViewModel.setUpdatedCartModel(updatedCartModel)
+                }
                 generateCartItemsListFromOrderModel(order)?.let {
                     Log.d("27OCT23", "generated List: ${Gson().toJson(it)}")
                     var itemDiscount = 0.0

@@ -615,6 +615,40 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     // store updated cart in database
+    var currentCartIdWhenInserted = 0L
+    fun addCartGetId(cartModel: CartModel) {
+        var mCartModel = cartModel
+        System.currentTimeMillis()
+        CoroutineScope(Dispatchers.IO).launch {
+
+            var listItems: ArrayList<TbCartItem> = arrayListOf()
+            cartModel.items?.forEach {
+                listItems.add(TbCartItem().convertToCartItem(it, it))
+
+            }
+            Log.e(TAG, "checkConvertedItem: ${listItems.size}")
+
+            for (i in 0 until listItems.size) {
+                listItems.get(i).taxes?.let { it ->
+                    for (j in 0 until it.size) {
+                        mCartModel = taxBifurcationCalculationNew(
+                            cartModel = mCartModel,
+                            item = listItems.get(i),
+                            type = ADD,
+                            orderTaxID = false
+                        )
+                    }
+                }
+
+            }
+
+            currentCartIdWhenInserted= posRepository.addItemCartGetId(mCartModel)!!
+            destroyedList.clear()
+
+        }
+
+    }
+
     fun addCart(cartModel: CartModel) {
         var mCartModel = cartModel
         System.currentTimeMillis()
@@ -5458,7 +5492,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 Constants.taxListDynamic,
                                 Gson().toJson(cartModel.taxlistDynamic)
                             )
-                        }catch (E:Exception) {}
+                        } catch (E: Exception) {
+                        }
 
                     } else {
                         if (itemtype.taxType != "Percentage") {
@@ -7697,28 +7732,30 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 Constants.VENUE_LOGO_URL, ""
                                             ).equals(it.settingData.data.logo.thumb.thumbUrl)
                                         ) {
-                                            val policy: StrictMode.ThreadPolicy =
-                                                StrictMode.ThreadPolicy.Builder().permitAll()
-                                                    .build()
+                                            CoroutineScope(Dispatchers.IO).launch {
+                                                val policy: StrictMode.ThreadPolicy =
+                                                    StrictMode.ThreadPolicy.Builder().permitAll()
+                                                        .build()
 
-                                            StrictMode.setThreadPolicy(policy)
+                                                StrictMode.setThreadPolicy(policy)
 
-                                            val bitmap =
-                                                getBitmapFromURL(it.settingData.data.logo.thumb.thumbUrl)
-                                            var baseBitmap =
-                                                bitmap?.let { it1 -> encodeTobase64(it1) }
-                                            if (baseBitmap?.isNotEmpty() == true) {
-                                                Log.d(TAG, "syncSettingModule: " + baseBitmap)
-                                                baseBitmap?.let { it1 ->
-                                                    prefProvider.setValue(
-                                                        VENUE_LOGO, it1
-                                                    )
+                                                val bitmap =
+                                                    getBitmapFromURL(it.settingData.data.logo.thumb.thumbUrl)
+                                                var baseBitmap =
+                                                    bitmap?.let { it1 -> encodeTobase64(it1) }
+                                                if (baseBitmap?.isNotEmpty() == true) {
+                                                    Log.d(TAG, "syncSettingModule: " + baseBitmap)
+                                                    baseBitmap?.let { it1 ->
+                                                        prefProvider.setValue(
+                                                            VENUE_LOGO, it1
+                                                        )
+                                                    }
                                                 }
+                                                prefProvider.setValue(
+                                                    Constants.VENUE_LOGO_URL,
+                                                    it.settingData.data.logo.thumb.thumbUrl
+                                                )
                                             }
-                                            prefProvider.setValue(
-                                                Constants.VENUE_LOGO_URL,
-                                                it.settingData.data.logo.thumb.thumbUrl
-                                            )
                                         }
 
 
