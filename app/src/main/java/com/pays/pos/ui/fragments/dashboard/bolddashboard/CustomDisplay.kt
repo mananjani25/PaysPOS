@@ -271,13 +271,13 @@ class CustomDisplay(
 
             btnClear?.setOnClickListener(object : View.OnClickListener {
                 override fun onClick(p0: View?) {
-                    tvPhoneNumber?.text = ""
+                    tvPhoneNumber?.setText("")
                 }
             })
 
             btnBackSpace?.setOnClickListener(object : View.OnClickListener {
                 override fun onClick(p0: View?) {
-                    tvPhoneNumber?.text = MethodUtils.removeChars(tvPhoneNumber?.text.toString(), 1)
+                    tvPhoneNumber?.setText(MethodUtils.removeChars(tvPhoneNumber?.text.toString(), 1))
                 }
             })
             /*---------------------KEYPAD----------------------*/
