@@ -1,6 +1,10 @@
 package com.pays.pos.ui.fragments.settings.tax
 
+import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,6 +12,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.databinding.DataBindingUtil
@@ -33,7 +38,9 @@ import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.pays.pos.utils.*
 import com.pays.pos.utils.extensions.getNavigationResultLiveData
+import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.liveSnackBar
+import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.visible
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -42,6 +49,9 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class CreateTax : Fragment() {
+    //to show progress dialog when update tax.
+    private var builder: Dialog? = null
+
 
     private var previousValue: String = ""
     private lateinit var binding: DialogCreateNewTaxBinding
@@ -50,6 +60,7 @@ class CreateTax : Fragment() {
     private val viewModel by viewModels<CreateTaxViewModel>()
     private var itemIds = ArrayList<Int>()
     private var itemPricing: String = ""
+    private var isSaveClicked:Boolean = false
 
     var isEdit: Boolean = false
     private lateinit var taxData: TaxData
@@ -91,6 +102,8 @@ class CreateTax : Fragment() {
 
 
         if (isEdit) {
+            binding.linearAddItemsLabel?.visible()
+            binding.llAllItemsDialog?.visible()
             taxDataTmp = arguments?.getParcelable("taxObject")!!
             taxData = arguments?.getParcelable("taxObject")!!
             binding.header.txtSave.text = getString(R.string.update)
@@ -110,6 +123,7 @@ class CreateTax : Fragment() {
             viewModel.setItemPricing(itemPricing)
             viewModel.setItemIds(itemIds)
 
+
 //            if (taxData.taxType == getString(R.string.disc_percentage)) {
 //                binding.swtTaxType.isChecked = true
 //                binding.swtTaxType.text = getString(R.string.disc_percentage)
@@ -119,6 +133,10 @@ class CreateTax : Fragment() {
 //                binding.swtTaxType.text = getString(R.string.dollar_amount)
 //                binding.edtAmount.hint = resources.getString(R.string.add_tax__dollor)
 //            }
+        }
+        else{
+            binding.linearAddItemsLabel?.gone()
+            binding.llAllItemsDialog?.gone()
         }
 
         binding.edtAmount.addTextChangedListener(object : TextWatcher {
@@ -180,10 +198,11 @@ class CreateTax : Fragment() {
 
         })
         setupSnackbar()
-        observeShowProgress()
+       // observeShowProgress()
         navigate()
 
         binding.header.txtSave.setOnClickListener {
+            showProgressDialog()
             val rate = binding.edtAmount.text.toString()
             var rate_double = 0.0
             if (this::taxData.isInitialized) {
@@ -335,6 +354,7 @@ class CreateTax : Fragment() {
                     ProgressUtils.showProgressDialog(requireActivity())
                 } else {
                     ProgressUtils.dismissProgressDialog()
+
                 }
             }
         }
@@ -370,10 +390,16 @@ class CreateTax : Fragment() {
         dashViewModel.taxSyncDone.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
-                    dashViewModel._showProgress.value = Event(true)
+
+                   // dashViewModel._showProgress.value = Event(true)
                     viewModel.setItemIds(ArrayList())
                     CoroutineScope(Dispatchers.Main).launch {
                         if (message.isNotEmpty() && !alertAlreadyShown) {
+                           // dashViewModel._showProgress.value = Event(false)
+                            runOnUiThread(Runnable {
+                                Log.e(TAG,"checkDialog Dismissed.")
+                                dismissProgressDialog()
+                            })
                             alertAlreadyShown=true
                             activity?.let {
                                 AlertUtils.showCustomAlertWithListenerWithOK(
@@ -386,7 +412,7 @@ class CreateTax : Fragment() {
 
                                         backPressManage()
                                     }catch (e:Exception){
-                                        dashViewModel._showProgress.value = Event(false)
+                                    //   dashViewModel._showProgress.value = Event(false)
 
                                     }
 
@@ -431,6 +457,54 @@ class CreateTax : Fragment() {
 
     private fun setupSnackbar() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
+
+    }
+
+   private fun showProgressDialog() {
+
+
+        if (builder == null)
+            builder = Dialog(requireContext())
+
+        val inflater = LayoutInflater.from(context)
+
+        val dialogView = inflater.inflate(R.layout.view_loading, null)
+        builder?.setContentView(dialogView)
+
+        builder?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+//        builder?.window?.setBackgroundDrawable(
+//            ColorDrawable(Color.WHITE)
+//        )
+        builder?.setCanceledOnTouchOutside(false)
+        builder?.setCancelable(false)
+        builder?.window?.setLayout(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+
+        if (!builder?.isShowing!!) {
+            val activity: Activity = requireActivity()
+            if (!activity.isFinishing && !activity?.isDestroyed) {
+                try {
+                    builder?.show()
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+
+            }
+        }
+    }
+
+    private fun dismissProgressDialog()
+    {
+        try {
+            if (builder != null && builder?.isShowing == true) {
+                builder?.dismiss()
+                builder = null
+            }
+        } catch (e: java.lang.Exception) {
+            Log.d("pos", "dismissProgressDialog: " + e.message)
+        }
 
     }
 
