@@ -20,3 +20,10 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 -keep class com.pays.pos.data.db.** { *; }
+
+
+-keepattributes *Annotation*
+-keepclassmembers class ** {
+    @org.greenrobot.eventbus.Subscribe <methods>;
+}
+-keep enum org.greenrobot.eventbus.ThreadMode { *; }

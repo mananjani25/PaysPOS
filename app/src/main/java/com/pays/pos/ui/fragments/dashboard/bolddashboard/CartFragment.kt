@@ -70,6 +70,7 @@ import com.pays.pos.databinding.FragmentCartBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
 import com.pays.pos.logger.MessageEvent
+import com.pays.pos.logger.SyncCustomerEvent
 import com.pays.pos.ui.adapter.DineInAdapter
 import com.pays.pos.ui.adapter.OrderTypeAdapter
 import com.pays.pos.ui.adapter.boldpos.CartItemsAdapter
@@ -481,7 +482,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
         }
 
-
+        setCustomerDisplayLoyalty()
         if (prefProvider.getValueInt(CUSTOMER_ID, -1) != -1) {
             displayCustomer()
         }
@@ -532,6 +533,41 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         uiSave()
 
     }
+
+
+/*----------------Customer Loyalty-----------------*/
+
+    private fun setCustomerDisplayLoyalty() {
+        viewModel.clickTakeOut.observe(
+            viewLifecycleOwner,
+            object : androidx.lifecycle.Observer<Event<Boolean>> {
+                override fun onChanged(t: Event<Boolean>?) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        binding.rvOrderType.layoutManager?.childCount?.let {
+                            for (position in 0..it) {
+                                if (binding.rvOrderType.findViewHolderForAdapterPosition(position)?.itemView?.findViewById<TextView>(
+                                        R.id.txtTitle
+                                    )?.text?.contains("Take out", ignoreCase = true) ?: false
+                                ) {
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        binding.rvOrderType.findViewHolderForAdapterPosition(
+                                            position
+                                        )?.itemView?.performClick()
+                                        if (prefProvider.getValueInt(CUSTOMER_ID, -1) != -1) {
+                                            displayCustomer()
+                                        }
+//                                binding.rvOrderType.findViewHolderForAdapterPosition(position)?.itemView?.performClick()
+                                    }
+                                    break
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+    }
+
+/*----------------Customer Loyalty-----------------*/
 
     private fun setupTaxAdapter() {
         taxBirfurcationAdapter = TaxBirfurcationAdapter("dashboard")
@@ -4467,6 +4503,34 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
 
     }
+
+
+    /*------------Customer Loyalty--------------*/
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: SyncCustomerEvent?) {
+        event?.let {
+            runOnUiThread(object : Runnable {
+                override fun run() {
+                    binding.txtAddCustomer.apply {
+                        text = event?.customerName
+                    }
+                }
+            })
+        }
+    }
+
+    /* @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: CreateCustomerEvent?) {
+        if (event?.performCreate?:false) {
+//        Create Customer, this control has came from CustomerDisplay.kt, when customer is not present when giving the phone number.
+            addCustomerViewModel.phoneNo.value = event?.phoneNumber
+            addCustomerViewModel.submit(arrayListOf(), false, true)
+        }else{
+            dashboardViewModel.clickOnTakeOut()
+        }
+    }*/
+    /*------------Customer Loyalty--------------*/
+
 
     private fun increaseOnGoingOrderCounter() {
         lifecycleScope.launch {

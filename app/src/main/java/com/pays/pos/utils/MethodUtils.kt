@@ -736,6 +736,12 @@ class MethodUtils {
                 0.0
             }
         }
+
+        fun removeChars(str: String?, numberOfCharactersToRemove: Int): String? {
+            return if (str != null && !str.trim { it <= ' ' }.isEmpty()) {
+                str.substring(0, str.length - numberOfCharactersToRemove)
+            } else ""
+        }
     }
 
 

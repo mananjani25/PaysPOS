@@ -87,8 +87,11 @@ import com.pays.pos.di.ApiModule.BASE_URL
 import com.pays.pos.di.HostSelectionInterceptor
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
+import com.pays.pos.logger.CreateCustomerEvent
+import com.pays.pos.logger.CustomerCreatedEvent
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.service.KioskService
+import com.pays.pos.ui.fragments.customer.AddCustomerViewModel
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
@@ -109,6 +112,7 @@ import com.pays.pos.utils.addOrdersForKitchenCustomerNewPrinter
 import com.pays.pos.utils.disconnectSocket
 import com.pays.pos.utils.executeAsyncTask
 import com.pays.pos.utils.extensions.alert
+import com.pays.pos.utils.extensions.toast
 import com.pays.pos.utils.getCustomerDisplay
 import com.pays.pos.utils.padLine
 import com.pays.pos.utils.printGuestByItemForSunmiQueue
@@ -201,6 +205,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     var arrayItems: ArrayList<PrinterQueueModel> = arrayListOf()
     var isKitchenFlag: Boolean = false
     var isPrinterOnline = false
+
+    private val addCustomerViewModel by viewModels<AddCustomerViewModel>()
 
     private val dashBoardCategoryViewModel by viewModels<DashBoardCategoryViewModel>()
 
@@ -1296,6 +1302,33 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         //dashboardViewModel.cartOrderUpdated.value?.let { prefProvider?.setOrderStatusSaveOrUpdate(it) }
 
     }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: CreateCustomerEvent?) {
+        if (event?.performCreate?:false) {
+//        Create Customer, this control has came from CustomerDisplay.kt, when customer is not present when giving the phone number.
+            addCustomerViewModel.phoneNo.value = event?.phoneNumber
+            addCustomerViewModel.submit(arrayListOf(), false, true)
+        }else{
+            dashboardViewModel.clickOnTakeOut()
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: CustomerCreatedEvent?) {
+        if (event?.created?:false) {
+            if (this::presentation.isInitialized) {
+                presentation.apply {
+                    /*This is not working*/
+                    addCustomer(event?.customer!!)
+                }
+            }
+        }else{
+            toast(getString(R.string.unable_to_create_customer), Toast.LENGTH_SHORT)
+        }
+    }
+
 
     private lateinit var presentation: CustomDisplay
 
