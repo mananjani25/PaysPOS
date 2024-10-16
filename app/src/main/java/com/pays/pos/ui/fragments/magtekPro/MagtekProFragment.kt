@@ -1,7 +1,11 @@
 package com.pays.pos.ui.fragments.magtekPro
 
 import android.Manifest
+import android.app.Activity
+import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -10,11 +14,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,6 +47,8 @@ import com.pays.pos.utils.paxUtils.SettingINI
 import com.magtek.mobile.android.mtusdk.*
 import com.pax.poslink.*
 import com.pax.poslink.broadpos.BroadPOSCommunicator
+import com.pays.pos.utils.Event
+import com.pays.pos.utils.extensions.visible
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import retrofit2.Call
@@ -55,6 +65,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
     private var adapter: MagtakProAdapter? = null
     private lateinit var binding: FragmentTagtekBinding
     private val viewModel by viewModels<MagtekViewModel>()
+    private var builder: Dialog? = null
 
     lateinit var commSetting: CommSetting
     private lateinit var mPaymentRequest: PaymentRequest
@@ -89,11 +100,13 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         )
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
+        setProgressObservers()
         binding.tvPax.setOnClickListener {
 //            initPOSLink()
 //            connectBP()
 //            paxNetworkCall()
             context?.let { it1 -> viewModel.initPOSLink(it1) }
+
         }
 
         binding.tvDisconnectPax.setOnClickListener {
@@ -119,6 +132,23 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         getMerchantDataObserver()
 
         return binding.root
+    }
+
+    private fun setProgressObservers() {
+        viewModel.progressDialog.observe(viewLifecycleOwner,object:Observer<Event<Boolean>?>{
+            override fun onChanged(t: Event<Boolean>?) {
+                t?.let {
+                    it.getContentIfNotHandled()?.let {
+                        if (it){
+                            showProgressDialog("Connecting to PAX", requireContext(), View.GONE)
+                        }else{
+                            dismissProgressDialog()
+                        }
+                    }
+                }
+            }
+
+        })
     }
 
     private fun getMerchantDataObserver() {
@@ -545,5 +575,54 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
 
     }
 
+    fun showProgressDialog(message: String?, context: Context, showClose: Int = 0) {
+        if (builder == null)
+            builder = Dialog(context)
+
+        val inflater = LayoutInflater.from(context)
+        val dialogView = inflater.inflate(R.layout.view_loading, null)
+        builder?.setContentView(dialogView)
+
+        dialogView.findViewById<AppCompatTextView>(R.id.txtMessage).text = message
+        val imgClose = dialogView.findViewById<AppCompatImageView>(R.id.imgClose)
+        builder?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+//        builder?.window?.setBackgroundDrawable(
+//            ColorDrawable(Color.WHITE)
+//        )
+        builder?.setCanceledOnTouchOutside(false)
+        builder?.window?.setLayout(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+        imgClose.visible()
+        imgClose.visibility = showClose
+
+
+        try {
+            if (builder != null) {
+                if (!builder!!.isShowing) {
+                    builder!!.show()
+                }
+            }
+        } catch (e: java.lang.Exception) {
+            Toast.makeText(context, "Loading...", Toast.LENGTH_SHORT).show()
+        }
+
+
+    }
+
+
+    private fun dismissProgressDialog()
+    {
+        try {
+            if (builder != null && builder?.isShowing == true) {
+                builder?.dismiss()
+                builder = null
+            }
+        } catch (e: java.lang.Exception) {
+            Log.d("pos", "dismissProgressDialog: " + e.message)
+        }
+
+    }
 
 }
