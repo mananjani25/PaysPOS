@@ -231,7 +231,9 @@
 
 
                     <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/linearAddItemsLabel"
                         android:layout_width="match_parent"
+                        android:visibility="gone"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
@@ -296,6 +298,7 @@
                         android:id="@+id/llAllItemsDialog"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:visibility="gone"
                         android:orientation="horizontal">
 
                         <TextView
