@@ -2477,6 +2477,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         binding.tvCash0.setOnSingleClickListener {
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
                 disconnectSyncChannel()
+
                 restrictTvCashClicks()
 
                 if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
