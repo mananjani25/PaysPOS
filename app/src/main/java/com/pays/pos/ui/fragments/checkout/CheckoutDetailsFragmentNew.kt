@@ -2410,13 +2410,32 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             }
                         }
                     } else {
+                        runOnUiThread(object:java.lang.Runnable{
+                            override fun run() {
+                                binding.llCreditCard.isEnabled = true
+                                ProgressUtils.dismissProgressDialog()
+                            }
+                        })
                         errorDisplay("Please connect a payment device.")
                     }
                 } else {
+                    runOnUiThread(object:java.lang.Runnable{
+                        override fun run() {
+                            binding.llCreditCard.isEnabled = true
+                            ProgressUtils.dismissProgressDialog()
+                        }
+                    })
                     errorDisplay("Payment Amount is zero.")
                 }
-            } else
+            } else {
+                runOnUiThread(object:java.lang.Runnable{
+                    override fun run() {
+                        binding.llCreditCard.isEnabled = true
+                        ProgressUtils.dismissProgressDialog()
+                    }
+                })
                 errorDisplay("Please check your Network Connectivity.")
+            }
             //  makePaymentCreditCard()
         }
 
