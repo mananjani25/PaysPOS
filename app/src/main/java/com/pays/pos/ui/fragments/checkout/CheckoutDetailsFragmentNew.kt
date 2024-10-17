@@ -3731,18 +3731,30 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 cartList = cartModel2
             } else if (dashboardViewModel.cartModel == null) {
                 runBlocking {
-                    var model =
-                        CoroutineScope(Dispatchers.IO).async { dashboardViewModel.getCartModelBackup() }
-                            .await().last().data
+                    if (dashboardViewModel.getCartModelBackup() == null ) {
 
-                    EventBus.getDefault().post(
-                        MessageEvent(
-                            "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_CART_BACKUP_MODEL -> model -> ${
-                                Gson().toJson(model)
-                            }", true
+
+                       var models  = dashboardViewModel.getAllCartModels()
+                        if (models.isNotEmpty()) {
+                            dashboardViewModel.cartModel = models.get(0)
+                        }
+
+
+                    } else {
+
+                        var model =
+                            CoroutineScope(Dispatchers.IO).async { dashboardViewModel.getCartModelBackup() }
+                                .await().last().data
+
+                        EventBus.getDefault().post(
+                            MessageEvent(
+                                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_CART_BACKUP_MODEL -> model -> ${
+                                    Gson().toJson(model)
+                                }", true
+                            )
                         )
-                    )
-                    dashboardViewModel.cartModel = Gson().fromJson(model, CartModel::class.java)
+                        dashboardViewModel.cartModel = Gson().fromJson(model, CartModel::class.java)
+                    }
                 }
             }
         }
@@ -3762,7 +3774,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
 
-        if (cartList!!.items == null || cartList!!.items!!.isEmpty()) {
+        if (cartList == null || cartList?.items == null || cartList?.items?.isEmpty() == true) {
             var items: ArrayList<TbItem>? = ArrayList()
             /*  for (item in dashboardViewModel.currentCartItems) {*/
             for (item in dashboardViewModel.currentCartItems) {
