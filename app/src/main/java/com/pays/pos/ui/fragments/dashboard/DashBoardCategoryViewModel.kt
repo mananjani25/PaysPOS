@@ -4934,6 +4934,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                     }
                     subTotalPrice -= cartModel?.discountPrice ?: 0.0
+                    Log.e("InternetSoft", "subTotalPrice:   ${subTotalPrice}")
                     if (subTotalPrice < 0) {
                         subTotalPrice = 0.0
                     }
@@ -4945,7 +4946,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                     order_note = cartModel?.note ?: ""
 
                     var finalTotal = 0.0
-                    finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+                    if (subTotalPrice == 00.0 || subTotalPrice == 0.00 || subTotalPrice == 00.00){
+                        subTotalPrice = 0.00
+                        totalTax = 0.00
+                        totalServiceCharge = 0.00
+                        finalTotal = 0.00
+                    }
+                    else {
+
+                        finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+                    }
 
                     redeemLoyaltyInfo.needToApplyLoyalty = prefProvider.getValueboolean(
                         LOYALTY_ADDED, false
