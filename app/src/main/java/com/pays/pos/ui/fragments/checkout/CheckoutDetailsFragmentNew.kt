@@ -289,7 +289,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 presentation.showSurcharge(true)
             }
             //presentation.showWouldYouLikeToAddTipScreen(tipListViewModel,WholetotalPrice)
+
+            val tipListViewModel by activityViewModels<TipListViewModel>()
+
+            presentation.checkForTipBeforeTransaction(tipListViewModel)
         }
+
+
     }
 
     @Inject
@@ -331,6 +337,35 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 Log.e(TAG, "checkCartDealy:  ${Gson().toJson(cartList)}")
             }
 
+        }
+
+        checkForTipBeforeTransaction()
+    }
+
+    fun checkForTipBeforeTransaction() {
+        dashboardViewModel.customerGivenTipBefore.observe(viewLifecycleOwner){
+            if(it) {
+
+                Log.d("TIP GIVEN: ", "TIP OBSEVER")
+
+                dashboardViewModel.customerGivenTipBefore.value = false
+
+
+                dashboardViewModel.apply {
+                    employeeGivenTip = true
+                    tipAmount = totalTipAmount
+                    customerGivenTip.value = true
+                }
+
+                dashboardViewModel.setTipAmount(tipAmount)
+
+                prefProvider.setValueboolean(Constants.TIP_ADDED, true)
+                prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, tipAmount.toString())
+                prefProvider.setValueInt(Constants.TIP_ADDED_ID, tipID)
+
+                tipAmountCalculation()
+                loadPaymentLayout()
+            }
         }
     }
 
@@ -617,6 +652,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         binding.linearNextSplit.setOnSingleClickListener {
             PaymentBoldPosFragment.newInstance().addTipHideShow(false)
+            dashboardViewModel.splitChanged.value = isSelectedCount
             dashboardViewModel.setSplitCount(isSelectedCount)
             loadPaymentLayout()
             tipAmountCalculation()
@@ -3667,6 +3703,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
 
         }
+
 
         EventBus.getDefault().post(
             MessageEvent(
