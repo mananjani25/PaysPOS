@@ -256,6 +256,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+    }
+
+    private fun initOmniDriver(){
         omniDriver = OmniDriver.me(requireContext())
         omniDriver?.init(object : OmniConnection {
             override fun onConnected() {
@@ -265,7 +269,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
         })
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -646,7 +649,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        initOmniDriver()
         Binding()
         setupSnackbar()
         observeShowProgress()
@@ -10215,12 +10218,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             this.checkBluetoothPermissions(object : OnBluetoothPermissionGranted {
                 override fun onPermissionsGranted() {
+                    if (omniDriver==null){
+                        initOmniDriver()
+                        initOmniDriver()
+                    }
                     try {
-                       var printer = omniDriver!!.getPrinter(Bundle())
-                        printer.openDevice(1)
+                       var printer = omniDriver?.getPrinter(Bundle())
+                        printer?.openDevice(1)
                     } catch (ex: java.lang.Exception) {
+                        requireActivity().runOnUiThread(Runnable {
                         Toast.makeText(activity, "Printer is not available...", Toast.LENGTH_LONG)
                             .show()
+                        })
                         return
                     }
                     GlobalScope.launch {
