@@ -10216,11 +10216,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             this.checkBluetoothPermissions(object : OnBluetoothPermissionGranted {
                 override fun onPermissionsGranted() {
                     try {
-                       var printer = omniDriver!!.getPrinter(Bundle())
-                        printer.openDevice(1)
+                       var printer = omniDriver?.getPrinter(Bundle())
+                        printer?.openDevice(1)
                     } catch (ex: java.lang.Exception) {
+                        requireActivity().runOnUiThread(Runnable {
                         Toast.makeText(activity, "Printer is not available...", Toast.LENGTH_LONG)
                             .show()
+                        })
                         return
                     }
                     GlobalScope.launch {
