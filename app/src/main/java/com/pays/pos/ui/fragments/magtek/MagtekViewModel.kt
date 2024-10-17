@@ -52,6 +52,9 @@ class MagtekViewModel @Inject constructor(
     private val _merchantData = MutableLiveData<Event<ManageResponse?>>()
     val merchantData: LiveData<Event<ManageResponse?>> = _merchantData
 
+    private val _progressDialog = MutableLiveData<Event<Boolean>?>()
+    val progressDialog: LiveData<Event<Boolean>?> = _progressDialog
+
     init {
         checkBroadPOSVersion()
     }
@@ -135,7 +138,8 @@ class MagtekViewModel @Inject constructor(
     }
 
     private fun paxNetworkCall(context: Context, makeMerchantDetailsCall:Boolean=true) {
-        ProgressUtils.showProgressDialog("Connecting to PAX", context, View.GONE)
+//        ProgressUtils.showProgressDialog("Connecting to PAX", context, View.GONE)
+        _progressDialog.postValue(Event(true))
         val srNo = prefProvider.getValue(
             Constants.PAX_SERIAL_NO,
             ""
@@ -174,6 +178,8 @@ class MagtekViewModel @Inject constructor(
                     setCommSetting(context, ipAddress, port.toString())
                     if (makeMerchantDetailsCall) {
                         getMerchantDetails(context)
+                    }else{
+                        _progressDialog.postValue(Event(false))
                     }
 //                    connectBP()
                 }
@@ -183,8 +189,9 @@ class MagtekViewModel @Inject constructor(
                 call: Call<PosLinkResult>,
                 t: Throwable
             ) {
+                _progressDialog.postValue(Event(false))
 
-                ProgressUtils.dismissProgressDialog()
+//                ProgressUtils.dismissProgressDialog()
                 if (makeMerchantDetailsCall) {
                     when (t.message?.contains("org.simpleframework.xml")) {
                         true -> {
@@ -269,6 +276,8 @@ class MagtekViewModel @Inject constructor(
                         msg.what = Constants.TRANSACTION_SUCCESSED
                         msg.obj = posLink.ManageResponse
 
+                        _progressDialog.postValue(Event(false))
+
                         val response = msg.obj as ManageResponse
                         _merchantData.postValue(Event(response))
                         Log.d(
@@ -276,6 +285,7 @@ class MagtekViewModel @Inject constructor(
                             result!!.Code.toString() + " Msg: " + result!!.Msg + response.ResultTxt
                         )
                     } else {
+                        _progressDialog.postValue(Event(false))
                         CoroutineScope(Dispatchers.Main).launch {
                             ProgressUtils.dismissProgressDialog()
                             if (result?.Msg.toString() == "CONNECT ERROR" || result?.Msg.toString() == "TIME OUT") {
@@ -294,6 +304,7 @@ class MagtekViewModel @Inject constructor(
                     }
 
                 } catch (e: Exception) {
+                    _progressDialog.postValue(Event(false))
                     Log.d("Exception: ", "Exception ${e.message}")
                 }
             }

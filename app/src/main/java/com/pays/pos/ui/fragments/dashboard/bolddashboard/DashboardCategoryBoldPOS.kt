@@ -1049,6 +1049,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             viewModel.syncInventoryModule(false)
             viewModel.syncDone.observe(viewLifecycleOwner) { event ->
                 event.getContentIfNotHandled()?.let {
+                    getOrderTypes()
                     Log.d(TAG, "syncDataDone: $it")
                     if (it) {
                         //binding.maskLayout?.gone()
@@ -1977,6 +1978,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             if (it.status == Status.SUCCESS) {
                 if (it.data != null) {
                     ordertypelist = it.data.toCollection(arrayListOf())
+                    getConnectedPrinters()
                     viewModel.setOrderTypeList(ordertypelist)
                 }
             }
@@ -6129,57 +6131,59 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     private fun getConnectedPrinters() {
+        if (view != null) {
 
-        printerViewModel.printerList().observe(viewLifecycleOwner) {
-            when (it.status) {
+            printerViewModel.printerList().observe(viewLifecycleOwner) {
+                when (it.status) {
 
-                Status.SUCCESS -> {
-                    //ProgressUtils.dismissProgressDialog()
-                    //binding.maskLayout?.gone()
+                    Status.SUCCESS -> {
+                        //ProgressUtils.dismissProgressDialog()
+                        //binding.maskLayout?.gone()
 
-                    val data = it.data
-                    LogUtil.logE(TAG, "getConnectedPrinters:  ${Gson().toJson(data)}")
+                        val data = it.data
+                        LogUtil.logE(TAG, "getConnectedPrinters:  ${Gson().toJson(data)}")
 
-                    if (data?.isNotEmpty() == true) {
-                        var isInnerPrinterConnected = false
-                        for (i in data.indices) {
-                            if (((data[i].name.startsWith(
-                                    SUNMI_INNER_PRINTER,
-                                    true
-                                )) || (data[i].name.startsWith(
-                                    LANDI_INNER_PRINTER,
-                                    true
-                                ))) && (data[i].receiptPrintType == CUSTOMER || data[i].receiptPrintType == KITCHENANDCUSTOMER)
-                            ) {
-                                isInnerPrinterConnected = true
-                                break
+                        if (data?.isNotEmpty() == true) {
+                            var isInnerPrinterConnected = false
+                            for (i in data.indices) {
+                                if (((data[i].name.startsWith(
+                                        SUNMI_INNER_PRINTER,
+                                        true
+                                    )) || (data[i].name.startsWith(
+                                        LANDI_INNER_PRINTER,
+                                        true
+                                    ))) && (data[i].receiptPrintType == CUSTOMER || data[i].receiptPrintType == KITCHENANDCUSTOMER)
+                                ) {
+                                    isInnerPrinterConnected = true
+                                    break
+                                }
                             }
-                        }
-                        if (!isInnerPrinterConnected) {
-                            searchBluetooth()
+                            if (!isInnerPrinterConnected) {
+                                searchBluetooth()
+                            } else {
+                                binding.maskLayout?.gone()
+                            }
+
                         } else {
-                            binding.maskLayout?.gone()
+                            searchBluetooth()
                         }
 
-                    } else {
-                        searchBluetooth()
                     }
 
+                    Status.ERROR -> {
+                        LogUtil.logE(TAG, "getConnectedPrinters - ${it.message}")
+                        //ProgressUtils.dismissProgressDialog()
+                        binding.maskLayout?.gone()
+
+                    }
+
+                    Status.LOADING -> {
+                        //ProgressUtils.showProgressDialog(requireActivity())
+                        binding.maskLayout?.visible()
+                    }
                 }
 
-                Status.ERROR -> {
-                    LogUtil.logE(TAG, "getConnectedPrinters - ${it.message}")
-                    //ProgressUtils.dismissProgressDialog()
-                    binding.maskLayout?.gone()
-
-                }
-
-                Status.LOADING -> {
-                    //ProgressUtils.showProgressDialog(requireActivity())
-                    binding.maskLayout?.visible()
-                }
             }
-
         }
 
     }
@@ -6214,8 +6218,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     uuid = UUID.randomUUID()
                 )
                 CoroutineScope(Dispatchers.IO).launch {
-                    delay(4000)
-                    setupInnerPrinterAttributes(innerPrinterModel)
+
+                    if (ordertypelist.isNotEmpty()) {
+                        setupInnerPrinterAttributes(innerPrinterModel)
+                    }
                 }
 
             } else {
@@ -6229,6 +6235,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     private fun setupInnerPrinterAttributes(innerPrinterModel: PrinterListModel) {
         val list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> = arrayListOf()
+        Log.e(TAG,"checkHereOrderTypeListSize. ${ordertypelist.size}")
         for (i in 0 until ordertypelist.size) {
             list.add(
                 CreatePrinterRequestModel.PrinterSettingsAttributes(

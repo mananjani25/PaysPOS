@@ -2333,6 +2333,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     )
                 }
 
+
                 if (cashDiscountType == "SurCharge") {
                     paymentAmount =
                         String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
@@ -2476,6 +2477,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         binding.tvCash0.setOnSingleClickListener {
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
                 disconnectSyncChannel()
+
                 restrictTvCashClicks()
 
                 if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
@@ -5536,6 +5538,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun clearObserver() {
         viewLifecycleOwnerLiveData.removeObservers(viewLifecycleOwner)
         onDestroy()
+
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
 
     }
 }
