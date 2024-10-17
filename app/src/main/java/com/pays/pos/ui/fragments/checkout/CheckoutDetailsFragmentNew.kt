@@ -94,6 +94,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.Executors
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -3750,17 +3751,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 cartList = cartModel2
             } else if (dashboardViewModel.cartModel == null) {
                 runBlocking {
-                    if (dashboardViewModel.getCartModelBackup() == null ) {
-
-
-                       var models  = dashboardViewModel.getAllCartModels()
-                        if (models.isNotEmpty()) {
-                            dashboardViewModel.cartModel = models.get(0)
-                        }
-
-
-                    } else {
-
+                    try{
                         var model =
                             CoroutineScope(Dispatchers.IO).async { dashboardViewModel.getCartModelBackup() }
                                 .await().last().data
@@ -3772,7 +3763,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 }", true
                             )
                         )
-                        dashboardViewModel.cartModel = Gson().fromJson(model, CartModel::class.java)
+                        dashboardViewModel.cartModel =
+                            Gson().fromJson(model, CartModel::class.java)
+                    }catch (e:Exception){
+                        var models =
+                            CoroutineScope(Dispatchers.IO).async { dashboardViewModel.getAllCartModels() }
+                                .await()
+                        if (models.isNotEmpty()) {
+                            dashboardViewModel.cartModel = models.get(0)
+                        }
                     }
                 }
             }
