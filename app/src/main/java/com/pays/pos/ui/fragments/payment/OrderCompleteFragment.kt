@@ -259,7 +259,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     }
 
-    private fun initOmniDriver(){
+    private fun initOmniDriver() {
         omniDriver = OmniDriver.me(requireContext())
         omniDriver?.init(object : OmniConnection {
             override fun onConnected() {
@@ -10220,17 +10220,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             this.checkBluetoothPermissions(object : OnBluetoothPermissionGranted {
                 override fun onPermissionsGranted() {
-                    if (omniDriver==null){
+                    if (omniDriver == null) {
                         initOmniDriver()
                         initOmniDriver()
                     }
                     try {
-                       var printer = omniDriver?.getPrinter(Bundle())
+                        var printer = omniDriver?.getPrinter(Bundle())
                         printer?.openDevice(1)
                     } catch (ex: java.lang.Exception) {
                         requireActivity().runOnUiThread(Runnable {
-                        Toast.makeText(activity, "Printer is not available...", Toast.LENGTH_LONG)
-                            .show()
+                            Toast.makeText(
+                                activity,
+                                "Printer is not available...",
+                                Toast.LENGTH_LONG
+                            )
+                                .show()
                         })
                         return
                     }
@@ -15872,8 +15876,201 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
 
     }
+    lateinit var kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters
 
     private fun generateKitchenReceiptSunmiInner(
+        kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String
+    ) {
+        if (!printingKitchen) {
+            if (!kitchenReceiptPrinters.receiptPrintType.equals(
+                    "KitchenAndCustomer",
+                    ignoreCase = true
+                ) && !printingCustomer
+            ) {
+                printingKitchen = true
+                try {
+                    // PrintSunmiUtils.fontSizeInner(LARGE)
+                    SunmiPrintHelper.getInstance().initPrinter()
+                    /*Added By Rahul */
+                    try {
+                        if (isOrderUpdated == true || cartList!!.isEdited == true) {
+                            PrintSunmiUtils.headerText("***** UPDATED *****")
+                        }
+                    } catch (e: java.lang.NullPointerException) {
+
+                    }
+
+                    try {
+                        SunmiPrintHelper.getInstance().lineWrap(4)
+                        if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                            PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.custom_order_id)
+                        } else {
+                            PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
+                        }
+                    } catch (e: Exception) {
+                    }
+
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+
+                    if (kitchenSettingModel.showOrderType) {
+                        PrintSunmiUtils.headerText(receiptModel?.order?.orderTypeName.toString())
+                        SunmiPrintHelper.getInstance().lineWrap(1)
+                    }
+
+                    if (receiptModel?.order?.orderType.equals("Online Order", true) ||
+                        receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                        receiptModel?.order?.orderType.equals(PHONE_ORDER, true)
+                    ) {
+                        PrintSunmiUtils.headerText(receiptModel?.order?.deliveryType.toString())
+                        SunmiPrintHelper.getInstance().lineWrap(1)
+                    }
+
+                    if (kitchenSettingModel.showTeamMember) {
+                        PrintSunmiUtils.normalTextLarge("Employee:" + receiptModel?.order?.employee?.name)
+                    }
+                    PrintSunmiUtils.normalTextLarge(
+                        getReceiptFormatDateFromUTCServer(
+                            requireContext(),
+                            receiptModel?.order?.createdAt.toString()
+                        )
+                    )
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+
+
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
+                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
+                        PrintSunmiUtils.addHorizontalInnerNew()
+                    } else {
+                        PrintSunmiUtils.addHorizontalInner()
+                    }
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
+                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
+                        PrintSunmiUtils.normalText("\n")
+                    }
+
+
+                    receiptModel?.order?.orderItems?.let {
+
+                        addOrdersForKitchenInner(
+                            it,
+                            kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf())
+                        )
+                    }
+
+
+                    if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+
+                        PrintSunmiUtils.orderNoteInnerLarge(receiptModel?.order?.note.toString())
+
+                    }
+
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+                    if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
+                        if (receiptModel?.order?.customer != null) {
+
+
+                            PrintSunmiUtils.customerDetailsInner(true, sunmiFrameworkVersion)
+                            if (sunmiFrameworkVersion?.get(0)
+                                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                            ) {
+                                PrintSunmiUtils.addHorizontalInnerNew()
+                            } else {
+                                PrintSunmiUtils.addHorizontalInner()
+                            }
+                            try {
+                                if (kitchenSettingModel.showCustomerName) {
+                                    PrintSunmiUtils.normalTextLarge(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+                                }
+                            } catch (e: Exception) {
+                            }
+
+
+                            try {
+                                if (kitchenSettingModel.showCustomerPhone) {
+
+                                    if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
+
+                                        receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
+                                            PrintSunmiUtils.normalTextLarge(
+                                                MethodUtils.formatPhoneNumber(it)
+                                            )
+                                        }
+                                    }
+
+                                }
+                            } catch (e: Exception) {
+                            }
+
+                            if (kitchenSettingModel.showCustomerAddress) {
+                                if (receiptModel?.order?.orderType?.trim().toString()
+                                        .lowercase() == "Open Order".trim()
+                                        .toString().lowercase()
+                                    && receiptModel?.order?.deliveryType?.trim().toString()
+                                        .lowercase() == "Pickup".trim().lowercase()
+                                ) {
+
+                                } else {
+                                    try {
+                                        if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
+
+
+//                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+//                                    PrintSunmiUtils.normalTextLarge(
+//                                        it
+//                                    )
+//                                }
+
+                                            receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
+                                                ?.forEach {
+
+                                                    if (it.typeOfAddress.equals(
+                                                            BILLING_ADDRESS,
+                                                            ignoreCase = true
+                                                        )
+                                                    ) {
+                                                        PrintSunmiUtils.normalTextLarge(
+                                                            it.fullAddress
+                                                        )
+                                                    }
+                                                }
+                                        }
+                                    } catch (e: Exception) {
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+                    PrintSunmiUtils.cutPaperInner()
+                    printingKitchen = false
+                    //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
+
+                } catch (e: Exception) {
+                    // printerDialog.dismiss()
+                    printingKitchen = false
+                    e.printStackTrace()
+                }
+            } else {
+                this.kitchenReceiptPrinters=kitchenReceiptPrinters
+            }
+        }
+
+    }
+
+    /* This function is cloned because the receipt type condition is not present in this function, the above function would have become very confusing that's why it is cloned and the receiptType condition is removed.*/
+    private fun generateKitchenReceiptSunmiInnerAfterCustomer(
         kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String
     ) {
@@ -15928,7 +16125,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 SunmiPrintHelper.getInstance().lineWrap(1)
 
 
-                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                        1
+                    )
                         ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                 ) {
                     PrintSunmiUtils.addHorizontalInnerNew()
@@ -15937,7 +16136,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
                 SunmiPrintHelper.getInstance().lineWrap(1)
 
-                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                        1
+                    )
                         ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                 ) {
                     PrintSunmiUtils.normalText("\n")
@@ -16048,6 +16249,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 printingKitchen = false
                 e.printStackTrace()
             }
+
         }
 
     }
@@ -18531,11 +18733,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
 
                     printingCustomer = false
+                    if (this@OrderCompleteFragment::kitchenReceiptPrinters.isInitialized) {
+                        generateKitchenReceiptSunmiInnerAfterCustomer(kitchenReceiptPrinters,"")
+                    }
+
                     pd?.dismiss()
 
                 } catch (e: Exception) {
                     pd?.dismiss()
                     printingCustomer = false
+                    if (this@OrderCompleteFragment::kitchenReceiptPrinters.isInitialized) {
+                        generateKitchenReceiptSunmiInnerAfterCustomer(kitchenReceiptPrinters,"")
+                    }
+
                     EventBus.getDefault()
                         .post(
                             MessageEvent(
