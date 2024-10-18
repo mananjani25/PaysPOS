@@ -104,6 +104,7 @@ class PaymentBoldPosFragment : Fragment() {
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     onBackPress()
+
                 }
 
             }
@@ -321,7 +322,7 @@ class PaymentBoldPosFragment : Fragment() {
                         arguments?.getBoolean("isFromActiveOrder") == true
                     )
                 )
-            }, 100)
+            }, 250)
 
         }
         binding.layoutHeaderCheckout.imgDrawer.setOnSingleClickListener {
@@ -378,6 +379,7 @@ class PaymentBoldPosFragment : Fragment() {
                     )
                 }
                 if (prefProvider.getValueboolean(IS_FROM_ALL_ORDER, false)) {
+                    
                     navController.navigate(R.id.action_paymentBoldPosFragment_to_allOrdersFragment)
                 } else {
                     navController.popBackStack()

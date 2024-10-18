@@ -3375,4 +3375,9 @@ open class PaymentViewModel @Inject constructor(
             posRepository.deletePAXTable()
         }
     }
+
+    override fun onCleared() {
+        Log.e("CheckOnClearedViewmodel","PaymentViewModel")
+        super.onCleared()
+    }
 }
