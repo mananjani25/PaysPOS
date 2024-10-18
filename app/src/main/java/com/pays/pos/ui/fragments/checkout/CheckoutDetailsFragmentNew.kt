@@ -2757,60 +2757,62 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         giftCardViewModel.giftCardCheckBalanceData.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it.data != null) {
+                    if (isAdded) {
 
-                    if (it.data.amount == 0.0) {
-                        binding.edtGiftCardNumber.setText("")
-                        prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, false)
-                        AlertUtils.showCustomAlertWithListenerWithOK(
-                            requireContext(),
-                            message = getString(R.string.msg_insufficient_gift_card_balance)
-                        ) { _, _ ->
-                        }
-                    } else {
-                        custom_paymentAmount = 0.0
-
-                        val actualTotalAmountWithTip =
-                            (WholetotalPrice / isSelectedCount) + tipAmount
-
-                        val giftCardBalanceAmount = it.data.amount
-
-                        if (actualTotalAmountWithTip < giftCardBalanceAmount) {
-                            val giftCardNumber =
-                                binding.edtGiftCardNumber.rawText.toString().trim()
-                            prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, true)
-                            prefProvider.setValue(GIFT_CARD_NUMBER, giftCardNumber)
-                            prefProvider.setValue(GIFT_CARD_PIN, "")
-                            prefProvider.setValueboolean(
-                                IS_ORDER_REDEEMABLE_WITH_GIFT_CARD,
-                                true
-                            )
-                            val actualTotalAmount = (WholetotalPrice / isSelectedCount)
-                            paymentAmount = actualTotalAmount
-                            paymentviewModel.totalPayAmount(paymentAmount)
-                            redeemGiftCard()
-                        } else {
-                            prefProvider.setValueboolean(
-                                IS_ORDER_REDEEMABLE_WITH_GIFT_CARD,
-                                false
-                            )
+                        if (it.data.amount == 0.0) {
+                            binding.edtGiftCardNumber.setText("")
+                            prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, false)
                             AlertUtils.showCustomAlertWithListenerWithOK(
                                 requireContext(),
-                                message = "Your GiftCard Balance is $${
-                                    giftCardBalanceAmount.toPrecision(
-                                        2
-                                    )
-                                }. Please use split payment."
+                                message = getString(R.string.msg_insufficient_gift_card_balance)
                             ) { _, _ ->
                             }
+                        } else {
+                            custom_paymentAmount = 0.0
+
+                            val actualTotalAmountWithTip =
+                                (WholetotalPrice / isSelectedCount) + tipAmount
+
+                            val giftCardBalanceAmount = it.data.amount
+
+                            if (actualTotalAmountWithTip < giftCardBalanceAmount) {
+                                val giftCardNumber =
+                                    binding.edtGiftCardNumber.rawText.toString().trim()
+                                prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, true)
+                                prefProvider.setValue(GIFT_CARD_NUMBER, giftCardNumber)
+                                prefProvider.setValue(GIFT_CARD_PIN, "")
+                                prefProvider.setValueboolean(
+                                    IS_ORDER_REDEEMABLE_WITH_GIFT_CARD,
+                                    true
+                                )
+                                val actualTotalAmount = (WholetotalPrice / isSelectedCount)
+                                paymentAmount = actualTotalAmount
+                                paymentviewModel.totalPayAmount(paymentAmount)
+                                redeemGiftCard()
+                            } else {
+                                prefProvider.setValueboolean(
+                                    IS_ORDER_REDEEMABLE_WITH_GIFT_CARD,
+                                    false
+                                )
+                                AlertUtils.showCustomAlertWithListenerWithOK(
+                                    requireContext(),
+                                    message = "Your GiftCard Balance is $${
+                                        giftCardBalanceAmount.toPrecision(
+                                            2
+                                        )
+                                    }. Please use split payment."
+                                ) { _, _ ->
+                                }
+                            }
+                            binding.edtGiftCardNumber.setText("")
                         }
+                    } else {
                         binding.edtGiftCardNumber.setText("")
-                    }
-                } else {
-                    binding.edtGiftCardNumber.setText("")
-                    AlertUtils.showCustomAlertWithListenerWithOK(
-                        requireContext(),
-                        message = it.message
-                    ) { _, _ ->
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(),
+                            message = it.message
+                        ) { _, _ ->
+                        }
                     }
                 }
 
