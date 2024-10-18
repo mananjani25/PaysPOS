@@ -945,9 +945,10 @@
     <!-- Customer Loyalty -->
     <string name="loyalty_message">Sign Up to get Loyalty Points</string>
     <string name="sign_up_or_check_in">Sign up or Check In</string>
-    <string name="powered_by_pays">Powered by Pays</string>
+    <string name="powered_by_pays">Powered by PAYS</string>
     <string name="enter_your_phone_number">Enter Your Mobile Number</string>
     <string name="unable_to_create_customer">Unable to create customer</string>
+    <string name="type_here">Type here</string>
     <!-- Customer Loyalty -->
 </resources>
 

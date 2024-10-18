@@ -128,7 +128,11 @@ class AddCustomerViewModel @Inject constructor(
         isFromPhoneOrderEdit: Boolean,
         fromCustomerDisplay: Boolean = false
     ) {
+        Log.d("C_Loyalty: ", "addCustomerViewModel: submit()...")
+
         if (phoneNo.value != null) {
+            Log.d("C_Loyalty: ", "addCustomerViewModel: phone number found...")
+
             addCustomerDetails.value?.data?.phones_attributes?.add(
                 0,
                 CreateCustomerRequestModel.Customer.Phone(
@@ -395,6 +399,7 @@ class AddCustomerViewModel @Inject constructor(
                     when (resource.status) {
                         Status.SUCCESS -> {
                             _showProgress.value = Event(false)
+                            Log.d("C_Loyalty: ", "addCustomerViewModel: Status.SUCCESS...")
 
                             resource.data.let {
                                 if (it?.status == 200) {
@@ -418,6 +423,7 @@ class AddCustomerViewModel @Inject constructor(
 
 
                                         posRepository.addCustomer(model)
+                                        Log.d("C_Loyalty: ", "addCustomerViewModel: posRepository.addCustomer() called...")
 
                                         if (isFromPhoneOrderEdit) {
                                             _updatedCustomer.value = Event(model)
@@ -438,6 +444,8 @@ class AddCustomerViewModel @Inject constructor(
                         }
                         Status.ERROR -> {
                             /*TODO: Handle Error scenario here*/
+                            Log.d(TAG, "addCustomerViewModel: Status.ERROR...")
+
                             if (fromCustomerDisplay && resource.message?.contains("already been taken")?:false) {
 
                             }

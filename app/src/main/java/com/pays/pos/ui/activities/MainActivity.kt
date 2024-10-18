@@ -39,6 +39,7 @@ import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -1307,10 +1308,13 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: CreateCustomerEvent?) {
         if (event?.performCreate?:false) {
+            Log.d("C_Loyalty: ", "createCustomer: Create Customer Event... Set")
+
 //        Create Customer, this control has came from CustomerDisplay.kt, when customer is not present when giving the phone number.
             addCustomerViewModel.phoneNo.value = event?.phoneNumber
             addCustomerViewModel.submit(arrayListOf(), false, true)
         }else{
+            Log.d("C_Loyalty: ", "createCustomer: checkonTakeOut... called")
             dashboardViewModel.clickOnTakeOut()
         }
     }
@@ -1333,9 +1337,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private lateinit var presentation: CustomDisplay
 
     private fun initCustomerDisplay() {
-        getCustomerDisplay(this)?.let { display ->
+        getCustomerDisplay(this@MainActivity)?.let { display ->
             presentation = CustomDisplay(
-                display, this, this, dashboardViewModel, passcodeViewModel, dineInViewModel
+                display, this@MainActivity, this@MainActivity, dashboardViewModel, passcodeViewModel, dineInViewModel
             )
         }
     }

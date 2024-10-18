@@ -1,5 +1,6 @@
 package com.pays.pos.ui.fragments.dashboard.bolddashboard
 
+import android.app.Activity
 import android.app.Presentation
 import android.content.Context
 import android.content.DialogInterface
@@ -7,6 +8,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.Message
 import android.util.Base64
 import android.util.Log
@@ -14,10 +17,8 @@ import android.view.Display
 import android.view.Gravity
 import android.view.View
 import android.view.Window
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.lifecycleScope
+import androidx.appcompat.view.ContextThemeWrapper
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -88,7 +89,7 @@ class CustomDisplay(
     private val dashBoardCategoryViewModel: DashBoardCategoryViewModel,
     val passcodeViewModel: PasscodeViewModel,
     val dineInViewModel: DineInOrderTableViewModel
-) : Presentation(context, display), MyCallback, DineInAdapter.DineInCallback,
+) : Presentation(ContextThemeWrapper(context, R.style.CustomPresentationTheme), display), MyCallback, DineInAdapter.DineInCallback,
     ActiveTipsListAdapter.DiscountInterface {
 
     private var mWholeTotalPrice: Double = 0.0
@@ -189,7 +190,7 @@ class CustomDisplay(
                 imgBusiness?.gone()
             }
             if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isNotEmpty()) {
-                btnSignUpOrCheckIn?.text = "Change phone number"
+                btnSignUpOrCheckIn?.text = "Change mobile number"
                 tvMessage?.text = "Customer added successfully"
             }
 
@@ -280,6 +281,13 @@ class CustomDisplay(
                     tvPhoneNumber?.setText(MethodUtils.removeChars(tvPhoneNumber?.text.toString(), 1))
                 }
             })
+
+            btnBackSpace?.setOnLongClickListener(object:View.OnLongClickListener{
+                override fun onLongClick(p0: View?): Boolean {
+                    tvPhoneNumber?.setText("")
+                    return true
+                }
+            })
             /*---------------------KEYPAD----------------------*/
 
             tvDone?.setOnSingleClickListener(object : View.OnClickListener {
@@ -289,7 +297,7 @@ class CustomDisplay(
                     //  1. if customer present then add the customer.
                     //  2. if customer not present then create the customer
 
-                    var mobileNumber = tvPhoneNumber?.text.toString().trim()
+                    var mobileNumber = tvPhoneNumber?.text.toString().trim().replace(Regex("[^0-9]"), "")
                     searchUserFromMobileNumber(mobileNumber)
 
 //                    [{"id":2,"phone_number":"5555575575"}]
@@ -332,6 +340,16 @@ class CustomDisplay(
 
 
     private fun createCustomer(phoneNumber: String) {
+      /*  binding.tvMessage?.post {
+            binding.tvMessage?.text="Loading..."
+        }*/
+        Handler(Looper.getMainLooper()).post(Runnable {
+            binding.keypadLayout?.gone()
+            binding.splashLayout?.gone()
+            binding.mainCartLayout?.visible()
+        })
+
+        Log.d("C_Loyalty: ", "createCustomer: Loading... Set")
         EventBus.getDefault().post(CreateCustomerEvent(true, phoneNumber))
     }
 
@@ -349,15 +367,18 @@ class CustomDisplay(
         prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
         customer.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
         dashBoardCategoryViewModel.clickOnTakeOut()
+
         EventBus.getDefault()
             .post(SyncCustomerEvent(true, customer.first_name + " " + customer.last_name))
-
         CoroutineScope(Dispatchers.Main).launch {
+            binding.tvMessage?.text="Customer added successfully"
             binding.txtCustomerName.apply { text = customer.first_name + " " + customer.last_name }
             binding.keypadLayout?.gone()
             binding.splashLayout?.gone()
             binding.mainCartLayout?.visible()
+
         }
+
     }
 
     private fun getDetails() {

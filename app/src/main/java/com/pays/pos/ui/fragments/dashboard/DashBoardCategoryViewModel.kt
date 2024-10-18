@@ -587,6 +587,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun clickOnTakeOut() {
+        Log.d(TAG, "dashboardCategoryViewModel: clickOnTakeOut()...")
         _clickTakeOut.postValue(Event(true))
     }
     /*------------Customer Loyalty---------------*/

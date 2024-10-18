@@ -20,6 +20,7 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 -keep class com.pays.pos.data.db.** { *; }
+-keep class com.santalu.maskara.widget.** { *; }
 
 
 -keepattributes *Annotation*

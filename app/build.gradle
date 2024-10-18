@@ -263,4 +263,6 @@ dependencies {
 
     implementation 'com.github.anrwatchdog:anrwatchdog:1.4.0'
 
+//    implementation 'com.github.santalu:maskara:1.0.0'
+
 }

@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:ignore="MissingDefaultResource"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:theme="@style/CustomPresentationTheme"
     android:background="@color/backgroundColor">
 
     <LinearLayout
@@ -43,7 +45,7 @@
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/_10sdp"
                     android:layout_gravity="center"
                     app:cardBackgroundColor="@color/btnColor"
                     app:cardCornerRadius="30dp"
@@ -60,13 +62,11 @@
                         android:background="@color/pinFieldLibraryTransparent"
                         android:gravity="center"
                         android:letterSpacing="0.02"
-                        android:paddingStart="10dp"
                         android:paddingEnd="10dp"
-                        android:paddingBottom="2dp"
+                        android:paddingStart="10dp"
                         android:text="@string/sign_up_or_check_in"
                         android:textAllCaps="false"
                         android:textColor="@color/white"
-                        android:textSize="@dimen/_6mdpi"
                         android:textStyle="normal"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -1337,6 +1337,7 @@
         android:background="#1D1D1F"
         android:visibility="gone">
 
+
         <LinearLayout
             android:id="@+id/llKeyboard"
             android:layout_width="match_parent"
@@ -1384,33 +1385,16 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
+                    android:id="@+id/llMarkedPhoneNumber"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginTop="@dimen/_5sdp"
-                    android:layout_marginEnd="@dimen/_15sdp"
-                    android:background="@drawable/background_square_border_grey"
+                    android:background="@drawable/background_sales_button"
                     android:orientation="vertical"
                     android:visibility="visible"
                     app:layout_constraintEnd_toEndOf="@+id/constraintLayout"
                     app:layout_constraintStart_toStartOf="@+id/constraintLayout"
                     app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
-
-                    <Spinner
-                        android:id="@+id/spPhone"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@null"
-                        android:enabled="false"
-                        android:padding="@dimen/_9sdp"
-                        android:textColor="@color/txt_color_blue"
-                        android:textSize="@dimen/_5mdpi"
-                        android:theme="@style/SpinnerTheme" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="0.5dp"
-                        android:background="@color/view" />
 
                     <com.santalu.maskedittext.MaskEditText
                         android:id="@+id/tvPhoneNumber"
@@ -1418,14 +1402,30 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@null"
-                        android:hint="(201) 555-0123"
+                        android:hint="@string/type_here"
                         android:inputType="number"
                         android:maxLength="20"
                         android:padding="@dimen/_9sdp"
-                        android:textColor="@color/txtColor"
-                        android:textColorHint="@color/hint_color_"
+                        android:textColor="@color/white"
+                        android:textColorHint="@color/gray_color"
                         android:textSize="@dimen/_7mdpi"
                         app:met_mask="(###) ###-####" />
+
+                    <!--        <com.santalu.maskedittext.MaskEditText
+                                android:id="@+id/tvPhoneNumber"
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@null"
+                                android:hint="(201) 555-0123"
+                                android:inputType="number"
+                                android:maxLength="20"
+                                android:padding="@dimen/_9sdp"
+                                android:text="7050058109"
+                                android:textColor="@color/txtColor"
+                                android:textColorHint="@color/hint_color_"
+                                android:textSize="@dimen/_7mdpi"
+                                app:met_mask="(###) ###-####" />-->
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -1451,7 +1451,7 @@
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toStartOf="@+id/guideline4"
                     app:layout_constraintStart_toStartOf="@+id/guideline3"
-                    app:layout_constraintTop_toBottomOf="@+id/tvPhoneNumber">
+                    app:layout_constraintTop_toBottomOf="@+id/llMarkedPhoneNumber">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -1596,7 +1596,7 @@
                                     android:background="@drawable/background_sales_button"
                                     android:gravity="center"
                                     android:padding="10dp"
-                                    android:text="C"
+                                    android:text="@string/clear"
                                     android:textColor="@color/white" />
 
                                 <androidx.appcompat.widget.AppCompatButton
@@ -1611,16 +1611,19 @@
                                     android:text="0"
                                     android:textColor="@color/white" />
 
-                                <androidx.appcompat.widget.AppCompatButton
+                                <androidx.appcompat.widget.AppCompatImageView
                                     android:id="@+id/btnBackSpace"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_margin="5dp"
                                     android:layout_weight="1"
+                                    android:src="@drawable/ic_backspace"
                                     android:background="@drawable/background_sales_button"
                                     android:gravity="center"
-                                    android:padding="10dp"
-                                    android:text="Delete"
+                                    android:tint="@color/white"
+                                    app:tint="@color/white"
+                                    android:padding="12dp"
+                                    android:contentDescription="@string/delete"
                                     android:textColor="@color/white" />
 
                             </TableRow>
