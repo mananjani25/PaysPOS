@@ -53,7 +53,8 @@ import java.io.OutputStream
 enum class CommonPrinterTypes {
     SunmiInnerPrinter,
     LandiInnerPrinter,
-    SunmiCloudPrinter
+    SunmiCloudPrinter,
+    TspStarPrinter
 }
 
 class SunmiInnerPrinterPays() {

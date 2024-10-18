@@ -603,6 +603,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     isChecked = true
                     isEnabled = false
                     buttonTintList = ColorStateList.valueOf(Color.GREEN)
+                   // Log.e("Items fired call","Item fired and updated")
                 }
             } else {
                 binding.chkIsFired.isChecked = false
@@ -613,6 +614,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     isChecked = false
                     isEnabled = true
                     buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.redColor))
+                   // Log.e("Items fired call","ITEM not fired")
+
                 }
             }
 
@@ -816,7 +819,9 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             this.isAnyPaymentDone = isAnyPaymentDone
             this.list = list
             notifyDataSetChanged()
-        }catch (_:Exception){}
+        }catch (e:Exception){
+            Log.e("Items fired call",e.message.toString())
+        }
     }
 
     interface DineInTableListner {
