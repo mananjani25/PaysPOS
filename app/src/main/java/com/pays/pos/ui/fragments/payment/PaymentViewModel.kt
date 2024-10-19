@@ -183,7 +183,7 @@ open class PaymentViewModel @Inject constructor(
 //                    prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
                     prefProvider.setValue("CART_MODEL1", "")
                     prefProvider.setValue("CART_MODEL2", "")
-                    _showProgress.value = Event(false)
+                    _showProgress.postValue(Event(false))
                     resource.data.let { response ->
                         if (response?.status == 200) {
 
@@ -283,6 +283,7 @@ open class PaymentViewModel @Inject constructor(
                                                 }
                                             }
                                         } else {
+                                            _showProgress.postValue(Event(false))
                                             _data.value = Event(createOrderResponse)
                                             EventBus.getDefault().post(
                                                 MessageEvent(
@@ -293,6 +294,8 @@ open class PaymentViewModel @Inject constructor(
                                             )
                                             LogUtil.logE("QueueCheck", "CreateOrderData")
                                         }
+                                    }else{
+                                        _showProgress.postValue(Event(false))
                                     }
 
                                     if (createOrderResponse.data.order.orderType != "Dine In" && createOrderResponse.data.order.orderType != PHONE_ORDER) {

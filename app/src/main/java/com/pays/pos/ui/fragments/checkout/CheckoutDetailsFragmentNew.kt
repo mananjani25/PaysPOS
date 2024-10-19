@@ -1,9 +1,13 @@
 package com.pays.pos.ui.fragments.checkout
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.Dialog
 import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.content.DialogInterface
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,6 +18,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
@@ -789,6 +794,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun observeData() {
         paymentviewModel.orderCreate.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+                if (it){
+                    runOnUiThread(Runnable {
+                        dismissProgressDialog()
+                    })
+                }
                 dashboardViewModel.activeOrderTypeName = ""
                 dashboardViewModel.activeOrderTypeId = 0
                 dashboardViewModel.activeOrderTypeText = ""
@@ -2024,7 +2034,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         requireActivity()
                     )
                 } else {
-                    ProgressUtils.dismissProgressDialog()
+                    runOnUiThread(Runnable {
+                        dismissProgressDialog()
+                    })
                 }
             }
         }
@@ -2288,7 +2300,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 runOnUiThread(object:java.lang.Runnable{
                     override fun run() {
-                        ProgressUtils.showProgressDialog(requireActivity())
+                        showProgressDialog()
                     }
                 })
                 restrictTvCashClicks()
@@ -2414,7 +2426,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         runOnUiThread(object:java.lang.Runnable{
                             override fun run() {
                                 binding.llCreditCard.isEnabled = true
-                                ProgressUtils.dismissProgressDialog()
+                                dismissProgressDialog()
                             }
                         })
                         errorDisplay("Please connect a payment device.")
@@ -2423,7 +2435,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     runOnUiThread(object:java.lang.Runnable{
                         override fun run() {
                             binding.llCreditCard.isEnabled = true
-                            ProgressUtils.dismissProgressDialog()
+                            dismissProgressDialog()
                         }
                     })
                     errorDisplay("Payment Amount is zero.")
@@ -2432,7 +2444,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 runOnUiThread(object:java.lang.Runnable{
                     override fun run() {
                         binding.llCreditCard.isEnabled = true
-                        ProgressUtils.dismissProgressDialog()
+                        dismissProgressDialog()
                     }
                 })
                 errorDisplay("Please check your Network Connectivity.")
@@ -2913,10 +2925,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         }
                     }
                 } else {
+                    runOnUiThread(Runnable {
+                        dismissProgressDialog()
+                    })
                     CoroutineScope(Dispatchers.Main).launch {
                         Log.d("PAX_LOADER_1:: ", "result.Code.toString() result.Msg")
 
-                        ProgressUtils.dismissProgressDialog()
                         AlertUtils.showCustomAlertWithListenerWithOK(
                             requireContext(),
                             resultTxt,
@@ -2984,8 +2998,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     Constants.MERCHANT_ID,
                     mID
                 )
+                runOnUiThread(Runnable {
+                    dismissProgressDialog()
+                })
                 CoroutineScope(Dispatchers.Main).launch {
-                    ProgressUtils.dismissProgressDialog()
                     makePaxPaymentRequest()
 //                    AlertUtils.showCustomAlert(requireContext(), "Merchant $mID is connected successfully")
                 }
@@ -4933,6 +4949,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     )
                 )
                 paymentviewModel.splitByOrder(aa, false)
+                runOnUiThread(Runnable {
+                    dismissProgressDialog()
+                })
                 EventBus.getDefault()
                     .post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_paymentviewModel.splitByOrder(aa, false)_After_6"))
 
@@ -5575,6 +5594,56 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     override fun onDestroyView() {
         super.onDestroyView()
+
+    }
+
+    private var builder: Dialog? = null
+
+    private fun showProgressDialog() {
+
+
+        if (builder == null)
+            builder = Dialog(requireContext())
+
+        val inflater = LayoutInflater.from(context)
+
+        val dialogView = inflater.inflate(R.layout.view_loading, null)
+        builder?.setContentView(dialogView)
+
+        builder?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+//        builder?.window?.setBackgroundDrawable(
+//            ColorDrawable(Color.WHITE)
+//        )
+        builder?.setCanceledOnTouchOutside(false)
+        builder?.setCancelable(false)
+        builder?.window?.setLayout(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+
+        if (!builder?.isShowing!!) {
+            val activity: Activity = requireActivity()
+            if (!activity.isFinishing && !activity?.isDestroyed) {
+                try {
+                    builder?.show()
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+
+            }
+        }
+    }
+
+    private fun dismissProgressDialog()
+    {
+        try {
+            if (builder != null && builder?.isShowing == true) {
+                builder?.dismiss()
+                builder = null
+            }
+        } catch (e: java.lang.Exception) {
+            Log.d("pos", "dismissProgressDialog: " + e.message)
+        }
 
     }
 }
