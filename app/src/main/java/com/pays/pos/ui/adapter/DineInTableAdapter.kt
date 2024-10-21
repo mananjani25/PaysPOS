@@ -122,11 +122,13 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                             guestSubTotal += (it.itemQuantity * it.price) - it.discountPrice
                             guestSubTotalWithOutCharges += (it.itemQuantity * it.price) - it.discountPrice
                             if (it.modifiers.isNotEmpty()) {
-                                it.modifiers.forEach { it ->
+                                it.modifiers.forEach { modifier ->
 
-                                    guestAmt += (it.modifier_quantity * it.price * item.itemQuantity)
-                                    guestSubTotal += (it.modifier_quantity * it.price * item.itemQuantity)
-                                    guestSubTotalWithOutCharges += (it.modifier_quantity * it.price * item.itemQuantity)
+                                    Log.e("MODIFIER",Gson().toJson(modifier).toString())
+
+                                    guestAmt += (modifier.modifier_quantity * modifier.price * item.itemQuantity)
+                                    guestSubTotal += (modifier.modifier_quantity * modifier.price * item.itemQuantity)
+                                    guestSubTotalWithOutCharges += (modifier.modifier_quantity * modifier.price * item.itemQuantity)
                                 }
                             }
 

@@ -1102,7 +1102,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             bundle
                         )
                                       },
-                    500)
+                    1000)
 
 
                 }
@@ -2386,12 +2386,18 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
         dashboardViewModel.totalServiceCharge = serviceChargeGuest
 
-            Handler().postDelayed({
-                findNavController().navigate(
-                    R.id.action_dineInOrderTable_to_checkoutDineIN,
-                    bundle
-                )},
-                500)
+            Handler().postDelayed(
+                {
+                    try {
+                        findNavController().navigate(
+                            R.id.action_dineInOrderTable_to_checkoutDineIN,
+                            bundle
+                        )
+                    }catch (e:Exception) {
+                        e.printStackTrace()
+                    }
+                },
+                1000)
 
     }
 
