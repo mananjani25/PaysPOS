@@ -145,6 +145,7 @@ class CustomDisplay(
     var CardName = ""
     var EDCType = ""
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -303,6 +304,8 @@ class CustomDisplay(
 //                    [{"id":2,"phone_number":"5555575575"}]
                 }
             })
+
+
         }
     }
 
@@ -1003,7 +1006,38 @@ class CustomDisplay(
             progressLayout.gone()
 
             thankYouLayout.visible()
+            try{
+                if (dashBoardCategoryViewModel.selectedCustomer!=null) {
+                    txtEarnedLoyalty?.visible()
+                    txtEarnedLoyalty?.post {
+                        if (dashBoardCategoryViewModel.selectedCustomer?.final_reward.toString()
+                                .toInt()!=0){
+                            txtEarnedLoyalty?.setText(
+                                "You have earned ${
+                                    ((dashBoardCategoryViewModel.selectedCustomer?.final_reward.toString()
+                                        .toInt()).minus(
+                                            dashBoardCategoryViewModel.earnedLoyaltyPoints.value?.peekContent()
+                                                .toString().toInt()
+                                        )).toString()
+                                } reward points"
+                            )
+                        }else{
+                            txtEarnedLoyalty?.setText(
+                                "You have earned ${
+                                    (dashBoardCategoryViewModel.earnedLoyaltyPoints.value?.peekContent()
+                                                .toString().toInt()).toString()
+                                } reward points"
+                            )
+                        }
+
+                    }
+                }
+            }catch (e:Exception){
+
+            }
+
             txtPaidAmount.text = "Paid $${paidAmount.toPrecision(2)}"
+
         }
     }
 

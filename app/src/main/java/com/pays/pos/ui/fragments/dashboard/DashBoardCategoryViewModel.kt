@@ -155,6 +155,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private val _clickTakeOut = MutableLiveData<Event<Boolean>>()
     val clickTakeOut: LiveData<Event<Boolean>> = _clickTakeOut
+
+    private val _earnedLoyaltyPoints = MutableLiveData<Event<Int>>()
+    val earnedLoyaltyPoints: LiveData<Event<Int>> = _earnedLoyaltyPoints
     /*-----------Customer Loyalty------------*/
 
 
@@ -330,6 +333,12 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun setCollectMore(title: String) {
         changeAvailable.postValue(Event(title))
     }
+
+    /*------------Customer Loyalty----------*/
+    fun setCustomerLoyaltyOnCustomerThankyouScreen(reward:Int){
+        _earnedLoyaltyPoints.postValue(Event(reward))
+    }
+    /*------------Customer Loyalty----------*/
 
     //Fetch all orders count
     fun allOrderCounts(
