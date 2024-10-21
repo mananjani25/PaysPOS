@@ -18267,12 +18267,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                 val str5 = padLine(
                                     "Total Price",
-                                    "$" + MethodUtils.roundOffAmountString(
-                                        finalAmt.plus(
+                                    "$" + MethodUtils.roundOffAmountString(finalAmt
+                                        /*finalAmt.plus(
                                             (receiptModel?.order?.payments?.get(
                                                 receiptModel?.order?.payments?.size?.minus(1) ?: 0
                                             )?.cash_discount_or_surcharge ?: 0.0)
-                                        )
+                                        )*/
                                     ), if (customerSettingModel.fonts == LARGE) 23 else 48
                                 ).toString()
 

@@ -8680,4 +8680,9 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.getDynamicPaymentRecords(isActive, locationId)
     }
     //    ----------------- Dynamic Payments -----------------------------
+
+    override fun onCleared() {
+        Log.e("CheckOnClearedViewmodel","DashboardCategoryBoldPOS")
+        super.onCleared()
+    }
 }
