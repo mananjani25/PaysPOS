@@ -158,6 +158,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private val _earnedLoyaltyPoints = MutableLiveData<Event<Int>>()
     val earnedLoyaltyPoints: LiveData<Event<Int>> = _earnedLoyaltyPoints
+
+    private val _updateCartFooterObservable = MutableLiveData<Event<Boolean>>()
+    val updateCartFooterObservable: LiveData<Event<Boolean>> = _updateCartFooterObservable
     /*-----------Customer Loyalty------------*/
 
 
@@ -337,6 +340,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     /*------------Customer Loyalty----------*/
     fun setCustomerLoyaltyOnCustomerThankyouScreen(reward:Int){
         _earnedLoyaltyPoints.postValue(Event(reward))
+    }
+
+    fun callUpdateCartFooter(value:Boolean){
+        _updateCartFooterObservable.postValue(Event(value))
     }
     /*------------Customer Loyalty----------*/
 

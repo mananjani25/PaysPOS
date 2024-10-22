@@ -282,7 +282,20 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
 
         setUpData()
+        setUpdateCartFooterObservable()
         return binding.root
+    }
+
+    private fun setUpdateCartFooterObservable() {
+        viewModel.updateCartFooterObservable.observe(viewLifecycleOwner,object:androidx.lifecycle.Observer<Event<Boolean>>{
+            override fun onChanged(t: Event<Boolean>?) {
+                t?.getContentIfNotHandled()?.let {
+                    if (it){
+                        updateCartFooter(viewModel.currentCartItems)
+                    }
+                }
+            }
+        })
     }
 
     // To check selected order type
@@ -2481,6 +2494,28 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         binding.checkloylaty.isChecked =
                             viewModel.redeemLoyaltyInfo.needToApplyLoyalty
                     }
+                }else{
+                    /* This condition will be called when a customer will be added with loyalty but when cart is active with items, the user changes the customer which has no loyalty */
+                    Log.d("Loyalty::","Not available")
+                    binding.relativeLoylatyPoints.visibility = View.GONE
+                    binding.lblLoyaltyPoints.visibility = View.GONE
+                    binding.lblLoyaltyBalance.visibility = View.GONE
+                  /*  prefProvider.setValue(
+                        Constants.CUSTOMER_NAME,
+                        ""
+                    )
+                    viewModel.selectedCustomer=null
+                    prefProvider.setValue(
+                        Constants.RECEIPT_CUSTOMER_NAME,
+                        ""
+                    )
+                    prefProvider.setValue(
+                        Constants.PREF_CUSTOMER,
+                        ""
+                    )*/
+                    prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+                    prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+//                    prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                 }
             } else {
                 binding.relativeLoylatyPoints.visibility = View.GONE

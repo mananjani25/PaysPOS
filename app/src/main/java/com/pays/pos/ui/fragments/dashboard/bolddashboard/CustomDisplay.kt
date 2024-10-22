@@ -18,6 +18,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.Window
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.core.view.isGone
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -361,16 +362,23 @@ class CustomDisplay(
             Constants.CUSTOMER_NAME,
             customer.first_name + " " + customer.last_name
         )
-
+        dashBoardCategoryViewModel.selectedCustomer=customer
         prefProvider.setValue(
             Constants.RECEIPT_CUSTOMER_NAME,
             customer.first_name + " " + customer.last_name
+        )
+        prefProvider.setValue(
+            Constants.PREF_CUSTOMER,
+            Gson().toJson(customer)
         )
         prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
         prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
         customer.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
         dashBoardCategoryViewModel.clickOnTakeOut()
-
+        if (dashBoardCategoryViewModel.currentCartItems.isNotEmpty()){
+            dashBoardCategoryViewModel.callUpdateCartFooter(true)
+        }
+        displayCustomer()
         EventBus.getDefault()
             .post(SyncCustomerEvent(true, customer.first_name + " " + customer.last_name))
         CoroutineScope(Dispatchers.Main).launch {
@@ -884,24 +892,41 @@ class CustomDisplay(
                 binding.tvLoyaltyPoints.text =
                     "${context.resources.getString(R.string.applied_loyalty_points)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
             } else {
-                binding.tvLoyaltyBalance.invisible()
+                /*binding.tvLoyaltyBalance.invisible()
                 binding.tvLoyaltyPoints.invisible()
+                */
+                /*-----------Customer Loyalty------------*/
+                binding.tvLoyaltyBalance.gone()
+                binding.tvLoyaltyPoints.gone()
+                /*-----------Customer Loyalty------------*/
+
             }
-            binding.txtLoyaltyPointsLabel.text =
-                "Loyalty Balance: ${
-                    if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
-                        dashBoardCategoryViewModel.redeemLoyaltyInfo.remainingLoyaltyPoints
-                    } else {
-                        dashBoardCategoryViewModel.redeemLoyaltyInfo.availablePoints
-                    }
-                }"
-            binding.txtCustomerName.text = name
+            CoroutineScope(Dispatchers.Main).launch {
+                binding.txtLoyaltyPointsLabel.text =
+                    "Loyalty Balance: ${
+                        if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                            dashBoardCategoryViewModel.redeemLoyaltyInfo.remainingLoyaltyPoints
+                        } else {
+                            dashBoardCategoryViewModel.redeemLoyaltyInfo.availablePoints
+                        }
+                    }"
+                binding.txtCustomerName.text = name
+            }
+
 
         } else {
-            binding.txtLoyaltyPointsLabel.invisible()
+         /*   binding.txtLoyaltyPointsLabel.invisible()
             binding.txtCustomerName.invisible()
             binding.tvLoyaltyBalance.invisible()
-            binding.tvLoyaltyPoints.invisible()
+            binding.tvLoyaltyPoints.invisible()*/
+
+            /*----------Customer Loyalty--------------*/
+            binding.txtLoyaltyPointsLabel.gone()
+            binding.txtCustomerName.gone()
+            binding.tvLoyaltyBalance.gone()
+            binding.tvLoyaltyPoints.gone()
+            /*----------Customer Loyalty--------------*/
+
             binding.relativeLoylatyPoints.gone()
             binding.lblLoyaltyPoints.gone()
             if (dashBoardCategoryViewModel.order_note.isNotEmpty()) {
