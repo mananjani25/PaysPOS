@@ -26,11 +26,13 @@ import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
+import com.pays.pos.logger.CustomerCreatedEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 @HiltViewModel
@@ -123,9 +125,14 @@ class AddCustomerViewModel @Inject constructor(
 
     fun submit(
         listAddress: ArrayList<CreateCustomerRequestModel.Customer.Addresses>,
-        isFromPhoneOrderEdit: Boolean
+        isFromPhoneOrderEdit: Boolean,
+        fromCustomerDisplay: Boolean = false
     ) {
+        Log.d("C_Loyalty: ", "addCustomerViewModel: submit()...")
+
         if (phoneNo.value != null) {
+            Log.d("C_Loyalty: ", "addCustomerViewModel: phone number found...")
+
             addCustomerDetails.value?.data?.phones_attributes?.add(
                 0,
                 CreateCustomerRequestModel.Customer.Phone(
@@ -211,7 +218,7 @@ class AddCustomerViewModel @Inject constructor(
             } else {*/
         _showProgress.value = Event(true)
 
-       viewModelScope.launch {
+       /*viewModelScope.launch {
            runBlocking {
                var totalCustomers=0
                if (TextUtils.isEmpty(value?.data?.first_name?.trim())){
@@ -326,7 +333,136 @@ class AddCustomerViewModel @Inject constructor(
 
 
            }
-       }
+       }*/
+
+        viewModelScope.launch {
+            runBlocking {
+                var totalCustomers = 0
+                if (TextUtils.isEmpty(value?.data?.first_name?.trim())) {
+                    async(Dispatchers.IO) {
+                        totalCustomers = posRepository.getTotalCustomersCount()
+                    }.await()
+
+                }
+
+                addCustomerData = CreateCustomerRequestModel().apply {
+
+                    LogUtil.logE("DaataJson", "PassData  ${Gson().toJson(value?.data)}")
+
+                    data?.apply {
+                        first_name = value?.data?.first_name!!.replaceFirstChar { it.uppercase() }
+                        last_name = value?.data?.last_name!!.replaceFirstChar { it.uppercase() }
+
+                        if (first_name.isNullOrEmpty()) {
+                            first_name = "Customer${totalCustomers.inc()}"
+                        }
+
+                        val phone = CreateCustomerRequestModel.Customer.Phone(
+                            id = phoneId,
+                            phone_number = phoneNo.value.toString().replace(
+                                ("[\\D]").toRegex(),
+                                ""
+                            )
+                        )
+                        if (isEdit) {
+                            phone.id = phoneId
+                        }
+                        phones_attributes?.add(
+                            0, phone
+                        )
+
+                        email = value.data!!.email
+                        birth_day = value.data!!.birth_day
+                        birth_month = value.data!!.birth_month
+                        birthday_year = value.data!!.birthday_year
+                        company = value.data!!.company
+                        enroll_to_loyalty = value.data!!.enroll_to_loyalty
+                        same_as_billing_address = value.data!!.same_as_billing_address
+
+                        addresses_attributes = (value.data?.addresses_attributes!!)
+
+                    }
+                }
+
+                LogUtil.logE(TAG, "addCustomerDataJson:  ${Gson().toJson(addCustomerData)}")
+                LogUtil.logE(TAG, "isEdit:  ${isEdit}")
+                LogUtil.logE(TAG, "customerID:  ${customerID}")
+                viewModelScope.launch {
+
+                    resource = if (isEdit) {
+                        posRepository.updateCustomer(customerID, addCustomerData)
+                    } else {
+
+                        posRepository.createCustomer(addCustomerData)
+                    }
+
+                    when (resource.status) {
+                        Status.SUCCESS -> {
+                            _showProgress.value = Event(false)
+                            Log.d("C_Loyalty: ", "addCustomerViewModel: Status.SUCCESS...")
+
+                            resource.data.let {
+                                if (it?.status == 200) {
+
+                                    resource.data?.let { customerListReposne ->
+
+                                        val model = TbCustomer(
+                                            id = customerListReposne.data.id,
+                                            first_name = customerListReposne.data.first_name,
+                                            last_name = customerListReposne.data.last_name,
+                                            birth_date = customerListReposne.data.birth_date,
+                                            email = customerListReposne.data.email,
+                                            phones = customerListReposne.data.phones,
+                                            addresses = customerListReposne.data.addresses,
+                                            enroll_to_loyalty = customerListReposne.data.enroll_to_loyalty,
+                                            same_as_billing_address = customerListReposne.data.same_as_billing_address,
+                                            final_reward = customerListReposne.data.final_reward,
+                                            company = customerListReposne.data.company,
+                                            isSelcted = true,
+                                        )
+
+
+                                        posRepository.addCustomer(model)
+                                        Log.d("C_Loyalty: ", "addCustomerViewModel: posRepository.addCustomer() called...")
+
+                                        if (isFromPhoneOrderEdit) {
+                                            _updatedCustomer.value = Event(model)
+                                        } else {
+                                            _Basedata.value = Event(customerListReposne)
+                                            if (fromCustomerDisplay) {
+                                                EventBus.getDefault().post(CustomerCreatedEvent(true, model))
+                                            } else {
+                                                _customerModel.value = Event(model)
+                                            }
+                                        }
+
+                                    }
+                                } else {
+                                    _snackbarText.value = Event(resource.message)
+                                }
+                            }
+                        }
+                        Status.ERROR -> {
+                            /*TODO: Handle Error scenario here*/
+                            Log.d(TAG, "addCustomerViewModel: Status.ERROR...")
+
+                            if (fromCustomerDisplay && resource.message?.contains("already been taken")?:false) {
+
+                            }
+                            _snackbarText.value = Event(resource.message)
+                            _showProgress.value = Event(false)
+                        }
+                        Status.LOADING -> {
+                            _showProgress.value = Event(true)
+                        }
+
+                    }
+
+                }
+
+
+            }
+        }
 
 //        }
 

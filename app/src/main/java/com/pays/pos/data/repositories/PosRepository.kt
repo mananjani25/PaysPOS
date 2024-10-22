@@ -9,6 +9,7 @@ import com.pays.pos.data.db.AppDatabase
 import com.pays.pos.data.db.IDataManager
 import com.pays.pos.data.entities.*
 import com.pays.pos.data.entities.ModifierSet
+import com.pays.pos.data.model.CustomerListResponse
 import com.pays.pos.data.model.PrinterQueueModel
 import com.pays.pos.data.model.ShiftRportConfiguration
 import com.pays.pos.data.model.SplitDetailListModel
@@ -556,6 +557,24 @@ class PosRepository @Inject constructor(
         databaseQuery = { appDatabase.customerDao().allCustomer },
         networkCall = { apiHelperNew.customerListPagination(data) },
         saveCallResult = { appDatabase.customerDao().addAllCustomer(it.data) })
+
+    /*------------Customer Loyalty--------------*/
+    suspend fun fetchCustomersList(data: HashMap<String, String>): Resource<CustomerListResponse> {
+        return apiHelperNew.customerListPagination(data)
+    }
+
+    suspend fun addCustomersList(data: List<TbCustomer>) =
+        appDatabase.customerDao().addAllCustomers(data)
+
+    suspend fun hasItem() =
+        appDatabase.customerDao().hasItem()
+
+    suspend fun allCustomerList() =
+        appDatabase.customerDao().allCustomerList()
+
+    suspend fun fetchCustomerFromPhoneNumber(phoneNumber:String) =
+        appDatabase.customerDao().fetchCustomerFromPhoneNumber(phoneNumber)
+    /*------------Customer Loyalty--------------*/
 
 
     fun orderTypes() = performGetOperation(
