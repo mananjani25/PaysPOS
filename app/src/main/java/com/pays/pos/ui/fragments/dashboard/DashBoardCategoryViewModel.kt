@@ -148,6 +148,25 @@ class DashBoardCategoryViewModel @Inject constructor(
     /**
      * When item update is in progress , restrict other actions like switch guest
      */
+    /*-----------Customer Loyalty------------*/
+    val getBusinessData = posRepository.getBusinessData()
+    val loyaltyPoints = taxServiceChargeRepository.loyaltyPointList()
+
+
+    private val _loadCustomersList = MutableLiveData<Pair<Int,Boolean>>()
+    val loadCustomersList: LiveData<Pair<Int,Boolean>> = _loadCustomersList
+
+    private val _clickTakeOut = MutableLiveData<Event<Boolean>>()
+    val clickTakeOut: LiveData<Event<Boolean>> = _clickTakeOut
+
+    private val _earnedLoyaltyPoints = MutableLiveData<Event<Int>>()
+    val earnedLoyaltyPoints: LiveData<Event<Int>> = _earnedLoyaltyPoints
+
+    private val _updateCartFooterObservable = MutableLiveData<Event<Boolean>>()
+    val updateCartFooterObservable: LiveData<Event<Boolean>> = _updateCartFooterObservable
+    /*-----------Customer Loyalty------------*/
+
+
     var isItemEditInProgress = false
 
     /**
@@ -253,7 +272,6 @@ class DashBoardCategoryViewModel @Inject constructor(
      * */
     var isCartItemClicked = false
 
-    val itemsFiredToTheKitchenSuccesfully = MutableLiveData<Boolean>(false)
 
     /**
      * Tip has been added , Either from customer display or from checkoutFragment
@@ -323,6 +341,16 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun setCollectMore(title: String) {
         changeAvailable.postValue(Event(title))
     }
+
+    /*------------Customer Loyalty----------*/
+    fun setCustomerLoyaltyOnCustomerThankyouScreen(reward:Int){
+        _earnedLoyaltyPoints.postValue(Event(reward))
+    }
+
+    fun callUpdateCartFooter(value:Boolean){
+        _updateCartFooterObservable.postValue(Event(value))
+    }
+    /*------------Customer Loyalty----------*/
 
     //Fetch all orders count
     fun allOrderCounts(
@@ -570,6 +598,22 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun getAllCartItems(orderType: String, employee_Id: Int): Flow<List<TbCartItem>> {
         return posRepository.getAllCartItems(orderType, employee_Id)
     }
+
+    /*------------Customer Loyalty---------------*/
+    suspend fun allCustomerList(): List<TbCustomer> {
+        return posRepository.allCustomerList()
+    }
+
+    suspend fun fetchCustomerFromPhoneNumber(phoneNumber: String): List<TbCustomer?>? {
+        return posRepository.fetchCustomerFromPhoneNumber(phoneNumber)
+    }
+
+    fun clickOnTakeOut() {
+        Log.d(TAG, "dashboardCategoryViewModel: clickOnTakeOut()...")
+        _clickTakeOut.postValue(Event(true))
+    }
+    /*------------Customer Loyalty---------------*/
+
 
     fun getAllDineInCartItems(orderType: String): Flow<List<TbCartItem>> {
         return posRepository.getAllDineInCartItems(orderType)
@@ -8663,6 +8707,18 @@ class DashBoardCategoryViewModel @Inject constructor(
     suspend fun getLabelPrinterSettingsData(): TbLabelPrinterSettings {
         return posRepository.getLabelPrinterSettingsData()
     }
+
+    /*-------------Customer Loyalty------------------*/
+    fun addCustomersList(currentPage:Int, data:List<TbCustomer>){
+        CoroutineScope(Dispatchers.IO).launch {
+            var data= posRepository.addCustomersList(data)
+            _loadCustomersList.postValue(Pair(currentPage,true))
+            _loadCustomersList.postValue(Pair(currentPage,false))
+            /*Check for Identical if not identical then find then call the livedata which will call the recursive function*/
+            Log.d("addCustomersList:S","$data")
+        }
+    }
+    /*-------------Customer Loyalty------------------*/
 
     //    ----------------- Dynamic Payments -----------------------------
     suspend fun insertDynamicPayment(tbDynamicPaymentRecords: TbDynamicPaymentRecords) {

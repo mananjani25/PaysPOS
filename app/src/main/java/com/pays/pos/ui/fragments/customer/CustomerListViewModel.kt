@@ -67,8 +67,20 @@ public class CustomerListViewModel @Inject constructor(
 
     val enableTaxes = taxServiceChargeRepository.enableTaxes()  // fetch active taxes from DB
 
+    /*-----------Customer Loyalty----------------*/
+    private val _customerCount = MutableLiveData<Event<Boolean>>()
+    val customerCount: LiveData<Event<Boolean>> = _customerCount
+    /*-----------Customer Loyalty----------------*/
+
+
     fun customerList(data: LinkedHashMap<String, String>) =
         posRepository.customerListPagination(data)
+
+    /*-----------Customer Loyalty----------------*/
+    suspend fun fetchCustomersList(data: LinkedHashMap<String, String>) =
+        posRepository.fetchCustomersList(data)
+    /*-----------Customer Loyalty----------------*/
+
 
     fun deleteCart() {
         EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CustomerListViewModel.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
@@ -180,6 +192,14 @@ public class CustomerListViewModel @Inject constructor(
     suspend fun getTotalCustomersCount(): Int {
         return posRepository.getTotalCustomersCount()
     }
+
+    /*----------Customer Loyalty------------*/
+    fun hasCustomers() {
+        CoroutineScope(Dispatchers.IO).launch {
+            _customerCount.postValue(Event(posRepository.hasItem()))
+        }
+    }
+    /*----------Customer Loyalty------------*/
 
     fun getReportSummary(isFromSearch: Boolean) {
 

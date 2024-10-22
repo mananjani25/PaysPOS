@@ -48,6 +48,16 @@ class MethodUtils {
         private var thirdValue: Double = 0.0
         private var secondValue: Int = 0
 
+        fun generalizeAmount(amount:String): String {
+            if (!amount.contains('.')){
+                return amount+".00"
+            }
+            if ((amount.length - 1) - amount.indexOf('.') < 2) {
+                return amount.toString() + "0"
+            } else {
+                return amount.toString()
+            }
+        }
 
         fun ellipsize(text: String, maxLength: Int = 4): String {
             return if (text.length > maxLength) {
@@ -735,6 +745,12 @@ class MethodUtils {
             } else {
                 0.0
             }
+        }
+
+        fun removeChars(str: String?, numberOfCharactersToRemove: Int): String? {
+            return if (str != null && !str.trim { it <= ' ' }.isEmpty()) {
+                str.substring(0, str.length - numberOfCharactersToRemove)
+            } else ""
         }
     }
 

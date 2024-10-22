@@ -24,7 +24,6 @@ import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.repositories.PosRepository
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.logger.MessageEvent
-import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.fragments.magtek.PaymentResponse
 import com.pays.pos.utils.Event
 import com.pays.pos.utils.LogUtil
@@ -119,6 +118,11 @@ open class PaymentViewModel @Inject constructor(
     private val _orderCreate = MutableLiveData<Event<Boolean>>()
     val orderCreate: LiveData<Event<Boolean>> = _orderCreate
 
+    /*-----------Customer Loyalty------------*/
+    private val _earnedLoyaltyPoints = MutableLiveData<Event<Int>>()
+    val earnedLoyaltyPoints: LiveData<Event<Int>> = _earnedLoyaltyPoints
+    /*-----------Customer Loyalty------------*/
+
     var serviceChargeListApplied: ArrayList<OrderServiceChargesAttribute> = arrayListOf()
 
     public var actual_Total: Double = 0.0
@@ -153,15 +157,13 @@ open class PaymentViewModel @Inject constructor(
 //        orderRequestModel.print_order = printOrder
         if (cashPaymentType(orderRequestModel)) {
             _showProgressCash.value = Event(true)
-        } else
-            _showProgress.value = Event(true)
+        } else _showProgress.value = Event(true)
 
         viewModelScope.launch {
 
             val resource: Resource<CreateOrderResponse> = if (isUpdateOrder) {
                 posRepository.updateOrder(
-                    orderId,
-                    orderRequestModel
+                    orderId, orderRequestModel
                 ) as Resource<CreateOrderResponse>
             } else {
                 EventBus.getDefault().post(
@@ -177,7 +179,7 @@ open class PaymentViewModel @Inject constructor(
 
             when (resource.status) {
                 Status.SUCCESS -> {
-                  /* Action cable will always connect automatically after payment is processed */
+                    /* Action cable will always connect automatically after payment is processed */
 
                     prefProvider.setValue(Constants.OLD_ITEM, "")
 //                    prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
@@ -190,11 +192,13 @@ open class PaymentViewModel @Inject constructor(
                             resource.data?.let { createOrderResponse ->
 
                                 if (createOrderResponse.data.order.customer != null) {
-                                    if (createOrderResponse.data.order.payments.isNotEmpty()){
+                                    if (createOrderResponse.data.order.payments.isNotEmpty()) {
                                         if (!createOrderResponse.data.order.payments.last().paymentType.equals(
                                                 "External", ignoreCase = true
                                             )
                                         ) {
+                                            /*From here, send the call to the Customer Screen */
+                                            _earnedLoyaltyPoints.postValue(Event(createOrderResponse.data.order.customer.final_reward.toInt()))
                                             posRepository.updateFinalRewards(
                                                 createOrderResponse.data.order.customer.final_reward.toInt(),
                                                 createOrderResponse.data.order.customer.id
@@ -225,19 +229,16 @@ open class PaymentViewModel @Inject constructor(
                                     )
                                     posRepository.deleteCart(
                                         prefProvider.getValueInt(
-                                            Constants.EMPLOYEE_ID,
-                                            0
+                                            Constants.EMPLOYEE_ID, 0
                                         )
                                     )
                                 }
 
                                 LogUtil.logE(TAG, "isOnlySave:  ${onlySave}")
                                 LogUtil.logE(
-                                    TAG,
-                                    "IS_PRINTER_QUEUE_ENABLE  ${
+                                    TAG, "IS_PRINTER_QUEUE_ENABLE  ${
                                         prefProvider.getValueboolean(
-                                            IS_PRINTER_QUEUE_ENABLE,
-                                            false
+                                            IS_PRINTER_QUEUE_ENABLE, false
                                         )
                                     }"
                                 )
@@ -333,8 +334,7 @@ open class PaymentViewModel @Inject constructor(
 
                     if (cashPaymentType(orderRequestModel)) {
                         _showProgressCash.value = Event(false)
-                    } else
-                        _showProgress.value = Event(false)
+                    } else _showProgress.value = Event(false)
 
 //                    _showProgress.value = Event(false)
                     EventBus.getDefault()
@@ -345,8 +345,7 @@ open class PaymentViewModel @Inject constructor(
                 Status.LOADING -> {
                     if (cashPaymentType(orderRequestModel)) {
                         _showProgressCash.value = Event(true)
-                    } else
-                        _showProgress.value = Event(true)
+                    } else _showProgress.value = Event(true)
 
 //                    _showProgress.value = Event(true)
                 }
@@ -372,8 +371,7 @@ open class PaymentViewModel @Inject constructor(
         viewModelScope.launch {
             posRepository.deleteCart(
                 prefProvider.getValueInt(
-                    Constants.EMPLOYEE_ID,
-                    0
+                    Constants.EMPLOYEE_ID, 0
                 )
             )
             _orderNotUpdated.value = Event(true)
@@ -386,8 +384,7 @@ open class PaymentViewModel @Inject constructor(
         if (orderRequestModel.order.paymentAttributes == null) return true
 
         return orderRequestModel.order.paymentAttributes?.paymentType.equals(
-            "Cash",
-            ignoreCase = true
+            "Cash", ignoreCase = true
         )
     }
 
@@ -396,8 +393,7 @@ open class PaymentViewModel @Inject constructor(
         if (orderRequestModel.amount_tab.payments_attributes?.isEmpty() == true) return true
 
         return orderRequestModel.amount_tab.payments_attributes?.get(0)?.paymentType.equals(
-            "Cash",
-            ignoreCase = true
+            "Cash", ignoreCase = true
         )
     }
 
@@ -426,11 +422,9 @@ open class PaymentViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            val resource: Resource<CreateOrderResponse> =
-                posRepository.updateOrder(
-                    orderId,
-                    orderRequestModel
-                ) as Resource<CreateOrderResponse>
+            val resource: Resource<CreateOrderResponse> = posRepository.updateOrder(
+                orderId, orderRequestModel
+            ) as Resource<CreateOrderResponse>
 
 
             when (resource.status) {
@@ -449,8 +443,7 @@ open class PaymentViewModel @Inject constructor(
                                 )
                                 posRepository.deleteCart(
                                     prefProvider.getValueInt(
-                                        Constants.EMPLOYEE_ID,
-                                        0
+                                        Constants.EMPLOYEE_ID, 0
                                     )
                                 )
                             }
@@ -518,8 +511,7 @@ open class PaymentViewModel @Inject constructor(
         )
 
         prefProvider.setValueInt(
-            PAYMENT_ID_FOR_CUSTOMER_DISPLAY,
-            order.payments[order.payments.size - 1].id
+            PAYMENT_ID_FOR_CUSTOMER_DISPLAY, order.payments[order.payments.size - 1].id
         )
 
         val resource = posRepository.cashInOut(cashLogRequest)
@@ -676,8 +668,7 @@ open class PaymentViewModel @Inject constructor(
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
 
-        if (isUpdateOrder)
-            orderAttributeRequestModel.id = orderId
+        if (isUpdateOrder) orderAttributeRequestModel.id = orderId
 
 
         if (prefProvider.getValue(Constants.ORDER_TYPE, "")
@@ -686,8 +677,7 @@ open class PaymentViewModel @Inject constructor(
             orderAttributeRequestModel.send_payment_link = true
         }
 
-        orderAttributeRequestModel.openOrderType =
-            prefProvider.getValue(Constants.ORDER_TYPE, "")
+        orderAttributeRequestModel.openOrderType = prefProvider.getValue(Constants.ORDER_TYPE, "")
 
         Log.e(
             "checkOrderTypeID",
@@ -695,14 +685,12 @@ open class PaymentViewModel @Inject constructor(
         )
         Log.e("checkOrderTypeID", "getOrderTypeIDVARTE  ${order_type_id}")
         if (order_type_id == -1 && prefProvider.getValue(
-                Constants.ORDER_TYPE,
-                TAKEOUT
+                Constants.ORDER_TYPE, TAKEOUT
             ) == Constants.OPEN_ORDER
         ) {
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
         } else if (prefProvider.getValue(
-                Constants.ORDER_TYPE,
-                TAKEOUT
+                Constants.ORDER_TYPE, TAKEOUT
             ) == Constants.DINE_IN && orderId != 0
         ) {
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
@@ -710,16 +698,14 @@ open class PaymentViewModel @Inject constructor(
 
 
         if (order_type_id == -1 && prefProvider.getValue(
-                Constants.ORDER_TYPE,
-                TAKEOUT
+                Constants.ORDER_TYPE, TAKEOUT
             ) == Constants.PHONE_ORDER
         ) {
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
         }
 
         if (order_type_id == -1 && prefProvider.getValue(
-                Constants.ORDER_TYPE,
-                TAKEOUT
+                Constants.ORDER_TYPE, TAKEOUT
             ) == Constants.KIOSK_OPEN_ORDER
         ) {
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
@@ -727,11 +713,11 @@ open class PaymentViewModel @Inject constructor(
 
         orderAttributeRequestModel.orderTypeId = order_type_id
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
-        if (future_delivery_date.isNotEmpty())
-            orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
+        if (future_delivery_date.isNotEmpty()) orderAttributeRequestModel.futureDeliveryDate =
+            future_delivery_date
 
-        if (future_delivery_time.isNotEmpty())
-            orderAttributeRequestModel.futureDeliveryTime = future_delivery_time
+        if (future_delivery_time.isNotEmpty()) orderAttributeRequestModel.futureDeliveryTime =
+            future_delivery_time
 
 
 //        if (cartModel.openOrderType.isNotEmpty()) {
@@ -773,8 +759,7 @@ open class PaymentViewModel @Inject constructor(
         }*/
         cartModel.taxlistDynamic?.forEach { taxData ->
             if (taxData.taxType == "Percentage") {
-                taxData.percentage_value =
-                    MethodUtils.roundOffAmountDouble(taxData.rate)
+                taxData.percentage_value = MethodUtils.roundOffAmountDouble(taxData.rate)
             } else {
                 taxData.percentage_value =
                     MethodUtils.roundOffAmountDouble((100 * taxData.totalTaxTypePrice) / taxData.subTotalAmount!!)
@@ -800,16 +785,15 @@ open class PaymentViewModel @Inject constructor(
 
         if (textToPay) {
             orderAttributeRequestModel.paymentStatus = 0
-        } else
-            orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
+        } else orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
 
         orderAttributeRequestModel.serviceChargeEnabled = true
         orderAttributeRequestModel.taxEnabled = true
         orderAttributeRequestModel.subTotal = actual_SubTotal
 
 
-        if (cartModel.discountId != null && cartModel.discountId != -1)
-            orderAttributeRequestModel.discount_id = cartModel.discountId
+        if (cartModel.discountId != null && cartModel.discountId != -1) orderAttributeRequestModel.discount_id =
+            cartModel.discountId
         orderAttributeRequestModel.totalDiscount = if (cartModel.orderType == DINE_IN) {
             dineInWholeDiscount ?: 0.0
         } else {
@@ -918,22 +902,20 @@ open class PaymentViewModel @Inject constructor(
         if (prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)) {
             giftCardRedeem = OrderRequestModel.GiftCardRedeem(
                 prefProvider.getValue(
-                    Constants.GIFT_CARD_NUMBER,
-                    ""
+                    Constants.GIFT_CARD_NUMBER, ""
                 ), prefProvider.getValue(Constants.GIFT_CARD_PIN, "")
             )
         }
 
-        val orderRequestModel =
-            OrderRequestModel(
-                isPaidOrder, orderAttributeRequestModel,
-                sendPaymentLink,
-                gift_card_redeem = prefProvider.getValueboolean(
-                    Constants.IS_GIFT_CARD_REDEEM,
-                    false
-                ),
-                gift_card = giftCardRedeem
-            )
+        val orderRequestModel = OrderRequestModel(
+            isPaidOrder,
+            orderAttributeRequestModel,
+            sendPaymentLink,
+            gift_card_redeem = prefProvider.getValueboolean(
+                Constants.IS_GIFT_CARD_REDEEM, false
+            ),
+            gift_card = giftCardRedeem
+        )
 
         LogUtil.logE("orderRequestModel", ":  ${Gson().toJson(orderRequestModel)}")
 
@@ -983,13 +965,11 @@ open class PaymentViewModel @Inject constructor(
                 var oldCartItemsList = if (isCustomFound.isEmpty()) {
 
                     Gson().fromJson<java.util.ArrayList<TbCartItem>>(
-                        oldItems,
-                        listType
+                        oldItems, listType
                     )
                 } else {
                     Gson().fromJson<java.util.ArrayList<TbCartItem>>(
-                        prefProvider.getValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, ""),
-                        listType
+                        prefProvider.getValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, ""), listType
                     )
                 }
 
@@ -1032,8 +1012,7 @@ open class PaymentViewModel @Inject constructor(
 
                                 if (oldItem.isItemEdited || it.orderItemId == null || it.isDestroy) {
                                     prefProvider.setValueboolean(
-                                        Constants.DO_PRINT,
-                                        true
+                                        Constants.DO_PRINT, true
                                     )
                                 }
                             }
@@ -1041,8 +1020,7 @@ open class PaymentViewModel @Inject constructor(
                     } catch (e: Exception) {
                         oldItem.isDestroy = true
                         prefProvider.setValueboolean(
-                            Constants.DO_PRINT,
-                            true
+                            Constants.DO_PRINT, true
                         )
                     }
 
@@ -1098,8 +1076,7 @@ open class PaymentViewModel @Inject constructor(
                 cartItems.clear()
                 cartItems.addAll(oldCartItemsList)
 
-            } else
-                prefProvider.setValueboolean(Constants.DO_PRINT, true)
+            } else prefProvider.setValueboolean(Constants.DO_PRINT, true)
 
             prefProvider.setValue(Constants.OLD_ITEM, oldItems)
         } catch (e: Exception) {
@@ -1108,8 +1085,7 @@ open class PaymentViewModel @Inject constructor(
         }
 
 
-        if (isUpdateOrder)
-            orderAttributeRequestModel.id = orderId
+        if (isUpdateOrder) orderAttributeRequestModel.id = orderId
 
 
         if (prefProvider.getValue(Constants.ORDER_TYPE, "")
@@ -1118,8 +1094,7 @@ open class PaymentViewModel @Inject constructor(
             orderAttributeRequestModel.send_payment_link = true
         }
 
-        orderAttributeRequestModel.openOrderType =
-            prefProvider.getValue(Constants.ORDER_TYPE, "")
+        orderAttributeRequestModel.openOrderType = prefProvider.getValue(Constants.ORDER_TYPE, "")
 
         Log.e(
             "checkOrderTypeID",
@@ -1127,14 +1102,12 @@ open class PaymentViewModel @Inject constructor(
         )
         Log.e("checkOrderTypeID", "getOrderTypeIDVARTE  ${order_type_id}")
         if (order_type_id == -1 && prefProvider.getValue(
-                Constants.ORDER_TYPE,
-                TAKEOUT
+                Constants.ORDER_TYPE, TAKEOUT
             ) == Constants.OPEN_ORDER
         ) {
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
         } else if (prefProvider.getValue(
-                Constants.ORDER_TYPE,
-                TAKEOUT
+                Constants.ORDER_TYPE, TAKEOUT
             ) == Constants.DINE_IN && orderId != 0
         ) {
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
@@ -1142,8 +1115,7 @@ open class PaymentViewModel @Inject constructor(
 
 
         if (order_type_id == -1 && prefProvider.getValue(
-                Constants.ORDER_TYPE,
-                TAKEOUT
+                Constants.ORDER_TYPE, TAKEOUT
             ) == Constants.PHONE_ORDER
         ) {
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
@@ -1154,8 +1126,7 @@ open class PaymentViewModel @Inject constructor(
         }
 
         if (order_type_id == -1 && prefProvider.getValue(
-                Constants.ORDER_TYPE,
-                TAKEOUT
+                Constants.ORDER_TYPE, TAKEOUT
             ) == Constants.KIOSK_OPEN_ORDER
         ) {
             order_type_id = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
@@ -1163,11 +1134,11 @@ open class PaymentViewModel @Inject constructor(
 
         orderAttributeRequestModel.orderTypeId = order_type_id
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
-        if (future_delivery_date.isNotEmpty())
-            orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
+        if (future_delivery_date.isNotEmpty()) orderAttributeRequestModel.futureDeliveryDate =
+            future_delivery_date
 
-        if (future_delivery_time.isNotEmpty())
-            orderAttributeRequestModel.futureDeliveryTime = future_delivery_time
+        if (future_delivery_time.isNotEmpty()) orderAttributeRequestModel.futureDeliveryTime =
+            future_delivery_time
 
         if (cartModel.orderType == PHONE_ORDER) {
             orderAttributeRequestModel.deliveryType =
@@ -1195,8 +1166,7 @@ open class PaymentViewModel @Inject constructor(
         }
         cartModel.taxlistDynamic?.forEach { taxData ->
             if (taxData.taxType == "Percentage") {
-                taxData.percentage_value =
-                    MethodUtils.roundOffAmountDouble(taxData.rate)
+                taxData.percentage_value = MethodUtils.roundOffAmountDouble(taxData.rate)
             } else {
                 taxData.percentage_value =
                     MethodUtils.roundOffAmountDouble((100 * taxData.totalTaxTypePrice) / taxData.subTotalAmount!!)
@@ -1222,16 +1192,15 @@ open class PaymentViewModel @Inject constructor(
 
         if (textToPay) {
             orderAttributeRequestModel.paymentStatus = 0
-        } else
-            orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
+        } else orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
 
         orderAttributeRequestModel.serviceChargeEnabled = true
         orderAttributeRequestModel.taxEnabled = true
         orderAttributeRequestModel.subTotal = actual_SubTotal
 
 
-        if (cartModel.discountId != null && cartModel.discountId != -1)
-            orderAttributeRequestModel.discount_id = cartModel.discountId
+        if (cartModel.discountId != null && cartModel.discountId != -1) orderAttributeRequestModel.discount_id =
+            cartModel.discountId
         orderAttributeRequestModel.totalDiscount = if (cartModel.orderType == DINE_IN) {
             dineInWholeDiscount ?: 0.0
         } else {
@@ -1339,22 +1308,20 @@ open class PaymentViewModel @Inject constructor(
         if (prefProvider.getValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)) {
             giftCardRedeem = OrderRequestModel.GiftCardRedeem(
                 prefProvider.getValue(
-                    Constants.GIFT_CARD_NUMBER,
-                    ""
+                    Constants.GIFT_CARD_NUMBER, ""
                 ), prefProvider.getValue(Constants.GIFT_CARD_PIN, "")
             )
         }
 
-        val orderRequestModel =
-            OrderRequestModel(
-                isPaidOrder, orderAttributeRequestModel,
-                sendPaymentLink,
-                gift_card_redeem = prefProvider.getValueboolean(
-                    Constants.IS_GIFT_CARD_REDEEM,
-                    false
-                ),
-                gift_card = giftCardRedeem
-            )
+        val orderRequestModel = OrderRequestModel(
+            isPaidOrder,
+            orderAttributeRequestModel,
+            sendPaymentLink,
+            gift_card_redeem = prefProvider.getValueboolean(
+                Constants.IS_GIFT_CARD_REDEEM, false
+            ),
+            gift_card = giftCardRedeem
+        )
 
         LogUtil.logE("orderRequestModel", ":  ${Gson().toJson(orderRequestModel)}")
 
@@ -1366,8 +1333,7 @@ open class PaymentViewModel @Inject constructor(
     }
 
     fun dineInServiceChargeAppliedAttribute(
-        cartModel: CartModel,
-        subTotalPrice: Double
+        cartModel: CartModel, subTotalPrice: Double
     ): List<OrderServiceChargesAttribute> {
         var guestCount = cartModel.dineInList?.size?.minus(1)
         val orderServiceChargesAttributeList: java.util.ArrayList<OrderServiceChargesAttribute> =
@@ -1376,9 +1342,7 @@ open class PaymentViewModel @Inject constructor(
             cartModel.dineInList?.get(0)!!.serviceChargeList?.forEach {
                 if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
                     if (isInRange(
-                            it.min_guest_count!!,
-                            it.max_guest_count!!,
-                            guestCount!!
+                            it.min_guest_count!!, it.max_guest_count!!, guestCount!!
                         )
                     ) {
                         val orderServiceChargesAttribute = OrderServiceChargesAttribute()
@@ -1423,15 +1387,14 @@ open class PaymentViewModel @Inject constructor(
         var orderAttributeRequestModel = OrderAttributeRequestModel()
 
 
-        if (isUpdateOrder)
-            orderAttributeRequestModel.id = orderId
+        if (isUpdateOrder) orderAttributeRequestModel.id = orderId
 
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
-        if (future_delivery_date.isNotEmpty())
-            orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
+        if (future_delivery_date.isNotEmpty()) orderAttributeRequestModel.futureDeliveryDate =
+            future_delivery_date
 
-        if (future_delivery_time.isNotEmpty())
-            orderAttributeRequestModel.futureDeliveryTime = future_delivery_time
+        if (future_delivery_time.isNotEmpty()) orderAttributeRequestModel.futureDeliveryTime =
+            future_delivery_time
 
 
         if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
@@ -1485,8 +1448,7 @@ open class PaymentViewModel @Inject constructor(
                 MethodUtils.roundOffAmountDouble(totalPrice) - MethodUtils.roundOffAmountDouble(
                     tipAmount
                 )
-            totalServiceCharges =
-                MethodUtils.roundOffAmountDouble(totalServiceCharge)
+            totalServiceCharges = MethodUtils.roundOffAmountDouble(totalServiceCharge)
             totalTaxAmount = MethodUtils.roundOffAmountDouble(totalTax)
             totalTips = MethodUtils.roundOffAmountDouble(tipAmount)
         }
@@ -1497,14 +1459,13 @@ open class PaymentViewModel @Inject constructor(
 
 
 
-        if (cartModel.discountId != null && cartModel.discountId != -1)
-            orderAttributeRequestModel.discount_id = cartModel.discountId
+        if (cartModel.discountId != null && cartModel.discountId != -1) orderAttributeRequestModel.discount_id =
+            cartModel.discountId
         orderAttributeRequestModel.totalDiscount = totalDiscount
 
         cartModel.taxlistDynamic?.forEach { taxData ->
             if (taxData.taxType == "Percentage") {
-                taxData.percentage_value =
-                    MethodUtils.roundOffAmountDouble(taxData.rate)
+                taxData.percentage_value = MethodUtils.roundOffAmountDouble(taxData.rate)
             } else {
                 taxData.percentage_value =
                     MethodUtils.roundOffAmountDouble((100 * taxData.totalTaxTypePrice) / taxData.subTotalAmount!!)
@@ -1606,16 +1567,14 @@ open class PaymentViewModel @Inject constructor(
 
         /*This is working well just uncomment it, we have commented it because the update list is being fetched in the OPEN_ORDER_ITEMS_BASE, that's why we are changing the get field*/
         if (/*prefProvider.getValue(Constants.OLD_ITEM, "")*/prefProvider.getValue(
-                Constants.OLD_ITEM_BASE_CUSTOM_ITEM,
-                ""
+                Constants.OLD_ITEM_BASE_CUSTOM_ITEM, ""
             ).isNotEmpty()
         ) {
 //            Added by Rahul to solve the modifiers not removing issue
             val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
 
             val oldCartItemsList = Gson().fromJson(
-                prefProvider.getValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, ""),
-                listType
+                prefProvider.getValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, ""), listType
             ) as ArrayList<TbCartItem>
 
 
@@ -1722,15 +1681,14 @@ open class PaymentViewModel @Inject constructor(
 
 
 
-        if (isUpdateOrder)
-            orderAttributeRequestModel.id = orderId
+        if (isUpdateOrder) orderAttributeRequestModel.id = orderId
 
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
-        if (future_delivery_date.isNotEmpty())
-            orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
+        if (future_delivery_date.isNotEmpty()) orderAttributeRequestModel.futureDeliveryDate =
+            future_delivery_date
 
-        if (future_delivery_time.isNotEmpty())
-            orderAttributeRequestModel.futureDeliveryTime = future_delivery_time
+        if (future_delivery_time.isNotEmpty()) orderAttributeRequestModel.futureDeliveryTime =
+            future_delivery_time
 
 
         if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
@@ -1766,8 +1724,8 @@ open class PaymentViewModel @Inject constructor(
             )
 
 
-        if (cartModel.discountId != null && cartModel.discountId != -1)
-            orderAttributeRequestModel.discount_id = cartModel.discountId
+        if (cartModel.discountId != null && cartModel.discountId != -1) orderAttributeRequestModel.discount_id =
+            cartModel.discountId
         orderAttributeRequestModel.totalDiscount = totalDiscount
         orderAttributeRequestModel.totalServiceCharges =
             MethodUtils.roundOffAmountDouble(totalServiceCharge)
@@ -1775,8 +1733,7 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.totalTips = MethodUtils.roundOffAmountDouble(tipAmount)
         cartModel.taxlistDynamic?.forEach { taxData ->
             if (taxData.taxType == "Percentage") {
-                taxData.percentage_value =
-                    MethodUtils.roundOffAmountDouble(taxData.rate)
+                taxData.percentage_value = MethodUtils.roundOffAmountDouble(taxData.rate)
             } else {
                 taxData.percentage_value =
                     MethodUtils.roundOffAmountDouble((100 * taxData.totalTaxTypePrice) / taxData.subTotalAmount!!)
@@ -1887,8 +1844,7 @@ open class PaymentViewModel @Inject constructor(
         val orderAttributeRequestModel = OrderAttributeRequestModel()
 
 
-        if (isUpdateOrder)
-            orderAttributeRequestModel.id = orderId
+        if (isUpdateOrder) orderAttributeRequestModel.id = orderId
 
 
 
@@ -1897,11 +1853,11 @@ open class PaymentViewModel @Inject constructor(
 
         orderAttributeRequestModel.orderTypeId = order_type_id
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
-        if (future_delivery_date.isNotEmpty())
-            orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
+        if (future_delivery_date.isNotEmpty()) orderAttributeRequestModel.futureDeliveryDate =
+            future_delivery_date
 
-        if (future_delivery_time.isNotEmpty())
-            orderAttributeRequestModel.futureDeliveryTime = future_delivery_time
+        if (future_delivery_time.isNotEmpty()) orderAttributeRequestModel.futureDeliveryTime =
+            future_delivery_time
 
         if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
             orderAttributeRequestModel.deliveryType = cartModel.openOrderType
@@ -1934,8 +1890,7 @@ open class PaymentViewModel @Inject constructor(
         }
         cartModel.taxlistDynamic?.forEach { taxData ->
             if (taxData.taxType == "Percentage") {
-                taxData.percentage_value =
-                    MethodUtils.roundOffAmountDouble(taxData.rate)
+                taxData.percentage_value = MethodUtils.roundOffAmountDouble(taxData.rate)
             } else {
                 taxData.percentage_value =
                     MethodUtils.roundOffAmountDouble((100 * taxData.totalTaxTypePrice) / taxData.subTotalAmount!!)
@@ -1954,8 +1909,8 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.taxEnabled = true
         orderAttributeRequestModel.subTotal = actual_SubTotal
 
-        if (cartModel.discountId != null && cartModel.discountId != -1)
-            orderAttributeRequestModel.discount_id = cartModel.discountId
+        if (cartModel.discountId != null && cartModel.discountId != -1) orderAttributeRequestModel.discount_id =
+            cartModel.discountId
         orderAttributeRequestModel.totalDiscount = actual_TotalDiscount
         orderAttributeRequestModel.totalServiceCharges = actual_TotalServiceCharge
         orderAttributeRequestModel.totalTaxAmount = actual_TotalTax
@@ -1990,7 +1945,8 @@ open class PaymentViewModel @Inject constructor(
                 tipAmount,
                 splitValue,
                 finaldiscount,
-                paymentType, cardNumberValue,
+                paymentType,
+                cardNumberValue,
                 orderAttributeRequestModel.cash_discount_type,
                 redeemLoyaltyInfo = redeemLoyaltyInfo,
                 globalUID,
@@ -2146,12 +2102,10 @@ open class PaymentViewModel @Inject constructor(
     }
 
     private fun addressesAttributes(
-        id: Int?,
-        customer: TbCustomer?
+        id: Int?, customer: TbCustomer?
     ): List<CustomerAttributes.AddressesAttribute> {
 
-        val addressesAttributeList: ArrayList<CustomerAttributes.AddressesAttribute> =
-            arrayListOf()
+        val addressesAttributeList: ArrayList<CustomerAttributes.AddressesAttribute> = arrayListOf()
         customer?.addresses?.forEach {
 
             val addressesAttribute = CustomerAttributes.AddressesAttribute().apply {
@@ -2176,12 +2130,10 @@ open class PaymentViewModel @Inject constructor(
     }
 
     private fun emailsAttributes(
-        custId: Int?,
-        emailId: String?
+        custId: Int?, emailId: String?
     ): List<CustomerAttributes.EmailsAttribute> {
 
-        val phonesAttributeList: ArrayList<CustomerAttributes.EmailsAttribute> =
-            arrayListOf()
+        val phonesAttributeList: ArrayList<CustomerAttributes.EmailsAttribute> = arrayListOf()
         val email = CustomerAttributes.EmailsAttribute().apply {
             destroy = false
             // customerId = custId!!
@@ -2193,12 +2145,10 @@ open class PaymentViewModel @Inject constructor(
     }
 
     private fun phonesAttributes(
-        custId: Int?,
-        phones: List<TbPhones>?
+        custId: Int?, phones: List<TbPhones>?
     ): List<CustomerAttributes.PhonesAttribute> {
 
-        val phonesAttributeList: ArrayList<CustomerAttributes.PhonesAttribute> =
-            arrayListOf()
+        val phonesAttributeList: ArrayList<CustomerAttributes.PhonesAttribute> = arrayListOf()
         phones?.forEach {
 
             val phone = CustomerAttributes.PhonesAttribute().apply {
@@ -2213,8 +2163,7 @@ open class PaymentViewModel @Inject constructor(
     }
 
     private fun dineInOrderItemAttributed(cartModel: CartModel): List<OrderItemsAttribute> {
-        val orderItemsAttributeList: ArrayList<OrderItemsAttribute> =
-            arrayListOf()
+        val orderItemsAttributeList: ArrayList<OrderItemsAttribute> = arrayListOf()
 
         for (i in 0 until cartModel.dineInList?.size!!) {
             cartModel.dineInList?.get(i)?.items?.forEach { item ->
@@ -2222,8 +2171,8 @@ open class PaymentViewModel @Inject constructor(
                 LogUtil.logE(TAG, "getItemDinefas  ${Gson().toJson(item)}")
                 val orderItemsAttribute = OrderItemsAttribute()
 
-                if (isUpdateOrder && item.orderItemId != null)
-                    orderItemsAttribute.id = item.orderItemId
+                if (isUpdateOrder && item.orderItemId != null) orderItemsAttribute.id =
+                    item.orderItemId
 
 
                 orderItemsAttribute.custom_item_id = item.id
@@ -2231,8 +2180,7 @@ open class PaymentViewModel @Inject constructor(
 
                 orderItemsAttribute.discountAmount = (item.discountPrice * item.itemQuantity)
                 orderItemsAttribute.discountType = item.discountType
-                if (item.discountId != -1)
-                    orderItemsAttribute.discountId = item.discountId
+                if (item.discountId != -1) orderItemsAttribute.discountId = item.discountId
                 orderItemsAttribute.employeeId = cartModel.employeeID
                 orderItemsAttribute.isCount = 0
                 orderItemsAttribute.isEdited = item.isEdited
@@ -2272,16 +2220,14 @@ open class PaymentViewModel @Inject constructor(
 
     private fun orderItemsAttributes(cartModel: CartModel): List<OrderItemsAttribute> {
 
-        val orderItemsAttributeList: ArrayList<OrderItemsAttribute> =
-            arrayListOf()
+        val orderItemsAttributeList: ArrayList<OrderItemsAttribute> = arrayListOf()
         LogUtil.logE(TAG, "insideSize  ${cartModel.items?.size}")
 
         cartModel.items?.forEach { item ->
 
             val orderItemsAttribute = OrderItemsAttribute()
 
-            if (isUpdateOrder && item.orderItemId != null)
-                orderItemsAttribute.id = item.orderItemId
+            if (isUpdateOrder && item.orderItemId != null) orderItemsAttribute.id = item.orderItemId
 
 
             orderItemsAttribute.category_id = item.categoryId
@@ -2297,8 +2243,7 @@ open class PaymentViewModel @Inject constructor(
 
 
             orderItemsAttribute.discountType = item.discountType
-            if (item.discountId != -1)
-                orderItemsAttribute.discountId = item.discountId
+            if (item.discountId != -1) orderItemsAttribute.discountId = item.discountId
             orderItemsAttribute.employeeId = cartModel.employeeID
             orderItemsAttribute.isCount = 0
             orderItemsAttribute.isEdited = item.isEdited
@@ -2324,8 +2269,7 @@ open class PaymentViewModel @Inject constructor(
                 orderItemModifierAttributes(item, cartModel.terminalId)
             orderItemsAttribute.isFired = item.isFired
 
-            orderItemsAttribute.orderItemVariationAttributes =
-                orderItemVariationAttributes(item)
+            orderItemsAttribute.orderItemVariationAttributes = orderItemVariationAttributes(item)
 
             if (item.variationsAttributes.isNotEmpty()) {
                 orderItemsAttribute.variationId = item.variationsAttributes[0].id
@@ -2338,20 +2282,17 @@ open class PaymentViewModel @Inject constructor(
     }
 
     private fun orderItemsAttributesNew(
-        cartModel: CartModel,
-        cartItems: List<TbCartItem>
+        cartModel: CartModel, cartItems: List<TbCartItem>
     ): List<OrderItemsAttribute> {
 
-        val orderItemsAttributeList: ArrayList<OrderItemsAttribute> =
-            arrayListOf()
+        val orderItemsAttributeList: ArrayList<OrderItemsAttribute> = arrayListOf()
         LogUtil.logE(TAG, "insideSize  ${cartItems.size}")
 
         cartItems.forEach { item ->
 
             val orderItemsAttribute = OrderItemsAttribute()
 
-            if (isUpdateOrder && item.orderItemId != null)
-                orderItemsAttribute.id = item.orderItemId
+            if (isUpdateOrder && item.orderItemId != null) orderItemsAttribute.id = item.orderItemId
 
 
             orderItemsAttribute.category_id = item.categoryId
@@ -2366,8 +2307,7 @@ open class PaymentViewModel @Inject constructor(
 
 
             orderItemsAttribute.discountType = item.discountType
-            if (item.discountId != -1)
-                orderItemsAttribute.discountId = item.discountId
+            if (item.discountId != -1) orderItemsAttribute.discountId = item.discountId
             orderItemsAttribute.employeeId = cartModel.employeeID
             orderItemsAttribute.isCount = 0
             orderItemsAttribute.isEdited = item.isEdited
@@ -2394,8 +2334,7 @@ open class PaymentViewModel @Inject constructor(
                 orderItemModifierAttributesNew(item, cartModel.terminalId)
             orderItemsAttribute.isFired = item.isFired
 
-            orderItemsAttribute.orderItemVariationAttributes =
-                orderItemVariationAttributesNew(item)
+            orderItemsAttribute.orderItemVariationAttributes = orderItemVariationAttributesNew(item)
 
             if (item.variationsAttributes.isNotEmpty()) {
                 orderItemsAttribute.variationId = item.variationsAttributes[0].id
@@ -2468,20 +2407,17 @@ open class PaymentViewModel @Inject constructor(
     }
 
     private fun orderItemModifierAttributes(
-        item: TbItem,
-        terminalId: Int
+        item: TbItem, terminalId: Int
     ): List<OrderItemModifierAttribute> {
 
-        val orderItemModifierAttributeList: ArrayList<OrderItemModifierAttribute> =
-            arrayListOf()
+        val orderItemModifierAttributeList: ArrayList<OrderItemModifierAttribute> = arrayListOf()
 
         LogUtil.logE(TAG, "getmodifiers:  ${Gson().toJson(item.modifiers)}")
         item.modifiers.forEach {
 
             val orderItemModifierAttribute = OrderItemModifierAttribute().apply {
 
-                if (isUpdateOrder && it.orderModifierId != null)
-                    id = it.orderModifierId
+                if (isUpdateOrder && it.orderModifierId != null) id = it.orderModifierId
 
                 name = it.name
                 price = it.price
@@ -2501,20 +2437,17 @@ open class PaymentViewModel @Inject constructor(
     }
 
     private fun orderItemModifierAttributesNew(
-        item: TbCartItem,
-        terminalId: Int
+        item: TbCartItem, terminalId: Int
     ): List<OrderItemModifierAttribute> {
 
-        val orderItemModifierAttributeList: ArrayList<OrderItemModifierAttribute> =
-            arrayListOf()
+        val orderItemModifierAttributeList: ArrayList<OrderItemModifierAttribute> = arrayListOf()
 
         LogUtil.logE(TAG, "getmodifiers:  ${Gson().toJson(item.modifiers)}")
         item.modifiers.forEach {
 
             val orderItemModifierAttribute = OrderItemModifierAttribute().apply {
 
-                if (isUpdateOrder && it.orderModifierId != null)
-                    id = it.orderModifierId
+                if (isUpdateOrder && it.orderModifierId != null) id = it.orderModifierId
 
                 name = it.name
                 price = it.price
@@ -2534,19 +2467,16 @@ open class PaymentViewModel @Inject constructor(
     }
 
     private fun orderItemModifierAttributesDineIn(
-        item: TbItem,
-        terminalId: Int
+        item: TbItem, terminalId: Int
     ): List<OrderItemModifierAttribute> {
 
-        val orderItemModifierAttributeList: ArrayList<OrderItemModifierAttribute> =
-            arrayListOf()
+        val orderItemModifierAttributeList: ArrayList<OrderItemModifierAttribute> = arrayListOf()
 
         item.modifiers.forEach {
 
             val orderItemModifierAttribute = OrderItemModifierAttribute().apply {
 
-                if (isUpdateOrder && it.orderModifierId != null)
-                    id = it.orderModifierId
+                if (isUpdateOrder && it.orderModifierId != null) id = it.orderModifierId
 
                 name = it.name
                 price = it.price
@@ -2565,13 +2495,10 @@ open class PaymentViewModel @Inject constructor(
     }
 
     private fun orderModifierTaxesAttributes(
-        items: TbItem,
-        modifier: Modifier,
-        terminalId: Int
+        items: TbItem, modifier: Modifier, terminalId: Int
     ): List<OrderModifierTaxesAttribute> {
 
-        val orderItemTaxesAttributeList: ArrayList<OrderModifierTaxesAttribute> =
-            arrayListOf()
+        val orderItemTaxesAttributeList: ArrayList<OrderModifierTaxesAttribute> = arrayListOf()
 
 //        items.taxes?.forEach { tax ->
 //            if (tax.isActive) {
@@ -2622,8 +2549,7 @@ open class PaymentViewModel @Inject constructor(
 
     private fun orderItemTaxesAttributes(items: TbItem): List<OrderItemTaxesAttribute> {
 
-        val orderItemTaxesAttributeList: ArrayList<OrderItemTaxesAttribute> =
-            arrayListOf()
+        val orderItemTaxesAttributeList: ArrayList<OrderItemTaxesAttribute> = arrayListOf()
 
         items.taxes?.forEach { tax ->
 
@@ -2631,8 +2557,8 @@ open class PaymentViewModel @Inject constructor(
 
                 val orderItemTaxesAttribute = OrderItemTaxesAttribute()
 
-                if (isUpdateOrder && tax.orderTaxId != null)
-                    orderItemTaxesAttribute.id = tax.orderTaxId
+                if (isUpdateOrder && tax.orderTaxId != null) orderItemTaxesAttribute.id =
+                    tax.orderTaxId
 
                 orderItemTaxesAttribute.isDefault = tax.isDefault
                 orderItemTaxesAttribute.isTaxRemoved = true
@@ -2662,8 +2588,7 @@ open class PaymentViewModel @Inject constructor(
 
                     val totalPrice = price + modifierPrice
 
-                    val itemTaxPrice =
-                        (tax.rate * totalPrice) / 100
+                    val itemTaxPrice = (tax.rate * totalPrice) / 100
 
                     LogUtil.logE("Tax Amount 1", itemTaxPrice.toString())
 
@@ -2675,8 +2600,7 @@ open class PaymentViewModel @Inject constructor(
 
                     LogUtil.logE("Tax Amount", ss.toString())
 
-                    orderItemTaxesAttribute.taxTotalAmount =
-                        MethodUtils.roundOffAmountDouble((ss))
+                    orderItemTaxesAttribute.taxTotalAmount = MethodUtils.roundOffAmountDouble((ss))
                 }
 
 
@@ -2693,8 +2617,7 @@ open class PaymentViewModel @Inject constructor(
 
     private fun orderItemTaxesAttributesNew(items: TbCartItem): List<OrderItemTaxesAttribute> {
 
-        val orderItemTaxesAttributeList: ArrayList<OrderItemTaxesAttribute> =
-            arrayListOf()
+        val orderItemTaxesAttributeList: ArrayList<OrderItemTaxesAttribute> = arrayListOf()
 
         items.taxes?.forEach { tax ->
 
@@ -2702,8 +2625,8 @@ open class PaymentViewModel @Inject constructor(
 
                 val orderItemTaxesAttribute = OrderItemTaxesAttribute()
 
-                if (isUpdateOrder && tax.orderTaxId != null)
-                    orderItemTaxesAttribute.id = tax.orderTaxId
+                if (isUpdateOrder && tax.orderTaxId != null) orderItemTaxesAttribute.id =
+                    tax.orderTaxId
 
                 orderItemTaxesAttribute.isDefault = tax.isDefault
                 orderItemTaxesAttribute.isTaxRemoved = true
@@ -2733,8 +2656,7 @@ open class PaymentViewModel @Inject constructor(
 
                     val totalPrice = price + modifierPrice
 
-                    val itemTaxPrice =
-                        (tax.rate * totalPrice) / 100
+                    val itemTaxPrice = (tax.rate * totalPrice) / 100
 
                     LogUtil.logE("Tax Amount 1", itemTaxPrice.toString())
 
@@ -2746,8 +2668,7 @@ open class PaymentViewModel @Inject constructor(
 
                     LogUtil.logE("Tax Amount", ss.toString())
 
-                    orderItemTaxesAttribute.taxTotalAmount =
-                        MethodUtils.roundOffAmountDouble((ss))
+                    orderItemTaxesAttribute.taxTotalAmount = MethodUtils.roundOffAmountDouble((ss))
                 }
 
 
@@ -2765,8 +2686,7 @@ open class PaymentViewModel @Inject constructor(
     private fun orderItemTaxesAttributesForDineIn(items: TbItem): List<OrderItemTaxesAttribute> {
         LogUtil.logE(TAG, "getDineitems:  ${Gson().toJson(items)}")
 
-        val orderItemTaxesAttributeList: ArrayList<OrderItemTaxesAttribute> =
-            arrayListOf()
+        val orderItemTaxesAttributeList: ArrayList<OrderItemTaxesAttribute> = arrayListOf()
 
         items.taxes?.forEach { tax ->
 
@@ -2774,8 +2694,7 @@ open class PaymentViewModel @Inject constructor(
 
                 val orderItemTaxesAttribute = OrderItemTaxesAttribute()
 
-                if (isUpdateOrder && tax.id != null)
-                    orderItemTaxesAttribute.id = tax.id
+                if (isUpdateOrder && tax.id != null) orderItemTaxesAttribute.id = tax.id
 
                 orderItemTaxesAttribute.isDefault = tax.isDefault
                 orderItemTaxesAttribute.isTaxRemoved = true
@@ -2803,8 +2722,7 @@ open class PaymentViewModel @Inject constructor(
 
                     val ss = tax.rate * items.itemQuantity
 
-                    orderItemTaxesAttribute.taxTotalAmount =
-                        MethodUtils.roundOffAmountDouble((ss))
+                    orderItemTaxesAttribute.taxTotalAmount = MethodUtils.roundOffAmountDouble((ss))
                 }
 
 //                if (tax.taxType == "Percentage") {
@@ -2846,8 +2764,7 @@ open class PaymentViewModel @Inject constructor(
 
 
     private fun orderServiceChargesAttributes(
-        cartModel: CartModel,
-        subTotalPrice: Double
+        cartModel: CartModel, subTotalPrice: Double
     ): List<OrderServiceChargesAttribute> {
 
         val orderServiceChargesAttributeList: ArrayList<OrderServiceChargesAttribute> =
@@ -2863,8 +2780,8 @@ open class PaymentViewModel @Inject constructor(
                     orderServiceChargesAttribute.rate = it.percentage
                     orderServiceChargesAttribute.serviceChargeId = it.id
                     orderServiceChargesAttribute.order_type = it.order_type
-                    if (isUpdateOrder && it.order_service_charge_id != null)
-                        orderServiceChargesAttribute.id = it.order_service_charge_id
+                    if (isUpdateOrder && it.order_service_charge_id != null) orderServiceChargesAttribute.id =
+                        it.order_service_charge_id
                     orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
                 }
             }
@@ -2974,7 +2891,8 @@ open class PaymentViewModel @Inject constructor(
         tipAmount: Double,
         splitValue: Int,
         finalcashdiscount: Double,
-        paymentTypeStatus: String, cardNumber1: String,
+        paymentTypeStatus: String,
+        cardNumber1: String,
         cashdiscountType: String,
         redeemLoyaltyInfo: RedeemLoyaltyInfo?,
         globalUID: String = "",
@@ -2994,8 +2912,7 @@ open class PaymentViewModel @Inject constructor(
             amount = totalAM
             if (magensaResponse != null) {
                 val model = Gson().fromJson(
-                    magensaResponse,
-                    PaymentResponse.PaymentResponseItem::class.java
+                    magensaResponse, PaymentResponse.PaymentResponseItem::class.java
                 )
                 if (model.dataOutput != null) {
                     var cardN = ""
@@ -3139,8 +3056,7 @@ open class PaymentViewModel @Inject constructor(
             .post(MessageEvent("${Constants.LINE_BREAK_TAB} splitByOrder(myRequest: SpitByOrderRequestModel, isDineIn: Boolean)_PaymentViewModel"))
         if (cashPaymentTypeSplit(myRequest)) {
             _showProgressCash.value = Event(true)
-        } else
-            _showProgress.value = Event(true)
+        } else _showProgress.value = Event(true)
 
 //        _showProgress.value = Event(true)
 
@@ -3188,8 +3104,7 @@ open class PaymentViewModel @Inject constructor(
                                     )
                                     posRepository.deleteCart(
                                         prefProvider.getValueInt(
-                                            Constants.EMPLOYEE_ID,
-                                            0
+                                            Constants.EMPLOYEE_ID, 0
                                         )
                                     )
                                 }
@@ -3223,8 +3138,7 @@ open class PaymentViewModel @Inject constructor(
 
 
 
-                                if (isDineIn)
-                                    _msgText.value = Event(response.message)
+                                if (isDineIn) _msgText.value = Event(response.message)
 
 
                             }
@@ -3242,16 +3156,14 @@ open class PaymentViewModel @Inject constructor(
                     _transactionErrorText.value = Event(resource.message)
                     if (cashPaymentTypeSplit(myRequest)) {
                         _showProgressCash.value = Event(true)
-                    } else
-                        _showProgress.value = Event(true)
+                    } else _showProgress.value = Event(true)
 
                 }
 
                 Status.LOADING -> {
                     if (cashPaymentTypeSplit(myRequest)) {
                         _showProgressCash.value = Event(true)
-                    } else
-                        _showProgress.value = Event(true)
+                    } else _showProgress.value = Event(true)
 
                 }
             }
@@ -3259,8 +3171,7 @@ open class PaymentViewModel @Inject constructor(
     }
 
     fun createQueuePrinter(
-        createQueuePrinterModel: CreateQueuePrinterRequestModel,
-        createOrder: CreateOrderResponse
+        createQueuePrinterModel: CreateQueuePrinterRequestModel, createOrder: CreateOrderResponse
     ) {
         _showProgress.value = Event(true)
         LogUtil.logE(
