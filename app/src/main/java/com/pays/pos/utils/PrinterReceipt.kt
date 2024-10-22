@@ -988,9 +988,9 @@ fun addCreditTipAuditHeaderInnerNew() {
 
 fun addCreditTipAuditData(
     builder: Builder,
-    fPArt: String,
+    fpArt: String,
     sPart: String,
-    TPArt: String,
+    tpArt: String,
     lPart: String
 ): Builder {
     builder.addTextLineSpace(30)
@@ -1007,7 +1007,7 @@ fun addCreditTipAuditData(
     )
 
 
-    var pOne = TPArt + repeat(" ", 13 - TPArt.length) + fPArt
+    var pOne = tpArt + repeat(" ", 13 - tpArt.length) + fpArt
 
     pOne += repeat(" ", 27 - pOne.length) + sPart
     pOne += repeat(" ", 38 - pOne.length) + lPart
