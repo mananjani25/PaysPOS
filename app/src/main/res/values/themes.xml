@@ -179,5 +179,11 @@
         <item name="android:colorBackground">@color/black</item>
     </style>
 
+    <!-- Custom theme for the Presentation -->
+    <style name="CustomPresentationTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/white</item>
+        <!-- Add other customizations for your presentation -->
+    </style>
 
 </resources>

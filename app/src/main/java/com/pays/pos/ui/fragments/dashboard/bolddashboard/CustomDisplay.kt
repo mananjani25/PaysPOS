@@ -1,23 +1,37 @@
 package com.pays.pos.ui.fragments.dashboard.bolddashboard
 
+import android.app.Activity
 import android.app.Presentation
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.Message
-import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
-import android.view.*
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.lifecycleScope
+import android.view.Display
+import android.view.Gravity
+import android.view.View
+import android.view.Window
+import androidx.appcompat.view.ContextThemeWrapper
+import androidx.core.view.isGone
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
+import com.github.gcacace.signaturepad.views.SignaturePad.OnSignedListener
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.pax.poslink.PaymentRequest
+import com.pax.poslink.PosLink
+import com.pax.poslink.ProcessTransResult
 import com.pays.pos.R
 import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.DineInModel
@@ -38,6 +52,8 @@ import com.pays.pos.data.remote.Constants.TERMINAL_ID
 import com.pays.pos.databinding.ViewCustomDisplayBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.CreateCustomerEvent
+import com.pays.pos.logger.SyncCustomerEvent
 import com.pays.pos.ui.adapter.ActiveTipsListAdapter
 import com.pays.pos.ui.adapter.DineInAdapter
 import com.pays.pos.ui.adapter.DineInTableAdapterCD
@@ -52,6 +68,7 @@ import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
 import com.pays.pos.ui.fragments.transactions.TransactionViewModel
 import com.pays.pos.utils.*
+import com.pays.pos.utils.MethodUtils.Companion.generalizeAmount
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
 import com.pays.pos.utils.callback.MyCallback
 import com.pays.pos.utils.extensions.*
@@ -59,18 +76,13 @@ import com.pays.pos.utils.paxUtils.AppThreadPool
 import com.pays.pos.utils.paxUtils.POSLinkCreatorWrapper
 import com.pays.pos.utils.paxUtils.SettingINI
 import com.pays.pos.utils.statusUtils.Status
-import com.github.gcacace.signaturepad.views.SignaturePad.OnSignedListener
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.pax.poslink.PaymentRequest
-import com.pax.poslink.PosLink
-import com.pax.poslink.ProcessTransResult
 import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayOutputStream
-import java.io.File
+
 
 class CustomDisplay(
     display: Display,
@@ -79,7 +91,7 @@ class CustomDisplay(
     private val dashBoardCategoryViewModel: DashBoardCategoryViewModel,
     val passcodeViewModel: PasscodeViewModel,
     val dineInViewModel: DineInOrderTableViewModel
-) : Presentation(context, display), MyCallback, DineInAdapter.DineInCallback,
+) : Presentation(ContextThemeWrapper(context, R.style.CustomPresentationTheme), display), MyCallback, DineInAdapter.DineInCallback,
     ActiveTipsListAdapter.DiscountInterface {
 
     private var mWholeTotalPrice: Double = 0.0
@@ -135,6 +147,7 @@ class CustomDisplay(
     var CardName = ""
     var EDCType = ""
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -147,24 +160,311 @@ class CustomDisplay(
         observeCashCardChange()
         setupTaxAdapter()
         initPOSLink()
-
+        initViews()
+        getDetails()
+        getLoyaltyPointListObserver()
         initDiscountLiveData()
     }
 
-    private fun observeCashCardChange() {
-        dashBoardCategoryViewModel.customerCashAmount.observe(lifecycleOwner,object:Observer<String>{
-            override fun onChanged(t: String?) {
-                Log.d("CustomerDisp::", "Obsever Called")
-                binding.txtTotalCash?.text = t
+    /*-------------Customer Loyalty---------------*/
+    private fun initViews() {
+        with(binding) {
+
+            if (prefProvider.getValue(
+                Constants.VENUE_LOGO,
+                ""
+            ).isNotEmpty()){
+                imgBusiness?.let {
+                    val decodedString: ByteArray = Base64.decode(prefProvider.getValue(
+                        Constants.VENUE_LOGO,
+                        ""
+                    ), Base64.DEFAULT)
+                    val decodedByte: Bitmap =
+                        BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+
+                    var requestOptions = RequestOptions()
+                    requestOptions = requestOptions.transforms(CenterCrop(), RoundedCorners(100))
+                    Glide.with(context).load(decodedByte)
+                        .apply(requestOptions).into(it)
+                    it.visible()
+                }
+
+            }else{
+                imgBusiness?.gone()
             }
+            if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isNotEmpty()) {
+                btnSignUpOrCheckIn?.text = "Change mobile number"
+                tvMessage?.text = "Customer added successfully"
+            }
+
+            btnSignUpOrCheckIn?.setOnSingleClickListener(object : View.OnClickListener {
+                override fun onClick(p0: View?) {
+                    splashLayout.gone()
+                    keypadLayout?.visible()
+                }
+            })
+
+            btnSignUpOrCheckInMain?.setOnSingleClickListener(object : View.OnClickListener {
+                override fun onClick(p0: View?) {
+                    splashLayout.gone()
+                    keypadLayout?.visible()
+                }
+            })
+
+            tvCancel?.setOnSingleClickListener(object : View.OnClickListener {
+                override fun onClick(p0: View?) {
+                    splashLayout.visible()
+                    keypadLayout?.gone()
+                }
+
+            })
+
+            /*---------------------KEYPAD----------------------*/
+            btnOne?.setOnClickListener(object : View.OnClickListener {
+                override fun onClick(p0: View?) {
+                    tvPhoneNumber?.append("1")
+                }
+            })
+
+            btnTwo?.setOnClickListener(object : View.OnClickListener {
+                override fun onClick(p0: View?) {
+                    tvPhoneNumber?.append("2")
+                }
+            })
+            btnThree?.setOnClickListener(object : View.OnClickListener {
+                override fun onClick(p0: View?) {
+                    tvPhoneNumber?.append("3")
+                }
+            })
+            btnFour?.setOnClickListener(object : View.OnClickListener {
+                override fun onClick(p0: View?) {
+                    tvPhoneNumber?.append("4")
+                }
+            })
+            btnFive?.setOnClickListener(object : View.OnClickListener {
+                override fun onClick(p0: View?) {
+                    tvPhoneNumber?.append("5")
+                }
+            })
+            btnSix?.setOnClickListener(object : View.OnClickListener {
+                override fun onClick(p0: View?) {
+                    tvPhoneNumber?.append("6")
+                }
+            })
+            btnSeven?.setOnClickListener(object : View.OnClickListener {
+                override fun onClick(p0: View?) {
+                    tvPhoneNumber?.append("7")
+                }
+            })
+            btnEight?.setOnClickListener(object : View.OnClickListener {
+                override fun onClick(p0: View?) {
+                    tvPhoneNumber?.append("8")
+                }
+            })
+            btnNine?.setOnClickListener(object : View.OnClickListener {
+                override fun onClick(p0: View?) {
+                    tvPhoneNumber?.append("9")
+                }
+            })
+
+            btnZero?.setOnClickListener(object : View.OnClickListener {
+                override fun onClick(p0: View?) {
+                    tvPhoneNumber?.append("0")
+                }
+            })
+
+            btnClear?.setOnClickListener(object : View.OnClickListener {
+                override fun onClick(p0: View?) {
+                    tvPhoneNumber?.setText("")
+                }
+            })
+
+            btnBackSpace?.setOnClickListener(object : View.OnClickListener {
+                override fun onClick(p0: View?) {
+                    tvPhoneNumber?.setText(MethodUtils.removeChars(tvPhoneNumber?.text.toString(), 1))
+                }
+            })
+
+            btnBackSpace?.setOnLongClickListener(object:View.OnLongClickListener{
+                override fun onLongClick(p0: View?): Boolean {
+                    tvPhoneNumber?.setText("")
+                    return true
+                }
+            })
+            /*---------------------KEYPAD----------------------*/
+
+            tvDone?.setOnSingleClickListener(object : View.OnClickListener {
+                override fun onClick(p0: View?) {
+//                    Search on local,
+
+                    //  1. if customer present then add the customer.
+                    //  2. if customer not present then create the customer
+
+                    var mobileNumber = tvPhoneNumber?.text.toString().trim().replace(Regex("[^0-9]"), "")
+                    searchUserFromMobileNumber(mobileNumber)
+
+//                    [{"id":2,"phone_number":"5555575575"}]
+                }
+            })
+
+
+        }
+    }
+
+    private fun searchUserFromMobileNumber(phoneNumber: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            var found: List<TbPhones>? = null
+            var customersListFromDb: List<TbCustomer?>? =
+                null
+            customersListFromDb =
+                dashBoardCategoryViewModel.fetchCustomerFromPhoneNumber(phoneNumber)
+            if (customersListFromDb?.isNotEmpty() ?: false) {
+                customersListFromDb?.get(0)?.let {
+                    found = it.phones.filter { it.phone_number.contains(phoneNumber) }
+                }
+                if (found?.isNotEmpty() ?: false) {
+                    addCustomer(customersListFromDb!!.get(0)!!)
+                } else {
+                    createCustomer(phoneNumber)
+                    CoroutineScope(Dispatchers.Main).launch {
+                        binding.keypadLayout?.gone()
+                        binding.splashLayout?.visible()
+                    }
+                }
+            } else {
+                createCustomer(phoneNumber)
+                CoroutineScope(Dispatchers.Main).launch {
+                    binding.keypadLayout?.gone()
+                    binding.splashLayout?.visible()
+                }
+            }
+            Log.d("CustomersList:: ", Gson().toJson(customersListFromDb))
+
+        }
+    }
+
+
+    private fun createCustomer(phoneNumber: String) {
+      /*  binding.tvMessage?.post {
+            binding.tvMessage?.text="Loading..."
+        }*/
+        Handler(Looper.getMainLooper()).post(Runnable {
+            binding.keypadLayout?.gone()
+            binding.splashLayout?.gone()
+            binding.mainCartLayout?.visible()
         })
 
-        dashBoardCategoryViewModel.customerCardAmount.observe(lifecycleOwner,object:Observer<String>{
-            override fun onChanged(t: String?) {
-                Log.d("CustomerDisp::", "Obsever Called")
-                binding.txtTotalCard?.text = t
+        Log.d("C_Loyalty: ", "createCustomer: Loading... Set")
+        EventBus.getDefault().post(CreateCustomerEvent(true, phoneNumber))
+    }
+
+    public fun addCustomer(customer: TbCustomer) {
+        prefProvider.setValue(
+            Constants.CUSTOMER_NAME,
+            customer.first_name + " " + customer.last_name
+        )
+        dashBoardCategoryViewModel.selectedCustomer=customer
+        prefProvider.setValue(
+            Constants.RECEIPT_CUSTOMER_NAME,
+            customer.first_name + " " + customer.last_name
+        )
+        prefProvider.setValue(
+            Constants.PREF_CUSTOMER,
+            Gson().toJson(customer)
+        )
+        prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+        prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+        customer.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
+        dashBoardCategoryViewModel.clickOnTakeOut()
+        if (dashBoardCategoryViewModel.currentCartItems.isNotEmpty()){
+            dashBoardCategoryViewModel.callUpdateCartFooter(true)
+        }
+        displayCustomer()
+        EventBus.getDefault()
+            .post(SyncCustomerEvent(true, customer.first_name + " " + customer.last_name))
+        CoroutineScope(Dispatchers.Main).launch {
+            binding.tvMessage?.text="Customer added successfully"
+            binding.txtCustomerName.apply { text = customer.first_name + " " + customer.last_name }
+            binding.keypadLayout?.gone()
+            binding.splashLayout?.gone()
+            binding.mainCartLayout?.visible()
+
+        }
+
+    }
+
+    private fun getDetails() {
+        dashBoardCategoryViewModel.getBusinessData.observe(lifecycleOwner) { it ->
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        binding.tvBusinessName?.text = resource.data?.business_name
+                    }
+                    Status.ERROR -> {
+                    }
+                    Status.LOADING -> {
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getLoyaltyPointListObserver() {
+        dashBoardCategoryViewModel.loyaltyPoints.observe(lifecycleOwner, {
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        try {
+                            ProgressUtils.dismissProgressDialog()
+                            resource.data?.get(0)?.let {
+                                binding.tvRewards?.text = getPreparedRewardStatement(it)
+                            }
+                        } catch (e: Exception) {
+//                            binding.btnSignUpOrCheckIn.gone()
+//                            binding.tvRewards.gone()
+//                            binding.tvMessage.text="Please login to start"
+                        }
+                    }
+                    Status.ERROR -> {
+                    }
+                    Status.LOADING -> {
+                    }
+                }
             }
         })
+    }
+
+    private fun getPreparedRewardStatement(it: LoyaltyProgramsModel): CharSequence? {
+        var point = ""
+        if (it.rewardPoint > 1) {
+            point = "points"
+        } else {
+            point = "point"
+        }
+
+        return "${generalizeAmount(it.amount.toString())} ${point} on for every $${generalizeAmount(it.rewardPoint.toString())} spent"
+    }
+
+
+    /*-------------Customer Loyalty---------------*/
+
+
+    private fun observeCashCardChange() {
+        dashBoardCategoryViewModel.customerCashAmount.observe(lifecycleOwner,
+            object : Observer<String> {
+                override fun onChanged(t: String?) {
+                    Log.d("CustomerDisp::", "Obsever Called")
+                    binding.txtTotalCash?.text = t
+                }
+            })
+
+        dashBoardCategoryViewModel.customerCardAmount.observe(lifecycleOwner,
+            object : Observer<String> {
+                override fun onChanged(t: String?) {
+                    Log.d("CustomerDisp::", "Obsever Called")
+                    binding.txtTotalCard?.text = t
+                }
+            })
     }
 
     private fun initDiscountLiveData() {
@@ -179,7 +479,6 @@ class CustomDisplay(
 
             })
     }
-
 
     private fun setupCartList() {
 
@@ -353,11 +652,11 @@ class CustomDisplay(
                 } else {
                     setupTotalsNew(isDineIn)
 //                    onDisplayChanged()
-                   /* if (refreshCount<=5) {
-                        onDisplayChanged()
-                    }else{
-                        refreshCount=1
-                    }*/
+                    /* if (refreshCount<=5) {
+                         onDisplayChanged()
+                     }else{
+                         refreshCount=1
+                     }*/
                 }
             }
         }
@@ -445,41 +744,49 @@ class CustomDisplay(
 //                    Log.v("CustomerScreen Amount_BACKUP_2:", dashBoardCategoryViewModel.wholetotalPrice.toString())
                     if (totalPrice < dashBoardCategoryViewModel.wholetotalPrice) {
 
-                            if (dashBoardCategoryViewModel.customerCashAmount.value?.isNotEmpty()?:false) {
-                                binding.txtTotalCash?.text =
-                                    dashBoardCategoryViewModel.customerCashAmount.value
-                            } else {
-                                binding.txtTotalCash?.text =
-                                    MethodUtils.roundOffAmount(dashBoardCategoryViewModel.wholetotalPrice)
-                            }
+                        if (dashBoardCategoryViewModel.customerCashAmount.value?.isNotEmpty()
+                                ?: false
+                        ) {
+                            binding.txtTotalCash?.text =
+                                dashBoardCategoryViewModel.customerCashAmount.value
+                        } else {
+                            binding.txtTotalCash?.text =
+                                MethodUtils.roundOffAmount(dashBoardCategoryViewModel.wholetotalPrice)
+                        }
 
-                            if (dashBoardCategoryViewModel.customerCardAmount.value?.isNotEmpty()?:false) {
-                                binding.txtTotalCard?.text =
-                                    dashBoardCategoryViewModel.customerCardAmount.value
-                            } else {
-                                binding.txtTotalCard?.text =
-                                    getSurchargedPrice(dashBoardCategoryViewModel.wholetotalPrice)
-                            }
+                        if (dashBoardCategoryViewModel.customerCardAmount.value?.isNotEmpty()
+                                ?: false
+                        ) {
+                            binding.txtTotalCard?.text =
+                                dashBoardCategoryViewModel.customerCardAmount.value
+                        } else {
+                            binding.txtTotalCard?.text =
+                                getSurchargedPrice(dashBoardCategoryViewModel.wholetotalPrice)
+                        }
 
                         Log.v("CustomerScreen:", "1")
                     } else {
                         /* binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
                          binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)*/
 
-                            if (dashBoardCategoryViewModel.customerCashAmount.value?.isNotEmpty()?:false) {
-                                binding.txtTotalCash?.text =
-                                    dashBoardCategoryViewModel.customerCashAmount.value
-                            } else {
-                                binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
-                            }
+                        if (dashBoardCategoryViewModel.customerCashAmount.value?.isNotEmpty()
+                                ?: false
+                        ) {
+                            binding.txtTotalCash?.text =
+                                dashBoardCategoryViewModel.customerCashAmount.value
+                        } else {
+                            binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
+                        }
 
 
-                            if (dashBoardCategoryViewModel.customerCardAmount.value?.isNotEmpty()?:false) {
-                                binding.txtTotalCard?.text =
-                                    dashBoardCategoryViewModel.customerCardAmount.value
-                            } else {
-                                binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
-                            }
+                        if (dashBoardCategoryViewModel.customerCardAmount.value?.isNotEmpty()
+                                ?: false
+                        ) {
+                            binding.txtTotalCard?.text =
+                                dashBoardCategoryViewModel.customerCardAmount.value
+                        } else {
+                            binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
+                        }
 
 
 
@@ -580,24 +887,41 @@ class CustomDisplay(
                 binding.tvLoyaltyPoints.text =
                     "${context.resources.getString(R.string.applied_loyalty_points)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
             } else {
-                binding.tvLoyaltyBalance.invisible()
+                /*binding.tvLoyaltyBalance.invisible()
                 binding.tvLoyaltyPoints.invisible()
+                */
+                /*-----------Customer Loyalty------------*/
+                binding.tvLoyaltyBalance.gone()
+                binding.tvLoyaltyPoints.gone()
+                /*-----------Customer Loyalty------------*/
+
             }
-            binding.txtLoyaltyPointsLabel.text =
-                "Loyalty Balance: ${
-                    if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
-                        dashBoardCategoryViewModel.redeemLoyaltyInfo.remainingLoyaltyPoints
-                    } else {
-                        dashBoardCategoryViewModel.redeemLoyaltyInfo.availablePoints
-                    }
-                }"
-            binding.txtCustomerName.text = name
+            CoroutineScope(Dispatchers.Main).launch {
+                binding.txtLoyaltyPointsLabel.text =
+                    "Loyalty Balance: ${
+                        if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                            dashBoardCategoryViewModel.redeemLoyaltyInfo.remainingLoyaltyPoints
+                        } else {
+                            dashBoardCategoryViewModel.redeemLoyaltyInfo.availablePoints
+                        }
+                    }"
+                binding.txtCustomerName.text = name
+            }
+
 
         } else {
-            binding.txtLoyaltyPointsLabel.invisible()
+         /*   binding.txtLoyaltyPointsLabel.invisible()
             binding.txtCustomerName.invisible()
             binding.tvLoyaltyBalance.invisible()
-            binding.tvLoyaltyPoints.invisible()
+            binding.tvLoyaltyPoints.invisible()*/
+
+            /*----------Customer Loyalty--------------*/
+            binding.txtLoyaltyPointsLabel.gone()
+            binding.txtCustomerName.gone()
+            binding.tvLoyaltyBalance.gone()
+            binding.tvLoyaltyPoints.gone()
+            /*----------Customer Loyalty--------------*/
+
             binding.relativeLoylatyPoints.gone()
             binding.lblLoyaltyPoints.gone()
             if (dashBoardCategoryViewModel.order_note.isNotEmpty()) {
@@ -702,7 +1026,38 @@ class CustomDisplay(
             progressLayout.gone()
 
             thankYouLayout.visible()
+            try{
+                if (dashBoardCategoryViewModel.selectedCustomer!=null) {
+                    txtEarnedLoyalty?.visible()
+                    txtEarnedLoyalty?.post {
+                        if (dashBoardCategoryViewModel.selectedCustomer?.final_reward.toString()
+                                .toInt()!=0){
+                            txtEarnedLoyalty?.setText(
+                                "You have earned ${
+                                    ((dashBoardCategoryViewModel.selectedCustomer?.final_reward.toString()
+                                        .toInt()).minus(
+                                            dashBoardCategoryViewModel.earnedLoyaltyPoints.value?.peekContent()
+                                                .toString().toInt()
+                                        )).toString()
+                                } reward points"
+                            )
+                        }else{
+                            txtEarnedLoyalty?.setText(
+                                "You have earned ${
+                                    (dashBoardCategoryViewModel.earnedLoyaltyPoints.value?.peekContent()
+                                                .toString().toInt()).toString()
+                                } reward points"
+                            )
+                        }
+
+                    }
+                }
+            }catch (e:Exception){
+
+            }
+
             txtPaidAmount.text = "Paid $${paidAmount.toPrecision(2)}"
+
         }
     }
 
@@ -749,6 +1104,8 @@ class CustomDisplay(
             mainCartLayout.gone()
             thankYouLayout.gone()
             splashLayout.visible()
+            imgPaysSplash?.visible()
+            splashLoyalty?.gone()
         }
     }
 
@@ -1525,21 +1882,41 @@ class CustomDisplay(
                         //delay(5000)
                         //binding.rvActiveTipsList.smoothScrollToPosition(tipsList.size - 1)
                     }
-                Log.d("Payment_TYPE:: ", dashBoardCategoryViewModel.paymentTypeForTip)
-                if (dashBoardCategoryViewModel.paymentTypeForTip.equals("cash", ignoreCase = true)){
-                    activeTipsListAdapter?.setList(it.data, binding.txtTotalCash.text.toString().trim().replace('$',' ').trim().toDouble())
-                }else if (dashBoardCategoryViewModel.paymentTypeForTip.equals("card", ignoreCase = true)){
-                    activeTipsListAdapter?.setList(it.data, binding.txtTotalCard.text.toString().trim().replace('$',' ').trim().toDouble())
-                }else{
-                    activeTipsListAdapter?.setList(it.data, wholeTotalPrice)
+                    Log.d("Payment_TYPE:: ", dashBoardCategoryViewModel.paymentTypeForTip)
+                    if (dashBoardCategoryViewModel.paymentTypeForTip.equals(
+                            "cash",
+                            ignoreCase = true
+                        )
+                    ) {
+                        activeTipsListAdapter?.setList(
+                            it.data,
+                            binding.txtTotalCash.text.toString().trim().replace('$', ' ').trim()
+                                .toDouble()
+                        )
+                    } else if (dashBoardCategoryViewModel.paymentTypeForTip.equals(
+                            "card",
+                            ignoreCase = true
+                        )
+                    ) {
+                        activeTipsListAdapter?.setList(
+                            it.data,
+                            binding.txtTotalCard.text.toString().trim().replace('$', ' ').trim()
+                                .toDouble()
+                        )
+                    } else {
+                        activeTipsListAdapter?.setList(it.data, wholeTotalPrice)
+                    }
+                    activeTipsListAdapter?.setListner(this)
+                    lifecycleOwner.lifecycleScope.launch {
+                        //delay(5000)
+                        //binding.rvActiveTipsList.smoothScrollToPosition(tipsList.size - 1)
+                    }
                 }
-                activeTipsListAdapter?.setListner(this)
-                lifecycleOwner.lifecycleScope.launch {
-                    //delay(5000)
-                    //binding.rvActiveTipsList.smoothScrollToPosition(tipsList.size - 1)
-                }
-            }}catch (e:Exception) {
-               Log.e("CRASH CUSTOMER DISPLAY - GET TIP LIST ACTIVE  ","observeActiveTipsList "+e.message)
+            } catch (e: Exception) {
+                Log.e(
+                    "CRASH CUSTOMER DISPLAY - GET TIP LIST ACTIVE  ",
+                    "observeActiveTipsList " + e.message
+                )
             }
         }
     }
@@ -1652,7 +2029,12 @@ class CustomDisplay(
         GlobalScope.launch {
             dashBoardCategoryViewModel.processingTipForCard.postValue(true)
 
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
+            posLink.SetCommSetting(
+                SettingINI.getCommSettingFromFile(
+                    context!!,
+                    Constants.FILE_PATH + SettingINI.FILENAME
+                )
+            )
             val tip_amt = (tippedAmount * 100).toInt()
             Log.d("Amt: ", "tip $tip_amt RefNo ${mPaymentViewModel.paxReferenceNo}")
 
@@ -1875,7 +2257,7 @@ class CustomDisplay(
         magRequestUtils: MagtekRequestUtils,
         apiModule1: ApiModule1,
         fromKeypad: Boolean = false,
-        totalPrice:Double
+        totalPrice: Double
     ) {
         mTipListViewModel = tipListViewModel
         mOrderID = orderId
@@ -1894,9 +2276,9 @@ class CustomDisplay(
             setupActiveTipsList(mTipListViewModel)
 //            observeActiveTipsList(wholeTotalPrice)
             Log.d("C_Disp_3::", mPaymentViewModel.tipOnAmount.toString())
-            if (dashBoardCategoryViewModel.getSplitCount()==1){
+            if (dashBoardCategoryViewModel.getSplitCount() == 1) {
                 observeActiveTipsList(/*mPaymentViewModel.tipOnAmount*/totalPrice / dashBoardCategoryViewModel.getSplitCount())
-            }else{
+            } else {
                 observeActiveTipsList(mPaymentViewModel.tipOnAmount / dashBoardCategoryViewModel.getSplitCount())
             }
 

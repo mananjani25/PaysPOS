@@ -263,9 +263,22 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         initPOSLink()
         getMerchantDataObserver()
+        setLoyaltyEarnedObserver()
 //        setCommSetting()
 
         return binding.root
+    }
+
+    private fun setLoyaltyEarnedObserver() {
+        paymentviewModel.earnedLoyaltyPoints.observe(viewLifecycleOwner,object :androidx.lifecycle.Observer<Event<Int>>{
+            override fun onChanged(t: Event<Int>?) {
+                t?.getContentIfNotHandled()?.let {
+                    if (it!=0){
+                        dashboardViewModel.setCustomerLoyaltyOnCustomerThankyouScreen(it)
+                    }
+                }
+            }
+        })
     }
 
     // To init PosLink for pax payment

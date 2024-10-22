@@ -81,6 +81,7 @@ import com.pays.pos.di.RolePermission
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.fragments.allorders.AllOrdersViewModel
+import com.pays.pos.ui.fragments.customer.CustomerListViewModel
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
@@ -151,6 +152,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private val TAG = "DashboardCategoryBold"
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
+
+    /*-------------Customer Loyalty-------------*/
+    private val customerListViewModel by activityViewModels<CustomerListViewModel>()
+    /*-------------Customer Loyalty-------------*/
+
     var isupdate = false
 
     //    this isOrderUpdate is used to track is the order is really updated or just update button is clicked to move to the All Orders Screen
@@ -392,6 +398,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             observerSyncItemPriceChange()   // putting these methods in onviewcreated due to UI glitch issue
             prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
 
+            /*------------Customer Loyalty------------*/
+            checkIfCustomersDownloaded()
+            /*------------Customer Loyalty------------*/
 
             binding.layoutHeader.ivLock.setOnClickListener {
 
@@ -436,6 +445,67 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         return binding.root
     }
+
+    /*----------------Customer Loyalty------------------*/
+    private fun checkIfCustomersDownloaded(){
+        customerListViewModel.hasCustomers()
+        viewModel.loadCustomersList.observe(viewLifecycleOwner,object:Observer<Pair<Int,Boolean>>{
+            override fun onChanged(t: Pair<Int,Boolean>?) {
+                t?.let {
+                    loadCustomerLocalList(it.first+1)
+                }
+            }
+        })
+        customerListViewModel.customerCount.observe(viewLifecycleOwner,object:Observer<Event<Boolean>>{
+            override fun onChanged(t: Event<Boolean>?) {
+                t?.getContentIfNotHandled()?.let { _it ->
+                    if (!_it) {
+                        loadCustomerLocalList(1)
+                    }
+                }
+            }
+        })
+    }
+
+    private fun loadCustomerLocalList(currentpage: Int) {
+        CoroutineScope(Dispatchers.Main).launch {
+            Log.d("loadCustomerLocalList::", "${currentpage}")
+            val data = LinkedHashMap<String, String>()
+            data["page"] = currentpage.toString()
+            data["per_page"] = "10"
+            var resource=customerListViewModel.fetchCustomersList(data)
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    if (resource.data != null) {
+                        resource.data?.let {
+                            if (it.data.isNotEmpty()){
+                                try{
+                                    var status=viewModel.addCustomersList(currentpage,it.data)
+//                                    Log.d("addCustomersList",status.toString())
+
+                                }catch (e:Exception){
+
+                                }
+
+                            }
+                        }
+                    }
+                }
+                Status.LOADING -> {
+
+                }
+                Status.ERROR -> {
+
+                    binding.root.showAlert(resource.message)
+
+                }
+
+
+            }
+
+        }
+    }
+    /*----------------Customer Loyalty------------------*/
 
 
     private fun checkCashDrawerObserver() {
