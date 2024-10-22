@@ -379,10 +379,10 @@ class CustomDisplay(
         if (dashBoardCategoryViewModel.currentCartItems.isNotEmpty()){
             dashBoardCategoryViewModel.callUpdateCartFooter(true)
         }
-        displayCustomer()
         EventBus.getDefault()
             .post(SyncCustomerEvent(true, customer.first_name + " " + customer.last_name))
         CoroutineScope(Dispatchers.Main).launch {
+            displayCustomer()
             binding.tvMessage?.text="Customer added successfully"
             binding.txtCustomerName.apply { text = customer.first_name + " " + customer.last_name }
             binding.keypadLayout?.gone()
