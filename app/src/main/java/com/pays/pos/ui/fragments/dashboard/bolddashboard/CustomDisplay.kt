@@ -68,6 +68,7 @@ import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
 import com.pays.pos.ui.fragments.transactions.TransactionViewModel
 import com.pays.pos.utils.*
+import com.pays.pos.utils.MethodUtils.Companion.generalizeAmount
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
 import com.pays.pos.utils.callback.MyCallback
 import com.pays.pos.utils.extensions.*
@@ -434,7 +435,6 @@ class CustomDisplay(
     }
 
     private fun getPreparedRewardStatement(it: LoyaltyProgramsModel): CharSequence? {
-        var amount = ""
         var point = ""
         if (it.rewardPoint > 1) {
             point = "points"
@@ -442,12 +442,7 @@ class CustomDisplay(
             point = "point"
         }
 
-        if ((it.amount.toString().length - 1) - it.amount.toString().indexOf('.') < 2) {
-            amount = it.amount.toString() + "0"
-        } else {
-            amount = it.amount.toString()
-        }
-        return "${it.rewardPoint.toString()} ${point} on for every $${amount} spent"
+        return "${generalizeAmount(it.amount.toString())} ${point} on for every $${generalizeAmount(it.rewardPoint.toString())} spent"
     }
 
 
