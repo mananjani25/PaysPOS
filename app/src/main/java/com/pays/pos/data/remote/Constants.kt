@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutionException
 
 object Constants {
 
-    const val isPaxInDebugMode: Boolean = false
+    const val isPaxInDebugMode: Boolean = true
     const val paxLive="https://secure.epx.com/"
     const val paxDebug="https://secure.epxuap.com/"
 
@@ -464,6 +464,7 @@ object Constants {
     const val isManual = "isManual"
     const val orderNoteOld = "orderNoteOld"
     const val orderNoteNew = "orderNoteNew"
+    const val CREATE_CUSTOMER = "CREATE_CUSTOMER"
 
     const val SUNMI_FRAMEWORK_VERSION = "SUNMI_FRAMEWORK_VERSION"
 

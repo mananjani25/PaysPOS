@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:ignore="MissingDefaultResource"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:theme="@style/CustomPresentationTheme"
     android:background="@color/backgroundColor">
 
     <LinearLayout
@@ -41,51 +43,84 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/tvLoyaltyBalance"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:gravity="end"
-                android:paddingVertical="@dimen/_5sdp"
-                android:layout_marginStart="@dimen/_8sdp"
-                android:singleLine="true"
-                android:textColor="@color/btnColorDark"
-                android:textSize="@dimen/_6mdpi"
-                android:textStyle="bold"
-                tools:text="@string/applied_loyalty_balance" />
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_10sdp"
+                    android:layout_gravity="center"
+                    app:cardBackgroundColor="@color/btnColor"
+                    app:cardCornerRadius="30dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/tvLoyaltyPoints"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:gravity="end"
-                android:paddingVertical="@dimen/_5sdp"
-                android:layout_marginStart="@dimen/_8sdp"
-                android:singleLine="true"
-                android:textColor="@color/btnColorDark"
-                android:textSize="@dimen/_6mdpi"
-                android:textStyle="bold"
-                tools:text="@string/applied_loyalty_points" />
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnSignUpOrCheckInMain"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@color/pinFieldLibraryTransparent"
+                        android:gravity="center"
+                        android:letterSpacing="0.02"
+                        android:paddingEnd="10dp"
+                        android:paddingStart="10dp"
+                        android:text="@string/sign_up_or_check_in"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textStyle="normal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/txtLoyaltyPointsLabel"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:gravity="end"
-                android:maxLength="40"
-                android:paddingVertical="@dimen/_5sdp"
-                android:layout_marginStart="@dimen/_8sdp"
-                android:singleLine="true"
-                android:textColor="@color/btnColorDark"
-                android:textSize="@dimen/_6mdpi"
-                android:textStyle="bold"
-                tools:text="Loyalty Points: 1000" />
+                </androidx.cardview.widget.CardView>
+
+
+                <TextView
+                    android:id="@+id/tvLoyaltyBalance"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_8sdp"
+                    android:ellipsize="end"
+                    android:gravity="end"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:singleLine="true"
+                    android:textColor="@color/btnColorDark"
+                    android:textSize="@dimen/_6mdpi"
+                    android:textStyle="bold"
+                    tools:text="@string/applied_loyalty_balance" />
+
+                <TextView
+                    android:id="@+id/tvLoyaltyPoints"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_8sdp"
+                    android:ellipsize="end"
+                    android:gravity="end"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:singleLine="true"
+                    android:textColor="@color/btnColorDark"
+                    android:textSize="@dimen/_6mdpi"
+                    android:textStyle="bold"
+                    tools:text="@string/applied_loyalty_points" />
+
+                <TextView
+                    android:id="@+id/txtLoyaltyPointsLabel"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_8sdp"
+                    android:ellipsize="end"
+                    android:gravity="end"
+                    android:maxLength="40"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:singleLine="true"
+                    android:textColor="@color/btnColorDark"
+                    android:textSize="@dimen/_6mdpi"
+                    android:textStyle="bold"
+                    tools:text="Loyalty Points: 1000" />
+
             </LinearLayout>
 
         </LinearLayout>
@@ -278,9 +313,9 @@
                     android:id="@+id/txtSubTotalCash"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -290,9 +325,9 @@
                     android:id="@+id/txtSubTotalCard"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -322,9 +357,9 @@
                     android:id="@+id/txtTaxCash"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -334,9 +369,9 @@
                     android:id="@+id/txtTaxCard"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -366,9 +401,9 @@
                     android:id="@+id/txtServiceChargeCash"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -378,9 +413,9 @@
                     android:id="@+id/txtServiceChargeCard"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -410,9 +445,9 @@
                     android:id="@+id/txtDiscountCash"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -422,9 +457,9 @@
                     android:id="@+id/txtDiscountCard"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -436,10 +471,10 @@
                 android:id="@+id/lnrLayoutTip"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 android:layout_marginHorizontal="@dimen/_5sdp"
                 android:layout_marginTop="@dimen/_3sdp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtTipLabel"
@@ -482,10 +517,10 @@
                 android:id="@+id/lnrLayoutCashDiscountSurcharge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 android:layout_marginHorizontal="@dimen/_5sdp"
                 android:layout_marginTop="@dimen/_3sdp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtCashDiscountSurchargeLabel"
@@ -502,22 +537,22 @@
                     android:id="@+id/txtCashDiscountSurchargeCash"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
-                    android:visibility="invisible"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/text_size_medium" />
+                    android:textSize="@dimen/text_size_medium"
+                    android:visibility="invisible" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtCashDiscountSurchargeCard"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="@string/_0_00"
                     android:textColor="@color/white"
@@ -531,8 +566,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="@color/btnColor"
-                android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:padding="@dimen/_5sdp">
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -549,11 +584,11 @@
                 <LinearLayout
                     android:id="@+id/lnrLayoutCashTotal"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
                     android:gravity="end"
-                    android:visibility="gone"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
@@ -578,11 +613,11 @@
                 <LinearLayout
                     android:id="@+id/lnrLayoutCardTotal"
                     android:layout_width="0dp"
-                    android:layout_weight="0.5"
                     android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
                     android:gravity="end"
-                    android:visibility="gone"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtTotalCardLabel"
@@ -612,8 +647,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_3sdp"
                     android:layout_weight="2"
-                    android:text="$0.00"
                     android:gravity="end"
+                    android:text="$0.00"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_8mdpi"
                     android:textStyle="bold"
@@ -1141,16 +1176,112 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#1D1D1F"
-        android:visibility="gone">
+        android:visibility="visible">
 
 
+        <LinearLayout
+            android:id="@+id/splashLoyalty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvBusinessName"
+                style="@style/CustomFontLight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_10ssp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Business Name Placeholder" />
+
+
+            <ImageView
+                android:id="@+id/imgBusiness"
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_round"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <TextView
+                android:id="@+id/tvMessage"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/loyalty_message"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_18ssp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvRewards"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_14ssp"
+                android:textStyle="normal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:layout_marginBottom="@dimen/_25sdp"
+                app:cardBackgroundColor="@color/btnColor"
+                app:cardCornerRadius="30dp">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnSignUpOrCheckIn"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@color/pinFieldLibraryTransparent"
+                    android:gravity="center"
+                    android:letterSpacing="0.02"
+                    android:paddingStart="40dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="40dp"
+                    android:paddingBottom="12dp"
+                    android:text="@string/sign_up_or_check_in"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_8ssp"
+                    android:textStyle="normal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgPaysSplash"
             android:layout_width="290dp"
             android:layout_height="200dp"
             android:background="@color/white"
             android:padding="12dp"
             android:src="@drawable/pays_logo_transparent"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -1161,7 +1292,7 @@
             android:id="@+id/current_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="70dp"
             android:textColor="@color/white"
             android:textSize="25sp"
             android:textStyle="bold"
@@ -1175,7 +1306,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginBottom="10dp"
             android:textColor="@color/white"
             android:textSize="12sp"
             android:textStyle="normal"
@@ -1184,6 +1314,389 @@
             app:layout_constraintTop_toBottomOf="@id/current_time"
             tools:text="Tuesday, 17 Jan" />
 
+        <TextView
+            android:id="@+id/tvPoweredByPays"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginBottom="10dp"
+            android:text="@string/powered_by_pays"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/keypadLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#1D1D1F"
+        android:visibility="gone">
+
+
+        <LinearLayout
+            android:id="@+id/llKeyboard"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="10">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline4"
+                    app:layout_constraintStart_toStartOf="@+id/guideline3"
+                    app:layout_constraintTop_toTopOf="@+id/guideline5">
+
+                    <TextView
+                        android:id="@+id/tvEnterPhoneTitle"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/enter_your_phone_number"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_15ssp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvCancel"
+                        style="@style/CustomFontLight"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:text="@string/cancel"
+                        android:textColor="@color/btnColorDark"
+                        android:textSize="@dimen/_12ssp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/llMarkedPhoneNumber"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="@drawable/background_sales_button"
+                    android:orientation="vertical"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="@+id/constraintLayout"
+                    app:layout_constraintStart_toStartOf="@+id/constraintLayout"
+                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+                    <com.santalu.maskedittext.MaskEditText
+                        android:id="@+id/tvPhoneNumber"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:hint="@string/type_here"
+                        android:inputType="number"
+                        android:maxLength="20"
+                        android:padding="@dimen/_9sdp"
+                        android:textColor="@color/white"
+                        android:textColorHint="@color/gray_color"
+                        android:textSize="@dimen/_7mdpi"
+                        app:met_mask="(###) ###-####" />
+
+                    <!--        <com.santalu.maskedittext.MaskEditText
+                                android:id="@+id/tvPhoneNumber"
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@null"
+                                android:hint="(201) 555-0123"
+                                android:inputType="number"
+                                android:maxLength="20"
+                                android:padding="@dimen/_9sdp"
+                                android:text="7050058109"
+                                android:textColor="@color/txtColor"
+                                android:textColorHint="@color/hint_color_"
+                                android:textSize="@dimen/_7mdpi"
+                                app:met_mask="(###) ###-####" />-->
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <!--<TextView
+                    android:id="@+id/tvPhoneNumber"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/background_sales_button"
+                    android:fontFamily="@font/sf_pro_display_semibold"
+                    android:hint="@string/phone_number"
+                    android:maxLength="15"
+                    android:padding="@dimen/_9sdp"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/gray_color"
+                    android:textSize="@dimen/_6mdpi"
+                    app:layout_constraintEnd_toEndOf="@+id/constraintLayout"
+                    app:layout_constraintStart_toStartOf="@+id/constraintLayout"
+                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />-->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline4"
+                    app:layout_constraintStart_toStartOf="@+id/guideline3"
+                    app:layout_constraintTop_toBottomOf="@+id/llMarkedPhoneNumber">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TableLayout
+                            android:id="@+id/number_pad"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center">
+
+                            <!-- First Row -->
+                            <TableRow>
+
+                                <androidx.appcompat.widget.AppCompatButton
+                                    android:id="@+id/btnOne"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="5dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/background_sales_button"
+                                    android:gravity="center"
+                                    android:padding="10dp"
+                                    android:text="1"
+                                    android:textColor="@color/white" />
+
+                                <androidx.appcompat.widget.AppCompatButton
+                                    android:id="@+id/btnTwo"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="5dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/background_sales_button"
+                                    android:gravity="center"
+                                    android:padding="10dp"
+                                    android:text="2"
+                                    android:textColor="@color/white" />
+
+                                <androidx.appcompat.widget.AppCompatButton
+                                    android:id="@+id/btnThree"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="5dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/background_sales_button"
+                                    android:gravity="center"
+                                    android:padding="10dp"
+                                    android:text="3"
+                                    android:textColor="@color/white" />
+                            </TableRow>
+
+                            <!-- Second Row -->
+                            <TableRow>
+
+                                <androidx.appcompat.widget.AppCompatButton
+                                    android:id="@+id/btnFour"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="5dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/background_sales_button"
+                                    android:gravity="center"
+                                    android:padding="10dp"
+                                    android:text="4"
+                                    android:textColor="@color/white" />
+
+                                <androidx.appcompat.widget.AppCompatButton
+                                    android:id="@+id/btnFive"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="5dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/background_sales_button"
+                                    android:gravity="center"
+                                    android:padding="10dp"
+                                    android:text="5"
+                                    android:textColor="@color/white" />
+
+                                <androidx.appcompat.widget.AppCompatButton
+                                    android:id="@+id/btnSix"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="5dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/background_sales_button"
+                                    android:gravity="center"
+                                    android:padding="10dp"
+                                    android:text="6"
+                                    android:textColor="@color/white" />
+                            </TableRow>
+
+                            <!-- Third Row -->
+                            <TableRow>
+
+                                <androidx.appcompat.widget.AppCompatButton
+                                    android:id="@+id/btnSeven"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="5dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/background_sales_button"
+                                    android:gravity="center"
+                                    android:padding="10dp"
+                                    android:text="7"
+                                    android:textColor="@color/white" />
+
+                                <androidx.appcompat.widget.AppCompatButton
+                                    android:id="@+id/btnEight"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="5dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/background_sales_button"
+                                    android:gravity="center"
+                                    android:padding="10dp"
+                                    android:text="8"
+                                    android:textColor="@color/white" />
+
+                                <androidx.appcompat.widget.AppCompatButton
+                                    android:id="@+id/btnNine"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="5dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/background_sales_button"
+                                    android:gravity="center"
+                                    android:padding="10dp"
+                                    android:text="9"
+                                    android:textColor="@color/white" />
+                            </TableRow>
+
+                            <TableRow>
+
+                                <androidx.appcompat.widget.AppCompatButton
+                                    android:id="@+id/btnClear"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="5dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/background_sales_button"
+                                    android:gravity="center"
+                                    android:padding="10dp"
+                                    android:text="@string/clear"
+                                    android:textColor="@color/white" />
+
+                                <androidx.appcompat.widget.AppCompatButton
+                                    android:id="@+id/btnZero"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="5dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/background_sales_button"
+                                    android:gravity="center"
+                                    android:padding="10dp"
+                                    android:text="0"
+                                    android:textColor="@color/white" />
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:id="@+id/btnBackSpace"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="5dp"
+                                    android:layout_weight="1"
+                                    android:src="@drawable/ic_backspace"
+                                    android:background="@drawable/background_sales_button"
+                                    android:gravity="center"
+                                    android:tint="@color/white"
+                                    app:tint="@color/white"
+                                    android:padding="12dp"
+                                    android:contentDescription="@string/delete"
+                                    android:textColor="@color/white" />
+
+                            </TableRow>
+
+                        </TableLayout>
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/tvDone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_button_border"
+                            android:gravity="center"
+                            android:padding="10dp"
+                            android:text="@string/tv_done"
+                            android:textColor="@color/white" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.10" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.9" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_percent="0.1" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+        <!-- <androidx.appcompat.widget.AppCompatImageView
+             android:layout_width="290dp"
+             android:layout_height="200dp"
+             android:background="@color/white"
+             android:padding="12dp"
+             android:src="@drawable/pays_logo_transparent"
+             app:layout_constraintBottom_toBottomOf="parent"
+             app:layout_constraintEnd_toEndOf="parent"
+             app:layout_constraintStart_toStartOf="parent"
+             app:layout_constraintTop_toTopOf="parent" />
+ -->
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginBottom="10dp"
+            android:text="@string/powered_by_pays"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -1237,6 +1750,23 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/imageViewThankYou" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtEarnedLoyalty"
+            style="@style/CustomFontMediumStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:visibility="gone"
+            android:layout_marginTop="10dp"
+            android:padding="@dimen/_5sdp"
+            tools:text="Thank you!"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_8mdpi"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtThankYou" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -857,14 +857,11 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                                     it.forEach {
                                                         addPaymentDetailsTwoDataLandiInner(it)
                                                     }
-
                                                 }
                                             }
                                         }
-
                                         lineBreak()
                                     }
-
 
                                     if (eodReportData?.refundDetails?.isNotEmpty() == true && eodReportConfiguration?.refundDetails == true) {
 
@@ -875,7 +872,6 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                             printOnNewLine = true
                                         )
                                         lineBreak()
-
 
                                         eodReportData?.refundDetails?.forEach {
 
@@ -888,9 +884,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                                     ).toString()
                                                 )
                                             }
-
                                         }
-
                                         lineBreak()
                                     }
 
@@ -904,10 +898,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                         )
                                         lineBreak()
 
-
-
                                         eodReportData?.discountDetails?.forEach {
-
                                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                                 print(
                                                     padLine(
@@ -931,9 +922,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                         )
                                         lineBreak()
 
-
                                         eodReportData?.totalCreditPaymentDetails?.forEach {
-
                                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                                 print(
                                                     padLine(
@@ -942,12 +931,11 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                                         48
                                                     ).toString()
                                                 )
-
                                             }
                                         }
                                         lineBreak()
-
                                     }
+
                                     if (eodReportData?.totalCashPayments?.isNotEmpty() == true && eodReportConfiguration?.totalCashPayments == true) {
 
                                         printCenter(
@@ -958,9 +946,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                         )
                                         lineBreak()
 
-
                                         eodReportData?.totalCashPayments?.forEach {
-
                                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                                 print(
                                                     padLine(
@@ -984,7 +970,6 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                         )
                                         lineBreak()
 
-
                                         eodReportData?.externalPayments?.forEach { report ->
                                             report.forEach {
                                                 if(it.key?.contains("Name", true) == true){
@@ -1004,6 +989,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                         }
                                         lineBreak()
                                     }
+
                                     if (eodReportData?.totalPayments?.isNotEmpty() == true && eodReportConfiguration?.totalPayments == true) {
 
                                         printCenter(
@@ -1015,7 +1001,6 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                         lineBreak()
 
                                         eodReportData?.totalPayments?.forEach {
-
                                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                                 print(
                                                     padLine(
@@ -1050,7 +1035,6 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                             }
                                         }
                                         lineBreak()
-
                                     }
 
                                     if (eodReportData?.serviceChargeDetails?.isNotEmpty() == true && eodReportConfiguration?.serviceChargeDetails == true) {
@@ -1071,7 +1055,6 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                                 }
                                             }
                                         }
-
                                         lineBreak()
                                     }
                                     if (eodReportData?.creditTipAudit?.isNotEmpty() == true && eodReportConfiguration?.creditTipAudit == true) {
@@ -1088,44 +1071,63 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                             addCreditTipAuditHeaderLandiInner()
                                             lineBreak()
                                             printDashedLineAndBreak()
-                                        }
-
-                                        eodReportData?.creditTipAudit?.forEach { it ->
-                                            var FPArt = ""
-                                            var SPart = ""
-                                            var LPart = ""
-                                            var TPArt = ""
-
-                                            it.forEach {
 
 
-                                                when {
-                                                    it.key?.contains("Subtotal", true) == true -> {
-                                                        FPArt = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
+                                            eodReportData?.creditTipAudit?.forEach { it ->
+                                                var fPArt = ""
+                                                var sPart = ""
+                                                var lPart = ""
+                                                var tPArt = ""
+
+                                                it.forEach {
+
+                                                    if (it.key?.contains(
+                                                            "Subtotal",
+                                                            true
+                                                        ) == true
+                                                    ) {
+                                                        fPArt = MethodUtils.roundOffAmount(
+                                                            it.value?.toDouble() ?: 0.0
+                                                        )
+                                                    } else if (it.key?.contains(
+                                                            "Tip",
+                                                            true
+                                                        ) == true
+                                                    ) {
+                                                        sPart = MethodUtils.roundOffAmount(
+                                                            it.value?.toDouble() ?: 0.0
+                                                        )
+                                                    } else if (it.key?.contains(
+                                                            "Total",
+                                                            true
+                                                        ) == true
+                                                    ) {
+                                                        lPart = MethodUtils.roundOffAmount(
+                                                            it.value?.toDouble() ?: 0.0
+                                                        )
+                                                    } else if (it.key?.contains(
+                                                            "Payment Id",
+                                                            true
+                                                        ) == true
+                                                    ) {
+                                                        tPArt = it.value.toString()
                                                     }
 
-                                                    it.key?.contains("Tip", true) == true -> {
-                                                        SPart = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
-                                                    }
-
-                                                    it.key?.contains("Total", true) == true -> {
-                                                        LPart = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
-                                                    }
-
-                                                    it.key?.contains("Payment Id", true) == true -> {
-                                                        TPArt = it.value.toString()
-                                                    }
                                                 }
 
-                                            }
-
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                                addCreditTipAuditDataLandiInner(FPArt, SPart, TPArt, LPart)
+                                                addCreditTipAuditDataLandiInner(
+                                                    fPArt,
+                                                    sPart,
+                                                    tPArt,
+                                                    lPart
+                                                )
                                                 lineBreak()
+
                                             }
                                         }
                                         lineBreak()
                                     }
+
                                     if (eodReportData?.employeeGuestDetails?.isNotEmpty() == true && eodReportConfiguration?.employeeGuestReport == true) {
 
                                         printCenter(
@@ -1146,6 +1148,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                         }
                                         lineBreak()
                                     }
+
                                     if (eodReportData?.salesPerCategorySummary?.isNotEmpty() == true && eodReportConfiguration?.cashCreditPerSalesCategorySummary == true) {
 
                                         printCenter(
@@ -1240,6 +1243,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                         }
                                         lineBreak()
                                     }
+
                                     if (eodReportData?.otherDetails?.isNotEmpty() == true && eodReportConfiguration?.otherDetails == true) {
 
                                         printCenter(

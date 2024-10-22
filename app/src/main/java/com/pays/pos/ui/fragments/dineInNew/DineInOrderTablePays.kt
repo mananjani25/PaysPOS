@@ -6270,10 +6270,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         prefProvider.getValue(Constants.BUSINESS_ADDRESS, "")
                                     } else ""
 
-                                    val businessPhoneNumber = prefProvider.getValue(
+                                    val businessPhoneNumber = MethodUtils.getUSFormatNumber(prefProvider.getValue(
                                         Constants.BUSINESS_PHONE_NO,
                                         ""
-                                    )
+                                    ))
 
 
                                     printCenter(venueAddress, fontSize = SMALL_SIZE)
@@ -10562,10 +10562,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         prefProvider.getValue(Constants.BUSINESS_ADDRESS, "")
                                     } else ""
 
-                                    val businessPhoneNumber = prefProvider.getValue(
+                                    val businessPhoneNumber = MethodUtils.getUSFormatNumber(prefProvider.getValue(
                                         Constants.BUSINESS_PHONE_NO,
                                         ""
-                                    )
+                                    ))
 
 
                                     printCenter(venueAddress, fontSize = SMALL_SIZE)

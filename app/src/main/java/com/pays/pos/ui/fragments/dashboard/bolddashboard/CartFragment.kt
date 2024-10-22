@@ -75,6 +75,7 @@ import com.pays.pos.databinding.FragmentCartBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
 import com.pays.pos.logger.MessageEvent
+import com.pays.pos.logger.SyncCustomerEvent
 import com.pays.pos.ui.adapter.DineInAdapter
 import com.pays.pos.ui.adapter.OrderTypeAdapter
 import com.pays.pos.ui.adapter.boldpos.CartItemsAdapter
@@ -286,7 +287,20 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
 
         setUpData()
+        setUpdateCartFooterObservable()
         return binding.root
+    }
+
+    private fun setUpdateCartFooterObservable() {
+        viewModel.updateCartFooterObservable.observe(viewLifecycleOwner,object:androidx.lifecycle.Observer<Event<Boolean>>{
+            override fun onChanged(t: Event<Boolean>?) {
+                t?.getContentIfNotHandled()?.let {
+                    if (it){
+                        updateCartFooter(viewModel.currentCartItems)
+                    }
+                }
+            }
+        })
     }
 
     // To check selected order type
@@ -486,7 +500,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
         }
 
-
+        setCustomerDisplayLoyalty()
         if (prefProvider.getValueInt(CUSTOMER_ID, -1) != -1) {
             displayCustomer()
         }
@@ -537,6 +551,41 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         uiSave()
 
     }
+
+
+/*----------------Customer Loyalty-----------------*/
+
+    private fun setCustomerDisplayLoyalty() {
+        viewModel.clickTakeOut.observe(
+            viewLifecycleOwner,
+            object : androidx.lifecycle.Observer<Event<Boolean>> {
+                override fun onChanged(t: Event<Boolean>?) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        binding.rvOrderType.layoutManager?.childCount?.let {
+                            for (position in 0..it) {
+                                if (binding.rvOrderType.findViewHolderForAdapterPosition(position)?.itemView?.findViewById<TextView>(
+                                        R.id.txtTitle
+                                    )?.text?.contains("Take out", ignoreCase = true) ?: false
+                                ) {
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        binding.rvOrderType.findViewHolderForAdapterPosition(
+                                            position
+                                        )?.itemView?.performClick()
+                                        if (prefProvider.getValueInt(CUSTOMER_ID, -1) != -1) {
+                                            displayCustomer()
+                                        }
+//                                binding.rvOrderType.findViewHolderForAdapterPosition(position)?.itemView?.performClick()
+                                    }
+                                    break
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+    }
+
+/*----------------Customer Loyalty-----------------*/
 
     private fun setupTaxAdapter() {
         taxBirfurcationAdapter = TaxBirfurcationAdapter("dashboard")
@@ -2453,6 +2502,28 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         binding.checkloylaty.isChecked =
                             viewModel.redeemLoyaltyInfo.needToApplyLoyalty
                     }
+                }else{
+                    /* This condition will be called when a customer will be added with loyalty but when cart is active with items, the user changes the customer which has no loyalty */
+                    Log.d("Loyalty::","Not available")
+                    binding.relativeLoylatyPoints.visibility = View.GONE
+                    binding.lblLoyaltyPoints.visibility = View.GONE
+                    binding.lblLoyaltyBalance.visibility = View.GONE
+                  /*  prefProvider.setValue(
+                        Constants.CUSTOMER_NAME,
+                        ""
+                    )
+                    viewModel.selectedCustomer=null
+                    prefProvider.setValue(
+                        Constants.RECEIPT_CUSTOMER_NAME,
+                        ""
+                    )
+                    prefProvider.setValue(
+                        Constants.PREF_CUSTOMER,
+                        ""
+                    )*/
+                    prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+                    prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+//                    prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                 }
             } else {
                 binding.relativeLoylatyPoints.visibility = View.GONE
@@ -4475,6 +4546,35 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
 
     }
+
+
+    /*------------Customer Loyalty--------------*/
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: SyncCustomerEvent?) {
+        event?.let {
+            runOnUiThread(object : Runnable {
+                override fun run() {
+                    /* TODO: set the customer added message to the customer display here*/
+                    binding.txtAddCustomer.apply {
+                        text = event?.customerName
+                    }
+                }
+            })
+        }
+    }
+
+    /* @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: CreateCustomerEvent?) {
+        if (event?.performCreate?:false) {
+//        Create Customer, this control has came from CustomerDisplay.kt, when customer is not present when giving the phone number.
+            addCustomerViewModel.phoneNo.value = event?.phoneNumber
+            addCustomerViewModel.submit(arrayListOf(), false, true)
+        }else{
+            dashboardViewModel.clickOnTakeOut()
+        }
+    }*/
+    /*------------Customer Loyalty--------------*/
+
 
     private fun increaseOnGoingOrderCounter() {
         lifecycleScope.launch {

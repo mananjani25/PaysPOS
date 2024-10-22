@@ -37,4 +37,17 @@ interface CustomerDao {
     @Query("SELECT COUNT(id) FROM TbCustomer")
     fun getTotalCustomersCount(): Int
 
+
+    /*--------------------Customer Loyalty--------------------*/
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun addAllCustomers(customerList: List<TbCustomer>):List<Long>
+
+    @Query("SELECT * FROM TbCustomer WHERE phones LIKE '%' || :phoneNumber || '%'")
+    fun fetchCustomerFromPhoneNumber(phoneNumber:String): List<TbCustomer?>?
+
+    @Query("SELECT EXISTS(SELECT * FROM TbCustomer)")
+    fun hasItem(): Boolean
+    /*--------------------Customer Loyalty--------------------*/
+
+
 }
