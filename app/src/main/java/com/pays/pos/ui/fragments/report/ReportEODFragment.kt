@@ -1074,10 +1074,10 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
 
                                             eodReportData?.creditTipAudit?.forEach { it ->
-                                                var FPArt = ""
-                                                var SPart = ""
-                                                var LPart = ""
-                                                var TPArt = ""
+                                                var fPArt = ""
+                                                var sPart = ""
+                                                var lPart = ""
+                                                var tPArt = ""
 
                                                 it.forEach {
 
@@ -1086,7 +1086,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                                             true
                                                         ) == true
                                                     ) {
-                                                        FPArt = MethodUtils.roundOffAmount(
+                                                        fPArt = MethodUtils.roundOffAmount(
                                                             it.value?.toDouble() ?: 0.0
                                                         )
                                                     } else if (it.key?.contains(
@@ -1094,7 +1094,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                                             true
                                                         ) == true
                                                     ) {
-                                                        SPart = MethodUtils.roundOffAmount(
+                                                        sPart = MethodUtils.roundOffAmount(
                                                             it.value?.toDouble() ?: 0.0
                                                         )
                                                     } else if (it.key?.contains(
@@ -1102,7 +1102,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                                             true
                                                         ) == true
                                                     ) {
-                                                        LPart = MethodUtils.roundOffAmount(
+                                                        lPart = MethodUtils.roundOffAmount(
                                                             it.value?.toDouble() ?: 0.0
                                                         )
                                                     } else if (it.key?.contains(
@@ -1110,16 +1110,16 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                                             true
                                                         ) == true
                                                     ) {
-                                                        TPArt = it.value.toString()
+                                                        tPArt = it.value.toString()
                                                     }
 
                                                 }
 
                                                 addCreditTipAuditDataLandiInner(
-                                                    FPArt,
-                                                    SPart,
-                                                    TPArt,
-                                                    LPart
+                                                    fPArt,
+                                                    sPart,
+                                                    tPArt,
+                                                    lPart
                                                 )
                                                 lineBreak()
 

@@ -1092,12 +1092,12 @@ fun addCreditTipAuditDataInner(
 fun addCreditTipAuditDataLandiInner(
     fPArt: String,
     sPart: String,
-    TPArt: String,
+    tPArt: String,
     lPart: String
 ) {
 
 
-    var pOne = TPArt + repeat(" ", 13 - TPArt.length) + fPArt
+    var pOne = tPArt + repeat(" ", 13 - tPArt.length) + fPArt
 
     pOne += repeat(" ", 27 - pOne.length) + sPart
     pOne += repeat(" ", 38 - pOne.length) + lPart
