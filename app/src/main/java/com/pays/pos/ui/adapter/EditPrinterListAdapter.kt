@@ -210,7 +210,7 @@ class EditPrinterListAdapter( val printerType:String) : RecyclerView.Adapter<Edi
     @SuppressLint("NotifyDataSetChanged")
     fun setList(dataList: ArrayList<PrinterResponse.Data.OrderTypes>) {
         /*---------------Removing the Kiosk Order Types-----------------*/
-        var toRemove=dataList.filter { it.orderTypeName.contains("Kiosk",ignoreCase = true) }
+        /*var toRemove=dataList.filter { it.orderTypeName.contains("Kiosk",ignoreCase = true) }
         var removeSettings:ArrayList<PrinterResponse.Data.PrinterSettings> = arrayListOf()
         dataList.forEach {
              removeSettings  = it.printerSettings.filter { it.isDestroy == true }.toCollection(
@@ -222,7 +222,7 @@ class EditPrinterListAdapter( val printerType:String) : RecyclerView.Adapter<Edi
             var nonDestroyList = it.printerSettings.filter { it.isDestroy == false }
             Log.e(TAG,"nonDestroyList:   ${nonDestroyList.size}")
             it.printerSettings = nonDestroyList
-        }
+        }*/
         /*---------------Removing the Kiosk Order Types-----------------*/
 
         list.clear()

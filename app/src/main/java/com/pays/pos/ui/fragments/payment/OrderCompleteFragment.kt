@@ -9581,23 +9581,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         ignoreCase = true
                                     ) && !isSpilt
                                 ) {
-                                    for (i in 0 until kitchenPrinterList.size) {
+                                    for (i in kitchenPrinterList.indices) {
+//                                        Log.d("KioskOpenOrderKitchenPrint", "1 -> Index$i, ${kitchenPrinterList[i].name}")
                                         if (kitchenPrinterList[i].status) {
-                                            kitchenPrinterList[i].orderTypes.forEach {
+//                                            Log.d("KioskOpenOrderKitchenPrint", "2 -> Index$i, ${kitchenPrinterList[i].name}")
+                                            kitchenPrinterList[i].orderTypes.forEach { orderTypes ->
 
-                                                if (it.orderTypeId == receiptModel?.order?.orderTypeId || it.orderType == receiptModel?.order?.orderType
+                                                if (orderTypes.orderTypeId == receiptModel?.order?.orderTypeId || orderTypes.orderType == receiptModel?.order?.orderType
 
                                                 ) {
-
-                                                    it.printerSettings.forEach {
-                                                        if ((it.printType.lowercase()
-                                                                .equals(KITCHEN.lowercase()) || it.printType.lowercase()
-                                                                .equals(
-                                                                    KITCHENANDCUSTOMER.lowercase()
-                                                                )) && it.autoPrinting
+//                                                    Log.d("KioskOpenOrderKitchenPrint", "3 -> Index$i, ${kitchenPrinterList[i].name}")
+                                                    orderTypes.printerSettings.forEach { printerSettings ->
+                                                        if ((printerSettings.printType.lowercase() == KITCHEN.lowercase() || printerSettings.printType.lowercase() == KITCHENANDCUSTOMER.lowercase()) && printerSettings.autoPrinting
                                                         ) {
-
-
+//                                                            Log.d("KioskOpenOrderKitchenPrint", "4 -> Index$i, ${kitchenPrinterList[i].name}")
                                                             if (checkItemsforPrinter(
                                                                     receiptModel?.order?.orderItems
                                                                         ?: arrayListOf(),
@@ -9606,11 +9603,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                     )
                                                                 )
                                                             ) {
+//                                                                Log.d("KioskOpenOrderKitchenPrint", "5 -> Index$i, ${kitchenPrinterList[i].name}")
+//                                                                val kitchenPrinterList = kitchenPrinterList[i]
                                                                 initKitchenPrinter(
-                                                                    kitchenPrinterList.get(
-                                                                        i
-                                                                    ),
-                                                                    KITCHEN
+                                                                    kitchenPrinterList[i],
+                                                                    KITCHEN,
                                                                 )
                                                             }
 
@@ -13513,6 +13510,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         type: String
     ) {
         prefProvider.deleteValue(Constants.DO_PRINT)
+        Log.d("initKitchenPrinter", "SunmiBlueToothPrinter is ${data.name}")
 
         GlobalScope.launch(Dispatchers.IO) {
             if (data.name.startsWith(SUNMI_PRINTER, true)) {
@@ -13544,6 +13542,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             override fun onConnect() {
                                 println("onConnect")
+//                                Log.d("KioskOpenOrderKitchenPrint", "CloudConnected")
                                 generateKitchenReceiptSunmi(data, type)
 
                                 /*       viewLifecycleOwner.lifecycleScope.launch {
@@ -13560,6 +13559,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         })
                 } else {
+//                    Log.d("KioskOpenOrderKitchenPrint", "CloudNotConnected")
                     generateKitchenReceiptSunmi(data, type)
                     /* viewLifecycleOwner.lifecycleScope.launch {
                      delay(200)
@@ -13570,6 +13570,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
                 SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+//                Log.d("KioskOpenOrderKitchenPrint", "SunmiInnerSetService2")
                 runBlocking {
                     delay(200)
                     setService2(data, type)
@@ -15679,6 +15680,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     ) {
         try {
 
+//            Log.d("KioskOpenOrderKitchenPrint", "${kitchenReceiptPrinters.name.toString()}")
             runBlocking {
 
                 delay(500)
@@ -19250,6 +19252,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
+//                Log.d("KioskOpenOrderKitchenPrint", "isBlueToothPrinter-${kitchenReceiptPrinters.name.toString()}")
+
                 generateKitchenReceiptSunmiInner(kitchenReceiptPrinters, type)
 
 
@@ -19257,6 +19261,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             Handler(Looper.getMainLooper()).postDelayed({
+//                Log.d("KioskOpenOrderKitchenPrint", "CheckSunmiPrinter-${kitchenReceiptPrinters.name.toString()}")
                 setService2(kitchenReceiptPrinters, type)
             }, 2000)
             LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")

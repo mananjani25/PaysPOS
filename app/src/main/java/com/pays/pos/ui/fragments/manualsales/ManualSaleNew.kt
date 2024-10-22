@@ -907,7 +907,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                 viewModel.subTotalPrice=binding.txtSubTotal.text.toString().replace('$',' ').trim().toDouble()
                 viewModel.totalTax = binding.txtTax.text.toString().replace('$',' ').trim().toDouble()
-                viewModel.totalDiscount = 0.0
+                /*viewModel.totalDiscount = 0.0
                 totalDiscount = viewModel.totalDiscount
                 prefProvider.setValue(
                     Constants.TOTAL_DISCOUNT_ACTUAL,
@@ -917,7 +917,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     Constants.TOTAL_DISCOUNT,
                     viewModel.totalDiscount.toString()
                 )
-                viewModel.mainCartDiscount = viewModel.totalDiscount
+                viewModel.mainCartDiscount = viewModel.totalDiscount*/
                 viewModel.totalServiceCharge = binding.txtServiceCharge.text.toString().replace('$',' ').trim().toDouble()
 //                viewModel.totalPrice = (viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge) - viewModel.totalDiscount
 
