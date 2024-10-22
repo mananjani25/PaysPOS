@@ -167,6 +167,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     /*-----------Customer Loyalty------------*/
 
 
+    val itemsFiredToTheKitchenSuccesfully = MutableLiveData<Boolean>()
+
     var isItemEditInProgress = false
 
     /**
