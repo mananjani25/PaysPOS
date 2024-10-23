@@ -2349,7 +2349,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
 
 
-                    if (!it.isChecked) {
+                    if (it.isChecked || it.isEnabled) {
                         serviceCharge += (viewModel.subTotalPrice * it.percentage) / 100
                         Log.e(
                             "Service charges",
