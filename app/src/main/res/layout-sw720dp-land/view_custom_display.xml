@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:background="@color/backgroundColor"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/topLayout"
@@ -55,6 +55,8 @@
                     android:layout_gravity="center"
                     app:cardBackgroundColor="@color/btnColor"
                     app:cardCornerRadius="30dp"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:layout_marginBottom="@dimen/_4sdp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">

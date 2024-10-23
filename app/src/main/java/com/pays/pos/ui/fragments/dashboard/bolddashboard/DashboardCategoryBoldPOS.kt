@@ -668,6 +668,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             if (result != null) {
                 LogUtil.logE(TAG, "gotBundlebundle:  ${Gson().toJson(bundle)}")
                 setUpCustomer(result, bundle)
+                /* Below code will change the (SignUp or Check In) label to Change mobile number */
+                viewModel.changeCustomerDispSignButtonTitle(getString(R.string.change_mobile_number))
             }
         }
 

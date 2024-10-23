@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
 import android.os.StrictMode
+import android.system.StructTimespec
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
@@ -164,6 +165,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private val _updateCartFooterObservable = MutableLiveData<Event<Boolean>>()
     val updateCartFooterObservable: LiveData<Event<Boolean>> = _updateCartFooterObservable
+
+    private val _changeCustDispSignInButtonTitle = MutableLiveData<String>()
+    val changeCustDispSignInButtonTitle: LiveData<String> = _changeCustDispSignInButtonTitle
     /*-----------Customer Loyalty------------*/
 
 
@@ -351,6 +355,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun callUpdateCartFooter(value:Boolean){
         _updateCartFooterObservable.postValue(Event(value))
+    }
+
+    fun changeCustomerDispSignButtonTitle(value:String){
+        _changeCustDispSignInButtonTitle.postValue(value)
     }
     /*------------Customer Loyalty----------*/
 

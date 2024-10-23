@@ -949,6 +949,7 @@
     <string name="enter_your_phone_number">Enter Your Mobile Number</string>
     <string name="unable_to_create_customer">Unable to create customer</string>
     <string name="type_here">Type here</string>
+    <string name="change_mobile_number">Change mobile number</string>
     <!-- Customer Loyalty -->
 </resources>
 
