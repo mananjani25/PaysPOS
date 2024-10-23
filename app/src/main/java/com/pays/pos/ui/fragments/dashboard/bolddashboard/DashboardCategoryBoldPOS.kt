@@ -319,7 +319,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         /*--------------------- FOR CUSTOMER RECEIPT MODIFICATION--------------------*/
         prefProvider?.setValue(Constants.SUNMI_FRAMEWORK_VERSION, SystemProperties.get("ro.version.sunmi_versionname"))
-/*--------------------- FOR CUSTOMER RECEIPT MODIFICATION--------------------*/
+        /*--------------------- FOR CUSTOMER RECEIPT MODIFICATION--------------------*/
         sunmiFrameworkVersion = prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".").toTypedArray()
 
         if (viewModel.boldPosNeedToRefresh) {
@@ -399,7 +399,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
 
             /*------------Customer Loyalty------------*/
-            checkIfCustomersDownloaded()
+            if (InternetUtils.isInternetAvailable(requireContext())) {
+                if (!prefProvider.getValueboolean("CUSTOMER_FETCHED", false)) {
+                    checkIfCustomersDownloaded()
+                }
+            }
             /*------------Customer Loyalty------------*/
 
             binding.layoutHeader.ivLock.setOnClickListener {
@@ -460,6 +464,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             override fun onChanged(t: Event<Boolean>?) {
                 t?.getContentIfNotHandled()?.let { _it ->
                     if (!_it) {
+                        prefProvider.setValueboolean("CUSTOMER_FETCHED",true)
                         loadCustomerLocalList(1)
                     }
                 }
@@ -469,10 +474,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     private fun loadCustomerLocalList(currentpage: Int) {
         CoroutineScope(Dispatchers.Main).launch {
+            var pageSize="10"
             Log.d("loadCustomerLocalList::", "${currentpage}")
             val data = LinkedHashMap<String, String>()
             data["page"] = currentpage.toString()
-            data["per_page"] = "10"
+            data["per_page"] = pageSize
             var resource=customerListViewModel.fetchCustomersList(data)
             when (resource.status) {
                 Status.SUCCESS -> {
@@ -480,13 +486,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         resource.data?.let {
                             if (it.data.isNotEmpty()){
                                 try{
-                                    var status=viewModel.addCustomersList(currentpage,it.data)
-//                                    Log.d("addCustomersList",status.toString())
+                                    if (it.data.size < pageSize.toInt()){
+                                        var status=viewModel.addCustomersList(currentpage,it.data, lastCall =  true)
+                                    }else{
+                                        var status=viewModel.addCustomersList(currentpage,it.data)
+                                    }
 
+//                                    Log.d("addCustomersList",status.toString())
                                 }catch (e:Exception){
 
                                 }
-
                             }
                         }
                     }

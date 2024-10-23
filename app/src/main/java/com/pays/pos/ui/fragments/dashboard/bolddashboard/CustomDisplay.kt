@@ -199,6 +199,7 @@ class CustomDisplay(
 
             btnSignUpOrCheckIn?.setOnSingleClickListener(object : View.OnClickListener {
                 override fun onClick(p0: View?) {
+                    tvPhoneNumber.text?.clear()
                     splashLayout.gone()
                     keypadLayout?.visible()
                 }
@@ -206,6 +207,7 @@ class CustomDisplay(
 
             btnSignUpOrCheckInMain?.setOnSingleClickListener(object : View.OnClickListener {
                 override fun onClick(p0: View?) {
+                    tvPhoneNumber.text?.clear()
                     splashLayout.gone()
                     keypadLayout?.visible()
                 }
@@ -302,7 +304,7 @@ class CustomDisplay(
 
                     var mobileNumber = tvPhoneNumber?.text.toString().trim().replace(Regex("[^0-9]"), "")
                     searchUserFromMobileNumber(mobileNumber)
-
+                    tvPhoneNumber?.text?.clear()
 //                    [{"id":2,"phone_number":"5555575575"}]
                 }
             })
@@ -379,11 +381,12 @@ class CustomDisplay(
         if (dashBoardCategoryViewModel.currentCartItems.isNotEmpty()){
             dashBoardCategoryViewModel.callUpdateCartFooter(true)
         }
-        displayCustomer()
         EventBus.getDefault()
             .post(SyncCustomerEvent(true, customer.first_name + " " + customer.last_name))
         CoroutineScope(Dispatchers.Main).launch {
+            displayCustomer()
             binding.tvMessage?.text="Customer added successfully"
+            binding.btnSignUpOrCheckInMain.text="Change mobile number"
             binding.txtCustomerName.apply { text = customer.first_name + " " + customer.last_name }
             binding.keypadLayout?.gone()
             binding.splashLayout?.gone()
@@ -416,8 +419,13 @@ class CustomDisplay(
                     Status.SUCCESS -> {
                         try {
                             ProgressUtils.dismissProgressDialog()
-                            resource.data?.get(0)?.let {
-                                binding.tvRewards?.text = getPreparedRewardStatement(it)
+                            run breaking@{
+                                resource.data?.forEach {
+                                    if (it.isEnable){
+                                        binding.tvRewards?.text = getPreparedRewardStatement(it)
+                                        return@breaking
+                                    }
+                                }
                             }
                         } catch (e: Exception) {
 //                            binding.btnSignUpOrCheckIn.gone()
@@ -877,24 +885,30 @@ class CustomDisplay(
 
         val name = prefProvider.getValue(Constants.CUSTOMER_NAME, "")
         if (name.isNotEmpty()) {
-            binding.txtCustomerName.visible()
-            binding.txtLoyaltyPointsLabel.visible()
+            CoroutineScope(Dispatchers.Main).launch {
+                binding.txtCustomerName.visible()
+                binding.txtLoyaltyPointsLabel.visible()
+            }
+
             if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
-                binding.tvLoyaltyBalance.visible()
-                binding.tvLoyaltyPoints.visible()
-                binding.tvLoyaltyBalance.text =
-                    "${context.resources.getString(R.string.applied_loyalty_balance)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount}"
-                binding.tvLoyaltyPoints.text =
-                    "${context.resources.getString(R.string.applied_loyalty_points)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+                CoroutineScope(Dispatchers.Main).launch {
+                    binding.tvLoyaltyBalance.visible()
+                    binding.tvLoyaltyPoints.visible()
+                    binding.tvLoyaltyBalance.text =
+                        "${context.resources.getString(R.string.applied_loyalty_balance)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount}"
+                    binding.tvLoyaltyPoints.text =
+                        "${context.resources.getString(R.string.applied_loyalty_points)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+                }
             } else {
                 /*binding.tvLoyaltyBalance.invisible()
                 binding.tvLoyaltyPoints.invisible()
                 */
-                /*-----------Customer Loyalty------------*/
-                binding.tvLoyaltyBalance.gone()
-                binding.tvLoyaltyPoints.gone()
-                /*-----------Customer Loyalty------------*/
-
+                CoroutineScope(Dispatchers.Main).launch {
+                    /*-----------Customer Loyalty------------*/
+                    binding.tvLoyaltyBalance.gone()
+                    binding.tvLoyaltyPoints.gone()
+                    /*-----------Customer Loyalty------------*/
+                }
             }
             CoroutineScope(Dispatchers.Main).launch {
                 binding.txtLoyaltyPointsLabel.text =
@@ -1030,7 +1044,7 @@ class CustomDisplay(
                 if (dashBoardCategoryViewModel.selectedCustomer!=null) {
                     txtEarnedLoyalty?.visible()
                     txtEarnedLoyalty?.post {
-                        if (dashBoardCategoryViewModel.selectedCustomer?.final_reward.toString()
+                        /*if (dashBoardCategoryViewModel.selectedCustomer?.final_reward.toString()
                                 .toInt()!=0){
                             txtEarnedLoyalty?.setText(
                                 "You have earned ${
@@ -1047,6 +1061,15 @@ class CustomDisplay(
                                     (dashBoardCategoryViewModel.earnedLoyaltyPoints.value?.peekContent()
                                                 .toString().toInt()).toString()
                                 } reward points"
+                            )
+                        }*/
+
+                        if (dashBoardCategoryViewModel.selectedCustomer?.final_reward.toString().toInt()!=0){
+                            txtEarnedLoyalty?.setText(
+                                "Your total loyalty points are ${
+                                    (dashBoardCategoryViewModel.earnedLoyaltyPoints.value?.peekContent()
+                                        .toString().toInt()).toString()
+                                }"
                             )
                         }
 
