@@ -21,7 +21,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/topLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -43,11 +43,46 @@
                 android:textColor="@color/btnColorDark"
                 android:textSize="@dimen/_6mdpi"
                 android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
                 tools:text="Customer Name" />
 
             <LinearLayout
+                android:id="@+id/linearLayout3"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:gravity="end">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_10sdp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="5dp"
+                    app:cardBackgroundColor="@color/btnColor"
+                    app:cardCornerRadius="30dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnSignUpOrCheckInMain"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@color/pinFieldLibraryTransparent"
+                        android:gravity="center"
+                        android:letterSpacing="0.02"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:text="@string/sign_up_or_check_in"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textStyle="normal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.cardview.widget.CardView>
 
                 <TextView
                     android:id="@+id/tvLoyaltyBalance"
@@ -96,7 +131,7 @@
                     tools:text="Loyalty Points: 1000" />
             </LinearLayout>
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:id="@+id/rowHeaderLayout"

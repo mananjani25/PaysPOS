@@ -295,8 +295,10 @@ open class PaymentViewModel @Inject constructor(
                                             )
                                             LogUtil.logE("QueueCheck", "CreateOrderData")
                                         }
-                                    }else{
+                                    }else if(createOrderResponse.data.order.orderType == "DineIn") {
+                                        _data.value = Event(createOrderResponse)
                                         _showProgress.postValue(Event(false))
+
                                     }
 
                                     if (createOrderResponse.data.order.orderType != "Dine In" && createOrderResponse.data.order.orderType != PHONE_ORDER) {

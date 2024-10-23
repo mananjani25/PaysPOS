@@ -145,6 +145,9 @@ class DashBoardCategoryViewModel @Inject constructor(
     var currentCartItems: ArrayList<TbCartItem> = arrayListOf()
     var duplicateCurrentCartItem: ArrayList<TbCartItem> = arrayListOf()
 
+    /**
+     * When item update is in progress , restrict other actions like switch guest
+     */
     /*-----------Customer Loyalty------------*/
     val getBusinessData = posRepository.getBusinessData()
     val loyaltyPoints = taxServiceChargeRepository.loyaltyPointList()
@@ -164,9 +167,13 @@ class DashBoardCategoryViewModel @Inject constructor(
     /*-----------Customer Loyalty------------*/
 
 
+    val itemsFiredToTheKitchenSuccesfully = MutableLiveData<Boolean>()
+
     var isItemEditInProgress = false
 
-    // used to check if removed last item from the cart
+    /**
+     * To check if removed last item from the cart
+     */
     val lastItemRemoveFromCart = MutableLiveData<Pair<Boolean, Int>>()
 
     /* This variable is used to track the selected category, if this variable is not 0 then the category will be selected, it was added to solve BIS-4045 */
@@ -8704,11 +8711,13 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     /*-------------Customer Loyalty------------------*/
-    fun addCustomersList(currentPage:Int, data:List<TbCustomer>){
+    fun addCustomersList(currentPage:Int, data:List<TbCustomer>, lastCall:Boolean=false){
         CoroutineScope(Dispatchers.IO).launch {
             var data= posRepository.addCustomersList(data)
-            _loadCustomersList.postValue(Pair(currentPage,true))
-            _loadCustomersList.postValue(Pair(currentPage,false))
+            if (!lastCall) {
+                _loadCustomersList.postValue(Pair(currentPage, true))
+            }
+//            _loadCustomersList.postValue(Pair(currentPage,false))
             /*Check for Identical if not identical then find then call the livedata which will call the recursive function*/
             Log.d("addCustomersList:S","$data")
         }

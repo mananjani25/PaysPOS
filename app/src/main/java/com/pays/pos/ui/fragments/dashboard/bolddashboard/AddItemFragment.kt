@@ -1922,6 +1922,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     }
 
                     viewModel.updateDineInCart(viewModel.currentCartItems, item, DELETE, false, it1)
+                    viewModel.isItemEditInProgress = false
                 }
             } else {
                 item.guestIndexForDineIn = null
