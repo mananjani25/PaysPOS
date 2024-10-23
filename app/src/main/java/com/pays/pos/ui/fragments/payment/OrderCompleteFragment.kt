@@ -10063,7 +10063,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                 customerList.forEach {
                                     if (it.status) {
-                                        initPrinter(it, CUSTOMER, autoPrintCheck)
+                                        initPrinter(it, CUSTOMER, autoPrintCheck,fromllPrintButton=true)
                                     }
 
                                 }
@@ -10151,7 +10151,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private fun initPrinter(
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
         type: String,
-        isAutoPrint: Boolean
+        isAutoPrint: Boolean,
+        fromllPrintButton:Boolean=false
     ) {
         Log.e(TAG, "checkAutoPrint  ${isAutoPrint}")
         pd?.show()
@@ -10186,7 +10187,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
                 viewLifecycleOwner.lifecycleScope.launch {
                     delay(100)
-                    setService1(isAutoPrint)
+                    setService1(isAutoPrint,fromllPrintButton)
                 }
 
             } else if (customerReceiptPrinters.name.startsWith(LANDI_INNER_PRINTER, true)) {
@@ -17674,7 +17675,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
     }
 
-    private fun sunmiPrintInner(isAutoPrint: Boolean) {
+    private fun sunmiPrintInner(isAutoPrint: Boolean, fromllPrintButton: Boolean = false) {
 
         EventBus.getDefault()
             .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _sunmiPrintInner(isAutoPrint: Boolean) -> Here_2"))
@@ -18799,7 +18800,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
 
                     printingCustomer = false
-                    if (this@OrderCompleteFragment::kitchenReceiptPrinters.isInitialized) {
+                    if (this@OrderCompleteFragment::kitchenReceiptPrinters.isInitialized && !fromllPrintButton) {
                         generateKitchenReceiptSunmiInnerAfterCustomer(kitchenReceiptPrinters,"")
                     }
 
@@ -18808,7 +18809,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 } catch (e: Exception) {
                     pd?.dismiss()
                     printingCustomer = false
-                    if (this@OrderCompleteFragment::kitchenReceiptPrinters.isInitialized) {
+                    if (this@OrderCompleteFragment::kitchenReceiptPrinters.isInitialized && !fromllPrintButton) {
                         generateKitchenReceiptSunmiInnerAfterCustomer(kitchenReceiptPrinters,"")
                     }
 
@@ -19239,7 +19240,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
     }
 
-    private fun setService1(isAutoPrint: Boolean) {
+    private fun setService1(isAutoPrint: Boolean, fromllPrintButton:Boolean=false) {
         EventBus.getDefault()
             .post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt _setService1(isAutoPrint) -> Here"))
 
@@ -19275,7 +19276,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (IS_GIFT_CARD_TYPE) {
                     sunmiInnerPrintForGiftCard()
                 } else {
-                    sunmiPrintInner(isAutoPrint)
+                    sunmiPrintInner(isAutoPrint,fromllPrintButton=fromllPrintButton)
                 }
 
             }
