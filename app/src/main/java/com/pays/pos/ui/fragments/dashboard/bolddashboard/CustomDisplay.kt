@@ -416,8 +416,13 @@ class CustomDisplay(
                     Status.SUCCESS -> {
                         try {
                             ProgressUtils.dismissProgressDialog()
-                            resource.data?.get(0)?.let {
-                                binding.tvRewards?.text = getPreparedRewardStatement(it)
+                            run breaking@{
+                                resource.data?.forEach {
+                                    if (it.isEnable){
+                                        binding.tvRewards?.text = getPreparedRewardStatement(it)
+                                        return@breaking
+                                    }
+                                }
                             }
                         } catch (e: Exception) {
 //                            binding.btnSignUpOrCheckIn.gone()
