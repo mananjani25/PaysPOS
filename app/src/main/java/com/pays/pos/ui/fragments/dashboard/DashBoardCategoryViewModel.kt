@@ -8711,11 +8711,13 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     /*-------------Customer Loyalty------------------*/
-    fun addCustomersList(currentPage:Int, data:List<TbCustomer>){
+    fun addCustomersList(currentPage:Int, data:List<TbCustomer>, lastCall:Boolean=false){
         CoroutineScope(Dispatchers.IO).launch {
             var data= posRepository.addCustomersList(data)
-            _loadCustomersList.postValue(Pair(currentPage,true))
-            _loadCustomersList.postValue(Pair(currentPage,false))
+            if (!lastCall) {
+                _loadCustomersList.postValue(Pair(currentPage, true))
+            }
+//            _loadCustomersList.postValue(Pair(currentPage,false))
             /*Check for Identical if not identical then find then call the livedata which will call the recursive function*/
             Log.d("addCustomersList:S","$data")
         }
