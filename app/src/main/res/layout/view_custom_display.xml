@@ -56,9 +56,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/_10sdp"
                     android:layout_gravity="center"
-                    android:layout_marginTop="5dp"
                     app:cardBackgroundColor="@color/btnColor"
                     app:cardCornerRadius="30dp"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:layout_marginBottom="@dimen/_4sdp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">

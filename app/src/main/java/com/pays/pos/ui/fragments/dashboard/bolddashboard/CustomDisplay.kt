@@ -193,7 +193,7 @@ class CustomDisplay(
                 imgBusiness?.gone()
             }
             if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isNotEmpty()) {
-                btnSignUpOrCheckIn?.text = "Change mobile number"
+                btnSignUpOrCheckIn?.text = resources.getString(R.string.change_mobile_number)
                 tvMessage?.text = "Customer added successfully"
             }
 
@@ -310,6 +310,15 @@ class CustomDisplay(
             })
 
 
+            dashBoardCategoryViewModel.changeCustDispSignInButtonTitle.observe(lifecycleOwner,object :Observer<String>{
+                override fun onChanged(t: String?) {
+                    t?.let {
+                        if (it.isNotEmpty()){
+                            btnSignUpOrCheckInMain.text=it
+                        }
+                    }
+                }
+            })
         }
     }
 
@@ -386,7 +395,7 @@ class CustomDisplay(
         CoroutineScope(Dispatchers.Main).launch {
             displayCustomer()
             binding.tvMessage?.text="Customer added successfully"
-            binding.btnSignUpOrCheckInMain.text="Change mobile number"
+            binding.btnSignUpOrCheckInMain.text=resources.getString(R.string.change_mobile_number)
             binding.txtCustomerName.apply { text = customer.first_name + " " + customer.last_name }
             binding.keypadLayout?.gone()
             binding.splashLayout?.gone()
