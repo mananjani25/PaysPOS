@@ -6648,7 +6648,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     lineBreak()
 
-                                    if (customerSettingModel.showRefundAmount) {
+                                    /*if (customerSettingModel.showRefundAmount) {
 
                                         if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
 
@@ -6664,7 +6664,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 ).toString()
                                             )
                                         }
-                                    }
+                                    }*/
 
 
                                     if (customerSettingModel.showTipSuggestion) {
