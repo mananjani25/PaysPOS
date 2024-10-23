@@ -503,10 +503,15 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                         totalItemPrice = screenTotalAmount.toDouble()
                     }
                 }
+                var totalCheckedItemPrice = 0.0
+                refundItemListAdapter.selectedItemList().forEach {
+                    if (it.isChecked)
+                        totalCheckedItemPrice += it.deductedPrice
+                }
                 val bundle = Bundle().apply {
                     putParcelable("refundData", refundData)
                     //putString("orderItemRefundsAttributes", Gson().toJson(ordersItemList))
-                    putDouble("refundAmount", totalItemPrice)
+                    putDouble("refundAmount", totalCheckedItemPrice)
                     putString("pax_ref_num", paymentOrderDetailsResponse.data.ref_num)
                     putString(
                         "pax_ecrref_num",
