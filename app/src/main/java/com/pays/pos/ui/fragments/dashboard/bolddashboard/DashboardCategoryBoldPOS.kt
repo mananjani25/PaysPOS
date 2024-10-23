@@ -683,6 +683,34 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     Log.d(TAG, "resultListener: orderDiscount : " + orderDiscount)
                     Log.d(TAG, "resultListener: totalprice : " + viewModel.totalPrice)
                     val price = discountApplyPrice - orderDiscount
+                    /*Cart model getting blank on adding custom item on navigating back to custom cart from checkout page and adding custom item to cart.*/
+                    if (viewModel.cartModel == null) {
+                        runBlocking {
+                            try{
+                                var model =
+                                    CoroutineScope(Dispatchers.IO).async { viewModel.getCartModelBackup() }
+                                        .await().last().data
+
+                                EventBus.getDefault().post(
+                                    MessageEvent(
+                                        "${Constants.LINE_BREAK_TAB} DashBoardCategoryBoldPOS.kt_CART_BACKUP_MODEL -> model -> ${
+                                            Gson().toJson(model)
+                                        }", true
+                                    )
+                                )
+                                viewModel.cartModel =
+                                    Gson().fromJson(model, CartModel::class.java)
+                            }catch (e:Exception){
+                                var models =
+                                    CoroutineScope(Dispatchers.IO).async { viewModel.getAllCartModels() }
+                                        .await()
+                                if (models.isNotEmpty()) {
+                                    viewModel.cartModel = models.get(0)
+                                }
+                            }
+                        }
+                    }
+
                     Log.d(TAG, "resultListener: " + cartList.size)
                     if (viewModel.cartModel != null) {
                         viewModel.cartModel!!.discountPrice = orderDiscount
