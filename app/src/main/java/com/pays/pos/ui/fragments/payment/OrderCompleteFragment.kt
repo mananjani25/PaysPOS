@@ -18188,9 +18188,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             }
 
                             //PLZCHECK
-                            if (!receiptModel?.order?.payments?.get(
-                                    receiptModel?.order?.payments?.size?.minus(1)!!
-                                )!!.paymentType.equals(
+                            if (!receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size?.minus(1)!!)!!.paymentType.equals(
                                     getString(R.string.external),
                                     ignoreCase = true
                                 )
@@ -18221,9 +18219,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             receiptModel?.order?.payments?.size?.minus(1) ?: 0
                                         )?.cash_discount_or_surcharge ?: 0.0)
                                     )
-                                } else {
-
-
+                                }
+                                else {
                                     val str5 = padLine(
                                         "Total Price",
                                         "$" + MethodUtils.roundOffAmountString(finalAmt),
@@ -18243,6 +18240,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     totalfamount = MethodUtils.roundOffAmountDouble(finalAmt)
 
                                 }
+                            }else{
+                                val str5 = padLine(
+                                    "Total Price",
+                                    "$" + MethodUtils.roundOffAmountString(finalAmt),
+                                    if (customerSettingModel.fonts == LARGE) 23 else 48
+                                ).toString()
+
+                                if (sunmiFrameworkVersion?.get(0)
+                                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)
+                                        ?.toInt() != 39
+                                ) {
+                                    PrintSunmiUtils.boldTextNew(str5)
+                                } else {
+                                    PrintSunmiUtils.boldText(str5)
+                                }
+
+                                totalfamount = MethodUtils.roundOffAmountDouble(finalAmt)
+
                             }
 
                         } else {
