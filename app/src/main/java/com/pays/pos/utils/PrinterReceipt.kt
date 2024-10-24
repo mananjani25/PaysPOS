@@ -1103,7 +1103,7 @@ fun addCreditTipAuditDataLandiInner(
     pOne += repeat(" ", 38 - pOne.length) + lPart
 
 
-    LPrint.print(pOne)
+    LPrint.print(pOne, trim = false)
 
 }
 
