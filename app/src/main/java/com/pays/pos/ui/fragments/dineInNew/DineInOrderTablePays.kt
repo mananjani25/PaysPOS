@@ -3879,7 +3879,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-               /* if (target.layoutPosition != 0 && dineInTableAdapter.getList()
+                if (target.layoutPosition != 0 && dineInTableAdapter.getList()
                         .get(viewHolder.layoutPosition).isHeader != 0
                 ) {
                     val oldPos = viewHolder.layoutPosition
@@ -3902,14 +3902,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 } else {
                     dineInCartItemMoved = false
                     return false
-                }*/
+                }
 
-                val oldPos = viewHolder.layoutPosition
+                /*val oldPos = viewHolder.layoutPosition
                 val newPos = target.layoutPosition
 
                 // Check if the target position is the 0th or the last item in the list
                 val itemCount = dineInTableAdapter.itemCount ?: 0
-                if (newPos == 0 || newPos == itemCount - 1) {
+                if (newPos == 0 ) {
                     return false
                 }
 
@@ -3930,7 +3930,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 } else {
                     dineInCartItemMoved = false
                     return false
-                }
+                }*/
 
             }
 
