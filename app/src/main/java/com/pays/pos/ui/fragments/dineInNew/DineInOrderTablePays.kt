@@ -1102,7 +1102,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             bundle
                         )
                                       },
-                    1000)
+                    1500)
 
 
                 }
@@ -2397,7 +2397,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         e.printStackTrace()
                     }
                 },
-                1000)
+                1500)
 
     }
 
