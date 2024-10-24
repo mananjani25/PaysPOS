@@ -91,7 +91,9 @@ import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
 import com.pays.pos.ui.fragments.payment.OrderCompleteFragment
+import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.runOnUiThread
+import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.landi.LPrint
 import com.pays.pos.utils.landi.LPrint.FONT_B
 import com.pays.pos.utils.landi.LPrint.printCenter
@@ -583,6 +585,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.btnPayNew.setOnClickListener {
             try {
 
+                binding.btnPayNew.isEnabled = false
+                binding.btnPayNew.visibility = View.INVISIBLE
 
                 dashboardViewModel.setTipAmount(0.0)
                 dashboardViewModel.customerGivenTip.value=false
@@ -1108,6 +1112,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                binding.btnPayNew.isEnabled = true
+                binding.btnPayNew.visible()
             }
         }
 
