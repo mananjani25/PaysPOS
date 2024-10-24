@@ -341,6 +341,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
             binding.btnPay.setOnClickListener {
+                binding.btnPay.visibility = View.INVISIBLE
                 if (!list.get(position).isPaid) {
                     var listItem: ArrayList<TbCartItem> = arrayListOf()
                     var listItemWT: ArrayList<TbCartItem> = arrayListOf()
