@@ -563,6 +563,10 @@ class PosRepository @Inject constructor(
         return apiHelperNew.customerListPagination(data)
     }
 
+    suspend fun getCustomerFromPhoneNumber(phoneNumber: String): Resource<CustomerListResponse> {
+        return apiHelperNew.getCustomerFromPhoneNumber(phoneNumber)
+    }
+
     suspend fun addCustomersList(data: List<TbCustomer>) =
         appDatabase.customerDao().addAllCustomers(data)
 

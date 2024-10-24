@@ -158,12 +158,31 @@ class CustomDisplay(
         getCustomerList()
         observeServiceCharge()
         observeCashCardChange()
+        observePasscodeScreen()
         setupTaxAdapter()
         initPOSLink()
         initViews()
         getDetails()
         getLoyaltyPointListObserver()
         initDiscountLiveData()
+    }
+
+    private fun observePasscodeScreen() {
+        dashBoardCategoryViewModel.passcodeScreenActive.observe(lifecycleOwner, object:Observer<Boolean>{
+            override fun onChanged(t: Boolean?) {
+                with(binding){
+                t?.let {
+                    if (it) {
+                        /*Passcode screen is active, show the splash screen with logo*/
+                        onLogOutOrClockOut(true)
+                    } else {
+                        /*Passcode screen is inactive, show the splash screen with sign up button*/
+                        onLogOutOrClockOut(false)
+                    }
+                }
+            }
+            }
+        })
     }
 
     /*-------------Customer Loyalty---------------*/
@@ -1140,13 +1159,21 @@ class CustomDisplay(
         }
     }
 
-    fun onLogOutOrClockOut() {
+    fun onLogOutOrClockOut(value: Boolean) {
         binding.apply {
-            mainCartLayout.gone()
-            thankYouLayout.gone()
-            splashLayout.visible()
-            imgPaysSplash?.visible()
-            splashLoyalty?.gone()
+            if (value) {
+                mainCartLayout.gone()
+                thankYouLayout.gone()
+//            splashLayout.visible()
+                imgPaysSplash?.visible()
+                splashLoyalty?.gone()
+            }else{
+                mainCartLayout.gone()
+                thankYouLayout.gone()
+//            splashLayout.visible()
+                imgPaysSplash?.gone()
+                splashLoyalty?.visible()
+            }
         }
     }
 

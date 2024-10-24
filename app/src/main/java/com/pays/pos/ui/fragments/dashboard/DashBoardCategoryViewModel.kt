@@ -153,7 +153,6 @@ class DashBoardCategoryViewModel @Inject constructor(
     val getBusinessData = posRepository.getBusinessData()
     val loyaltyPoints = taxServiceChargeRepository.loyaltyPointList()
 
-
     private val _loadCustomersList = MutableLiveData<Pair<Int,Boolean>>()
     val loadCustomersList: LiveData<Pair<Int,Boolean>> = _loadCustomersList
 
@@ -168,6 +167,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private val _changeCustDispSignInButtonTitle = MutableLiveData<String>()
     val changeCustDispSignInButtonTitle: LiveData<String> = _changeCustDispSignInButtonTitle
+
+    private val _passcodeScreenActive = MutableLiveData<Boolean>()
+    val passcodeScreenActive: LiveData<Boolean> = _passcodeScreenActive
+
     /*-----------Customer Loyalty------------*/
 
 
@@ -359,6 +362,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun changeCustomerDispSignButtonTitle(value:String){
         _changeCustDispSignInButtonTitle.postValue(value)
+    }
+
+    fun setPasscodeScreenActive(value:Boolean){
+        _passcodeScreenActive.postValue(value)
     }
     /*------------Customer Loyalty----------*/
 

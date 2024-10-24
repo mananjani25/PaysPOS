@@ -68,6 +68,7 @@ import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
 import com.pays.pos.MainApplication
 import com.pays.pos.R
+import com.pays.pos.data.entities.TbCustomer
 import com.pays.pos.data.model.GuestAttrQueue
 import com.pays.pos.data.model.PrinterJSONElementData
 import com.pays.pos.data.model.PrinterQueueModel
@@ -426,6 +427,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     }
 
     fun addObserver() {
+
+        addCustomerViewModel.customerFetchedAndAdded.observe(this, object:Observer<TbCustomer>{
+            override fun onChanged(customer: TbCustomer?) {
+                customer?.let {
+                    presentation.addCustomer(it)
+                }
+            }
+        })
         /*
                 dashboardViewModel.orderCompleted.observe(this){
                     if(it){
