@@ -321,6 +321,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         prefProvider?.setValue(Constants.SUNMI_FRAMEWORK_VERSION, SystemProperties.get("ro.version.sunmi_versionname"))
         /*--------------------- FOR CUSTOMER RECEIPT MODIFICATION--------------------*/
         sunmiFrameworkVersion = prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".").toTypedArray()
+        changeCustomerDisplayState()
 
         if (viewModel.boldPosNeedToRefresh) {
 
@@ -451,6 +452,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     /*----------------Customer Loyalty------------------*/
+
+    private fun changeCustomerDisplayState() {
+        viewModel.setPasscodeScreenActive(false)
+    }
+
     private fun checkIfCustomersDownloaded(){
         customerListViewModel.hasCustomers()
         viewModel.loadCustomersList.observe(viewLifecycleOwner,object:Observer<Pair<Int,Boolean>>{

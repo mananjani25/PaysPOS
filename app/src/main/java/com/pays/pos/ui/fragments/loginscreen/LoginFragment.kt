@@ -334,7 +334,7 @@ class LoginFragment : Fragment() {
         super.onResume()
         if (this::presentation.isInitialized) {
             presentation.show()
-            presentation.onLogOutOrClockOut()
+            presentation.onLogOutOrClockOut(true)
         }
 
 //        CoroutineScope(Dispatchers.Main).launch{
