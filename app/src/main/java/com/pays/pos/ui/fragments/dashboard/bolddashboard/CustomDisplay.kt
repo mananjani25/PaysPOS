@@ -1075,10 +1075,19 @@ class CustomDisplay(
 
                         if (dashBoardCategoryViewModel.selectedCustomer?.final_reward.toString().toInt()!=0){
                             txtEarnedLoyalty?.setText(
-                                "Your total loyalty points are ${
-                                    (dashBoardCategoryViewModel.earnedLoyaltyPoints.value?.peekContent()
-                                        .toString().toInt()).toString()
-                                }"
+                                if (dashBoardCategoryViewModel.earnedLoyaltyPoints.value?.peekContent()
+                                        .toString().toInt()==1){
+                                    "Your balance loyalty point is ${
+                                        (dashBoardCategoryViewModel.earnedLoyaltyPoints.value?.peekContent()
+                                            .toString().toInt()).toString()
+                                    }"
+                                }else{
+                                    "Your balance loyalty points are ${
+                                        (dashBoardCategoryViewModel.earnedLoyaltyPoints.value?.peekContent()
+                                            .toString().toInt()).toString()
+                                    }"
+                                }
+
                             )
                         }
 
