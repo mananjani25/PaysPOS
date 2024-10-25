@@ -3015,6 +3015,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     supervisorScope {
                         launch {
                             try {
+                                viewModel.changeCustomerDispSignButtonTitle("")
                                 viewModel.selectedCatetory = 0
                                 // Do positive stuff here
                                 prefProvider.setValueboolean(Constants.BACK_FROM_PAYMENT, false)

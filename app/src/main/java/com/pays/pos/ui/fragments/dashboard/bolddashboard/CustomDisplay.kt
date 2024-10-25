@@ -214,6 +214,9 @@ class CustomDisplay(
             if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isNotEmpty()) {
                 btnSignUpOrCheckIn?.text = resources.getString(R.string.change_mobile_number)
                 tvMessage?.text = "Customer added successfully"
+            }else{
+                btnSignUpOrCheckIn?.text = resources.getString(R.string.sign_up_or_check_in)
+                btnSignUpOrCheckInMain?.text = resources.getString(R.string.sign_up_or_check_in)
             }
 
             btnSignUpOrCheckIn?.setOnSingleClickListener(object : View.OnClickListener {
