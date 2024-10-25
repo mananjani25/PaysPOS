@@ -21,7 +21,6 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.*
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
@@ -51,7 +50,6 @@ import com.pays.pos.data.remote.Constants.BALANCE_INQUIRY
 import com.pays.pos.data.remote.Constants.CUSTOMER
 import com.pays.pos.data.remote.Constants.DELIVERY_TYPE
 import com.pays.pos.data.remote.Constants.DINE_IN
-import com.pays.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.pays.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.pays.pos.data.remote.Constants.GIFT_CARD
 import com.pays.pos.data.remote.Constants.IS_FROM_ALL_ORDER
@@ -456,28 +454,33 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private fun changeCustomerDisplayState() {
         viewModel.setPasscodeScreenActive(false)
     }
+    private var customerFetchingJob: Job? = null
 
-    private fun checkIfCustomersDownloaded(){
+    private fun checkIfCustomersDownloaded() {
         customerListViewModel.hasCustomers()
-        viewModel.loadCustomersList.observe(viewLifecycleOwner,object:Observer<Pair<Int,Boolean>>{
-            override fun onChanged(t: Pair<Int,Boolean>?) {
-                t?.let {
-                    loadCustomerLocalList(it.first+1)
-                }
-            }
-        })
-        customerListViewModel.customerCount.observe(viewLifecycleOwner,object:Observer<Event<Boolean>>{
-            override fun onChanged(t: Event<Boolean>?) {
-                t?.getContentIfNotHandled()?.let { _it ->
-                    if (!_it) {
-                        prefProvider.setValueboolean("CUSTOMER_FETCHED",true)
-                        loadCustomerLocalList(1)
+        customerFetchingJob = viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.loadCustomersList.observe(viewLifecycleOwner,
+                object : Observer<Pair<Int, Boolean>> {
+                    override fun onChanged(t: Pair<Int, Boolean>?) {
+                        t?.let {
+                            loadCustomerLocalList(it.first + 1)
+                        }
                     }
-                }
-            }
-        })
-    }
+                })
 
+            customerListViewModel.customerCount.observe(viewLifecycleOwner,
+                object : Observer<Event<Boolean>> {
+                    override fun onChanged(t: Event<Boolean>?) {
+                        t?.getContentIfNotHandled()?.let { _it ->
+                            if (!_it) {
+                                prefProvider.setValueboolean("CUSTOMER_FETCHED", true)
+                                loadCustomerLocalList(1)
+                            }
+                        }
+                    }
+                })
+        }
+    }
     private fun loadCustomerLocalList(currentpage: Int) {
         CoroutineScope(Dispatchers.Main).launch {
             var pageSize="10"
@@ -1194,7 +1197,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d("CUSTOMERFETCHINGJOB:: ","started")
+        customerFetchingJob?.cancel()
+        enableTouch()
+        Log.d("CUSTOMERFETCHINGJOB:: ","ended")
 
+    }
     override fun onDestroy() {
         super.onDestroy()
         syncDataCallback = null

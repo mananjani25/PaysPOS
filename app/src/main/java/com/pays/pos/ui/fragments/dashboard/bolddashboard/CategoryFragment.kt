@@ -530,55 +530,57 @@ class CategoryFragment(val listner: ItemListner?=null, val edtSearch: AutoComple
         list.add(CategoryParentModel(listCategories))
         list.add(CategoryParentModel(listCategories))
         categoryParentAdapter = CategoryParentAdapter(requireContext(), arrayListOf(), this)
-        itemAdapter = ItemAdapterPagDash(listner!!, null, prefProvider)
-        binding.rvItemList.setHasFixedSize(true)
-        binding.rvItemList.layoutManager = GridLayoutManager(requireContext(), 4)
-        binding.rvItemList.adapter = itemAdapter
-        binding.rvItemList.isFocusable = false
-        //   binding.rvItemList.layoutManager = GridLayoutManager(requireContext(),4)
+        if (listner!=null) {
+            itemAdapter = ItemAdapterPagDash(listner!!, null, prefProvider)
+            binding.rvItemList.setHasFixedSize(true)
+            binding.rvItemList.layoutManager = GridLayoutManager(requireContext(), 4)
+            binding.rvItemList.adapter = itemAdapter
+            binding.rvItemList.isFocusable = false
+            //   binding.rvItemList.layoutManager = GridLayoutManager(requireContext(),4)
 
-        //  binding.rvItemList.setHasFixedSize(true)
-        binding.rvCategoryParent.adapter = categoryParentAdapter
-        binding.rvCategoryParent.layoutManager =
-            LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
-        val snapHelper = PagerSnapHelper()
-        snapHelper.attachToRecyclerView(binding.rvCategoryParent)
-        binding.rvCategoryParent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+            //  binding.rvItemList.setHasFixedSize(true)
+            binding.rvCategoryParent.adapter = categoryParentAdapter
+            binding.rvCategoryParent.layoutManager =
+                LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
+            val snapHelper = PagerSnapHelper()
+            snapHelper.attachToRecyclerView(binding.rvCategoryParent)
+            binding.rvCategoryParent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
 
-                runOnUiThread(Runnable {
-                    val bindingAdapterPos =
-                        (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+                    runOnUiThread(Runnable {
+                        val bindingAdapterPos =
+                            (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
 
-                    categoryParentAdapter.list.forEachIndexed { index1, it ->
-                        it.list.forEachIndexed { index, categoryTabModel ->
+                        categoryParentAdapter.list.forEachIndexed { index1, it ->
+                            it.list.forEachIndexed { index, categoryTabModel ->
 
-                            categoryTabModel.isSelected =
-                                categoryTabModel.id == prefProvider.getValueInt(
-                                    Constants.CAT_ID_SELECTED,
-                                    0
-                                )
+                                categoryTabModel.isSelected =
+                                    categoryTabModel.id == prefProvider.getValueInt(
+                                        Constants.CAT_ID_SELECTED,
+                                        0
+                                    )
+                            }
                         }
-                    }
-                    val tabList: ArrayList<CategoryTabModel> = arrayListOf()
-                    for (i in 0 until categoryParentAdapter.list.size) {
-                        tabList.add(CategoryTabModel(0, "", i == bindingAdapterPos, 0))
-                    }
-                    categoryTabAdapter.addList(tabList)
-                    categoryParentAdapter.notifyDataSetChanged()
+                        val tabList: ArrayList<CategoryTabModel> = arrayListOf()
+                        for (i in 0 until categoryParentAdapter.list.size) {
+                            tabList.add(CategoryTabModel(0, "", i == bindingAdapterPos, 0))
+                        }
+                        categoryTabAdapter.addList(tabList)
+                        categoryParentAdapter.notifyDataSetChanged()
 
-                })
+                    })
 
-                super.onScrollStateChanged(recyclerView, newState)
-            }
+                    super.onScrollStateChanged(recyclerView, newState)
+                }
 
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-            }
-        })
-        val tabList: ArrayList<CategoryTabModel> = arrayListOf()
-        categoryTabAdapter = CategoryTabAdapter(tabList)
-        binding.rvTabLayout.adapter = categoryTabAdapter
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                }
+            })
+            val tabList: ArrayList<CategoryTabModel> = arrayListOf()
+            categoryTabAdapter = CategoryTabAdapter(tabList)
+            binding.rvTabLayout.adapter = categoryTabAdapter
+        }
     }
 
 
