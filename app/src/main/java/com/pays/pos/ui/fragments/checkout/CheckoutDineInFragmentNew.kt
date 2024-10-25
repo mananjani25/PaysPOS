@@ -1829,6 +1829,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             }
         }
 
+        //TODO - remove this line for split payment
+        binding.linearTab2.gone()
+
         if(isGuestPay)
             binding.linearTab2.gone()
         else binding.linearTab2.setOnSingleClickListener {
