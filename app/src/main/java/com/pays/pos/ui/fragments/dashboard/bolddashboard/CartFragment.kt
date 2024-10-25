@@ -4633,7 +4633,6 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         event?.let {
             runOnUiThread(object : Runnable {
                 override fun run() {
-                    /* TODO: set the customer added message to the customer display here*/
                     binding.txtAddCustomer.apply {
                         text = event?.customerName
                     }

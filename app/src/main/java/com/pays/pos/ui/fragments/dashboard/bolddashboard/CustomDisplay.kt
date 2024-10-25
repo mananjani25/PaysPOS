@@ -408,6 +408,7 @@ class CustomDisplay(
         prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
         prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
         customer.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
+        /*This will click on the order type dynamically, only the variable name is clickOnTakeOut()*/
         dashBoardCategoryViewModel.clickOnTakeOut()
         if (dashBoardCategoryViewModel.currentCartItems.isNotEmpty()){
             dashBoardCategoryViewModel.callUpdateCartFooter(true)
