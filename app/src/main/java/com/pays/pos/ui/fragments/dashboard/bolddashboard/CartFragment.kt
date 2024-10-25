@@ -2503,6 +2503,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             ), binding.txtTotal
                         )
                     }
+                    /* To handle BIS-4672, we need to check isFromPayment variable, it is coming true, it should come false */
                     if (isFromPayment) {
                         if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
                             binding.liinearInfoLayout.layoutParams.height =
@@ -2564,9 +2565,18 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 } else {
                     /* This condition will be called when a customer will be added with loyalty but when cart is active with items, the user changes the customer which has no loyalty */
                     Log.d("Loyalty::", "Not available")
+                    binding.apply {
+                        liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._50sdp).toInt()
+                        relativeLoylatyPoints.visibility = View.GONE
+                        lblLoyaltyPoints.visibility = View.GONE
+                        lblLoyaltyBalance.visibility = View.GONE
+                    }
+                   /* binding.liinearInfoLayout.layoutParams.height =
+                                  resources.getDimension(R.dimen._50sdp).toInt()
                     binding.relativeLoylatyPoints.visibility = View.GONE
                     binding.lblLoyaltyPoints.visibility = View.GONE
-                    binding.lblLoyaltyBalance.visibility = View.GONE
+                    binding.lblLoyaltyBalance.visibility = View.GONE*/
                     /*  prefProvider.setValue(
                           Constants.CUSTOMER_NAME,
                           ""
