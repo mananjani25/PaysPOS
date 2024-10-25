@@ -409,6 +409,7 @@ class CustomDisplay(
         if (dashBoardCategoryViewModel.currentCartItems.isNotEmpty()){
             dashBoardCategoryViewModel.callUpdateCartFooter(true)
         }
+        dashBoardCategoryViewModel.changeCustomerDispSignButtonTitle(resources.getString(R.string.change_mobile_number))
         EventBus.getDefault()
             .post(SyncCustomerEvent(true, customer.first_name + " " + customer.last_name))
         CoroutineScope(Dispatchers.Main).launch {
