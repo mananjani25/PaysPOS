@@ -571,15 +571,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                         R.id.txtTitle
                                     )?.text?.contains(/*"Take out"*/binding.orderTypeDisplay.text.toString(), ignoreCase = true) ?: false
                                 ) {
-                                    CoroutineScope(Dispatchers.Main).launch {
-                                        binding.rvOrderType.findViewHolderForAdapterPosition(
-                                            position
-                                        )?.itemView?.performClick()
-                                        if (prefProvider.getValueInt(CUSTOMER_ID, -1) != -1) {
-                                            displayCustomer()
-                                        }
-//                                binding.rvOrderType.findViewHolderForAdapterPosition(position)?.itemView?.performClick()
-                                    }
+                                    performClickOnOrderTypeAndSetCustomer(position)
+                                    break
+                                }else if (!binding.orderTypeDisplay.text.toString().trim().contains(':')){
+                                    performClickOnOrderTypeAndSetCustomer(0)
                                     break
                                 }
                             }
@@ -589,6 +584,17 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             })
     }
 
+    private fun performClickOnOrderTypeAndSetCustomer(position: Int){
+        CoroutineScope(Dispatchers.Main).launch {
+            binding.rvOrderType.findViewHolderForAdapterPosition(
+                position
+            )?.itemView?.performClick()
+            if (prefProvider.getValueInt(CUSTOMER_ID, -1) != -1) {
+                displayCustomer()
+            }
+//                                binding.rvOrderType.findViewHolderForAdapterPosition(position)?.itemView?.performClick()
+        }
+    }
 /*----------------Customer Loyalty-----------------*/
 
     private fun setupTaxAdapter() {
