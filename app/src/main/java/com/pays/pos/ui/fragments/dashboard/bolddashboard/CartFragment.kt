@@ -569,7 +569,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             for (position in 0..it) {
                                 if (binding.rvOrderType.findViewHolderForAdapterPosition(position)?.itemView?.findViewById<TextView>(
                                         R.id.txtTitle
-                                    )?.text?.contains("Take out", ignoreCase = true) ?: false
+                                    )?.text?.contains(/*"Take out"*/binding.orderTypeDisplay.text.toString(), ignoreCase = true) ?: false
                                 ) {
                                     CoroutineScope(Dispatchers.Main).launch {
                                         binding.rvOrderType.findViewHolderForAdapterPosition(
