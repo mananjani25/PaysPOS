@@ -299,6 +299,7 @@ final object LPrint {
                                         ""
                                     }
                         printCenter(tableName)
+                        lineBreak()
 
                     }
                 }

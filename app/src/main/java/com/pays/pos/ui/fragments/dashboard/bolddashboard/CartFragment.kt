@@ -2934,8 +2934,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     .forEach { destroyedGuestsList.add(it) }
 
                 val index = position
-                Toast.makeText(requireContext(), "Removed guest at index $index", Toast.LENGTH_LONG)
-                    .show()
+//                Toast.makeText(requireContext(), "Removed guest at index $index", Toast.LENGTH_LONG)
+//                    .show()
 
                 dineIn.removeAll(destroyedGuestsList.toSet())
 

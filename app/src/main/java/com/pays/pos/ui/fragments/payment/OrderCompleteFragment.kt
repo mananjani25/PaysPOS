@@ -7100,6 +7100,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                     }
                                                         write(LPrint.CENTER_ALIGN)
                                                         write(tableName.trim().toByteArray())
+                                                        write(LPrint.LINE_FEED)
 
                                                     }
                                                 }
