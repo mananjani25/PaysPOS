@@ -96,7 +96,7 @@ final object LPrint {
 
     fun getOutputStream() = outputStream
 
-    fun print(string: String,fontSize:ByteArray = NORMAL_SIZE, isBold:Boolean = false ,printOnNewLine:Boolean = false,align: ByteArray = LEFT_ALIGN){
+    fun print(string: String,fontSize:ByteArray = NORMAL_SIZE, isBold:Boolean = false ,printOnNewLine:Boolean = false,align: ByteArray = LEFT_ALIGN, trim:Boolean = true){
         outputStream?.apply {
 
             if(isBold)
@@ -107,7 +107,7 @@ final object LPrint {
             write(fontSize)
             write(align)
 
-            val stringToPrint = if(printOnNewLine) "\n${string.trim()}\n".toByteArray() else string.trim().toByteArray()
+            val stringToPrint = if(printOnNewLine) "\n${if (trim == true) string.trim() else string}\n".toByteArray() else { if (trim == true) string.trim().toByteArray() else string.toByteArray()}
             write(stringToPrint)
 
             if(isBold)
@@ -299,6 +299,7 @@ final object LPrint {
                                         ""
                                     }
                         printCenter(tableName)
+                        lineBreak()
 
                     }
                 }

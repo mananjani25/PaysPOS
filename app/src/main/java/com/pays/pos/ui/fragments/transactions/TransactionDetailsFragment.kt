@@ -6686,10 +6686,10 @@ class TransactionDetailsFragment : Fragment() {
                                         prefProvider.getValue(BUSINESS_ADDRESS, "")
                                     } else ""
 
-                                    var businessPhoneNumber = prefProvider.getValue(
+                                    var businessPhoneNumber = MethodUtils.getUSFormatNumber(prefProvider.getValue(
                                         BUSINESS_PHONE_NO,
                                         ""
-                                    )
+                                    ))
 
                                     printCenter(venueAddress, fontSize = SMALL_SIZE)
                                     lineBreak()

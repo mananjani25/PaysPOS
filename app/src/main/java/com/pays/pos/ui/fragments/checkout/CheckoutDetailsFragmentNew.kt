@@ -1,9 +1,13 @@
 package com.pays.pos.ui.fragments.checkout
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.Dialog
 import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.content.DialogInterface
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,6 +18,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
@@ -94,6 +99,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.Executors
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -257,9 +263,22 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         initPOSLink()
         getMerchantDataObserver()
+        setLoyaltyEarnedObserver()
 //        setCommSetting()
 
         return binding.root
+    }
+
+    private fun setLoyaltyEarnedObserver() {
+        paymentviewModel.earnedLoyaltyPoints.observe(viewLifecycleOwner,object :androidx.lifecycle.Observer<Event<Int>>{
+            override fun onChanged(t: Event<Int>?) {
+                t?.getContentIfNotHandled()?.let {
+                    if (it!=0){
+                        dashboardViewModel.setCustomerLoyaltyOnCustomerThankyouScreen(it)
+                    }
+                }
+            }
+        })
     }
 
     // To init PosLink for pax payment
@@ -824,6 +843,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun observeData() {
         paymentviewModel.orderCreate.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+                if (it){
+                    runOnUiThread(Runnable {
+                        dismissProgressDialog()
+                    })
+                }
                 dashboardViewModel.activeOrderTypeName = ""
                 dashboardViewModel.activeOrderTypeId = 0
                 dashboardViewModel.activeOrderTypeText = ""
@@ -2059,7 +2083,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         requireActivity()
                     )
                 } else {
-                    ProgressUtils.dismissProgressDialog()
+                    runOnUiThread(Runnable {
+                        dismissProgressDialog()
+                    })
                 }
             }
         }
@@ -2323,7 +2349,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 runOnUiThread(object:java.lang.Runnable{
                     override fun run() {
-                        ProgressUtils.showProgressDialog(requireActivity())
+                        showProgressDialog()
                     }
                 })
                 restrictTvCashClicks()
@@ -2446,13 +2472,32 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             }
                         }
                     } else {
+                        runOnUiThread(object:java.lang.Runnable{
+                            override fun run() {
+                                binding.llCreditCard.isEnabled = true
+                                dismissProgressDialog()
+                            }
+                        })
                         errorDisplay("Please connect a payment device.")
                     }
                 } else {
+                    runOnUiThread(object:java.lang.Runnable{
+                        override fun run() {
+                            binding.llCreditCard.isEnabled = true
+                            dismissProgressDialog()
+                        }
+                    })
                     errorDisplay("Payment Amount is zero.")
                 }
-            } else
+            } else {
+                runOnUiThread(object:java.lang.Runnable{
+                    override fun run() {
+                        binding.llCreditCard.isEnabled = true
+                        dismissProgressDialog()
+                    }
+                })
                 errorDisplay("Please check your Network Connectivity.")
+            }
             //  makePaymentCreditCard()
         }
 
@@ -2773,60 +2818,62 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         giftCardViewModel.giftCardCheckBalanceData.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it.data != null) {
+                    if (isAdded) {
 
-                    if (it.data.amount == 0.0) {
-                        binding.edtGiftCardNumber.setText("")
-                        prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, false)
-                        AlertUtils.showCustomAlertWithListenerWithOK(
-                            requireContext(),
-                            message = getString(R.string.msg_insufficient_gift_card_balance)
-                        ) { _, _ ->
-                        }
-                    } else {
-                        custom_paymentAmount = 0.0
-
-                        val actualTotalAmountWithTip =
-                            (WholetotalPrice / isSelectedCount) + tipAmount
-
-                        val giftCardBalanceAmount = it.data.amount
-
-                        if (actualTotalAmountWithTip < giftCardBalanceAmount) {
-                            val giftCardNumber =
-                                binding.edtGiftCardNumber.rawText.toString().trim()
-                            prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, true)
-                            prefProvider.setValue(GIFT_CARD_NUMBER, giftCardNumber)
-                            prefProvider.setValue(GIFT_CARD_PIN, "")
-                            prefProvider.setValueboolean(
-                                IS_ORDER_REDEEMABLE_WITH_GIFT_CARD,
-                                true
-                            )
-                            val actualTotalAmount = (WholetotalPrice / isSelectedCount)
-                            paymentAmount = actualTotalAmount
-                            paymentviewModel.totalPayAmount(paymentAmount)
-                            redeemGiftCard()
-                        } else {
-                            prefProvider.setValueboolean(
-                                IS_ORDER_REDEEMABLE_WITH_GIFT_CARD,
-                                false
-                            )
+                        if (it.data.amount == 0.0) {
+                            binding.edtGiftCardNumber.setText("")
+                            prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, false)
                             AlertUtils.showCustomAlertWithListenerWithOK(
                                 requireContext(),
-                                message = "Your GiftCard Balance is $${
-                                    giftCardBalanceAmount.toPrecision(
-                                        2
-                                    )
-                                }. Please use split payment."
+                                message = getString(R.string.msg_insufficient_gift_card_balance)
                             ) { _, _ ->
                             }
+                        } else {
+                            custom_paymentAmount = 0.0
+
+                            val actualTotalAmountWithTip =
+                                (WholetotalPrice / isSelectedCount) + tipAmount
+
+                            val giftCardBalanceAmount = it.data.amount
+
+                            if (actualTotalAmountWithTip < giftCardBalanceAmount) {
+                                val giftCardNumber =
+                                    binding.edtGiftCardNumber.rawText.toString().trim()
+                                prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, true)
+                                prefProvider.setValue(GIFT_CARD_NUMBER, giftCardNumber)
+                                prefProvider.setValue(GIFT_CARD_PIN, "")
+                                prefProvider.setValueboolean(
+                                    IS_ORDER_REDEEMABLE_WITH_GIFT_CARD,
+                                    true
+                                )
+                                val actualTotalAmount = (WholetotalPrice / isSelectedCount)
+                                paymentAmount = actualTotalAmount
+                                paymentviewModel.totalPayAmount(paymentAmount)
+                                redeemGiftCard()
+                            } else {
+                                prefProvider.setValueboolean(
+                                    IS_ORDER_REDEEMABLE_WITH_GIFT_CARD,
+                                    false
+                                )
+                                AlertUtils.showCustomAlertWithListenerWithOK(
+                                    requireContext(),
+                                    message = "Your GiftCard Balance is $${
+                                        giftCardBalanceAmount.toPrecision(
+                                            2
+                                        )
+                                    }. Please use split payment."
+                                ) { _, _ ->
+                                }
+                            }
+                            binding.edtGiftCardNumber.setText("")
                         }
+                    } else {
                         binding.edtGiftCardNumber.setText("")
-                    }
-                } else {
-                    binding.edtGiftCardNumber.setText("")
-                    AlertUtils.showCustomAlertWithListenerWithOK(
-                        requireContext(),
-                        message = it.message
-                    ) { _, _ ->
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(),
+                            message = it.message
+                        ) { _, _ ->
+                        }
                     }
                 }
 
@@ -2927,10 +2974,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         }
                     }
                 } else {
+                    runOnUiThread(Runnable {
+                        dismissProgressDialog()
+                    })
                     CoroutineScope(Dispatchers.Main).launch {
                         Log.d("PAX_LOADER_1:: ", "result.Code.toString() result.Msg")
 
-                        ProgressUtils.dismissProgressDialog()
                         AlertUtils.showCustomAlertWithListenerWithOK(
                             requireContext(),
                             resultTxt,
@@ -2998,8 +3047,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     Constants.MERCHANT_ID,
                     mID
                 )
+                runOnUiThread(Runnable {
+                    dismissProgressDialog()
+                })
                 CoroutineScope(Dispatchers.Main).launch {
-                    ProgressUtils.dismissProgressDialog()
                     makePaxPaymentRequest()
 //                    AlertUtils.showCustomAlert(requireContext(), "Merchant $mID is connected successfully")
                 }
@@ -3768,18 +3819,28 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 cartList = cartModel2
             } else if (dashboardViewModel.cartModel == null) {
                 runBlocking {
-                    var model =
-                        CoroutineScope(Dispatchers.IO).async { dashboardViewModel.getCartModelBackup() }
-                            .await().last().data
+                    try{
+                        var model =
+                            CoroutineScope(Dispatchers.IO).async { dashboardViewModel.getCartModelBackup() }
+                                .await().last().data
 
-                    EventBus.getDefault().post(
-                        MessageEvent(
-                            "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_CART_BACKUP_MODEL -> model -> ${
-                                Gson().toJson(model)
-                            }", true
+                        EventBus.getDefault().post(
+                            MessageEvent(
+                                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_CART_BACKUP_MODEL -> model -> ${
+                                    Gson().toJson(model)
+                                }", true
+                            )
                         )
-                    )
-                    dashboardViewModel.cartModel = Gson().fromJson(model, CartModel::class.java)
+                        dashboardViewModel.cartModel =
+                            Gson().fromJson(model, CartModel::class.java)
+                    }catch (e:Exception){
+                        var models =
+                            CoroutineScope(Dispatchers.IO).async { dashboardViewModel.getAllCartModels() }
+                                .await()
+                        if (models.isNotEmpty()) {
+                            dashboardViewModel.cartModel = models.get(0)
+                        }
+                    }
                 }
             }
         }
@@ -3799,7 +3860,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
 
-        if (cartList!!.items == null || cartList!!.items!!.isEmpty()) {
+        if (cartList == null || cartList?.items == null || cartList?.items?.isEmpty() == true) {
             var items: ArrayList<TbItem>? = ArrayList()
             /*  for (item in dashboardViewModel.currentCartItems) {*/
             for (item in dashboardViewModel.currentCartItems) {
@@ -4938,6 +4999,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     )
                 )
                 paymentviewModel.splitByOrder(aa, false)
+                runOnUiThread(Runnable {
+                    dismissProgressDialog()
+                })
                 EventBus.getDefault()
                     .post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_paymentviewModel.splitByOrder(aa, false)_After_6"))
 
@@ -5580,6 +5644,56 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     override fun onDestroyView() {
         super.onDestroyView()
+
+    }
+
+    private var builder: Dialog? = null
+
+    private fun showProgressDialog() {
+
+
+        if (builder == null)
+            builder = Dialog(requireContext())
+
+        val inflater = LayoutInflater.from(context)
+
+        val dialogView = inflater.inflate(R.layout.view_loading, null)
+        builder?.setContentView(dialogView)
+
+        builder?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+//        builder?.window?.setBackgroundDrawable(
+//            ColorDrawable(Color.WHITE)
+//        )
+        builder?.setCanceledOnTouchOutside(false)
+        builder?.setCancelable(false)
+        builder?.window?.setLayout(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+
+        if (!builder?.isShowing!!) {
+            val activity: Activity = requireActivity()
+            if (!activity.isFinishing && !activity?.isDestroyed) {
+                try {
+                    builder?.show()
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+
+            }
+        }
+    }
+
+    private fun dismissProgressDialog()
+    {
+        try {
+            if (builder != null && builder?.isShowing == true) {
+                builder?.dismiss()
+                builder = null
+            }
+        } catch (e: java.lang.Exception) {
+            Log.d("pos", "dismissProgressDialog: " + e.message)
+        }
 
     }
 }

@@ -131,9 +131,12 @@ class Passcode : Fragment() {
             "PAYS v." + BuildConfig.VERSION_NAME + "(" + BuildConfig.VERSION_CODE + ")"
         isLogin = arguments?.getBoolean("isLogin") ?: false
 
-
-
+        changeCustomerDisplayState()
         return binding.root
+    }
+
+    private fun changeCustomerDisplayState() {
+        dashboardViewModel.setPasscodeScreenActive(true)
     }
 
     override fun onResume() {

@@ -38,7 +38,7 @@ class MainApplication : Application() {
         FirebaseApp.initializeApp(this)
 
         /*It will not work in builds that are sent for live */
-        if (Constants.isPaxInDebugMode) {
+        /*if (Constants.isPaxInDebugMode) {*/
             ANRWatchDog().start()
             ANRWatchDog().setANRListener { error ->
                 // Log or handle the ANR event
@@ -47,7 +47,7 @@ class MainApplication : Application() {
                 // You can also send this information to Crashlytics or another logging service
                 // FirebaseCrashlytics.getInstance().recordException(error)
             }.start()
-        }
+        /*}*/
 /*ALL THE SCAN GUN VARIABLES ARE COMMENTED AND MOVED TO MAINACTIVITY(for solving permission issue), PLEASE UNCOMMENT IT AND REMOVE THE VARIABLES FROM MAINACTIVITY*/
 
 //        CoroutineScope(Dispatchers.IO).launch {

@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
 import android.os.StrictMode
+import android.system.StructTimespec
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
@@ -145,9 +146,41 @@ class DashBoardCategoryViewModel @Inject constructor(
     var currentCartItems: ArrayList<TbCartItem> = arrayListOf()
     var duplicateCurrentCartItem: ArrayList<TbCartItem> = arrayListOf()
 
+    /**
+     * When item update is in progress , restrict other actions like switch guest
+     */
+    /*-----------Customer Loyalty------------*/
+    val getBusinessData = posRepository.getBusinessData()
+    val loyaltyPoints = taxServiceChargeRepository.loyaltyPointList()
+
+    private val _loadCustomersList = MutableLiveData<Pair<Int,Boolean>>()
+    val loadCustomersList: LiveData<Pair<Int,Boolean>> = _loadCustomersList
+
+    private val _clickTakeOut = MutableLiveData<Event<Boolean>>()
+    val clickTakeOut: LiveData<Event<Boolean>> = _clickTakeOut
+
+    private val _earnedLoyaltyPoints = MutableLiveData<Event<Int>>()
+    val earnedLoyaltyPoints: LiveData<Event<Int>> = _earnedLoyaltyPoints
+
+    private val _updateCartFooterObservable = MutableLiveData<Event<Boolean>>()
+    val updateCartFooterObservable: LiveData<Event<Boolean>> = _updateCartFooterObservable
+
+    private val _changeCustDispSignInButtonTitle = MutableLiveData<String>()
+    val changeCustDispSignInButtonTitle: LiveData<String> = _changeCustDispSignInButtonTitle
+
+    private val _passcodeScreenActive = MutableLiveData<Boolean>()
+    val passcodeScreenActive: LiveData<Boolean> = _passcodeScreenActive
+
+    /*-----------Customer Loyalty------------*/
+
+
+    val itemsFiredToTheKitchenSuccesfully = MutableLiveData<Boolean>()
+
     var isItemEditInProgress = false
 
-    // used to check if removed last item from the cart
+    /**
+     * To check if removed last item from the cart
+     */
     val lastItemRemoveFromCart = MutableLiveData<Pair<Boolean, Int>>()
 
     /* This variable is used to track the selected category, if this variable is not 0 then the category will be selected, it was added to solve BIS-4045 */
@@ -320,6 +353,24 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun setCollectMore(title: String) {
         changeAvailable.postValue(Event(title))
     }
+
+    /*------------Customer Loyalty----------*/
+    fun setCustomerLoyaltyOnCustomerThankyouScreen(reward:Int){
+        _earnedLoyaltyPoints.postValue(Event(reward))
+    }
+
+    fun callUpdateCartFooter(value:Boolean){
+        _updateCartFooterObservable.postValue(Event(value))
+    }
+
+    fun changeCustomerDispSignButtonTitle(value:String){
+        _changeCustDispSignInButtonTitle.postValue(value)
+    }
+
+    fun setPasscodeScreenActive(value:Boolean){
+        _passcodeScreenActive.postValue(value)
+    }
+    /*------------Customer Loyalty----------*/
 
     //Fetch all orders count
     fun allOrderCounts(
@@ -555,6 +606,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
+
     fun mAllWordsFlow(orderType: String, employee_Id: Int): Flow<List<CartModel>> {
 
 
@@ -566,6 +618,22 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun getAllCartItems(orderType: String, employee_Id: Int): Flow<List<TbCartItem>> {
         return posRepository.getAllCartItems(orderType, employee_Id)
     }
+
+    /*------------Customer Loyalty---------------*/
+    suspend fun allCustomerList(): List<TbCustomer> {
+        return posRepository.allCustomerList()
+    }
+
+    suspend fun fetchCustomerFromPhoneNumber(phoneNumber: String): List<TbCustomer?>? {
+        return posRepository.fetchCustomerFromPhoneNumber(phoneNumber)
+    }
+
+    fun clickOnTakeOut() {
+        Log.d(TAG, "dashboardCategoryViewModel: clickOnTakeOut()...")
+        _clickTakeOut.postValue(Event(true))
+    }
+    /*------------Customer Loyalty---------------*/
+
 
     fun getAllDineInCartItems(orderType: String): Flow<List<TbCartItem>> {
         return posRepository.getAllDineInCartItems(orderType)
@@ -934,12 +1002,14 @@ class DashBoardCategoryViewModel @Inject constructor(
             )
         )
         viewModelScope.launch {
+            _changeCustDispSignInButtonTitle.postValue("")
             posRepository.clearCartModelBackup()
         }
     }
 
     fun deleteManualSaleCart() {
         viewModelScope.launch {
+            _changeCustDispSignInButtonTitle.postValue("")
             totalPrice = 0.0
             subTotalPrice = 0.0
             totalTax = 0.0
@@ -4936,6 +5006,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                     }
                     subTotalPrice -= cartModel?.discountPrice ?: 0.0
+                    Log.e("InternetSoft", "subTotalPrice:   ${subTotalPrice}")
                     if (subTotalPrice < 0) {
                         subTotalPrice = 0.0
                     }
@@ -4947,7 +5018,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                     order_note = cartModel?.note ?: ""
 
                     var finalTotal = 0.0
-                    finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+                    if (subTotalPrice == 00.0 || subTotalPrice == 0.00 || subTotalPrice == 00.00){
+                        subTotalPrice = 0.00
+                        totalTax = 0.00
+                        totalServiceCharge = 0.00
+                        finalTotal = 0.00
+                    }
+                    else {
+
+                        finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+                    }
 
                     redeemLoyaltyInfo.needToApplyLoyalty = prefProvider.getValueboolean(
                         LOYALTY_ADDED, false
@@ -8650,6 +8730,20 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.getLabelPrinterSettingsData()
     }
 
+    /*-------------Customer Loyalty------------------*/
+    fun addCustomersList(currentPage:Int, data:List<TbCustomer>, lastCall:Boolean=false){
+        CoroutineScope(Dispatchers.IO).launch {
+            var data= posRepository.addCustomersList(data)
+            if (!lastCall) {
+                _loadCustomersList.postValue(Pair(currentPage, true))
+            }
+//            _loadCustomersList.postValue(Pair(currentPage,false))
+            /*Check for Identical if not identical then find then call the livedata which will call the recursive function*/
+            Log.d("addCustomersList:S","$data")
+        }
+    }
+    /*-------------Customer Loyalty------------------*/
+
     //    ----------------- Dynamic Payments -----------------------------
     suspend fun insertDynamicPayment(tbDynamicPaymentRecords: TbDynamicPaymentRecords) {
         posRepository.insertDynamicPayments(tbDynamicPaymentRecords)
@@ -8666,4 +8760,9 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.getDynamicPaymentRecords(isActive, locationId)
     }
     //    ----------------- Dynamic Payments -----------------------------
+
+    override fun onCleared() {
+        Log.e("CheckOnClearedViewmodel","DashboardCategoryBoldPOS")
+        super.onCleared()
+    }
 }

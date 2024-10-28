@@ -734,6 +734,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             )
                         )
                         bundle.putParcelable(PRINT_DATA_DINE_IN, dineInDataModel.dineInOrderDetails)
+
+                        Log.e("PRINT_DATA_DINE_IN",Gson().toJson(dineInDataModel.dineInOrderDetails))
+
                         bundle.putParcelable(
                             DINE_IN_GUEST_PAYMENT_DATA,
                             dineInDataModel.guestPaymentModel
@@ -832,6 +835,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             )
                         )
                         bundle.putParcelable(PRINT_DATA_DINE_IN, dineInDataModel.dineInOrderDetails)
+
+                        Log.e("PRINT_DATA_DINE_IN",Gson().toJson(dineInDataModel.dineInOrderDetails))
                         bundle.putParcelable(
                             DINE_IN_GUEST_PAYMENT_DATA,
                             dineInDataModel.guestPaymentModel

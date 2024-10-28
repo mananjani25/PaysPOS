@@ -1,6 +1,10 @@
 package com.pays.pos.ui.fragments.dashboard.bolddashboard
 
+import android.app.Activity
+import android.app.Dialog
 import android.content.DialogInterface
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.text.SpannableString
@@ -10,6 +14,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
@@ -65,12 +70,14 @@ import com.pays.pos.data.remote.Constants.PERCENTAGE
 import com.pays.pos.data.remote.Constants.PHONE_ORDER
 import com.pays.pos.data.remote.Constants.PICK_UP
 import com.pays.pos.data.remote.Constants.REDIRECT_FROM
+import com.pays.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
 import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.remote.Constants.WHOLE_AMOUNT
 import com.pays.pos.databinding.FragmentCartBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
 import com.pays.pos.logger.MessageEvent
+import com.pays.pos.logger.SyncCustomerEvent
 import com.pays.pos.ui.adapter.DineInAdapter
 import com.pays.pos.ui.adapter.OrderTypeAdapter
 import com.pays.pos.ui.adapter.boldpos.CartItemsAdapter
@@ -122,6 +129,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
     }
 
     constructor() : super()
+
     /*--------------------Constructor params--------------------*/
     var itemClickListner: ItemClickListner? = null
     var itemListner: ItemListner? = null
@@ -189,6 +197,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
     @Inject
     lateinit var prefProvider: PrefProvider
+
     @Inject
     lateinit var rolePermission: RolePermission
     private val TAG = "CartFragment"
@@ -283,7 +292,21 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
 
         setUpData()
+        setUpdateCartFooterObservable()
         return binding.root
+    }
+
+    private fun setUpdateCartFooterObservable() {
+        viewModel.updateCartFooterObservable.observe(viewLifecycleOwner,
+            object : androidx.lifecycle.Observer<Event<Boolean>> {
+                override fun onChanged(t: Event<Boolean>?) {
+                    t?.getContentIfNotHandled()?.let {
+                        if (it) {
+                            updateCartFooter(viewModel.currentCartItems)
+                        }
+                    }
+                }
+            })
     }
 
     // To check selected order type
@@ -483,7 +506,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
         }
 
-
+        setCustomerDisplayLoyalty()
         if (prefProvider.getValueInt(CUSTOMER_ID, -1) != -1) {
             displayCustomer()
         }
@@ -534,6 +557,47 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         uiSave()
 
     }
+
+
+/*----------------Customer Loyalty-----------------*/
+
+    private fun setCustomerDisplayLoyalty() {
+        viewModel.clickTakeOut.observe(
+            viewLifecycleOwner,
+            object : androidx.lifecycle.Observer<Event<Boolean>> {
+                override fun onChanged(t: Event<Boolean>?) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        binding.rvOrderType.layoutManager?.childCount?.let {
+                            for (position in 0..it) {
+                                if (binding.rvOrderType.findViewHolderForAdapterPosition(position)?.itemView?.findViewById<TextView>(
+                                        R.id.txtTitle
+                                    )?.text?.contains(/*"Take out"*/binding.orderTypeDisplay.text.toString(), ignoreCase = true) ?: false
+                                ) {
+                                    performClickOnOrderTypeAndSetCustomer(position)
+                                    break
+                                }else if (!binding.orderTypeDisplay.text.toString().trim().contains(':')){
+                                    performClickOnOrderTypeAndSetCustomer(0)
+                                    break
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+    }
+
+    private fun performClickOnOrderTypeAndSetCustomer(position: Int){
+        CoroutineScope(Dispatchers.Main).launch {
+            binding.rvOrderType.findViewHolderForAdapterPosition(
+                position
+            )?.itemView?.performClick()
+            if (prefProvider.getValueInt(CUSTOMER_ID, -1) != -1) {
+                displayCustomer()
+            }
+//                                binding.rvOrderType.findViewHolderForAdapterPosition(position)?.itemView?.performClick()
+        }
+    }
+/*----------------Customer Loyalty-----------------*/
 
     private fun setupTaxAdapter() {
         taxBirfurcationAdapter = TaxBirfurcationAdapter("dashboard")
@@ -792,10 +856,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
     private fun checkDineInEditOrder() {
 
 
-
-
-        if(viewModel.currentCartItems.isEmpty()) {
-            val dineInList: ArrayList<DineInModel> = ArrayList(viewModel?.dineInAdapterBackup?.getList()) ?: arrayListOf()
+        if (viewModel.currentCartItems.isEmpty()) {
+            val dineInList: ArrayList<DineInModel> =
+                ArrayList(viewModel?.dineInAdapterBackup?.getList()) ?: arrayListOf()
 //
 //            val guestcount = viewModel.dineInAdapterBackup?.getList()?.count { it.isHeader == 0 } ?: 1
 //
@@ -812,7 +875,6 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 //                        )
 //                )
 //            }
-
 
 
             dineInCartAdapter.setList(dineInList, viewModel.currentCartItems)
@@ -850,10 +912,6 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 cartModelsList, null, Constants.ADD, false, dineInList = dineInList
             )
         }
-
-
-
-
 
 
 //        if (/*arguments?.getBoolean("is_dine_in_edit") == */false) {
@@ -937,7 +995,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 //        }
 
         binding.rvCartDineIn.visibility = View.VISIBLE
-       // AlertUtils.showAlert(requireContext(),"CART VISIBILITY = ${binding.rvCartDineIn.visibility == View.VISIBLE}")
+        // AlertUtils.showAlert(requireContext(),"CART VISIBILITY = ${binding.rvCartDineIn.visibility == View.VISIBLE}")
     }
 
     fun setTaxBifurcationData(taxlistData: ArrayList<TaxData>) {
@@ -1185,22 +1243,33 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 viewModel.observeLatestCartModel().observe(viewLifecycleOwner) {
                     var latestCartModel: CartModel? = null
 
-                    Log.e("AddItemFragment.kt","currentCartItems:    ${Gson().toJson(viewModel.currentCartItems)}")
+                    Log.e(
+                        "AddItemFragment.kt",
+                        "currentCartItems:    ${Gson().toJson(viewModel.currentCartItems)}"
+                    )
 
-                    if(it.isNotEmpty())
+                    if (it.isNotEmpty())
                         cartModelsList = ArrayList(it)
 
-                    if(it!=null)
-                    if (it.isNotEmpty() && (viewModel.cartFooterNeedToBeUpdated || prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN)) {
-                        latestCartModel = it[0]
+                    if (it != null)
+                        if (it.isNotEmpty() && (viewModel.cartFooterNeedToBeUpdated || prefProvider.getValue(
+                                ORDER_TYPE,
+                                TAKEOUT
+                            ) == Constants.DINE_IN)
+                        ) {
+                            latestCartModel = it[0]
 
-                        if (latestCartModel.discountPrice == 0.0) {
-                            latestCartModel.discountPrice = viewModel.customCartUpdateDiscount
-                            viewModel.customCartUpdateDiscount = 0.0
-                        }
+                            if (latestCartModel.discountPrice == 0.0) {
+                                latestCartModel.discountPrice = viewModel.customCartUpdateDiscount
+                                viewModel.customCartUpdateDiscount = 0.0
+                            }
 
 
-                        if(viewModel.currentCartItems.isNotEmpty() && prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN)
+                            if (viewModel.currentCartItems.isNotEmpty() && prefProvider.getValue(
+                                    ORDER_TYPE,
+                                    TAKEOUT
+                                ) == DINE_IN
+                            )
 //                            latestCartModel.let { cartModel ->
 //                                viewModel.taxBifurcationCalculationNew(
 //                                    viewModel.currentCartItems.first(),
@@ -1208,132 +1277,135 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 //                                )
 //                            }
 
-                        viewModel.setUpdatedCartModel(latestCartModel)
-                        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
-                            viewModel.setCartModel(it)
-                            if (latestCartModel.dineInList?.isNotEmpty() == true) {
-                                var dineInList = latestCartModel.dineInList
-                                if (dineInList?.get(0)?.selectedPosition != -1) {
+                                viewModel.setUpdatedCartModel(latestCartModel)
+                            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+                                viewModel.setCartModel(it)
+                                if (latestCartModel.dineInList?.isNotEmpty() == true) {
+                                    var dineInList = latestCartModel.dineInList
+                                    if (dineInList?.get(0)?.selectedPosition != -1) {
 
-                                    dineInList?.get(0)?.selectedPosition =
-                                        viewModel.dineInHeaderPosition
-                                }
+                                        dineInList?.get(0)?.selectedPosition =
+                                            viewModel.dineInHeaderPosition
+                                    }
 
-                                dineInCartAdapter.setList(
-                                    dineInList?.toCollection(arrayListOf()) ?: arrayListOf(),
-                                    viewModel.currentCartItems
-                                )
-
-
-                            }
-
-                            LogUtil.logE(TAG, "getPAyment:  ${isFromPayment}")
-                            LogUtil.logE(TAG, "isGuestPayment:  ${isGuestPayment}")
-
-                            if (isFromPaymentDinein) {
-                                viewModelPayment.dineInWholeDiscount =
-                                    guestCalModel?.wholeOrderPassDiscount
-                                viewModelPayment.dineInWholeSC = guestCalModel?.wholeOrderPassSC
-                                viewModel.itemCalculationForDineInPaymentNew(
-                                    it[0],
-                                    binding.txtTotal,
-                                    requireContext(),
-                                    guestCalModel!!,
-                                    isGuestPayment
-                                )
-                            } else {
-                                LogUtil.logE(TAG, "WithOutDineIn")
-                                viewModel.itemCalculationCartModelNew(
-                                    viewModel.currentCartItems, binding.txtTotal, requireContext()
-                                )
-                            }
-
-                            var listOfTax: ArrayList<TaxData> = arrayListOf()
-
-
-                            latestCartModel.taxlistDynamic?.let { it1 ->
-                                if (prefProvider.getValue(
-                                        ORDER_TYPE, ""
-                                    ) == DINE_IN && viewModel.currentCartItems.isEmpty() && !prefProvider.getValueboolean(
-                                        Constants.DINE_IN_UPDATE, false
+                                    dineInCartAdapter.setList(
+                                        dineInList?.toCollection(arrayListOf()) ?: arrayListOf(),
+                                        viewModel.currentCartItems
                                     )
-                                ) {
-                                    //listOfTax.addAll(arrayListOf())
-                                    setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
 
+
+                                }
+
+                                LogUtil.logE(TAG, "getPAyment:  ${isFromPayment}")
+                                LogUtil.logE(TAG, "isGuestPayment:  ${isGuestPayment}")
+
+                                if (isFromPaymentDinein) {
+                                    viewModelPayment.dineInWholeDiscount =
+                                        guestCalModel?.wholeOrderPassDiscount
+                                    viewModelPayment.dineInWholeSC = guestCalModel?.wholeOrderPassSC
+                                    viewModel.itemCalculationForDineInPaymentNew(
+                                        it[0],
+                                        binding.txtTotal,
+                                        requireContext(),
+                                        guestCalModel!!,
+                                        isGuestPayment
+                                    )
                                 } else {
-                                   // listOfTax.addAll(it1)
-                                    setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
+                                    LogUtil.logE(TAG, "WithOutDineIn")
+                                    viewModel.itemCalculationCartModelNew(
+                                        viewModel.currentCartItems,
+                                        binding.txtTotal,
+                                        requireContext()
+                                    )
                                 }
 
-                            }
+                                var listOfTax: ArrayList<TaxData> = arrayListOf()
 
-                            if (viewModel.currentCartItems.isEmpty()) {
-                                viewModel.getAllCartItems(
-                                    prefProvider.getValue(
-                                        Constants.ORDER_TYPE, TAKEOUT
-                                    ), prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                                ).asLiveData().value?.let { it1 ->
-                                    viewModel.cartModel =
-                                        taxBifurcationCalculationUpdate(it[0], it1)
+
+                                latestCartModel.taxlistDynamic?.let { it1 ->
+                                    if (prefProvider.getValue(
+                                            ORDER_TYPE, ""
+                                        ) == DINE_IN && viewModel.currentCartItems.isEmpty() && !prefProvider.getValueboolean(
+                                            Constants.DINE_IN_UPDATE, false
+                                        )
+                                    ) {
+                                        //listOfTax.addAll(arrayListOf())
+                                        setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
+
+                                    } else {
+                                        // listOfTax.addAll(it1)
+                                        setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
+                                    }
+
                                 }
-                            } else {
-                                viewModel.cartModel = taxBifurcationCalculationUpdate(
-                                    it[0], viewModel.currentCartItems
-                                )
-                            }
 
-                            updateCartFooter(
-                                viewModel.currentCartItems
-                            )
-
-                        } else {
-
-                            Log.e(
-                                TAG, "CheckCartFragTax 12: ${Gson().toJson(it[0].taxlistDynamic)}"
-                            )
-
-                            // Added to resolve Add Discount issue BIS-3547
-                            if (viewModel.discountNeedToUpdate && viewModel.cartFooterNeedToBeUpdated)
-
-                                if (viewModel.currentCartItems.isNotEmpty()) updateCartFooter(
-                                    viewModel.currentCartItems
-                                )
-                                else {
+                                if (viewModel.currentCartItems.isEmpty()) {
                                     viewModel.getAllCartItems(
                                         prefProvider.getValue(
                                             Constants.ORDER_TYPE, TAKEOUT
                                         ), prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                                     ).asLiveData().value?.let { it1 ->
-                                        updateCartFooter(
-                                            it1.toList()
-                                        )
+                                        viewModel.cartModel =
+                                            taxBifurcationCalculationUpdate(it[0], it1)
+                                    }
+                                } else {
+                                    viewModel.cartModel = taxBifurcationCalculationUpdate(
+                                        it[0], viewModel.currentCartItems
+                                    )
+                                }
+
+                                updateCartFooter(
+                                    viewModel.currentCartItems
+                                )
+
+                            } else {
+
+                                Log.e(
+                                    TAG,
+                                    "CheckCartFragTax 12: ${Gson().toJson(it[0].taxlistDynamic)}"
+                                )
+
+                                // Added to resolve Add Discount issue BIS-3547
+                                if (viewModel.discountNeedToUpdate && viewModel.cartFooterNeedToBeUpdated)
+
+                                    if (viewModel.currentCartItems.isNotEmpty()) updateCartFooter(
+                                        viewModel.currentCartItems
+                                    )
+                                    else {
+                                        viewModel.getAllCartItems(
+                                            prefProvider.getValue(
+                                                Constants.ORDER_TYPE, TAKEOUT
+                                            ), prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                                        ).asLiveData().value?.let { it1 ->
+                                            updateCartFooter(
+                                                it1.toList()
+                                            )
+                                        }
+                                    }
+                                else {
+                                    viewModel.apply {
+                                        discountNeedToUpdate = true
+                                        cartFooterNeedToBeUpdated = true
                                     }
                                 }
-                            else {
-                                viewModel.apply {
-                                    discountNeedToUpdate = true
-                                    cartFooterNeedToBeUpdated = true
-                                }
-                            }
 
-                            if (viewModel.currentCartItems.isEmpty()) {
-                                viewModel.getAllCartItems(
-                                    prefProvider.getValue(
-                                        Constants.ORDER_TYPE, TAKEOUT
-                                    ), prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                                ).asLiveData().value?.let { it1 ->
-                                    viewModel.cartModel =
-                                        taxBifurcationCalculationUpdate(it[0], it1)
+                                if (viewModel.currentCartItems.isEmpty()) {
+                                    viewModel.getAllCartItems(
+                                        prefProvider.getValue(
+                                            Constants.ORDER_TYPE, TAKEOUT
+                                        ), prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                                    ).asLiveData().value?.let { it1 ->
+                                        viewModel.cartModel =
+                                            taxBifurcationCalculationUpdate(it[0], it1)
+                                    }
+                                } else {
+                                    viewModel.cartModel = taxBifurcationCalculationUpdate(
+                                        it[0], viewModel.currentCartItems
+                                    )
                                 }
-                            } else {
-                                viewModel.cartModel = taxBifurcationCalculationUpdate(
-                                    it[0], viewModel.currentCartItems
-                                )
-                            }
 
+                            }
                         }
-                    }
                 }
 
 
@@ -1343,7 +1415,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 ).asLiveData().observe(viewLifecycleOwner) { it ->
                     val itemCount = it.size
 
-                    if(prefProvider.getValue(Constants.ORDER_TYPE, "") == "DineIn") {
+                    if (prefProvider.getValue(Constants.ORDER_TYPE, "") == "DineIn") {
                         Log.e("DINE IN ITEM COUNT", "DINE IN ORDER COUNT")
 
 
@@ -1387,14 +1459,18 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                 saveVisibility()
 
 
-                                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+                                if (prefProvider.getValue(
+                                        ORDER_TYPE,
+                                        TAKEOUT
+                                    ) == Constants.DINE_IN
+                                ) {
                                     runOnUiThread(Runnable {
                                         binding.rvCartDineIn.visible()
                                         binding.rvCartList.gone()
                                         checkOrderType()
                                         if (it.isNotEmpty()) {
 
-    //                                        cartlist = it
+                                            //                                        cartlist = it
                                             if (isFromPayment) {
 
                                                 if (MethodUtils.isEnableCashDiscount(requireContext()) && prefProvider.getValue(
@@ -1433,9 +1509,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                 if (getOldList.isEmpty()) {
                                                     var listItemDine: ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
                                                         arrayListOf()
-    //                                                var data = it[0].dineInList
-    //                                                LogUtil.logE(TAG, "getDataSizeDin ${data?.size}")
-    //                                                data?.forEach {
+                                                    //                                                var data = it[0].dineInList
+                                                    //                                                LogUtil.logE(TAG, "getDataSizeDin ${data?.size}")
+                                                    //                                                data?.forEach {
                                                     it.forEach { item ->
                                                         var modifiers: ArrayList<GetOrderDetailsResponse.Data.OrderItem.OrderItemModifier> =
                                                             arrayListOf()
@@ -1498,7 +1574,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                         )
 
                                                     }
-    //                                                }
+                                                    //                                                }
                                                     prefProvider.setValue(
                                                         Constants.DINE_IN_UPDATE_LIST,
                                                         Gson().toJson(listItemDine)
@@ -1507,7 +1583,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                                             } else {
                                                 binding.txtDineInProceed.setText("Proceed To Fire")
-    //                                            cartAdapter.notifyDataSetChanged()
+                                                //                                            cartAdapter.notifyDataSetChanged()
                                             }
 
 
@@ -1524,7 +1600,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                 MethodUtils.roundOffAmount(viewModel.subTotalPrice)
                                             binding.txtTax.text =
                                                 MethodUtils.roundOffAmount(viewModel.totalTax)
-                                            Log.d("S_CHARGE_2::", viewModel.totalServiceCharge.toString())
+                                            Log.d(
+                                                "S_CHARGE_2::",
+                                                viewModel.totalServiceCharge.toString()
+                                            )
                                             binding.txtServiceCharge.text =
                                                 MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                                             binding.txtDiscount.text =
@@ -1541,7 +1620,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                     MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
                                             }
                                             if (viewModel.order_note.isNotEmpty()) {
-                                                binding.relativeOrderNotes?.visibility = View.VISIBLE
+                                                binding.relativeOrderNotes?.visibility =
+                                                    View.VISIBLE
                                                 binding.txtOrderNote?.text = viewModel.order_note
                                             } else {
                                                 binding.relativeOrderNotes?.visibility = View.GONE
@@ -1552,7 +1632,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             binding.lblLoyaltyBalance.visibility = View.GONE
 
                                         } else {
-    //                                        cartlist = arrayListOf()
+                                            //                                        cartlist = arrayListOf()
                                             if (isFromPayment) {
                                                 if (MethodUtils.isEnableCashDiscount(requireContext()) && prefProvider.getValue(
                                                         ORDER_TYPE, TAKEOUT
@@ -1621,7 +1701,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             } else {
 
                                                 Log.e(
-                                                    "FRAGMENT RESTARTED", "CART FRAGMENT NOT RESTARTED"
+                                                    "FRAGMENT RESTARTED",
+                                                    "CART FRAGMENT NOT RESTARTED"
                                                 )
 
 
@@ -1645,9 +1726,12 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                         oldItemSize = it.size
 
                                         viewModel.destroyedCartItemsList.clear()
-                                        it.filter { item -> item.isDestroy }.let { listOfCartItems ->
-                                            viewModel.destroyedCartItemsList.addAll(listOfCartItems)
-                                        }
+                                        it.filter { item -> item.isDestroy }
+                                            .let { listOfCartItems ->
+                                                viewModel.destroyedCartItemsList.addAll(
+                                                    listOfCartItems
+                                                )
+                                            }
 
                                         runOnUiThread(Runnable {
                                             if (isFromPayment) {
@@ -1685,7 +1769,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                     prefProvider.getValue(
                                                         Constants.ORDER_TYPE, TAKEOUT
                                                     ),
-                                                    prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                                                    prefProvider.getValueInt(
+                                                        Constants.EMPLOYEE_ID,
+                                                        0
+                                                    )
                                                 ).asLiveData().value?.let { it1 ->
                                                     viewModel.cartModel =
                                                         viewModel.cartModel?.let { it2 ->
@@ -1695,11 +1782,12 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                         }
                                                 }
                                             } else {
-                                                viewModel.cartModel = viewModel.cartModel?.let { it1 ->
-                                                    taxBifurcationCalculationUpdate(
-                                                        it1, viewModel.currentCartItems
-                                                    )
-                                                }
+                                                viewModel.cartModel =
+                                                    viewModel.cartModel?.let { it1 ->
+                                                        taxBifurcationCalculationUpdate(
+                                                            it1, viewModel.currentCartItems
+                                                        )
+                                                    }
                                             }
                                             /* binding.rvCartList.removeAllViews()
                                          binding.rvCartList.removeAllViewsInLayout()*/
@@ -1754,9 +1842,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                         } else {
                             Log.e("Cart Blank Tracked", "Cart Going BLANK ->>>>>>")
-                          //  getDineInCartList()
-                            if(itemCount > 0)
-                            viewModel.setCurrentCartItems(viewModel.duplicateCurrentCartItem )
+                            //  getDineInCartList()
+                            if (itemCount > 0)
+                                viewModel.setCurrentCartItems(viewModel.duplicateCurrentCartItem)
 
                         }
                     }
@@ -1775,14 +1863,18 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         Log.e("checkFirstItemQty", "itemQuantity:  ${it.get(0).itemQuantity}")
                     }
 
-                    if(prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) != "DineIn") {
+                    if (prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) != "DineIn") {
 
                         viewModel.duplicateCurrentCartItem =
                             if (viewModel.currentCartItems.isNotEmpty()) viewModel.currentCartItems else viewModel.duplicateCurrentCartItem
 
                         viewModel.setCurrentCartItems(it)
 
-                        if (viewModel.currentCartItems.isNotEmpty() && prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT)!="DineIN") {
+                        if (viewModel.currentCartItems.isNotEmpty() && prefProvider.getValue(
+                                Constants.ORDER_TYPE,
+                                TAKEOUT
+                            ) != "DineIN"
+                        ) {
 
                             CoroutineScope(Dispatchers.IO).launch {
 
@@ -1813,14 +1905,18 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                                 saveVisibility()
 
-                                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+                                if (prefProvider.getValue(
+                                        ORDER_TYPE,
+                                        TAKEOUT
+                                    ) == Constants.DINE_IN
+                                ) {
                                     runOnUiThread(Runnable {
                                         binding.rvCartDineIn.visible()
                                         binding.rvCartList.gone()
                                         checkOrderType()
                                         if (it.isNotEmpty()) {
 
-    //                                        cartlist = it
+                                            //                                        cartlist = it
                                             if (isFromPayment) {
 
                                                 if (MethodUtils.isEnableCashDiscount(requireContext()) && prefProvider.getValue(
@@ -1859,9 +1955,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                 if (getOldList.isEmpty()) {
                                                     var listItemDine: ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
                                                         arrayListOf()
-    //                                                var data = it[0].dineInList
-    //                                                LogUtil.logE(TAG, "getDataSizeDin ${data?.size}")
-    //                                                data?.forEach {
+                                                    //                                                var data = it[0].dineInList
+                                                    //                                                LogUtil.logE(TAG, "getDataSizeDin ${data?.size}")
+                                                    //                                                data?.forEach {
                                                     it.forEach { item ->
                                                         var modifiers: ArrayList<GetOrderDetailsResponse.Data.OrderItem.OrderItemModifier> =
                                                             arrayListOf()
@@ -1924,7 +2020,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                         )
 
                                                     }
-    //                                                }
+                                                    //                                                }
                                                     prefProvider.setValue(
                                                         Constants.DINE_IN_UPDATE_LIST,
                                                         Gson().toJson(listItemDine)
@@ -1933,12 +2029,12 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                                             } else {
                                                 binding.txtDineInProceed.setText("Proceed To Fire")
-    //                                            cartAdapter.notifyDataSetChanged()
+                                                //                                            cartAdapter.notifyDataSetChanged()
                                             }
 
 
                                             viewModel.currentCartItems.clear()
-                                            viewModel.currentCartItems.addAll(it+viewModel.oldDineInItems)
+                                            viewModel.currentCartItems.addAll(it + viewModel.oldDineInItems)
                                             //viewModel.oldDineInItems.clear()
                                             Log.e(
                                                 TAG,
@@ -1950,7 +2046,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                 MethodUtils.roundOffAmount(viewModel.subTotalPrice)
                                             binding.txtTax.text =
                                                 MethodUtils.roundOffAmount(viewModel.totalTax)
-                                            Log.d("S_CHARGE_3::", viewModel.totalServiceCharge.toString())
+                                            Log.d(
+                                                "S_CHARGE_3::",
+                                                viewModel.totalServiceCharge.toString()
+                                            )
                                             binding.txtServiceCharge.text =
                                                 MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                                             binding.txtDiscount.text =
@@ -1967,7 +2066,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                     MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
                                             }
                                             if (viewModel.order_note.isNotEmpty()) {
-                                                binding.relativeOrderNotes?.visibility = View.VISIBLE
+                                                binding.relativeOrderNotes?.visibility =
+                                                    View.VISIBLE
                                                 binding.txtOrderNote?.text = viewModel.order_note
                                             } else {
                                                 binding.relativeOrderNotes?.visibility = View.GONE
@@ -1978,7 +2078,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             binding.lblLoyaltyBalance.visibility = View.GONE
 
                                         } else {
-    //                                        cartlist = arrayListOf()
+                                            //                                        cartlist = arrayListOf()
                                             if (isFromPayment) {
                                                 if (MethodUtils.isEnableCashDiscount(requireContext()) && prefProvider.getValue(
                                                         ORDER_TYPE, TAKEOUT
@@ -2047,7 +2147,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             } else {
 
                                                 Log.e(
-                                                    "FRAGMENT RESTARTED", "CART FRAGMENT NOT RESTARTED"
+                                                    "FRAGMENT RESTARTED",
+                                                    "CART FRAGMENT NOT RESTARTED"
                                                 )
 
 
@@ -2071,9 +2172,12 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                         oldItemSize = it.size
 
                                         viewModel.destroyedCartItemsList.clear()
-                                        it.filter { item -> item.isDestroy }.let { listOfCartItems ->
-                                            viewModel.destroyedCartItemsList.addAll(listOfCartItems)
-                                        }
+                                        it.filter { item -> item.isDestroy }
+                                            .let { listOfCartItems ->
+                                                viewModel.destroyedCartItemsList.addAll(
+                                                    listOfCartItems
+                                                )
+                                            }
 
                                         runOnUiThread(Runnable {
                                             if (isFromPayment) {
@@ -2111,7 +2215,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                     prefProvider.getValue(
                                                         Constants.ORDER_TYPE, TAKEOUT
                                                     ),
-                                                    prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                                                    prefProvider.getValueInt(
+                                                        Constants.EMPLOYEE_ID,
+                                                        0
+                                                    )
                                                 ).asLiveData().value?.let { it1 ->
                                                     viewModel.cartModel =
                                                         viewModel.cartModel?.let { it2 ->
@@ -2121,11 +2228,12 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                         }
                                                 }
                                             } else {
-                                                viewModel.cartModel = viewModel.cartModel?.let { it1 ->
-                                                    taxBifurcationCalculationUpdate(
-                                                        it1, viewModel.currentCartItems
-                                                    )
-                                                }
+                                                viewModel.cartModel =
+                                                    viewModel.cartModel?.let { it1 ->
+                                                        taxBifurcationCalculationUpdate(
+                                                            it1, viewModel.currentCartItems
+                                                        )
+                                                    }
                                             }
                                             /* binding.rvCartList.removeAllViews()
                                          binding.rvCartList.removeAllViewsInLayout()*/
@@ -2181,8 +2289,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         } else {
                             Log.e("Cart Blank Tracked", "Cart Going BLANK ->>>>>>")
 
-                           // if(itemCount > 0)
-                            viewModel.setCurrentCartItems(viewModel.duplicateCurrentCartItem )
+                            // if(itemCount > 0)
+                            viewModel.setCurrentCartItems(viewModel.duplicateCurrentCartItem)
 
                         }
                     } else {
@@ -2190,7 +2298,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         /**
                          *  currentDineInItems keeps track of all dine in Items even if they are destroyed
                          */
-                        viewModel.currentDineInItems = kotlin.collections.ArrayList(it.filter { it.orderType == DINE_IN })
+                        viewModel.currentDineInItems =
+                            kotlin.collections.ArrayList(it.filter { it.orderType == DINE_IN })
                     }
                 }
             }
@@ -2229,6 +2338,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         }
                     } else {
                         ProgressUtils.dismissProgressDialog()
+                        runOnUiThread(kotlinx.coroutines.Runnable {
+                            dismissProgressDialog()
+                        })
                     }
                 }
             }
@@ -2266,51 +2378,42 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             binding.txtSubTotal.text = MethodUtils.roundOffAmount(viewModel.subTotalPrice)
             binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
 
-            if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
-
-//                if(prefProvider.getValueboolean(DINE_IN_UPDATE,false))
-//                    viewModel.totalServiceCharge = arguments?.getBundle("updateBundle")?.getDouble("serviceChargeB")?.toDouble() ?: 0.0
-//                else {
-
-                val total = viewModel.subTotalPrice + viewModel.totalTax
-
-                val guestCount = dineInCartAdapter.getList().count {
-                    it.isHeader == 0
-                }
-                val serviceChargesList = getServiceChargeFromGuestCount(guestCount - 1)
+            if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN ) {
 
                 var serviceCharge = 0.0
 
-                Log.e(
-                    "Service charges",
-                    "Service charges size ${serviceChargesList.size}  AND guest count is $guestCount"
-                )
-                serviceChargesList.forEach {
-
-                    Log.e(
-                        "Service charges",
-                        "Service charges for each iteration AND IS CHECKED = ${it.isChecked}"
-                    )
+                if (prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
 
 
+                    val total = viewModel.subTotalPrice + viewModel.totalTax
 
-                    if (!it.isChecked) {
+                    val guestCount = dineInCartAdapter.getList().count {
+                        it.isHeader == 0
+                    }
+
+//                    viewModel.serviceChargesList =
+//                        ArrayList(viewModel.cartModel?.serviceCharge ?: arrayListOf())
+
+                    val serviceChargesList = getServiceChargeFromGuestCount(guestCount - 1)
+
+
+
+                    serviceChargesList.forEach {
+
                         serviceCharge += (viewModel.subTotalPrice * it.percentage) / 100
-                        Log.e(
-                            "Service charges",
-                            "Service charges for each iteration $serviceCharge on percentage ${it.percentage} and subtotal ${viewModel.subTotalPrice}"
-                        )
                     }
                 }
 
+
                 viewModel.totalServiceCharge = serviceCharge
 
-                binding.txtServiceCharge.text = MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
-            }  else {
+                binding.txtServiceCharge.text =
+                    MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
+            } else {
                 Log.d("S_CHARGE_5::", viewModel.totalServiceCharge.toString())
                 binding.txtServiceCharge.text =
                     MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
-             }
+            }
             Log.e("totalDiscount", viewModel.totalDiscount.toString())
 
             var cartCompletePrice = getCompleteCartPrice()
@@ -2324,7 +2427,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                     try {
                         binding.txtSubTotal.text = MethodUtils.roundOffAmount(remaining)
-                    }catch (e:Exception) {}
+                    } catch (e: Exception) {
+                    }
                     subTotalPrice = remaining
                 } else {
                     viewModel.totalDiscount = 0.0
@@ -2340,10 +2444,12 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
 
 
-            if(prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
-                binding.txtTotal.text = MethodUtils.roundOffAmount(viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge)
+            if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+                binding.txtTotal.text =
+                    MethodUtils.roundOffAmount(viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge)
 
-                viewModel.totalPriceUpdated.value = viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge
+                viewModel.totalPriceUpdated.value =
+                    viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge
 
                 Log.e(
                     "Service charges",
@@ -2363,6 +2469,16 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     OPTION_TYPE, "CashDiscount"
                 ) == "CashDiscount"
             ) {
+
+
+                if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+                    viewModel.cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                        viewModel.totalPriceUpdated.value ?: 0.0,
+                        prefProvider,
+                        requireContext()
+                    )
+                }
+
                 binding.txtNoncashAdj.setTextColor(getColor(R.color.colorRed))
                 binding.txtNoncashAdj.text =
                     "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
@@ -2389,6 +2505,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             ), binding.txtTotal
                         )
                     }
+                    /* To handle BIS-4672, we need to check isFromPayment variable, it is coming true, it should come false */
                     if (isFromPayment) {
                         if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
                             binding.liinearInfoLayout.layoutParams.height =
@@ -2447,6 +2564,37 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         binding.checkloylaty.isChecked =
                             viewModel.redeemLoyaltyInfo.needToApplyLoyalty
                     }
+                } else {
+                    /* This condition will be called when a customer will be added with loyalty but when cart is active with items, the user changes the customer which has no loyalty */
+                    Log.d("Loyalty::", "Not available")
+                    binding.apply {
+                        liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._50sdp).toInt()
+                        relativeLoylatyPoints.visibility = View.GONE
+                        lblLoyaltyPoints.visibility = View.GONE
+                        lblLoyaltyBalance.visibility = View.GONE
+                    }
+                   /* binding.liinearInfoLayout.layoutParams.height =
+                                  resources.getDimension(R.dimen._50sdp).toInt()
+                    binding.relativeLoylatyPoints.visibility = View.GONE
+                    binding.lblLoyaltyPoints.visibility = View.GONE
+                    binding.lblLoyaltyBalance.visibility = View.GONE*/
+                    /*  prefProvider.setValue(
+                          Constants.CUSTOMER_NAME,
+                          ""
+                      )
+                      viewModel.selectedCustomer=null
+                      prefProvider.setValue(
+                          Constants.RECEIPT_CUSTOMER_NAME,
+                          ""
+                      )
+                      prefProvider.setValue(
+                          Constants.PREF_CUSTOMER,
+                          ""
+                      )*/
+                    prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+                    prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+//                    prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                 }
             } else {
                 binding.relativeLoylatyPoints.visibility = View.GONE
@@ -2572,14 +2720,17 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
     override fun onHeaderSelected(position: Int) {
 
-        if(!viewModel.isItemEditInProgress) {
+        if (!viewModel.isItemEditInProgress) {
 
             prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, position)
             Log.d(TAG, "onHeaderSelected: header position : $position")
             viewModel.dineInHeaderPosition = position
             viewModel.currentSelectedHeaderDineIn = position
-        }else
-            AlertUtils.showCustomAlert(requireContext(),"Cannot change guest as already updating another item")
+        } else
+            AlertUtils.showCustomAlert(
+                requireContext(),
+                "Cannot change guest as already updating another item"
+            )
     }
 
     override fun onItemSelected(headerPosition: Int, position: Int, item: TbCartItem) {
@@ -2604,7 +2755,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         LogUtil.logE(TAG, "onCustomerClicked  ${isRemoved}")
         viewModel.dineInHeaderPosition = position
         if (isRemoved) {
-            if(cartModelsList.isEmpty())
+            if (cartModelsList.isEmpty())
                 viewModel.cartModel?.let { cartModelsList.add(0, it) }
 
             if (cartModelsList.get(0).dineInList?.size!! >= position) {
@@ -2618,10 +2769,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         } else {
 
 
-            if(cartModelsList.isEmpty())
+            if (cartModelsList.isEmpty())
                 viewModel.cartModel?.let { cartModelsList.add(0, it) }
 
-            if(cartModelsList.isNotEmpty()) {
+            if (cartModelsList.isNotEmpty()) {
 
                 var listOfCustomersID: ArrayList<Int> = arrayListOf()
                 cartModelsList[0].dineInList?.forEach {
@@ -2641,7 +2792,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
                 )
             } else
-                AlertUtils.showCustomAlert(requireContext(),"Unable to assign customer ! Please add at least one Item.")
+                AlertUtils.showCustomAlert(
+                    requireContext(),
+                    "Unable to assign customer ! Please add at least one Item."
+                )
         }
 
 
@@ -2661,11 +2815,11 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             return
         }
 
-        if(cartModelsList.isEmpty())
+        if (cartModelsList.isEmpty())
             viewModel.cartModel?.let { cartModelsList.add(0, it) }
 
 
-        if(cartModelsList.isEmpty()){
+        if (cartModelsList.isEmpty()) {
             AlertUtils.showCustomAlertWithListenerWithOK(
                 requireContext(), "Unable to Add Guest !"
             ) { _, _ ->
@@ -2782,18 +2936,23 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
     // To remove guest from order
     override fun onRemoveGuest(position: Int) {
 
-        if(cartModelsList.isNotEmpty()){
-            if(viewModel.currentCartItems.any { it.guestIndexForDineIn == position }) {
-                AlertUtils.showCustomAlert(requireContext(),"Can't remove guest as it contains items.")
+        if (cartModelsList.isNotEmpty()) {
+            if (viewModel.currentCartItems.any { it.guestIndexForDineIn == position }) {
+                AlertUtils.showCustomAlert(
+                    requireContext(),
+                    "Can't remove guest as it contains items."
+                )
                 return
             }
         }
 
-        if(cartModelsList.isEmpty())
+        if (cartModelsList.isEmpty())
             viewModel.cartModel?.let { cartModelsList.add(0, it) }
 
 
-        if (dineInCartAdapter.getList().isNotEmpty() && dineInCartAdapter.getList().size > 2 && cartModelsList.isNotEmpty()) {
+        if (dineInCartAdapter.getList()
+                .isNotEmpty() && dineInCartAdapter.getList().size > 2 && cartModelsList.isNotEmpty()
+        ) {
             if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
                 cartModelsList.get(0).dineInList?.forEach {
                     if (it.title == dineInCartAdapter.getList()[position].title) {
@@ -2810,7 +2969,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     .forEach { destroyedGuestsList.add(it) }
 
                 val index = position
-                Toast.makeText(requireContext(),"Removed guest at index $index",Toast.LENGTH_LONG).show()
+//                Toast.makeText(requireContext(), "Removed guest at index $index", Toast.LENGTH_LONG)
+//                    .show()
 
                 dineIn.removeAll(destroyedGuestsList.toSet())
 
@@ -2825,12 +2985,12 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
              * */
             try {
                 viewModel.dineInHeaderPosition = 0
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
 
-        } else if(cartModelsList.isEmpty()){
-            AlertUtils.showCustomAlert(requireContext(),"Unable to remove guest")
+        } else if (cartModelsList.isEmpty()) {
+            AlertUtils.showCustomAlert(requireContext(), "Unable to remove guest")
         } else {
             viewModel.unableToRemoveGuest(getString(R.string.minimum_one_guest_is_required))
         }
@@ -2864,11 +3024,11 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         binding.rvCartDineIn.adapter = dineInCartAdapter
 
         viewModel.lastItemRemoveFromCart.observe(viewLifecycleOwner) { pair ->
-            if(pair.first) {
+            if (pair.first) {
                 val dineInList = dineInCartAdapter.getList()
                 val found = dineInList.any { it.items.any { it.cartItemId == pair.second } }
 
-                Toast.makeText(requireContext(),"ITEMS - $found",Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), "ITEMS - $found", Toast.LENGTH_LONG).show()
 
             }
         }
@@ -2884,7 +3044,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     supervisorScope {
                         launch {
                             try {
-                                viewModel.selectedCatetory=0
+                                viewModel.changeCustomerDispSignButtonTitle("")
+                                viewModel.selectedCatetory = 0
                                 // Do positive stuff here
                                 prefProvider.setValueboolean(Constants.BACK_FROM_PAYMENT, false)
                                 prefProvider.setValueboolean(Constants.NO_NEED_TO_PRINT, false)
@@ -2911,20 +3072,20 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                                     //if (cartModelsList.size > 0) {
 
-                                        val dList = viewModel.cartModel?.dineInList ?: arrayListOf()
-                                        LogUtil.logE(TAG, "dList:  ${Gson().toJson(dList)}")
-                                        if (dList.isNotEmpty()) {
-                                            dList[0].floorPlanTable?.id?.let {
+                                    val dList = viewModel.cartModel?.dineInList ?: arrayListOf()
+                                    LogUtil.logE(TAG, "dList:  ${Gson().toJson(dList)}")
+                                    if (dList.isNotEmpty()) {
+                                        dList[0].floorPlanTable?.id?.let {
 
-                                                if (dList[0].floorPlanTable?.status.toString() == Constants.MERGED) {
-                                                    viewModel.getTableStatus(it, Constants.MERGED)
-                                                } else {
-                                                    viewModel.getTableStatus(
-                                                        it, "Available"
-                                                    )
-                                                }
+                                            if (dList[0].floorPlanTable?.status.toString() == Constants.MERGED) {
+                                                viewModel.getTableStatus(it, Constants.MERGED)
+                                            } else {
+                                                viewModel.getTableStatus(
+                                                    it, "Available"
+                                                )
                                             }
                                         }
+                                    }
                                     //}
 
                                     clearCustomer()
@@ -3069,10 +3230,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             if (viewModel.restrictedAmount(binding.txtTotal)) {
 
 
-                if(viewModel.currentCartItems.isNotEmpty())
+                if (viewModel.currentCartItems.isNotEmpty())
                     binding.relPreoceedToFire.gone()
                 else
-                    AlertUtils.showCustomAlert(requireContext(),"Please add at least one Item.")
+                    AlertUtils.showCustomAlert(requireContext(), "Please add at least one Item.")
 
                 prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 //cartModelsList[0] = viewModel.generateCombinedItems(viewModel.cartModel!!)
@@ -3122,38 +3283,33 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             val valuess = cartModelsList[0]
 
 
-
-
-
                             val request = viewModel.updateOrder(cartModelsList[0])
 
 
                             /***
                              * Added this delay to resolve items getting added two times after moving items
                              */
-                                Handler().postDelayed({
+                            Handler().postDelayed({
 
-                                    request.order.guestsAttributes.forEach {
-                                        it.guestItemsAttributes.forEach { it.Destroy = true }
+                                request.order.guestsAttributes.forEach {
+                                    it.guestItemsAttributes.forEach { it.Destroy = true }
+                                }
+
+                                if (cartModelsList[0].orderId != 0) {
+                                    cartModelsList[0].orderId?.let {
+                                        viewModel.updateOrderCall(
+                                            it, request
+                                        )
                                     }
-
-                                    if (cartModelsList[0].orderId != 0) {
-                                        cartModelsList[0].orderId?.let {
-                                            viewModel.updateOrderCall(
-                                                it, request
-                                            )
-                                        }
-                                    } else {
-                                        orderId?.let { it1 ->
-                                            viewModel.updateOrderCall(
-                                                it1,
-                                                request
-                                            )
-                                        }
+                                } else {
+                                    orderId?.let { it1 ->
+                                        viewModel.updateOrderCall(
+                                            it1,
+                                            request
+                                        )
                                     }
-                                },300)
-
-
+                                }
+                            }, 300)
 
 
 //                                viewModel.dineInResult.observe(viewLifecycleOwner) { returnResult ->
@@ -3298,8 +3454,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     viewModel.deleteCustomer(cartlist[0].cartId)
                                 }
 
-
                                 clearCustomer()
+                                viewModel.changeCustomerDispSignButtonTitle(getString(R.string.sign_up_or_check_in))
+
                             }
 
 
@@ -3362,17 +3519,17 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             }
 
                             if (prefProvider.isAdmin() || prefProvider.isManager()) {
-                                Log.e(TAG,"added in 1")
+                                Log.e(TAG, "added in 1")
 
                                 findNavController().navigate(
                                     R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
                                     bundle
                                 )
                             } else {
-                                Log.e(TAG,"added in 2")
-                                if (rolePermission.hasDiscountPermission(binding.root)){
+                                Log.e(TAG, "added in 2")
+                                if (rolePermission.hasDiscountPermission(binding.root)) {
 
-                                    Log.e(TAG,"added in 3")
+                                    Log.e(TAG, "added in 3")
 
                                     findNavController().navigate(
                                         R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
@@ -3506,16 +3663,26 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             object : View.OnClickListener {
                 override fun onClick(p0: View?) {
                     cleanOrderBackupDetails()
-                    if ((binding.orderTypeDisplay.text.toString().lowercase().contains("phone"))){
-                        var deliveryType=prefProvider.getValue(DELIVERY_TYPE,"")
-                        if (deliveryType.isNotEmpty() && deliveryType.equals(DELIVERY,ignoreCase = true)){
-                            if ((binding.txtAddCustomer.text.toString().contains("+")) && (binding.txtAddCustomer.text.toString().lowercase().contains("add"))){
-                                AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), getString(R.string.add_customer_message), object : DialogInterface.OnClickListener{
-                                    override fun onClick(p0: DialogInterface?, p1: Int) {
-                                        p0?.dismiss()
-                                    }
+                    if ((binding.orderTypeDisplay.text.toString().lowercase().contains("phone"))) {
+                        var deliveryType = prefProvider.getValue(DELIVERY_TYPE, "")
+                        if (deliveryType.isNotEmpty() && deliveryType.equals(
+                                DELIVERY,
+                                ignoreCase = true
+                            )
+                        ) {
+                            if ((binding.txtAddCustomer.text.toString()
+                                    .contains("+")) && (binding.txtAddCustomer.text.toString()
+                                    .lowercase().contains("add"))
+                            ) {
+                                AlertUtils.showCustomAlertWithListenerWithOK(
+                                    requireContext(),
+                                    getString(R.string.add_customer_message),
+                                    object : DialogInterface.OnClickListener {
+                                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                                            p0?.dismiss()
+                                        }
 
-                                })
+                                    })
                                 return
                             }
                         }
@@ -3524,7 +3691,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     EventBus.getDefault()
                         .post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvPayNow()"))
 
-                    viewModel.selectedCatetory=0
+                    viewModel.selectedCatetory = 0
                     prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
                     prefProvider.setValueInt("ORDER_ID", -1)
 
@@ -3646,25 +3813,26 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     restrictButtonClick(false)
 
                     prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
-                    viewModel.selectedCatetory=0
+                    viewModel.selectedCatetory = 0
 
                     EventBus.getDefault()
                         .post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvSave()"))
                     if (!binding.tvSave.text.toString().trim()
-                            .equals("update", ignoreCase = true)) {
+                            .equals("update", ignoreCase = true)
+                    ) {
                         prefProvider.setValueInt("ORDER_ID", -1)
                     }
 
                     if (viewModel.backupOrderId != null &&
                         viewModel.backupPaymentId != null &&
-                        viewModel.backupPaymentOfflineId?.isNotEmpty()?:false &&
-                        viewModel.backupOrderOfflineId?.isNotEmpty()?:false
+                        viewModel.backupPaymentOfflineId?.isNotEmpty() ?: false &&
+                        viewModel.backupOrderOfflineId?.isNotEmpty() ?: false
                     ) {
                         isOrderUpdate = true
                         orderId = viewModel.backupOrderId
                         paymentId = viewModel.backupPaymentId
-                        paymentOfflineId = viewModel.backupPaymentOfflineId?:"Failing"
-                        orderOfflineId = viewModel.backupOrderOfflineId?:"Failing"
+                        paymentOfflineId = viewModel.backupPaymentOfflineId ?: "Failing"
+                        orderOfflineId = viewModel.backupOrderOfflineId ?: "Failing"
                     }
                     if (InternetUtils.isInternetAvailable(requireContext().applicationContext)) {
                         runBlocking {
@@ -4313,7 +4481,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         )
 
 
-         viewModel.createDineInOrderRequest(
+        viewModel.createDineInOrderRequest(
             cartModel = cartModelsList[0],
             subTotalPrice = viewModel.subTotalPrice,
             totalPrice = viewModel.totalPrice - cartModelsList[0].discountPrice,
@@ -4332,7 +4500,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
         viewModel.dineInResultCreateOrder.observe(viewLifecycleOwner) { it ->
 
-            if(it){
+            if (it) {
                 if (viewModel.orderRequestModel != null) {
                     viewModel.submit(viewModel.orderRequestModel!!)
                     viewModel.orderRequestModel = null
@@ -4350,7 +4518,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
         viewModel.orderTypes().observe(requireActivity()) {
 
-            Log.e(TAG,"checkAllOrderTypes:  ${Gson().toJson(it.data)}")
+            Log.e(TAG, "checkAllOrderTypes:  ${Gson().toJson(it.data)}")
 
             val orderTypesToShow = it?.data?.let { it1 -> ArrayList(it1) }
 
@@ -4487,6 +4655,34 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
     }
 
+
+    /*------------Customer Loyalty--------------*/
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: SyncCustomerEvent?) {
+        event?.let {
+            runOnUiThread(object : Runnable {
+                override fun run() {
+                    binding.txtAddCustomer.apply {
+                        text = event?.customerName
+                    }
+                }
+            })
+        }
+    }
+
+    /* @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: CreateCustomerEvent?) {
+        if (event?.performCreate?:false) {
+//        Create Customer, this control has came from CustomerDisplay.kt, when customer is not present when giving the phone number.
+            addCustomerViewModel.phoneNo.value = event?.phoneNumber
+            addCustomerViewModel.submit(arrayListOf(), false, true)
+        }else{
+            dashboardViewModel.clickOnTakeOut()
+        }
+    }*/
+    /*------------Customer Loyalty--------------*/
+
+
     private fun increaseOnGoingOrderCounter() {
         lifecycleScope.launch {
             viewModel.increaseOnGoingOrderCounter()
@@ -4596,5 +4792,54 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
         }
         return totaltaxtemp
+    }
+
+    private var builder: Dialog? = null
+
+    private fun showProgressDialog() {
+
+
+        if (builder == null)
+            builder = Dialog(requireContext())
+
+        val inflater = LayoutInflater.from(context)
+
+        val dialogView = inflater.inflate(R.layout.view_loading, null)
+        builder?.setContentView(dialogView)
+
+        builder?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+//        builder?.window?.setBackgroundDrawable(
+//            ColorDrawable(Color.WHITE)
+//        )
+        builder?.setCanceledOnTouchOutside(false)
+        builder?.setCancelable(false)
+        builder?.window?.setLayout(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+
+        if (!builder?.isShowing!!) {
+            val activity: Activity = requireActivity()
+            if (!activity.isFinishing && !activity?.isDestroyed) {
+                try {
+                    builder?.show()
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+
+            }
+        }
+    }
+
+    private fun dismissProgressDialog() {
+        try {
+            if (builder != null && builder?.isShowing == true) {
+                builder?.dismiss()
+                builder = null
+            }
+        } catch (e: java.lang.Exception) {
+            Log.d("pos", "dismissProgressDialog: " + e.message)
+        }
+
     }
 }

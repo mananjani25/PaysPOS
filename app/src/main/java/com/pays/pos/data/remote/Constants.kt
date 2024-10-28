@@ -464,6 +464,7 @@ object Constants {
     const val isManual = "isManual"
     const val orderNoteOld = "orderNoteOld"
     const val orderNoteNew = "orderNoteNew"
+    const val CREATE_CUSTOMER = "CREATE_CUSTOMER"
 
     const val SUNMI_FRAMEWORK_VERSION = "SUNMI_FRAMEWORK_VERSION"
 

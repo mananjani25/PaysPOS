@@ -21,7 +21,6 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.*
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
@@ -51,7 +50,6 @@ import com.pays.pos.data.remote.Constants.BALANCE_INQUIRY
 import com.pays.pos.data.remote.Constants.CUSTOMER
 import com.pays.pos.data.remote.Constants.DELIVERY_TYPE
 import com.pays.pos.data.remote.Constants.DINE_IN
-import com.pays.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.pays.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.pays.pos.data.remote.Constants.GIFT_CARD
 import com.pays.pos.data.remote.Constants.IS_FROM_ALL_ORDER
@@ -81,6 +79,7 @@ import com.pays.pos.di.RolePermission
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.fragments.allorders.AllOrdersViewModel
+import com.pays.pos.ui.fragments.customer.CustomerListViewModel
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
@@ -151,6 +150,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private val TAG = "DashboardCategoryBold"
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
+
+    /*-------------Customer Loyalty-------------*/
+    private val customerListViewModel by activityViewModels<CustomerListViewModel>()
+    /*-------------Customer Loyalty-------------*/
+
     var isupdate = false
 
     //    this isOrderUpdate is used to track is the order is really updated or just update button is clicked to move to the All Orders Screen
@@ -313,8 +317,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         /*--------------------- FOR CUSTOMER RECEIPT MODIFICATION--------------------*/
         prefProvider?.setValue(Constants.SUNMI_FRAMEWORK_VERSION, SystemProperties.get("ro.version.sunmi_versionname"))
-/*--------------------- FOR CUSTOMER RECEIPT MODIFICATION--------------------*/
+        /*--------------------- FOR CUSTOMER RECEIPT MODIFICATION--------------------*/
         sunmiFrameworkVersion = prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".").toTypedArray()
+        changeCustomerDisplayState()
 
         if (viewModel.boldPosNeedToRefresh) {
 
@@ -392,6 +397,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             observerSyncItemPriceChange()   // putting these methods in onviewcreated due to UI glitch issue
             prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
 
+            /*------------Customer Loyalty------------*/
+            if (InternetUtils.isInternetAvailable(requireContext())) {
+                if (!prefProvider.getValueboolean("CUSTOMER_FETCHED", false)) {
+                    checkIfCustomersDownloaded()
+                }
+            }
+            /*------------Customer Loyalty------------*/
 
             binding.layoutHeader.ivLock.setOnClickListener {
 
@@ -436,6 +448,82 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         return binding.root
     }
+
+    /*----------------Customer Loyalty------------------*/
+
+    private fun changeCustomerDisplayState() {
+        viewModel.setPasscodeScreenActive(false)
+    }
+    private var customerFetchingJob: Job? = null
+
+    private fun checkIfCustomersDownloaded() {
+        customerListViewModel.hasCustomers()
+        customerFetchingJob = viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.loadCustomersList.observe(viewLifecycleOwner,
+                object : Observer<Pair<Int, Boolean>> {
+                    override fun onChanged(t: Pair<Int, Boolean>?) {
+                        t?.let {
+                            loadCustomerLocalList(it.first + 1)
+                        }
+                    }
+                })
+
+            customerListViewModel.customerCount.observe(viewLifecycleOwner,
+                object : Observer<Event<Boolean>> {
+                    override fun onChanged(t: Event<Boolean>?) {
+                        t?.getContentIfNotHandled()?.let { _it ->
+                            if (!_it) {
+                                prefProvider.setValueboolean("CUSTOMER_FETCHED", true)
+                                loadCustomerLocalList(1)
+                            }
+                        }
+                    }
+                })
+        }
+    }
+    private fun loadCustomerLocalList(currentpage: Int) {
+        CoroutineScope(Dispatchers.Main).launch {
+            var pageSize="10"
+            Log.d("loadCustomerLocalList::", "${currentpage}")
+            val data = LinkedHashMap<String, String>()
+            data["page"] = currentpage.toString()
+            data["per_page"] = pageSize
+            var resource=customerListViewModel.fetchCustomersList(data)
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    if (resource.data != null) {
+                        resource.data?.let {
+                            if (it.data.isNotEmpty()){
+                                try{
+                                    if (it.data.size < pageSize.toInt()){
+                                        var status=viewModel.addCustomersList(currentpage,it.data, lastCall =  true)
+                                    }else{
+                                        var status=viewModel.addCustomersList(currentpage,it.data)
+                                    }
+
+//                                    Log.d("addCustomersList",status.toString())
+                                }catch (e:Exception){
+
+                                }
+                            }
+                        }
+                    }
+                }
+                Status.LOADING -> {
+
+                }
+                Status.ERROR -> {
+
+                    binding.root.showAlert(resource.message)
+
+                }
+
+
+            }
+
+        }
+    }
+    /*----------------Customer Loyalty------------------*/
 
 
     private fun checkCashDrawerObserver() {
@@ -589,6 +677,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             if (result != null) {
                 LogUtil.logE(TAG, "gotBundlebundle:  ${Gson().toJson(bundle)}")
                 setUpCustomer(result, bundle)
+                /* Below code will change the (SignUp or Check In) label to Change mobile number */
+                viewModel.changeCustomerDispSignButtonTitle(getString(R.string.change_mobile_number))
             }
         }
 
@@ -604,6 +694,34 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     Log.d(TAG, "resultListener: orderDiscount : " + orderDiscount)
                     Log.d(TAG, "resultListener: totalprice : " + viewModel.totalPrice)
                     val price = discountApplyPrice - orderDiscount
+                    /*Cart model getting blank on adding custom item on navigating back to custom cart from checkout page and adding custom item to cart.*/
+                    if (viewModel.cartModel == null) {
+                        runBlocking {
+                            try{
+                                var model =
+                                    CoroutineScope(Dispatchers.IO).async { viewModel.getCartModelBackup() }
+                                        .await().last().data
+
+                                EventBus.getDefault().post(
+                                    MessageEvent(
+                                        "${Constants.LINE_BREAK_TAB} DashBoardCategoryBoldPOS.kt_CART_BACKUP_MODEL -> model -> ${
+                                            Gson().toJson(model)
+                                        }", true
+                                    )
+                                )
+                                viewModel.cartModel =
+                                    Gson().fromJson(model, CartModel::class.java)
+                            }catch (e:Exception){
+                                var models =
+                                    CoroutineScope(Dispatchers.IO).async { viewModel.getAllCartModels() }
+                                        .await()
+                                if (models.isNotEmpty()) {
+                                    viewModel.cartModel = models.get(0)
+                                }
+                            }
+                        }
+                    }
+
                     Log.d(TAG, "resultListener: " + cartList.size)
                     if (viewModel.cartModel != null) {
                         viewModel.cartModel!!.discountPrice = orderDiscount
@@ -1079,7 +1197,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d("CUSTOMERFETCHINGJOB:: ","started")
+        customerFetchingJob?.cancel()
+        enableTouch()
+        Log.d("CUSTOMERFETCHINGJOB:: ","ended")
 
+    }
     override fun onDestroy() {
         super.onDestroy()
         syncDataCallback = null
