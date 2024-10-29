@@ -999,12 +999,14 @@ class DashBoardCategoryViewModel @Inject constructor(
             )
         )
         viewModelScope.launch {
+            _changeCustDispSignInButtonTitle.postValue("")
             posRepository.clearCartModelBackup()
         }
     }
 
     fun deleteManualSaleCart() {
         viewModelScope.launch {
+            _changeCustDispSignInButtonTitle.postValue("")
             totalPrice = 0.0
             subTotalPrice = 0.0
             totalTax = 0.0

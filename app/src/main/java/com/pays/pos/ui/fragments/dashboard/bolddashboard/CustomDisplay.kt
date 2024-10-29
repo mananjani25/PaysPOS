@@ -214,6 +214,9 @@ class CustomDisplay(
             if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isNotEmpty()) {
                 btnSignUpOrCheckIn?.text = resources.getString(R.string.change_mobile_number)
                 tvMessage?.text = "Customer added successfully"
+            }else{
+                btnSignUpOrCheckIn?.text = resources.getString(R.string.sign_up_or_check_in)
+                btnSignUpOrCheckInMain?.text = resources.getString(R.string.sign_up_or_check_in)
             }
 
             btnSignUpOrCheckIn?.setOnSingleClickListener(object : View.OnClickListener {
@@ -405,6 +408,7 @@ class CustomDisplay(
         prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
         prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
         customer.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
+        /*This will click on the order type dynamically, only the variable name is clickOnTakeOut()*/
         dashBoardCategoryViewModel.clickOnTakeOut()
         if (dashBoardCategoryViewModel.currentCartItems.isNotEmpty()){
             dashBoardCategoryViewModel.callUpdateCartFooter(true)

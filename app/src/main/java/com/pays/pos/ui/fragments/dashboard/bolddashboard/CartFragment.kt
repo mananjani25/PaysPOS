@@ -571,15 +571,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                         R.id.txtTitle
                                     )?.text?.contains(/*"Take out"*/binding.orderTypeDisplay.text.toString(), ignoreCase = true) ?: false
                                 ) {
-                                    CoroutineScope(Dispatchers.Main).launch {
-                                        binding.rvOrderType.findViewHolderForAdapterPosition(
-                                            position
-                                        )?.itemView?.performClick()
-                                        if (prefProvider.getValueInt(CUSTOMER_ID, -1) != -1) {
-                                            displayCustomer()
-                                        }
-//                                binding.rvOrderType.findViewHolderForAdapterPosition(position)?.itemView?.performClick()
-                                    }
+                                    performClickOnOrderTypeAndSetCustomer(position)
+                                    break
+                                }else if (!binding.orderTypeDisplay.text.toString().trim().contains(':')){
+                                    performClickOnOrderTypeAndSetCustomer(0)
                                     break
                                 }
                             }
@@ -589,6 +584,17 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             })
     }
 
+    private fun performClickOnOrderTypeAndSetCustomer(position: Int){
+        CoroutineScope(Dispatchers.Main).launch {
+            binding.rvOrderType.findViewHolderForAdapterPosition(
+                position
+            )?.itemView?.performClick()
+            if (prefProvider.getValueInt(CUSTOMER_ID, -1) != -1) {
+                displayCustomer()
+            }
+//                                binding.rvOrderType.findViewHolderForAdapterPosition(position)?.itemView?.performClick()
+        }
+    }
 /*----------------Customer Loyalty-----------------*/
 
     private fun setupTaxAdapter() {
@@ -2497,6 +2503,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             ), binding.txtTotal
                         )
                     }
+                    /* To handle BIS-4672, we need to check isFromPayment variable, it is coming true, it should come false */
                     if (isFromPayment) {
                         if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
                             binding.liinearInfoLayout.layoutParams.height =
@@ -2558,9 +2565,18 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 } else {
                     /* This condition will be called when a customer will be added with loyalty but when cart is active with items, the user changes the customer which has no loyalty */
                     Log.d("Loyalty::", "Not available")
+                    binding.apply {
+                        liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._50sdp).toInt()
+                        relativeLoylatyPoints.visibility = View.GONE
+                        lblLoyaltyPoints.visibility = View.GONE
+                        lblLoyaltyBalance.visibility = View.GONE
+                    }
+                   /* binding.liinearInfoLayout.layoutParams.height =
+                                  resources.getDimension(R.dimen._50sdp).toInt()
                     binding.relativeLoylatyPoints.visibility = View.GONE
                     binding.lblLoyaltyPoints.visibility = View.GONE
-                    binding.lblLoyaltyBalance.visibility = View.GONE
+                    binding.lblLoyaltyBalance.visibility = View.GONE*/
                     /*  prefProvider.setValue(
                           Constants.CUSTOMER_NAME,
                           ""
@@ -3009,6 +3025,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     supervisorScope {
                         launch {
                             try {
+                                viewModel.changeCustomerDispSignButtonTitle("")
                                 viewModel.selectedCatetory = 0
                                 // Do positive stuff here
                                 prefProvider.setValueboolean(Constants.BACK_FROM_PAYMENT, false)
@@ -4626,7 +4643,6 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         event?.let {
             runOnUiThread(object : Runnable {
                 override fun run() {
-                    /* TODO: set the customer added message to the customer display here*/
                     binding.txtAddCustomer.apply {
                         text = event?.customerName
                     }
