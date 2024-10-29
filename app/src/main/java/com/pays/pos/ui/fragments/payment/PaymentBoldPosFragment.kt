@@ -433,6 +433,9 @@ class PaymentBoldPosFragment : Fragment() {
                 )
             } else {
                 if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
+
+                    Log.e("TOTAL TIP CHECK","Total TIP = ${viewModel.tipTransactionAmount}  AND SplitCount = ${viewModel.isSelectCount}")
+
                     findNavController().navigate(
                         R.id.action_paymentBoldPosFragment_to_addTipDialog,
                         bundleOf(

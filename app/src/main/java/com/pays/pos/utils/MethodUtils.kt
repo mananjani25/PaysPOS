@@ -488,6 +488,9 @@ class MethodUtils {
         }
 
         fun percentageCalculation(price: Double, rate: Double): Double {
+
+            Log.e("TOTAL TIP Check","Price $price")
+
             return (price * rate) / 100
         }
 

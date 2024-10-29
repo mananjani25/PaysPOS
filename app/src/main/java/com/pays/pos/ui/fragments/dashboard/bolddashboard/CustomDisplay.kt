@@ -26,12 +26,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
-import com.github.gcacace.signaturepad.views.SignaturePad.OnSignedListener
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.pax.poslink.PaymentRequest
-import com.pax.poslink.PosLink
-import com.pax.poslink.ProcessTransResult
 import com.pays.pos.R
 import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.DineInModel
@@ -97,11 +91,9 @@ class CustomDisplay(
     val lifecycleOwner: LifecycleOwner,
     private val dashBoardCategoryViewModel: DashBoardCategoryViewModel,
     val passcodeViewModel: PasscodeViewModel,
-    val dineInViewModel: DineInOrderTableViewModel
-) : Presentation(ContextThemeWrapper(context, R.style.CustomPresentationTheme), display), MyCallback, DineInAdapter.DineInCallback,
     val dineInViewModel: DineInOrderTableViewModel,
     val isTipBeforeScreen:Boolean = false
-) : Presentation(context, display), MyCallback, DineInAdapter.DineInCallback,
+) : Presentation(ContextThemeWrapper(context, R.style.CustomPresentationTheme), display), MyCallback, DineInAdapter.DineInCallback,
     ActiveTipsListAdapter.DiscountInterface {
 
     private var mWholeTotalPrice: Double = 0.0
@@ -156,8 +148,6 @@ class CustomDisplay(
     var cardLastDigits = ""
     var CardName = ""
     var EDCType = ""
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -228,11 +218,11 @@ class CustomDisplay(
                 wholeAmount = dashBoardCategoryViewModel.totalPrice
             }
 
-            Log.e("SPLIT COUNT ","SPLIT COUNT $it")
+            Log.e("Total Tip Check ","SPLIT COUNT $it AND WHOLE AMOUNT = $wholeAmount")
 
 
 
-            observeActiveTipsList(dashBoardCategoryViewModel.totalPrice / it)
+            observeActiveTipsList(/*dashBoardCategoryViewModel.totalPrice*/ wholeAmount / it)
         }
 
 
@@ -2043,18 +2033,6 @@ class CustomDisplay(
                         //binding.rvActiveTipsList.smoothScrollToPosition(tipsList.size - 1)
                     }
 
-                Log.d("Payment_TYPE:: ", dashBoardCategoryViewModel.paymentTypeForTip)
-                if (dashBoardCategoryViewModel.paymentTypeForTip.equals("cash", ignoreCase = true)){
-                    activeTipsListAdapter?.setList(it.data, binding.txtTotalCash.text.toString().trim().replace('$',' ').trim().toDouble())
-                }else if (dashBoardCategoryViewModel.paymentTypeForTip.equals("card", ignoreCase = true)){
-                    activeTipsListAdapter?.setList(it.data, binding.txtTotalCard.text.toString().trim().replace('$',' ').trim().toDouble())
-                }else{
-                    activeTipsListAdapter?.setList(it.data, wholeTotalPrice)
-                }
-                activeTipsListAdapter?.setListner(this)
-                lifecycleOwner.lifecycleScope.launch {
-                    //delay(5000)
-                    //binding.rvActiveTipsList.smoothScrollToPosition(tipsList.size - 1)
                     Log.d("Payment_TYPE:: ", dashBoardCategoryViewModel.paymentTypeForTip)
                     if (dashBoardCategoryViewModel.paymentTypeForTip.equals(
                             "cash",
@@ -2083,6 +2061,35 @@ class CustomDisplay(
                     lifecycleOwner.lifecycleScope.launch {
                         //delay(5000)
                         //binding.rvActiveTipsList.smoothScrollToPosition(tipsList.size - 1)
+                        Log.d("Payment_TYPE:: ", dashBoardCategoryViewModel.paymentTypeForTip)
+                        if (dashBoardCategoryViewModel.paymentTypeForTip.equals(
+                                "cash",
+                                ignoreCase = true
+                            )
+                        ) {
+                            activeTipsListAdapter?.setList(
+                                it.data,
+                                binding.txtTotalCash.text.toString().trim().replace('$', ' ').trim()
+                                    .toDouble()
+                            )
+                        } else if (dashBoardCategoryViewModel.paymentTypeForTip.equals(
+                                "card",
+                                ignoreCase = true
+                            )
+                        ) {
+                            activeTipsListAdapter?.setList(
+                                it.data,
+                                binding.txtTotalCard.text.toString().trim().replace('$', ' ').trim()
+                                    .toDouble()
+                            )
+                        } else {
+                            activeTipsListAdapter?.setList(it.data, wholeTotalPrice)
+                        }
+                        //activeTipsListAdapter?.setListner(this)
+                        lifecycleOwner.lifecycleScope.launch {
+                            //delay(5000)
+                            //binding.rvActiveTipsList.smoothScrollToPosition(tipsList.size - 1)
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -2129,7 +2136,7 @@ class CustomDisplay(
                 //dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=true
 
                 txtContinue.isEnabled = false
-                txtContinue.setBackgroundColor(Color.GRAY)
+
 
                 tippedAmount =
                     edtAmount.text.toString().replace("$", "").trim().toDouble()
@@ -2190,6 +2197,8 @@ class CustomDisplay(
                         callUpdateTip()
                     }
                 }
+
+                txtContinue.isEnabled = true
             }
 
         }
@@ -2665,6 +2674,8 @@ class CustomDisplay(
         tipRate = model.rate
         tippedAmount = MethodUtils.percentageCalculation(wholeTotalPrice, model.rate)
         Log.d("selectedItem: ", "tip params $tipRate $tippedAmount")
+
+        Log.e("TOTAL TIP Check","TIP RATE")
 
         if(prefProvider.getValueboolean(Constants.IS_PAYMENT_SCREEN,false)) {
             /**
