@@ -1513,8 +1513,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     fun getDataFromPref() {
 
-        viewModel.totalPrice = viewModel.totalPriceUpdated.value ?: viewModel.totalPrice
-
         redeemLoyaltyInfo = viewModel.redeemLoyaltyInfo
         prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
         if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty() || prefProvider.getValue(
@@ -1527,16 +1525,17 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         ) {
             LogUtil.logE(TAG, "totalPrice  ${viewModel.totalPrice}")
 
+
+            viewModel.totalPrice  = viewModel.totalPriceUpdated.value ?: viewModel.totalPrice
+
             WholetotalPrice = viewModel.totalPrice
             prefProvider.setValue(
                 Constants.WHOLE_AMOUNT,
                 String.format("%.2f", viewModel.totalPrice)
             )
+        } else {
+            WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
         }
-
-//        else {
-//            WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
-//        }
 
         if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty() || prefProvider.getValue(
                 Constants.SUB_TOTAL,
@@ -1829,8 +1828,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             }
         }
 
-        //TODO - remove this line for split payment
-        binding.linearTab2.gone()
+//        //TODO - remove this line for split payment
+//        binding.linearTab2.gone()
 
         if(isGuestPay)
             binding.linearTab2.gone()

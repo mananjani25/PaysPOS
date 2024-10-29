@@ -10460,6 +10460,15 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        prefProvider.setValue(
+            Constants.WHOLE_AMOUNT,
+            ""
+        )
+    }
+
     var onBluetoothPermissionGranted: OrderCompleteFragment.OnBluetoothPermissionGranted? = null
 
     fun checkBluetoothPermissions(onBluetoothPermissionGranted: OrderCompleteFragment.OnBluetoothPermissionGranted) {
