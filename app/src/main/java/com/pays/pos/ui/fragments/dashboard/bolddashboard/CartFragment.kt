@@ -2482,6 +2482,15 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
 
             } else {
+
+                if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+                    viewModel.cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                        viewModel.totalPriceUpdated.value ?: 0.0,
+                        prefProvider,
+                        requireContext()
+                    )
+                }
+
                 binding.txtNoncashAdj.text =
                     MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
             }
