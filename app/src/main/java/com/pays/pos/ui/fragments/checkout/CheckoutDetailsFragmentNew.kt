@@ -2510,7 +2510,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
                     )
                     paymentAmount =
-                        binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                        binding.tvCash0.text.toString().repxlace("$", "").trim().toDouble()
                 }
 
                 cashPaymentWithVariation(dynamicPaymentType = getString(R.string.synergy) ?: "")
@@ -4018,7 +4018,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
             /*Adding the deleted items*/
-            cartList!!.items = items
+            cartList?.items = items
         }
         prefProvider.setValue(Constants.OLD_ITEM, "")
         prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
