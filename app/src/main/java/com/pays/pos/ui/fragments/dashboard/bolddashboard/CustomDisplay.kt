@@ -237,8 +237,14 @@ class CustomDisplay(
 
             tvCancel?.setOnSingleClickListener(object : View.OnClickListener {
                 override fun onClick(p0: View?) {
-                    splashLayout.visible()
-                    keypadLayout?.gone()
+                    if (cartAdapter.cartList.isNotEmpty()){
+                        mainCartLayout.visible()
+                        splashLayout.gone()
+                        keypadLayout?.gone()
+                    }else{
+                        splashLayout.visible()
+                        keypadLayout?.gone()
+                    }
                 }
 
             })
