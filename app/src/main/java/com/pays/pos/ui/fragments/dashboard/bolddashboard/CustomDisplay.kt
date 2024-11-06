@@ -481,7 +481,7 @@ class CustomDisplay(
         })
     }
 
-    private fun getPreparedRewardStatement(it: LoyaltyProgramsModel): CharSequence? {
+    private fun getPreparedRewardStatement(it: LoyaltyProgramsModel): CharSequence {
         var point = ""
         if (it.rewardPoint > 1) {
             point = "points"
@@ -489,7 +489,7 @@ class CustomDisplay(
             point = "point"
         }
 
-        return "${generalizeAmount(it.amount.toString())} ${point} on for every $${generalizeAmount(it.rewardPoint.toString())} spent"
+        return "${generalizeAmount(it.amount.toString())} ${point} for every $${generalizeAmount(it.rewardPoint.toString())} spent."
     }
 
 
