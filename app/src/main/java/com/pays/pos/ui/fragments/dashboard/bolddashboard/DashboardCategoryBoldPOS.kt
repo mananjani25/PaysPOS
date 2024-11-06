@@ -1355,6 +1355,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
 
         binding.layoutHeader.linearSwitchUser.setOnClickListener {
+            enableTouch()
             var bundle = Bundle()
             bundle.putBoolean("isSwap", true)
             bundle.putBoolean("isDashboard", false)

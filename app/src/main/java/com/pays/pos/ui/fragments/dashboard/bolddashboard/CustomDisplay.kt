@@ -1103,7 +1103,7 @@ class CustomDisplay(
                             )
                         }*/
 
-                        if (dashBoardCategoryViewModel.selectedCustomer?.final_reward.toString().toInt()!=0){
+//                        if (dashBoardCategoryViewModel.selectedCustomer?.final_reward.toString().toInt()!=0){
                             txtEarnedLoyalty?.setText(
                                 if (dashBoardCategoryViewModel.earnedLoyaltyPoints.value?.peekContent()
                                         .toString().toInt()==1){
@@ -1119,7 +1119,7 @@ class CustomDisplay(
                                 }
 
                             )
-                        }
+//                        }
 
                     }
                 }
