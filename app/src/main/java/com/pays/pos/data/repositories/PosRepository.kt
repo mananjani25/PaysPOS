@@ -497,6 +497,10 @@ class PosRepository @Inject constructor(
         appDatabase.splitDao().addSplit(model)
     }
 
+    suspend fun allSplit(): List<SplitDetailListModel> {
+        return appDatabase.splitDao().allSplit()
+    }
+
     suspend fun createNote(data: CreateNoteRequest) = apiHelperNew.createNote(data)
 
     suspend fun createNoteDatabase(data: NoteResponse.Data) =
