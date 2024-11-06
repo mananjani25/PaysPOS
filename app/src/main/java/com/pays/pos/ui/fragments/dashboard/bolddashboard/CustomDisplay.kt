@@ -187,6 +187,23 @@ class CustomDisplay(
 
     /*-------------Customer Loyalty---------------*/
     private fun initViews() {
+
+        lifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            if (dashBoardCategoryViewModel.allSplit().isEmpty()){
+                withContext(Dispatchers.Main){
+                    binding.apply {
+                        btnSignUpOrCheckInMain.visible()
+                    }
+                }
+            }else{
+                withContext(Dispatchers.Main) {
+                    binding.apply {
+                        btnSignUpOrCheckInMain.gone()
+                    }
+                }
+            }
+        }
+
         with(binding) {
 
             if (prefProvider.getValue(
@@ -213,6 +230,7 @@ class CustomDisplay(
             }
             if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isNotEmpty()) {
                 btnSignUpOrCheckIn?.text = resources.getString(R.string.change_mobile_number)
+                btnSignUpOrCheckInMain?.text = resources.getString(R.string.change_mobile_number)
                 tvMessage?.text = "Customer added successfully"
             }else{
                 btnSignUpOrCheckIn?.text = resources.getString(R.string.sign_up_or_check_in)
@@ -229,9 +247,11 @@ class CustomDisplay(
 
             btnSignUpOrCheckInMain?.setOnSingleClickListener(object : View.OnClickListener {
                 override fun onClick(p0: View?) {
-                    tvPhoneNumber.text?.clear()
-                    splashLayout.gone()
-                    keypadLayout?.visible()
+                    binding.apply {
+                        tvPhoneNumber.text?.clear()
+                        splashLayout.gone()
+                        keypadLayout?.visible()
+                    }
                 }
             })
 
@@ -387,6 +407,7 @@ class CustomDisplay(
       /*  binding.tvMessage?.post {
             binding.tvMessage?.text="Loading..."
         }*/
+
         Handler(Looper.getMainLooper()).post(Runnable {
             binding.keypadLayout?.gone()
             binding.splashLayout?.gone()
@@ -1104,14 +1125,16 @@ class CustomDisplay(
                         }*/
 
 //                        if (dashBoardCategoryViewModel.selectedCustomer?.final_reward.toString().toInt()!=0){
+                        try {
                             txtEarnedLoyalty?.setText(
                                 if (dashBoardCategoryViewModel.earnedLoyaltyPoints.value?.peekContent()
-                                        .toString().toInt()==1){
+                                        .toString().toInt() == 1
+                                ) {
                                     "Your balance loyalty point is ${
                                         (dashBoardCategoryViewModel.earnedLoyaltyPoints.value?.peekContent()
                                             .toString().toInt()).toString()
                                     }"
-                                }else{
+                                } else {
                                     "Your balance loyalty points are ${
                                         (dashBoardCategoryViewModel.earnedLoyaltyPoints.value?.peekContent()
                                             .toString().toInt()).toString()
@@ -1120,7 +1143,9 @@ class CustomDisplay(
 
                             )
 //                        }
+                        }catch (e:Exception){
 
+                        }
                     }
                 }
             }catch (e:Exception){
