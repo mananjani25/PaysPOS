@@ -338,6 +338,7 @@ class MenuFragment : DialogFragment() {
                     dashboardViewModel.apply {
                         clearCartModelBackup()
                         deleteCart()
+                        loggingOut=true
                         currentCartItems = arrayListOf()
                         duplicateCurrentCartItem = arrayListOf()
                         val viewLifecycleOwner = view?.let { getViewLifecycleOwner() }

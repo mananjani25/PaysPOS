@@ -336,7 +336,7 @@ class LoginFragment : Fragment() {
             presentation.show()
             presentation.onLogOutOrClockOut(true)
         }
-
+        dashboardViewModel.loggingOut = false
 //        CoroutineScope(Dispatchers.Main).launch{
 //            binding.txtSignIn.apply {
 //                isClickable = false

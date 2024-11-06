@@ -142,6 +142,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     var wholetotalPrice = 0.0
     var tip = 0.0
     var order_note = ""
+    /* This loggingOut variable is used to restrict the dialog which is shown after the user is logged out. the dialog is fetched from Customer's list api */
+    var loggingOut = false
     var cartModel: CartModel? = null
     var manualCartOrderNote: String? = ""
     var currentCartItems: ArrayList<TbCartItem> = arrayListOf()
