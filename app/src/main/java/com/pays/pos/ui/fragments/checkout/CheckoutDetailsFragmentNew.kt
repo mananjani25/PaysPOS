@@ -4850,6 +4850,21 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
 
+        /* This is placed to solve the payment issue happening due to the orderTypeId = -1   */
+        if (myRequest.order.orderTypeId == -1) {
+            runBlocking {
+                CoroutineScope(Dispatchers.IO).async {
+                    dashboardViewModel.getOrderTypeBackupList(prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1))?.let {
+                        myRequest.order.apply {
+                            orderTypeId=(it.get(0).orderType) ?: -1
+                            orderTypeName=(it.get(0).orderTypeName) ?: ""
+                        }
+                    }
+                }.await()
+            }
+        }
+
+
         val orderId = prefProvider.getValueInt("ORDER_ID", -1) //Here
         LogUtil.logE(TAG, "orderIdmyRequestOriginal ${orderId}")
         Log.e("textToPay", textToPay.toString())
