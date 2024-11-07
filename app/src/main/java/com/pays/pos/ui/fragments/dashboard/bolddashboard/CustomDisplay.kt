@@ -147,7 +147,6 @@ class CustomDisplay(
     var CardName = ""
     var EDCType = ""
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -165,6 +164,10 @@ class CustomDisplay(
         getDetails()
         getLoyaltyPointListObserver()
         initDiscountLiveData()
+    }
+
+    public fun closeSecondaryDisplay() {
+        System.exit(0)
     }
 
     private fun observePasscodeScreen() {

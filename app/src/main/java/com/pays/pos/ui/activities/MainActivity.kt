@@ -248,6 +248,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         public var subscription2: Subscription? = null
         private var consumer: Consumer? = null
         public var consumer2: Consumer? = null
+
         /*Moved the Zebra scan gun from MainApplication to MainActivity*/
 //        var sdkHandler: SDKHandler? = null
 //        var mScannerInfoList = ArrayList<DCSScannerInfo>()
@@ -280,6 +281,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         var currentConnectedScannerID = -1 //Track scannerId of currently connected Scanner
 
         var isFirmwareUpdateInProgress = false
+
         //        var intentionallyDisconnected = false
         var virtualTetherHostActivated = false
 
@@ -428,7 +430,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     fun addObserver() {
 
-        addCustomerViewModel.customerFetchedAndAdded.observe(this, object:Observer<TbCustomer>{
+        addCustomerViewModel.customerFetchedAndAdded.observe(this, object : Observer<TbCustomer> {
             override fun onChanged(customer: TbCustomer?) {
                 customer?.let {
                     presentation.addCustomer(it)
@@ -1316,13 +1318,13 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: CreateCustomerEvent?) {
-        if (event?.performCreate?:false) {
+        if (event?.performCreate ?: false) {
             Log.d("C_Loyalty: ", "createCustomer: Create Customer Event... Set")
 
 //        Create Customer, this control has came from CustomerDisplay.kt, when customer is not present when giving the phone number.
             addCustomerViewModel.phoneNo.value = event?.phoneNumber
             addCustomerViewModel.submit(arrayListOf(), false, true)
-        }else{
+        } else {
             Log.d("C_Loyalty: ", "createCustomer: checkonTakeOut... called")
             dashboardViewModel.clickOnTakeOut()
         }
@@ -1330,14 +1332,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: CustomerCreatedEvent?) {
-        if (event?.created?:false) {
+        if (event?.created ?: false) {
             if (this::presentation.isInitialized) {
                 presentation.apply {
                     /*This is not working*/
                     addCustomer(event?.customer!!)
                 }
             }
-        }else{
+        } else {
             toast(getString(R.string.unable_to_create_customer), Toast.LENGTH_SHORT)
         }
     }
@@ -1348,7 +1350,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private fun initCustomerDisplay() {
         getCustomerDisplay(this@MainActivity)?.let { display ->
             presentation = CustomDisplay(
-                display, this@MainActivity, this@MainActivity, dashboardViewModel, passcodeViewModel, dineInViewModel
+                display,
+                this@MainActivity,
+                this@MainActivity,
+                dashboardViewModel,
+                passcodeViewModel,
+                dineInViewModel
             )
         }
     }
@@ -1357,6 +1364,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         super.onStop()
 
         EventBus.getDefault().unregister(this)
+        if (this::presentation.isInitialized) {
+            presentation.closeSecondaryDisplay()
+        }
 
         try {
             if (consumer != null) {
@@ -1375,39 +1385,40 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     @Subscribe(threadMode = ThreadMode.ASYNC)
     fun onMessageEvent(event: MessageEvent?) {
         event?.let {
-            if (it.data.equals(Constants.CASHBOX, ignoreCase = true) && it.newTrack){
+            if (it.data.equals(Constants.CASHBOX, ignoreCase = true) && it.newTrack) {
                 openLandiCashBox()
-            }else {
+            } else {
                 log(it.data.toString())
                 it.newTrack.let {
                     if (it == true) {
                         logNewTrack(event?.data.toString())
                     }
                 }
-                    }
+            }
         }
 
 
     }
 
     lateinit var omniDriver: OmniDriver
-    private var landiCashboxConnected:Boolean=false
+    private var landiCashboxConnected: Boolean = false
 
     private fun initLandiCashBox() {
-        omniDriver= OmniDriver.me(this)
+        omniDriver = OmniDriver.me(this)
 
         omniDriver.init(object : OmniConnection {
             override fun onConnected() {
-                landiCashboxConnected=true
+                landiCashboxConnected = true
             }
+
             override fun onDisconnected(error: Int) {
                 Log.d("OmniDriver:", "Disconnected")
             }
         })
     }
 
-    private fun openLandiCashBox(){
-        if (landiCashboxConnected){
+    private fun openLandiCashBox() {
+        if (landiCashboxConnected) {
             var cashBox: CashBox = omniDriver.getCashBox(Bundle())
             cashBox.openBox()
         }
@@ -1424,7 +1435,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
         initLandiCashBox()
         CoroutineScope(Dispatchers.IO).launch {
-        prefProvider!!.setValue(Constants.DELIVERY_TYPE, "")
+            prefProvider!!.setValue(Constants.DELIVERY_TYPE, "")
         }
 
         if (!checkServiceRunning(
@@ -1756,7 +1767,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 Manifest.permission.BLUETOOTH,
                 Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.BLUETOOTH_SCAN,
-                ), 1515
+            ), 1515
         )
 
 
@@ -3495,7 +3506,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 presentation.show()
                 presentation.onDisplayChanged()
             }
-        }catch (e:WindowManager.InvalidDisplayException){
+        } catch (e: WindowManager.InvalidDisplayException) {
             e.printStackTrace()
         }
         prefProvider?.setValue(UNIQUE_ID, getDeviceId())
@@ -3560,7 +3571,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         allOrderCounts("", "")
                     }
                 }
-                    // allInventoryItems.removeObserver {  }
+                // allInventoryItems.removeObserver {  }
 //                }
 
 
@@ -3773,7 +3784,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             }
 
             //Change this - get order response key as sync_dine_in
-            if(navController?.currentDestination?.id == R.id.dineInFragmentPays) {
+            if (navController?.currentDestination?.id == R.id.dineInFragmentPays) {
                 EventBus.getDefault().post(SyncDineInEvent(true, "RefreshDineIn"))
             }
 
@@ -4116,7 +4127,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                             /*delay(2000)*/
                         }
                     }
-                    }
+                }
 
 
             }
