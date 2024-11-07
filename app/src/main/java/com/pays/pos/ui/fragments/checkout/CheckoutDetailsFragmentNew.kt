@@ -1094,6 +1094,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         giftCardViewModel.giftCardData.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
+                runOnUiThread(object:java.lang.Runnable{
+                    override fun run() {
+                        dismissProgressDialog()
+                    }
+                })
                 if (it.data != null) {
                     Log.d(TAG, "observeData: SellGiftCardResponse = $it")
                     LogUtil.logE(TAG, "receiptData: ${Gson().toJson(it.data)}")
