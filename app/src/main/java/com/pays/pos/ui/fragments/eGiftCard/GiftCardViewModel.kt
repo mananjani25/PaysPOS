@@ -56,8 +56,12 @@ class GiftCardViewModel @Inject constructor(
     private val _showProgressCash = MutableLiveData<Event<Boolean>>()
     val showProgressCash: LiveData<Event<Boolean>> = _showProgressCash
 
-    private var magensaResponse: String? = null
-    private var cardNumberLast4: String = ""
+    var magensaResponse: String? = null
+    var cardNumberLast4: String = ""
+    var cardNamePax: String = ""
+    var transactionID: String = ""
+
+
 
     fun setMagensaResponse(response: String?, cardNumber1: String) {
         magensaResponse = response
@@ -100,6 +104,10 @@ class GiftCardViewModel @Inject constructor(
 
     fun createSellGiftCardRequestUsingCard(): SellGiftCardRequestModel {
 
+        var cardNumber = ""
+        var cardName = ""
+        var transactionId = ""
+
         val giftCardPurchaseAmount =
             prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0")
         var paymentAttributes: com.pays.pos.data.model.requestModel.giftCard.request.PaymentAttributes? =
@@ -111,8 +119,7 @@ class GiftCardViewModel @Inject constructor(
                 PaymentResponse.PaymentResponseItem::class.java
             )
 
-            var cardNumber = ""
-            var cardName = ""
+
 
             if (model.dataOutput != null) {
                 LogUtil.logE("dataOutput", Gson().toJson(model))
@@ -153,6 +160,12 @@ class GiftCardViewModel @Inject constructor(
                 cardNumber =
                     if (cardNumberLast4.isNotEmpty()) cardNumberLast4.takeLast(4) else ""
             }
+            transactionId = model.transactionOutput?.transactionID.toString()
+        } else {
+            cardName = cardNamePax
+            cardNumber = cardNumberLast4
+            transactionId = transactionID
+        }
 
             paymentAttributes =
                 com.pays.pos.data.model.requestModel.giftCard.request.PaymentAttributes(
@@ -169,9 +182,9 @@ class GiftCardViewModel @Inject constructor(
                     payment_type = "Card",
                     sub_total = giftCardPurchaseAmount.toDouble(),
                     terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
-                    transaction_id = model.transactionOutput?.transactionID.toString()
+                    transaction_id = transactionId
                 )
-        }
+
 
 
         val giftCard = GiftCard(
@@ -307,14 +320,15 @@ class GiftCardViewModel @Inject constructor(
 
         var paymentAttributes: GiftCardAddValueRequest.GiftCardAmountTab.PaymentAttributes? = null
 
+        var cardNumber = ""
+        var cardName = ""
+        var transactionId = ""
+
         if (magensaResponse != null) {
             val model = Gson().fromJson(
                 magensaResponse,
                 PaymentResponse.PaymentResponseItem::class.java
             )
-
-            var cardNumber = ""
-            var cardName = ""
 
             if (model.dataOutput != null) {
                 LogUtil.logE("dataOutput", Gson().toJson(model))
@@ -356,6 +370,13 @@ class GiftCardViewModel @Inject constructor(
                     if (cardNumberLast4.isNotEmpty()) cardNumberLast4.takeLast(4) else ""
             }
 
+            transactionId = model.transactionOutput?.transactionID.toString()
+        } else {
+            cardName = cardNamePax
+            cardNumber = cardNumberLast4
+            transactionId = transactionID
+        }
+
             paymentAttributes =
                 GiftCardAddValueRequest.GiftCardAmountTab.PaymentAttributes(
                     amount = giftCardPurchaseAmount.toDouble(),
@@ -371,9 +392,9 @@ class GiftCardViewModel @Inject constructor(
                     payment_type = "Card",
                     sub_total = giftCardPurchaseAmount.toDouble(),
                     terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
-                    transaction_id = model.transactionOutput?.transactionID.toString()
+                    transaction_id = transactionId
                 )
-        }
+
 
 
         val giftCard = GiftCardAddValueRequest.GiftCard(

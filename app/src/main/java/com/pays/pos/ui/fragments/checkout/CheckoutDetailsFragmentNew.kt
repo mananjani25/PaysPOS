@@ -99,7 +99,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.Executors
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -2430,7 +2429,28 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 PAXtoken = paxData.paxToken
                                 EDCType = paxData.EDCType
                                 cardLastDigits = paxData.cardLastDigits
-                                makePaymentCreditCard()
+                                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+                                    if (prefProvider.getValueboolean(
+                                            Constants.IS_ADD_VALUE_IN_GIFT_CARD,
+                                            false
+                                        )
+                                    ) {
+                                        giftCardViewModel.magensaResponse = ExtData
+                                        giftCardViewModel.cardNumberLast4 = cardLastDigits
+                                        giftCardViewModel.cardNamePax = EDCType
+                                        giftCardViewModel.transactionID = PAXtoken
+                                        addValueInGiftCardUsingCard()
+                                    } else {
+                                        giftCardViewModel.magensaResponse = ExtData
+                                        giftCardViewModel.cardNumberLast4 = cardLastDigits
+                                        giftCardViewModel.cardNamePax = EDCType
+                                        giftCardViewModel.transactionID = PAXtoken
+                                        sellGiftCardUsingCard()
+                                    }
+                                } else {
+                                    makePaymentCreditCard()
+                                }
+//                                makePaymentCreditCard()
                             } else {
                                 makePaxPaymentRequest()
                             }
@@ -2934,7 +2954,28 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     CoroutineScope(Dispatchers.Main).launch {
 //                        ProgressUtils.dismissProgressDialog()
                         coroutineScope {
-                            makePaymentCreditCard()
+                            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+                                if (prefProvider.getValueboolean(
+                                        Constants.IS_ADD_VALUE_IN_GIFT_CARD,
+                                        false
+                                    )
+                                ) {
+                                    giftCardViewModel.magensaResponse = response.ExtData
+                                    giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
+                                    giftCardViewModel.cardNamePax = response.CardType
+                                    giftCardViewModel.transactionID = response.PaymentTransInfo.Token
+                                    addValueInGiftCardUsingCard()
+                                } else {
+                                    giftCardViewModel.magensaResponse = response.ExtData
+                                    giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
+                                    giftCardViewModel.cardNamePax = response.CardType
+                                    giftCardViewModel.transactionID = response.PaymentTransInfo.Token
+                                    sellGiftCardUsingCard()
+                                }
+                            } else {
+                                makePaymentCreditCard()
+                            }
+//                            makePaymentCreditCard()
                         }
                     }
                 } else {
