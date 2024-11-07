@@ -260,9 +260,10 @@ final object LPrint {
                         val strCardType = padLine(
                             "",
                             cardType,
-                            if (font == Constants.LARGE) 23 else 48
+                           /* if (font == Constants.LARGE) 23 else */48
                         ).toString()
-                        print(strCardType)
+                        print(strCardType, align = RIGHT_ALIGN)
+                        lineBreak()
                     }
 
                 }
@@ -272,9 +273,9 @@ final object LPrint {
                         val strCardNumber = padLine(
                             "",
                             cardNumber,
-                            if (font == Constants.LARGE) 23 else 48
+                           /* if (font == Constants.LARGE) 23 else*/ 48
                         ).toString()
-                        print(strCardNumber)
+                        print(strCardNumber, align = RIGHT_ALIGN)
                     }
                 }
             }

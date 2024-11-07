@@ -2804,6 +2804,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
 
+        giftCardViewModel.giftCardError.observe(viewLifecycleOwner){ event->
+            event.getContentIfNotHandled()?.let {
+                AlertUtils.showCustomAlert(requireActivity(),it)
+            }
+        }
+
         giftCardViewModel.giftCardCheckBalanceData.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it.data != null) {

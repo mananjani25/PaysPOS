@@ -53,6 +53,9 @@ class GiftCardViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+    private val _giftCardError = MutableLiveData<Event<String>>()
+    val giftCardError: LiveData<Event<String>> = _giftCardError
+
     private val _showProgressCash = MutableLiveData<Event<Boolean>>()
     val showProgressCash: LiveData<Event<Boolean>> = _showProgressCash
 
@@ -513,6 +516,12 @@ class GiftCardViewModel @Inject constructor(
                             _snackbarText.value = Event(resource.message)
                         }
                     }
+                    resource.data?.let {
+                        if (it.data==null && it.message.isNotEmpty()){
+                            _giftCardError.postValue(Event(it.message))
+                        }
+                    }
+
                 }
 
                 Status.ERROR -> {
