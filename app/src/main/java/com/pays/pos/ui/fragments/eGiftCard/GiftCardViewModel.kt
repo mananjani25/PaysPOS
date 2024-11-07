@@ -57,6 +57,8 @@ class GiftCardViewModel @Inject constructor(
     val showProgressCash: LiveData<Event<Boolean>> = _showProgressCash
 
     var magensaResponse: String? = null
+
+    var paxResponse: String = ""
     var cardNumberLast4: String = ""
     var cardNamePax: String = ""
     var transactionID: String = ""
@@ -165,6 +167,7 @@ class GiftCardViewModel @Inject constructor(
             cardName = cardNamePax
             cardNumber = cardNumberLast4
             transactionId = transactionID
+            magensaResponse = paxResponse
         }
 
             paymentAttributes =
@@ -375,6 +378,7 @@ class GiftCardViewModel @Inject constructor(
             cardName = cardNamePax
             cardNumber = cardNumberLast4
             transactionId = transactionID
+            magensaResponse = paxResponse
         }
 
             paymentAttributes =

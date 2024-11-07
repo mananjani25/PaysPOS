@@ -2435,13 +2435,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                             false
                                         )
                                     ) {
-                                        giftCardViewModel.magensaResponse = ExtData
+                                        giftCardViewModel.paxResponse = ExtData
                                         giftCardViewModel.cardNumberLast4 = cardLastDigits
                                         giftCardViewModel.cardNamePax = EDCType
                                         giftCardViewModel.transactionID = PAXtoken
                                         addValueInGiftCardUsingCard()
                                     } else {
-                                        giftCardViewModel.magensaResponse = ExtData
+                                        giftCardViewModel.paxResponse = ExtData
                                         giftCardViewModel.cardNumberLast4 = cardLastDigits
                                         giftCardViewModel.cardNamePax = EDCType
                                         giftCardViewModel.transactionID = PAXtoken
@@ -2960,13 +2960,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                         false
                                     )
                                 ) {
-                                    giftCardViewModel.magensaResponse = response.ExtData
+                                    giftCardViewModel.paxResponse = response.ExtData
                                     giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
                                     giftCardViewModel.cardNamePax = response.CardType
                                     giftCardViewModel.transactionID = response.PaymentTransInfo.Token
                                     addValueInGiftCardUsingCard()
                                 } else {
-                                    giftCardViewModel.magensaResponse = response.ExtData
+                                    giftCardViewModel.paxResponse = response.ExtData
                                     giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
                                     giftCardViewModel.cardNamePax = response.CardType
                                     giftCardViewModel.transactionID = response.PaymentTransInfo.Token
