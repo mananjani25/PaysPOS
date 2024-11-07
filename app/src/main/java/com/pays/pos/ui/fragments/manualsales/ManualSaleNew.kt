@@ -45,17 +45,10 @@ import com.pays.pos.ui.adapter.ManualSaleCartAdapter
 import com.pays.pos.ui.adapter.ManualSaleCartAdapterNew
 import com.pays.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.pays.pos.utils.AlertUtils
-import com.pays.pos.utils.AmountTextWatcher
-import com.pays.pos.utils.LogUtil
-import com.pays.pos.utils.MethodUtils
+import com.pays.pos.utils.*
 import com.pays.pos.utils.MethodUtils.Companion.getSaltString
 import com.pays.pos.utils.callback.ManualSaleOptionsCustomCallback
-import com.pays.pos.utils.extensions.alert
-import com.pays.pos.utils.extensions.gone
-import com.pays.pos.utils.extensions.setOnSingleClickListener
-import com.pays.pos.utils.extensions.visible
-import com.pays.pos.utils.subTotalToDouble
+import com.pays.pos.utils.extensions.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
@@ -580,6 +573,16 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
     private fun listener() {
 
+        viewModel.clickTakeOut.observe(
+            viewLifecycleOwner,
+            object : androidx.lifecycle.Observer<Event<Boolean>> {
+                override fun onChanged(t: Event<Boolean>?) {
+                    setUpCustomer(Gson().fromJson<TbCustomer>(prefProvider.getValue(
+                        Constants.PREF_CUSTOMER,
+                        ""
+                    ), TbCustomer::class.java))
+                }
+            })
 
         setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
@@ -610,10 +613,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
             //set loyalty
             if (viewModel.loyaltyPointCondition(customer)) {
-                binding.txtLoyaltyPoints.visible()
                 "${getString(R.string.loyalty_points)}: ${customer.final_reward}".also {
                     binding.txtLoyaltyPoints.text = it
                 }
+                binding.txtLoyaltyPoints.visible()
             } else {
                 binding.txtLoyaltyPoints.gone()
             }
@@ -907,7 +910,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                 viewModel.subTotalPrice=binding.txtSubTotal.text.toString().replace('$',' ').trim().toDouble()
                 viewModel.totalTax = binding.txtTax.text.toString().replace('$',' ').trim().toDouble()
-                viewModel.totalDiscount = 0.0
+                /*viewModel.totalDiscount = 0.0
                 totalDiscount = viewModel.totalDiscount
                 prefProvider.setValue(
                     Constants.TOTAL_DISCOUNT_ACTUAL,
@@ -917,7 +920,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     Constants.TOTAL_DISCOUNT,
                     viewModel.totalDiscount.toString()
                 )
-                viewModel.mainCartDiscount = viewModel.totalDiscount
+                viewModel.mainCartDiscount = viewModel.totalDiscount*/
                 viewModel.totalServiceCharge = binding.txtServiceCharge.text.toString().replace('$',' ').trim().toDouble()
 //                viewModel.totalPrice = (viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge) - viewModel.totalDiscount
 

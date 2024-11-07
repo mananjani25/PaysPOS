@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
 import android.os.StrictMode
+import android.system.StructTimespec
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
@@ -24,6 +25,7 @@ import com.pays.pos.data.entities.ModifierSet
 import com.pays.pos.data.model.DineInModel
 import com.pays.pos.data.model.DineInOrderDetailAttributes
 import com.pays.pos.data.model.GuestPaymentCalculationModel
+import com.pays.pos.data.model.SplitDetailListModel
 import com.pays.pos.data.model.requestModel.*
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.pays.pos.data.model.responseModel.OnlineOrderNotificationCount
@@ -140,6 +142,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     var wholetotalPrice = 0.0
     var tip = 0.0
     var order_note = ""
+    /* This loggingOut variable is used to restrict the dialog which is shown after the user is logged out. the dialog is fetched from Customer's list api */
+    var loggingOut = false
     var cartModel: CartModel? = null
     var manualCartOrderNote: String? = ""
     var currentCartItems: ArrayList<TbCartItem> = arrayListOf()
@@ -152,9 +156,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     val getBusinessData = posRepository.getBusinessData()
     val loyaltyPoints = taxServiceChargeRepository.loyaltyPointList()
 
-
-    private val _loadCustomersList = MutableLiveData<Pair<Int,Boolean>>()
-    val loadCustomersList: LiveData<Pair<Int,Boolean>> = _loadCustomersList
+    private val _loadCustomersList = MutableLiveData<Pair<Int, Boolean>>()
+    val loadCustomersList: LiveData<Pair<Int, Boolean>> = _loadCustomersList
 
     private val _clickTakeOut = MutableLiveData<Event<Boolean>>()
     val clickTakeOut: LiveData<Event<Boolean>> = _clickTakeOut
@@ -164,6 +167,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private val _updateCartFooterObservable = MutableLiveData<Event<Boolean>>()
     val updateCartFooterObservable: LiveData<Event<Boolean>> = _updateCartFooterObservable
+
+    private val _changeCustDispSignInButtonTitle = MutableLiveData<String>()
+    val changeCustDispSignInButtonTitle: LiveData<String> = _changeCustDispSignInButtonTitle
+
+    private val _passcodeScreenActive = MutableLiveData<Boolean>()
+    val passcodeScreenActive: LiveData<Boolean> = _passcodeScreenActive
+
     /*-----------Customer Loyalty------------*/
 
 
@@ -345,12 +355,20 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     /*------------Customer Loyalty----------*/
-    fun setCustomerLoyaltyOnCustomerThankyouScreen(reward:Int){
+    fun setCustomerLoyaltyOnCustomerThankyouScreen(reward: Int) {
         _earnedLoyaltyPoints.postValue(Event(reward))
     }
 
-    fun callUpdateCartFooter(value:Boolean){
+    fun callUpdateCartFooter(value: Boolean) {
         _updateCartFooterObservable.postValue(Event(value))
+    }
+
+    fun changeCustomerDispSignButtonTitle(value: String) {
+        _changeCustDispSignInButtonTitle.postValue(value)
+    }
+
+    fun setPasscodeScreenActive(value: Boolean) {
+        _passcodeScreenActive.postValue(value)
     }
     /*------------Customer Loyalty----------*/
 
@@ -630,6 +648,10 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.getDineInCartItems(guestIndexForDineIn)
     }
 
+    suspend fun allSplit(): List<SplitDetailListModel> {
+        return posRepository.allSplit()
+    }
+
     fun updateDineInCartItemGuestDineInPositions(removedGuestIndex: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             posRepository.updateDineInCartItemGuestDineInPositions(removedGuestIndex)
@@ -689,7 +711,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             }
 
-            currentCartIdWhenInserted= posRepository.addItemCartGetId(mCartModel)!!
+            currentCartIdWhenInserted = posRepository.addItemCartGetId(mCartModel)!!
             destroyedList.clear()
 
         }
@@ -984,12 +1006,14 @@ class DashBoardCategoryViewModel @Inject constructor(
             )
         )
         viewModelScope.launch {
+            _changeCustDispSignInButtonTitle.postValue("")
             posRepository.clearCartModelBackup()
         }
     }
 
     fun deleteManualSaleCart() {
         viewModelScope.launch {
+            _changeCustDispSignInButtonTitle.postValue("")
             totalPrice = 0.0
             subTotalPrice = 0.0
             totalTax = 0.0
@@ -4998,13 +5022,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                     order_note = cartModel?.note ?: ""
 
                     var finalTotal = 0.0
-                    if (subTotalPrice == 00.0 || subTotalPrice == 0.00 || subTotalPrice == 00.00){
+                    if (subTotalPrice == 00.0 || subTotalPrice == 0.00 || subTotalPrice == 00.00) {
                         subTotalPrice = 0.00
                         totalTax = 0.00
                         totalServiceCharge = 0.00
                         finalTotal = 0.00
-                    }
-                    else {
+                    } else {
 
                         finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
                     }
@@ -8711,13 +8734,15 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     /*-------------Customer Loyalty------------------*/
-    fun addCustomersList(currentPage:Int, data:List<TbCustomer>){
+    fun addCustomersList(currentPage: Int, data: List<TbCustomer>, lastCall: Boolean = false) {
         CoroutineScope(Dispatchers.IO).launch {
-            var data= posRepository.addCustomersList(data)
-            _loadCustomersList.postValue(Pair(currentPage,true))
-            _loadCustomersList.postValue(Pair(currentPage,false))
+            var data = posRepository.addCustomersList(data)
+            if (!lastCall) {
+                _loadCustomersList.postValue(Pair(currentPage, true))
+            }
+//            _loadCustomersList.postValue(Pair(currentPage,false))
             /*Check for Identical if not identical then find then call the livedata which will call the recursive function*/
-            Log.d("addCustomersList:S","$data")
+            Log.d("addCustomersList:S", "$data")
         }
     }
     /*-------------Customer Loyalty------------------*/
@@ -8740,7 +8765,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     //    ----------------- Dynamic Payments -----------------------------
 
     override fun onCleared() {
-        Log.e("CheckOnClearedViewmodel","DashboardCategoryBoldPOS")
+        Log.e("CheckOnClearedViewmodel", "DashboardCategoryBoldPOS")
         super.onCleared()
     }
 }

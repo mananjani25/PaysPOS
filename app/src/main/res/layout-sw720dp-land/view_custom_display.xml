@@ -14,9 +14,9 @@
         android:layout_height="match_parent"
         android:background="@color/backgroundColor"
         android:orientation="vertical"
-        android:visibility="visible">
+        android:visibility="gone">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/topLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -37,11 +37,17 @@
                 android:textColor="@color/btnColorDark"
                 android:textSize="@dimen/_6mdpi"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:text="Customer Name" />
 
             <LinearLayout
+                android:id="@+id/linearLayout2"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent">
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="wrap_content"
@@ -49,6 +55,8 @@
                     android:layout_gravity="center"
                     app:cardBackgroundColor="@color/btnColor"
                     app:cardCornerRadius="30dp"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:layout_marginBottom="@dimen/_4sdp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -62,8 +70,8 @@
                         android:background="@color/pinFieldLibraryTransparent"
                         android:gravity="center"
                         android:letterSpacing="0.02"
-                        android:paddingEnd="10dp"
                         android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
                         android:text="@string/sign_up_or_check_in"
                         android:textAllCaps="false"
                         android:textColor="@color/white"
@@ -123,7 +131,7 @@
 
             </LinearLayout>
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:id="@+id/rowHeaderLayout"
@@ -1240,9 +1248,11 @@
 
 
             <androidx.cardview.widget.CardView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
                 android:layout_marginTop="@dimen/_15sdp"
                 android:layout_marginBottom="@dimen/_25sdp"
                 app:cardBackgroundColor="@color/btnColor"
@@ -1251,20 +1261,20 @@
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnSignUpOrCheckIn"
                     style="@style/CustomFontMediumStyle"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:background="@color/pinFieldLibraryTransparent"
                     android:gravity="center"
                     android:letterSpacing="0.02"
                     android:paddingStart="40dp"
-                    android:paddingTop="10dp"
+                    android:paddingTop="30dp"
                     android:paddingEnd="40dp"
-                    android:paddingBottom="12dp"
+                    android:paddingBottom="30dp"
                     android:text="@string/sign_up_or_check_in"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_8ssp"
+                    android:textSize="@dimen/_14ssp"
                     android:textStyle="normal"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -1296,6 +1306,7 @@
             android:textColor="@color/white"
             android:textSize="25sp"
             android:textStyle="bold"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -1309,6 +1320,7 @@
             android:textColor="@color/white"
             android:textSize="12sp"
             android:textStyle="normal"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/current_time"

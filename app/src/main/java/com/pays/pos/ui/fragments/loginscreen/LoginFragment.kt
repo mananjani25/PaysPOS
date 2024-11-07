@@ -334,9 +334,9 @@ class LoginFragment : Fragment() {
         super.onResume()
         if (this::presentation.isInitialized) {
             presentation.show()
-            presentation.onLogOutOrClockOut()
+            presentation.onLogOutOrClockOut(true)
         }
-
+        dashboardViewModel.loggingOut = false
 //        CoroutineScope(Dispatchers.Main).launch{
 //            binding.txtSignIn.apply {
 //                isClickable = false

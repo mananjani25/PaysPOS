@@ -22,6 +22,7 @@ import com.pays.pos.databinding.ViewDineInTableItemsBinding
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
 import com.google.gson.Gson
+import com.pays.pos.utils.extensions.gone
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -338,9 +339,12 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     guestSubTotal + list[0].guestDividedAmt
 
                 binding.txtPay.text = "Pay : " + MethodUtils.roundOffAmount(amountToShow)
+            } else {
+                binding.imgPrint.gone()
             }
 
             binding.btnPay.setOnClickListener {
+                binding.btnPay.visibility = View.INVISIBLE
                 if (!list.get(position).isPaid) {
                     var listItem: ArrayList<TbCartItem> = arrayListOf()
                     var listItemWT: ArrayList<TbCartItem> = arrayListOf()

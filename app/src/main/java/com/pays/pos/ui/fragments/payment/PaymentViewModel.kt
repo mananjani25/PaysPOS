@@ -338,7 +338,9 @@ open class PaymentViewModel @Inject constructor(
 
 //                    _showProgress.value = Event(false)
                     EventBus.getDefault()
-                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_submit_ERROR"))
+                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} PaymentViewModel.kt_submit_ERROR -> ${
+                            Gson().toJson(resource)
+                        }"))
 
                 }
 

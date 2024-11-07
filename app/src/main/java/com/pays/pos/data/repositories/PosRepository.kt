@@ -497,6 +497,10 @@ class PosRepository @Inject constructor(
         appDatabase.splitDao().addSplit(model)
     }
 
+    suspend fun allSplit(): List<SplitDetailListModel> {
+        return appDatabase.splitDao().allSplit()
+    }
+
     suspend fun createNote(data: CreateNoteRequest) = apiHelperNew.createNote(data)
 
     suspend fun createNoteDatabase(data: NoteResponse.Data) =
@@ -561,6 +565,10 @@ class PosRepository @Inject constructor(
     /*------------Customer Loyalty--------------*/
     suspend fun fetchCustomersList(data: HashMap<String, String>): Resource<CustomerListResponse> {
         return apiHelperNew.customerListPagination(data)
+    }
+
+    suspend fun getCustomerFromPhoneNumber(phoneNumber: String): Resource<CustomerListResponse> {
+        return apiHelperNew.getCustomerFromPhoneNumber(phoneNumber)
     }
 
     suspend fun addCustomersList(data: List<TbCustomer>) =

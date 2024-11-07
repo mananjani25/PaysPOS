@@ -99,7 +99,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.Executors
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -435,7 +434,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     it.alpha = 0f
                                 }
 
-                                binding.tvOther.invisible()
+//                                binding.tvOther.invisible()
                             }
                         }
 
@@ -2430,7 +2429,28 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 PAXtoken = paxData.paxToken
                                 EDCType = paxData.EDCType
                                 cardLastDigits = paxData.cardLastDigits
-                                makePaymentCreditCard()
+                                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+                                    if (prefProvider.getValueboolean(
+                                            Constants.IS_ADD_VALUE_IN_GIFT_CARD,
+                                            false
+                                        )
+                                    ) {
+                                        giftCardViewModel.paxResponse = ExtData
+                                        giftCardViewModel.cardNumberLast4 = cardLastDigits
+                                        giftCardViewModel.cardNamePax = EDCType
+                                        giftCardViewModel.transactionID = PAXtoken
+                                        addValueInGiftCardUsingCard()
+                                    } else {
+                                        giftCardViewModel.paxResponse = ExtData
+                                        giftCardViewModel.cardNumberLast4 = cardLastDigits
+                                        giftCardViewModel.cardNamePax = EDCType
+                                        giftCardViewModel.transactionID = PAXtoken
+                                        sellGiftCardUsingCard()
+                                    }
+                                } else {
+                                    makePaymentCreditCard()
+                                }
+//                                makePaymentCreditCard()
                             } else {
                                 makePaxPaymentRequest()
                             }
@@ -2934,7 +2954,28 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     CoroutineScope(Dispatchers.Main).launch {
 //                        ProgressUtils.dismissProgressDialog()
                         coroutineScope {
-                            makePaymentCreditCard()
+                            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+                                if (prefProvider.getValueboolean(
+                                        Constants.IS_ADD_VALUE_IN_GIFT_CARD,
+                                        false
+                                    )
+                                ) {
+                                    giftCardViewModel.paxResponse = response.ExtData
+                                    giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
+                                    giftCardViewModel.cardNamePax = response.CardType
+                                    giftCardViewModel.transactionID = response.PaymentTransInfo.Token
+                                    addValueInGiftCardUsingCard()
+                                } else {
+                                    giftCardViewModel.paxResponse = response.ExtData
+                                    giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
+                                    giftCardViewModel.cardNamePax = response.CardType
+                                    giftCardViewModel.transactionID = response.PaymentTransInfo.Token
+                                    sellGiftCardUsingCard()
+                                }
+                            } else {
+                                makePaymentCreditCard()
+                            }
+//                            makePaymentCreditCard()
                         }
                     }
                 } else {
@@ -4849,6 +4890,21 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
             }
         }
+
+        /* This is placed to solve the payment issue happening due to the orderTypeId = -1   */
+        if (myRequest.order.orderTypeId == -1) {
+            runBlocking {
+                CoroutineScope(Dispatchers.IO).async {
+                    dashboardViewModel.getOrderTypeBackupList(prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1))?.let {
+                        myRequest.order.apply {
+                            orderTypeId=(it.get(0).orderType) ?: -1
+                            orderTypeName=(it.get(0).orderTypeName) ?: ""
+                        }
+                    }
+                }.await()
+            }
+        }
+
 
         val orderId = prefProvider.getValueInt("ORDER_ID", -1) //Here
         LogUtil.logE(TAG, "orderIdmyRequestOriginal ${orderId}")

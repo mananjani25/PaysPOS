@@ -21,7 +21,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.*
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
@@ -51,7 +51,6 @@ import com.pays.pos.data.remote.Constants.BALANCE_INQUIRY
 import com.pays.pos.data.remote.Constants.CUSTOMER
 import com.pays.pos.data.remote.Constants.DELIVERY_TYPE
 import com.pays.pos.data.remote.Constants.DINE_IN
-import com.pays.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.pays.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.pays.pos.data.remote.Constants.GIFT_CARD
 import com.pays.pos.data.remote.Constants.IS_FROM_ALL_ORDER
@@ -186,7 +185,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     private var oneItemPerReceipt: Boolean = true
 
-    private var sunmiFrameworkVersion :Array<String>? = null
+    private var sunmiFrameworkVersion: Array<String>? = null
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -275,7 +274,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.clearCartModelBackup()
-        Log.e("ThisISInit","InitStarted")
+        Log.e("ThisISInit", "InitStarted")
 
         lifecycleScope.launch {
             try {
@@ -288,7 +287,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
         if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
-            magTekViewModel.initPOSLink(requireContext(),makeMerchantDetailsCall = false)
+            magTekViewModel.initPOSLink(requireContext(), makeMerchantDetailsCall = false)
         }
 
     }
@@ -318,9 +317,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     ): View? {
 
         /*--------------------- FOR CUSTOMER RECEIPT MODIFICATION--------------------*/
-        prefProvider?.setValue(Constants.SUNMI_FRAMEWORK_VERSION, SystemProperties.get("ro.version.sunmi_versionname"))
-/*--------------------- FOR CUSTOMER RECEIPT MODIFICATION--------------------*/
-        sunmiFrameworkVersion = prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".").toTypedArray()
+        prefProvider?.setValue(
+            Constants.SUNMI_FRAMEWORK_VERSION,
+            SystemProperties.get("ro.version.sunmi_versionname")
+        )
+        /*--------------------- FOR CUSTOMER RECEIPT MODIFICATION--------------------*/
+        sunmiFrameworkVersion =
+            prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".")
+                .toTypedArray()
+        changeCustomerDisplayState()
 
         if (viewModel.boldPosNeedToRefresh) {
 
@@ -399,7 +404,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
 
             /*------------Customer Loyalty------------*/
-            checkIfCustomersDownloaded()
+            if (InternetUtils.isInternetAvailable(requireContext())) {
+                if (!prefProvider.getValueboolean("CUSTOMER_FETCHED", false)) {
+                    checkIfCustomersDownloaded()
+                }
+            }
             /*------------Customer Loyalty------------*/
 
             binding.layoutHeader.ivLock.setOnClickListener {
@@ -424,20 +433,20 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
         }
 
-        binding.layoutHeader.edtSearch.isCursorVisible=false
-        binding.layoutHeader.edtSearch.setOnTouchListener(object:View.OnTouchListener{
+        binding.layoutHeader.edtSearch.isCursorVisible = false
+        binding.layoutHeader.edtSearch.setOnTouchListener(object : View.OnTouchListener {
             override fun onTouch(p0: View?, p1: MotionEvent?): Boolean {
-                binding.layoutHeader.edtSearch.isCursorVisible=true
+                binding.layoutHeader.edtSearch.isCursorVisible = true
                 return false
             }
         })
 
 
-        viewModel.disableCursor.observe(viewLifecycleOwner,object:Observer<Boolean>{
+        viewModel.disableCursor.observe(viewLifecycleOwner, object : Observer<Boolean> {
             override fun onChanged(t: Boolean?) {
                 t?.let {
-                    if (it){
-                        binding.layoutHeader.edtSearch.isCursorVisible=false
+                    if (it) {
+                        binding.layoutHeader.edtSearch.isCursorVisible = false
                     }
                 }
             }
@@ -447,46 +456,69 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     /*----------------Customer Loyalty------------------*/
-    private fun checkIfCustomersDownloaded(){
+
+    private fun changeCustomerDisplayState() {
+        viewModel.setPasscodeScreenActive(false)
+    }
+
+    private var customerFetchingJob: Job? = null
+
+    private fun checkIfCustomersDownloaded() {
         customerListViewModel.hasCustomers()
-        viewModel.loadCustomersList.observe(viewLifecycleOwner,object:Observer<Pair<Int,Boolean>>{
-            override fun onChanged(t: Pair<Int,Boolean>?) {
-                t?.let {
-                    loadCustomerLocalList(it.first+1)
-                }
-            }
-        })
-        customerListViewModel.customerCount.observe(viewLifecycleOwner,object:Observer<Event<Boolean>>{
-            override fun onChanged(t: Event<Boolean>?) {
-                t?.getContentIfNotHandled()?.let { _it ->
-                    if (!_it) {
-                        loadCustomerLocalList(1)
+        customerFetchingJob = viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.loadCustomersList.observe(viewLifecycleOwner,
+                object : Observer<Pair<Int, Boolean>> {
+                    override fun onChanged(t: Pair<Int, Boolean>?) {
+                        t?.let {
+                            loadCustomerLocalList(it.first + 1)
+                        }
                     }
-                }
-            }
-        })
+                })
+
+            customerListViewModel.customerCount.observe(viewLifecycleOwner,
+                object : Observer<Event<Boolean>> {
+                    override fun onChanged(t: Event<Boolean>?) {
+                        t?.getContentIfNotHandled()?.let { _it ->
+                            if (!_it) {
+                                prefProvider.setValueboolean("CUSTOMER_FETCHED", true)
+                                loadCustomerLocalList(1)
+                            }
+                        }
+                    }
+                })
+        }
     }
 
     private fun loadCustomerLocalList(currentpage: Int) {
-        CoroutineScope(Dispatchers.Main).launch {
+//        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            var pageSize = "10"
             Log.d("loadCustomerLocalList::", "${currentpage}")
             val data = LinkedHashMap<String, String>()
             data["page"] = currentpage.toString()
-            data["per_page"] = "10"
-            var resource=customerListViewModel.fetchCustomersList(data)
+            data["per_page"] = pageSize
+            var resource = customerListViewModel.fetchCustomersList(data)
             when (resource.status) {
                 Status.SUCCESS -> {
                     if (resource.data != null) {
                         resource.data?.let {
-                            if (it.data.isNotEmpty()){
-                                try{
-                                    var status=viewModel.addCustomersList(currentpage,it.data)
-//                                    Log.d("addCustomersList",status.toString())
+                            if (it.data.isNotEmpty()) {
+                                try {
+                                    if (it.data.size < pageSize.toInt()) {
+                                        var status = viewModel.addCustomersList(
+                                            currentpage,
+                                            it.data,
+                                            lastCall = true
+                                        )
+                                    } else {
+                                        var status =
+                                            viewModel.addCustomersList(currentpage, it.data)
+                                    }
 
-                                }catch (e:Exception){
+//                                    Log.d("addCustomersList",status.toString())
+                                } catch (e: Exception) {
 
                                 }
-
                             }
                         }
                     }
@@ -495,12 +527,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 }
                 Status.ERROR -> {
-
-                    binding.root.showAlert(resource.message)
-
+                    if (!viewModel.loggingOut) {
+                        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+                            binding.root.showAlert(resource.message)
+                        }
+                    }
                 }
-
-
             }
 
         }
@@ -541,7 +573,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 )
                 try {
                     loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
-                }catch (e:Exception) {
+                } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }
@@ -659,6 +691,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             if (result != null) {
                 LogUtil.logE(TAG, "gotBundlebundle:  ${Gson().toJson(bundle)}")
                 setUpCustomer(result, bundle)
+                /* Below code will change the (SignUp or Check In) label to Change mobile number */
+                viewModel.changeCustomerDispSignButtonTitle(getString(R.string.change_mobile_number))
             }
         }
 
@@ -674,6 +708,34 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     Log.d(TAG, "resultListener: orderDiscount : " + orderDiscount)
                     Log.d(TAG, "resultListener: totalprice : " + viewModel.totalPrice)
                     val price = discountApplyPrice - orderDiscount
+                    /*Cart model getting blank on adding custom item on navigating back to custom cart from checkout page and adding custom item to cart.*/
+                    if (viewModel.cartModel == null) {
+                        runBlocking {
+                            try {
+                                var model =
+                                    CoroutineScope(Dispatchers.IO).async { viewModel.getCartModelBackup() }
+                                        .await().last().data
+
+                                EventBus.getDefault().post(
+                                    MessageEvent(
+                                        "${Constants.LINE_BREAK_TAB} DashBoardCategoryBoldPOS.kt_CART_BACKUP_MODEL -> model -> ${
+                                            Gson().toJson(model)
+                                        }", true
+                                    )
+                                )
+                                viewModel.cartModel =
+                                    Gson().fromJson(model, CartModel::class.java)
+                            } catch (e: Exception) {
+                                var models =
+                                    CoroutineScope(Dispatchers.IO).async { viewModel.getAllCartModels() }
+                                        .await()
+                                if (models.isNotEmpty()) {
+                                    viewModel.cartModel = models.get(0)
+                                }
+                            }
+                        }
+                    }
+
                     Log.d(TAG, "resultListener: " + cartList.size)
                     if (viewModel.cartModel != null) {
                         viewModel.cartModel!!.discountPrice = orderDiscount
@@ -960,23 +1022,28 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 //        System.gc()
         onClick()
 
-        viewModel.removeLastItem.observe(viewLifecycleOwner){
-            if (it.getContentIfNotHandled() == true){
+        viewModel.removeLastItem.observe(viewLifecycleOwner) {
+            if (it.getContentIfNotHandled() == true) {
 
-                Log.e("HereToCheck","EventTrue  ")
+                Log.e("HereToCheck", "EventTrue  ")
                 getCustomerDisplay(requireContext())?.let {
                     presentation = CustomDisplay(
-                        it, requireContext(), this, dashBoardCategoryViewModel = viewModel, passcodeViewModel, dineInViewModel
+                        it,
+                        requireContext(),
+                        this,
+                        dashBoardCategoryViewModel = viewModel,
+                        passcodeViewModel,
+                        dineInViewModel
                     )
                 }
-                    /*if (!presentation.isShowing)
-                        presentation.show()
-                    if (it.isNotEmpty()) {
-                        presentation.updateCustomerDisplay(it)
-                    } else {
-                        Log.e(TAG,"PresentationHide: ")
-                        presentation.onLogOutOrClockOutWithApiService(apiService)
-                    }*/
+                /*if (!presentation.isShowing)
+                    presentation.show()
+                if (it.isNotEmpty()) {
+                    presentation.updateCustomerDisplay(it)
+                } else {
+                    Log.e(TAG,"PresentationHide: ")
+                    presentation.onLogOutOrClockOutWithApiService(apiService)
+                }*/
 
 
             }
@@ -1029,7 +1096,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         cartList =
                             bundle.getParcelableArrayList<CartModel>("cartList") as ArrayList<CartModel>
                     }
-                   // val dineInList = cartList[0].dineInList
+                    // val dineInList = cartList[0].dineInList
                     val dineInList = viewModel.cartModel?.dineInList
                     LogUtil.logE(TAG, "getdineInListSize:  ${dineInList?.size}")
 
@@ -1149,6 +1216,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d("CUSTOMERFETCHINGJOB:: ", "started")
+        customerFetchingJob?.cancel()
+        enableTouch()
+        Log.d("CUSTOMERFETCHINGJOB:: ", "ended")
+
+    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -1276,7 +1351,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         }
                     }
 
-                    if(prefProvider.getValue(ORDER_TYPE,"") != DINE_IN) {
+                    if (prefProvider.getValue(ORDER_TYPE, "") != DINE_IN) {
                         clearCustomer()
                         viewModel.clearListTax()
                         viewModel.deleteCart()
@@ -1284,13 +1359,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                     viewModel.updateActiveOrderFlagClear()
 
-                        EventBus.getDefault().post(
-                            MessageEvent(
-                                "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
-                                    Gson().toJson(Thread.currentThread().stackTrace)
-                                }"
-                            )
+                    EventBus.getDefault().post(
+                        MessageEvent(
+                            "${Constants.LINE_BREAK_TAB} PosRepository.kt_CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                                Gson().toJson(Thread.currentThread().stackTrace)
+                            }"
                         )
+                    )
                     /* This bracket is closed before clearCustomer(), to solve BIS-4098}*/
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
                 }
@@ -1300,6 +1375,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
 
         binding.layoutHeader.linearSwitchUser.setOnClickListener {
+            enableTouch()
             var bundle = Bundle()
             bundle.putBoolean("isSwap", true)
             bundle.putBoolean("isDashboard", false)
@@ -1481,7 +1557,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             true
                         ) == true
                     ) {
-                        EventBus.getDefault().post(MessageEvent(Constants.CASHBOX,true))
+                        EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
                     } else {
                         Log.d(TAG, "CASH-DRAWER: STEP 3 in TM-m30 ")
 
@@ -1740,7 +1816,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         )
                                         Log.d(TAG, "dineintest item: " + Gson().toJson(item))
 
-                                        val finalList = viewModel.currentCartItems + viewModel.oldDineInItems
+                                        val finalList =
+                                            viewModel.currentCartItems + viewModel.oldDineInItems
 
                                         //insert dine in
                                         viewModel.updateDineInCart(
@@ -1763,7 +1840,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                 }
                                                 viewModel.updateCartModel(viewModel.cartModel!!)
                                             }
-                                        }catch (e:Exception){}
+                                        } catch (e: Exception) {
+                                        }
                                     })
 
                                 }
@@ -1813,13 +1891,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         viewModel.showProgress.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
-                try{
+                try {
                     if (it) {
                         ProgressUtils.showProgressDialog(requireActivity())
                     } else {
                         ProgressUtils.dismissProgressDialog()
                     }
-                }catch (e:Exception){}
+                } catch (e: Exception) {
+                }
             }
         }
         viewModel.syncProgressDialog.observe(requireActivity()) { event ->
@@ -2060,13 +2139,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     override fun onItemUpdate(item: TbCartItem, position: Int) {
 
         viewModel.isItemEditInProgress = true
-        viewModel.dineInHeaderPosition = item.guestIndexForDineIn ?:-1
+        viewModel.dineInHeaderPosition = item.guestIndexForDineIn ?: -1
 
         viewModel.isCartItemClicked = true
 
         viewModel.cartItemModifiersBeforeUpdate = item.modifiers
 
-        Log.e("ITEM MODIFIER SIZE",Gson().toJson(item.modifiers))
+        Log.e("ITEM MODIFIER SIZE", Gson().toJson(item.modifiers))
 
 
         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
@@ -2290,7 +2369,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 cartList[0].note = arguments?.getString("order_note").toString()
 
                 cartList[0].discountPrice = arguments?.getDouble("totalDiscount") ?: 0.0
-                cartList[0].discountSelectdValue = arguments?.getDouble("discountSelectdValue") ?:0.0
+                cartList[0].discountSelectdValue =
+                    arguments?.getDouble("discountSelectdValue") ?: 0.0
 
                 /*viewModel.newCartLogicModifier(
                     cartList,
@@ -2383,8 +2463,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         R.id.action_dashboardCategoryBoldPOS_to_dineInOrderTable,
                         bundle
                     )
-                }catch (_e:Exception){
-                   // AlertUtils.showAlert(requireActivity(),"Something went wrong. Please try again !")
+                } catch (_e: Exception) {
+                    // AlertUtils.showAlert(requireActivity(),"Something went wrong. Please try again !")
                 }
 
             }
@@ -2447,7 +2527,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 println("onUnfound")
 
                                 viewModel.downloadFinished(false)
-                                runOnUiThread(object:Runnable{
+                                runOnUiThread(object : Runnable {
                                     override fun run() {
                                         if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                                             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
@@ -2485,11 +2565,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             setService(data, createOrderResponse.data, cartModel)
 
 
-        } else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains("SP", ignoreCase = true)))) {
+        } else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains(
+                "SP",
+                ignoreCase = true
+            )))
+        ) {
             settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
             printer = StarPrinter(settings, requireContext())
 
-            CoroutineScope(Dispatchers.IO).launch{
+            CoroutineScope(Dispatchers.IO).launch {
                 try {
                     val builder = StarXpandCommandBuilder()
 
@@ -2501,7 +2585,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         styleAlignment(Alignment.Center)
 
                         if (!oneItemPerReceipt) {
-                            createOrderResponse.data?.order.orderItems.forEach {item->
+                            createOrderResponse.data?.order.orderItems.forEach { item ->
                                 data.printerCategories.toCollection(arrayListOf())?.forEach {
                                     if (it?.id == item.categoryId) {
                                         if (it.categoryActive && it.printerEnable) {
@@ -2561,7 +2645,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                             content = addSingleOrdersForStarKitchen(
                                                                 1,
                                                                 item,
-                                                                data.printerCategories.toCollection(arrayListOf())
+                                                                data.printerCategories.toCollection(
+                                                                    arrayListOf()
+                                                                )
                                                             )
                                                         )
                                                 )
@@ -2595,7 +2681,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                 actionFeedLine(1)
                                                 actionFeedLine(1)
 
-                                                try{
+                                                try {
                                                     var printedName = StringBuilder("")
                                                     createOrderResponse.data?.order?.customer?.firstName?.let { firstName ->
                                                         createOrderResponse.data?.order?.customer?.lastName?.let { lastName ->
@@ -2616,7 +2702,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                                 if (printedName.isNotEmpty()) {
                                                                     add(
                                                                         PrinterBuilder()
-                                                                            .styleAlignment(Alignment.Left)
+                                                                            .styleAlignment(
+                                                                                Alignment.Left
+                                                                            )
                                                                             .styleBold(true)
                                                                             .actionPrintText(
                                                                                 content = "Customer Details\n"
@@ -2625,7 +2713,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                                                                     add(
                                                                         PrinterBuilder()
-                                                                            .styleAlignment(Alignment.Center)
+                                                                            .styleAlignment(
+                                                                                Alignment.Center
+                                                                            )
                                                                             .actionPrintText(
                                                                                 content =
                                                                                 "-------------------------------------------"
@@ -2634,7 +2724,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                                                                     add(
                                                                         PrinterBuilder()
-                                                                            .styleAlignment(Alignment.Left)
+                                                                            .styleAlignment(
+                                                                                Alignment.Left
+                                                                            )
                                                                             .actionPrintText(
                                                                                 content = printedName.toString()
                                                                             )
@@ -2645,7 +2737,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                                                         }
                                                     }
-                                                }catch (e:Exception){}
+                                                } catch (e: Exception) {
+                                                }
 
                                                 actionFeedLine(1)
 
@@ -2781,7 +2874,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 )
                             }
                             actionFeedLine(1)
-                            try{
+                            try {
                                 if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
                                     add(
                                         PrinterBuilder()
@@ -2817,46 +2910,46 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                             )
                                     )
                                 }
-                            }catch (e:Exception){
+                            } catch (e: Exception) {
 
                             }
 
-                         try{
-                             if (kitchenSettingModel.showCustomerPhone && createOrderResponse.data?.order?.customer?.phones?.get(
-                                     0
-                                 ) != null
-                             ) {
-                                 add(
-                                     PrinterBuilder()
-                                         .styleAlignment(Alignment.Left)
-                                         .actionPrintText(
-                                             content = if (kitchenSettingModel.showCustomerPhone && createOrderResponse.data?.order?.customer?.phones?.get(
-                                                     0
-                                                 ) != null
-                                             ) {
+                            try {
+                                if (kitchenSettingModel.showCustomerPhone && createOrderResponse.data?.order?.customer?.phones?.get(
+                                        0
+                                    ) != null
+                                ) {
+                                    add(
+                                        PrinterBuilder()
+                                            .styleAlignment(Alignment.Left)
+                                            .actionPrintText(
+                                                content = if (kitchenSettingModel.showCustomerPhone && createOrderResponse.data?.order?.customer?.phones?.get(
+                                                        0
+                                                    ) != null
+                                                ) {
 
-                                                 var phoneNumber =
-                                                     createOrderResponse.data.order?.customer?.phones?.get(
-                                                         0
-                                                     )?.phoneNumber.toString()
-                                                 if (phoneNumber.length != 10) {
-                                                     // Handle invalid input (must be 10 digits)
-                                                     "Invalid phone number"
-                                                 }
+                                                    var phoneNumber =
+                                                        createOrderResponse.data.order?.customer?.phones?.get(
+                                                            0
+                                                        )?.phoneNumber.toString()
+                                                    if (phoneNumber.length != 10) {
+                                                        // Handle invalid input (must be 10 digits)
+                                                        "Invalid phone number"
+                                                    }
 
-                                                 val areaCode = phoneNumber.substring(0, 3)
-                                                 val firstPart = phoneNumber.substring(3, 6)
-                                                 val secondPart = phoneNumber.substring(6)
+                                                    val areaCode = phoneNumber.substring(0, 3)
+                                                    val firstPart = phoneNumber.substring(3, 6)
+                                                    val secondPart = phoneNumber.substring(6)
 
-                                                 "($areaCode)$firstPart-$secondPart"
+                                                    "($areaCode)$firstPart-$secondPart"
 
-                                             } else ""
-                                         )
-                                 )
-                             }
-                         }catch (e:Exception){
+                                                } else ""
+                                            )
+                                    )
+                                }
+                            } catch (e: Exception) {
 
-                         }
+                            }
                             printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
                         }
 
@@ -2900,8 +2993,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
             }
 
-        } else if (data.name.contains(LANDI_INNER_PRINTER, true)){
-            printKitchenFromLandiInner(data,createOrderResponse.data, cartModel)
+        } else if (data.name.contains(LANDI_INNER_PRINTER, true)) {
+            printKitchenFromLandiInner(data, createOrderResponse.data, cartModel)
         } else {
 
             if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
@@ -3107,33 +3200,69 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 //                                    lineBreak()
                                     cartModel?.let {
                                         if (it.isEdited || isOrderUpdate) {
-                                            printCenter("***** UPDATED *****", isBold = true, fontSize = FONT_SIZE_5X)
+                                            printCenter(
+                                                "***** UPDATED *****",
+                                                isBold = true,
+                                                fontSize = FONT_SIZE_5X
+                                            )
 
                                         }
                                     }
                                     lineBreak()
                                     lineBreak()
 
-                                    if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
-                                        printCenter("OrderID:" + receiptModel?.order?.custom_order_id, isBold = true, fontSize = FONT_SIZE_5X)
+                                    if (prefProvider.getValueboolean(
+                                            ORDER_NUMBER_STARTING_FROM_ONE,
+                                            false
+                                        )
+                                    ) {
+                                        printCenter(
+                                            "OrderID:" + receiptModel?.order?.custom_order_id,
+                                            isBold = true,
+                                            fontSize = FONT_SIZE_5X
+                                        )
                                         lineBreak()
                                     } else {
-                                        printCenter("OrderID:" + receiptModel?.order?.id, isBold = true, fontSize = FONT_SIZE_5X)
+                                        printCenter(
+                                            "OrderID:" + receiptModel?.order?.id,
+                                            isBold = true,
+                                            fontSize = FONT_SIZE_5X
+                                        )
                                     }
                                     lineBreak()
 
                                     if (kitchenSettingModel.showOrderType) {
 
-                                        printCenter(receiptModel?.order?.orderTypeName, isBold = true, fontSize = FONT_SIZE_5X)
+                                        printCenter(
+                                            receiptModel?.order?.orderTypeName,
+                                            isBold = true,
+                                            fontSize = FONT_SIZE_5X
+                                        )
                                         lineBreak()
 
-                                        if ((receiptModel.order.orderType.equals(Constants.PHONE_ORDER, true) ||
-                                                    receiptModel.order.orderType.equals("OnlineWebOrder", true) ||
-                                                    receiptModel.order.orderType.equals("Online Order", true) ||
-                                                    receiptModel.order.orderType.equals("OnlineOrder", true)) &&
+                                        if ((receiptModel.order.orderType.equals(
+                                                Constants.PHONE_ORDER,
+                                                true
+                                            ) ||
+                                                    receiptModel.order.orderType.equals(
+                                                        "OnlineWebOrder",
+                                                        true
+                                                    ) ||
+                                                    receiptModel.order.orderType.equals(
+                                                        "Online Order",
+                                                        true
+                                                    ) ||
+                                                    receiptModel.order.orderType.equals(
+                                                        "OnlineOrder",
+                                                        true
+                                                    )) &&
                                             receiptModel.order.deliveryType != null
                                         ) {
-                                            printCenter(receiptModel.order.deliveryType, isBold = true, fontSize = FONT_SIZE_5X)
+                                            printCenter(
+                                                receiptModel.order.deliveryType,
+                                                isBold = true,
+                                                fontSize = FONT_SIZE_5X
+                                            )
                                             lineBreak()
                                         }
                                     }
@@ -3143,7 +3272,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
                                     if (kitchenSettingModel.showTeamMember) {
-                                        printLeft("Employee:" + receiptModel?.order?.employee?.name, isBold = true, fontSize = FONT_SIZE_5X)
+                                        printLeft(
+                                            "Employee:" + receiptModel?.order?.employee?.name,
+                                            isBold = true,
+                                            fontSize = FONT_SIZE_5X
+                                        )
                                     }
                                     lineBreak()
 
@@ -3168,7 +3301,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                                         addOrdersForKitchenLandiInner(
                                             it,
-                                            kitchenReceiptPrinters.printerCategories.toCollection(arrayListOf()),
+                                            kitchenReceiptPrinters.printerCategories.toCollection(
+                                                arrayListOf()
+                                            ),
                                             LPrint
                                         )
                                     }
@@ -3176,16 +3311,22 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
 
                                         lineBreak()
-                                        printCenter("Order Note",isBold = true,
-                                            fontSize = FONT_SIZE_5X)
+                                        printCenter(
+                                            "Order Note", isBold = true,
+                                            fontSize = FONT_SIZE_5X
+                                        )
                                         lineBreak()
-                                        printCenter(receiptModel?.order?.note.toString(), isBold = true, fontSize = FONT_SIZE_5X)
+                                        printCenter(
+                                            receiptModel?.order?.note.toString(),
+                                            isBold = true,
+                                            fontSize = FONT_SIZE_5X
+                                        )
                                         lineBreak()
                                     }
 
 
                                     if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName) {
-                                        try{
+                                        try {
                                             if (receiptModel?.order?.customer != null) {
 
 //                                                PrintSunmiUtils.customerDetailsInner(true,sunmiFrameworkVersion)
@@ -3195,36 +3336,47 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 //                                                }
 
                                                 lineBreak()
-                                                printLeft("Customer Details", isBold = true,
-                                                    fontSize = FONT_SIZE_5X)
+                                                printLeft(
+                                                    "Customer Details", isBold = true,
+                                                    fontSize = FONT_SIZE_5X
+                                                )
                                                 lineBreak()
                                                 printDashedLineAndBreak()
-                                                try{
+                                                try {
                                                     if (kitchenSettingModel.showCustomerName) {
-                                                        printLeft(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName, isBold = true, fontSize = FONT_SIZE_5X)
+                                                        printLeft(
+                                                            receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName,
+                                                            isBold = true,
+                                                            fontSize = FONT_SIZE_5X
+                                                        )
                                                     }
-                                                }catch (e:Exception){}
+                                                } catch (e: Exception) {
+                                                }
 
                                                 lineBreak()
-                                                try{
+                                                try {
                                                     if (kitchenSettingModel.showCustomerPhone) {
 
                                                         if (receiptModel?.order?.customer?.phones?.isNotEmpty()) {
 
-                                                            receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
+                                                            receiptModel?.order?.customer?.phones?.get(
+                                                                0
+                                                            )?.phoneNumber?.let {
                                                                 printLeft(
-                                                                    MethodUtils.formatPhoneNumber(it), isBold = true, fontSize = FONT_SIZE_5X
+                                                                    MethodUtils.formatPhoneNumber(it),
+                                                                    isBold = true,
+                                                                    fontSize = FONT_SIZE_5X
                                                                 )
                                                             }
                                                         }
                                                     }
-                                                }catch (e:Exception){
+                                                } catch (e: Exception) {
 
                                                 }
 
                                                 lineBreak()
 
-                                                try{
+                                                try {
                                                     if (kitchenSettingModel.showCustomerAddress) {
 
                                                         if (receiptModel?.order?.orderType.trim()
@@ -3260,11 +3412,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                                                         }
                                                     }
-                                                }catch (e:Exception){
+                                                } catch (e: Exception) {
 
                                                 }
                                             }
-                                        }catch (e:Exception){
+                                        } catch (e: Exception) {
 
                                         }
                                     }
@@ -3279,11 +3431,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                                     try {
                                         viewModel.downloadFinished(false)
-                                    } catch (e:Exception) {
+                                    } catch (e: Exception) {
                                         e.printStackTrace()
                                     }
 
-                                    runOnUiThread(object:Runnable{
+                                    runOnUiThread(object : Runnable {
                                         override fun run() {
                                             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS)
                                                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
@@ -3293,7 +3445,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 } catch (e: Exception) {
                                     e.printStackTrace()
                                     viewModel.downloadFinished(false)
-                                    runOnUiThread(object:Runnable{
+                                    runOnUiThread(object : Runnable {
                                         override fun run() {
                                             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS)
                                                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
@@ -5714,7 +5866,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             viewModel.downloadFinished(false)
 
-            runOnUiThread(object :Runnable{
+            runOnUiThread(object : Runnable {
                 override fun run() {
                     if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS)
                         findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
@@ -5724,7 +5876,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         } catch (e: Exception) {
             e.printStackTrace()
             viewModel.downloadFinished(false)
-            runOnUiThread(object:Runnable{
+            runOnUiThread(object : Runnable {
                 override fun run() {
                     if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS)
                         findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
@@ -5789,7 +5941,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             PrintSunmiUtils.addHorizontalInner()
 
-            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+            ) {
                 PrintSunmiUtils.normalText("\n")
             }
 
@@ -5809,21 +5963,25 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
             if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName) {
-                try{
+                try {
                     if (receiptModel?.order?.customer != null) {
 
-                        PrintSunmiUtils.customerDetailsInner(true,sunmiFrameworkVersion)
+                        PrintSunmiUtils.customerDetailsInner(true, sunmiFrameworkVersion)
 
-                        if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                        if (sunmiFrameworkVersion?.get(0)
+                                ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                                ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                        ) {
                             PrintSunmiUtils.normalText("\n")
                         }
-                        try{
+                        try {
                             if (kitchenSettingModel.showCustomerName) {
                                 PrintSunmiUtils.normalTextLarge(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
                             }
-                        }catch (e:Exception){}
+                        } catch (e: Exception) {
+                        }
 
-                        try{
+                        try {
                             if (kitchenSettingModel.showCustomerPhone) {
 
                                 if (receiptModel?.order?.customer?.phones?.isNotEmpty()) {
@@ -5835,11 +5993,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     }
                                 }
                             }
-                        }catch (e:Exception){
+                        } catch (e: Exception) {
 
                         }
 
-                        try{
+                        try {
                             if (kitchenSettingModel.showCustomerAddress) {
 
                                 if (receiptModel?.order?.orderType.trim()
@@ -5875,11 +6033,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                                 }
                             }
-                        }catch (e:Exception){
+                        } catch (e: Exception) {
 
                         }
                     }
-                }catch (e:Exception){
+                } catch (e: Exception) {
 
                 }
             }
@@ -6069,7 +6227,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             e.printStackTrace()
         }
     }
-
 
 
     override fun scannerFirmwareUpdateEvent(firmwareUpdateEvent: FirmwareUpdateEvent?) {
@@ -6269,8 +6426,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             val innerPrinterModel: PrinterListModel
 
             val filteredPrintersList =
-                availableDevices.filter { it.name.startsWith(SUNMI_INNER_PRINTER, true) || it.name.startsWith(
-                    LANDI_INNER_PRINTER, true) }
+                availableDevices.filter {
+                    it.name.startsWith(SUNMI_INNER_PRINTER, true) || it.name.startsWith(
+                        LANDI_INNER_PRINTER, true
+                    )
+                }
 
             if (filteredPrintersList.isNotEmpty()) {
                 val foundPrinter = filteredPrintersList[0]
@@ -6305,7 +6465,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     private fun setupInnerPrinterAttributes(innerPrinterModel: PrinterListModel) {
         val list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> = arrayListOf()
-        Log.e(TAG,"checkHereOrderTypeListSize. ${ordertypelist.size}")
+        Log.e(TAG, "checkHereOrderTypeListSize. ${ordertypelist.size}")
         for (i in 0 until ordertypelist.size) {
             list.add(
                 CreatePrinterRequestModel.PrinterSettingsAttributes(
@@ -6318,10 +6478,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             .post(MessageEvent("${Constants.LINE_BREAK_TAB} DashboardCategoryBoldPOS.kt_ setupInnerPrinterAttributes_before_create_printer_model_creation"))
 
         val createPrinter = CreatePrinterRequestModel(
-            name = if (innerPrinterModel.modelName==null) innerPrinterModel.printerName else innerPrinterModel.modelName,
+            name = if (innerPrinterModel.modelName == null) innerPrinterModel.printerName else innerPrinterModel.modelName,
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
             macAddress = innerPrinterModel.deviceModel?.macAddress,
-            modalName = if (innerPrinterModel.modelName==null) innerPrinterModel.printerName else innerPrinterModel.modelName,
+            modalName = if (innerPrinterModel.modelName == null) innerPrinterModel.printerName else innerPrinterModel.modelName,
             terminalIds = listOf(prefProvider.getValueInt(Constants.TERMINAL_ID, 1)),
             status = true,
             locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1),
@@ -6332,7 +6492,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         )
         EventBus.getDefault()
-            .post(MessageEvent("${Constants.LINE_BREAK_TAB} DashboardCategoryBoldPOS.kt_ setupInnerPrinterAttributes_createPrinter= ${Gson().toJson(createPrinter)}"))
+            .post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} DashboardCategoryBoldPOS.kt_ setupInnerPrinterAttributes_createPrinter= ${
+                        Gson().toJson(
+                            createPrinter
+                        )
+                    }"
+                )
+            )
         disableTouch()
         setCreatePrintersObserver()
         runOnUiThread(kotlinx.coroutines.Runnable {
@@ -6359,26 +6527,25 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     }
 
-    private fun disableTouch(){
+    private fun disableTouch() {
         try {
             runOnUiThread(kotlinx.coroutines.Runnable {
-            requireActivity().window.setFlags(
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-            );
+                requireActivity().window.setFlags(
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                );
             })
-        }catch (e:Exception)
-        {
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    private fun enableTouch(){
+    private fun enableTouch() {
         try {
             runOnUiThread(kotlinx.coroutines.Runnable {
-            requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             })
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }

@@ -91,7 +91,9 @@ import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
 import com.pays.pos.ui.fragments.payment.OrderCompleteFragment
+import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.runOnUiThread
+import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.landi.LPrint
 import com.pays.pos.utils.landi.LPrint.FONT_B
 import com.pays.pos.utils.landi.LPrint.printCenter
@@ -583,6 +585,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.btnPayNew.setOnClickListener {
             try {
 
+                binding.btnPayNew.isEnabled = false
+                binding.btnPayNew.visibility = View.INVISIBLE
 
                 dashboardViewModel.setTipAmount(0.0)
                 dashboardViewModel.customerGivenTip.value=false
@@ -1102,12 +1106,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                             bundle
                         )
                                       },
-                    1000)
+                    1500)
 
 
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                binding.btnPayNew.isEnabled = true
+                binding.btnPayNew.visible()
             }
         }
 
@@ -2397,7 +2403,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         e.printStackTrace()
                     }
                 },
-                1000)
+                1500)
 
     }
 
@@ -3879,7 +3885,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-               /* if (target.layoutPosition != 0 && dineInTableAdapter.getList()
+                if (target.layoutPosition != 0 && dineInTableAdapter.getList()
                         .get(viewHolder.layoutPosition).isHeader != 0
                 ) {
                     val oldPos = viewHolder.layoutPosition
@@ -3902,14 +3908,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 } else {
                     dineInCartItemMoved = false
                     return false
-                }*/
+                }
 
-                val oldPos = viewHolder.layoutPosition
+                /*val oldPos = viewHolder.layoutPosition
                 val newPos = target.layoutPosition
 
                 // Check if the target position is the 0th or the last item in the list
                 val itemCount = dineInTableAdapter.itemCount ?: 0
-                if (newPos == 0 || newPos == itemCount - 1) {
+                if (newPos == 0 ) {
                     return false
                 }
 
@@ -3930,7 +3936,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 } else {
                     dineInCartItemMoved = false
                     return false
-                }
+                }*/
 
             }
 
@@ -6648,7 +6654,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     lineBreak()
 
-                                    if (customerSettingModel.showRefundAmount) {
+                                    /*if (customerSettingModel.showRefundAmount) {
 
                                         if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
 
@@ -6664,7 +6670,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 ).toString()
                                             )
                                         }
-                                    }
+                                    }*/
 
 
                                     if (customerSettingModel.showTipSuggestion) {

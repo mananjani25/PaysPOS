@@ -583,7 +583,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                                     printCenter(
                                         "Employee End of Day Report",
-                                        fontSize = FONT_SIZE_3X,
+                                        fontSize = MEDIUM_SIZE,
                                         isBold = true,
                                         printOnNewLine = true
                                     )

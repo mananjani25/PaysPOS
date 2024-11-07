@@ -147,7 +147,6 @@ class CustomDisplay(
     var CardName = ""
     var EDCType = ""
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -158,6 +157,7 @@ class CustomDisplay(
         getCustomerList()
         observeServiceCharge()
         observeCashCardChange()
+        observePasscodeScreen()
         setupTaxAdapter()
         initPOSLink()
         initViews()
@@ -166,8 +166,47 @@ class CustomDisplay(
         initDiscountLiveData()
     }
 
+    public fun closeSecondaryDisplay() {
+        System.exit(0)
+    }
+
+    private fun observePasscodeScreen() {
+        dashBoardCategoryViewModel.passcodeScreenActive.observe(lifecycleOwner, object:Observer<Boolean>{
+            override fun onChanged(t: Boolean?) {
+                with(binding){
+                t?.let {
+                    if (it) {
+                        /*Passcode screen is active, show the splash screen with logo*/
+                        onLogOutOrClockOut(true)
+                    } else {
+                        /*Passcode screen is inactive, show the splash screen with sign up button*/
+                        onLogOutOrClockOut(false)
+                    }
+                }
+            }
+            }
+        })
+    }
+
     /*-------------Customer Loyalty---------------*/
     private fun initViews() {
+
+        lifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            if (dashBoardCategoryViewModel.allSplit().isEmpty()){
+                withContext(Dispatchers.Main){
+                    binding.apply {
+                        btnSignUpOrCheckInMain.visible()
+                    }
+                }
+            }else{
+                withContext(Dispatchers.Main) {
+                    binding.apply {
+                        btnSignUpOrCheckInMain.gone()
+                    }
+                }
+            }
+        }
+
         with(binding) {
 
             if (prefProvider.getValue(
@@ -193,12 +232,17 @@ class CustomDisplay(
                 imgBusiness?.gone()
             }
             if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isNotEmpty()) {
-                btnSignUpOrCheckIn?.text = "Change mobile number"
+                btnSignUpOrCheckIn?.text = resources.getString(R.string.change_mobile_number)
+                btnSignUpOrCheckInMain?.text = resources.getString(R.string.change_mobile_number)
                 tvMessage?.text = "Customer added successfully"
+            }else{
+                btnSignUpOrCheckIn?.text = resources.getString(R.string.sign_up_or_check_in)
+                btnSignUpOrCheckInMain?.text = resources.getString(R.string.sign_up_or_check_in)
             }
 
             btnSignUpOrCheckIn?.setOnSingleClickListener(object : View.OnClickListener {
                 override fun onClick(p0: View?) {
+                    tvPhoneNumber.text?.clear()
                     splashLayout.gone()
                     keypadLayout?.visible()
                 }
@@ -206,15 +250,24 @@ class CustomDisplay(
 
             btnSignUpOrCheckInMain?.setOnSingleClickListener(object : View.OnClickListener {
                 override fun onClick(p0: View?) {
-                    splashLayout.gone()
-                    keypadLayout?.visible()
+                    binding.apply {
+                        tvPhoneNumber.text?.clear()
+                        splashLayout.gone()
+                        keypadLayout?.visible()
+                    }
                 }
             })
 
             tvCancel?.setOnSingleClickListener(object : View.OnClickListener {
                 override fun onClick(p0: View?) {
-                    splashLayout.visible()
-                    keypadLayout?.gone()
+                    if (cartAdapter.cartList.isNotEmpty()){
+                        mainCartLayout.visible()
+                        splashLayout.gone()
+                        keypadLayout?.gone()
+                    }else{
+                        splashLayout.visible()
+                        keypadLayout?.gone()
+                    }
                 }
 
             })
@@ -302,12 +355,21 @@ class CustomDisplay(
 
                     var mobileNumber = tvPhoneNumber?.text.toString().trim().replace(Regex("[^0-9]"), "")
                     searchUserFromMobileNumber(mobileNumber)
-
+                    tvPhoneNumber?.text?.clear()
 //                    [{"id":2,"phone_number":"5555575575"}]
                 }
             })
 
 
+            dashBoardCategoryViewModel.changeCustDispSignInButtonTitle.observe(lifecycleOwner,object :Observer<String>{
+                override fun onChanged(t: String?) {
+                    t?.let {
+                        if (it.isNotEmpty()){
+                            btnSignUpOrCheckInMain.text=it
+                        }
+                    }
+                }
+            })
         }
     }
 
@@ -348,6 +410,7 @@ class CustomDisplay(
       /*  binding.tvMessage?.post {
             binding.tvMessage?.text="Loading..."
         }*/
+
         Handler(Looper.getMainLooper()).post(Runnable {
             binding.keypadLayout?.gone()
             binding.splashLayout?.gone()
@@ -375,15 +438,18 @@ class CustomDisplay(
         prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
         prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
         customer.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
+        /*This will click on the order type dynamically, only the variable name is clickOnTakeOut()*/
         dashBoardCategoryViewModel.clickOnTakeOut()
         if (dashBoardCategoryViewModel.currentCartItems.isNotEmpty()){
             dashBoardCategoryViewModel.callUpdateCartFooter(true)
         }
-        displayCustomer()
+        dashBoardCategoryViewModel.changeCustomerDispSignButtonTitle(resources.getString(R.string.change_mobile_number))
         EventBus.getDefault()
             .post(SyncCustomerEvent(true, customer.first_name + " " + customer.last_name))
         CoroutineScope(Dispatchers.Main).launch {
+            displayCustomer()
             binding.tvMessage?.text="Customer added successfully"
+            binding.btnSignUpOrCheckInMain.text=resources.getString(R.string.change_mobile_number)
             binding.txtCustomerName.apply { text = customer.first_name + " " + customer.last_name }
             binding.keypadLayout?.gone()
             binding.splashLayout?.gone()
@@ -416,8 +482,13 @@ class CustomDisplay(
                     Status.SUCCESS -> {
                         try {
                             ProgressUtils.dismissProgressDialog()
-                            resource.data?.get(0)?.let {
-                                binding.tvRewards?.text = getPreparedRewardStatement(it)
+                            run breaking@{
+                                resource.data?.forEach {
+                                    if (it.isEnable){
+                                        binding.tvRewards?.text = getPreparedRewardStatement(it)
+                                        return@breaking
+                                    }
+                                }
                             }
                         } catch (e: Exception) {
 //                            binding.btnSignUpOrCheckIn.gone()
@@ -434,7 +505,7 @@ class CustomDisplay(
         })
     }
 
-    private fun getPreparedRewardStatement(it: LoyaltyProgramsModel): CharSequence? {
+    private fun getPreparedRewardStatement(it: LoyaltyProgramsModel): CharSequence {
         var point = ""
         if (it.rewardPoint > 1) {
             point = "points"
@@ -442,7 +513,7 @@ class CustomDisplay(
             point = "point"
         }
 
-        return "${generalizeAmount(it.amount.toString())} ${point} on for every $${generalizeAmount(it.rewardPoint.toString())} spent"
+        return "${generalizeAmount(it.amount.toString())} ${point} for every $${generalizeAmount(it.rewardPoint.toString())} spent."
     }
 
 
@@ -877,24 +948,30 @@ class CustomDisplay(
 
         val name = prefProvider.getValue(Constants.CUSTOMER_NAME, "")
         if (name.isNotEmpty()) {
-            binding.txtCustomerName.visible()
-            binding.txtLoyaltyPointsLabel.visible()
+            CoroutineScope(Dispatchers.Main).launch {
+                binding.txtCustomerName.visible()
+                binding.txtLoyaltyPointsLabel.visible()
+            }
+
             if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
-                binding.tvLoyaltyBalance.visible()
-                binding.tvLoyaltyPoints.visible()
-                binding.tvLoyaltyBalance.text =
-                    "${context.resources.getString(R.string.applied_loyalty_balance)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount}"
-                binding.tvLoyaltyPoints.text =
-                    "${context.resources.getString(R.string.applied_loyalty_points)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+                CoroutineScope(Dispatchers.Main).launch {
+                    binding.tvLoyaltyBalance.visible()
+                    binding.tvLoyaltyPoints.visible()
+                    binding.tvLoyaltyBalance.text =
+                        "${context.resources.getString(R.string.applied_loyalty_balance)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount}"
+                    binding.tvLoyaltyPoints.text =
+                        "${context.resources.getString(R.string.applied_loyalty_points)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+                }
             } else {
                 /*binding.tvLoyaltyBalance.invisible()
                 binding.tvLoyaltyPoints.invisible()
                 */
-                /*-----------Customer Loyalty------------*/
-                binding.tvLoyaltyBalance.gone()
-                binding.tvLoyaltyPoints.gone()
-                /*-----------Customer Loyalty------------*/
-
+                CoroutineScope(Dispatchers.Main).launch {
+                    /*-----------Customer Loyalty------------*/
+                    binding.tvLoyaltyBalance.gone()
+                    binding.tvLoyaltyPoints.gone()
+                    /*-----------Customer Loyalty------------*/
+                }
             }
             CoroutineScope(Dispatchers.Main).launch {
                 binding.txtLoyaltyPointsLabel.text =
@@ -1030,7 +1107,7 @@ class CustomDisplay(
                 if (dashBoardCategoryViewModel.selectedCustomer!=null) {
                     txtEarnedLoyalty?.visible()
                     txtEarnedLoyalty?.post {
-                        if (dashBoardCategoryViewModel.selectedCustomer?.final_reward.toString()
+                        /*if (dashBoardCategoryViewModel.selectedCustomer?.final_reward.toString()
                                 .toInt()!=0){
                             txtEarnedLoyalty?.setText(
                                 "You have earned ${
@@ -1048,8 +1125,30 @@ class CustomDisplay(
                                                 .toString().toInt()).toString()
                                 } reward points"
                             )
-                        }
+                        }*/
 
+//                        if (dashBoardCategoryViewModel.selectedCustomer?.final_reward.toString().toInt()!=0){
+                        try {
+                            txtEarnedLoyalty?.setText(
+                                if (dashBoardCategoryViewModel.earnedLoyaltyPoints.value?.peekContent()
+                                        .toString().toInt() == 1
+                                ) {
+                                    "Your balance loyalty point is ${
+                                        (dashBoardCategoryViewModel.earnedLoyaltyPoints.value?.peekContent()
+                                            .toString().toInt()).toString()
+                                    }"
+                                } else {
+                                    "Your balance loyalty points are ${
+                                        (dashBoardCategoryViewModel.earnedLoyaltyPoints.value?.peekContent()
+                                            .toString().toInt()).toString()
+                                    }"
+                                }
+
+                            )
+//                        }
+                        }catch (e:Exception){
+
+                        }
                     }
                 }
             }catch (e:Exception){
@@ -1099,13 +1198,21 @@ class CustomDisplay(
         }
     }
 
-    fun onLogOutOrClockOut() {
+    fun onLogOutOrClockOut(value: Boolean) {
         binding.apply {
-            mainCartLayout.gone()
-            thankYouLayout.gone()
-            splashLayout.visible()
-            imgPaysSplash?.visible()
-            splashLoyalty?.gone()
+            if (value) {
+                mainCartLayout.gone()
+                thankYouLayout.gone()
+//            splashLayout.visible()
+                imgPaysSplash?.visible()
+                splashLoyalty?.gone()
+            }else{
+                mainCartLayout.gone()
+                thankYouLayout.gone()
+//            splashLayout.visible()
+                imgPaysSplash?.gone()
+                splashLoyalty?.visible()
+            }
         }
     }
 
