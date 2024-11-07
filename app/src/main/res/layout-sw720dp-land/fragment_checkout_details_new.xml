@@ -403,7 +403,7 @@
                                 android:background="@drawable/background_txt_selector"
                                 android:gravity="center_vertical|center_horizontal"
                                 android:paddingVertical="@dimen/_10sdp"
-                                android:visibility="gone">
+                                android:visibility="visible">
 
                                 <ImageView
                                     android:layout_width="wrap_content"

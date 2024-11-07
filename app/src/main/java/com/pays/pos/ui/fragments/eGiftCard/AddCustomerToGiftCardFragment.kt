@@ -3,6 +3,7 @@ package com.pays.pos.ui.fragments.eGiftCard
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.Gson
 import com.pays.pos.R
 import com.pays.pos.data.entities.CartModel
 import com.pays.pos.data.entities.TbCartItem
@@ -27,10 +29,13 @@ import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.callback.ItemCallback
 import com.pays.pos.utils.callback.PaginationScrollListener
+import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
@@ -44,6 +49,7 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
     private val viewModel by viewModels<CustomerListViewModel>()
     private lateinit var adapter: AssignCustomerToOrderAdapter
     private var customerListIDs: ArrayList<Int> = arrayListOf()
+    private val TAG = "AddCustomerToGiftCardFragment"
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -213,25 +219,33 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
             orderTypeName = Constants.GIFT_CARD
             locationId = prefProvider.getLocationId()
         }
+        Log.e(TAG,"checkItems: ${Gson().toJson(tbItem)}")
 
         dashboardViewModel.addCart(cm)
         dashboardViewModel.addItemToCartItems(tbItem)
 
-        val bundle = Bundle()
-        bundle.putBoolean("update", true)
-        bundle.putDouble("totalPrice", totalPrice)
-        bundle.putDouble("finalprice", totalPrice)
-        bundle.putDouble("cashDiscountSurcharge", 0.0)
-        bundle.putDouble("subTotalPrice", totalPrice)
-        bundle.putDouble("totalTax", 0.0)
-        bundle.putDouble("totalDiscount", 0.0)
-        bundle.putDouble("totalServiceCharge", 0.0)
-        bundle.putParcelable("cartList", cm)
 
-        findNavController().navigate(
-            R.id.action_addCustomerToGiftCard_to_paymentBoldPosFragment,
-            bundle
-        )
+        CoroutineScope(Dispatchers.IO).launch {
+            delay(100)
+
+            runOnUiThread(kotlinx.coroutines.Runnable {
+            val bundle = Bundle()
+            bundle.putBoolean("update", true)
+            bundle.putDouble("totalPrice", totalPrice)
+            bundle.putDouble("finalprice", totalPrice)
+            bundle.putDouble("cashDiscountSurcharge", 0.0)
+            bundle.putDouble("subTotalPrice", totalPrice)
+            bundle.putDouble("totalTax", 0.0)
+            bundle.putDouble("totalDiscount", 0.0)
+            bundle.putDouble("totalServiceCharge", 0.0)
+            bundle.putParcelable("cartList", cm)
+
+            findNavController().navigate(
+                R.id.action_addCustomerToGiftCard_to_paymentBoldPosFragment,
+                bundle
+            )
+            })
+        }
     }
 
     private fun loadCustomerLocalList(currentPage: Int) {

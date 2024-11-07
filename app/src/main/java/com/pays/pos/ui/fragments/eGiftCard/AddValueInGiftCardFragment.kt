@@ -1,12 +1,14 @@
 package com.pays.pos.ui.fragments.eGiftCard
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.google.gson.Gson
 import com.pays.pos.R
 import com.pays.pos.data.entities.CartModel
 import com.pays.pos.data.entities.TbCartItem
@@ -28,6 +30,7 @@ class AddValueInGiftCardFragment : Fragment() {
     @Inject
     lateinit var prefProvider: PrefProvider
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val TAG = "AddValueInGiftCardFragment"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -229,7 +232,9 @@ class AddValueInGiftCardFragment : Fragment() {
             orderTypeName = Constants.GIFT_CARD
         }
 
+        Log.e(TAG,"tbItem:  ${Gson().toJson(tbItem)}" )
         dashboardViewModel.addCart(cm)
+
         dashboardViewModel.addItemToCartItems(tbItem)
 
         val bundle = Bundle()
