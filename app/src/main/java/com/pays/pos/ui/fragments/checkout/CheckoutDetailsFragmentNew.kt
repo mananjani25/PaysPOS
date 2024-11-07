@@ -434,7 +434,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     it.alpha = 0f
                                 }
 
-                                binding.tvOther.invisible()
+//                                binding.tvOther.invisible()
                             }
                         }
 
