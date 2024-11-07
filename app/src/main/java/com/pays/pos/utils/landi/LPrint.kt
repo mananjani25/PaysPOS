@@ -238,6 +238,49 @@ final object LPrint {
 
     }
 
+    fun cardDetailsInner(cardName: String, cardType: String, cardNumber: String, font: String) {
+
+        for (i in 1..3) {
+
+            when (i) {
+                /*1 -> {
+                    if (!cardName.isNullOrBlank()) {
+                        val strCardName = padLine(
+                            "",
+                            cardName,
+                            if (font == Constants.LARGE) 23 else 48
+                        ).toString()
+                        normalText(strCardName)
+
+                    }
+                }*/
+
+                2 -> {
+                    if (!cardType.isNullOrBlank()) {
+                        val strCardType = padLine(
+                            "",
+                            cardType,
+                            if (font == Constants.LARGE) 23 else 48
+                        ).toString()
+                        print(strCardType)
+                    }
+
+                }
+
+                3 -> {
+                    if (!cardNumber.isNullOrBlank()) {
+                        val strCardNumber = padLine(
+                            "",
+                            cardNumber,
+                            if (font == Constants.LARGE) 23 else 48
+                        ).toString()
+                        print(strCardNumber)
+                    }
+                }
+            }
+        }
+    }
+
 
     public fun printQRCode(writer: OutputStream, data: String,align :ByteArray= CENTER_ALIGN) {
         try {
