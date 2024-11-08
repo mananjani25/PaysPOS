@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
@@ -293,6 +294,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         setUpdateCartFooterObservable()
         return binding.root
     }
+
 
     private fun setUpdateCartFooterObservable() {
         viewModel.updateCartFooterObservable.observe(viewLifecycleOwner,
@@ -2531,6 +2533,18 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             binding.relativeLoylatyPoints.visibility = View.GONE
                             binding.lblLoyaltyPoints.visibility = View.GONE
                             binding.lblLoyaltyBalance.visibility = View.GONE
+                        }
+                        if (findNavController().currentDestination!!.label!!.contains("Dashboard", ignoreCase = true)){
+                            isFromPayment=false
+                            arguments?.apply {
+                                putBoolean("isFromPayment",false)
+                            }
+
+//                                updateCartFooter(it)
+                            /*Refreshing the current fragment*/
+                            val id = findNavController().currentDestination?.id
+                            findNavController().popBackStack(id!!,true)
+                            findNavController().navigate(id)
                         }
                     } else {
                         binding.liinearInfoLayout.layoutParams.height =
