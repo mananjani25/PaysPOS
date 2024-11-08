@@ -1136,12 +1136,12 @@ class CustomDisplay(
                                     "Your balance loyalty point is ${
                                         (dashBoardCategoryViewModel.earnedLoyaltyPoints.value?.peekContent()
                                             .toString().toInt()).toString()
-                                    }"
+                                    }."
                                 } else {
                                     "Your balance loyalty points are ${
                                         (dashBoardCategoryViewModel.earnedLoyaltyPoints.value?.peekContent()
                                             .toString().toInt()).toString()
-                                    }"
+                                    }."
                                 }
 
                             )
