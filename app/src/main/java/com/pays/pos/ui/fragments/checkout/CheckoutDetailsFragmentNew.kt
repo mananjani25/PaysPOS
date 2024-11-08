@@ -4920,8 +4920,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 CoroutineScope(Dispatchers.IO).async {
                     dashboardViewModel.getOrderTypeBackupList(prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1))?.let {
                         myRequest.order.apply {
-                            orderTypeId=(it.get(0).orderType) ?: -1
-                            orderTypeName=(it.get(0).orderTypeName) ?: ""
+                            if (it.isNotEmpty()) {
+                                orderTypeId = (it.get(0).orderType) ?: -1
+                                orderTypeName = (it.get(0).orderTypeName) ?: ""
+                            }else{
+                                if (dashboardViewModel.cartModel!=null) {
+                                    orderTypeId = dashboardViewModel.cartModel!!.orderTypeId ?: -1
+                                    orderTypeName = dashboardViewModel.cartModel!!.orderTypeName ?: ""
+                                }else{
+                                    //TODO: fetch the order type name from the cart fragment, fetch the orderType from local database with respect to the order type name of cart fragment
+                                }
+                            }
                         }
                     }
                 }.await()
