@@ -19204,7 +19204,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 PrintSunmiUtils.normalText(
                     //"ReceiptID:" + giftCardReceiptModel?.gift_card?.id
-                    "ReceiptID:" + giftCardReceiptModel?.gift_card?.payments?.get(
+                    "ReceiptID: " + giftCardReceiptModel?.gift_card?.payments?.get(
                         giftCardReceiptModel?.gift_card?.payments?.size?.minus(1) ?: 0
                     )?.offline_id
                 )
@@ -19215,7 +19215,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 if (customerSettingModel.showOrderTime) {
                     PrintSunmiUtils.normalText(
-                        "Order Time:" + getReceiptFormatDateFromUTCServer(
+                        "Order Time: " + getReceiptFormatDateFromUTCServer(
                             requireContext(),
                             giftCardReceiptModel?.gift_card?.payments?.get(
                                 giftCardReceiptModel?.gift_card?.payments?.size?.minus(1) ?: 0
@@ -19227,7 +19227,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (customerSettingModel.showPrintTime) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         PrintSunmiUtils.normalText(
-                            "Print Time:" + getCurrentTimeFromTimeZone(
+                            "Print Time: " + getCurrentTimeFromTimeZone(
                                 requireContext(),
                                 MethodUtils.formatted()
                             )
@@ -19238,7 +19238,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 PrintSunmiUtils.normalText(
                     //"ReceiptID:" + giftCardReceiptModel?.gift_card?.id
-                    "ReceiptID:" + giftCardReceiptModel?.gift_card?.payments?.get(
+                    "ReceiptID: " + giftCardReceiptModel?.gift_card?.payments?.get(
                         giftCardReceiptModel?.gift_card?.payments?.size?.minus(1) ?: 0
                     )?.offline_id
                 )
@@ -19247,7 +19247,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     val empName = padLine(
                         if (customerSettingModel.showTeam) {
-                            "Employee:" + giftCardReceiptModel?.gift_card?.employee?.name
+                            "Employee: " + giftCardReceiptModel?.gift_card?.employee?.name
                         } else {
                             ""
                         },
@@ -19265,7 +19265,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     val orderTime = padLine(
                         if (customerSettingModel.showOrderTime) {
-                            "Order Time:" + getReceiptFormatDateFromUTCServer(
+                            "Order Time: " + getReceiptFormatDateFromUTCServer(
                                 requireContext(),
                                 giftCardReceiptModel?.gift_card?.payments?.get(
                                     giftCardReceiptModel?.gift_card?.payments?.size?.minus(
@@ -19292,7 +19292,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         val printTime = padLine(
                             if (customerSettingModel.showPrintTime) {
-                                "Print Time:" + getCurrentTimeFromTimeZone(
+                                "Print Time: " + getCurrentTimeFromTimeZone(
                                     requireContext(),
                                     MethodUtils.formatted()
                                 )
