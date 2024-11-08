@@ -7284,11 +7284,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             padLine(
                                                 "Tips",
                                                 "$" +
-                                                    MethodUtils.roundOffAmountString(
-                                                        tipAmount
-                                                    )
+                                                        MethodUtils.roundOffAmountString(
+                                                            tipAmount
+                                                        )
                                                 ,
-                                              48
+                                                48
                                             ).toString().toByteArray()
 
                                         outputStream.write(tipsToPrint)
@@ -7305,10 +7305,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                                     var totalAmt = order?.subTotal ?: 0.0
-                                        totalAmt += serviceCharge
-                                        totalAmt += order?.totalTaxAmount ?: 0.0
+                                    totalAmt += serviceCharge
+                                    totalAmt += order?.totalTaxAmount ?: 0.0
 
-                                        totalAmt = MethodUtils.roundOffAmountDouble(totalAmt)
+                                    totalAmt = MethodUtils.roundOffAmountDouble(totalAmt)
 
 
 
@@ -19316,6 +19316,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.addHorizontalInner()
             }
 
+            SunmiPrintHelper.getInstance().lineWrap(1)
+
             val giftCardList: MutableList<CreateOrderResponse.Data.Order.OrderItem> =
                 mutableListOf()
 
@@ -19339,11 +19341,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             )
 
-            addOrderItemsInner(
-                giftCardList,
-                false,
-                customerSettingModel.fonts
-            )
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+            ){
+                addOrderItemsInnerNew(
+                    giftCardList,
+                    false,
+                    customerSettingModel.fonts
+                )
+            } else{
+                addOrderItemsInner(
+                    giftCardList,
+                    false,
+                    customerSettingModel.fonts
+                )
+            }
             SunmiPrintHelper.getInstance().lineWrap(1)
 
             val str5 = padLine(
@@ -19351,7 +19363,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 "$${giftCardAmount.toPrecision(2)}",
                 if (customerSettingModel.fonts == LARGE) 23 else 48
             ).toString()
-            PrintSunmiUtils.boldText(str5)
+
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+            ){
+                PrintSunmiUtils.boldTextNew(str5)
+            } else {
+                PrintSunmiUtils.boldText(str5)
+            }
+
 
             val str6 = padLine(
                 "Paid Amount",
@@ -19359,7 +19379,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     paidAmount
                 ), if (customerSettingModel.fonts == LARGE) 23 else 48
             ).toString()
-            PrintSunmiUtils.boldText(str6)
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+            ){
+                PrintSunmiUtils.boldTextNew(str6)
+            } else {
+                PrintSunmiUtils.boldText(str6)
+            }
 
             if (customerSettingModel.showRefundAmount) {
 
@@ -19369,7 +19395,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString()
 
-                PrintSunmiUtils.boldText(str7)
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                ){
+                    PrintSunmiUtils.boldTextNew(str7)
+                } else {
+                    PrintSunmiUtils.boldText(str7)
+                }
                 SunmiPrintHelper.getInstance().lineWrap(1)
 
             }
@@ -19380,14 +19412,28 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     ?.let { giftCardReceiptModel?.gift_card?.payments?.get(it)?.id },
                 if (customerSettingModel.fonts == LARGE) 23 else 48
             ).toString()
-            PrintSunmiUtils.boldText(str10)
+
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+            ){
+                PrintSunmiUtils.boldTextNew(str10)
+            } else {
+                PrintSunmiUtils.boldText(str10)
+            }
 
             val str11 = padLine(
                 "Transaction Type",
                 giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.payment_type,
                 if (customerSettingModel.fonts == LARGE) 23 else 48
             ).toString()
-            PrintSunmiUtils.boldText(str11)
+
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+            ){
+                PrintSunmiUtils.boldTextNew(str11)
+            } else {
+                PrintSunmiUtils.boldText(str11)
+            }
 
             if (giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.payment_type?.lowercase() == "Card".lowercase()) {
 
@@ -19402,7 +19448,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 val str14 =
                     giftCardReceiptModel?.gift_card?.payments?.get(giftCardReceiptModel?.gift_card?.payments?.size!! - 1)?.card_number.toString()
 
-                PrintSunmiUtils.cardDetailsInner(str12, str13, str14, customerSettingModel.fonts)
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                ){
+                    PrintSunmiUtils.cardDetailsInnerNew(str12, str13, str14, customerSettingModel.fonts)
+                } else {
+                    PrintSunmiUtils.cardDetailsInner(
+                        str12,
+                        str13,
+                        str14,
+                        customerSettingModel.fonts
+                    )
+                }
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
@@ -19413,9 +19470,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     SunmiPrintHelper.getInstance().lineWrap(1)
                     PrintSunmiUtils.customerDetailsInner(false, sunmiFrameworkVersion)
 
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+
                     if (customerSettingModel.showCustomerName) {
 
-                        PrintSunmiUtils.normalText(giftCardReceiptModel?.gift_card?.customer?.firstName + " " + giftCardReceiptModel?.gift_card?.customer?.lastName)
+                        if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                                ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                        ){
+                            PrintSunmiUtils.normalTextNew(giftCardReceiptModel?.gift_card?.customer?.firstName + " " + giftCardReceiptModel?.gift_card?.customer?.lastName)
+                        } else {
+                            PrintSunmiUtils.normalText(giftCardReceiptModel?.gift_card?.customer?.firstName + " " + giftCardReceiptModel?.gift_card?.customer?.lastName)
+                        }
 
                     }
                     if (customerSettingModel.showCustomerPhone) {
@@ -19430,13 +19495,26 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         it
                                     )?.phoneNumber
                                 }
-                            PrintSunmiUtils.normalText(
-                                padLine(
-                                    phone?.let { MethodUtils.formatPhoneNumber(it) },
-                                    "",
-                                    if (customerSettingModel.fonts == LARGE) 23 else 48
-                                ).toString()
-                            )
+
+                            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                            ){
+                                PrintSunmiUtils.normalTextNew(
+                                    padLine(
+                                        phone?.let { MethodUtils.formatPhoneNumber(it) },
+                                        "",
+                                        if (customerSettingModel.fonts == LARGE) 23 else 48
+                                    ).toString()
+                                )
+                            } else {
+                                PrintSunmiUtils.normalText(
+                                    padLine(
+                                        phone?.let { MethodUtils.formatPhoneNumber(it) },
+                                        "",
+                                        if (customerSettingModel.fonts == LARGE) 23 else 48
+                                    ).toString()
+                                )
+                            }
 
                         }
 
@@ -19453,13 +19531,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             ignoreCase = true
                                         )
                                     ) {
-                                        PrintSunmiUtils.normalText(
-                                            padLine(
-                                                it.fullAddress,
-                                                "",
-                                                if (customerSettingModel.fonts == LARGE) 23 else 48
-                                            ).toString()
-                                        )
+                                        if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                                                ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                                        ){
+                                            PrintSunmiUtils.normalTextNew(
+                                                padLine(
+                                                    it.fullAddress,
+                                                    "",
+                                                    if (customerSettingModel.fonts == LARGE) 23 else 48
+                                                ).toString()
+                                            )
+                                        } else {
+                                            PrintSunmiUtils.normalText(
+                                                padLine(
+                                                    it.fullAddress,
+                                                    "",
+                                                    if (customerSettingModel.fonts == LARGE) 23 else 48
+                                                ).toString()
+                                            )
+                                        }
                                     }
                                 }
 
@@ -19473,10 +19563,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             SunmiPrintHelper.getInstance().lineWrap(1)
 
             SunmiPrintHelper.getInstance().lineWrap(2)
-            if (customerSettingModel.fonts == Constants.LARGE) {
-                PrintSunmiUtils.boldText("Customer Signature ____")
+
+            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+            ){
+                if (customerSettingModel.fonts == Constants.LARGE) {
+                    PrintSunmiUtils.boldTextNew("Customer Signature ____")
+                } else {
+                    PrintSunmiUtils.boldTextNew("Customer Signature           __________________")
+                }
             } else {
-                PrintSunmiUtils.boldText("Customer Signature           __________________")
+                if (customerSettingModel.fonts == Constants.LARGE) {
+                    PrintSunmiUtils.boldText("Customer Signature ____")
+                } else {
+                    PrintSunmiUtils.boldText("Customer Signature           __________________")
+                }
             }
 
             SunmiPrintHelper.getInstance().lineWrap(2)
