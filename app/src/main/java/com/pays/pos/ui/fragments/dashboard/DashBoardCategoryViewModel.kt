@@ -584,7 +584,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             pageSize = 12, enablePlaceholders = false, initialLoadSize = 12
         )
     ) {
-        appDatabase.itemDao().getItemListByCategory(id)
+            appDatabase.itemDao().getItemListByCategory(id)
 
     }.flow.cachedIn(viewModelScope)
 /* The above .cachedIn(viewModelScope) is added by Rahul to solve the, Attempt to collect twice from pageEventFlow issue. */

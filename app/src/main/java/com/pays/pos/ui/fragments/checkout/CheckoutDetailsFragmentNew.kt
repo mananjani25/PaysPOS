@@ -825,6 +825,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         paymentviewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+                runOnUiThread(Runnable {
+                    dismissProgressDialog()
+                })
                 LogUtil.logE(TAG, "receiptData: ${Gson().toJson(it.data)}")
                 dashboardViewModel.redeemLoyaltyInfo = RedeemLoyaltyInfo()
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
@@ -1083,6 +1086,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         paymentviewModel.transactionErrorText.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+                runOnUiThread(Runnable {
+                    dismissProgressDialog()
+                })
                 prefProvider.setValueboolean(IS_PAX_PAYMENT_FAILED, true)
                 AlertUtils.showCustomAlert(
                     requireContext(),
@@ -1450,6 +1456,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         giftCardViewModel.addValueInGiftCardData.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+
+                runOnUiThread(object:java.lang.Runnable{
+                    override fun run() {
+                        dismissProgressDialog()
+                    }
+                })
                 if (it.data != null) {
                     Log.d(TAG, "observeData: SellGiftCardResponse = $it")
                     LogUtil.logE(TAG, "receiptData: ${Gson().toJson(it.data)}")
@@ -5326,6 +5338,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun sellGiftCardUsingCash() {
         paymentType = "Cash"
+        if (cartList==null){
+            runBlocking {
+                lifecycleScope.async(Dispatchers.IO){
+                    cartList=dashboardViewModel.getAllCartModels().get(0)
+                }.await()
+            }
+        }
         val myRequest = cartList?.let {
             giftCardViewModel.createSellGiftCardRequestUsingCash()
         }
@@ -5346,6 +5365,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun addValueInGiftCardUsingCash() {
         paymentType = "Cash"
+        if (cartList==null){
+            runBlocking {
+                lifecycleScope.async(Dispatchers.IO){
+                    cartList=dashboardViewModel.getAllCartModels().get(0)
+                }.await()
+            }
+        }
         val myRequest = cartList?.let {
             giftCardViewModel.createAddValueInGiftCardRequestUsingCash()
         }
@@ -5356,6 +5382,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun addValueInGiftCardUsingCard() {
         paymentType = "Card"
+        if (cartList==null){
+            runBlocking {
+                lifecycleScope.async(Dispatchers.IO){
+                    cartList=dashboardViewModel.getAllCartModels().get(0)
+                }.await()
+            }
+        }
         val myRequest = cartList?.let {
             giftCardViewModel.createAddValueInGiftCardRequestUsingCard()
         }
