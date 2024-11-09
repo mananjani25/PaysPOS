@@ -2638,6 +2638,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
                 val bundleVal = Bundle().apply {
                     putDouble("totalprice", ((paymentAmount)))
+                    putDouble("amountToDisplay", ((paymentAmount)))
                 }
                 findNavController().navigate(
                     R.id.action_paymentBoldPosFragment_to_customAmountFragment,
