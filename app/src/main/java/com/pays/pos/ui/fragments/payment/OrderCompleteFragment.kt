@@ -737,6 +737,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             paymentType = requireArguments().getString("paymentType", "")
             dis_charge_value = requireArguments().getDouble("dis_charge_value", 0.0)
 
+            paymentType.let {
+                binding.txtTitleCash.text = it
+            }
+
         }
 
         /*Added By Rahul */
@@ -1651,6 +1655,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.txtRemainingAmountLabel.text = "Remaining Amount"
             }
         }
+//        else if (giftCardReceiptModel?.gift_card != null) {
+//            giftCardReceiptModel?.gift_card?.let { item ->
+//                item.payments.forEach {
+//                    paymentTypeTitle?.append(it.payment_type + ", ")
+//                }
+//            }
+//            Log.v("TRACKING::", "${paymentTypeTitle}")
+//            paymentTypeTitle?.let {
+//                binding.txtTitleCash.text = it.deleteCharAt(it.length - 2)
+//                binding.txtRemainingAmountLabel.text = "Remaining Amount"
+//            }
+//        }
+
         Log.v("TRACKING::", "END")
 
     }
