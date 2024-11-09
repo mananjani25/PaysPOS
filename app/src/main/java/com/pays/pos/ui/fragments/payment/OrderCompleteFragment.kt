@@ -740,8 +740,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             paymentType.let {
                 binding.txtTitleCash.text = it
             }
-
-
         }
 
         /*Added By Rahul */
@@ -1655,32 +1653,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.txtTitleCash.text = it.deleteCharAt(it.length - 2)
                 binding.txtRemainingAmountLabel.text = "Remaining Amount"
             }
-        } else if(giftCardReceiptModel?.gift_card != null){
-            giftCardReceiptModel?.gift_card?.let { item ->
-                item.payments.forEach {
-                    paymentTypeTitle?.append(it.payment_type + ", ")
-                }
-            }
-
-            Log.v("TRACKING::", "${paymentTypeTitle}")
-            paymentTypeTitle?.let {
-                binding.txtTitleCash.text = it.deleteCharAt(it.length - 2)
-                binding.txtRemainingAmountLabel.text = "Remaining Amount"
-            }
         }
-//        else if (giftCardReceiptModel?.gift_card != null) {
-//            giftCardReceiptModel?.gift_card?.let { item ->
-//                item.payments.forEach {
-//                    paymentTypeTitle?.append(it.payment_type + ", ")
-//                }
-//            }
-//            Log.v("TRACKING::", "${paymentTypeTitle}")
-//            paymentTypeTitle?.let {
-//                binding.txtTitleCash.text = it.deleteCharAt(it.length - 2)
-//                binding.txtRemainingAmountLabel.text = "Remaining Amount"
-//            }
-//        }
-
         Log.v("TRACKING::", "END")
 
     }
