@@ -2637,6 +2637,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
                 paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
                 val bundleVal = Bundle().apply {
+                    putDouble("totalprice", ((paymentAmount)))
                     putDouble("amountToDisplay", ((paymentAmount)))
                 }
                 findNavController().navigate(
