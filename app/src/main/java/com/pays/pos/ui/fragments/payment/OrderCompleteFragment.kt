@@ -13664,6 +13664,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     ignoreCase = true
                 )))
             ) {
+                EventBus.getDefault().post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_start"
+                    )
+                )
                 settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
                 printer = StarPrinter(settings, requireContext())
 
@@ -13683,6 +13688,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             val builder = StarXpandCommandBuilder()
 
                             var printerBuilder = PrinterBuilder()
+
+                            EventBus.getDefault().post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing GlobalScope"
+                                )
+                            )
 
                             with(printerBuilder) {
                                 styleInternationalCharacter(InternationalCharacterType.Usa)
@@ -14132,9 +14143,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             printer.printAsync(commands).await()
 
 
-
+                            EventBus.getDefault().post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_ success"
+                                )
+                            )
                             Log.d("Printing", "Success")
                         } catch (e: Exception) {
+                            EventBus.getDefault().post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing exception -> ${e}"
+                                )
+                            )
                             Log.d("Printing", "Error: ${e}")
                         } finally {
                             printer.closeAsync().await()
