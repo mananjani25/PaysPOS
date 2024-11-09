@@ -34,7 +34,6 @@
                 android:ellipsize="end"
                 android:paddingVertical="@dimen/_5sdp"
                 android:singleLine="true"
-                android:text="Customer name"
                 android:textColor="@color/btnColorDark"
                 android:textSize="@dimen/_6mdpi"
                 android:textStyle="bold"
