@@ -4928,7 +4928,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     orderTypeId = dashboardViewModel.cartModel!!.orderTypeId ?: -1
                                     orderTypeName = dashboardViewModel.cartModel!!.orderTypeName ?: ""
                                 }else{
-                                    //TODO: fetch the order type name from the cart fragment, fetch the orderType from local database with respect to the order type name of cart fragment
+//                                  Fetch the order type name from the cart fragment, fetch the orderType from local database with respect to the order type name of cart fragment
+                                    var orderType=prefProvider.getValue(ORDER_TYPE, "")
+                                    dashboardViewModel.getOrderTypes.value?.data?.filter { it.orderType.equals(orderType) }?.let {
+                                        orderTypeId = it.first().id ?: -1
+                                        orderTypeName = it.first().orderType ?: ""
+                                    }
+
                                 }
                             }
                         }
