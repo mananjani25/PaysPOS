@@ -741,6 +741,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.txtTitleCash.text = it
             }
 
+
         }
 
         /*Added By Rahul */
