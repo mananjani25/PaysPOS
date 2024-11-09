@@ -43,6 +43,7 @@
                 android:textColor="@color/btnColorDark"
                 android:textSize="@dimen/_6mdpi"
                 android:textStyle="bold"
+                android:text="Customer name"
                 app:layout_constraintStart_toStartOf="parent"
                 tools:text="Customer Name" />
 
