@@ -3487,25 +3487,29 @@ fun addOrdersForKitchenDineIn(
     listItemWithGuest: HashMap<String, ArrayList<TbCartItem>> = hashMapOf()
 ) {
 
-    listItemWithGuest.forEach {
-
-        SunmiPrinterApi.getInstance()
-            .printText(addHorizontalKitchenLineSunmi24(PrintSunmiUtils.fontSize))
-        SunmiPrinterApi.getInstance().enableUnderline(false)
-        SunmiPrinterApi.getInstance().enableBold(false)
-
-        SunmiPrinterApi.getInstance().setAlignMode(0)
-        SunmiPrinterApi.getInstance()
-            .printText(it.key + "\n")
-
-        SunmiPrinterApi.getInstance()
-            .printText(addHorizontalKitchenLineSunmi24(PrintSunmiUtils.fontSize))
-        SunmiPrinterApi.getInstance().lineWrap(1)
-
-        it.value.forEach { obj ->
+    listItemWithGuest.forEach { guest ->
+        var isGuestNamePrinted = false
+        guest.value.forEach { obj ->
 
             printerCat?.forEach {
                 if (it.id == obj.categoryId && it.printerEnable && it.categoryActive) {
+
+                    if(!isGuestNamePrinted) {
+                        SunmiPrinterApi.getInstance()
+                            .printText(addHorizontalKitchenLineSunmi24(PrintSunmiUtils.fontSize))
+                        SunmiPrinterApi.getInstance().enableUnderline(false)
+                        SunmiPrinterApi.getInstance().enableBold(false)
+
+                        SunmiPrinterApi.getInstance().setAlignMode(0)
+                        SunmiPrinterApi.getInstance()
+                            .printText(guest.key + "\n")
+
+                        SunmiPrinterApi.getInstance()
+                            .printText(addHorizontalKitchenLineSunmi24(PrintSunmiUtils.fontSize))
+                        SunmiPrinterApi.getInstance().lineWrap(1)
+
+                        isGuestNamePrinted = true
+                    }
 
                     PrintSunmiUtils.orderTime(obj.itemQuantity.toString() + " " + obj.name.uppercase())
 

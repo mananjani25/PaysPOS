@@ -2448,8 +2448,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 binding.txtTotal.text =
                     MethodUtils.roundOffAmount(viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge)
 
+                Log.e("Dine in","1 BEFORE DATA ALREADY UPDATED ${viewModel.totalPriceUpdated.value} = sub = ${viewModel.subTotalPrice} , tax = ${viewModel.totalTax}, service charges = ${viewModel.totalServiceCharge}\"")
                 viewModel.totalPriceUpdated.value =
                     viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge
+                Log.e("Dine in","2 DATA ALREADY UPDATED CART ${viewModel.totalPriceUpdated.value} = sub = ${ viewModel.subTotalPrice} , tax = ${viewModel.totalTax}, service charges = ${viewModel.totalServiceCharge}")
 
                 Log.e(
                     "Service charges",

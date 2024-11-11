@@ -1097,7 +1097,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     getOrderDetailsResponse?.orderTypeName ?: DINE_IN
                 )
 
+                prefProvider.setValue(
+                    Constants.WHOLE_AMOUNT,
+                    "0.0"
+                )
 
+                    val whole_ = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
+                Log.e("Dine in","DATA WHOLE $whole_")
 
                 Handler().postDelayed({
                     if (findNavController().currentDestination?.id == R.id.dineInOrderTable)
@@ -9795,72 +9801,90 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.d("###17MAR23", "initKitchenPrinter: Called - Start")
         Log.d("###17MAR23", "ProgressShow: Called - Start")
 
-        if (data.name.startsWith(SUNMI_PRINTER, true)) {
+            if (data.name.startsWith(SUNMI_PRINTER, true)) {
 
-            SunmiPrinterApi.getInstance()
-                .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
+                SunmiPrinterApi.getInstance()
+                    .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
 
-            if (!SunmiPrinterApi.getInstance().isConnected) {
+                if (!SunmiPrinterApi.getInstance().isConnected) {
 //                runOnUiThread {
 //                    ProgressUtils.showProgressDialog(requireActivity())
 //                }
-                SunmiPrinterApi.getInstance()
-                    .connectPrinter(requireContext(), object : ConnectCallback {
+                    SunmiPrinterApi.getInstance()
+                        .connectPrinter(requireContext(), object : ConnectCallback {
 
-                        override fun onFound() {
-                            Log.d("###17MAR23", "SunmiPrinterFound: Called")
-                            println("onFound")
-                        }
+                            override fun onFound() {
+                                Log.d("###17MAR23", "SunmiPrinterFound: Called")
+                                println("onFound")
+                            }
 
-                        override fun onUnfound() {
-                            println("onUnfound")
-                            Log.d("###17MAR23", "SunmiPrinterUnfound: Called")
-                        }
+                            override fun onUnfound() {
+                                println("onUnfound")
+                                Log.d("###17MAR23", "SunmiPrinterUnfound: Called")
+                            }
 
-                        override fun onConnect() {
-                            println("onConnect")
-                            Log.d("###17MAR23", "SunmiPrinterConnect: Called")
-                            //ProgressUtils.dismissProgressDialog()
-                            //generateKitchenReceiptSunmi(data, type, item, listItemWithGuest)
+                            override fun onConnect() {
+                                println("onConnect")
+                                Log.d("###17MAR23", "SunmiPrinterConnect: Called")
+                                //ProgressUtils.dismissProgressDialog()
+                                //generateKitchenReceiptSunmi(data, type, item, listItemWithGuest)
 
-                            generateKitchenReceiptCommon(CommonPrinterTypes.SunmiCloudPrinter,data, type, item, listItemWithGuest)
+                                generateKitchenReceiptCommon(
+                                    CommonPrinterTypes.SunmiCloudPrinter,
+                                    data,
+                                    type,
+                                    item,
+                                    listItemWithGuest
+                                )
 
-                        }
+                            }
 
-                        override fun onDisconnect() {
-                            println("onDisconnect")
-                            Log.d("###17MAR23", "SunmiPrinterDisConnect: Called")
-                        }
+                            override fun onDisconnect() {
+                                println("onDisconnect")
+                                Log.d("###17MAR23", "SunmiPrinterDisConnect: Called")
+                            }
 
-                    })
-            } else {
+                        })
+                } else {
 
-                if (SunmiPrinterApi.getInstance().isConnected)
-                    generateKitchenReceiptCommon(CommonPrinterTypes.SunmiCloudPrinter,data, type, item, listItemWithGuest)
+                    if (SunmiPrinterApi.getInstance().isConnected)
+                        generateKitchenReceiptCommon(
+                            CommonPrinterTypes.SunmiCloudPrinter,
+                            data,
+                            type,
+                            item,
+                            listItemWithGuest
+                        )
                     //generateKitchenReceiptSunmi(data, type, item, listItemWithGuest)
-            }
+                }
 
-        } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
+            } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
-            SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-            viewLifecycleOwner.lifecycleScope.launch {
-                delay(100)
-                //setService(data, type, item, listItemWithGuest)
-                generateKitchenReceiptCommon(CommonPrinterTypes.SunmiInnerPrinter,data, type, item, listItemWithGuest)
+                SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+                viewLifecycleOwner.lifecycleScope.launch {
+                    delay(100)
+                    //setService(data, type, item, listItemWithGuest)
+                    generateKitchenReceiptCommon(
+                        CommonPrinterTypes.SunmiInnerPrinter,
+                        data,
+                        type,
+                        item,
+                        listItemWithGuest
+                    )
 
-            }
-        } else if(data.name.startsWith(LANDI_INNER_PRINTER,true)){
+                }
+            } else if (data.name.startsWith(LANDI_INNER_PRINTER, true)) {
 
-            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.lifecycleScope.launch {
 
-                checkBluetoothPermissions(object :
-                    OrderCompleteFragment.OnBluetoothPermissionGranted {
-                    override fun onPermissionsGranted() {
-                        GlobalScope.launch {
-                            LPrint.connectLandiInnerPrinter(data.macAddress)
-                                ?.let { outputStream ->
+                    checkBluetoothPermissions(object :
+                        OrderCompleteFragment.OnBluetoothPermissionGranted {
+                        override fun onPermissionsGranted() {
+                            GlobalScope.launch {
+                                LPrint.connectLandiInnerPrinter(data.macAddress)
+                                    ?.let { outputStream ->
 
-                                    LPrint.apply {
+                                        LPrint.apply {
 
 //                                        LPrint.printKitchenReceiptDineInLandi(
 //                                            requireContext(),
@@ -9874,30 +9898,36 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 //                                            getOrderDetailsResponse
 //                                        )
 
-                                        LPrint.setOutputStream(outputStream)
+                                            LPrint.setOutputStream(outputStream)
 
-                                        generateKitchenReceiptCommon(CommonPrinterTypes.LandiInnerPrinter,data, type, item, listItemWithGuest)
+                                            generateKitchenReceiptCommon(
+                                                CommonPrinterTypes.LandiInnerPrinter,
+                                                data,
+                                                type,
+                                                item,
+                                                listItemWithGuest
+                                            )
+                                        }
                                     }
-                                }
+                            }
                         }
-                    }
-                })
-            }
+                    })
+                }
 
 
-        }else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains(
-                "SP",
-                ignoreCase = true
-            )))
-        ) {
+            } else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains(
+                    "SP",
+                    ignoreCase = true
+                )))
+            ) {
 
-            //remove comments to work on star printer for dine in
-            try {
-                settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
-                printer = StarPrinter(settings, requireContext())
+                //remove comments to work on star printer for dine in
+                try {
+                    settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
+                    printer = StarPrinter(settings, requireContext())
 
 
-                /*viewLifecycleOwner.lifecycleScope.launch {
+                    /*viewLifecycleOwner.lifecycleScope.launch {
 
                         generateKitchenReceiptStarPrinter(
                             data,
@@ -9909,118 +9939,124 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         )
 
                 }*/
-                generateKitchenReceiptCommon(CommonPrinterTypes.TspStarPrinter,data, type, item, listItemWithGuest)
-            } catch (e:Exception){
-
-            } finally {
-                GlobalScope.launch {
-                    try {
-                        printer.closeAsync().await()
-                    } catch (e: Exception) {
-                    }
-            }
-        }
-
-        } else {
-
-            if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
-                var mPrinter = if (data.name.substring(0, 6).toString().lowercase()
-                        .contains("TM-m".lowercase())
-                ) {
-                    Log.e(TAG, "YesContains")
-                    Printer(
-                        Printer.TM_M30,
-                        Printer.MODEL_ANK, requireContext()
+                    generateKitchenReceiptCommon(
+                        CommonPrinterTypes.TspStarPrinter,
+                        data,
+                        type,
+                        item,
+                        listItemWithGuest
                     )
-                } else {
-                    Printer(
-                        Printer.TM_U220,
-                        Printer.MODEL_ANK, requireContext()
-                    )
+                } catch (e: Exception) {
 
-
-                }
-
-                mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
-
-                    Log.e(
-                        TAG,
-                        "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
-                    )
-                    if (printerStatusInfo.online == 1) {
+                } finally {
+                    GlobalScope.launch {
                         try {
-                            printer.disconnect()
-
-                        } catch (e: java.lang.Exception) {
-                            e.printStackTrace()
+                            printer.closeAsync().await()
+                        } catch (e: Exception) {
                         }
                     }
                 }
 
-                try {
-                    Log.e(TAG, "printerDataType:  ${data.printer_type}")
+            } else {
 
-                    var printerAdd =
-                        if (data.printer_type == Constants.BLUETOOTH) "BT:" + data.macAddress else "TCP:" + data.ipAddress
-                    mPrinter.connect(
-                        printerAdd,
-                        Printer.PARAM_DEFAULT
-                    )
-                    mPrinter.startMonitor()
+                if (!data.name.substring(0, 6).toString().lowercase()
+                        .contains("TM-m".lowercase())
+                ) {
+                    var mPrinter = if (data.name.substring(0, 6).toString().lowercase()
+                            .contains("TM-m".lowercase())
+                    ) {
+                        Log.e(TAG, "YesContains")
+                        Printer(
+                            Printer.TM_M30,
+                            Printer.MODEL_ANK, requireContext()
+                        )
+                    } else {
+                        Printer(
+                            Printer.TM_U220,
+                            Printer.MODEL_ANK, requireContext()
+                        )
 
-                    generateReceiptForU220(data, type, item, mPrinter)
 
-                } catch (e: java.lang.Exception) {
-                    e.printStackTrace()
-                }
-
-
-            }
-            else {
-
-                PrinterClass.setPrinter(null)
-                if (PrinterClass.getPrinter() == null) {
-                    var printer: Print? = Print(requireContext())
-                    if (printer != null) {
-//                printer.setStatusChangeEventCallback(this)
-//                printer.setBatteryStatusChangeEventCallback(this)
                     }
 
-                    val enabled = Print.FALSE
+                    mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
+
+                        Log.e(
+                            TAG,
+                            "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
+                        )
+                        if (printerStatusInfo.online == 1) {
+                            try {
+                                printer.disconnect()
+
+                            } catch (e: java.lang.Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+                    }
 
                     try {
+                        Log.e(TAG, "printerDataType:  ${data.printer_type}")
 
-                        printer?.openPrinter(
-                            if (data.printer_type == Constants.BLUETOOTH) {
-                                Print.DEVTYPE_BLUETOOTH
-                            } else {
-                                Print.DEVTYPE_TCP
-                            },
-                            data.ipAddress,
-                            enabled,
-                            1000
+                        var printerAdd =
+                            if (data.printer_type == Constants.BLUETOOTH) "BT:" + data.macAddress else "TCP:" + data.ipAddress
+                        mPrinter.connect(
+                            printerAdd,
+                            Printer.PARAM_DEFAULT
                         )
-                        // printer?.setStatusChangeEventCallback(this)
+                        mPrinter.startMonitor()
 
-                    } catch (e: Exception) {
-                        LogUtil.logE(TAG, "PrinterException: " + e.message)
-                        printer = null
-                        return
+                        generateReceiptForU220(data, type, item, mPrinter)
+
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
                     }
 
-                    if (printer != null) {
-                        PrinterClass.setPrinter(printer)
-
-                        generateKitchenReceipt(data, type, item, listItemWithGuest)
-
-                    }
 
                 } else {
-                    LogUtil.logE(TAG, "PrinterIsNotNull:")
+
+                    PrinterClass.setPrinter(null)
+                    if (PrinterClass.getPrinter() == null) {
+                        var printer: Print? = Print(requireContext())
+                        if (printer != null) {
+//                printer.setStatusChangeEventCallback(this)
+//                printer.setBatteryStatusChangeEventCallback(this)
+                        }
+
+                        val enabled = Print.FALSE
+
+                        try {
+
+                            printer?.openPrinter(
+                                if (data.printer_type == Constants.BLUETOOTH) {
+                                    Print.DEVTYPE_BLUETOOTH
+                                } else {
+                                    Print.DEVTYPE_TCP
+                                },
+                                data.ipAddress,
+                                enabled,
+                                1000
+                            )
+                            // printer?.setStatusChangeEventCallback(this)
+
+                        } catch (e: Exception) {
+                            LogUtil.logE(TAG, "PrinterException: " + e.message)
+                            printer = null
+                            return
+                        }
+
+                        if (printer != null) {
+                            PrinterClass.setPrinter(printer)
+
+                            generateKitchenReceipt(data, type, item, listItemWithGuest)
+
+                        }
+
+                    } else {
+                        LogUtil.logE(TAG, "PrinterIsNotNull:")
+                    }
                 }
             }
-        }
-
     }
 
     private fun generateKitchenReceiptForU220(
@@ -10460,14 +10496,15 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        super.onStop()
 
         prefProvider.setValue(
             Constants.WHOLE_AMOUNT,
-            ""
+            "0.0"
         )
     }
+
 
     var onBluetoothPermissionGranted: OrderCompleteFragment.OnBluetoothPermissionGranted? = null
 
@@ -12620,7 +12657,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
         for (i in 0 until list.size) {
 
-            if (list[i].isHeader == 0) {
+            if (list[i].isHeader == 0 && list[i].itemsCount > 0) {
                 if (i < list.size - 1 && list[i + 1].isHeader == 1) {
                     Log.e(TAG, "checkInsideEdge 1 ")
                     var listItemLocal: ArrayList<TbCartItem> = arrayListOf()
@@ -12933,12 +12970,22 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                 }
                             } else {
                                 if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
-                                    initKitchenPrinter(
-                                        kit,
-                                        Constants.KITCHEN,
-                                        listItem,
-                                        listItemWithGuest
-                                    )
+
+                                    if (checkItemsforPrinterDineIn(
+                                            listItem,
+                                            kit.printerCategories.toCollection(
+                                                arrayListOf()
+                                            )
+                                        )
+                                    ) {
+
+                                        initKitchenPrinter(
+                                            kit,
+                                            Constants.KITCHEN,
+                                            listItem,
+                                            listItemWithGuest
+                                        )
+                                    }
                                 }
 
 
