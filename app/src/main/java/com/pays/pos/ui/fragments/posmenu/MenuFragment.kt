@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -40,6 +41,7 @@ import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.disconnectSocket
 import com.pays.pos.utils.extensions.alert
 import com.pays.pos.utils.extensions.gone
+import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.getCustomerDisplay
 import com.pays.pos.utils.workmanager.UploadWorker2
@@ -331,11 +333,12 @@ class MenuFragment : DialogFragment() {
         binding.llLogout.setOnClickListener {
             alert("", "Are you sure you want to Logout?") {
                 this.positiveButton("Logout") {
-
+                    enableTouch()
 
                     dashboardViewModel.apply {
                         clearCartModelBackup()
                         deleteCart()
+                        loggingOut=true
                         currentCartItems = arrayListOf()
                         duplicateCurrentCartItem = arrayListOf()
                         val viewLifecycleOwner = view?.let { getViewLifecycleOwner() }
@@ -376,6 +379,7 @@ class MenuFragment : DialogFragment() {
         binding.header.llClockOut.setOnClickListener {
 //            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
 //                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+            enableTouch()
 
             alert(
                 getString(R.string.app_name),
@@ -429,6 +433,16 @@ class MenuFragment : DialogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
 
+    }
+
+    private fun enableTouch(){
+        try {
+            runOnUiThread(kotlinx.coroutines.Runnable {
+                requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            })
+        }catch (e:Exception){
+            e.printStackTrace()
+        }
     }
 
 

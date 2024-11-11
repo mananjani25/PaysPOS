@@ -53,11 +53,19 @@ class GiftCardViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+    private val _giftCardError = MutableLiveData<Event<String>>()
+    val giftCardError: LiveData<Event<String>> = _giftCardError
+
     private val _showProgressCash = MutableLiveData<Event<Boolean>>()
     val showProgressCash: LiveData<Event<Boolean>> = _showProgressCash
 
-    private var magensaResponse: String? = null
-    private var cardNumberLast4: String = ""
+    var magensaResponse: String? = null
+
+    var paxResponse: String = ""
+    var cardNumberLast4: String = ""
+    var cardNamePax: String = ""
+    var transactionID: String = ""
+
 
     fun setMagensaResponse(response: String?, cardNumber1: String) {
         magensaResponse = response
@@ -93,85 +101,104 @@ class GiftCardViewModel @Inject constructor(
             customer_id = prefProvider.getValueInt(Constants.CUSTOMER_ID, 0),
             location_id = prefProvider.getValueInt(Constants.LOCATION_ID, 1),
             password = "",
-            payment_attributes = paymentAttributes)
+            payment_attributes = paymentAttributes
+        )
 
         return SellGiftCardRequestModel(gift_card = giftCard)
     }
 
     fun createSellGiftCardRequestUsingCard(): SellGiftCardRequestModel {
 
+        var cardNumber = ""
+        var cardName = ""
+        var transactionId = ""
+
         val giftCardPurchaseAmount =
             prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0")
         var paymentAttributes: com.pays.pos.data.model.requestModel.giftCard.request.PaymentAttributes? =
             null
 
+
+
+
         if (magensaResponse != null) {
-            val model = Gson().fromJson(
-                magensaResponse,
-                PaymentResponse.PaymentResponseItem::class.java
-            )
+            try {
+                if (!magensaResponse!!.contains('<') && !magensaResponse!!.contains('>')) {
+                    val model = Gson().fromJson(
+                        magensaResponse,
+                        PaymentResponse.PaymentResponseItem::class.java
+                    )
 
-            var cardNumber = ""
-            var cardName = ""
 
-            if (model.dataOutput != null) {
-                LogUtil.logE("dataOutput", Gson().toJson(model))
-                cardNumber = model.dataOutput.PANLast4
-                var cardN = ""
-                model.dataOutput.additionalOutputData?.forEach {
-                    LogUtil.logE("additionalOutputData", it.key)
-                    if (it.key == "CardType") {
-                        cardN = it.value
+
+                    if (model.dataOutput != null) {
+                        LogUtil.logE("dataOutput", Gson().toJson(model))
+                        cardNumber = model.dataOutput.PANLast4
+                        var cardN = ""
+                        model.dataOutput.additionalOutputData?.forEach {
+                            LogUtil.logE("additionalOutputData", it.key)
+                            if (it.key == "CardType") {
+                                cardN = it.value
+                            }
+                        }
+                        cardName = cardN
                     }
+
+                    if (model.cardSwipeOutput != null) {
+                        LogUtil.logE("cardSwipeOutput", Gson().toJson(model))
+                        cardNumber = model.cardSwipeOutput.pANLast4
+                        var cardN = ""
+                        model.cardSwipeOutput.additionalOutputData?.forEach {
+                            if (it.key == "CardType") {
+                                cardN = it.value
+                            }
+                        }
+
+                        cardName = cardN
+                    }
+
+
+                    if (model.transactionOutput?.transactionOutputDetails?.isNotEmpty() == true) {
+                        var CardType = ""
+                        model.transactionOutput.transactionOutputDetails.forEach {
+                            if (it.key == "CardType") {
+                                CardType = it.value
+                            }
+                        }
+
+                        cardName = CardType
+                        cardNumber =
+                            if (cardNumberLast4.isNotEmpty()) cardNumberLast4.takeLast(4) else ""
+                    }
+                    transactionId = model.transactionOutput?.transactionID.toString()
                 }
-                cardName = cardN
+            } catch (e: Exception) {
             }
 
-            if (model.cardSwipeOutput != null) {
-                LogUtil.logE("cardSwipeOutput", Gson().toJson(model))
-                cardNumber = model.cardSwipeOutput.pANLast4
-                var cardN = ""
-                model.cardSwipeOutput.additionalOutputData?.forEach {
-                    if (it.key == "CardType") {
-                        cardN = it.value
-                    }
-                }
-
-                cardName = cardN
-            }
-
-
-            if (model.transactionOutput?.transactionOutputDetails?.isNotEmpty() == true) {
-                var CardType = ""
-                model.transactionOutput.transactionOutputDetails.forEach {
-                    if (it.key == "CardType") {
-                        CardType = it.value
-                    }
-                }
-
-                cardName = CardType
-                cardNumber =
-                    if (cardNumberLast4.isNotEmpty()) cardNumberLast4.takeLast(4) else ""
-            }
-
-            paymentAttributes =
-                com.pays.pos.data.model.requestModel.giftCard.request.PaymentAttributes(
-                    amount = giftCardPurchaseAmount.toDouble(),
-                    card_name = cardName,
-                    card_number = cardNumber,
-                    card_type = 0,
-                    employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0),
-                    magensa_response = magensaResponse,
-                    offline_id = MethodUtils.randomOfflineId(
-                        prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
-                    ),
-                    payable_type = "GiftCard",
-                    payment_type = "Card",
-                    sub_total = giftCardPurchaseAmount.toDouble(),
-                    terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
-                    transaction_id = model.transactionOutput?.transactionID.toString()
-                )
+        } else {
+            cardName = cardNamePax
+            cardNumber = cardNumberLast4
+            transactionId = transactionID
+            magensaResponse = paxResponse
         }
+
+        paymentAttributes =
+            com.pays.pos.data.model.requestModel.giftCard.request.PaymentAttributes(
+                amount = giftCardPurchaseAmount.toDouble(),
+                card_name = cardName,
+                card_number = cardNumber,
+                card_type = 0,
+                employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0),
+                magensa_response = magensaResponse,
+                offline_id = MethodUtils.randomOfflineId(
+                    prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+                ),
+                payable_type = "GiftCard",
+                payment_type = "Card",
+                sub_total = giftCardPurchaseAmount.toDouble(),
+                terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
+                transaction_id = transactionId
+            )
 
 
         val giftCard = GiftCard(
@@ -220,7 +247,13 @@ class GiftCardViewModel @Inject constructor(
                                         sellGiftCardResponse.data.gift_card.payments[0].id
                                     )
                                 }
-                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+                                EventBus.getDefault().post(
+                                    MessageEvent(
+                                        "${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                                            Gson().toJson(Thread.currentThread().stackTrace)
+                                        }"
+                                    )
+                                )
                                 posRepository.deleteCart(
                                     prefProvider.getValueInt(
                                         Constants.EMPLOYEE_ID,
@@ -307,73 +340,88 @@ class GiftCardViewModel @Inject constructor(
 
         var paymentAttributes: GiftCardAddValueRequest.GiftCardAmountTab.PaymentAttributes? = null
 
+        var cardNumber = ""
+        var cardName = ""
+        var transactionId = ""
+
         if (magensaResponse != null) {
-            val model = Gson().fromJson(
-                magensaResponse,
-                PaymentResponse.PaymentResponseItem::class.java
-            )
+            try {
+                if (!magensaResponse!!.contains('<') && !magensaResponse!!.contains('>')) {
 
-            var cardNumber = ""
-            var cardName = ""
+                    val model = Gson().fromJson(
+                        magensaResponse,
+                        PaymentResponse.PaymentResponseItem::class.java
+                    )
 
-            if (model.dataOutput != null) {
-                LogUtil.logE("dataOutput", Gson().toJson(model))
-                cardNumber = model.dataOutput.PANLast4
-                var cardN = ""
-                model.dataOutput.additionalOutputData?.forEach {
-                    LogUtil.logE("additionalOutputData", it.key)
-                    if (it.key == "CardType") {
-                        cardN = it.value
+                    if (model.dataOutput != null) {
+                        LogUtil.logE("dataOutput", Gson().toJson(model))
+                        cardNumber = model.dataOutput.PANLast4
+                        var cardN = ""
+                        model.dataOutput.additionalOutputData?.forEach {
+                            LogUtil.logE("additionalOutputData", it.key)
+                            if (it.key == "CardType") {
+                                cardN = it.value
+                            }
+                        }
+                        cardName = cardN
                     }
-                }
-                cardName = cardN
-            }
 
-            if (model.cardSwipeOutput != null) {
-                LogUtil.logE("cardSwipeOutput", Gson().toJson(model))
-                cardNumber = model.cardSwipeOutput.pANLast4
-                var cardN = ""
-                model.cardSwipeOutput.additionalOutputData?.forEach {
-                    if (it.key == "CardType") {
-                        cardN = it.value
+                    if (model.cardSwipeOutput != null) {
+                        LogUtil.logE("cardSwipeOutput", Gson().toJson(model))
+                        cardNumber = model.cardSwipeOutput.pANLast4
+                        var cardN = ""
+                        model.cardSwipeOutput.additionalOutputData?.forEach {
+                            if (it.key == "CardType") {
+                                cardN = it.value
+                            }
+                        }
+
+                        cardName = cardN
                     }
-                }
-
-                cardName = cardN
-            }
 
 
-            if (model.transactionOutput?.transactionOutputDetails?.isNotEmpty() == true) {
-                var CardType = ""
-                model.transactionOutput.transactionOutputDetails.forEach {
-                    if (it.key == "CardType") {
-                        CardType = it.value
+                    if (model.transactionOutput?.transactionOutputDetails?.isNotEmpty() == true) {
+                        var CardType = ""
+                        model.transactionOutput.transactionOutputDetails.forEach {
+                            if (it.key == "CardType") {
+                                CardType = it.value
+                            }
+                        }
+
+                        cardName = CardType
+                        cardNumber =
+                            if (cardNumberLast4.isNotEmpty()) cardNumberLast4.takeLast(4) else ""
                     }
+
+                    transactionId = model.transactionOutput?.transactionID.toString()
                 }
+            } catch (e: IllegalStateException) {
 
-                cardName = CardType
-                cardNumber =
-                    if (cardNumberLast4.isNotEmpty()) cardNumberLast4.takeLast(4) else ""
             }
-
-            paymentAttributes =
-                GiftCardAddValueRequest.GiftCardAmountTab.PaymentAttributes(
-                    amount = giftCardPurchaseAmount.toDouble(),
-                    card_name = cardName,
-                    card_number = cardNumber,
-                    card_type = 0,
-                    employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0),
-                    magensa_response = magensaResponse,
-                    offline_id = MethodUtils.randomOfflineId(
-                        prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
-                    ),
-                    payable_type = "GiftCardAmountTab",
-                    payment_type = "Card",
-                    sub_total = giftCardPurchaseAmount.toDouble(),
-                    terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
-                    transaction_id = model.transactionOutput?.transactionID.toString()
-                )
+        } else {
+            cardName = cardNamePax
+            cardNumber = cardNumberLast4
+            transactionId = transactionID
+            magensaResponse = paxResponse
         }
+
+        paymentAttributes =
+            GiftCardAddValueRequest.GiftCardAmountTab.PaymentAttributes(
+                amount = giftCardPurchaseAmount.toDouble(),
+                card_name = cardName,
+                card_number = cardNumber,
+                card_type = 0,
+                employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0),
+                magensa_response = magensaResponse,
+                offline_id = MethodUtils.randomOfflineId(
+                    prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+                ),
+                payable_type = "GiftCardAmountTab",
+                payment_type = "Card",
+                sub_total = giftCardPurchaseAmount.toDouble(),
+                terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
+                transaction_id = transactionId
+            )
 
 
         val giftCard = GiftCardAddValueRequest.GiftCard(
@@ -428,7 +476,13 @@ class GiftCardViewModel @Inject constructor(
                                         addValueInGiftCardResponse.data.gift_card.payments[0].id
                                     )
                                 }
-                                EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${Gson().toJson(Thread.currentThread().stackTrace)}"))
+                                EventBus.getDefault().post(
+                                    MessageEvent(
+                                        "${Constants.LINE_BREAK_TAB} CART_MODEL_CLEAR Thread.dumpStack(): it1 -> ${
+                                            Gson().toJson(Thread.currentThread().stackTrace)
+                                        }"
+                                    )
+                                )
                                 posRepository.deleteCart(
                                     prefProvider.getValueInt(
                                         Constants.EMPLOYEE_ID,
@@ -488,6 +542,12 @@ class GiftCardViewModel @Inject constructor(
                             _snackbarText.value = Event(resource.message)
                         }
                     }
+                    resource.data?.let {
+                        if (it.data == null && it.message.isNotEmpty()) {
+                            _giftCardError.postValue(Event(it.message))
+                        }
+                    }
+
                 }
 
                 Status.ERROR -> {

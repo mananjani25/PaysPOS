@@ -397,6 +397,7 @@ class PaymentBoldPosFragment : Fragment() {
                 if ((prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.PHONE_ORDER) && !findNavController().backStack.elementAtOrNull(findNavController().backStack.size-2)?.destination?.label?.equals("DashboardCategoryBoldPOS")!!) {
                     findNavController().navigate(R.id.action_paymentBoldPosFragment_to_allOrdersFragment)
                 }else {
+                    Log.e("NeedToCheckPop","POPBACK")
                     findNavController().popBackStack()
                 }
          //       }

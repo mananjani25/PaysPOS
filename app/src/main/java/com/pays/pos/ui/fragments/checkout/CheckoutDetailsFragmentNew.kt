@@ -99,7 +99,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.Executors
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -435,7 +434,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     it.alpha = 0f
                                 }
 
-                                binding.tvOther.invisible()
+//                                binding.tvOther.invisible()
                             }
                         }
 
@@ -826,6 +825,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         paymentviewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+                runOnUiThread(Runnable {
+                    dismissProgressDialog()
+                })
                 LogUtil.logE(TAG, "receiptData: ${Gson().toJson(it.data)}")
                 dashboardViewModel.redeemLoyaltyInfo = RedeemLoyaltyInfo()
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
@@ -1084,6 +1086,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         paymentviewModel.transactionErrorText.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+                runOnUiThread(Runnable {
+                    dismissProgressDialog()
+                })
                 prefProvider.setValueboolean(IS_PAX_PAYMENT_FAILED, true)
                 AlertUtils.showCustomAlert(
                     requireContext(),
@@ -1095,6 +1100,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         giftCardViewModel.giftCardData.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
+                runOnUiThread(object:java.lang.Runnable{
+                    override fun run() {
+                        dismissProgressDialog()
+                    }
+                })
                 if (it.data != null) {
                     Log.d(TAG, "observeData: SellGiftCardResponse = $it")
                     LogUtil.logE(TAG, "receiptData: ${Gson().toJson(it.data)}")
@@ -1446,6 +1456,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         giftCardViewModel.addValueInGiftCardData.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+
+                runOnUiThread(object:java.lang.Runnable{
+                    override fun run() {
+                        dismissProgressDialog()
+                    }
+                })
                 if (it.data != null) {
                     Log.d(TAG, "observeData: SellGiftCardResponse = $it")
                     LogUtil.logE(TAG, "receiptData: ${Gson().toJson(it.data)}")
@@ -2430,7 +2446,28 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 PAXtoken = paxData.paxToken
                                 EDCType = paxData.EDCType
                                 cardLastDigits = paxData.cardLastDigits
-                                makePaymentCreditCard()
+                                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+                                    if (prefProvider.getValueboolean(
+                                            Constants.IS_ADD_VALUE_IN_GIFT_CARD,
+                                            false
+                                        )
+                                    ) {
+                                        giftCardViewModel.paxResponse = ExtData
+                                        giftCardViewModel.cardNumberLast4 = cardLastDigits
+                                        giftCardViewModel.cardNamePax = EDCType
+                                        giftCardViewModel.transactionID = PAXtoken
+                                        addValueInGiftCardUsingCard()
+                                    } else {
+                                        giftCardViewModel.paxResponse = ExtData
+                                        giftCardViewModel.cardNumberLast4 = cardLastDigits
+                                        giftCardViewModel.cardNamePax = EDCType
+                                        giftCardViewModel.transactionID = PAXtoken
+                                        sellGiftCardUsingCard()
+                                    }
+                                } else {
+                                    makePaymentCreditCard()
+                                }
+//                                makePaymentCreditCard()
                             } else {
                                 makePaxPaymentRequest()
                             }
@@ -2510,7 +2547,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
                     )
                     paymentAmount =
-                        binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                        binding.tvCash0.text.toString().repxlace("$", "").trim().toDouble()
                 }
 
                 cashPaymentWithVariation(dynamicPaymentType = getString(R.string.synergy) ?: "")
@@ -2601,6 +2638,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
                 val bundleVal = Bundle().apply {
                     putDouble("totalprice", ((paymentAmount)))
+                    putDouble("amountToDisplay", ((paymentAmount)))
                 }
                 findNavController().navigate(
                     R.id.action_paymentBoldPosFragment_to_customAmountFragment,
@@ -2779,6 +2817,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
 
+        giftCardViewModel.giftCardError.observe(viewLifecycleOwner){ event->
+            event.getContentIfNotHandled()?.let {
+                AlertUtils.showCustomAlert(requireActivity(),it)
+            }
+        }
+
         giftCardViewModel.giftCardCheckBalanceData.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it.data != null) {
@@ -2934,7 +2978,28 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     CoroutineScope(Dispatchers.Main).launch {
 //                        ProgressUtils.dismissProgressDialog()
                         coroutineScope {
-                            makePaymentCreditCard()
+                            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+                                if (prefProvider.getValueboolean(
+                                        Constants.IS_ADD_VALUE_IN_GIFT_CARD,
+                                        false
+                                    )
+                                ) {
+                                    giftCardViewModel.paxResponse = response.ExtData
+                                    giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
+                                    giftCardViewModel.cardNamePax = response.CardType
+                                    giftCardViewModel.transactionID = response.PaymentTransInfo.Token
+                                    addValueInGiftCardUsingCard()
+                                } else {
+                                    giftCardViewModel.paxResponse = response.ExtData
+                                    giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
+                                    giftCardViewModel.cardNamePax = response.CardType
+                                    giftCardViewModel.transactionID = response.PaymentTransInfo.Token
+                                    sellGiftCardUsingCard()
+                                }
+                            } else {
+                                makePaymentCreditCard()
+                            }
+//                            makePaymentCreditCard()
                         }
                     }
                 } else {
@@ -4018,7 +4083,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
             /*Adding the deleted items*/
-            cartList!!.items = items
+            cartList?.items = items
         }
         prefProvider.setValue(Constants.OLD_ITEM, "")
         prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
@@ -4850,6 +4915,36 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
 
+        /* This is placed to solve the payment issue happening due to the orderTypeId = -1   */
+        if (myRequest.order.orderTypeId == -1) {
+            runBlocking {
+                CoroutineScope(Dispatchers.IO).async {
+                    dashboardViewModel.getOrderTypeBackupList(prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1))?.let {
+                        myRequest.order.apply {
+                            if (it.isNotEmpty()) {
+                                orderTypeId = (it.get(0).orderType) ?: -1
+                                orderTypeName = (it.get(0).orderTypeName) ?: ""
+                            }else{
+                                if (dashboardViewModel.cartModel!=null) {
+                                    orderTypeId = dashboardViewModel.cartModel!!.orderTypeId ?: -1
+                                    orderTypeName = dashboardViewModel.cartModel!!.orderTypeName ?: ""
+                                }else{
+//                                  Fetch the order type name from the cart fragment, fetch the orderType from local database with respect to the order type name of cart fragment
+                                    var orderType=prefProvider.getValue(ORDER_TYPE, "")
+                                    dashboardViewModel.getOrderTypes.value?.data?.filter { it.orderType.equals(orderType) }?.let {
+                                        orderTypeId = it.first().id ?: -1
+                                        orderTypeName = it.first().orderType ?: ""
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }.await()
+            }
+        }
+
+
         val orderId = prefProvider.getValueInt("ORDER_ID", -1) //Here
         LogUtil.logE(TAG, "orderIdmyRequestOriginal ${orderId}")
         Log.e("textToPay", textToPay.toString())
@@ -5259,6 +5354,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun sellGiftCardUsingCash() {
         paymentType = "Cash"
+        if (cartList==null){
+            runBlocking {
+                lifecycleScope.async(Dispatchers.IO){
+                    cartList=dashboardViewModel.getAllCartModels().get(0)
+                }.await()
+            }
+        }
         val myRequest = cartList?.let {
             giftCardViewModel.createSellGiftCardRequestUsingCash()
         }
@@ -5279,6 +5381,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun addValueInGiftCardUsingCash() {
         paymentType = "Cash"
+        if (cartList==null){
+            runBlocking {
+                lifecycleScope.async(Dispatchers.IO){
+                    cartList=dashboardViewModel.getAllCartModels().get(0)
+                }.await()
+            }
+        }
         val myRequest = cartList?.let {
             giftCardViewModel.createAddValueInGiftCardRequestUsingCash()
         }
@@ -5289,6 +5398,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun addValueInGiftCardUsingCard() {
         paymentType = "Card"
+        if (cartList==null){
+            runBlocking {
+                lifecycleScope.async(Dispatchers.IO){
+                    cartList=dashboardViewModel.getAllCartModels().get(0)
+                }.await()
+            }
+        }
         val myRequest = cartList?.let {
             giftCardViewModel.createAddValueInGiftCardRequestUsingCard()
         }

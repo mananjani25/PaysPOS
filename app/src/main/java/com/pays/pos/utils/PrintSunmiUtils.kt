@@ -859,9 +859,10 @@ class PrintSunmiUtils {
                             val strCardType = padLine(
                                 "",
                                 cardType,
-                                if (font == Constants.LARGE) 23 else 83
+//                                if (font == Constants.LARGE) 23 else 83
+                                48
                             ).toString()
-                            PrintSunmiUtils.normalText(strCardType)
+                            PrintSunmiUtils.normalTextNew(strCardType)
                         }
 
                     }
@@ -871,9 +872,10 @@ class PrintSunmiUtils {
                             val strCardNumber = padLine(
                                 "",
                                 cardNumber,
-                                if (font == Constants.LARGE) 23 else 87
+//                                if (font == Constants.LARGE) 23 else 87
+                                48
                             ).toString()
-                            PrintSunmiUtils.normalText(strCardNumber)
+                            PrintSunmiUtils.normalTextNew(strCardNumber)
                         }
                     }
                 }
