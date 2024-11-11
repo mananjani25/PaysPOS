@@ -2364,7 +2364,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         prefProvider,
                         requireContext()
                     ) / isSelectedCount
-
 //                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
 //                        0.0
 //                    } else {
