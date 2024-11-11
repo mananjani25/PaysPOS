@@ -580,7 +580,7 @@ class PosRepository @Inject constructor(
     suspend fun allCustomerList() =
         appDatabase.customerDao().allCustomerList()
 
-    suspend fun fetchCustomerFromPhoneNumber(phoneNumber:String) =
+    suspend fun fetchCustomerFromPhoneNumber(phoneNumber: String) =
         appDatabase.customerDao().fetchCustomerFromPhoneNumber(phoneNumber)
     /*------------Customer Loyalty--------------*/
 
@@ -620,6 +620,9 @@ class PosRepository @Inject constructor(
 
     suspend fun updateFinalRewards(finalrewards: Int, customerId: Int) =
         appDatabase.customerDao().updateLoyaltyRewards(finalrewards, customerId)
+
+    suspend fun updateFinalRewards(finalrewards: Int, customerId: Int, firstName: String) =
+        appDatabase.customerDao().updateLoyaltyRewards(finalrewards, customerId, firstName)
 
     fun getCustomerDetailsByID(id: Int?): LiveData<TbCustomer> {
 
@@ -812,7 +815,7 @@ class PosRepository @Inject constructor(
         return appDatabase.cartDao().getManualSaleFromCart(employeeId)
     }
 
-    fun addItemCartGetId(cartModel: CartModel):Long? {
+    fun addItemCartGetId(cartModel: CartModel): Long? {
         synchronized(this) {
             //  appDatabase.beginTransaction()
             return appDatabase.cartDao().addSuspended(cartModel)
@@ -820,6 +823,7 @@ class PosRepository @Inject constructor(
         }
 
     }
+
     fun addItemCart(cartModel: CartModel) {
         synchronized(this) {
             //  appDatabase.beginTransaction()
@@ -973,7 +977,12 @@ class PosRepository @Inject constructor(
         guestIndexForDineIn: Int
     ) {
         appDatabase.cartDao()
-            .updateDineInCartItemsByIdGuestIndex(itemQuantity, itemId,  modifiers,guestIndexForDineIn)
+            .updateDineInCartItemsByIdGuestIndex(
+                itemQuantity,
+                itemId,
+                modifiers,
+                guestIndexForDineIn
+            )
     }
 
 
@@ -1530,8 +1539,8 @@ class PosRepository @Inject constructor(
         appDatabase.dynamicPaymentDao().deleteDynamicPaymentById(idList)
     }
 
-    suspend fun deleteDynamicPaymentByName(name: String, createdAt:String) {
-        appDatabase.dynamicPaymentDao().deleteDynamicPaymentByName(name,createdAt)
+    suspend fun deleteDynamicPaymentByName(name: String, createdAt: String) {
+        appDatabase.dynamicPaymentDao().deleteDynamicPaymentByName(name, createdAt)
     }
 
 
@@ -1598,7 +1607,7 @@ class PosRepository @Inject constructor(
     fun getDynamicPaymentRecords(isActive: Boolean, locationId: Int) =
         appDatabase.dynamicPaymentDao().getDynamicPaymentRecords(isActive, locationId)
 
-       fun getAllDynamicPayments() =
+    fun getAllDynamicPayments() =
         appDatabase.dynamicPaymentDao().getAllDynamicPayments
 
 
