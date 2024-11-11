@@ -3601,6 +3601,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 totalprice
             }
         } else {
+//            if (cashDiscountType == "SurCharge" && prefProvider.getValue(
+//                    ORDER_TYPE,
+//                    TAKEOUT
+//                ) != GIFT_CARD
+//            )
             if (cashDiscountType == "SurCharge") {
                 totalprice + MethodUtils.getLatestCashDiscountOrSurCharge(
                     totalprice,
