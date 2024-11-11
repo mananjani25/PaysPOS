@@ -2184,23 +2184,33 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                 viewModel.selectedCustomer =
                                                     prefProvider.getCustomerData()
 
-                                                if (MethodUtils.isEnableCashDiscount(requireContext()) && prefProvider.getValue(
-                                                        ORDER_TYPE, TAKEOUT
-                                                    ) != Constants.GIFT_CARD
+//                                                if (MethodUtils.isEnableCashDiscount(requireContext()) && prefProvider.getValue(
+//                                                        ORDER_TYPE, TAKEOUT
+//                                                    ) != Constants.GIFT_CARD
+//                                                ) {
+//
+//                                                    binding.linearCashDiscount.visible()
+//                                                    if (prefProvider.getValue(
+//                                                            OPTION_TYPE, "CashDiscount"
+//                                                        ) == "CashDiscount"
+//                                                    ) {
+//                                                        binding.labelCashSurcharge?.text =
+//                                                            "Cash Discount"
+//                                                    } else {
+//                                                        showSurchargeWithPercentage()
+//                                                    }
+//                                                } else {
+//                                                    binding.linearCashDiscount.gone()
+//                                                }
+                                                binding.linearCashDiscount.visible()
+                                                if (prefProvider.getValue(
+                                                        OPTION_TYPE, "CashDiscount"
+                                                    ) == "CashDiscount"
                                                 ) {
-
-                                                    binding.linearCashDiscount.visible()
-                                                    if (prefProvider.getValue(
-                                                            OPTION_TYPE, "CashDiscount"
-                                                        ) == "CashDiscount"
-                                                    ) {
-                                                        binding.labelCashSurcharge?.text =
-                                                            "Cash Discount"
-                                                    } else {
-                                                        showSurchargeWithPercentage()
-                                                    }
+                                                    binding.labelCashSurcharge?.text =
+                                                        "Cash Discount"
                                                 } else {
-                                                    binding.linearCashDiscount.gone()
+                                                    showSurchargeWithPercentage()
                                                 }
                                                 binding.linearButtonView.gone()
                                                 binding.relPreoceedToFire.gone()
@@ -2484,6 +2494,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
 
             } else {
+                var total = viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge
+                viewModel.cashdiscountAmount = MethodUtils.getLatestCashDiscountOrSurCharge(total, prefProvider, requireContext())
                 binding.txtNoncashAdj.text =
                     MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
             }
