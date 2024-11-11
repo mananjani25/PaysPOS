@@ -149,6 +149,7 @@ class CustomDisplay(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("CUSTOM_DISPLAY::", "onCreate")
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         binding = ViewCustomDisplayBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -417,11 +418,16 @@ class CustomDisplay(
             binding.tvMessage?.text="Loading..."
         }*/
 
-        Handler(Looper.getMainLooper()).post(Runnable {
-            binding.keypadLayout?.gone()
-            binding.splashLayout?.gone()
-            binding.mainCartLayout?.visible()
-        })
+        CoroutineScope(Dispatchers.Main).launch {
+            binding.apply {
+                keypadLayout?.gone()
+                splashLayout?.gone()
+                mainCartLayout?.visible()
+            }
+
+            binding.root.invalidate() // or
+            this@CustomDisplay.window?.decorView?.invalidate()
+        }
 
         Log.d("C_Loyalty: ", "createCustomer: Loading... Set")
         EventBus.getDefault().post(CreateCustomerEvent(true, phoneNumber))
@@ -464,10 +470,20 @@ class CustomDisplay(
                 keypadLayout?.gone()
                 splashLayout?.gone()
                 mainCartLayout?.visible()
+
+                dismiss()
+                dismiss()
+
             }
             Log.v("4732", "Customer Name is shown")
 
+//            if (savedInstanceStateBackup!=null){
+//                onCreate(savedInstanceStateBackup)
+//            }
+//            onCreate(null)
         }
+
+//        onCreate(null)
 
     }
 
@@ -966,6 +982,10 @@ class CustomDisplay(
                 binding.txtCustomerName.visible()
                 binding.txtCustomerName.text=name
                 binding.txtLoyaltyPointsLabel.visible()
+                show()
+                binding.root.invalidate() // or
+                this@CustomDisplay.window?.decorView?.invalidate()
+                show()
                 Log.v("4732", "inside displayCustomer()_2 -> ${name}")
             }
 
@@ -993,8 +1013,18 @@ class CustomDisplay(
                         txtCustomerName.setText(name)
                         txtCustomerName.invalidate()
                         txtCustomerName.postInvalidate()
+                        keypadLayout?.gone()
+                        splashLayout?.gone()
+                        mainCartLayout?.visible()
+                        binding.root.invalidate() // or
+                        show()
+                        this@CustomDisplay.window?.decorView?.invalidate()
                     }
                 })
+                show()
+
+                binding.root.invalidate() // or
+                this@CustomDisplay.window?.decorView?.invalidate()
                 CoroutineScope(Dispatchers.Main).launch {
                     Log.v("4732", "inside displayCustomer()_removed_1 -> -> ${name}")
 
@@ -1007,6 +1037,9 @@ class CustomDisplay(
                     /*-----------Customer Loyalty------------*/
                 }
             }
+            binding.root.invalidate() // or
+            this@CustomDisplay.window?.decorView?.invalidate()
+
             CoroutineScope(Dispatchers.Main).launch {
                 binding.txtLoyaltyPointsLabel.text =
                     "Loyalty Balance: ${
@@ -1032,7 +1065,9 @@ class CustomDisplay(
             binding.tvLoyaltyBalance.gone()
             binding.tvLoyaltyPoints.gone()
             /*----------Customer Loyalty--------------*/
-
+            binding.root.invalidate() // or
+            this@CustomDisplay.window?.decorView?.invalidate()
+            show()
             binding.relativeLoylatyPoints.gone()
             binding.lblLoyaltyPoints.gone()
             if (dashBoardCategoryViewModel.order_note.isNotEmpty()) {
