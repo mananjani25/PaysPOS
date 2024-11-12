@@ -3119,10 +3119,12 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
     // Update UI after removing guest from order
     private fun removeGuestObserver() {
-        viewModel.removeGuestSuccess.observe(viewLifecycleOwner) { event ->
-            AlertUtils.showCustomAlertWithListenerWithOK(
-                requireContext(), event.getContentIfNotHandled().toString()
-            ) { _, _ -> }
+        if (view!=null) {
+            viewModel.removeGuestSuccess.observe(viewLifecycleOwner) { event ->
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(), event.getContentIfNotHandled().toString()
+                ) { _, _ -> }
+            }
         }
     }
 
