@@ -8,7 +8,6 @@ import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
 import android.os.StrictMode
-import android.system.StructTimespec
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
@@ -578,6 +577,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun getItemByCategoryId(id: Int) = posRepository.getItemByCategoryId(id)
 
+
+    fun refreshCartFragment(){
+        fragmentNeedToBeUpdated.value=true
+    }
 
     fun itemsByCat(id: Int): kotlinx.coroutines.flow.Flow<PagingData<TbItem>> = Pager(
         config = PagingConfig(

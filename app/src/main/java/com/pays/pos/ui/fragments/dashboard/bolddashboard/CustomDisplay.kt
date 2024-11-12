@@ -1,6 +1,5 @@
 package com.pays.pos.ui.fragments.dashboard.bolddashboard
 
-import android.app.Activity
 import android.app.Presentation
 import android.content.Context
 import android.content.DialogInterface
@@ -18,7 +17,6 @@ import android.view.Gravity
 import android.view.View
 import android.view.Window
 import androidx.appcompat.view.ContextThemeWrapper
-import androidx.core.view.isGone
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -53,6 +51,7 @@ import com.pays.pos.databinding.ViewCustomDisplayBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.logger.CreateCustomerEvent
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.logger.SyncCustomerEvent
 import com.pays.pos.ui.adapter.ActiveTipsListAdapter
 import com.pays.pos.ui.adapter.DineInAdapter
@@ -434,6 +433,12 @@ class CustomDisplay(
     }
 
     public fun addCustomer(customer: TbCustomer) {
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} CutomDisplay addCustomer:${Gson().toJson(customer)} line -> ${Exception().stackTrace[0].lineNumber}"
+            )
+        )
+
         prefProvider.setValue(
             Constants.CUSTOMER_NAME,
             customer.first_name + " " + customer.last_name
@@ -481,6 +486,8 @@ class CustomDisplay(
 //                onCreate(savedInstanceStateBackup)
 //            }
 //            onCreate(null)
+
+            dashBoardCategoryViewModel.refreshCartFragment()
         }
 
 //        onCreate(null)
