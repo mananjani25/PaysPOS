@@ -1956,13 +1956,16 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                             viewModel.deleteCartItem(item.cartItemId)
                         }
                     } else
-                        viewModel.updateCart(
-                            viewModel.currentCartItems,
-                            item,
-                            DELETE,
-                            item.isManualSales
 
-                        )
+                        CoroutineScope(Dispatchers.IO).launch {
+                            viewModel.updateCart(
+                                viewModel.currentCartItems,
+                                item,
+                                DELETE,
+                                item.isManualSales
+
+                            )
+                        }
                 }
                 //viewModel.newCartLogicModifier(cartModelsList, item, DELETE, item.isManualSales)
 
