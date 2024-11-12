@@ -410,8 +410,43 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 }
             }
 
+
+            // if all items fired for guest -> Header checkbox will be selected by default
+            var allItemsFired = true
+            var index = bindingAdapterPosition + 1
+
+            if (index == list.size && list[bindingAdapterPosition].isHeader == 0) {
+                allItemsFired = false
+            }
+
+            while (index < list.size) {
+                val item = list[index]
+
+                if (item.isHeader != 0 && !(item.item?.isFired == true)) {
+                    allItemsFired = false
+                    break
+                }
+
+                if (item.isHeader == 0) {
+                    if (index - bindingAdapterPosition == 1) {
+                        allItemsFired = false
+                    }
+                    break
+                }
+
+                index++
+            }
+
+
+            binding.checkedForFire?.apply {
+                isChecked = allItemsFired
+                isPressed = allItemsFired
+                isEnabled = !allItemsFired
+                buttonTintList = ColorStateList.valueOf(if (allItemsFired) Color.GREEN else Color.RED)
+            }
+            //
+
             binding.imgPrint.setOnClickListener {
-                var fisrtTime: Boolean = false
                 var listItem: ArrayList<TbCartItem> = arrayListOf()
                 var listItemWT: ArrayList<TbCartItem> = arrayListOf()
                 for (i in 1 until list.size) {
