@@ -2354,6 +2354,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     )
                 )
 
+                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
                 totalServiceCharge =
                     String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
                 totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
@@ -2389,6 +2390,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     )
                 }
 
+                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
                 if (cashDiscountType == "SurCharge") {
                     paymentAmount =
@@ -2433,6 +2435,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
 
                 paymentAmount += tipAmount
+                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
                 if (paymentAmount != 0.0) {
                     if (mSessionManager.isConnected) {
@@ -2977,6 +2980,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 )
 
                 if (resultCode == "000000") {
+                    Log.v("PAX_LOADER_5:: ", result.Code.toString() + " " + result.Msg)
                     // Store pax payment data to database
                     val paxData = PAXData(
                         response.PaymentTransInfo.GlobalUid,
@@ -3815,6 +3819,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         paymentAmount -= tipAmount
         paymentAmount = MethodUtils.roundOffAmountDouble(paymentAmount)
         paymentType = "Card"
+        Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+
 //        LogUtil.logE(TAG, "cartList:  ${Gson().toJson(cartList)}")
 //        LogUtil.logE(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
         if (orderId != -1 && orderId != 0) {
@@ -3850,6 +3856,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         if (cartList == null) {
+            Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+
             CoroutineScope(Dispatchers.Main).launch {
                 getCartModelsList()
             }
@@ -3877,6 +3885,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         cartList = Gson().fromJson(model, CartModel::class.java)
                         dashboardViewModel.cartModel =
                             Gson().fromJson(model, CartModel::class.java)
+                        Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+
                     }catch (e:Exception){
                         var models =
                             CoroutineScope(Dispatchers.IO).async { dashboardViewModel.getAllCartModels() }
@@ -3884,7 +3894,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         if (models.isNotEmpty()) {
                             dashboardViewModel.cartModel = models.last()
                             cartList=models.last()
+                            Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+
                         }else{
+                            Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+
                             /*Continuous loading shall occur due to the cartModel null */
 
                         }
@@ -3893,6 +3907,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
 
+        Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
         oldItems = prefProvider.getValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
         val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
@@ -3915,6 +3930,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
         )
         if (cartList == null || cartList?.items == null || cartList?.items?.isEmpty() == true) {
+            Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
             EventBus.getDefault().post(
                 MessageEvent(
@@ -4118,6 +4134,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             cartList?.items = items
         }
 
+        Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
         prefProvider.setValue(Constants.OLD_ITEM, "")
         prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
@@ -4171,6 +4188,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     } _1"
                 )
             )
+            Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
             /* //FILE ASSERTION
              MainActivity.writeToFile(
@@ -4939,6 +4957,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         dynamicPaymentType: String? = "",
         dynamicPaymentId: Int = -1
     ) {
+        Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
         dynamicPaymentType?.let { payment ->
             if (payment.isNotEmpty() && dynamicPaymentId != -1) {
@@ -4978,6 +4997,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
 
+        Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
         val orderId = prefProvider.getValueInt("ORDER_ID", -1) //Here
         LogUtil.logE(TAG, "orderIdmyRequestOriginal ${orderId}")
@@ -5044,14 +5064,19 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
             paymentviewModel.submit(myRequest)
         } else {
+            Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+
             EventBus.getDefault()
                 .post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_else_before_if(textToPay)_6"))
 
             if (textToPay) {
+                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
                 paymentviewModel.textPaySplit(orderId)
 
             } else {
+                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+
                 EventBus.getDefault()
                     .post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_else_6"))
 
@@ -5094,8 +5119,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 runOnUiThread(Runnable {
                     dismissProgressDialog()
                 })
+                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+
                 EventBus.getDefault()
                     .post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_paymentviewModel.splitByOrder(aa, false)_After_6"))
+                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
             }
         }
@@ -5405,10 +5433,27 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun sellGiftCardUsingCard() {
         paymentType = "Card"
+        EventBus.getDefault()
+            .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ sellGiftCardUsingCard cartList->${cartList}"))
+        if (cartList==null){
+            runBlocking {
+                lifecycleScope.async(Dispatchers.IO){
+                    cartList=dashboardViewModel.getAllCartModels().get(0)
+                }.await()
+            }
+        }
+        EventBus.getDefault()
+            .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ sellGiftCardUsingCard cartList->${cartList}"))
         val myRequest = cartList?.let {
+            EventBus.getDefault()
+                .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ sellGiftCardUsingCard inside the myRequest = cartList?.let"))
             giftCardViewModel.createSellGiftCardRequestUsingCard()
         }
+        EventBus.getDefault()
+            .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ sellGiftCardUsingCard before if (myRequest != null)"))
         if (myRequest != null) {
+            EventBus.getDefault()
+                .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ sellGiftCardUsingCard inside if (myRequest != null)"))
             giftCardViewModel.sellGiftCard(myRequest)
         }
     }
