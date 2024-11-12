@@ -122,6 +122,7 @@ import com.pays.pos.utils.extensions.liveSnackBar
 import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.landi.LPrint
+import com.pays.pos.utils.landi.LPrint.printLeft
 import com.pays.pos.utils.printer.CommonPrinterTypes
 import com.pays.pos.utils.printer.LandiInnerPrinterPays
 import com.pays.pos.utils.printer.PrinterClass
@@ -19072,38 +19073,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     ).toString()
                                     printLeft(str5, isBold = true)
 
-
-//                                    val surcharge = (MethodUtils.roundOffAmount(paidAmount)).toDouble() - (giftCardAmount.toPrecision(2)).toDouble()
-//                                    val str1 = padLine(
-//                                        "Surcharge",
-//                                        "$${surcharge}",
-//                                        if (customerSettingModel.fonts == LARGE) 23 else 48
-//                                    ).toString()
-//                                    printLeft(str1, isBold = true)
-
                                     if (giftCardReceiptModel?.gift_card?.payments?.isNotEmpty() == true && giftCardReceiptModel?.gift_card?.payments?.get(
                                             giftCardReceiptModel?.gift_card?.payments?.size!! - 1
-                                    )?.payment_type?.lowercase() == "Card".lowercase() && giftCardReceiptModel?.gift_card?.payments?.get(
-                                            giftCardReceiptModel?.gift_card?.payments?.size!! - 1
-                                    )?.cash_discount_type?.lowercase() == "SurCharge".lowercase()) {
+                                    )?.payment_type?.lowercase() == "Card".lowercase() && giftCardAmount.toPrecision(2).toDouble() != MethodUtils.roundOffAmountDouble(paidAmount)) {
 
-                                        if (giftCardReceiptModel?.gift_card?.payments?.get(
-                                                giftCardReceiptModel?.gift_card?.payments?.size!! - 1
-                                        )?.cash_discount_fee != null) {
-                                            val str8 = padLine(
-                                                Constants.SURCHARGE_TEXT,
-                                                "$" + MethodUtils.roundOffAmountString(
-                                                    giftCardReceiptModel?.gift_card?.payments?.get(
-                                                        giftCardReceiptModel?.gift_card?.payments?.size?.minus(
-                                                            1
-                                                        ) ?: 0
-                                                    )?.cash_discount_or_surcharge ?: 0.0
-                                                ),
-                                                if (customerSettingModel.fonts == LARGE) 23 else 48
-                                            ).toString()
+                                        val surcharge = paidAmount - giftCardAmount.toPrecision(2).toDouble()
+                                        val str8 = padLine(
+                                            Constants.SURCHARGE_TEXT,
+                                            "$" + MethodUtils.roundOffAmountString(surcharge),
+                                            if (customerSettingModel.fonts == LARGE) 23 else 48
+                                        ).toString()
 
-                                            printLeft(str8, isBold = true)
-                                        }
+                                        printLeft(str8, isBold = true)
                                     }
                                     lineBreak()
 
@@ -19160,7 +19141,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     lineBreak()
                                     lineBreak()
 
-                                    printBoldLeft("Customer Details")
+                                    printLeft("Customer Details", isBold = true)
 
                                     lineBreak()
 
@@ -19438,25 +19419,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.boldText(str5)
             }
 
-//            if (paymentType == "Card") {
-//                val surcharge = (MethodUtils.roundOffAmount(paidAmount)).toDouble() - (giftCardAmount.toPrecision(2)).toDouble()
-//                val str1 = padLine(
-//                    "Surcharge",
-//                    "$${CASH_DISCOUNT_SURCHARGE}",
-//                    if (customerSettingModel.fonts == LARGE) 23 else 48
-//                ).toString()
-//
-//                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
-//                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
-//                ){
-//                    PrintSunmiUtils.boldTextNew(str1)
-//                } else {
-//                    PrintSunmiUtils.boldText(str1)
-//                }
-//
-//            }
+            if (giftCardReceiptModel?.gift_card?.payments?.isNotEmpty() == true && giftCardReceiptModel?.gift_card?.payments?.get(
+                    giftCardReceiptModel?.gift_card?.payments?.size!! - 1
+                )?.payment_type?.lowercase() == "Card".lowercase() && giftCardAmount.toPrecision(2).toDouble() != MethodUtils.roundOffAmountDouble(paidAmount)) {
 
+                val surcharge = paidAmount - giftCardAmount.toPrecision(2).toDouble()
+                val str8 = padLine(
+                    Constants.SURCHARGE_TEXT,
+                    "$" + MethodUtils.roundOffAmountString(surcharge),
+                    if (customerSettingModel.fonts == LARGE) 23 else 48
+                ).toString()
 
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                ){
+                    PrintSunmiUtils.boldTextNew(str8)
+                } else {
+                    PrintSunmiUtils.boldText(str8)
+                }
+            }
 
             val str6 = padLine(
                 "Paid Amount",
