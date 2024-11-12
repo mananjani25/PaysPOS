@@ -5419,7 +5419,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (cartList==null){
             runBlocking {
                 lifecycleScope.async(Dispatchers.IO){
-                    cartList=dashboardViewModel.getAllCartModels().get(0)
+                    cartList=dashboardViewModel.getAllCartModels().last()
                 }.await()
             }
         }
@@ -5438,7 +5438,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (cartList==null){
             runBlocking {
                 lifecycleScope.async(Dispatchers.IO){
-                    cartList=dashboardViewModel.getAllCartModels().get(0)
+                    cartList=dashboardViewModel.getAllCartModels().last()
                 }.await()
             }
         }
@@ -5463,7 +5463,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (cartList==null){
             runBlocking {
                 lifecycleScope.async(Dispatchers.IO){
-                    cartList=dashboardViewModel.getAllCartModels().get(0)
+                    cartList=dashboardViewModel.getAllCartModels().last()
                 }.await()
             }
         }
@@ -5480,7 +5480,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (cartList==null){
             runBlocking {
                 lifecycleScope.async(Dispatchers.IO){
-                    cartList=dashboardViewModel.getAllCartModels().get(0)
+                    cartList=dashboardViewModel.getAllCartModels().last()
                 }.await()
             }
         }
