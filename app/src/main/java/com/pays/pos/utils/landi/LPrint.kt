@@ -518,20 +518,26 @@ final object LPrint {
         listItemWithGuest: HashMap<String, ArrayList<TbCartItem>> = hashMapOf()
     ) {
 
-        listItemWithGuest.forEach { it ->
 
-            lineBreak()
-            printDashedLineAndBreak()
 
-            printText(it.key + "\n")
-
-            printDashedLineAndBreak()
-            lineBreak()
-
-            it.value.forEach { obj ->
+        listItemWithGuest.forEach { guest ->
+            var isGuestNamePrinted = false
+            guest.value.forEach { obj ->
 
                 printerCat?.forEach {
                     if (it.id == obj.categoryId && it.printerEnable && it.categoryActive) {
+
+                        if (!isGuestNamePrinted) {
+                            lineBreak()
+                            printDashedLineAndBreak()
+
+                            printText(guest.key + "\n")
+
+                            printDashedLineAndBreak()
+                            lineBreak()
+
+                            isGuestNamePrinted = true
+                        }
 
                         printWithFontSize(obj.itemQuantity.toString() + " " + obj.name.uppercase(),
                             FONT_B)

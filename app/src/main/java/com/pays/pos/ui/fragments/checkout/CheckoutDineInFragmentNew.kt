@@ -64,6 +64,7 @@ import com.magtek.mobile.android.mtusdk.*
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
+import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
 import com.pays.pos.ui.fragments.dineInNew.DineInOrderTableViewModelPays
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
@@ -299,17 +300,19 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             orderOfflineId = arguments?.getString("orderOfflineId").toString()
         }
 
-       // dashboardViewModel.totalPriceUpdated.observe(viewLifecycleOwner) {
+        dashboardViewModel.totalPriceUpdated.observe(viewLifecycleOwner) {
+            Log.e("Dine in","3 DATA ALREADY UPDATED $it")
             getDataFromPref()
-        //}
-        setupTabDesign()
-        paymentClick()
-        splitClick()
-        observeShowProgress()
-        observeData()
-        callback()
-        setUpManualCardFocusChanged()
-        observeQueueCreate()
+            setupTabDesign()
+            paymentClick()
+            splitClick()
+            observeShowProgress()
+            observeData()
+            callback()
+            setUpManualCardFocusChanged()
+            observeQueueCreate()
+        }
+
     }
 
     private fun setUpManualCardFocusChanged() {
@@ -1511,32 +1514,41 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         AlertUtils.showCustomAlert(requireContext(), msg)
     }
 
-    fun getDataFromPref() {
+    fun observeValuesFromCart() {
+        dashboardViewModel.totalPriceUpdated.observe(viewLifecycleOwner) {
+            getDataFromPref()
+        }
+    }
 
-        viewModel.totalPrice = viewModel.totalPriceUpdated.value ?: viewModel.totalPrice
+    fun getDataFromPref() {
 
         redeemLoyaltyInfo = viewModel.redeemLoyaltyInfo
         prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
-        if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty() || prefProvider.getValue(
-                Constants.WHOLE_AMOUNT,
-                ""
-            ) == "0.0" || prefProvider.getValue(
-                Constants.WHOLE_AMOUNT,
-                ""
-            ) == "0.00"
+        if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty() ||
+            prefProvider.getValue(Constants.WHOLE_AMOUNT, "") == "0.0" ||
+            prefProvider.getValue(Constants.WHOLE_AMOUNT, "") == "0.00"
         ) {
             LogUtil.logE(TAG, "totalPrice  ${viewModel.totalPrice}")
+
+
+            viewModel.totalPrice  = viewModel.totalPriceUpdated.value ?: 0.0
+
+            Log.e("Dine in"," 0 BEFORE DATA ALREADY UPDATED WHOLE = $WholetotalPrice ${viewModel.totalPriceUpdated.value} ${viewModel.totalPrice}")
+
 
             WholetotalPrice = viewModel.totalPrice
             prefProvider.setValue(
                 Constants.WHOLE_AMOUNT,
                 String.format("%.2f", viewModel.totalPrice)
             )
-        }
+        } else {
+            WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
 
-//        else {
-//            WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
-//        }
+
+            //    WholetotalPrice =  viewModel.totalPriceUpdated.value ?: 0.0
+
+            Log.e("Dine in"," 4 BEFORE DATA ALREADY UPDATED WHOLE = $WholetotalPrice ${viewModel.totalPriceUpdated.value}")
+        }
 
         if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty() || prefProvider.getValue(
                 Constants.SUB_TOTAL,
@@ -1828,6 +1840,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 tipAmountCalculation()
             }
         }
+
+//        //TODO - remove this line for split payment
+//        binding.linearTab2.gone()
 
         if(isGuestPay)
             binding.linearTab2.gone()
@@ -2650,6 +2665,46 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     }
 
     private fun gotoPay(createOrder: CreateOrderResponse) {
+
+
+//        if(dineInDataModel.dineInOrderDetails?.payments?.isEmpty() == true) {
+
+            val list = mutableListOf<GetOrderDetailsResponse.Data.Payment>()
+            createOrder.data.order.payments.forEach { paymentDetails ->
+
+                val payment = GetOrderDetailsResponse.Data.Payment(
+                    amount = paymentDetails.amount,
+                    cardName = paymentDetails.cardName,
+                    cardNumber = paymentDetails.cardNumber,
+                    cardType = paymentDetails.cardType,  // Nullable field in first Payment class
+                    createdAt = paymentDetails.createdAt,
+                    cash_discount_or_surcharge = paymentDetails.totalcashdiscount,
+                    employeeId = paymentDetails.employeeId,
+                    id = paymentDetails.id,
+                    offlineId = paymentDetails.offlineId,
+                    orderId = paymentDetails.orderId,
+                    payableId = paymentDetails.payableId,
+                    payableType = paymentDetails.payableType,
+                    paymentType = paymentDetails.paymentType,
+                    serviceChargeAmount = paymentDetails.serviceChargeAmount,
+                    subTotal = paymentDetails.subTotal,
+                    taxAmount = paymentDetails.taxAmount,
+                    terminalId = paymentDetails.terminalId,
+                    tips = paymentDetails.tips,
+                    tipsAdjusted = paymentDetails.tipsAdjusted,
+                    totalDiscount = paymentDetails.totalDiscount,
+                    transactionId = paymentDetails.transactionId,
+                    updatedAt = paymentDetails.updatedAt,
+                    dynamicPaymentId = null
+                )
+
+
+                list.add(payment)
+            }
+            dineInDataModel.dineInOrderDetails?.payments = list
+
+    //    }
+
         when {
 
             paymentType == "Cash" -> {

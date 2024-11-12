@@ -4122,14 +4122,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     printCenter("Whole Table")
                                     lineBreak()
 
+                                    var guestCount: Int =
+                                        (order?.guestAttributes?.size?.minus(1)) ?: 1
+                                    if (guestCount < 1) {
+                                        guestCount = 1
+                                    }
+
                                     for (i in 0 until listWTitems.size) {
-
-                                        var guestCount: Int =
-                                            (order?.guestAttributes?.size?.minus(1)) ?: 1
-                                        if (guestCount < 1) {
-                                            guestCount = 1
-                                        }
-
 
                                         addWholeTbItemToGuestInnerLandi(
                                             listWTitems.get(i),
@@ -4163,20 +4162,29 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                      */
                                     lineBreak()
 
+                                    val guestPayment = order?.payments?.last()
+
+
+
+                                    var guestDiscount:Double = 0.00
+
+
+                                    try {
+
+                                        guestDiscount = guestPayment?.totalDiscount!!
+
+                                    }catch (e:Exception) {
+
+                                    }
+
+                                    guestDiscount = MethodUtils.roundOffAmountDouble(guestDiscount)
+
                                     if (order?.totalDiscount != null) {
 
                                         val discountToPrint =
                                             padLine(
                                                 "Total Discount",
-
-                                                if (order?.totalDiscount == 0.0) {
-//                            "-$" + MethodUtils.roundOffAmountString(0.00)
-                                                    "$" + MethodUtils.roundOffAmountString(0.00)
-                                                } else {
-                                                    order?.totalDiscount?.let {
-                                                        "-$" + MethodUtils.roundOffAmountString(it)
-                                                    }
-                                                },
+                                                "-$" + MethodUtils.roundOffAmountString( guestDiscount ),
                                                 48
                                             ).toString()
 
@@ -4191,7 +4199,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                     val subTotalToPrint = padLine(
                                         "Sub Total",
-                                        "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.subTotal ?: 0.0),
+                                        "$" + MethodUtils.roundOffAmountString(guestPayment?.subTotal ?: 0.0),
                                         48
                                     ).toString()
 
@@ -4209,7 +4217,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         val taxToPrint =
                                             padLine(
                                                 "Tax",
-                                                "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalTax ?: 0.0),
+                                                "$" + MethodUtils.roundOffAmountString(guestPayment?.taxAmount ?: 0.0),
                                                 48
                                             ).toString()
 
@@ -4234,7 +4242,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         val serviceChargeToPrint =
                                             padLine(
                                                 "Service Charge",
-                                                "$" + MethodUtils.roundOffAmountString(serviceCharge),
+                                                "$" + MethodUtils.roundOffAmountString(guestPayment?.serviceChargeAmount ?: 0.0),
                                                 if (customerSettingModel.fonts == Constants.LARGE) {
                                                     23
                                                 } else {
@@ -4324,7 +4332,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                     val str5 = padLine(
                                         "Total Price",
-                                        "$" + MethodUtils.roundOffAmountString(totalAmt),
+                                        "$" + MethodUtils.roundOffAmountString(guestPayment?.amount ?: 0.0),
                                         48
                                     ).toString()
 

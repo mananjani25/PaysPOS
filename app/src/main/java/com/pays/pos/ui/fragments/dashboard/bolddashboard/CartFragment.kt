@@ -2458,8 +2458,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 binding.txtTotal.text =
                     MethodUtils.roundOffAmount(viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge)
 
+                Log.e("Dine in","1 BEFORE DATA ALREADY UPDATED ${viewModel.totalPriceUpdated.value} = sub = ${viewModel.subTotalPrice} , tax = ${viewModel.totalTax}, service charges = ${viewModel.totalServiceCharge}\"")
                 viewModel.totalPriceUpdated.value =
                     viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge
+                Log.e("Dine in","2 DATA ALREADY UPDATED CART ${viewModel.totalPriceUpdated.value} = sub = ${ viewModel.subTotalPrice} , tax = ${viewModel.totalTax}, service charges = ${viewModel.totalServiceCharge}")
 
                 Log.e(
                     "Service charges",
@@ -2494,8 +2496,19 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
 
             } else {
-                var total = viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge
-                viewModel.cashdiscountAmount = MethodUtils.getLatestCashDiscountOrSurCharge(total, prefProvider, requireContext())
+
+                if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+                    viewModel.cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                        viewModel.totalPriceUpdated.value ?: 0.0,
+                        prefProvider,
+                        requireContext()
+                    )
+                } else {
+                    var total = viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge
+                    viewModel.cashdiscountAmount = MethodUtils.getLatestCashDiscountOrSurCharge(total, prefProvider, requireContext())
+
+                }
+
                 binding.txtNoncashAdj.text =
                     MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
             }
