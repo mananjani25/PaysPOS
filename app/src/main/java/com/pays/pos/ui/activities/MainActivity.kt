@@ -3783,6 +3783,14 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 }
             }
 
+            if (it.asJsonObject.has("customer_sync")){
+                if (it.asJsonObject.get("customer_sync").toString().equals("true")){
+                    var firstName=it.asJsonObject.get("first_name")
+                    var customerId=it.asJsonObject.get("customer_id")
+                    syncCustomer(firstName.asString,customerId.asInt)
+                }
+            }
+
             //Change this - get order response key as sync_dine_in
             if (navController?.currentDestination?.id == R.id.dineInFragmentPays) {
                 EventBus.getDefault().post(SyncDineInEvent(true, "RefreshDineIn"))
@@ -3817,6 +3825,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             }
         } catch (e: Exception) {
             Log.e(TAG2, "Exception ${e.message}")
+        }
+    }
+
+    private fun syncCustomer(firstName: String?, customerId: Int) {
+        firstName?.let {
+            addCustomerViewModel.fetchCustomerFromPhoneNumber(it,customerId=customerId,sync = true)
         }
     }
 

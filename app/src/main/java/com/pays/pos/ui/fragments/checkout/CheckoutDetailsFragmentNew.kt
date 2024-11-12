@@ -1438,16 +1438,25 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     R.id.action_paymentBoldPosFragment_to_orderComplete,
                                     bundle
                                 )
+                            }else{
+                                runOnUiThread(Runnable {
+                                    dismissProgressDialog()
+                                })
                             }
 
                         }
                     }
                 } else {
+                    runOnUiThread(Runnable {
+                        dismissProgressDialog()
+                    })
+
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         requireContext(),
                         message = it.message
                     ) { _, _ ->
                     }
+
                 }
 
 
@@ -2169,12 +2178,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
         cashDiscountSurcharge = if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
             0.0
-        } else {
-            MethodUtils.getLatestCashDiscountOrSurCharge(
-                WholetotalPrice,
-                prefProvider,
-                requireContext()
-            ) / isSelectedCount
+            } else {
+                MethodUtils.getLatestCashDiscountOrSurCharge(
+                    WholetotalPrice,
+                    prefProvider,
+                    requireContext()
+                ) / isSelectedCount
         }
         if (cashDiscountType.equals("CashDiscount")) {
             paymentAmount -= cashDiscountSurcharge
@@ -2350,15 +2359,20 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
                 totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
                 cashDiscountSurcharge =
-                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
-                        0.0
-                    } else {
-                        MethodUtils.getLatestCashDiscountOrSurCharge(
-                            WholetotalPrice,
-                            prefProvider,
-                            requireContext()
-                        ) / isSelectedCount
-                    }
+                    MethodUtils.getLatestCashDiscountOrSurCharge(
+                        WholetotalPrice,
+                        prefProvider,
+                        requireContext()
+                    ) / isSelectedCount
+//                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+//                        0.0
+//                    } else {
+//                        MethodUtils.getLatestCashDiscountOrSurCharge(
+//                            WholetotalPrice,
+//                            prefProvider,
+//                            requireContext()
+//                        ) / isSelectedCount
+//                    }
                 paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
 
                 lifecycleScope.launch(Dispatchers.IO) {
@@ -3587,11 +3601,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 totalprice
             }
         } else {
-            if (cashDiscountType == "SurCharge" && prefProvider.getValue(
-                    ORDER_TYPE,
-                    TAKEOUT
-                ) != GIFT_CARD
-            ) {
+//            if (cashDiscountType == "SurCharge" && prefProvider.getValue(
+//                    ORDER_TYPE,
+//                    TAKEOUT
+//                ) != GIFT_CARD
+//            )
+            if (cashDiscountType == "SurCharge") {
                 totalprice + MethodUtils.getLatestCashDiscountOrSurCharge(
                     totalprice,
                     prefProvider,
@@ -3859,6 +3874,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 }", true
                             )
                         )
+                        cartList = Gson().fromJson(model, CartModel::class.java)
                         dashboardViewModel.cartModel =
                             Gson().fromJson(model, CartModel::class.java)
                     }catch (e:Exception){
@@ -3866,7 +3882,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             CoroutineScope(Dispatchers.IO).async { dashboardViewModel.getAllCartModels() }
                                 .await()
                         if (models.isNotEmpty()) {
-                            dashboardViewModel.cartModel = models.get(0)
+                            dashboardViewModel.cartModel = models.last()
+                            cartList=models.last()
+                        }else{
+                            /*Continuous loading shall occur due to the cartModel null */
+
                         }
                     }
                 }
@@ -3887,8 +3907,20 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             prefProvider.setValueboolean(DO_PRINT, true)
         }
 
-
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_makePaymentCreditCard() -> cartList -> ${
+                    Gson().toJson(cartList)
+                }", true
+            )
+        )
         if (cartList == null || cartList?.items == null || cartList?.items?.isEmpty() == true) {
+
+            EventBus.getDefault().post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_makePaymentCreditCard() -> null Case"
+                ))
+
             var items: ArrayList<TbItem>? = ArrayList()
             /*  for (item in dashboardViewModel.currentCartItems) {*/
             for (item in dashboardViewModel.currentCartItems) {
@@ -4085,6 +4117,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             /*Adding the deleted items*/
             cartList?.items = items
         }
+
+
         prefProvider.setValue(Constants.OLD_ITEM, "")
         prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
         prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")

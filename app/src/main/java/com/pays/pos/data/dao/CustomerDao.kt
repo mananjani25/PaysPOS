@@ -28,6 +28,9 @@ interface CustomerDao {
     @Query("UPDATE TbCustomer SET final_reward = :rewards WHERE id =:customer_id")
     suspend fun updateLoyaltyRewards(rewards: Int, customer_id: Int)
 
+    @Query("UPDATE TbCustomer SET final_reward = :rewards WHERE id =:customer_id AND first_name=:firstName")
+    suspend fun updateLoyaltyRewards(rewards: Int, customer_id: Int, firstName:String)
+
     @Query("DELETE FROM TbCustomer")
     suspend fun deleteCustomerTb()
 

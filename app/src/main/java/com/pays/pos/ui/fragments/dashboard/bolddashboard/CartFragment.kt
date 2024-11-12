@@ -2493,6 +2493,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         prefProvider,
                         requireContext()
                     )
+                } else {
+                    var total = viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge
+                    viewModel.cashdiscountAmount = MethodUtils.getLatestCashDiscountOrSurCharge(total, prefProvider, requireContext())
+
                 }
 
                 binding.txtNoncashAdj.text =
