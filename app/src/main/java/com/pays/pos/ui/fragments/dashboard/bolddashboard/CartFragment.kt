@@ -2552,8 +2552,23 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         requireContext()
                     )
                 } else {
-                    var total = viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge
-                    viewModel.cashdiscountAmount = MethodUtils.getLatestCashDiscountOrSurCharge(total, prefProvider, requireContext())
+                    if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                        val total =
+                            viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge - viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
+                        viewModel.cashdiscountAmount = MethodUtils.getLatestCashDiscountOrSurCharge(
+                            total,
+                            prefProvider,
+                            requireContext()
+                        )
+                    } else {
+                        val total =
+                            viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge
+                        viewModel.cashdiscountAmount = MethodUtils.getLatestCashDiscountOrSurCharge(
+                            total,
+                            prefProvider,
+                            requireContext()
+                        )
+                    }
 
                 }
 
