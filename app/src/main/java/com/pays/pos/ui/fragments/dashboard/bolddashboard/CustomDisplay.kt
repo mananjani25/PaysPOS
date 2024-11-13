@@ -192,11 +192,26 @@ class CustomDisplay(
     /*-------------Customer Loyalty---------------*/
     private fun initViews() {
 
+        if (prefProvider.getValueboolean(Constants.IS_PAYMENT_SCREEN,false)){
+            lifecycleOwner.lifecycleScope.launch(Dispatchers.Main){
+                binding.btnSignUpOrCheckInMain.apply {
+                    gone()
+                }
+            }
+
+        }else{
+            lifecycleOwner.lifecycleScope.launch(Dispatchers.Main){
+                binding.btnSignUpOrCheckInMain.apply {
+                    visible()
+                }
+            }
+        }
         lifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             if (dashBoardCategoryViewModel.allSplit().isEmpty()){
                 withContext(Dispatchers.Main){
                     binding.apply {
-                        btnSignUpOrCheckInMain.visible()
+                        /*Commented for now because we don't need to show the signIn or change mobile button on Checkout Screen*/
+//                        btnSignUpOrCheckInMain.visible()
                     }
                 }
             }else{
@@ -235,10 +250,15 @@ class CustomDisplay(
             if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isNotEmpty()) {
                 btnSignUpOrCheckIn?.text = resources.getString(R.string.change_mobile_number)
                 btnSignUpOrCheckInMain?.text = resources.getString(R.string.change_mobile_number)
+//               Added below gone() statement just for initial phase
+                btnSignUpOrCheckInMain.gone()
+                btnSignUpOrCheckIn.gone()
                 tvMessage?.text = "Customer added successfully"
             }else{
                 btnSignUpOrCheckIn?.text = resources.getString(R.string.sign_up_or_check_in)
                 btnSignUpOrCheckInMain?.text = resources.getString(R.string.sign_up_or_check_in)
+                btnSignUpOrCheckInMain.visible()
+                btnSignUpOrCheckIn.visible()
             }
 
             btnSignUpOrCheckIn?.setOnSingleClickListener(object : View.OnClickListener {
@@ -468,6 +488,11 @@ class CustomDisplay(
             binding.apply {
                 tvMessage?.text="Customer added successfully"
                 btnSignUpOrCheckInMain.text=resources.getString(R.string.change_mobile_number)
+
+                /*Gone is temporary, we will remove this in future*/
+                btnSignUpOrCheckInMain.gone()
+                btnSignUpOrCheckIn.gone()
+
                 btnSignUpOrCheckIn.text=resources.getString(R.string.change_mobile_number)
                 txtCustomerName.visible()
                 txtCustomerName.apply { text = customer.first_name + " " + customer.last_name }
@@ -1016,8 +1041,12 @@ class CustomDisplay(
 //              CoroutineScope(Dispatchers.Main).launch {
 //                    binding.apply {
                 binding.tvMessage.post { binding.tvMessage.text="Customer added successfully" }
-                binding.btnSignUpOrCheckInMain.post { binding.btnSignUpOrCheckInMain.text=resources.getString(R.string.change_mobile_number) }
-                binding.btnSignUpOrCheckIn.post { binding.btnSignUpOrCheckIn.text=resources.getString(R.string.change_mobile_number) }
+                binding.btnSignUpOrCheckInMain.post { binding.btnSignUpOrCheckInMain.text=resources.getString(R.string.change_mobile_number)
+                    /*Gone is temprary*/
+                binding.btnSignUpOrCheckInMain.gone() }
+                binding.btnSignUpOrCheckIn.post { binding.btnSignUpOrCheckIn.text=resources.getString(R.string.change_mobile_number)
+                    /*Gone is temprary*/
+                    binding.btnSignUpOrCheckIn.gone()}
                 binding.txtCustomerName.post { binding.txtCustomerName.visibility=View.VISIBLE }
                 binding.txtCustomerName.post { binding.txtCustomerName.text=name }
 //                        txtCustomerName.invalidate()
