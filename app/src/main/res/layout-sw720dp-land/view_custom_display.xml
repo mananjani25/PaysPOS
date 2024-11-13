@@ -1401,8 +1401,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:background="@drawable/background_sales_button"
-                    android:orientation="vertical"
+                    android:orientation="horizontal"
                     android:visibility="visible"
+                    android:weightSum="1"
                     app:layout_constraintEnd_toEndOf="@+id/constraintLayout"
                     app:layout_constraintStart_toStartOf="@+id/constraintLayout"
                     app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
@@ -1410,7 +1411,7 @@
                     <com.santalu.maskedittext.MaskEditText
                         android:id="@+id/tvPhoneNumber"
                         style="@style/CustomFontMediumStyle"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@null"
                         android:hint="@string/type_here"
@@ -1418,9 +1419,19 @@
                         android:maxLength="20"
                         android:padding="@dimen/_9sdp"
                         android:textColor="@color/white"
+                        android:layout_weight="0.9"
                         android:textColorHint="@color/gray_color"
                         android:textSize="@dimen/_7mdpi"
                         app:met_mask="(###) ###-####" />
+
+                    <TextView
+                        android:id="@+id/tvErrorMessage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.1"
+                        android:textColor="@android:color/holo_red_dark"
+                        android:text=""
+                        android:textSize="14.00sp" />
 
                     <!--        <com.santalu.maskedittext.MaskEditText
                                 android:id="@+id/tvPhoneNumber"
@@ -1439,6 +1450,7 @@
                                 app:met_mask="(###) ###-####" />-->
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
+
 
                 <!--<TextView
                     android:id="@+id/tvPhoneNumber"

@@ -244,6 +244,7 @@ class CustomDisplay(
             btnSignUpOrCheckIn?.setOnSingleClickListener(object : View.OnClickListener {
                 override fun onClick(p0: View?) {
                     tvPhoneNumber.text?.clear()
+                    tvErrorMessage?.text = ""
                     splashLayout.gone()
                     keypadLayout?.visible()
                 }
@@ -265,6 +266,8 @@ class CustomDisplay(
                         mainCartLayout.visible()
                         splashLayout.gone()
                         keypadLayout?.gone()
+                        tvErrorMessage?.text = ""
+
                     }else{
                         splashLayout.visible()
                         keypadLayout?.gone()
@@ -330,12 +333,14 @@ class CustomDisplay(
             btnClear?.setOnClickListener(object : View.OnClickListener {
                 override fun onClick(p0: View?) {
                     tvPhoneNumber?.setText("")
+                    tvErrorMessage?.text = ""
                 }
             })
 
             btnBackSpace?.setOnClickListener(object : View.OnClickListener {
                 override fun onClick(p0: View?) {
                     tvPhoneNumber?.setText(MethodUtils.removeChars(tvPhoneNumber?.text.toString(), 1))
+                    tvErrorMessage?.text = ""
                 }
             })
 
@@ -359,8 +364,10 @@ class CustomDisplay(
                     if (mobileNumber.length == 10) {
                         searchUserFromMobileNumber(mobileNumber)
                         tvPhoneNumber?.text?.clear()
+                        tvErrorMessage?.text = ""
                     } else {
-                        Toast.makeText(context,"Enter a correct Mobile Number.", Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(context,"Enter a correct Mobile Number.", Toast.LENGTH_SHORT).show()
+                        tvErrorMessage?.text = "Invalid Input"
                     }
 //                    [{"id":2,"phone_number":"5555575575"}]
                 }
