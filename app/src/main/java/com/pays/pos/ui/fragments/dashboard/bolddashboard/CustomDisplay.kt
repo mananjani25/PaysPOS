@@ -17,6 +17,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.Window
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.databinding.adapters.TextViewBindingAdapter.setText
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -454,13 +455,15 @@ class CustomDisplay(
         /*This will click on the order type dynamically, only the variable name is clickOnTakeOut()*/
         dashBoardCategoryViewModel.clickOnTakeOut()
         Log.v("4732", "TakeOut Clicked on Main Screen")
-        if (dashBoardCategoryViewModel.currentCartItems.isNotEmpty()){
-            dashBoardCategoryViewModel.callUpdateCartFooter(true)
-        }
+//        if (dashBoardCategoryViewModel.currentCartItems.isNotEmpty()){
+//            dashBoardCategoryViewModel.callUpdateCartFooter(true)
+//        }
         dashBoardCategoryViewModel.changeCustomerDispSignButtonTitle(resources.getString(R.string.change_mobile_number))
         EventBus.getDefault()
             .post(SyncCustomerEvent(true, customer.first_name + " " + customer.last_name))
-        lifecycleOwner.lifecycleScope.launch {
+//        displayCustomer()
+
+        CoroutineScope(Dispatchers.Main).launch {
             displayCustomer()
             binding.apply {
                 tvMessage?.text="Customer added successfully"
@@ -471,22 +474,20 @@ class CustomDisplay(
                 keypadLayout?.gone()
                 splashLayout?.gone()
                 mainCartLayout?.visible()
-
-                dismiss()
-                dismiss()
-
             }
-            Log.v("4732", "Customer Name is shown")
-
-//            if (savedInstanceStateBackup!=null){
-//                onCreate(savedInstanceStateBackup)
-//            }
-//            onCreate(null)
-
+//            Log.v("4732", "Customer Name is shown")
+//
+////            if (savedInstanceStateBackup!=null){
+////                onCreate(savedInstanceStateBackup)
             dashBoardCategoryViewModel.refreshCartFragment()
-        }
+            }
+////            onCreate(null)
+//
+
+//        }
 
 //        onCreate(null)
+
 
     }
 
@@ -982,9 +983,12 @@ class CustomDisplay(
         if (name.isNotEmpty()) {
             Log.v("4732", "inside displayCustomer()_1")
 //            CoroutineScope(Dispatchers.Main).launch {
-                binding.txtCustomerName.visible()
-                binding.txtCustomerName.text=name
-                binding.txtLoyaltyPointsLabel.visible()
+            binding.apply {
+                txtCustomerName.post { txtCustomerName.visible() }
+                txtCustomerName.post { txtCustomerName.text=name }
+                txtLoyaltyPointsLabel.post {  txtLoyaltyPointsLabel.visible() }
+            }
+
 //                show()
 //                binding.root.invalidate() // or
 //                this@CustomDisplay.window?.decorView?.invalidate()
@@ -993,7 +997,7 @@ class CustomDisplay(
 //            }
 
             if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
-                lifecycleOwner.lifecycleScope.launch {
+                lifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
                     Log.v("4732", "inside displayCustomer()_3")
                     binding.tvLoyaltyBalance.visible()
                     binding.tvLoyaltyPoints.visible()
@@ -1002,43 +1006,50 @@ class CustomDisplay(
                     binding.tvLoyaltyPoints.text =
                         "${context.resources.getString(R.string.applied_loyalty_points)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
                 }
+                dashBoardCategoryViewModel.reloadCustomerDisplay()
             } else {
                 /*binding.tvLoyaltyBalance.invisible()
                 binding.tvLoyaltyPoints.invisible()
                 */
 //                Handler(Looper.getMainLooper()).post(Runnable {
 
-                    binding.apply {
-                        tvMessage.setText("Customer added successfully")
-                        btnSignUpOrCheckInMain.setText(resources.getString(R.string.change_mobile_number))
-                        btnSignUpOrCheckIn.setText(resources.getString(R.string.change_mobile_number))
-                        txtCustomerName.visibility=View.VISIBLE
-                        txtCustomerName.setText(name)
+//              CoroutineScope(Dispatchers.Main).launch {
+//                    binding.apply {
+                binding.tvMessage.post { binding.tvMessage.text="Customer added successfully" }
+                binding.btnSignUpOrCheckInMain.post { binding.btnSignUpOrCheckInMain.text=resources.getString(R.string.change_mobile_number) }
+                binding.btnSignUpOrCheckIn.post { binding.btnSignUpOrCheckIn.text=resources.getString(R.string.change_mobile_number) }
+                binding.txtCustomerName.post { binding.txtCustomerName.visibility=View.VISIBLE }
+                binding.txtCustomerName.post { binding.txtCustomerName.text=name }
 //                        txtCustomerName.invalidate()
 //                        txtCustomerName.postInvalidate()
-                        keypadLayout?.gone()
-                        splashLayout?.gone()
-                        mainCartLayout?.visible()
+                binding.keypadLayout.post { binding.keypadLayout.gone() }
+                binding.splashLayout.post { binding.splashLayout.gone() }
+                binding.mainCartLayout.post { binding.mainCartLayout.visible() }
+
+                dashBoardCategoryViewModel.reloadCustomerDisplay()
+
 //                        binding.root.invalidate() // or
 //                        show()
 //                        this@CustomDisplay.window?.decorView?.invalidate()
-                    }
+//                    }
+//                }
+
 //                })
 //                show()
 
 //                binding.root.invalidate() // or
 //                this@CustomDisplay.window?.decorView?.invalidate()
-                CoroutineScope(Dispatchers.Main).launch {
+                /*CoroutineScope(Dispatchers.Main).launch {
                     Log.v("4732", "inside displayCustomer()_removed_1 -> -> ${name}")
 
-                    /*-----------Customer Loyalty------------*/
+                    *//*-----------Customer Loyalty------------*//*
                     binding.tvLoyaltyBalance.gone()
                     binding.tvLoyaltyPoints.gone()
-                    /*binding.txtCustomerName.post {
+                    *//*binding.txtCustomerName.post {
                         this@CustomDisplay.name=name
-                    }*/
-                    /*-----------Customer Loyalty------------*/
-                }
+                    }*//*
+                    *//*-----------Customer Loyalty------------*//*
+                }*/
             }
 //            binding.root.invalidate() // or
 //            this@CustomDisplay.window?.decorView?.invalidate()
@@ -1053,6 +1064,7 @@ class CustomDisplay(
                         }
                     }"
                 binding.txtCustomerName.text = name
+                binding.txtCustomerName.post { binding.txtCustomerName.text=name }
             }
 
 
@@ -1081,6 +1093,7 @@ class CustomDisplay(
                     resources.getDimension(R.dimen._70sdp).toInt()
 
             }
+
         }
 
     }
