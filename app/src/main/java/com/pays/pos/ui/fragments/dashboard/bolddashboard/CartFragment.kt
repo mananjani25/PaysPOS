@@ -562,22 +562,26 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             viewLifecycleOwner,
             object : androidx.lifecycle.Observer<Event<Boolean>> {
                 override fun onChanged(t: Event<Boolean>?) {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        binding.rvOrderType.layoutManager?.childCount?.let {
-                            for (position in 0..it) {
-                                if (binding.rvOrderType.findViewHolderForAdapterPosition(position)?.itemView?.findViewById<TextView>(
-                                        R.id.txtTitle
-                                    )?.text?.contains(/*"Take out"*/binding.orderTypeDisplay.text.toString(), ignoreCase = true) ?: false
-                                ) {
-                                    performClickOnOrderTypeAndSetCustomer(position)
-                                    break
-                                }else if (!binding.orderTypeDisplay.text.toString().trim().contains(':')){
-                                    performClickOnOrderTypeAndSetCustomer(0)
-                                    break
+//                    CoroutineScope(Dispatchers.Main).launch {
+                        runOnUiThread(object :Runnable{
+                            override fun run() {
+                                binding.rvOrderType.layoutManager?.childCount?.let {
+                                    for (position in 0..it) {
+                                        if (binding.rvOrderType.findViewHolderForAdapterPosition(position)?.itemView?.findViewById<TextView>(
+                                                R.id.txtTitle
+                                            )?.text?.contains(/*"Take out"*/binding.orderTypeDisplay.text.toString(), ignoreCase = true) ?: false
+                                        ) {
+                                            performClickOnOrderTypeAndSetCustomer(position)
+                                            break
+                                        }else if (!binding.orderTypeDisplay.text.toString().trim().contains(':')){
+                                            performClickOnOrderTypeAndSetCustomer(0)
+                                            break
+                                        }
+                                    }
                                 }
                             }
-                        }
-                    }
+                        })
+//                    }
                 }
             })
     }
