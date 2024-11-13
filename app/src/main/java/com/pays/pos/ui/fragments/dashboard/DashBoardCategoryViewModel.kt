@@ -584,8 +584,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     val reloadCustomerDisplay = MutableLiveData<Boolean>()
     fun reloadCustomerDisplay(){
-        /*commented because it was going into infinite call and performance was decreasing heavily*/
-//        fragmentNeedToBeUpdated.postValue(true)
+        /* Uncomment the below code, if the customer Display is not refreshing everytime */
+//        reloadCustomerDisplay.postValue(true)
     }
 
     fun itemsByCat(id: Int): kotlinx.coroutines.flow.Flow<PagingData<TbItem>> = Pager(
