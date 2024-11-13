@@ -1,6 +1,5 @@
 package com.pays.pos.ui.fragments.dashboard.bolddashboard
 
-import android.app.Activity
 import android.app.Presentation
 import android.content.Context
 import android.content.DialogInterface
@@ -18,7 +17,6 @@ import android.view.Gravity
 import android.view.View
 import android.view.Window
 import androidx.appcompat.view.ContextThemeWrapper
-import androidx.core.view.isGone
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -53,6 +51,7 @@ import com.pays.pos.databinding.ViewCustomDisplayBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.logger.CreateCustomerEvent
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.logger.SyncCustomerEvent
 import com.pays.pos.ui.adapter.ActiveTipsListAdapter
 import com.pays.pos.ui.adapter.DineInAdapter
@@ -396,7 +395,8 @@ class CustomDisplay(
                     createCustomer(phoneNumber)
                     CoroutineScope(Dispatchers.Main).launch {
                         binding.keypadLayout?.gone()
-                        binding.splashLayout?.visible()
+                        binding.splashLayout?.gone()
+                        binding.mainCartLayout?.visible()
                     }
                 }
             } else {
@@ -404,7 +404,8 @@ class CustomDisplay(
                 createCustomer(phoneNumber)
                 CoroutineScope(Dispatchers.Main).launch {
                     binding.keypadLayout?.gone()
-                    binding.splashLayout?.visible()
+                    binding.splashLayout?.gone()
+                    binding.mainCartLayout?.visible()
                 }
             }
             Log.d("CustomersList:: ", Gson().toJson(customersListFromDb))
@@ -426,7 +427,7 @@ class CustomDisplay(
             }
 
             binding.root.invalidate() // or
-            this@CustomDisplay.window?.decorView?.invalidate()
+//            this@CustomDisplay.window?.decorView?.invalidate()
         }
 
         Log.d("C_Loyalty: ", "createCustomer: Loading... Set")
@@ -459,7 +460,7 @@ class CustomDisplay(
         dashBoardCategoryViewModel.changeCustomerDispSignButtonTitle(resources.getString(R.string.change_mobile_number))
         EventBus.getDefault()
             .post(SyncCustomerEvent(true, customer.first_name + " " + customer.last_name))
-        CoroutineScope(Dispatchers.Main).launch {
+        lifecycleOwner.lifecycleScope.launch {
             displayCustomer()
             binding.apply {
                 tvMessage?.text="Customer added successfully"
@@ -481,6 +482,8 @@ class CustomDisplay(
 //                onCreate(savedInstanceStateBackup)
 //            }
 //            onCreate(null)
+
+            dashBoardCategoryViewModel.refreshCartFragment()
         }
 
 //        onCreate(null)
@@ -978,19 +981,19 @@ class CustomDisplay(
         val name = prefProvider.getValue(Constants.CUSTOMER_NAME, "")
         if (name.isNotEmpty()) {
             Log.v("4732", "inside displayCustomer()_1")
-            CoroutineScope(Dispatchers.Main).launch {
+//            CoroutineScope(Dispatchers.Main).launch {
                 binding.txtCustomerName.visible()
                 binding.txtCustomerName.text=name
                 binding.txtLoyaltyPointsLabel.visible()
-                show()
-                binding.root.invalidate() // or
-                this@CustomDisplay.window?.decorView?.invalidate()
-                show()
+//                show()
+//                binding.root.invalidate() // or
+//                this@CustomDisplay.window?.decorView?.invalidate()
+//                show()
                 Log.v("4732", "inside displayCustomer()_2 -> ${name}")
-            }
+//            }
 
             if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
-                CoroutineScope(Dispatchers.Main).launch {
+                lifecycleOwner.lifecycleScope.launch {
                     Log.v("4732", "inside displayCustomer()_3")
                     binding.tvLoyaltyBalance.visible()
                     binding.tvLoyaltyPoints.visible()
@@ -1003,7 +1006,7 @@ class CustomDisplay(
                 /*binding.tvLoyaltyBalance.invisible()
                 binding.tvLoyaltyPoints.invisible()
                 */
-                Handler(Looper.getMainLooper()).post(Runnable {
+//                Handler(Looper.getMainLooper()).post(Runnable {
 
                     binding.apply {
                         tvMessage.setText("Customer added successfully")
@@ -1011,20 +1014,20 @@ class CustomDisplay(
                         btnSignUpOrCheckIn.setText(resources.getString(R.string.change_mobile_number))
                         txtCustomerName.visibility=View.VISIBLE
                         txtCustomerName.setText(name)
-                        txtCustomerName.invalidate()
-                        txtCustomerName.postInvalidate()
+//                        txtCustomerName.invalidate()
+//                        txtCustomerName.postInvalidate()
                         keypadLayout?.gone()
                         splashLayout?.gone()
                         mainCartLayout?.visible()
-                        binding.root.invalidate() // or
-                        show()
-                        this@CustomDisplay.window?.decorView?.invalidate()
+//                        binding.root.invalidate() // or
+//                        show()
+//                        this@CustomDisplay.window?.decorView?.invalidate()
                     }
-                })
-                show()
+//                })
+//                show()
 
-                binding.root.invalidate() // or
-                this@CustomDisplay.window?.decorView?.invalidate()
+//                binding.root.invalidate() // or
+//                this@CustomDisplay.window?.decorView?.invalidate()
                 CoroutineScope(Dispatchers.Main).launch {
                     Log.v("4732", "inside displayCustomer()_removed_1 -> -> ${name}")
 
@@ -1037,8 +1040,8 @@ class CustomDisplay(
                     /*-----------Customer Loyalty------------*/
                 }
             }
-            binding.root.invalidate() // or
-            this@CustomDisplay.window?.decorView?.invalidate()
+//            binding.root.invalidate() // or
+//            this@CustomDisplay.window?.decorView?.invalidate()
 
             CoroutineScope(Dispatchers.Main).launch {
                 binding.txtLoyaltyPointsLabel.text =
@@ -1065,9 +1068,9 @@ class CustomDisplay(
             binding.tvLoyaltyBalance.gone()
             binding.tvLoyaltyPoints.gone()
             /*----------Customer Loyalty--------------*/
-            binding.root.invalidate() // or
-            this@CustomDisplay.window?.decorView?.invalidate()
-            show()
+//            binding.root.invalidate() // or
+//            this@CustomDisplay.window?.decorView?.invalidate()
+//            show()
             binding.relativeLoylatyPoints.gone()
             binding.lblLoyaltyPoints.gone()
             if (dashBoardCategoryViewModel.order_note.isNotEmpty()) {

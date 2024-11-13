@@ -7,7 +7,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
-import android.os.Looper
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
@@ -38,7 +37,6 @@ import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.pays.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.pays.pos.data.remote.ApiService
 import com.pays.pos.data.remote.Constants
-import com.pays.pos.data.remote.Constants.ADD
 import com.pays.pos.data.remote.Constants.CUSTOMER_ID
 import com.pays.pos.data.remote.Constants.DELETE
 import com.pays.pos.data.remote.Constants.DELIVERY
@@ -83,7 +81,6 @@ import com.pays.pos.ui.adapter.OrderTypeAdapter
 import com.pays.pos.ui.adapter.boldpos.CartItemsAdapter
 import com.pays.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS.Companion
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
@@ -99,7 +96,6 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.Runnable
 import java.lang.System
-import java.security.spec.ECField
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -1151,11 +1147,13 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                 binding.liinearInfoLayout.layoutParams.height =
                                     resources.getDimension(R.dimen._50sdp).toInt()
                                 binding.relativeLoylatyPoints.visibility = View.GONE
+
                                 binding.lblLoyaltyPoints.visibility = View.GONE
                                 binding.lblLoyaltyBalance.visibility = View.GONE
                             } else {
                                 binding.liinearInfoLayout.layoutParams.height =
                                     resources.getDimension(R.dimen._70sdp).toInt()
+
                                 binding.relativeLoylatyPoints.visibility = View.VISIBLE
                                 binding.lblLoyaltyPoints.visibility = View.VISIBLE
                                 binding.lblLoyaltyBalance.visibility = View.VISIBLE
@@ -1185,6 +1183,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         binding.relativeLoylatyPoints.visibility = View.GONE
                         binding.lblLoyaltyPoints.visibility = View.GONE
                         binding.lblLoyaltyBalance.visibility = View.GONE
+
+
                     }
 
                     viewModel.itemCalculationCartModelNew(it, binding.txtTotal, requireContext())
@@ -1222,12 +1222,16 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             binding.relativeLoylatyPoints.visibility = View.VISIBLE
                             binding.lblLoyaltyPoints.visibility = View.VISIBLE
                             binding.lblLoyaltyBalance.visibility = View.VISIBLE
+
+
                         } else {
                             binding.liinearInfoLayout.layoutParams.height =
                                 resources.getDimension(R.dimen._50sdp).toInt()
                             binding.relativeLoylatyPoints.visibility = View.GONE
                             binding.lblLoyaltyPoints.visibility = View.GONE
                             binding.lblLoyaltyBalance.visibility = View.GONE
+
+
                         }
                     }
 
@@ -1631,6 +1635,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             binding.lblLoyaltyPoints.visibility = View.GONE
                                             binding.lblLoyaltyBalance.visibility = View.GONE
 
+
+
                                         } else {
                                             //                                        cartlist = arrayListOf()
                                             if (isFromPayment) {
@@ -1667,6 +1673,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             binding.relativeLoylatyPoints.visibility = View.GONE
                                             binding.lblLoyaltyPoints.visibility = View.GONE
                                             binding.lblLoyaltyBalance.visibility = View.GONE
+
+
 
 
                                         }
@@ -2077,6 +2085,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             binding.lblLoyaltyPoints.visibility = View.GONE
                                             binding.lblLoyaltyBalance.visibility = View.GONE
 
+
                                         } else {
                                             //                                        cartlist = arrayListOf()
                                             if (isFromPayment) {
@@ -2113,6 +2122,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             binding.relativeLoylatyPoints.visibility = View.GONE
                                             binding.lblLoyaltyPoints.visibility = View.GONE
                                             binding.lblLoyaltyBalance.visibility = View.GONE
+
 
 
                                         }
@@ -2504,8 +2514,23 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         requireContext()
                     )
                 } else {
-                    var total = viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge
-                    viewModel.cashdiscountAmount = MethodUtils.getLatestCashDiscountOrSurCharge(total, prefProvider, requireContext())
+                    if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                        val total =
+                            viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge - viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
+                        viewModel.cashdiscountAmount = MethodUtils.getLatestCashDiscountOrSurCharge(
+                            total,
+                            prefProvider,
+                            requireContext()
+                        )
+                    } else {
+                        val total =
+                            viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge
+                        viewModel.cashdiscountAmount = MethodUtils.getLatestCashDiscountOrSurCharge(
+                            total,
+                            prefProvider,
+                            requireContext()
+                        )
+                    }
 
                 }
 
@@ -2539,12 +2564,15 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             binding.lblLoyaltyPoints.visibility = View.VISIBLE
                             binding.lblLoyaltyBalance.visibility = View.VISIBLE
                             binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
+
                             binding.checkloylaty.visibility = View.GONE
                             binding.txtLoyaltyAmount.text = "- $${
                                 String.format(
                                     "%.2f", viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
                                 )
                             }"
+
+
                             binding.txtLoyaltyPoints.text =
                                 "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
                             /*  binding.txtLoyaltyBalance.text =
@@ -2558,6 +2586,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             binding.relativeLoylatyPoints.visibility = View.GONE
                             binding.lblLoyaltyPoints.visibility = View.GONE
                             binding.lblLoyaltyBalance.visibility = View.GONE
+
+
                         }
                         if (findNavController().currentDestination!!.label!!.contains("Dashboard", ignoreCase = true)){
                             isFromPayment=false
@@ -2577,6 +2607,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         binding.relativeLoylatyPoints.visibility = View.VISIBLE
                         binding.lblLoyaltyPoints.visibility = View.VISIBLE
                         binding.lblLoyaltyBalance.visibility = View.VISIBLE
+
+
                         Log.e(TAG, "InsideLoyalty")
                         Log.e(
                             TAG, Gson().toJson(viewModel.redeemLoyaltyInfo)
@@ -2610,6 +2642,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         relativeLoylatyPoints.visibility = View.GONE
                         lblLoyaltyPoints.visibility = View.GONE
                         lblLoyaltyBalance.visibility = View.GONE
+
                     }
                    /* binding.liinearInfoLayout.layoutParams.height =
                                   resources.getDimension(R.dimen._50sdp).toInt()
@@ -2637,6 +2670,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 binding.relativeLoylatyPoints.visibility = View.GONE
                 binding.lblLoyaltyPoints.visibility = View.GONE
                 binding.lblLoyaltyBalance.visibility = View.GONE
+
             }
         } else {
             cartModelsList = arrayListOf()
@@ -2683,6 +2717,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     binding.relativeLoylatyPoints.visibility = View.GONE
                     binding.lblLoyaltyPoints.visibility = View.GONE
                     binding.lblLoyaltyBalance.visibility = View.GONE
+
                 }
             } else {
                 binding.liinearInfoLayout.layoutParams.height =
@@ -2690,6 +2725,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 binding.relativeLoylatyPoints.visibility = View.GONE
                 binding.lblLoyaltyPoints.visibility = View.GONE
                 binding.lblLoyaltyBalance.visibility = View.GONE
+
+
             }
         }
 
@@ -3018,10 +3055,12 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
     // Update UI after removing guest from order
     private fun removeGuestObserver() {
-        viewModel.removeGuestSuccess.observe(viewLifecycleOwner) { event ->
-            AlertUtils.showCustomAlertWithListenerWithOK(
-                requireContext(), event.getContentIfNotHandled().toString()
-            ) { _, _ -> }
+        if (isAdded) {
+            viewModel.removeGuestSuccess.observe(viewLifecycleOwner) { event ->
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(), event.getContentIfNotHandled().toString()
+                ) { _, _ -> }
+            }
         }
     }
 
@@ -3213,6 +3252,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         viewModel.assignCustomer = null
         binding.liinearInfoLayout.layoutParams.height =
             resources.getDimension(R.dimen._50sdp).toInt()
+
         binding.relativeLoylatyPoints.visibility = View.GONE
         binding.lblLoyaltyPoints.visibility = View.GONE
         binding.lblLoyaltyBalance.visibility = View.GONE
@@ -3707,9 +3747,6 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             }
                         }
                     }
-
-                    EventBus.getDefault()
-                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvPayNow()"))
 
                     viewModel.selectedCatetory = 0
                     prefProvider.setValue(Constants.WHOLE_AMOUNT, "")

@@ -15,6 +15,7 @@ import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -84,27 +85,30 @@ class MainViewModel @Inject constructor(
         val data = HashMap<String, String>()
         data["email"] =
             prefProvider.getValue(Constants.EMAIL, "").toString()
-        val resource = posRepository.logout(data)
-        when (resource.status) {
-            Status.SUCCESS -> {
-                _showProgress.value = Event(false)
-                resource.data?.let { it ->
+        CoroutineScope(Dispatchers.IO).async {
+            val resource = posRepository.logout(data)
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data?.let { it ->
 
-                    _logout.value = Event(true)
+                        _logout.value = Event(true)
 
 
+                    }
                 }
-            }
-            Status.ERROR -> {
-                _snackbarText.value = Event(resource.message)
-                _showProgress.value = Event(false)
-            }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
 
-            Status.LOADING -> {
-                _showProgress.value = Event(true)
-            }
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
 
-        }
+            }
+        }.await()
+
     }
 
     fun clearTable() {
