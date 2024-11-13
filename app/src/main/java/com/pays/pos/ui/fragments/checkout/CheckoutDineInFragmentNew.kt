@@ -394,6 +394,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
 
             viewModel.setTipAmount(tipAmount)
+            prefProvider.setValueboolean(Constants.TIP_ADDED, true)
             tipID = bundle.getInt("tipId")
 //            isSelectedCount = 1
             tipAmountCalculation()
