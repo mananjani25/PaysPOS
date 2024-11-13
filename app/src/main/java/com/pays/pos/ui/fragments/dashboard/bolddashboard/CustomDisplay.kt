@@ -10,6 +10,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Base64
 import android.util.Log
 import android.view.Display
@@ -382,6 +384,26 @@ class CustomDisplay(
 
                     Log.v("4732", "Done Clicked")
                     var mobileNumber = tvPhoneNumber?.text.toString().trim().replace(Regex("[^0-9]"), "")
+
+                    tvPhoneNumber.addTextChangedListener(object : TextWatcher {
+                        override fun afterTextChanged(s: Editable?) {
+                            // Check if the length of the number is 10 digits
+                            val mobileNumber = s?.toString()?.trim()?.replace(Regex("[^0-9]"), "")
+                            if (mobileNumber?.length == 10) {
+                                // If the length is 10, remove the error message
+                                tvErrorMessage?.text = ""
+                            }
+                        }
+
+                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                            // No need to implement this for this use case
+                        }
+
+                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                            // No need to implement this for this use case
+                        }
+                    })
+
                     if (mobileNumber.length == 10) {
                         searchUserFromMobileNumber(mobileNumber)
                         tvPhoneNumber?.text?.clear()
