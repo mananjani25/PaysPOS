@@ -11970,136 +11970,159 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                     actionFeedLine(1)
 
 
-                                    listItemWithGuest.forEach {
+                                            listItemWithGuest.forEach {
 
-                                        add(
-                                            PrinterBuilder()
-                                                .styleAlignment(Alignment.Left)
-                                                .styleBold(true)
-                                                .actionPrintText(
-                                                    "------------------------------------------------"
-                                                )
-                                        )
+                                                var isGuestNamePrinted = false
 
-                                        add(
-                                            PrinterBuilder()
-                                                .styleAlignment(Alignment.Center)
-                                                .styleMagnification(
-                                                    MagnificationParameter(2, 2)
-                                                )
-                                                .actionPrintText(
-                                                    it.key
-                                                )
-                                        )
+                                                it.value.forEach { obj ->
+                                                    customerReceiptPrinters.printerCategories.forEach { printer ->
+                                                        if (printer.id == obj.categoryId && printer.printerEnable && printer.categoryActive) {
 
-                                        add(
-                                            PrinterBuilder()
-                                                .styleAlignment(Alignment.Left)
-                                                .styleBold(true)
-                                                .actionPrintText(
-                                                    "------------------------------------------------"
-                                                )
-                                        )
+                                                            if (!isGuestNamePrinted) {
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleAlignment(Alignment.Left)
+                                                                        .styleBold(true)
+                                                                        .actionPrintText(
+                                                                            "------------------------------------------------"
+                                                                        )
+                                                                )
 
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleAlignment(Alignment.Center)
+                                                                        .styleMagnification(
+                                                                            MagnificationParameter(
+                                                                                2,
+                                                                                2
+                                                                            )
+                                                                        )
+                                                                        .actionPrintText(
+                                                                            it.key
+                                                                        )
+                                                                )
 
-                                        it.value.forEach { obj ->
-                                            add(
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleAlignment(Alignment.Left)
+                                                                        .styleBold(true)
+                                                                        .actionPrintText(
+                                                                            "------------------------------------------------"
+                                                                        )
+                                                                )
+                                                                isGuestNamePrinted = true
+                                                            }
 
-                                                PrinterBuilder()
-                                                    .styleAlignment(Alignment.Left)
-                                                    .styleMagnification(
-                                                        MagnificationParameter(2, 2)
-                                                    )
-                                                    .actionPrintText(
-                                                        obj.itemQuantity.toString() + " " + obj.name.uppercase()
-                                                    )
-                                            )
+                                                            add(
 
-                                            if (obj.modifiers.isNotEmpty()) {
-                                                for (j in 0 until obj.modifiers.size) {
-                                                    val modifierObj = obj.modifiers.get(j)
-
-
-                                                    add(
-                                                        PrinterBuilder()
-                                                            .styleAlignment(Alignment.Left)
-                                                            .styleBold(true)
-                                                            .styleMagnification(
-                                                                MagnificationParameter(1, 1)
+                                                                PrinterBuilder()
+                                                                    .styleAlignment(Alignment.Left)
+                                                                    .styleMagnification(
+                                                                        MagnificationParameter(2, 2)
+                                                                    )
+                                                                    .actionPrintText(
+                                                                        obj.itemQuantity.toString() + " " + obj.name.uppercase()
+                                                                    )
                                                             )
-                                                            .actionPrintText(
-                                                                "  " + if (modifierObj.modifier_quantity == 1) {
-                                                                    "   "
-                                                                } else {
-                                                                    "" + modifierObj.modifier_quantity + "x "
-                                                                } + modifierObj.name.uppercase()
-                                                            )
-                                                    )
 
+                                                            if (obj.modifiers.isNotEmpty()) {
+                                                                for (j in 0 until obj.modifiers.size) {
+                                                                    val modifierObj =
+                                                                        obj.modifiers.get(j)
+
+
+                                                                    add(
+                                                                        PrinterBuilder()
+                                                                            .styleAlignment(
+                                                                                Alignment.Left
+                                                                            )
+                                                                            .styleBold(true)
+                                                                            .styleMagnification(
+                                                                                MagnificationParameter(
+                                                                                    1,
+                                                                                    1
+                                                                                )
+                                                                            )
+                                                                            .actionPrintText(
+                                                                                "  " + if (modifierObj.modifier_quantity == 1) {
+                                                                                    "   "
+                                                                                } else {
+                                                                                    "" + modifierObj.modifier_quantity + "x "
+                                                                                } + modifierObj.name.uppercase()
+                                                                            )
+                                                                    )
+
+                                                                }
+                                                            }
+                                                            if (obj.note.isNotEmpty()) {
+
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleAlignment(Alignment.Left)
+                                                                        .styleBold(true)
+                                                                        .styleMagnification(
+                                                                            MagnificationParameter(
+                                                                                1,
+                                                                                1
+                                                                            )
+                                                                        )
+                                                                        .actionPrintText(
+                                                                            "  Note:" + obj.note
+                                                                        )
+                                                                )
+
+
+                                                            }
+
+
+
+                                                        actionFeedLine(1)
+
+                                                        if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+                                                            if (orderNote.isNotEmpty())
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleAlignment(Alignment.Center)
+                                                                        .styleBold(true)
+                                                                        .styleMagnification(
+                                                                            MagnificationParameter(
+                                                                                2,
+                                                                                2
+                                                                            )
+                                                                        )
+                                                                        .actionPrintText(
+                                                                            "Order Note \n" + orderNote
+                                                                        )
+                                                                )
+                                                            actionFeedLine(1)
+                                                        }
+
+
+                                                        dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(
+                                                            true
+                                                        )
+                                                    }
+                                                    }
                                                 }
                                             }
-                                            if (obj.note.isNotEmpty()) {
+                                            actionCut(CutType.Partial)
 
-                                                add(
-                                                    PrinterBuilder()
-                                                        .styleAlignment(Alignment.Left)
-                                                        .styleBold(true)
-                                                        .styleMagnification(
-                                                            MagnificationParameter(1, 1)
-                                                        )
-                                                        .actionPrintText(
-                                                            "  Note:" + obj.note
-                                                        )
-                                                )
-
-
-                                            }
-                                        }
-
-                                    }
-
-                                    actionFeedLine(1)
-
-                                    if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
-                                        if (orderNote.isNotEmpty())
-                                            add(
-                                                PrinterBuilder()
-                                                    .styleAlignment(Alignment.Center)
-                                                    .styleBold(true)
-                                                    .styleMagnification(
-                                                        MagnificationParameter(2, 2)
-                                                    )
-                                                    .actionPrintText(
-                                                        "Order Note \n" + orderNote
-                                                    )
+                                            var document = DocumentBuilder()
+                                                .addPrinter(printerBuilder)
+                                            builder.addDocument(
+                                                document
                                             )
-                                        actionFeedLine(1)
-                                    }
+
+                                            val commands = builder.getCommands()
+
+                                            printer.openAsync().await()
 
 
-                                    dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(
-                                        true
-                                    )
+                                            printer.printAsync(commands).await()
+                                            printer.closeAsync().await()
 
 
-
-                                    actionCut(CutType.Partial)
-
-                                    var document = DocumentBuilder()
-                                        .addPrinter(printerBuilder)
-                                    builder.addDocument(
-                                        document
-                                    )
-
-                                    val commands = builder.getCommands()
-
-                                    printer.openAsync().await()
-
-
-                                    printer.printAsync(commands).await()
-                                    printer.closeAsync().await()
                                 }
-
                             } catch (e: Exception) {
                                 Log.e("START DINE IN KITCHEN RECEIPT ", "" + e.printStackTrace())
                             }
