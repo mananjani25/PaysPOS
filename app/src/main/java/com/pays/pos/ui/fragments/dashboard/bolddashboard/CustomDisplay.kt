@@ -16,6 +16,7 @@ import android.view.Display
 import android.view.Gravity
 import android.view.View
 import android.view.Window
+import android.widget.Toast
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.GridLayoutManager
@@ -355,8 +356,12 @@ class CustomDisplay(
 
                     Log.v("4732", "Done Clicked")
                     var mobileNumber = tvPhoneNumber?.text.toString().trim().replace(Regex("[^0-9]"), "")
-                    searchUserFromMobileNumber(mobileNumber)
-                    tvPhoneNumber?.text?.clear()
+                    if (mobileNumber.length == 10) {
+                        searchUserFromMobileNumber(mobileNumber)
+                        tvPhoneNumber?.text?.clear()
+                    } else {
+                        Toast.makeText(context,"Enter a correct Mobile Number.", Toast.LENGTH_SHORT).show()
+                    }
 //                    [{"id":2,"phone_number":"5555575575"}]
                 }
             })
