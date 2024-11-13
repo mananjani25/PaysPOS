@@ -579,7 +579,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     fun refreshCartFragment(){
-        fragmentNeedToBeUpdated.value=true
+//        fragmentNeedToBeUpdated.value=true
     }
 
     fun itemsByCat(id: Int): kotlinx.coroutines.flow.Flow<PagingData<TbItem>> = Pager(

@@ -1148,22 +1148,12 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     resources.getDimension(R.dimen._50sdp).toInt()
                                 binding.relativeLoylatyPoints.visibility = View.GONE
 
-                                EventBus.getDefault().post(
-                                    MessageEvent(
-                                        "${Constants.LINE_BREAK_TAB} CartFragment GONE: ${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                                    )
-                                )
-
                                 binding.lblLoyaltyPoints.visibility = View.GONE
                                 binding.lblLoyaltyBalance.visibility = View.GONE
                             } else {
                                 binding.liinearInfoLayout.layoutParams.height =
                                     resources.getDimension(R.dimen._70sdp).toInt()
-                                EventBus.getDefault().post(
-                                    MessageEvent(
-                                        "${Constants.LINE_BREAK_TAB} CartFragment VISIBLE: ${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                                    )
-                                )
+
                                 binding.relativeLoylatyPoints.visibility = View.VISIBLE
                                 binding.lblLoyaltyPoints.visibility = View.VISIBLE
                                 binding.lblLoyaltyBalance.visibility = View.VISIBLE
@@ -1193,11 +1183,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         binding.relativeLoylatyPoints.visibility = View.GONE
                         binding.lblLoyaltyPoints.visibility = View.GONE
                         binding.lblLoyaltyBalance.visibility = View.GONE
-                        EventBus.getDefault().post(
-                            MessageEvent(
-                                "${Constants.LINE_BREAK_TAB} CartFragment GONE: ${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                            )
-                        )
+
 
                     }
 
@@ -1236,11 +1222,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             binding.relativeLoylatyPoints.visibility = View.VISIBLE
                             binding.lblLoyaltyPoints.visibility = View.VISIBLE
                             binding.lblLoyaltyBalance.visibility = View.VISIBLE
-                            EventBus.getDefault().post(
-                                MessageEvent(
-                                    "${Constants.LINE_BREAK_TAB} CartFragment VISIBLE: ${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                                )
-                            )
+
 
                         } else {
                             binding.liinearInfoLayout.layoutParams.height =
@@ -1248,11 +1230,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             binding.relativeLoylatyPoints.visibility = View.GONE
                             binding.lblLoyaltyPoints.visibility = View.GONE
                             binding.lblLoyaltyBalance.visibility = View.GONE
-                            EventBus.getDefault().post(
-                                MessageEvent(
-                                    "${Constants.LINE_BREAK_TAB} CartFragment GONE: ${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                                )
-                            )
+
 
                         }
                     }
@@ -1656,11 +1634,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             binding.relativeLoylatyPoints.visibility = View.GONE
                                             binding.lblLoyaltyPoints.visibility = View.GONE
                                             binding.lblLoyaltyBalance.visibility = View.GONE
-                                            EventBus.getDefault().post(
-                                                MessageEvent(
-                                                    "${Constants.LINE_BREAK_TAB} CartFragment GONE: ${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                                                )
-                                            )
+
 
 
                                         } else {
@@ -1699,11 +1673,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             binding.relativeLoylatyPoints.visibility = View.GONE
                                             binding.lblLoyaltyPoints.visibility = View.GONE
                                             binding.lblLoyaltyBalance.visibility = View.GONE
-                                            EventBus.getDefault().post(
-                                                MessageEvent(
-                                                    "${Constants.LINE_BREAK_TAB} CartFragment GONE: ${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                                                )
-                                            )
+
 
 
 
@@ -2114,11 +2084,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             binding.relativeLoylatyPoints.visibility = View.GONE
                                             binding.lblLoyaltyPoints.visibility = View.GONE
                                             binding.lblLoyaltyBalance.visibility = View.GONE
-                                            EventBus.getDefault().post(
-                                                MessageEvent(
-                                                    "${Constants.LINE_BREAK_TAB} CartFragment GONE: ${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                                                )
-                                            )
+
 
                                         } else {
                                             //                                        cartlist = arrayListOf()
@@ -2156,11 +2122,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             binding.relativeLoylatyPoints.visibility = View.GONE
                                             binding.lblLoyaltyPoints.visibility = View.GONE
                                             binding.lblLoyaltyBalance.visibility = View.GONE
-                                            EventBus.getDefault().post(
-                                                MessageEvent(
-                                                    "${Constants.LINE_BREAK_TAB} CartFragment GONE: ${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                                                )
-                                            )
+
 
 
                                         }
@@ -2602,11 +2564,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             binding.lblLoyaltyPoints.visibility = View.VISIBLE
                             binding.lblLoyaltyBalance.visibility = View.VISIBLE
                             binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
-                            EventBus.getDefault().post(
-                                MessageEvent(
-                                    "${Constants.LINE_BREAK_TAB} CartFragment VISIBLE: ${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                                )
-                            )
+
                             binding.checkloylaty.visibility = View.GONE
                             binding.txtLoyaltyAmount.text = "- $${
                                 String.format(
@@ -2628,11 +2586,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             binding.relativeLoylatyPoints.visibility = View.GONE
                             binding.lblLoyaltyPoints.visibility = View.GONE
                             binding.lblLoyaltyBalance.visibility = View.GONE
-                            EventBus.getDefault().post(
-                                MessageEvent(
-                                    "${Constants.LINE_BREAK_TAB} CartFragment GONE: ${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                                )
-                            )
+
 
                         }
                         if (findNavController().currentDestination!!.label!!.contains("Dashboard", ignoreCase = true)){
@@ -2654,11 +2608,6 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         binding.lblLoyaltyPoints.visibility = View.VISIBLE
                         binding.lblLoyaltyBalance.visibility = View.VISIBLE
 
-                        EventBus.getDefault().post(
-                            MessageEvent(
-                                "${Constants.LINE_BREAK_TAB} CartFragment VISIBLE: ${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                            )
-                        )
 
                         Log.e(TAG, "InsideLoyalty")
                         Log.e(
@@ -2694,12 +2643,6 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         lblLoyaltyPoints.visibility = View.GONE
                         lblLoyaltyBalance.visibility = View.GONE
 
-                        EventBus.getDefault().post(
-                            MessageEvent(
-                                "${Constants.LINE_BREAK_TAB} CartFragment GONE: ${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                            )
-                        )
-
                     }
                    /* binding.liinearInfoLayout.layoutParams.height =
                                   resources.getDimension(R.dimen._50sdp).toInt()
@@ -2727,11 +2670,6 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 binding.relativeLoylatyPoints.visibility = View.GONE
                 binding.lblLoyaltyPoints.visibility = View.GONE
                 binding.lblLoyaltyBalance.visibility = View.GONE
-                EventBus.getDefault().post(
-                    MessageEvent(
-                        "${Constants.LINE_BREAK_TAB} CartFragment GONE: ${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                    )
-                )
 
             }
         } else {
@@ -2770,12 +2708,6 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     binding.lblLoyaltyPoints.visibility = View.VISIBLE
                     binding.lblLoyaltyBalance.visibility = View.VISIBLE
 
-                    EventBus.getDefault().post(
-                        MessageEvent(
-                            "${Constants.LINE_BREAK_TAB} CartFragment VISIBLE: ${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                        )
-                    )
-
                     binding.txtLoyaltyAmount.text = "$0.00"
                     binding.txtLoyaltyPoints.text = "$0.00"
                     binding.txtLoyaltyBalance.text = "0"
@@ -2786,12 +2718,6 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     binding.lblLoyaltyPoints.visibility = View.GONE
                     binding.lblLoyaltyBalance.visibility = View.GONE
 
-                    EventBus.getDefault().post(
-                        MessageEvent(
-                            "${Constants.LINE_BREAK_TAB} CartFragment GONE: ${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                        )
-                    )
-
                 }
             } else {
                 binding.liinearInfoLayout.layoutParams.height =
@@ -2800,11 +2726,6 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 binding.lblLoyaltyPoints.visibility = View.GONE
                 binding.lblLoyaltyBalance.visibility = View.GONE
 
-                EventBus.getDefault().post(
-                    MessageEvent(
-                        "${Constants.LINE_BREAK_TAB} CartFragment GONE: ${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                    )
-                )
 
             }
         }
@@ -3134,7 +3055,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
     // Update UI after removing guest from order
     private fun removeGuestObserver() {
-        if (view!=null) {
+        if (isAdded) {
             viewModel.removeGuestSuccess.observe(viewLifecycleOwner) { event ->
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(), event.getContentIfNotHandled().toString()
@@ -3332,21 +3253,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         binding.liinearInfoLayout.layoutParams.height =
             resources.getDimension(R.dimen._50sdp).toInt()
 
-        EventBus.getDefault().post(
-            MessageEvent(
-                "${Constants.LINE_BREAK_TAB} CartFragment GONE: ${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-            )
-        )
-
         binding.relativeLoylatyPoints.visibility = View.GONE
         binding.lblLoyaltyPoints.visibility = View.GONE
         binding.lblLoyaltyBalance.visibility = View.GONE
-        EventBus.getDefault().post(
-            MessageEvent(
-                "${Constants.LINE_BREAK_TAB} CartFragment GONE: ${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-            )
-        )
-
         displayCustomer()
         refreshItemCalculation()
         prefProvider.setValueboolean(IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
@@ -3838,9 +3747,6 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             }
                         }
                     }
-
-                    EventBus.getDefault()
-                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvPayNow()"))
 
                     viewModel.selectedCatetory = 0
                     prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
