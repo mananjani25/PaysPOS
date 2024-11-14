@@ -276,6 +276,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     public val tipButtonOnCustomerDisplayClicked = MutableLiveData<Boolean>()
 
+    public val tipErrorObservable = MutableLiveData<String>()
+
     var isUpdatedOnce = false
 
     /**
@@ -351,6 +353,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun setCollectMore(title: String) {
         changeAvailable.postValue(Event(title))
+    }
+
+    fun setTipErrorObservable(message: String) {
+        tipErrorObservable.postValue(message)
     }
 
     /*------------Customer Loyalty----------*/

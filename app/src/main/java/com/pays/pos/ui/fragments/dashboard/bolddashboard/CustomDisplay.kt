@@ -2344,9 +2344,10 @@ class CustomDisplay(
                         }
                     }
                 } else {
-                    CoroutineScope(Dispatchers.Main).launch {
+                    dashBoardCategoryViewModel.setTipErrorObservable(resultTxt)
+                    lifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
                         ProgressUtils.dismissProgressDialog()
-                        AlertUtils.showCustomAlertWithListenerWithOK(context, resultTxt, object :
+                        /*AlertUtils.showCustomAlertWithListenerWithOK(context, resultTxt, object :
                             DialogInterface.OnClickListener {
                             override fun onClick(p0: DialogInterface?, p1: Int) {
                                 try {
@@ -2354,7 +2355,7 @@ class CustomDisplay(
                                 } catch (e: Exception) {
                                 }
                             }
-                        })
+                        })*/
                         Log.d("resultCode not 000000:", "param $resultCode $resultTxt")
 //                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
                     }
