@@ -409,8 +409,8 @@ class CustomDisplay(
                         tvPhoneNumber?.text?.clear()
                         tvErrorMessage?.text = ""
                     } else {
-//                        Toast.makeText(context,"Enter a correct Mobile Number.", Toast.LENGTH_SHORT).show()
-                        tvErrorMessage?.text = "Invalid Input"
+                        Toast.makeText(context,"Enter Valid Mobile Number", Toast.LENGTH_SHORT).show()
+                        tvErrorMessage?.text = "Invalid Number"
                     }
 //                    [{"id":2,"phone_number":"5555575575"}]
                 }
