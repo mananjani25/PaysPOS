@@ -1365,7 +1365,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
         EventBus.getDefault().unregister(this)
         if (this::presentation.isInitialized) {
-            presentation.closeSecondaryDisplay()
+//            presentation.closeSecondaryDisplay()
         }
 
         try {

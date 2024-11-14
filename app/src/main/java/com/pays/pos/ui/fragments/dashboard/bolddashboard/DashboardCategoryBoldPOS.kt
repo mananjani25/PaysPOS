@@ -326,6 +326,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".")
                 .toTypedArray()
         changeCustomerDisplayState()
+        reloadCustomerDisplay()
 
         if (viewModel.boldPosNeedToRefresh) {
 
@@ -453,6 +454,26 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         })
 
         return binding.root
+    }
+
+    private fun reloadCustomerDisplay() {
+        viewModel.reloadCustomerDisplay.observe(viewLifecycleOwner,object:Observer<Boolean>{
+            override fun onChanged(t: Boolean) {
+                if (t){
+                    getCustomerDisplay(requireContext())?.let {
+                        presentation = CustomDisplay(
+                            it,
+                            requireContext(),
+                            viewLifecycleOwner,
+                            dashBoardCategoryViewModel = viewModel,
+                            passcodeViewModel,
+                            dineInViewModel
+                        )
+                    }
+
+                }
+            }
+        })
     }
 
     /*----------------Customer Loyalty------------------*/

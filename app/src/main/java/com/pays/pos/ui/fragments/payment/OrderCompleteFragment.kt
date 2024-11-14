@@ -14128,6 +14128,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 //                        printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
 
+                            EventBus.getDefault().post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_ document prepared"
+                                )
+                            )
+
                             var document = DocumentBuilder()
                                 .addPrinter(printerBuilder)
                             builder.addDocument(
@@ -14158,6 +14164,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             Log.d("Printing", "Error: ${e}")
                         } finally {
                             printer.closeAsync().await()
+
+                            EventBus.getDefault().post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_ FINALIZED"
+                                )
+                            )
                         }
                     }
                 }
