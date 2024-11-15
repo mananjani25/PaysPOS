@@ -604,7 +604,7 @@ class CustomDisplay(
             point = "point"
         }
 
-        return "${generalizeAmount(it.amount.toString())} ${point} for every $${generalizeAmount(it.rewardPoint.toString())} spent."
+        return "Redeem $${generalizeAmount(it.amount.toString())} on every ${generalizeAmount(it.rewardPoint.toString())} ${point}."
     }
 
 
