@@ -2,13 +2,10 @@ package com.pays.pos.ui.fragments.dashboard.bolddashboard
 
 import android.app.Presentation
 import android.content.Context
-import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.os.Message
 import android.text.Editable
 import android.text.TextWatcher
@@ -20,7 +17,6 @@ import android.view.View
 import android.view.Window
 import android.widget.Toast
 import androidx.appcompat.view.ContextThemeWrapper
-import androidx.databinding.adapters.TextViewBindingAdapter.setText
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -55,7 +51,6 @@ import com.pays.pos.databinding.ViewCustomDisplayBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.logger.CreateCustomerEvent
-import com.pays.pos.logger.MessageEvent
 import com.pays.pos.logger.SyncCustomerEvent
 import com.pays.pos.ui.adapter.ActiveTipsListAdapter
 import com.pays.pos.ui.adapter.DineInAdapter
@@ -1364,6 +1359,17 @@ class CustomDisplay(
         }
     }
 
+    fun showThankyouLayout(){
+        binding.apply {
+            mainCartLayout.gone()
+            thankYouLayout.gone()
+//            splashLayout.visible()
+            imgPaysSplash?.gone()
+            splashLoyalty?.gone()
+            thankYouLayout.visible()
+
+        }
+    }
     private fun getCustomerList() {
 
         try {
