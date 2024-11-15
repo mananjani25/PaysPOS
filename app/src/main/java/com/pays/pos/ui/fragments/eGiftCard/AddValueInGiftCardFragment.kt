@@ -1,25 +1,35 @@
 package com.pays.pos.ui.fragments.eGiftCard
 
+import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import com.pays.pos.R
 import com.pays.pos.data.entities.CartModel
 import com.pays.pos.data.entities.TbCartItem
+import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
+import com.pays.pos.data.model.requestModel.giftCard.response.GiftCardCheckBalanceResponse
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.databinding.FragmentAddValueInGiftCardBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.pays.pos.utils.AlertUtils
-import com.pays.pos.utils.AmountTextWatcher
-import com.pays.pos.utils.MethodUtils
+import com.pays.pos.utils.*
+import com.pays.pos.utils.extensions.runOnUiThread
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -30,6 +40,7 @@ class AddValueInGiftCardFragment : Fragment() {
     @Inject
     lateinit var prefProvider: PrefProvider
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val giftCardViewModel: GiftCardViewModel by viewModels()
     private val TAG = "AddValueInGiftCardFragment"
 
     override fun onCreateView(
@@ -40,12 +51,79 @@ class AddValueInGiftCardFragment : Fragment() {
         setDefaultAmountsInKeypad()
         setKeyPad()
         onClick()
+        setObservables()
+        setupSnackbar()
+        setupProgress()
         return binding.root
+    }
+
+    private fun setupProgress() {
+        giftCardViewModel.showProgress.observe(viewLifecycleOwner) { event ->
+            event?.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
+    }
+
+    private fun setupSnackbar() {
+        giftCardViewModel.snackbarText.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                AlertUtils.showCustomAlert(
+                    requireActivity(),
+                    it.toString()
+                )
+            }
+
+        }
+    }
+
+    private fun setObservables() {
+        giftCardViewModel.giftCardCheckBalanceData.observe(
+            viewLifecycleOwner,
+            object : Observer<Event<GiftCardCheckBalanceResponse?>> {
+                override fun onChanged(t: Event<GiftCardCheckBalanceResponse?>?) {
+                    t?.getContentIfNotHandled()?.let {
+                        if (it.data == null) {
+                            context?.let { ctx ->
+                                AlertUtils.showCustomAlertWithListenerWithOK(ctx, it.message, object: DialogInterface.OnClickListener{
+                                    override fun onClick(p0: DialogInterface?, p1: Int) {
+                                        focusAndOpenKeyboard()
+                                    }
+
+                                    private fun focusAndOpenKeyboard() {
+                                        runOnUiThread(kotlinx.coroutines.Runnable {
+                                            binding.run {
+                                                edtGiftCardNumber.requestFocus()
+                                                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                                                imm.showSoftInput(edtGiftCardNumber, InputMethodManager.SHOW_IMPLICIT)
+                                            }
+                                        })
+                                    }
+                                })
+                            }
+
+                        } else {
+                            moveToCheckout()
+                        }
+                    }
+                }
+            })
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-       binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, true,isFromGiftCard = true))
+        binding.edtAmount.addTextChangedListener(
+            AmountTextWatcher(
+                binding.edtAmount,
+                true,
+                isFromGiftCard = true
+            )
+        )
 
 
     }
@@ -137,7 +215,7 @@ class AddValueInGiftCardFragment : Fragment() {
         binding.txtNext.setOnClickListener {
             MethodUtils.hideSoftKeyboard(requireActivity())
             val amount = binding.edtAmount.text.toString().replace("$", "").trim().toDouble()
-            val giftCardNumber = binding.edtGiftCardNumber.text.toString().replace(" ","")
+            val giftCardNumber = binding.edtGiftCardNumber.text.toString().replace(" ", "")
 
             if(giftCardNumber.length < 8){
                 AlertUtils.showCustomAlert(requireContext(), "Please enter 8-digit gift card number.")
@@ -160,7 +238,17 @@ class AddValueInGiftCardFragment : Fragment() {
                 prefProvider.setValue(Constants.GIFT_CARD_NUMBER, giftCardNumber)
                 prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, true)
 
-                moveToCheckout()
+                activity?.let {
+                    if (InternetUtils.isInternetAvailable(it.applicationContext)) {
+                        giftCardViewModel.giftCardCheckBalance(
+                            GiftCardCheckBalanceRequest(
+                                giftCardNumber
+                            )
+                        )
+                    }
+                }
+
+//                moveToCheckout()
             }
         }
 
@@ -241,7 +329,7 @@ class AddValueInGiftCardFragment : Fragment() {
             orderTypeName = Constants.GIFT_CARD
         }
 
-        Log.e(TAG,"tbItem:  ${Gson().toJson(tbItem)}" )
+        Log.e(TAG, "tbItem:  ${Gson().toJson(tbItem)}")
         dashboardViewModel.addCart(cm)
 
         dashboardViewModel.addItemToCartItems(tbItem)
