@@ -119,7 +119,6 @@ import com.pays.pos.utils.extensions.liveSnackBar
 import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.landi.LPrint
-import com.pays.pos.utils.landi.LPrint.printLeft
 import com.pays.pos.utils.printer.CommonPrinterTypes
 import com.pays.pos.utils.printer.LandiInnerPrinterPays
 import com.pays.pos.utils.printer.PrinterClass
@@ -384,17 +383,23 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
                 )
                 Log.e(TAG, "checkTotalPrice:  ${totalPayableAmount}")
-                presentation.showWouldYouLikeToAddTipScreen(
-                    tipListViewModel,
-                    transactionViewModel,
-                    finalPaidAmount, paymentIdForCustomerDisplay,
-                    paymentType == "Card",
-                    paymentViewModel = paymentViewModel,
-                    magRequestUtils = magtekRequestUtils,
-                    apiModule1 = apiModule1,
-                    true,
-                    totalPayableAmount
-                )
+                var foundGiftCard=dashboardViewModel.currentCartItems.find { it.orderType.equals("GiftCard", ignoreCase = true) }
+
+                if (foundGiftCard==null) {
+                    presentation.showWouldYouLikeToAddTipScreen(
+                        tipListViewModel,
+                        transactionViewModel,
+                        finalPaidAmount, paymentIdForCustomerDisplay,
+                        paymentType == "Card",
+                        paymentViewModel = paymentViewModel,
+                        magRequestUtils = magtekRequestUtils,
+                        apiModule1 = apiModule1,
+                        true,
+                        totalPayableAmount
+                    )
+                }else{
+                    presentation.showThankyouLayout()
+                }
             }
         }
     }
