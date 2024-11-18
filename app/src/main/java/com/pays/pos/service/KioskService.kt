@@ -2724,6 +2724,9 @@ class KioskService : Service(), StatusChangeEventListener {
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         orderData: KioskOrderResponse
     ) {
+        sunmiFrameworkVersion=PrefProvider(this).getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".").toTypedArray()
+
+        Log.d("KITCHEN_RECEIPT::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
         try {
 
@@ -2742,6 +2745,7 @@ class KioskService : Service(), StatusChangeEventListener {
             }
             SunmiPrintHelper.getInstance().lineWrap(1)
 
+            Log.d("KITCHEN_RECEIPT::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
             if (kitchenSettingModel.showOrderType) {
                 PrintSunmiUtils.headerText(orderData.data?.orderTypeName.toString())
@@ -2771,49 +2775,113 @@ class KioskService : Service(), StatusChangeEventListener {
 
 
             }
+            Log.d("KITCHEN_RECEIPT::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
-            PrintSunmiUtils.normalTextLarge(
-                Constants.getReceiptFormatDateFromUTCServer(
-                    applicationContext,
-                    orderData.data?.createdAt ?: ""
-                )
-            )
+            try{
+                try {
+                    PrintSunmiUtils.normalTextLarge(
+                        Constants.getReceiptFormatDateFromUTCServer(
+                            applicationContext,
+                            orderData.data?.createdAt ?: ""
+                        )
+                    )
+                }catch (e:Exception){
+                    Log.d("KITCHEN_RECEIPT::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber} -> ${Gson().toJson(e)}")
+                }
 
 
-
+                try {
+                    Log.d(
+                        "KITCHEN_RECEIPT::",
+                        "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                    )
 //            PrintSunmiUtils.addHorizontalInner()
-            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
-                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
-            ) {
-                PrintSunmiUtils.addHorizontalInnerNew()
-            }else{
-                PrintSunmiUtils.addHorizontalInnerSmall()
-            }
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
+                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
+                        Log.d("KITCHEN_RECEIPT::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
-            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
-                PrintSunmiUtils.normalTextNew("\n")
-            }
+                        try{
+                           PrintSunmiUtils.addHorizontalInnerNew()
+                       }catch (e:Exception){
+                           Log.d("KITCHEN_RECEIPT::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber} -> ${Gson().toJson(e)}")
+                       }
+                    } else {
+                        Log.d("KITCHEN_RECEIPT::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
-            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
-                orderData.data?.orderItems?.let {
-                    addOrdersForKitchenOnlineOrderSunmiInnerKioskNew(
-                        it,
-                        customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
-                    )
+                        try {
+                            PrintSunmiUtils.addHorizontalInnerSmall()
+                        }catch (e:Exception){
+                            Log.d("KITCHEN_RECEIPT::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber} -> ${Gson().toJson(e)}")
+
+                        }
+                    }
+                }catch (e:Exception){
+                    Log.d("KITCHEN_RECEIPT::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber} -> ${Gson().toJson(e)}")
                 }
-            }else{
-                orderData.data?.orderItems?.let {
-                    addOrdersForKitchenOnlineOrderSunmiInnerKiosk(
-                        it,
-                        customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
-                    )
+
+                try {
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
+                        Log.d("KITCHEN_RECEIPT::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+
+                        PrintSunmiUtils.normalTextNew("\n")
+                    }
+                }catch (e:Exception){
+                    Log.d("KITCHEN_RECEIPT::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber} -> ${Gson().toJson(e)}")
                 }
+            Log.d("KITCHEN_RECEIPT::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+
+                try {
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
+                        Log.d("KITCHEN_RECEIPT::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+
+                        try {
+                            orderData.data?.orderItems?.let {
+                                addOrdersForKitchenOnlineOrderSunmiInnerKioskNew(
+                                    it,
+                                    customerReceiptPrinters.printerCategories.toCollection(
+                                        arrayListOf()
+                                    )
+                                )
+                            }
+                        }catch (e:Exception){
+                            Log.d("KITCHEN_RECEIPT::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}-> ${Gson().toJson(e)}")
+                        }
+                    } else {
+                        try {
+                            orderData.data?.orderItems?.let {
+                                addOrdersForKitchenOnlineOrderSunmiInnerKiosk(
+                                    it,
+                                    customerReceiptPrinters.printerCategories.toCollection(
+                                        arrayListOf()
+                                    )
+                                )
+                            }
+                        }catch (e:Exception){
+                            Log.d("KITCHEN_RECEIPT::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}-> ${Gson().toJson(e)}")
+                        }
+                    }
+                }catch (e:Exception){
+                    Log.d("KITCHEN_RECEIPT::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber} -> ${Gson().toJson(e)}")
+                }
+            }catch (e:Exception){
+                Log.d("KITCHEN_RECEIPT::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber} -> ${Gson().toJson(e)}")
             }
+            Log.d("KITCHEN_RECEIPT::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
             if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
 
                 PrintSunmiUtils.orderNoteInnerLarge(orderData.data?.note.toString())
             }
+            Log.d("KITCHEN_RECEIPT::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
 
             if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
@@ -2853,10 +2921,14 @@ class KioskService : Service(), StatusChangeEventListener {
 
 
             }
+            Log.d("KITCHEN_RECEIPT::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
             PrintSunmiUtils.cutPaperInner()
+            Log.d("KITCHEN_RECEIPT::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+
         } catch (e: Exception) {
             // printerDialog.dismiss()
+            Log.d("KITCHEN_RECEIPT::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber} -> ${Gson().toJson(e)}")
             e.printStackTrace()
         }
 
