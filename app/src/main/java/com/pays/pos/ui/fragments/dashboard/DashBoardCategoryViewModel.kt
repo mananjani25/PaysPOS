@@ -78,6 +78,7 @@ import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.remote.Constants.TERMINAL_ID
 import com.pays.pos.data.remote.Constants.UPDATE
 import com.pays.pos.data.remote.Constants.VENUE_LOGO
+import com.pays.pos.data.remote.Constants.discountSelectedValue
 import com.pays.pos.data.remote.NetworkConnectionInterceptor
 import com.pays.pos.data.repositories.PosRepository
 import com.pays.pos.data.repositories.TaxServiceChargeRepository
@@ -752,6 +753,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
 
             }
+
+            if(prefProvider.getValue(ORDER_TYPE,"") == DINE_IN)
+                if(mCartModel.discountSelectdValue == null) {
+                    mCartModel.discountSelectdValue = 0.0
+                }
 
             posRepository.addItemCart(mCartModel)
             destroyedList.clear()
