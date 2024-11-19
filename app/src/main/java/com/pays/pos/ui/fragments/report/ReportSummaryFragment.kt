@@ -129,16 +129,26 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
 
         endTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
-            val timecalender = Calendar.getInstance()
-            timecalender.set(Calendar.HOUR_OF_DAY, hour)
-            timecalender.set(Calendar.MINUTE, minute)
-            viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
-            if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30) {
-                viewModel.getReportSummary()
-            } else {
+            var fromDate = SimpleDateFormat("dd/MM/yyyy HH:mm").parse(viewModel.startDate.value).getTime() / 1000
+            var endDate = SimpleDateFormat("dd/MM/yyyy HH:mm").parse(timeCalculateForStartEndTime(hour, minute, "isend")).getTime() / 1000
+            if (fromDate<=endDate){
+                val timecalender = Calendar.getInstance()
+                timecalender.set(Calendar.HOUR_OF_DAY, hour)
+                timecalender.set(Calendar.MINUTE, minute)
+                viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
+                if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30) {
+                    viewModel.getReportSummary()
+                } else {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireActivity(),
+                        "Please Select date in 30 Days."
+                    ) { _, _ ->
+                    }
+                }
+            }else{
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
-                    "Please Select date in 30 Days."
+                    "The end date cannot be earlier than the start date. Please select a valid date range."
                 ) { _, _ ->
                 }
             }
