@@ -579,8 +579,16 @@ class EmployeeTipSummary : Fragment() {
                                             DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
                                         val formatted = current.format(formatter)
                                         printLeft(
-                                            "Print Time:" + formatted,
+                                            "Print Time: " + formatted,
                                             fontSize = RESET_FONT_SIZE
+                                        )
+                                    }
+
+                                    lineBreak()
+
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                        printLeft(
+                                            "Report Time: ${viewModel.startDate.value} To \n${viewModel.endDate.value}"
                                         )
                                     }
 
@@ -817,6 +825,8 @@ class EmployeeTipSummary : Fragment() {
                     Builder.COLOR_1
                 )
                 builder.addText("Print Time:" + formatted)
+
+                builder.addText("Report Time:" + viewModel.startDate.value + "To\n" + viewModel.endDate.value)
             }
 
 
@@ -963,6 +973,10 @@ class EmployeeTipSummary : Fragment() {
         }
         SunmiPrintHelper.getInstance().lineWrap(1)
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            PrintSunmiUtils.normalText("Report Time:${viewModel.startDate.value} To \n${viewModel.endDate.value}")
+        }
+        SunmiPrintHelper.getInstance().lineWrap(1)
 
         //Main part start
         if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
