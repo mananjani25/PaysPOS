@@ -52,12 +52,28 @@
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
+
+
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@+id/orderTypeDisplay">
+
+
+                    <TextView
+                        android:id="@+id/preAuthOption"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:padding="@dimen/_2sdp"
+                        android:text="Pre Auth"
+                        android:visibility="gone"
+                        android:background="@drawable/rounded_border"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_4mdpi" />
 
                     <TextView
                         android:layout_weight="1"

@@ -7,6 +7,8 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
+import android.os.Message
+import android.os.SystemClock
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
@@ -26,6 +28,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.pax.poslink.PaymentRequest
+import com.pax.poslink.PosLink
+import com.pax.poslink.ProcessTransResult
+import com.pax.poslink.ReportRequest
 import com.pays.pos.R
 import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.DineInModel
@@ -87,6 +93,7 @@ import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.utils.*
 import com.pays.pos.utils.callback.*
 import com.pays.pos.utils.extensions.*
+import com.pays.pos.utils.paxUtils.SettingINI
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
@@ -100,6 +107,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
+import kotlin.math.roundToInt
 
 
 @AndroidEntryPoint
@@ -4677,7 +4685,129 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             increaseOnGoingOrderCounter()
         }
 
+        if(model?.orderType == OPEN_ORDER) {
+            makePaxPreAuthRequest()
+        }
 
+
+    }
+
+    // To make card payment via pax device
+    private fun makePaxPreAuthRequest() {
+        var posLink: PosLink = PosLink()
+
+        // PAX variables
+        lateinit var mPaymentRequest: PaymentRequest
+        var CARDBIN = ""
+        var cardLastDigits = ""
+        var CardName = ""
+        var EDCType = ""
+        var GlobalUID = ""
+        var RefNumber = ""
+        var ECRRefNumber = ""
+        var PAXtoken = ""
+        var ExtData = ""
+
+        val paymentviewModel by activityViewModels<PaymentViewModel>()
+
+        GlobalScope.launch {
+            Log.d("getCommSettingFromFile ","getCommSettingFromFile: "+Gson().toJson(SettingINI.getCommSettingFromFile(context!!,"/storage/emulated/0/Download/"+ SettingINI.FILENAME)))
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,"/storage/emulated/0/Download/"+ SettingINI.FILENAME))
+            val amt = (1 * 100)
+            val tip_amt = 0
+            ECRRefNumber = System.currentTimeMillis().toString()
+            var broadPOS_version = prefProvider.getValue(
+                Constants.BROADPOS_VERSION,
+                ""
+            )
+
+            CoroutineScope(Dispatchers.Main).launch {
+                ProgressUtils.showProgressDialog(requireActivity())
+            }
+            mPaymentRequest = PaymentRequest()
+            mPaymentRequest.TransType = mPaymentRequest.ParseTransType("AUTH")
+            mPaymentRequest.TenderType = mPaymentRequest.ParseTenderType("CREDIT")
+            mPaymentRequest.Amount = amt.toString()
+            mPaymentRequest.TipAmt = tip_amt.toString()
+            mPaymentRequest.ECRRefNum = ECRRefNumber
+            if (broadPOS_version.contains("TSYS")) {
+                mPaymentRequest.ExtData = "<Force>T</Force>"
+            } else if (broadPOS_version.contains("Rapid")) {
+                mPaymentRequest.ExtData = "<Force>T</Force><TokenRequest>1</TokenRequest>"
+            }
+
+            Log.d("ECRRefNum", "ECRRefNum: $ECRRefNumber")
+
+            posLink.PaymentRequest = mPaymentRequest
+            val result = posLink.ProcessTrans()
+            Log.d("result: ", result.Code.toString() + " " + result.Msg)
+            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                val msg = Message()
+                msg.what = Constants.TRANSACTION_SUCCESSED
+                msg.obj = posLink.PaymentResponse
+
+                val response = msg.obj as com.pax.poslink.PaymentResponse
+                val resultCode = response.ResultCode
+                val resultTxt = response.ResultTxt
+                val approvedAmount = response.ApprovedAmount
+                ExtData = response.ExtData
+                RefNumber = response.RefNum
+
+                cardLastDigits = response.BogusAccountNum
+                EDCType = response.CardType
+                CARDBIN = response.CardInfo.CardBin
+                var tipAmount = response.ApprovedTipAmount
+                GlobalUID = response.PaymentTransInfo.GlobalUid
+                paymentviewModel.setPAXData(RefNumber, GlobalUID)
+//                prefProvider.setValue(Constants.GLOBAL_ID, globalUID!!)
+
+//                dineInDataModel.guestPaymentReq?.paymentAttributes?.let { it ->
+//                    it.cardName = response.CardType
+//                    it.cardNumber = cardLastDigits
+//                    it.cardType = 0.toString()
+//
+//                }
+
+                //implementation("org.dom4j:dom4j:2.1.3")
+                PAXtoken = response.PaymentTransInfo.Token
+                Log.d("token:", "token $PAXtoken")
+                Log.d("token:", "EXT $ExtData")
+                Log.d(
+                    "Payment Details: ",
+                    "$ExtData $resultCode $resultTxt $GlobalUID $RefNumber"
+                )
+                Log.d("Payment Details: ", "$cardLastDigits $approvedAmount $CARDBIN $EDCType $tipAmount ${Gson().toJson(response)}")
+
+                if (resultCode == "000000") {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        ProgressUtils.dismissProgressDialog()
+                        coroutineScope {
+                            Log.e("PRE AUTH DATA ",Gson().toJson(response.ExtData))
+
+                            binding.preAuthOption.visible()
+
+                        }
+                    }
+                } else {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        ProgressUtils.dismissProgressDialog()
+                        AlertUtils.showCustomAlertWithListenerWithOK(requireContext(),resultTxt,object:
+                            DialogInterface.OnClickListener{
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                try {
+                                    binding.preAuthOption.gone()
+                                    p0?.dismiss()
+                                } catch (e: Exception) {
+                                }
+                            }
+                        })
+//                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+//                        connectBP()
+                    }
+                }
+            }
+
+        }
     }
 
     override fun onStart() {
