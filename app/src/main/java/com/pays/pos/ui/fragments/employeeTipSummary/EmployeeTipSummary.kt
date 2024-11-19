@@ -54,6 +54,7 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -264,35 +265,46 @@ class EmployeeTipSummary : Fragment() {
         }
 
         endTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
-            val timecalender = Calendar.getInstance()
-            timecalender.set(Calendar.HOUR_OF_DAY, hour)
-            timecalender.set(Calendar.MINUTE, minute)
-            viewModel.endDate.value = requireContext().timeCalculateForStartEndTime(
-                hour,
-                minute,
-                "isend",
-                myCalendar,
-                myCalendar1
-            )
-            if (requireContext().differenceTrue(
-                    viewModel.endDate.value!!,
-                    viewModel.startDate.value
-                ) <= 30
-            ) {
-                // Call API here
-                viewModel.getEmployeeTipSummary()
-                Log.e(
-                    "setupCalender",
-                    "2 start date = ${viewModel.startDate.value}, End date = ${viewModel.endDate.value}"
+            var fromDate = SimpleDateFormat("dd/MM/yyyy HH:mm").parse(viewModel.startDate.value).getTime() / 1000
+            var endDate = SimpleDateFormat("dd/MM/yyyy HH:mm").parse(timeCalculateForStartEndTime(hour, minute, "isend")).getTime() / 1000
+            if (fromDate<=endDate){
+                val timecalender = Calendar.getInstance()
+                timecalender.set(Calendar.HOUR_OF_DAY, hour)
+                timecalender.set(Calendar.MINUTE, minute)
+                viewModel.endDate.value = requireContext().timeCalculateForStartEndTime(
+                    hour,
+                    minute,
+                    "isend",
+                    myCalendar,
+                    myCalendar1
                 )
+                if (requireContext().differenceTrue(
+                        viewModel.endDate.value!!,
+                        viewModel.startDate.value
+                    ) <= 30
+                ) {
+                    // Call API here
+                    viewModel.getEmployeeTipSummary()
+                    Log.e(
+                        "setupCalender",
+                        "2 start date = ${viewModel.startDate.value}, End date = ${viewModel.endDate.value}"
+                    )
 
-            } else {
+                } else {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireActivity(),
+                        "Please Select date in 30 Days."
+                    ) { _, _ ->
+                    }
+                }
+            }else{
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
-                    "Please Select date in 30 Days."
+                    "The end date cannot be earlier than the start date. Please select a valid date range."
                 ) { _, _ ->
                 }
             }
+
 
         }
 
@@ -325,6 +337,64 @@ class EmployeeTipSummary : Fragment() {
             ).show()
 
         }
+    }
+
+    fun timeCalculateForStartEndTime(hour: Int, minute: Int, isStart: String): String {
+        var timestring = ""
+        var hoursfinal: Int = 0
+        if ((hour == 12 && minute > 0) || (hour > 12 && minute > 0) || (hour > 12 && minute == 0)) {
+            if (hour == 12) {
+                hoursfinal = hour
+            } else {
+                hoursfinal = hour - 12
+            }
+            if (hoursfinal < 10) {
+                if (minute < 10) {
+                    timestring = "0$hoursfinal:0$minute PM"
+                } else {
+                    timestring = "0$hoursfinal:$minute PM"
+                }
+            } else {
+                if (minute < 10) {
+                    timestring = "$hoursfinal:0$minute PM"
+                } else {
+                    timestring = "$hoursfinal:$minute PM"
+                }
+            }
+        } else {
+            if (hour == 0) {
+                if (minute < 10) {
+                    timestring = "${hour.plus(12)}:0$minute AM"
+                } else {
+                    timestring = "${hour.plus(12)}:$minute AM"
+                }
+            } else {
+                if (hour < 10) {
+                    if (minute < 10) {
+                        timestring = "0$hour:0$minute AM"
+                    } else {
+                        timestring = "0$hour:$minute AM"
+                    }
+                } else {
+                    if (minute < 10) {
+                        timestring = "$hour:0$minute AM"
+                    } else {
+                        timestring = "$hour:$minute AM"
+                    }
+                }
+            }
+
+        }
+
+        val myFormat = "MM/dd/yyyy" //In which you need put here
+        val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
+        var startDatestring = ""
+        if (isStart == "isstart") {
+            startDatestring = sdf.format(myCalendar.time)
+        } else {
+            startDatestring = sdf.format(myCalendar1.time)
+        }
+        return "$startDatestring $timestring"
     }
 
     private fun sendEmail() {

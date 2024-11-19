@@ -217,6 +217,12 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     ) { _, _ ->
                     }
                 }
+            }else {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireActivity(),
+                    "The end date cannot be earlier than the start date. Please select a valid date range."
+                ) { _, _ ->
+                }
             }
         }
 

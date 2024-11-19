@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResultListener
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.pays.pos.R
 import com.pays.pos.databinding.FragmentReportsBinding
@@ -110,7 +111,9 @@ class Reports : Fragment() {
         }
 
         binding.commonToolbar.txtHome.setOnClickListener {
-            findNavController().navigate(R.id.action_reports_to_dashboardCategory)
+            if (findNavController().currentDestination?.id == R.id.reports) {
+                findNavController().navigate(R.id.action_reports_to_dashboardCategory)
+            }
         }
 
         binding.commonToolbar.txtEmail?.setOnClickListener {
