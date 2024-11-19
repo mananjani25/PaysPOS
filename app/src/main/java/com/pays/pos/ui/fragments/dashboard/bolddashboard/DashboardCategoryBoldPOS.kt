@@ -549,8 +549,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
                 Status.ERROR -> {
                     if (!viewModel.loggingOut) {
-                        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
-                            binding.root.showAlert(resource.message)
+                        if (isAdded && view!=null) {
+                            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+                                resource.message?.let {
+                                    binding.root.showAlert(resource.message)
+                                }
+                            }
                         }
                     }
                 }

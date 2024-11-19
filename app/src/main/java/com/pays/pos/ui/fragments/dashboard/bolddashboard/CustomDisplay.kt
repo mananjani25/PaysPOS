@@ -2,13 +2,10 @@ package com.pays.pos.ui.fragments.dashboard.bolddashboard
 
 import android.app.Presentation
 import android.content.Context
-import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.os.Message
 import android.text.Editable
 import android.text.TextWatcher
@@ -20,7 +17,6 @@ import android.view.View
 import android.view.Window
 import android.widget.Toast
 import androidx.appcompat.view.ContextThemeWrapper
-import androidx.databinding.adapters.TextViewBindingAdapter.setText
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -55,7 +51,6 @@ import com.pays.pos.databinding.ViewCustomDisplayBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.logger.CreateCustomerEvent
-import com.pays.pos.logger.MessageEvent
 import com.pays.pos.logger.SyncCustomerEvent
 import com.pays.pos.ui.adapter.ActiveTipsListAdapter
 import com.pays.pos.ui.adapter.DineInAdapter
@@ -409,8 +404,8 @@ class CustomDisplay(
                         tvPhoneNumber?.text?.clear()
                         tvErrorMessage?.text = ""
                     } else {
-//                        Toast.makeText(context,"Enter a correct Mobile Number.", Toast.LENGTH_SHORT).show()
-                        tvErrorMessage?.text = "Invalid Input"
+                        Toast.makeText(context,"Enter Valid Mobile Number", Toast.LENGTH_SHORT).show()
+                        tvErrorMessage?.text = "Invalid Number"
                     }
 //                    [{"id":2,"phone_number":"5555575575"}]
                 }
@@ -604,7 +599,7 @@ class CustomDisplay(
             point = "point"
         }
 
-        return "${generalizeAmount(it.amount.toString())} ${point} for every $${generalizeAmount(it.rewardPoint.toString())} spent."
+        return "Redeem $${generalizeAmount(it.amount.toString())} on every ${generalizeAmount(it.rewardPoint.toString())} ${point}."
     }
 
 
@@ -1364,6 +1359,17 @@ class CustomDisplay(
         }
     }
 
+    fun showThankyouLayout(){
+        binding.apply {
+            mainCartLayout.gone()
+            thankYouLayout.gone()
+//            splashLayout.visible()
+            imgPaysSplash?.gone()
+            splashLoyalty?.gone()
+            thankYouLayout.visible()
+
+        }
+    }
     private fun getCustomerList() {
 
         try {
@@ -2344,9 +2350,10 @@ class CustomDisplay(
                         }
                     }
                 } else {
-                    CoroutineScope(Dispatchers.Main).launch {
+                    dashBoardCategoryViewModel.setTipErrorObservable(resultTxt)
+                    lifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
                         ProgressUtils.dismissProgressDialog()
-                        AlertUtils.showCustomAlertWithListenerWithOK(context, resultTxt, object :
+                        /*AlertUtils.showCustomAlertWithListenerWithOK(context, resultTxt, object :
                             DialogInterface.OnClickListener {
                             override fun onClick(p0: DialogInterface?, p1: Int) {
                                 try {
@@ -2354,7 +2361,7 @@ class CustomDisplay(
                                 } catch (e: Exception) {
                                 }
                             }
-                        })
+                        })*/
                         Log.d("resultCode not 000000:", "param $resultCode $resultTxt")
 //                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
                     }
