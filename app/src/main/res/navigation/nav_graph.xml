@@ -1040,6 +1040,18 @@
         <action
             android:id="@+id/action_purchaseGiftCard_to_addCustomerToGiftCard"
             app:destination="@id/addCustomerToGiftCard" />
+        <action
+            android:id="@+id/action_purchaseGiftCard_to_plasticCardNumber"
+            app:destination="@id/plasticCardNumber" />
+    </fragment>
+
+    <fragment android:id="@+id/plasticCardNumber"
+        android:name="com.pays.pos.ui.fragments.eGiftCard.PlasticCardNumber"
+        android:label="@string/lbl_plastic_gift_card">
+
+        <action
+            android:id="@+id/action_plasticCardNumber_to_paymentBoldPosFragment"
+            app:destination="@id/paymentBoldPosFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -1817,6 +1829,9 @@
         <action
             android:id="@+id/action_addCustomerToGiftCard_to_paymentBoldPosFragment"
             app:destination="@id/paymentBoldPosFragment" />
+        <action
+            android:id="@+id/action_addCustomerToGiftCard_to_plasticCardNumber"
+            app:destination="@id/plasticCardNumber" />
     </fragment>
     <fragment
         android:id="@+id/addNewCustomerForGiftCard"

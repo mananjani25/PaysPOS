@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/bg_color"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgBack"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:padding="@dimen/_6sdp"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:tint="@color/drawable_ic_color"
+            app:srcCompat="@mipmap/ic_left_arrow" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/CustomFontSemiBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/lbl_enter_gift_card_number"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_7mdpi" />
+
+
+        <TextView
+            android:id="@+id/txtNext"
+            style="@style/CustomFontBold"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_23sdp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/button_action_hover"
+            android:gravity="center"
+            android:paddingHorizontal="@dimen/padding_home_button"
+            android:text="@string/tv_next"
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_7mdpi"
+            android:visibility="visible" />
+
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/view" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_18sdp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginBottom="@dimen/_2sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:background="@drawable/background_square_border_grey"
+        android:padding="@dimen/_4sdp">
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/edtAmount"
+            style="@style/CustomFontBold"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:digits="0123456789"
+            android:gravity="center"
+            android:maxLength="17"
+            android:editable="true"
+            android:enabled="false"
+            android:textColor="@color/btnColor"
+            android:textSize="@dimen/_6sdp"
+            tools:ignore="MissingConstraints" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <include
+        android:id="@+id/llKeypad"
+        layout="@layout/layout_keypad"
+        android:layout_width="match_parent"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_2sdp"
+        android:paddingLeft="@dimen/_5sdp"
+        android:paddingRight="@dimen/_5sdp" />
+
+</androidx.appcompat.widget.LinearLayoutCompat>

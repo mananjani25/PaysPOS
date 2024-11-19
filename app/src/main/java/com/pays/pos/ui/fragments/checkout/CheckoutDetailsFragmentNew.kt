@@ -4174,12 +4174,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
         if (myRequest != null) {
             paymentviewModel.totalPayAmount(paymentAmount)
+            Log.e(TAG,"giftCardType:  ${prefProvider.getValue(Constants.GIFT_CARD_TYPE, "")}")
 
             if (prefProvider.getValue(Constants.GIFT_CARD_TYPE, "")
                     .equals("digital", ignoreCase = true)
             ) {
                 myRequest.order.orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
             }
+
 
             EventBus.getDefault().post(
                 MessageEvent(
