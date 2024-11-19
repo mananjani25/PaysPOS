@@ -971,7 +971,7 @@ class EmployeeTipSummary : Fragment() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             PrintSunmiUtils.normalText("Print Time:${MethodUtils.formatted()}")
         }
-        SunmiPrintHelper.getInstance().lineWrap(1)
+//        SunmiPrintHelper.getInstance().lineWrap(1)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             PrintSunmiUtils.normalText("Report Time:${viewModel.startDate.value} To \n${viewModel.endDate.value}")
@@ -1045,6 +1045,10 @@ class EmployeeTipSummary : Fragment() {
             PrintSunmiUtils.orderTime("Print Time:$formatted")
         }
         SunmiPrinterApi.getInstance().lineWrap(1)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            PrintSunmiUtils.normalText("Report Time:${viewModel.startDate.value} To \n${viewModel.endDate.value}")
+        }
 
         if (ETSdataList?.isNotEmpty() == true) {
             PrintSunmiUtils.addHorizontal()
