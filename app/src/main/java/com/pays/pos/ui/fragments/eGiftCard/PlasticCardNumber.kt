@@ -142,7 +142,7 @@ class PlasticCardNumber : Fragment() {
 
 
         binding.txtNext?.setOnClickListener {
-            if (binding.edtAmount?.text.toString().trim().length < 17) {
+            if (binding.edtAmount?.text.toString().trim().length < 13) {
                 AlertUtils.showCustomAlert(requireContext(), "Please enter Valid Gift Card number")
             }
             else{
@@ -151,6 +151,8 @@ class PlasticCardNumber : Fragment() {
                     Constants.CUSTOMER_NAME,
                     customer?.first_name + " " + customer?.last_name
                 )
+
+                prefProvider.setValue(Constants.PHYSICAL_GIFT_CARD_NUMBER,binding.edtAmount?.text.toString().trim())
 
                 prefProvider.setValue(
                     Constants.RECEIPT_CUSTOMER_NAME,

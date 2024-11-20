@@ -835,6 +835,7 @@ object Constants {
     const val IS_GIFT_CARD_REDEEM = "is_gift_card_redeem"
     const val IS_ORDER_REDEEMABLE_WITH_GIFT_CARD = "is_order_redeemable_with_gift_card"
     const val GIFT_CARD_NUMBER = "gift_card_number"
+    const val PHYSICAL_GIFT_CARD_NUMBER = "physical_gift_card_number"
     const val GIFT_CARD_PIN = "gift_card_pin"
     const val IS_ADD_VALUE_IN_GIFT_CARD = "is_add_value_in_gift_card"
 
@@ -855,6 +856,10 @@ object Constants {
     const val PERMISSION_BLUETOOTH_ADMIN = 2
     const val PERMISSION_BLUETOOTH_CONNECT = 3
     const val PERMISSION_BLUETOOTH_SCAN = 4
+
+    const val SOAP_ACTION = "https://www.sc-solutions.com/SmartTrackSE/RequestGateway/AuthenticateAndAuthorizeTransaction"
+    const val NAMESPACE = "https://www.sc-solutions.com/SmartTrackSE/RequestGateway"
+    const val ENDPOINT_URL = "https://demo.ecardsystems.net/requestgatewaydemo/requestgatewaywebservice.asmx"
 
     fun createCloudPrinter(ipAddress: String, portNo: Int): CloudPrinter {
         return CloudPrinterBuilder.buildPrinter(ipAddress, portNo)

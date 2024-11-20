@@ -1,5 +1,6 @@
 package com.pays.pos.ui.fragments.eGiftCard
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,7 +10,6 @@ import com.pays.pos.data.model.requestModel.giftCard.request.GiftCard
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardAddValueRequest
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.requestModel.giftCard.request.SellGiftCardRequestModel
-import com.pays.pos.data.model.requestModel.giftCard.response.GiftCardAddValueResponse
 import com.pays.pos.data.model.requestModel.giftCard.response.GiftCardCheckBalanceResponse
 import com.pays.pos.data.model.requestModel.giftCard.response.SellGiftCardResponseModel
 import com.pays.pos.data.remote.Constants
@@ -19,14 +19,32 @@ import com.pays.pos.ui.fragments.magtek.PaymentResponse
 import com.pays.pos.utils.Event
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
-import com.pays.pos.utils.MethodUtils.Companion.generateRandomNumbers
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
+import com.pays.pos.data.remote.Constants.ENDPOINT_URL
+import com.pays.pos.data.remote.Constants.GIFT_CARD_NUMBER
+import com.pays.pos.data.remote.Constants.PHYSICAL_GIFT_CARD_NUMBER
+import com.pays.pos.data.remote.Constants.SOAP_ACTION
 import com.pays.pos.logger.MessageEvent
+import com.squareup.okhttp.Callback
+import com.squareup.okhttp.MediaType
+import com.squareup.okhttp.OkHttpClient
+import com.squareup.okhttp.Protocol
+import com.squareup.okhttp.Request
+import com.squareup.okhttp.RequestBody
+import com.squareup.okhttp.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.Call
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.greenrobot.eventbus.EventBus
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -214,6 +232,113 @@ class GiftCardViewModel @Inject constructor(
         return SellGiftCardRequestModel(gift_card = giftCard)
     }
 
+    //add balance to physical gift card
+    fun addBalanceToPhysicalGiftCard(myRequest: SellGiftCardRequestModel?) {
+        val soapRequest = createSoapRequest("","",prefProvider.getValue(PHYSICAL_GIFT_CARD_NUMBER,""),myRequest?.gift_card?.amount ?: "")
+        sendSoapRequest(soapRequest, onSuccess = {response->
+            val endingBalance = parseSoapResponse(response)
+            CoroutineScope(Dispatchers.Main).launch {
+                myRequest?.let { sellGiftCard(it) }
+            }
+            Log.e("PhysicalGiftCard","endingBalance:  ${endingBalance}")
+        }, onError = {error->
+            Log.e("PhysicalGiftCard","error:  ${error.message}")
+
+        })
+
+
+    }
+
+    fun parseSoapResponse(response: String): String {
+        // Extract specific elements from the XML response using an XML parser
+        // Placeholder implementation
+        val regex = "<EndingBalance>(.*?)</EndingBalance>".toRegex()
+        return regex.find(response)?.groups?.get(1)?.value ?: "No balance found"
+    }
+
+    fun sendSoapRequest(soapRequest: String, onSuccess: (String) -> Unit, onError: (Throwable) -> Unit) {
+        val client = OkHttpClient()
+        var cli   =  okhttp3.OkHttpClient.Builder().protocols(listOf(okhttp3.Protocol.HTTP_1_1)).build()
+
+        val body = okhttp3.RequestBody.create(
+            "text/xml; charset=utf-8".toMediaTypeOrNull(),
+            soapRequest
+        )
+        val request = okhttp3.Request.Builder()
+            .url(ENDPOINT_URL)
+            .post(body)
+            .addHeader("Content-Type", "text/xml; charset=utf-8")
+            .addHeader("SOAPAction", SOAP_ACTION)
+            .build()
+
+        cli.newCall(request).enqueue(object : okhttp3.Callback{
+            /*override fun onFailure(request: Request?, e: IOException?) {
+                Log.e("PhysicalGiftCard","onFailure")
+                e?.let { onError(it) }
+
+            }
+
+            override fun onResponse(response: Response?) {
+                Log.e("PhysicalGiftCard","onResponse: ")
+                if (response?.isSuccessful == true) {
+                    Log.e("PhysicalGiftCard","onResponse:  ${Gson().toJson(response.body().string())}")
+                    response.body()?.string()?.let {
+                        onSuccess(it)
+                    } ?: onError(IOException("Empty response"))
+                } else {
+                    onError(IOException("HTTP ${response?.code()} ${Gson().toJson(response?.body()?.string())}"))
+                }
+
+            }
+*/
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("PhysicalGiftCard","onFailure")
+                e?.let { onError(it) }
+            }
+
+            override fun onResponse(call: Call, response: okhttp3.Response) {
+                Log.e("PhysicalGiftCard","onResponse: ")
+                if (response?.isSuccessful == true) {
+                    Log.e("PhysicalGiftCard","onResponse:  ${Gson().toJson(response.body?.toString())}")
+                    response.body?.toString()?.let {
+                        onSuccess(it)
+                    } ?: onError(IOException("Empty response"))
+                } else {
+                    onError(IOException("HTTP ${response.code} ${Gson().toJson(response?.body?.toString())}"))
+                }
+            }
+
+        })
+
+    }
+
+
+    fun createSoapRequest(username: String, password: String, giftCardNumber: String, transactionAmount: String): String {
+        val formattedDateTime = getFormattedDateTime()
+        return """
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                       xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                       xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+            <soap:Body>
+                <AuthenticateAndAuthorizeTransaction xmlns="${Constants.NAMESPACE}">
+                <credential>
+                        <Username>m101293rgw</Username>
+                        <Password>WXYSLZD3WN</Password>
+                    </credential>
+                    <authRequest>
+                        <Account>$giftCardNumber</Account>
+                        <TransactionAmount>$transactionAmount</TransactionAmount>
+                        <TerminalDateTime>${formattedDateTime}</TerminalDateTime>
+                        <TransactionType>Load</TransactionType>
+                        <PurseNumber>0</PurseNumber>
+                        <SchemeNumber>1</SchemeNumber>
+                     </authRequest>
+                </AuthenticateAndAuthorizeTransaction>
+            </soap:Body>
+        </soap:Envelope>
+    """.trimIndent()
+    }
     // purchase new gift card
     fun sellGiftCard(sellGiftCardRequestModel: SellGiftCardRequestModel) {
 
@@ -291,6 +416,11 @@ class GiftCardViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun getFormattedDateTime(): String {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        return dateFormat.format(Date())
     }
 
     fun createAddValueInGiftCardRequestUsingCash(): GiftCardAddValueRequest {
