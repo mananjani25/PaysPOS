@@ -1073,6 +1073,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         }
         val guestPaymentAttributes = GuestPaymentAttributes()
         guestPaymentAttributes.amount = guestRequestModel?.paymentAttributes!!.amount
+        guestPaymentAttributes.guestIndexForGuestPaymentDineIn = guestRequestModel?.paymentAttributes!!.guestIndexForGuestPaymentDineIn
         guestPaymentAttributes.serviceChargeAmount =
             guestRequestModel?.paymentAttributes!!.serviceChargeAmount
         guestPaymentAttributes.subTotal =
