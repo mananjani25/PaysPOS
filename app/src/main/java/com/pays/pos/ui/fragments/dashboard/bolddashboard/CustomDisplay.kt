@@ -88,7 +88,8 @@ class CustomDisplay(
     val lifecycleOwner: LifecycleOwner,
     private val dashBoardCategoryViewModel: DashBoardCategoryViewModel,
     val passcodeViewModel: PasscodeViewModel,
-    val dineInViewModel: DineInOrderTableViewModel
+    val dineInViewModel: DineInOrderTableViewModel,
+   /* val makeOneTimeReload:Boolean=false*/
 ) : Presentation(ContextThemeWrapper(context, R.style.CustomPresentationTheme), display), MyCallback, DineInAdapter.DineInCallback,
     ActiveTipsListAdapter.DiscountInterface {
 
@@ -417,6 +418,27 @@ class CustomDisplay(
                     t?.let {
                         if (it.isNotEmpty()){
                             btnSignUpOrCheckInMain.text=it
+                        }
+                    }
+                }
+            })
+
+            dashBoardCategoryViewModel.removedCustomerFromManualSaleObs.observe(lifecycleOwner,object:Observer<Boolean>{
+                override fun onChanged(t: Boolean?) {
+                    t?.let {
+                        if (it){
+                            dismiss()
+                            dismiss()
+                            binding.apply {
+                                txtCustomerName.text=""
+                                tvLoyaltyBalance.text=""
+                                tvMessage.text=resources.getString(R.string.loyalty_message)
+                            }
+//                            if (!makeOneTimeReload) {
+                            dashBoardCategoryViewModel.removedCustomerFromManualSaleObs.value=false
+
+                            dashBoardCategoryViewModel.reloadCustomerDisplay(it)
+//                            }
                         }
                     }
                 }
@@ -1060,7 +1082,10 @@ class CustomDisplay(
                     binding.tvLoyaltyPoints.text =
                         "${context.resources.getString(R.string.applied_loyalty_points)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
                 }
-                dashBoardCategoryViewModel.reloadCustomerDisplay()
+                /*dashBoardCategoryViewModel.reloadCustomerDisplay()*/
+//                if (!makeOneTimeReload) {
+                    dashBoardCategoryViewModel.reloadCustomerDisplay(false)
+//                }
             } else {
                 /*binding.tvLoyaltyBalance.invisible()
                 binding.tvLoyaltyPoints.invisible()
@@ -1084,7 +1109,10 @@ class CustomDisplay(
                 binding.splashLayout.post { binding.splashLayout.gone() }
                 binding.mainCartLayout.post { binding.mainCartLayout.visible() }
 
-                dashBoardCategoryViewModel.reloadCustomerDisplay()
+                /*dashBoardCategoryViewModel.reloadCustomerDisplay()*/
+//                if (!makeOneTimeReload) {
+                    dashBoardCategoryViewModel.reloadCustomerDisplay(false)
+//                }
 
 //                        binding.root.invalidate() // or
 //                        show()
