@@ -2945,6 +2945,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val result = posLink.ProcessTrans()
             Log.d("PAX_LOADER:: ", result.Code.toString() + " " + result.Msg)
             if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                Log.d("PAX_LOADER:: ", "2948")
                 val msg = Message()
                 msg.what = Constants.TRANSACTION_SUCCESSED
                 msg.obj = posLink.PaymentResponse
@@ -2980,6 +2981,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 )
 
                 if (resultCode == "000000") {
+                    Log.d("PAX_LOADER:: ", "2984")
                     Log.v("PAX_LOADER_5:: ", result.Code.toString() + " " + result.Msg)
                     // Store pax payment data to database
                     val paxData = PAXData(
@@ -3033,6 +3035,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             object : DialogInterface.OnClickListener {
                                 override fun onClick(p0: DialogInterface?, p1: Int) {
                                     try {
+                                        dismissProgressDialog()
                                         p0?.dismiss()
                                     } catch (e: Exception) {
                                     }
@@ -3046,6 +3049,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             } else {
                 CoroutineScope(Dispatchers.Main).launch {
                     ProgressUtils.dismissProgressDialog()
+                    dismissProgressDialog()
 /*                    if (retryCount <= 1) {
                         retryCount++
                         magtekProViewModel.initPOSLink(requireContext())
