@@ -45,6 +45,9 @@ import com.pays.pos.ui.adapter.ManualSaleCartAdapter
 import com.pays.pos.ui.adapter.ManualSaleCartAdapterNew
 import com.pays.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
+import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.utils.*
 import com.pays.pos.utils.MethodUtils.Companion.getSaltString
 import com.pays.pos.utils.callback.ManualSaleOptionsCustomCallback
@@ -88,6 +91,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     var tabCartItemModel = TbCartItem()
     private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
     var selectedHeaderPosition: Int = 0
+    private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
+    private val dineInViewModel by activityViewModels<DineInOrderTableViewModel>()
+    private lateinit var presentation: CustomDisplay
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -112,6 +118,28 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             selectedHeaderPosition = requireArguments().getInt("selectedHeaderPosition", 0)
         }
         binding.layoutHeader.edtSearch.visibility = View.GONE
+
+        viewModel.reloadCustomerDisplay.observe(viewLifecycleOwner,object:Observer<Boolean>{
+            override fun onChanged(t: Boolean) {
+                if (t){
+                    getCustomerDisplay(requireContext())?.let {
+                        presentation = CustomDisplay(
+                            it,
+                            requireContext(),
+                            viewLifecycleOwner,
+                            dashBoardCategoryViewModel = viewModel,
+                            passcodeViewModel,
+                            dineInViewModel,
+                        )
+
+                        if (presentation!=null) {
+                            presentation.show()
+                        }
+                    }
+
+                }
+            }
+        })
 
         return binding.root
     }
@@ -1064,6 +1092,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                                 viewModel.addCart(cartModelsList!![0])
                             }
                             clearCustomer()
+                            viewModel.changeCustomerDispSignButtonTitle(getString(R.string.sign_up_or_check_in))
+                            viewModel.removedCustomerFromManualSale(true)
 
                         }
 
