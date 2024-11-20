@@ -265,8 +265,8 @@ class EmployeeTipSummary : Fragment() {
         }
 
         endTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
-            var fromDate = SimpleDateFormat("dd/MM/yyyy HH:mm").parse(viewModel.startDate.value).getTime() / 1000
-            var endDate = SimpleDateFormat("dd/MM/yyyy HH:mm").parse(timeCalculateForStartEndTime(hour, minute, "isend")).getTime() / 1000
+            var fromDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(viewModel.startDate.value).getTime() / 1000
+            var endDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(timeCalculateForStartEndTime(hour, minute, "isend")).getTime() / 1000
             if (fromDate<=endDate){
                 val timecalender = Calendar.getInstance()
                 timecalender.set(Calendar.HOUR_OF_DAY, hour)
