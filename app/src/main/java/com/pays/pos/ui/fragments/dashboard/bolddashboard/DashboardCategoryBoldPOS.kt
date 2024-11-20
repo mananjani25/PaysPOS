@@ -459,7 +459,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private fun reloadCustomerDisplay() {
         viewModel.reloadCustomerDisplay.observe(viewLifecycleOwner,object:Observer<Boolean>{
             override fun onChanged(t: Boolean) {
-                if (t){
+                /*if (t){
                     getCustomerDisplay(requireContext())?.let {
                         presentation = CustomDisplay(
                             it,
@@ -471,7 +471,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         )
                     }
 
-                }
+                }*/
             }
         })
     }

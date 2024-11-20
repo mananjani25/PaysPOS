@@ -141,6 +141,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var wholetotalPrice = 0.0
     var tip = 0.0
     var order_note = ""
+
     /* This loggingOut variable is used to restrict the dialog which is shown after the user is logged out. the dialog is fetched from Customer's list api */
     var loggingOut = false
     var cartModel: CartModel? = null
@@ -169,6 +170,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private val _changeCustDispSignInButtonTitle = MutableLiveData<String>()
     val changeCustDispSignInButtonTitle: LiveData<String> = _changeCustDispSignInButtonTitle
+
+    public val removedCustomerFromManualSaleObs = MutableLiveData<Boolean>()
 
     private val _passcodeScreenActive = MutableLiveData<Boolean>()
     val passcodeScreenActive: LiveData<Boolean> = _passcodeScreenActive
@@ -370,6 +373,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun changeCustomerDispSignButtonTitle(value: String) {
         _changeCustDispSignInButtonTitle.postValue(value)
+    }
+
+    fun removedCustomerFromManualSale(value: Boolean) {
+        removedCustomerFromManualSaleObs.postValue(value)
     }
 
     fun setPasscodeScreenActive(value: Boolean) {
@@ -584,14 +591,16 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun getItemByCategoryId(id: Int) = posRepository.getItemByCategoryId(id)
 
 
-    fun refreshCartFragment(){
+    fun refreshCartFragment() {
         fragmentNeedToBeUpdated.postValue(true)
     }
 
     val reloadCustomerDisplay = MutableLiveData<Boolean>()
-    fun reloadCustomerDisplay(){
-        /* Uncomment the below code, if the customer Display is not refreshing everytime */
-//        reloadCustomerDisplay.postValue(true)
+    fun reloadCustomerDisplay(value:Boolean) {
+        if (value) {
+            /* Uncomment the below code, if the customer Display is not refreshing everytime */
+            reloadCustomerDisplay.postValue(value)
+        }
     }
 
     fun itemsByCat(id: Int): kotlinx.coroutines.flow.Flow<PagingData<TbItem>> = Pager(
@@ -599,7 +608,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             pageSize = 12, enablePlaceholders = false, initialLoadSize = 12
         )
     ) {
-            appDatabase.itemDao().getItemListByCategory(id)
+        appDatabase.itemDao().getItemListByCategory(id)
 
     }.flow.cachedIn(viewModelScope)
 /* The above .cachedIn(viewModelScope) is added by Rahul to solve the, Attempt to collect twice from pageEventFlow issue. */
