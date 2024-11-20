@@ -267,6 +267,55 @@ data class OnlineOrderResponseModel(
             val order_type: String
         )
 
+//        data class Payment(
+//            @SerializedName("amount")
+//            val amount: Double,
+//            @SerializedName("card_name")
+//            val cardName: String,
+//            @SerializedName("card_number")
+//            val cardNumber: String,
+//            @SerializedName("card_type")
+//            val cardType: String,
+//            @SerializedName("cash_discount_or_surcharge")
+//            val cashDiscount: Double,
+//            @SerializedName("created_at")
+//            val createdAt: String,
+//            @SerializedName("employee_id")
+//            val employeeId: Int,
+//            @SerializedName("id")
+//            val id: Int,
+//            @SerializedName("offline_id")
+//            val offlineId: String,
+//            @SerializedName("order_id")
+//            val orderId: Int,
+//            @SerializedName("payable_id")
+//            val payableId: Int,
+//            @SerializedName("payable_type")
+//            val payableType: String,
+//            @SerializedName("payment_type")
+//            val paymentType: String,
+//            @SerializedName("service_charge_amount")
+//            val serviceChargeAmount: Double,
+//            @SerializedName("sub_total")
+//            val subTotal: Double,
+//            @SerializedName("tax_amount")
+//            val taxAmount: Double,
+//            @SerializedName("terminal_id")
+//            val terminalId: Int,
+//            @SerializedName("tips")
+//            val tips: Double,
+//            @SerializedName("tips_adjusted")
+//            val tipsAdjusted: Boolean,
+//            @SerializedName("total_discount")
+//            val totalDiscount: Double,
+//            @SerializedName("transaction_id")
+//            val transactionId: String,
+//            @SerializedName("updated_at")
+//            val updatedAt: String,
+//            @SerializedName("pax_data")
+//            val pax_data: String
+//        )
+
         data class Payment(
             @SerializedName("amount")
             val amount: Double,
@@ -313,8 +362,56 @@ data class OnlineOrderResponseModel(
             @SerializedName("updated_at")
             val updatedAt: String,
             @SerializedName("pax_data")
-            val pax_data: String
+            val pax_data: String,
+
+            // New fields added
+            @SerializedName("dynamic_payment_id")
+            val dynamicPaymentId: String?,
+            @SerializedName("tip_setting_id")
+            val tipSettingId: String?,
+            @SerializedName("loyalty_program_id")
+            val loyaltyProgramId: String?,
+            @SerializedName("loyalty_amount")
+            val loyaltyAmount: Double,
+            @SerializedName("is_loyalty_applied")
+            val isLoyaltyApplied: Boolean,
+            @SerializedName("used_reward_points")
+            val usedRewardPoints: Int,
+            @SerializedName("cash_discount_type")
+            val cashDiscountType: String?,
+            @SerializedName("deleted_at")
+            val deletedAt: String?,
+            @SerializedName("magensa_response")
+            val magensaResponse: String,
+            @SerializedName("is_captured")
+            val isCaptured: Boolean,
+            @SerializedName("gift_card_redeemed_amount")
+            val giftCardRedeemedAmount: Double,
+            @SerializedName("signature")
+            val signature: String?,
+            @SerializedName("loyalty_balance")
+            val loyaltyBalance: Double,
+            @SerializedName("captured_at")
+            val capturedAt: String?,
+            @SerializedName("gift_card_id")
+            val giftCardId: String?,
+            @SerializedName("capture_response")
+            val captureResponse: String?,
+            @SerializedName("tip_with_surcharge_percentage")
+            val tipWithSurchargePercentage: Double,
+            @SerializedName("global_uniq_id")
+            val globalUniqId: String,
+            @SerializedName("ref_num")
+            val refNum: String,
+            @SerializedName("ext_data")
+            val extData: String,
+            @SerializedName("ecr_ref_num")
+            val ecrRefNum: String,
+            @SerializedName("pax_transaction_token")
+            val paxTransactionToken: String?
         )
+
+
 
         data class Customer(
 

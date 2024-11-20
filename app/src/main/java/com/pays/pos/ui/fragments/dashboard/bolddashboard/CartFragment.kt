@@ -38,6 +38,7 @@ import com.pays.pos.data.model.DineInModel
 import com.pays.pos.data.model.DineInOrderDetailAttributes
 import com.pays.pos.data.model.GuestPaymentCalculationModel
 import com.pays.pos.data.model.requestModel.OrderItemsAttribute
+import com.pays.pos.data.model.requestModel.PaymentAttributes
 import com.pays.pos.data.model.responseModel.GetFloorPlanResponse
 import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.pays.pos.data.model.responseModel.OnlineOrderResponseModel
@@ -4121,7 +4122,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                     ),
                                                     false,
                                                     "Cash",
-                                                    cashDiscountType
+                                                    cashDiscountType,
+                                                    isPreAuth = true,
+                                                    viewModelPayment.paymentAttributes
 
                                                 )
                                             }
@@ -4713,7 +4716,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         GlobalScope.launch {
             Log.d("getCommSettingFromFile ","getCommSettingFromFile: "+Gson().toJson(SettingINI.getCommSettingFromFile(context!!,"/storage/emulated/0/Download/"+ SettingINI.FILENAME)))
             posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,"/storage/emulated/0/Download/"+ SettingINI.FILENAME))
-            val amt = (1 * 100)
+            val amt = 0.99
             val tip_amt = 0
             ECRRefNumber = System.currentTimeMillis().toString()
             var broadPOS_version = prefProvider.getValue(
@@ -4784,6 +4787,25 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         coroutineScope {
                             Log.e("PRE AUTH DATA ",Gson().toJson(response.ExtData))
 
+                           val paymentAttributes = PaymentAttributes()
+
+                            paymentAttributes.apply {
+                                amount = amt.toDouble()
+                                cardName = CardName
+                                cardNumber = ""
+                                ecr_ref_num = ECRRefNumber
+                                employeeId = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                                ext_data = ExtData
+                                global_uniq_id = GlobalUID
+                                pax_transaction_token =""
+                                payableType = "Order"
+                                paymentType = "Card"
+                                ref_num = response.RefNum
+                                subTotal = 1.0
+                                terminalId = prefProvider.getTerminalId()
+                            }
+
+                            paymentviewModel.paymentAttributes = paymentAttributes
                             binding.preAuthOption.visible()
 
                         }

@@ -30,6 +30,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.android.volley.AuthFailureError
+import com.android.volley.Request
+import com.android.volley.VolleyError
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.reflect.TypeToken
@@ -94,9 +99,12 @@ import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
+import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.StringReader
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -2519,6 +2527,194 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             //  makePaymentCreditCard()
         }
 
+        binding.llSavedCard.setOnSingleClickListener {
+            disconnectSyncChannel()
+
+            if (InternetUtils.isInternetAvailable(applicationContext = requireActivity().applicationContext)) {
+
+                runOnUiThread(object:java.lang.Runnable{
+                    override fun run() {
+                        showProgressDialog()
+                    }
+                })
+                restrictTvCashClicks()
+
+                val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
+                subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
+
+                EventBus.getDefault().post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_binding.llCreditCard.setOnSingleClickListener dashboardViewModel.subTotalPrice-> ${
+                            Gson().toJson(dashboardViewModel.subTotalPrice)
+                        } , isSelectedCount-> ${isSelectedCount}", true
+                    )
+                )
+
+                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+                totalServiceCharge =
+                    String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
+                totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
+                totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
+                cashDiscountSurcharge =
+                    MethodUtils.getLatestCashDiscountOrSurCharge(
+                        WholetotalPrice,
+                        prefProvider,
+                        requireContext()
+                    ) / isSelectedCount
+//                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+//                        0.0
+//                    } else {
+//                        MethodUtils.getLatestCashDiscountOrSurCharge(
+//                            WholetotalPrice,
+//                            prefProvider,
+//                            requireContext()
+//                        ) / isSelectedCount
+//                    }
+                paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+
+                lifecycleScope.launch(Dispatchers.IO) {
+                    EventBus.getDefault().post(
+                        MessageEvent(
+                            "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_paymentClick() paymentAmount-> ${
+                                Gson().toJson(paymentAmount)
+                            }, WholetotalPrice -> ${Gson().toJson(WholetotalPrice)}, isSelectedCount -> ${
+                                Gson().toJson(
+                                    isSelectedCount
+                                )
+                            }", true
+                        )
+                    )
+                }
+
+                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+
+                if (cashDiscountType == "SurCharge") {
+                    paymentAmount =
+                        String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
+                }
+
+//        paymentviewModel.tipOnAmount = paymentAmount
+                //        Above code is commented, because the split amount was not changing, below code is the solution
+                try {
+                    paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                        .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 3).toDouble()
+                } catch (e: Exception) {
+                    try {
+                        paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                            .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 2)
+                            .toDouble()
+                    } catch (e: Exception) {
+                        try {
+                            paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                                .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 1)
+                                .toDouble()
+                        } catch (e: Exception) {
+                            try {
+                                paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                                    .substring(0, dashboardViewModel.totalPrice.toString().indexOf("."))
+                                    .toDouble()
+                            } catch (e: Exception) {
+                            }
+                        }
+                    }
+                }
+//                paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+//                    .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 3).toDouble()
+
+                /**
+                 * Added to check tip details
+                 * **/
+
+                dashboardViewModel.apply {
+                    totalAmount = paymentAmount
+                    paymentTypeForTip = "card"
+                }
+
+                paymentAmount += tipAmount
+                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+
+                if (paymentAmount != 0.0) {
+                    if (mSessionManager.isConnected) {
+                        magtekModule.stopListner(false)
+                        if (device == 0) {
+                            magtekPaymentCall()
+                        } else {
+                            magtekProPaymentCall()
+                        }
+                        prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, false)
+                    } else if (prefProvider.getValueboolean(
+                            Constants.IS_PAX_CONNECTED,
+                            false
+                        ) && !mSessionManager.isConnected
+                    ) {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            var paxData: PAXData? = paymentviewModel.getPaxPaymentData()
+                            if (paxData != null) {
+                                prefProvider.setValueboolean(IS_PAX_PAYMENT_FAILED, true)
+                                // Retry api call if we have unsuccessful pending payment stored
+                                GlobalUID = paxData.globalUid
+                                ExtData = paxData.extData
+                                RefNumber = paxData.refNumber
+                                ECRRefNumber = paxData.eCRRefNumber
+                                PAXtoken = paxData.paxToken
+                                EDCType = paxData.EDCType
+                                cardLastDigits = paxData.cardLastDigits
+                                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+                                    if (prefProvider.getValueboolean(
+                                            Constants.IS_ADD_VALUE_IN_GIFT_CARD,
+                                            false
+                                        )
+                                    ) {
+                                        giftCardViewModel.paxResponse = ExtData
+                                        giftCardViewModel.cardNumberLast4 = cardLastDigits
+                                        giftCardViewModel.cardNamePax = EDCType
+                                        giftCardViewModel.transactionID = PAXtoken
+                                        addValueInGiftCardUsingCard()
+                                    } else {
+                                        giftCardViewModel.paxResponse = ExtData
+                                        giftCardViewModel.cardNumberLast4 = cardLastDigits
+                                        giftCardViewModel.cardNamePax = EDCType
+                                        giftCardViewModel.transactionID = PAXtoken
+                                        sellGiftCardUsingCard()
+                                    }
+                                } else {
+                                    makePaymentCreditCard()
+                                }
+//                                makePaymentCreditCard()
+                            } else {
+                                adjustPreAuthPaymentPax()
+                            }
+                        }
+                    } else {
+                        runOnUiThread(object:java.lang.Runnable{
+                            override fun run() {
+                                binding.llCreditCard.isEnabled = true
+                                dismissProgressDialog()
+                            }
+                        })
+                        errorDisplay("Please connect a payment device.")
+                    }
+                } else {
+                    runOnUiThread(object:java.lang.Runnable{
+                        override fun run() {
+                            binding.llCreditCard.isEnabled = true
+                            dismissProgressDialog()
+                        }
+                    })
+                    errorDisplay("Payment Amount is zero.")
+                }
+            } else {
+                runOnUiThread(object:java.lang.Runnable{
+                    override fun run() {
+                        binding.llCreditCard.isEnabled = true
+                        dismissProgressDialog()
+                    }
+                })
+                errorDisplay("Please check your Network Connectivity.")
+            }
+            //  makePaymentCreditCard()
+        }
+
         binding.llManualCardEntry.setOnSingleClickListener {
             binding.frameLayoutId.visible()
             binding.relativeMain.gone()
@@ -2911,7 +3107,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         GlobalScope.launch {
             posLink.SetCommSetting(
                 SettingINI.getCommSettingFromFile(
-                    context!!,
+                    requireContext(),
                     "/storage/emulated/0/Download/" + SettingINI.FILENAME
                 )
             )
@@ -3647,7 +3843,132 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
     }
 
+    private fun adjustPreAuthPaymentPax(){
+
+        paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+
+        val paymentDetailsResponse = paymentviewModel.authPaymentResponse?.payments?.first()
+
+        paymentDetailsResponse
+        Log.e("Print",Gson().toJson(paymentDetailsResponse))
+
+        GlobalScope.launch {
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(requireContext(),Constants.FILE_PATH + SettingINI.FILENAME))
+            val tip_amt = (paymentAmount * 100).toInt()
+            Log.d("Amt: ", "tip $tip_amt RefNo ${paymentDetailsResponse?.ecrRefNum}")
+
+            CoroutineScope(Dispatchers.Main).launch {
+                ProgressUtils.showProgressDialog(requireActivity())
+            }
+            mPaymentRequest = PaymentRequest()
+            mPaymentRequest.TransType = mPaymentRequest.ParseTransType("ADJUST")
+            mPaymentRequest.TenderType = mPaymentRequest.ParseTenderType("CREDIT")
+            mPaymentRequest.Amount = tip_amt.toString()
+            //Added for TSYS ADJUST issue
+            mPaymentRequest.ECRRefNum = paymentDetailsResponse?.refNum
+            mPaymentRequest.OrigRefNum = paymentDetailsResponse?.refNum
+            mPaymentRequest.ExtData = "<Force>T</Force>"
+
+            posLink.PaymentRequest = mPaymentRequest
+            val result = posLink.ProcessTrans()
+            Log.d("result: ", result.Code.toString() + " " + result.Msg)
+            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                val msg = Message()
+                msg.what = Constants.TRANSACTION_SUCCESSED
+                msg.obj = posLink.PaymentResponse
+
+                val response = msg.obj as com.pax.poslink.PaymentResponse
+                val resultCode = response.ResultCode
+                val resultTxt = response.ResultTxt
+                val approvedAmount = response.ApprovedAmount
+                val ExtData = response.ExtData
+
+                cardLastDigits = response.BogusAccountNum
+                EDCType = response.CardType
+                CARDBIN = response.CardInfo.CardBin
+                var tipAmount = response.ApprovedTipAmount
+                val globalUID = response.PaymentTransInfo.GlobalUid
+
+                Log.d(
+                    "Payment Details: ",
+                    "$ExtData $resultCode $resultTxt $globalUID"
+                )
+                Log.d(
+                    "Payment Details: ",
+                    "$cardLastDigits $approvedAmount $CARDBIN $EDCType $tipAmount ${
+                        Gson().toJson(response)
+                    }"
+                )
+
+                if (resultCode == "000000") {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        ProgressUtils.dismissProgressDialog()
+                        coroutineScope {
+//                            makePaymentCreditCard()
+                            makePaymentCreditCard()
+                        }
+                    }
+                } else {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        ProgressUtils.dismissProgressDialog()
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(),
+                            resultTxt,
+                            object :
+                                DialogInterface.OnClickListener {
+                                override fun onClick(p0: DialogInterface?, p1: Int) {
+                                    try {
+                                        p0?.dismiss()
+                                    } catch (e: Exception) {
+                                    }
+                                }
+                            })
+//                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+                    }
+                }
+            } else {
+                CoroutineScope(Dispatchers.Main).launch {
+                    ProgressUtils.dismissProgressDialog()
+                    AlertUtils.showCustomAlertWithListenerWithOKCancel(
+                        requireContext(),
+                        getString(R.string.pax_connect_error), getString(R.string.reconnect),
+                    )
+                    { _, _ ->
+                        // Add connect to PAX logic
+                        magtekProViewModel.initPOSLink(requireContext())
+                    }
+
+                    /*if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT"){
+                        AlertUtils.showCustomAlertWithListenerWithOKCancel(
+                            requireContext(),
+                            getString(R.string.pax_connect_error), getString(R.string.reconnect),
+                        )
+                        { _, _ ->
+                            // Add connect to PAX logic
+                            magtekProViewModel.initPOSLink(requireContext())
+                        }
+//                        Toast.makeText(requireContext(), R.string.pax_connect_error, Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(requireContext(), "getMerchantDetails Failed ${result.Code} ${result.Msg}", Toast.LENGTH_LONG).show()
+                    }*/
+                }
+            }
+
+        }
+    }
+
+
     private fun setupTabDesign() {
+
+        // Checking Pre-Auth condition , if any pre auth card saved with this order
+        binding.llSavedCard.visibility = if(paymentviewModel.authPaymentResponse != null) View.VISIBLE else View.GONE
+//        binding.llSavedCard.setOnClickListener {
+//            if(paymentviewModel.authPaymentResponse == null) {
+//                AlertUtils.showCustomAlert(requireContext(),"No card Found!")
+//            } else {
+//                //adjustPreAuthPaymentPax()
+//            }
+//        }
 
         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
             PaymentBoldPosFragment.newInstance().addTipHideShow(true)
@@ -3744,6 +4065,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     tipsetupGlobal(tipAmount, isSelectedCount)
                     binding.tvFullAMounttxt.visibility = View.VISIBLE
                     binding.tvwaysplit?.invisible()
+
                 }
             } else {
                 loadSplitLayout()

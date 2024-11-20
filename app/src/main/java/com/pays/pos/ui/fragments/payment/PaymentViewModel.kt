@@ -12,6 +12,7 @@ import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.requestModel.*
 import com.pays.pos.data.model.responseModel.BaseResponse
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
+import com.pays.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.DINE_IN
 import com.pays.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
@@ -58,6 +59,14 @@ open class PaymentViewModel @Inject constructor(
     private var totalServiceChargeM: Double? = null
     private var totalDiscountM: Double? = null
     public var extData: String = ""
+
+    /***
+     * PreAuth Payment Attribute
+     */
+    var paymentAttributes:PaymentAttributes ? = null
+    var authPaymentResponse: OnlineOrderResponseModel.Data? = null
+    var allOrderResponse: List<OnlineOrderResponseModel. Data>? = null
+
 
     var orderCreateCallSent = false
 
@@ -1562,7 +1571,9 @@ open class PaymentViewModel @Inject constructor(
         finaldiscount: Double,
         needToAddPaymentAttributes: Boolean?,
         paymentType: String,
-        cashdiscountType: String
+        cashdiscountType: String,
+        isPreAuth:Boolean = false,
+        paymentAttributes: PaymentAttributes? = null
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -1767,24 +1778,31 @@ open class PaymentViewModel @Inject constructor(
         }
 
 
-        orderAttributeRequestModel.paymentAttributes = if (needToAddPaymentAttributes == true) {
-            paymentAttributes(
-                cartModel,
-                totalPrice,
-                subTotalPrice,
-                totalServiceCharge,
-                totalTax,
-                totalDiscount,
-                tipAmount,
-                splitValue,
-                finaldiscount,
-                paymentType,
-                orderAttributeRequestModel.cash_discount_type,
-                redeemLoyaltyInfo = redeemLoyaltyInfo
-            )
+        if(isPreAuth && paymentAttributes!=null) {
+
+            orderAttributeRequestModel.paymentAttributes = paymentAttributes
+
         } else {
-            null
+            orderAttributeRequestModel.paymentAttributes = if (needToAddPaymentAttributes == true) {
+                paymentAttributes(
+                    cartModel,
+                    totalPrice,
+                    subTotalPrice,
+                    totalServiceCharge,
+                    totalTax,
+                    totalDiscount,
+                    tipAmount,
+                    splitValue,
+                    finaldiscount,
+                    paymentType,
+                    orderAttributeRequestModel.cash_discount_type,
+                    redeemLoyaltyInfo = redeemLoyaltyInfo
+                )
+            } else {
+                null
+            }
         }
+
         if (cartModel.orderType == DINE_IN) {
             orderAttributeRequestModel.orderServiceChargesAttributes = serviceChargeListApplied
         } else {

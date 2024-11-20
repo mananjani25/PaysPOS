@@ -76,6 +76,7 @@ import com.pays.pos.ui.adapter.AllOrderAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.onlineorder.OnlineDetailViewModel
 import com.pays.pos.ui.fragments.orders.ActiveOrderViewModel
+import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.ui.fragments.transactions.TransactionDetailsFragment.OnBluetoothPermissionGranted
@@ -131,6 +132,7 @@ class AllOrdersListingFragment(
     private var isPrint: Boolean = true
     private val viewModel by viewModels<AllOrdersViewModel>()
     private val ordersViewModel by activityViewModels<AllOrdersViewModel>()
+    private val paymentViewModel by activityViewModels<PaymentViewModel>()
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val onlineDetailViewModel by activityViewModels<OnlineDetailViewModel>()
     private val activeOrderViewModel by viewModels<ActiveOrderViewModel>()
@@ -876,6 +878,9 @@ class AllOrdersListingFragment(
                 it?.let { resource ->
                     when (resource.status) {
                         Status.SUCCESS -> {
+
+                            paymentViewModel.allOrderResponse = resource.data?.data
+
                             ProgressUtils.dismissProgressDialog()
                             resource.data?.let {
 
@@ -1518,6 +1523,12 @@ class AllOrdersListingFragment(
 
                 prefProvider.setValueInt("ORDER_ID", -1)
 
+                paymentViewModel.apply {
+                    authPaymentResponse = null
+                    allOrderResponse = null
+                    paymentAttributes = null
+                }
+
                 dashboardViewModel.activeOrderTypeName = order.orderType
                 dashboardViewModel.activeOrderTypeText = order.orderTypeName
                 dashboardViewModel.activeOrderTypeId = order.id
@@ -1844,6 +1855,10 @@ class AllOrdersListingFragment(
             "PAY" -> {
 
                 try {
+
+                    paymentViewModel.authPaymentResponse = paymentViewModel.allOrderResponse?.get(pos)
+
+
                     prefProvider.setValueInt("ORDER_ID", -1)
 
                     dashboardViewModel.activeOrderTypeName = order.orderType
@@ -2169,6 +2184,7 @@ class AllOrdersListingFragment(
                     EventBus.getDefault()
                         .post(MessageEvent("${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  PAY -> prefException -> ${e.printStackTrace()}"))
                 }
+
 
 
                 findNavController().navigate(
