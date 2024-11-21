@@ -41,7 +41,12 @@ import kotlinx.coroutines.launch
 import okhttp3.Call
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.greenrobot.eventbus.EventBus
+import org.json.JSONObject
+import org.json.XML
+import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserFactory
 import java.io.IOException
+import java.io.StringReader
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -252,13 +257,26 @@ class GiftCardViewModel @Inject constructor(
     fun parseSoapResponse(response: String): String {
         // Extract specific elements from the XML response using an XML parser
         // Placeholder implementation
-        val regex = "<EndingBalance>(.*?)</EndingBalance>".toRegex()
+        val regex = "<PurseBalances>(.*?)</PurseBalances>".toRegex()
         return regex.find(response)?.groups?.get(1)?.value ?: "No balance found"
     }
 
-    fun sendSoapRequest(soapRequest: String, onSuccess: (String) -> Unit, onError: (Throwable) -> Unit) {
-        val client = OkHttpClient()
-        var cli   =  okhttp3.OkHttpClient.Builder().protocols(listOf(okhttp3.Protocol.HTTP_1_1)).build()
+    fun convertXmlToJson(xmlString: String): String {
+        return try {
+            // Convert XML string to JSON object
+            val jsonObject = XML.toJSONObject(xmlString)
+
+            // Pretty print the JSON object
+            jsonObject.toString(4) // Indent with 4 spaces
+        } catch (e: Exception) {
+            e.printStackTrace()
+            "Error converting XML to JSON: ${e.message}"
+        }
+    }
+
+    fun sendSoapCheckBalanceRequest(soapRequest: String, onSuccess: (String) -> Unit, onError: (Throwable) -> Unit){
+
+        var client   =  okhttp3.OkHttpClient.Builder().protocols(listOf(okhttp3.Protocol.HTTP_1_1)).build()
 
         val body = okhttp3.RequestBody.create(
             "text/xml; charset=utf-8".toMediaTypeOrNull(),
@@ -271,26 +289,129 @@ class GiftCardViewModel @Inject constructor(
             .addHeader("SOAPAction", SOAP_ACTION)
             .build()
 
-        cli.newCall(request).enqueue(object : okhttp3.Callback{
-            /*override fun onFailure(request: Request?, e: IOException?) {
+        client.newCall(request).enqueue(object : okhttp3.Callback{
+            override fun onFailure(call: Call, e: IOException) {
                 Log.e("PhysicalGiftCard","onFailure")
                 e?.let { onError(it) }
-
             }
 
-            override fun onResponse(response: Response?) {
-                Log.e("PhysicalGiftCard","onResponse: ")
+            override fun onResponse(call: Call, response: okhttp3.Response) {
+                Log.e("PhysicalGiftCardBalance","onResponse: ")
                 if (response?.isSuccessful == true) {
-                    Log.e("PhysicalGiftCard","onResponse:  ${Gson().toJson(response.body().string())}")
-                    response.body()?.string()?.let {
+                    Log.e("PhysicalGiftCard","onResponseBalance:  ")
+                    response.body?.toString()?.let {
                         onSuccess(it)
+                       var getGiftCardBalance =  parseXMLData(response.body?.string()?:"")
+
+                        var model =GiftCardCheckBalanceResponse(message =response.message , status = 0, type = "", data = getGiftCardBalance?.toDouble()
+                            ?.let { it1 -> GiftCardCheckBalanceResponse.Data(it1) })
+                        CoroutineScope(Dispatchers.Main).launch {
+                            _giftCardCheckBalanceData.value = Event(model)
+                        }
+
+
+
+
+
+                        Log.e("PhysicalGiftCard","checkResponse:  ${getGiftCardBalance}")
                     } ?: onError(IOException("Empty response"))
                 } else {
-                    onError(IOException("HTTP ${response?.code()} ${Gson().toJson(response?.body()?.string())}"))
+                    onError(IOException("HTTP ${response.code} ${Gson().toJson(response?.body?.toString())}"))
                 }
-
             }
-*/
+
+        })
+
+
+
+    }
+
+    private fun parseXMLData(data: String) : String{
+        var key = ""
+        var value = ""
+        var balances =""
+      var newData = data.replace("\\u003c", "<")
+            .replace("\\u003e", ">")
+            .replace("\\u003d", "=")
+            .replace("\\\"", "\"")
+
+        Log.e("PhysicalGiftCard","newDAta: ${newData}")
+        val purchaseBalances = parseXmlResponse(newData).get("PurseBalances") as List<String>
+        Log.e("PhysicalGiftCard","purchaseBalances:  ${purchaseBalances}")
+        if (purchaseBalances.isNotEmpty()){
+            return purchaseBalances[0].toString()
+          /*  if (response?.status == 200) {
+                _giftCardCheckBalanceData.value = Event(purchaseBalances[0])
+            } else {
+                _snackbarText.value = Event(resource.message)
+            }*/
+        }
+        else{
+            return "0.00"
+        }
+
+
+
+
+
+
+    }
+
+    fun parseXmlResponse(xml: String): Map<String, Any> {
+        val result = mutableMapOf<String, Any>()
+        val purseBalances = mutableListOf<String>() // To hold multiple decimal values
+        try {
+            // Create a new XmlPullParser
+            val factory = XmlPullParserFactory.newInstance()
+            val parser = factory.newPullParser()
+            parser.setInput(xml.reader()) // Set the XML string as input
+
+            var eventType = parser.eventType
+            var currentTag: String? = null
+
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                when (eventType) {
+                    XmlPullParser.START_TAG -> {
+                        currentTag = parser.name // Start reading a tag
+                    }
+                    XmlPullParser.TEXT -> {
+                        if (currentTag == "decimal") {
+                            purseBalances.add(parser.text.trim()) // Add decimals to list
+                        } else if (currentTag != null && parser.text.isNotBlank()) {
+                            result[currentTag] = parser.text.trim()
+                        }
+                    }
+                    XmlPullParser.END_TAG -> {
+                        currentTag = null // Reset the tag
+                    }
+                }
+                eventType = parser.next() // Move to the next XML element
+            }
+
+            // Add the list of PurseBalances to the result map
+            result["PurseBalances"] = purseBalances
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return result
+    }
+
+    fun sendSoapRequest(soapRequest: String, onSuccess: (String) -> Unit, onError: (Throwable) -> Unit) {
+        var client   =  okhttp3.OkHttpClient.Builder().protocols(listOf(okhttp3.Protocol.HTTP_1_1)).build()
+
+        val body = okhttp3.RequestBody.create(
+            "text/xml; charset=utf-8".toMediaTypeOrNull(),
+            soapRequest
+        )
+        val request = okhttp3.Request.Builder()
+            .url(ENDPOINT_URL)
+            .post(body)
+            .addHeader("Content-Type", "text/xml; charset=utf-8")
+            .addHeader("SOAPAction", SOAP_ACTION)
+            .build()
+
+        client.newCall(request).enqueue(object : okhttp3.Callback{
             override fun onFailure(call: Call, e: IOException) {
                 Log.e("PhysicalGiftCard","onFailure")
                 e?.let { onError(it) }
@@ -651,7 +772,56 @@ class GiftCardViewModel @Inject constructor(
             }
         }
     }
+    //check physical gift card balance
 
+    fun physcialGiftCardCheckBalance(giftCardCheckBalanceRequest: GiftCardCheckBalanceRequest){
+
+        val soapRequest = checkBalanceRequest("","",giftCardCheckBalanceRequest.name)
+        sendSoapCheckBalanceRequest(soapRequest, onSuccess = {response->
+            val endingBalance = parseSoapResponse(response)
+
+            Log.e("PhysicalGiftCardBalance","endingBalance:  ${endingBalance}")
+        }, onError = {error->
+            CoroutineScope(Dispatchers.Main).launch {
+                _snackbarText.value = Event(error.message)
+            }
+            Log.e("PhysicalGiftCardBalance","error:  ${error.message}")
+
+        })
+
+
+    }
+
+
+    fun checkBalanceRequest(username: String, password: String, giftCardNumber: String):String{
+
+            val formattedDateTime = getFormattedDateTime()
+        Log.e("PhysicalGiftCard","formattedDateTime:  ${formattedDateTime}")
+            return """
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                       xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                       xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+            <soap:Body>
+                <AuthenticateAndAuthorizeTransaction xmlns="${Constants.NAMESPACE}">
+                <credential>
+                        <Username>m101293rgw</Username>
+                        <Password>WXYSLZD3WN</Password>
+                    </credential>
+                    <authRequest>
+                        <Account>$giftCardNumber</Account>
+                        <TerminalDateTime>${formattedDateTime}</TerminalDateTime>
+                        <TransactionType>BalanceInquiry</TransactionType>
+                        <PurseNumber>0</PurseNumber>
+                        <SchemeNumber>1</SchemeNumber>
+                     </authRequest>
+                </AuthenticateAndAuthorizeTransaction>
+            </soap:Body>
+        </soap:Envelope>
+    """.trimIndent()
+
+
+    }
     // check gift card balance of existing gift card
     fun giftCardCheckBalance(giftCardCheckBalanceRequest: GiftCardCheckBalanceRequest) {
 
