@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice
 import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.os.Message
 import android.text.Editable
 import android.text.InputType
@@ -66,6 +67,8 @@ import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.pays.pos.data.remote.Constants.DINE_IN
+import com.pays.pos.data.remote.Constants.IS_GIFT_CARD_REDEEM
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
 import com.pays.pos.ui.fragments.dineInNew.DineInOrderTableViewModelPays
@@ -755,6 +758,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 Constants.GUEST_POSITION,
                                 it1
                             )
+                        }
+
+                        if (it.data.order.paymentStatus == "Paid" && it.data.order.orderType == DINE_IN){
+                            prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, false)
                         }
 
                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
@@ -1459,6 +1466,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         }
         binding.txtChargeGC.setOnSingleClickListener {
+            it.isEnabled = false
             val giftCardNumber = binding.edtGiftCardNumber.rawText.toString().trim()
 
             if (giftCardNumber.isEmpty() || giftCardNumber.length != 8) {
@@ -1470,6 +1478,12 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             } else {
                 giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = giftCardNumber))
             }
+            /**
+             * Added to prevent multiple api calls on multiple clicks.
+             */
+            Handler(Looper.getMainLooper()).postDelayed({
+                it.isEnabled = true  // Re-enable the button after delay
+            }, 1000)  // 1000ms = 1 second (adjust the delay based on your use case)
         }
 
         binding.lnrGiftCard.setOnSingleClickListener {
