@@ -394,6 +394,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     }
 
                     LogUtil.logE(TAG, "listItemWTGuestPay:  ${Gson().toJson(listItemWT)}")
+
+
                     listner.onGuestPay(
                         list[position],
                         position,
@@ -405,7 +407,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         list[0].guestDividedAmt,
                         listItemWT,
                         listItem,
-                        list[position].item?.guestIndexForDineIn?:0
+                        list[position+1].item?.guestIndexForDineIn ?: -1
                     )
                 }
             }

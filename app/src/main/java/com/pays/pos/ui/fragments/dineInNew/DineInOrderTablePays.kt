@@ -1841,7 +1841,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
         totalGuestCount = eligibleGuestsForDivision ?: 1
-        LogUtil.logE("TODAY", "totalGuestCount:  ${totalGuestCount}")
+        LogUtil.logE("TODAY", "dine_in_index:  ${guestIndexForDineIn}")
         LogUtil.logE("TODAY", "toFinalAmt:  ${toFinalAmt}")
 
         var divideCashDiscount = 0.0

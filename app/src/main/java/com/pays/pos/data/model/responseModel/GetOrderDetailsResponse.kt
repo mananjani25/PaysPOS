@@ -285,7 +285,7 @@ data class GetOrderDetailsResponse(
             @SerializedName("order_item_taxes")
             val orderItemTaxes: List<OrderItemTaxe>,
             @SerializedName("price")
-            val price: Double,
+            var price: Double,
             @SerializedName("quantity")
             var quantity: Int,
             @SerializedName("timestamp")

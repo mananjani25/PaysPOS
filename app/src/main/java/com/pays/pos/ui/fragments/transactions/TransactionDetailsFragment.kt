@@ -512,6 +512,7 @@ class TransactionDetailsFragment : Fragment() {
                 var isItemRefund = false
                 var isAmountRefund = false
 
+
                 paymentDetailsResponse.data.order.order_items.forEach {
                     if (it.refundedAmount != 0.0)
                         isItemRefund = true
@@ -1361,7 +1362,7 @@ class TransactionDetailsFragment : Fragment() {
                 val jsonString = Gson().toJson(paymentDetailsResponse)
                 Log.e("paymentDetailsResponse", "paymentDetailsResponse result = $jsonString")
 
-                if (paymentDetailsResponse.data.order.order_split_type == "OrderAmountTab" || paymentDetailsResponse.data.order.order_split_type == "OrderGuestTab") {
+                if (paymentDetailsResponse.data.order.order_split_type == "OrderAmountTab" /*|| paymentDetailsResponse.data.order.order_split_type == "OrderGuestTab"*/) {
                     isSplitPayment = true
                 }
 
@@ -1461,7 +1462,39 @@ class TransactionDetailsFragment : Fragment() {
                     binding.tvCustomerName.text = ""
                 }
                 binding.orderDetails = it
-                orderDetailsItemAdapter.addOrderDetailsItems(it.data.order.order_items)
+
+                /**
+                 * Applied this logic for DineIn - Item wise refund for Guest Payment
+                 */
+
+                if(it.data.order.order_type == DINE_IN) {
+                        var orderItems = mutableListOf<GetOrderDetailsResponse.Data.OrderItem>()
+
+                        if (it.data.payable_type == "Guest") {
+
+                            it.data.order.order_items.forEach { item ->
+                                if (item.guestIndexForDineIn == it.data.guest_index_for_dine_in || item.guestIndexForDineIn == 0) {
+
+                                    if (item.guestIndexForDineIn == 0) {
+
+                                        val _item = item
+                                        _item.price /= it.data.guestCount ?: 0
+
+                                        orderItems.add(_item)
+                                    } else orderItems.add(item)
+                                }
+                            }
+                    } else {
+                        orderItems = it.data.order.order_items.toMutableList()
+                    }
+
+                    orderDetailsItemAdapter.addOrderDetailsItems(orderItems)
+                }else {
+
+                    orderDetailsItemAdapter.addOrderDetailsItems(it.data.order.order_items)
+
+                }
+
                 Log.e("OrderTypeId", it.data.order.order_type_id.toString())
                 if (it.data.order.order_type_id.equals(5) || it.data.order.order_type_id.equals(2) || it.data.order.order_type_id.equals(
                         6
