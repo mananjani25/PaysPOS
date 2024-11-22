@@ -5601,6 +5601,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
         if (myRequest != null) {
             if (prefProvider.getValue(Constants.GIFT_CARD_TYPE, "").equals("Physical", true)) {
+                myRequest.gift_card.gift_card_type = "Physical"
                 giftCardViewModel.addValueInPhysicalGiftCard(true, myRequest)
             } else {
 
@@ -5623,6 +5624,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
         if (myRequest != null) {
             if (prefProvider.getValue(Constants.GIFT_CARD_TYPE,"").equals("Physical",true)){
+                myRequest.gift_card.gift_card_type = "Physical"
                 giftCardViewModel.addValueInPhysicalGiftCard(false,myRequest)
             }
             else {
