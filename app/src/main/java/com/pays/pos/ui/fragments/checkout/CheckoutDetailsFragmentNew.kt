@@ -2846,13 +2846,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         binding.txtChargeGC.setOnSingleClickListener {
+            it.isEnabled = false
             val giftCardNumber = binding.edtGiftCardNumber.rawText.toString().trim()
 
+            if (giftCardNumber.isEmpty() || giftCardNumber.length != 8) {
+                AlertUtils.showCustomAlertWithListenerWithOK(
             if (giftCardNumber.isEmpty() || giftCardNumber.length < 8) {
                 AlertUtils.showCustomAlert(
                     requireContext(),
                     "Please enter 8-digit gift card number."
-                )
+                ){ _, _ ->
+                    it.isEnabled = true
+                }
                 return@setOnSingleClickListener
             } else if (giftCardNumber.isNotEmpty() && giftCardNumber.length > 8) {
                 giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
@@ -2861,6 +2866,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = giftCardNumber))
             }
+            /**
+             * Added to prevent multiple api calls on multiple clicks.
+             */
+            Handler(Looper.getMainLooper()).postDelayed({
+                it.isEnabled = true  // Re-enable the button after delay
+            }, 3000)  // 1000ms = 1 second (adjust the delay based on your use case)
         }
     }
 
