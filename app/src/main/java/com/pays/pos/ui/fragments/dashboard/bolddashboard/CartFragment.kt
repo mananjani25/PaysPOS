@@ -74,6 +74,8 @@ import com.pays.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.pays.pos.data.remote.Constants.PERCENTAGE
 import com.pays.pos.data.remote.Constants.PHONE_ORDER
 import com.pays.pos.data.remote.Constants.PICK_UP
+import com.pays.pos.data.remote.Constants.PRE_AUTH_AMOUNT
+import com.pays.pos.data.remote.Constants.PRE_AUTH_DETAILS
 import com.pays.pos.data.remote.Constants.REDIRECT_FROM
 import com.pays.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
 import com.pays.pos.data.remote.Constants.TAKEOUT
@@ -316,6 +318,39 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
     // To check selected order type
     private fun checkOrderType() {
+
+        if(prefProvider.getValue(ORDER_TYPE,"") == OPEN_ORDER && !isFromPayment) {
+
+            binding.preAuthOption.visible()
+
+            binding.preAuthOption.apply {
+
+                if(prefProvider.getValue(PRE_AUTH_DETAILS,"").isNotEmpty()) {
+                    visible()
+                    isChecked = true
+                    isEnabled = false
+                    setTextColor(Color.GREEN)
+                }else {
+
+                    setOnClickListener {
+                        makePaxPreAuthRequest()
+                    }
+                }
+
+                try {
+                    if (viewModel.authPaymentResponse!!.payments.isNotEmpty()) {
+                        isChecked = true
+                        isEnabled = false
+                        setTextColor(Color.GREEN)
+                    }
+                }catch (e:Exception) {
+
+                }
+
+
+            }
+        } else
+            binding.preAuthOption.gone()
 
 //        saveVisibility()
         if (prefProvider.getValue(ORDER_TYPE, "").isEmpty()) {
@@ -3510,6 +3545,14 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             popupMenu.dismiss() //For resolving BIS-273
                             clearCart()
                             cleanOrderBackupDetails()
+
+                            //Clear PREAUTH data
+                            prefProvider.setValue(PRE_AUTH_DETAILS,"")
+                            viewModel.apply {
+                                paymentAttributes = null
+                                authPaymentResponse = null
+                                allOrderResponse = null
+                            }
                         }
 
 
@@ -4099,6 +4142,26 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                 }"
                                             )
 
+                                            /**
+                                             * Pre Auth for OPEN ORDER
+                                             */
+                                            val paymentType = object : TypeToken<PaymentAttributes>() {}.type
+
+                                            var isPreAuth = prefProvider.getValue(PRE_AUTH_DETAILS,"").isNotEmpty()
+
+                                            var paymentAttributes:PaymentAttributes? = null
+                                            if(isPreAuth) {
+                                                if (prefProvider.getValue(ORDER_TYPE, "") != OPEN_ORDER) {
+                                                    isPreAuth = false
+                                                    paymentAttributes = null
+                                                } else {
+                                                    paymentAttributes = Gson().fromJson(prefProvider.getValue(PRE_AUTH_DETAILS, ""), paymentType) as PaymentAttributes
+                                                }
+                                            } else if(isOrderUpdate){
+
+                                            }
+                                            //END Pre AUTH
+
                                             val request = cartModel?.let {
                                                 viewModelPayment.createOpenOrderRequestNew(
                                                     viewModel.currentCartItems,
@@ -4123,11 +4186,14 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                     false,
                                                     "Cash",
                                                     cashDiscountType,
-                                                    isPreAuth = true,
-                                                    viewModelPayment.paymentAttributes
+                                                    isPreAuth = isPreAuth,
+                                                    paymentAttributes
 
                                                 )
                                             }
+
+
+
                                             isSaveOrder = true
                                             viewModelPayment.saveOrder(true)
 
@@ -4688,14 +4754,16 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             increaseOnGoingOrderCounter()
         }
 
-        if(model?.orderType == OPEN_ORDER) {
-            makePaxPreAuthRequest()
+        //CLEAR PREAUTH DATA
+        prefProvider.setValue(PRE_AUTH_DETAILS,"")
+        viewModel.apply {
+            paymentAttributes = null
+            authPaymentResponse = null
+            allOrderResponse = null
         }
-
-
     }
 
-    // To make card payment via pax device
+    // PRE AUTHORISE CARD
     private fun makePaxPreAuthRequest() {
         var posLink: PosLink = PosLink()
 
@@ -4711,12 +4779,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         var PAXtoken = ""
         var ExtData = ""
 
-        val paymentviewModel by activityViewModels<PaymentViewModel>()
-
         GlobalScope.launch {
-            Log.d("getCommSettingFromFile ","getCommSettingFromFile: "+Gson().toJson(SettingINI.getCommSettingFromFile(context!!,"/storage/emulated/0/Download/"+ SettingINI.FILENAME)))
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,"/storage/emulated/0/Download/"+ SettingINI.FILENAME))
-            val amt = 0.99
+            Log.d("getCommSettingFromFile ","getCommSettingFromFile: "+Gson().toJson(SettingINI.getCommSettingFromFile(requireContext(),"/storage/emulated/0/Download/"+ SettingINI.FILENAME)))
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(requireContext(),"/storage/emulated/0/Download/"+ SettingINI.FILENAME))
+            val amt = PRE_AUTH_AMOUNT * 10
             val tip_amt = 0
             ECRRefNumber = System.currentTimeMillis().toString()
             var broadPOS_version = prefProvider.getValue(
@@ -4761,7 +4827,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 CARDBIN = response.CardInfo.CardBin
                 var tipAmount = response.ApprovedTipAmount
                 GlobalUID = response.PaymentTransInfo.GlobalUid
-                paymentviewModel.setPAXData(RefNumber, GlobalUID)
+                viewModelPayment.setPAXData(RefNumber, GlobalUID)
 //                prefProvider.setValue(Constants.GLOBAL_ID, globalUID!!)
 
 //                dineInDataModel.guestPaymentReq?.paymentAttributes?.let { it ->
@@ -4787,10 +4853,16 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         coroutineScope {
                             Log.e("PRE AUTH DATA ",Gson().toJson(response.ExtData))
 
-                           val paymentAttributes = PaymentAttributes()
+                            binding.preAuthOption.apply {
+                                isChecked = true
+                                isEnabled = false
+                                setTextColor(Color.GREEN)
+                            }
+
+                            val paymentAttributes = PaymentAttributes()
 
                             paymentAttributes.apply {
-                                amount = amt.toDouble()
+                                amount = PRE_AUTH_AMOUNT
                                 cardName = CardName
                                 cardNumber = ""
                                 ecr_ref_num = ECRRefNumber
@@ -4805,19 +4877,31 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                 terminalId = prefProvider.getTerminalId()
                             }
 
-                            paymentviewModel.paymentAttributes = paymentAttributes
-                            binding.preAuthOption.visible()
+                            prefProvider.setValue(PRE_AUTH_DETAILS,Gson().toJson(paymentAttributes))
+                            viewModel.paymentAttributes = paymentAttributes
 
                         }
                     }
                 } else {
+
+                    runOnUiThread(object:java.lang.Runnable{
+                        override fun run() {
+                            dismissProgressDialog()
+                        }
+                    })
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
                         AlertUtils.showCustomAlertWithListenerWithOK(requireContext(),resultTxt,object:
                             DialogInterface.OnClickListener{
                             override fun onClick(p0: DialogInterface?, p1: Int) {
                                 try {
-                                    binding.preAuthOption.gone()
+
+                                    binding.preAuthOption.apply {
+                                        isChecked = false
+                                        isEnabled = true
+                                        setTextColor(Color.RED)
+                                    }
+
                                     p0?.dismiss()
                                 } catch (e: Exception) {
                                 }
@@ -4841,6 +4925,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
     override fun onStop() {
         super.onStop()
         prefProvider.setValue(Constants.OLD_ITEM, "")
+
+
 
         org.greenrobot.eventbus.EventBus.getDefault().unregister(this)
 

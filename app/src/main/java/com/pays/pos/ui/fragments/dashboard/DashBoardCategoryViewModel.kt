@@ -28,6 +28,7 @@ import com.pays.pos.data.model.SplitDetailListModel
 import com.pays.pos.data.model.requestModel.*
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.pays.pos.data.model.responseModel.OnlineOrderNotificationCount
+import com.pays.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.pays.pos.data.model.responseModel.OrderTypeResponse
 import com.pays.pos.data.model.responseModel.PrinterResponse
 import com.pays.pos.data.model.responseModel.allOrders.AllOrdersCountResponse
@@ -224,6 +225,13 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun getSunmiFrameWorkVersion() =
         prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".")
             .toTypedArray()
+
+    /***
+     * PreAuth Payment Attribute
+     */
+    var paymentAttributes:PaymentAttributes ? = null
+    var authPaymentResponse: OnlineOrderResponseModel.Data? = null
+    var allOrderResponse: List<OnlineOrderResponseModel. Data>? = null
 
     /**
      * Tracking main cart discount

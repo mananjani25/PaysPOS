@@ -21,6 +21,7 @@ import com.pays.pos.data.remote.Constants.PAYMENT_ID
 import com.pays.pos.data.remote.Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY
 import com.pays.pos.data.remote.Constants.PHONE_ORDER
 import com.pays.pos.data.remote.Constants.PICK_UP
+import com.pays.pos.data.remote.Constants.PRE_AUTH_DETAILS
 import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.repositories.PosRepository
 import com.pays.pos.di.PrefProvider
@@ -59,13 +60,6 @@ open class PaymentViewModel @Inject constructor(
     private var totalServiceChargeM: Double? = null
     private var totalDiscountM: Double? = null
     public var extData: String = ""
-
-    /***
-     * PreAuth Payment Attribute
-     */
-    var paymentAttributes:PaymentAttributes ? = null
-    var authPaymentResponse: OnlineOrderResponseModel.Data? = null
-    var allOrderResponse: List<OnlineOrderResponseModel. Data>? = null
 
 
     var orderCreateCallSent = false
@@ -199,6 +193,8 @@ open class PaymentViewModel @Inject constructor(
                         if (response?.status == 200) {
 
                             resource.data?.let { createOrderResponse ->
+
+                                prefProvider.setValue(PRE_AUTH_DETAILS,"")
 
                                 if (createOrderResponse.data.order.customer != null) {
                                     if (createOrderResponse.data.order.payments.isNotEmpty()) {
@@ -1778,9 +1774,10 @@ open class PaymentViewModel @Inject constructor(
         }
 
 
-        if(isPreAuth && paymentAttributes!=null) {
+        if(isPreAuth) {
 
-            orderAttributeRequestModel.paymentAttributes = paymentAttributes
+            if(paymentAttributes!=null)
+                orderAttributeRequestModel.paymentAttributes = paymentAttributes
 
         } else {
             orderAttributeRequestModel.paymentAttributes = if (needToAddPaymentAttributes == true) {

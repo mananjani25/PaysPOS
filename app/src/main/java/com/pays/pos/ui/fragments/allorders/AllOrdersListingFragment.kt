@@ -62,6 +62,7 @@ import com.pays.pos.data.remote.Constants.OPEN_ORDER_TAB
 import com.pays.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.pays.pos.data.remote.Constants.PHONE_ORDER
 import com.pays.pos.data.remote.Constants.PHONE_ORDER_TAB
+import com.pays.pos.data.remote.Constants.PRE_AUTH_DETAILS
 import com.pays.pos.data.remote.Constants.SHIPPING_ADDRESS
 import com.pays.pos.data.remote.Constants.SUNMI_PRINTER
 import com.pays.pos.data.remote.Constants.THIRD_PARTY_ORDER_TAB
@@ -879,7 +880,7 @@ class AllOrdersListingFragment(
                     when (resource.status) {
                         Status.SUCCESS -> {
 
-                            paymentViewModel.allOrderResponse = resource.data?.data
+                            dashboardViewModel.allOrderResponse = resource.data?.data
 
                             ProgressUtils.dismissProgressDialog()
                             resource.data?.let {
@@ -1521,13 +1522,11 @@ class AllOrdersListingFragment(
             "UPDATE" -> {
                 prefProvider.setValue(OLD_ITEM_BASE_CUSTOM_ITEM, Gson().toJson(order.orderItems))
 
+                dashboardViewModel.authPaymentResponse = dashboardViewModel.allOrderResponse?.get(pos)
+
                 prefProvider.setValueInt("ORDER_ID", -1)
 
-                paymentViewModel.apply {
-                    authPaymentResponse = null
-                    allOrderResponse = null
-                    paymentAttributes = null
-                }
+
 
                 dashboardViewModel.activeOrderTypeName = order.orderType
                 dashboardViewModel.activeOrderTypeText = order.orderTypeName
@@ -1856,7 +1855,7 @@ class AllOrdersListingFragment(
 
                 try {
 
-                    paymentViewModel.authPaymentResponse = paymentViewModel.allOrderResponse?.get(pos)
+                    dashboardViewModel.authPaymentResponse = dashboardViewModel.allOrderResponse?.get(pos)
 
 
                     prefProvider.setValueInt("ORDER_ID", -1)

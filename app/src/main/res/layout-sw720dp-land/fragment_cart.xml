@@ -62,7 +62,7 @@
                     android:layout_toEndOf="@+id/orderTypeDisplay">
 
 
-                    <TextView
+                    <CheckBox
                         android:id="@+id/preAuthOption"
                         style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
@@ -70,9 +70,8 @@
                         android:layout_centerVertical="true"
                         android:padding="@dimen/_2sdp"
                         android:text="Pre Auth"
-                        android:visibility="gone"
-                        android:background="@drawable/rounded_border"
-                        android:textColor="@color/white"
+                        android:visibility="visible"
+                        android:textColor="@color/redColor"
                         android:textSize="@dimen/_4mdpi" />
 
                     <TextView

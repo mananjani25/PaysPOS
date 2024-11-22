@@ -64,6 +64,7 @@ import com.pays.pos.data.remote.Constants.IS_GIFT_CARD_REDEEM
 import com.pays.pos.data.remote.Constants.IS_ORDER_REDEEMABLE_WITH_GIFT_CARD
 import com.pays.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
 import com.pays.pos.data.remote.Constants.ORDER_TYPE
+import com.pays.pos.data.remote.Constants.PRE_AUTH_DETAILS
 import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.remote.Constants.TIP_ADDED
 import com.pays.pos.data.remote.Constants.TIP_ADDED_AMOUNT
@@ -2682,6 +2683,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 }
 //                                makePaymentCreditCard()
                             } else {
+                                //makePaxPaymentRequest()
                                 adjustPreAuthPaymentPax()
                             }
                         }
@@ -3845,28 +3847,29 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun adjustPreAuthPaymentPax(){
 
-        paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+      //  paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
 
-        val paymentDetailsResponse = paymentviewModel.authPaymentResponse?.payments?.first()
+        val paymentDetailsResponse = dashboardViewModel.authPaymentResponse?.payments?.first()
 
         paymentDetailsResponse
         Log.e("Print",Gson().toJson(paymentDetailsResponse))
 
         GlobalScope.launch {
             posLink.SetCommSetting(SettingINI.getCommSettingFromFile(requireContext(),Constants.FILE_PATH + SettingINI.FILENAME))
-            val tip_amt = (paymentAmount * 100).toInt()
-            Log.d("Amt: ", "tip $tip_amt RefNo ${paymentDetailsResponse?.ecrRefNum}")
+            val finalAmount = (paymentAmount * 100).toInt()
+            Log.d("Amt: ", "tip $finalAmount RefNo ${paymentDetailsResponse?.ecrRefNum}")
 
             CoroutineScope(Dispatchers.Main).launch {
-                ProgressUtils.showProgressDialog(requireActivity())
+               // ProgressUtils.showProgressDialog(requireActivity())
             }
             mPaymentRequest = PaymentRequest()
-            mPaymentRequest.TransType = mPaymentRequest.ParseTransType("ADJUST")
+            mPaymentRequest.TransType = mPaymentRequest.ParseTransType("POSTAUTH")
             mPaymentRequest.TenderType = mPaymentRequest.ParseTenderType("CREDIT")
-            mPaymentRequest.Amount = tip_amt.toString()
+            mPaymentRequest.Amount = finalAmount.toString()
             //Added for TSYS ADJUST issue
             mPaymentRequest.ECRRefNum = paymentDetailsResponse?.refNum
-            mPaymentRequest.OrigRefNum = paymentDetailsResponse?.refNum
+            mPaymentRequest.OrigRefNum = paymentDetailsResponse?.ecrRefNum
+            mPaymentRequest.OrigECRRefNum = paymentDetailsResponse?.ecrRefNum
             mPaymentRequest.ExtData = "<Force>T</Force>"
 
             posLink.PaymentRequest = mPaymentRequest
@@ -3881,7 +3884,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 val resultCode = response.ResultCode
                 val resultTxt = response.ResultTxt
                 val approvedAmount = response.ApprovedAmount
-                val ExtData = response.ExtData
+                ExtData = response.ExtData
 
                 cardLastDigits = response.BogusAccountNum
                 EDCType = response.CardType
@@ -3900,20 +3903,109 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     }"
                 )
 
+                msg.what = Constants.TRANSACTION_SUCCESSED
+                msg.obj = posLink.PaymentResponse
+
+                ExtData = response.ExtData
+                RefNumber = response.RefNum
+                ECRRefNumber = paymentDetailsResponse?.ecrRefNum ?: ""
+
+                cardLastDigits = response.BogusAccountNum
+                EDCType = response.CardType
+                CARDBIN = response.CardInfo.CardBin
+                GlobalUID = response.PaymentTransInfo.GlobalUid
+                paymentviewModel.setPAXData(RefNumber, GlobalUID)
+//                prefProvider.setValue(Constants.GLOBAL_ID, globalUID!!)
+
+                //implementation("org.dom4j:dom4j:2.1.3")
+                PAXtoken = response.PaymentTransInfo.Token
+                Log.d("PAX_CARD:", "pax card info > ${response.CardInfo.ProgramType}")
+                Log.d("token:", "token $PAXtoken")
+                Log.d(
+                    "Payment Details: ",
+                    "$ExtData $resultCode $resultTxt $GlobalUID $RefNumber"
+                )
+                Log.d(
+                    "Payment Details: ",
+                    "$cardLastDigits $approvedAmount $CARDBIN $EDCType $tipAmount ${
+                        Gson().toJson(response)
+                    }"
+                )
+
+
+
                 if (resultCode == "000000") {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        ProgressUtils.dismissProgressDialog()
-                        coroutineScope {
+//                    CoroutineScope(Dispatchers.Main).launch {
+//                        ProgressUtils.dismissProgressDialog()
+//                        coroutineScope {
+////                            makePaymentCreditCard()
 //                            makePaymentCreditCard()
-                            makePaymentCreditCard()
+//                        }
+//                    }
+
+
+                    Log.v("PAX_LOADER_5:: ", result.Code.toString() + " " + result.Msg)
+                    // Store pax payment data to database
+                    val paxData = PAXData(
+                        response.PaymentTransInfo.GlobalUid,
+                        response.ExtData,
+                        response.RefNum,
+                        ECRRefNumber,
+                        response.PaymentTransInfo.Token,
+                        response.BogusAccountNum,
+                        response.CardType
+                    )
+                    paymentviewModel.savePaxPaymentDataLocally(paxData)
+
+                    CoroutineScope(Dispatchers.Main).launch {
+//                        ProgressUtils.dismissProgressDialog()
+                        coroutineScope {
+                            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+                                if (prefProvider.getValueboolean(
+                                        Constants.IS_ADD_VALUE_IN_GIFT_CARD,
+                                        false
+                                    )
+                                ) {
+                                    giftCardViewModel.paxResponse = response.ExtData
+                                    giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
+                                    giftCardViewModel.cardNamePax = response.CardType
+                                    giftCardViewModel.transactionID = response.PaymentTransInfo.Token
+                                    addValueInGiftCardUsingCard()
+                                } else {
+                                    giftCardViewModel.paxResponse = response.ExtData
+                                    giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
+                                    giftCardViewModel.cardNamePax = response.CardType
+                                    giftCardViewModel.transactionID = response.PaymentTransInfo.Token
+                                    sellGiftCardUsingCard()
+                                }
+                            } else {
+                                makePaymentCreditCard()
+                            }
+//                            makePaymentCreditCard()
                         }
                     }
                 } else {
+
+                    runOnUiThread(object:java.lang.Runnable{
+                        override fun run() {
+                            dismissProgressDialog()
+                            binding.llSavedCard.gone()
+                        }
+                    })
+
+                    //clear PRE AUTH DATA
+                    prefProvider.setValue(PRE_AUTH_DETAILS,"")
+                    dashboardViewModel.apply {
+                        paymentAttributes = null
+                        authPaymentResponse = null
+                        allOrderResponse = null
+                    }
+
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
                         AlertUtils.showCustomAlertWithListenerWithOK(
                             requireContext(),
-                            resultTxt,
+                            "Card Expired OR " + resultTxt,
                             object :
                                 DialogInterface.OnClickListener {
                                 override fun onClick(p0: DialogInterface?, p1: Int) {
@@ -3961,14 +4053,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun setupTabDesign() {
 
         // Checking Pre-Auth condition , if any pre auth card saved with this order
-        binding.llSavedCard.visibility = if(paymentviewModel.authPaymentResponse != null) View.VISIBLE else View.GONE
-//        binding.llSavedCard.setOnClickListener {
-//            if(paymentviewModel.authPaymentResponse == null) {
-//                AlertUtils.showCustomAlert(requireContext(),"No card Found!")
-//            } else {
-//                //adjustPreAuthPaymentPax()
-//            }
-//        }
+            try {
+                if (dashboardViewModel.authPaymentResponse!!.payments.isNotEmpty())
+                    binding.llSavedCard.visibility = View.VISIBLE
+                else
+                    binding.llSavedCard.visibility = View.GONE
+            }catch (e:Exception){
+                binding.llSavedCard.visibility = View.GONE
+            }
 
         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
             PaymentBoldPosFragment.newInstance().addTipHideShow(true)
