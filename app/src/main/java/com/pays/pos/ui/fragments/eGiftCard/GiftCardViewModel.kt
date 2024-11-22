@@ -118,8 +118,8 @@ class GiftCardViewModel @Inject constructor(
             )
 
         val giftCard = GiftCard(
-            gift_card_type = "Digital",//Physical
-            name = "",
+            gift_card_type = prefProvider.getValue(Constants.GIFT_CARD_TYPE,""),//"Digital",//Physical
+            name = if (prefProvider.getValue(Constants.GIFT_CARD_TYPE,"").equals("Physical",true)){prefProvider.getValue(Constants.PHYSICAL_GIFT_CARD_NUMBER,"")} else{""},
             amount = giftCardPurchaseAmount,
             customer_id = prefProvider.getValueInt(Constants.CUSTOMER_ID, 0),
             location_id = prefProvider.getValueInt(Constants.LOCATION_ID, 1),
@@ -272,6 +272,46 @@ class GiftCardViewModel @Inject constructor(
             e.printStackTrace()
             "Error converting XML to JSON: ${e.message}"
         }
+    }
+
+    fun checkPhysicalCardBalanceBeforePayment(soapRequest: String, onSuccess: (String) -> Unit, onError: (Throwable) -> Unit){
+        var client   =  okhttp3.OkHttpClient.Builder().protocols(listOf(okhttp3.Protocol.HTTP_1_1)).build()
+
+        val body = okhttp3.RequestBody.create(
+            "text/xml; charset=utf-8".toMediaTypeOrNull(),
+            soapRequest
+        )
+        val request = okhttp3.Request.Builder()
+            .url(ENDPOINT_URL)
+            .post(body)
+            .addHeader("Content-Type", "text/xml; charset=utf-8")
+            .addHeader("SOAPAction", SOAP_ACTION)
+            .build()
+
+        client.newCall(request).enqueue(object : okhttp3.Callback{
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("PhysicalGiftCard","onFailure")
+                e?.let { onError(it) }
+            }
+
+            override fun onResponse(call: Call, response: okhttp3.Response) {
+                Log.e("PhysicalGiftCardBalance","onResponse: ")
+                if (response?.isSuccessful == true) {
+                    Log.e("PhysicalGiftCard","onResponseBalance:  ")
+                        onSuccess(response.body?.string()?:"")
+                  /*  response.body?.toString()?.let {
+                        var getGiftCardBalance =  parseXMLData(response.body?.string()?:"")
+                        Log.e("PhysicalGiftCard","checkResponse:  ${getGiftCardBalance}")
+                    }*/ ?: onError(IOException("Empty response"))
+                } else {
+                    onError(IOException("HTTP ${response.code} ${Gson().toJson(response?.body?.toString())}"))
+                }
+            }
+
+        })
+
+
+
     }
 
     fun sendSoapCheckBalanceRequest(soapRequest: String, onSuccess: (String) -> Unit, onError: (Throwable) -> Unit){
@@ -690,6 +730,24 @@ class GiftCardViewModel @Inject constructor(
             gift_card_amount_tab = giftCardAmountTab
         )
     }
+    //Add money in existing Physical Gift Card
+    fun addValueInPhysicalGiftCard(
+        isCashPaymentType: Boolean,
+        giftCardAddValueRequest: GiftCardAddValueRequest){
+
+        val soapRequest = createSoapRequest("","",prefProvider.getValue(PHYSICAL_GIFT_CARD_NUMBER,""),giftCardAddValueRequest.gift_card.added_amount.toString() ?: "")
+        sendSoapRequest(soapRequest, onSuccess = {response->
+            val endingBalance = parseSoapResponse(response)
+            CoroutineScope(Dispatchers.Main).launch {
+                addValueInGiftCard(isCashPaymentType,giftCardAddValueRequest)
+            }
+            Log.e("PhysicalGiftCard","endingBalance:  ${endingBalance}")
+        }, onError = {error->
+            Log.e("PhysicalGiftCard","error:  ${error.message}")
+
+        })
+
+    }
 
     // Add money in existing gift card
     fun addValueInGiftCard(
@@ -772,6 +830,34 @@ class GiftCardViewModel @Inject constructor(
             }
         }
     }
+    fun physicalGiftCardCheckBalanceBeforePay(giftCardCheckBalanceRequest: GiftCardCheckBalanceRequest) {
+        val soapRequest = checkBalanceRequest("","",giftCardCheckBalanceRequest.name)
+        checkPhysicalCardBalanceBeforePayment(soapRequest, onSuccess = {response ->
+            val endingBalance = parseXMLData(response)
+
+            Log.e("PhysicalGiftCardBalance","endingBalance:  ${endingBalance}")
+            CoroutineScope(Dispatchers.Main).launch{
+                val res = GiftCardCheckBalanceResponse(type = "Physical", status = 200, message = "", data = GiftCardCheckBalanceResponse.Data(endingBalance.toDouble()))
+
+                _giftCardCheckBalanceData.value = Event(res)
+
+            }
+
+        }, onError = {error->
+
+            CoroutineScope(Dispatchers.Main).launch {
+                _snackbarText.value = Event(error.message)
+            }
+            Log.e("PhysicalGiftCardBalance","error:  ${error.message}")
+
+        })
+
+
+
+
+
+    }
+
     //check physical gift card balance
 
     fun physcialGiftCardCheckBalance(giftCardCheckBalanceRequest: GiftCardCheckBalanceRequest){
@@ -869,4 +955,6 @@ class GiftCardViewModel @Inject constructor(
             ignoreCase = true
         )
     }
+
+
 }

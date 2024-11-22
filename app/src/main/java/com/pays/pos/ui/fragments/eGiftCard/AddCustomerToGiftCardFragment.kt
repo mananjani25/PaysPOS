@@ -161,7 +161,7 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
 
     private fun moveToCheckout() {
         val customer = adapter.getItem(selectedPosition)
-        if (prefProvider.getValue(Constants.GIFT_CARD_TYPE,"").equals("Plastic",true)){
+        if (prefProvider.getValue(Constants.GIFT_CARD_TYPE,"").equals("Physical",true)){
 
             val dataBundle = Bundle()
             dataBundle.putParcelable("customer",customer)

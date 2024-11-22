@@ -2831,13 +2831,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         binding.txtChargeGC.setOnSingleClickListener {
             val giftCardNumber = binding.edtGiftCardNumber.rawText.toString().trim()
 
-            if (giftCardNumber.isEmpty() || giftCardNumber.length != 8) {
+            if (giftCardNumber.isEmpty() || giftCardNumber.length < 8) {
                 AlertUtils.showCustomAlert(
                     requireContext(),
                     "Please enter 8-digit gift card number."
                 )
                 return@setOnSingleClickListener
+            } else if (giftCardNumber.isNotEmpty() && giftCardNumber.length > 8) {
+                giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
+
             } else {
+
                 giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = giftCardNumber))
             }
         }
@@ -5538,7 +5542,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             giftCardViewModel.createSellGiftCardRequestUsingCash()
         }
 
-        if (prefProvider.getValue(Constants.GIFT_CARD_TYPE, "").equals("Plastic", true)) {
+
+        if (prefProvider.getValue(Constants.GIFT_CARD_TYPE, "").equals("Physical", true)) {
             Log.e(TAG, "checkPlastiCard  ${myRequest?.gift_card?.amount}")
 
             giftCardViewModel.addBalanceToPhysicalGiftCard(myRequest)
@@ -5590,7 +5595,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             giftCardViewModel.createAddValueInGiftCardRequestUsingCash()
         }
         if (myRequest != null) {
-            giftCardViewModel.addValueInGiftCard(true, myRequest)
+            if (prefProvider.getValue(Constants.GIFT_CARD_TYPE, "").equals("Physical", true)) {
+                giftCardViewModel.addValueInPhysicalGiftCard(true, myRequest)
+            } else {
+
+                giftCardViewModel.addValueInGiftCard(true, myRequest)
+            }
         }
     }
 

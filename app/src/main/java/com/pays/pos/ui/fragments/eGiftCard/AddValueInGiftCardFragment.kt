@@ -139,14 +139,23 @@ class AddValueInGiftCardFragment : Fragment() {
             val amount = binding.edtAmount.text.toString().replace("$", "").trim().toDouble()
             val giftCardNumber = binding.edtGiftCardNumber.text.toString().replace(" ","")
 
-            if(giftCardNumber.length != 8){
+            if(giftCardNumber.length < 8){
                 AlertUtils.showCustomAlert(requireContext(), "Please enter 8-digit gift card number.")
                 return@setOnClickListener
             } else if (amount <= 0.0) {
                 AlertUtils.showCustomAlert(requireContext(), "Please enter amount")
                 return@setOnClickListener
             } else {
-                prefProvider.setValue(Constants.GIFT_CARD_TYPE,"Digital")
+                if (giftCardNumber.length > 8){
+                    prefProvider.setValue(Constants.PHYSICAL_GIFT_CARD_NUMBER,giftCardNumber)
+                    prefProvider.setValue(Constants.GIFT_CARD_TYPE,"Physical")
+                }
+                else{
+                    prefProvider.setValue(Constants.GIFT_CARD_TYPE,"Digital")
+
+                }
+
+
                 prefProvider.setValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, amount.toString())
                 prefProvider.setValue(Constants.GIFT_CARD_NUMBER, giftCardNumber)
                 prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, true)

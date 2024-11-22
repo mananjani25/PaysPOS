@@ -175,7 +175,7 @@ class PurchaseGiftCardFragment : Fragment() {
                 }
 
                 binding.rdBtnPlasticGiftCard.id -> {
-                    giftCardType = "Plastic"
+                    giftCardType = "Physical"
                 }
             }
         }
