@@ -1470,10 +1470,12 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             val giftCardNumber = binding.edtGiftCardNumber.rawText.toString().trim()
 
             if (giftCardNumber.isEmpty() || giftCardNumber.length != 8) {
-                AlertUtils.showCustomAlert(
+                AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(),
                     "Please enter 8-digit gift card number."
-                )
+                ){ _, _ ->
+                    it.isEnabled = true
+                }
                 return@setOnSingleClickListener
             } else {
                 giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = giftCardNumber))
@@ -1483,7 +1485,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
              */
             Handler(Looper.getMainLooper()).postDelayed({
                 it.isEnabled = true  // Re-enable the button after delay
-            }, 1000)  // 1000ms = 1 second (adjust the delay based on your use case)
+            }, 3000)  // 1000ms = 1 second (adjust the delay based on your use case)
         }
 
         binding.lnrGiftCard.setOnSingleClickListener {
