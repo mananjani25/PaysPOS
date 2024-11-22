@@ -31,6 +31,15 @@ interface CustomerDao {
     @Query("UPDATE TbCustomer SET final_reward = :rewards WHERE id =:customer_id AND first_name=:firstName")
     suspend fun updateLoyaltyRewards(rewards: Int, customer_id: Int, firstName:String)
 
+    @Query("UPDATE TbCustomer SET final_reward = :rewards WHERE phones LIKE '%' || :phone || '%' AND first_name=:firstName AND last_name=:lastName")
+    suspend fun updateLoyaltyRewardsSync(rewards: Int, firstName:String,lastName:String,phone:String)
+
+  @Query("UPDATE TbCustomer SET final_reward = :rewards WHERE phones LIKE '%' || :phone || '%' AND email=:email AND first_name=:firstName OR last_name=:lastName")
+    suspend fun updateLoyaltyRewardsSyncEmailPhone(rewards: Int, firstName:String,lastName:String,phone:String,email:String)
+
+   @Query("UPDATE TbCustomer SET final_reward = :rewards WHERE email=:email AND first_name=:firstName OR last_name=:lastName")
+    suspend fun updateLoyaltyRewardsSyncEmail(rewards: Int, firstName:String,lastName:String,email:String)
+
     @Query("DELETE FROM TbCustomer")
     suspend fun deleteCustomerTb()
 

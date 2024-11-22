@@ -18,7 +18,9 @@ import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.pays.pos.data.model.CustomerSearchList
+import com.pays.pos.data.model.requestModel.OnlineOrderUpdateRequest
 import com.pays.pos.logger.CustomerCreatedEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
@@ -467,7 +469,12 @@ class AddCustomerViewModel @Inject constructor(
 
     }
 
-    public fun fetchCustomerFromPhoneNumber(value: String?, customerId:Int=0, sync: Boolean = false) {
+    public fun fetchCustomerFromPhoneNumber(
+        value: String?,
+        lastName: String? = "",
+        customerId: Int = 0,
+        sync: Boolean = false
+    ) {
         CoroutineScope(Dispatchers.IO).launch {
             var resource: Resource<CustomerSearchList> = posRepository.searchCustomer(value ?: "")
 
@@ -502,18 +509,143 @@ class AddCustomerViewModel @Inject constructor(
                                     withContext(Dispatchers.Main) {
                                         _customerFetchedAndAdded.postValue(model)
                                     }
-                                }
-                                else {
+                                } else {
                                     it.data.forEach {
-                                        if (it.id== customerId && it.first_name.equals(value)) {
+                                        if (it.first_name.equals(
+                                                value,
+                                                ignoreCase = true
+                                            ) && it.last_name.equals(lastName, ignoreCase = true)
+                                        ) {
                                             viewModelScope.launch {
                                                 posRepository.updateFinalRewards(
                                                     finalrewards = it.final_reward!!.toInt(),
                                                     customerId = it.id!!.toInt(),
-                                                    firstName=value?:""
+                                                    firstName = value ?: ""
                                                 )
                                             }
                                         }
+                                    }
+                                }
+                            } else {
+                                it.data.forEach {
+                                    if (it.id.toString().equals(value)) {
+                                        viewModelScope.launch {
+                                            posRepository.updateFinalRewards(
+                                                finalrewards = it.final_reward!!.toInt(),
+                                                customerId = it.id!!.toInt()
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                Status.ERROR -> {
+                    _snackbarText.postValue(Event(resource.message))
+                    _showProgress.postValue(Event(false))
+                }
+                Status.LOADING -> {
+                    _showProgress.postValue(Event(true))
+                }
+
+            }
+
+        }
+    }
+
+    public fun fetchCustomerFromPhoneNumberSync(
+        value: JsonElement,
+        customerID: Int, sync: Boolean = false
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            var resource: Resource<CustomerSearchList> =
+                posRepository.searchCustomer(value.asJsonObject.get("first_name").asString)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.postValue(Event(false))
+                    resource.data.let {
+                        if (it?.status == 200) {
+                            if (it.data.isNotEmpty()) {
+                                if (!sync) {
+
+                                    /*Insert the customer to the Room DB*/
+                                    val model = TbCustomer(
+                                        id = it.data.get(0).id,
+                                        first_name = it.data.get(0).first_name,
+                                        last_name = it.data.get(0).last_name,
+                                        birth_date = it.data.get(0).birth_date,
+                                        email = it.data.get(0).email,
+                                        phones = it.data.get(0).phones,
+                                        addresses = it.data.get(0).addresses,
+                                        enroll_to_loyalty = it.data.get(0).enroll_to_loyalty,
+                                        same_as_billing_address = it.data.get(0).same_as_billing_address,
+                                        final_reward = it.data.get(0).final_reward,
+                                        company = it.data.get(0).company,
+                                        isSelcted = true,
+                                    )
+
+                                    launch {
+                                        posRepository.addCustomer(model)
+                                    }
+
+                                    withContext(Dispatchers.Main) {
+                                        _customerFetchedAndAdded.postValue(model)
+                                    }
+                                } else {
+                                    it.data.forEach {
+                                        /*if (value.asJsonObject.get("phones").asString.isNotEmpty()){
+                                            (value.asJsonObject.get("phones") as Iterable<OnlineOrderUpdateRequest.CustomerAttributes.PhonesAttribute>).toSet().forEach { phone->
+                                                (value.asJsonObject.get("phones") as Iterable<OnlineOrderUpdateRequest.CustomerAttributes.PhonesAttribute>).toSet().find {data-> data.phoneNumber.equals(phone.phoneNumber) }
+                                            }
+                                        }*/
+//                                        if (it.first_name!!.equals(value.asJsonObject.get("first_name").toString()) && it.last_name.equals(value.asJsonObject.get("last_name").toString())) {
+                                        viewModelScope.launch {
+                                            if (it.phones.isNotEmpty() && it.email!=null) {
+                                                posRepository.updateFinalRewardsSync(
+                                                    finalrewards = it.final_reward!!.toInt(),
+                                                    customerId = it.id!!.toInt(),
+                                                    firstName = it.first_name.toString(),
+                                                    lastName = it.last_name.toString(),
+                                                    phoneNumber = it.phones?.get(
+                                                        0
+                                                    ).phone_number.toString(),
+                                                    it.email
+                                                    )
+                                            } else if (it.phones.isNotEmpty()) {
+                                                posRepository.updateFinalRewardsSync(
+                                                    finalrewards = it.final_reward!!.toInt(),
+                                                    customerId = it.id!!.toInt(),
+                                                    firstName = it.first_name.toString(),
+                                                    lastName = it.last_name.toString(),
+                                                    phoneNumber = it.phones?.get(
+                                                        0
+                                                    ).phone_number.toString(),
+""
+                                                    )
+                                            }else if (it.email!=null && it.email?.isNotEmpty()){
+                                                posRepository.updateFinalRewardsSyncEmail(
+                                                    finalrewards = it.final_reward!!.toInt(),
+                                                    customerId = it.id!!.toInt(),
+                                                    firstName = it.first_name.toString(),
+                                                    lastName = it.last_name.toString(),
+                                                    phoneNumber = "",
+                                                    email = it.email
+                                                    )
+                                            }else{
+                                                posRepository.updateFinalRewardsSync(
+                                                    finalrewards = it.final_reward!!.toInt(),
+                                                    customerId = it.id!!.toInt(),
+                                                    firstName = it.first_name.toString(),
+                                                    lastName = it.last_name.toString(),
+                                                    phoneNumber = "",
+                                                    email = "",
+                                                )
+                                            }
+
+                                        }
+//                                        }
                                     }
                                 }
                             } else {
