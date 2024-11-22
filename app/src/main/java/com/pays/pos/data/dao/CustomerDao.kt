@@ -57,6 +57,15 @@ interface CustomerDao {
     @Query("SELECT * FROM TbCustomer WHERE phones LIKE '%' || :phoneNumber || '%'")
     fun fetchCustomerFromPhoneNumber(phoneNumber:String): List<TbCustomer?>?
 
+    @Query("SELECT * FROM TbCustomer WHERE first_name=:firstName")
+    fun fetchCustomerFromFirstName(firstName:String): List<TbCustomer?>?
+
+    @Query("SELECT * FROM TbCustomer WHERE first_name=:firstName AND last_name=:lastName")
+    fun fetchCustomerFromFirstNameAndLastName(firstName:String,lastName: String): List<TbCustomer?>?
+
+    @Query("SELECT * FROM TbCustomer WHERE email = :email")
+    fun fetchCustomerFromEmail(email:String): List<TbCustomer?>?
+
     @Query("SELECT EXISTS(SELECT * FROM TbCustomer)")
     fun hasItem(): Boolean
     /*--------------------Customer Loyalty--------------------*/
