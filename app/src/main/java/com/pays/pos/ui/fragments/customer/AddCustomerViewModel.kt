@@ -594,14 +594,33 @@ class AddCustomerViewModel @Inject constructor(
                                         _customerFetchedAndAdded.postValue(model)
                                     }
                                 } else {
-                                    it.data.forEach {
-                                        /*if (value.asJsonObject.get("phones").asString.isNotEmpty()){
-                                            (value.asJsonObject.get("phones") as Iterable<OnlineOrderUpdateRequest.CustomerAttributes.PhonesAttribute>).toSet().forEach { phone->
-                                                (value.asJsonObject.get("phones") as Iterable<OnlineOrderUpdateRequest.CustomerAttributes.PhonesAttribute>).toSet().find {data-> data.phoneNumber.equals(phone.phoneNumber) }
+                                    it.data.forEach {data->
+                                        runBlocking {
+                                            var customersListFromDb:List<TbCustomer?>?= arrayListOf()
+                                            if (data.phones.isNotEmpty()) {
+                                                customersListFromDb = posRepository.fetchCustomerFromPhoneNumber(data.phones?.get(0).phone_number)
+
+                                            }else if (data.email!=null){
+                                                 customersListFromDb = posRepository.fetchCustomerFromEmail(data.email)
+                                            }else if (data.last_name!=null){
+                                                 customersListFromDb = posRepository.fetchCustomerFromFirstNameAndLastName(data.first_name!!,data.last_name)
+                                            }else{
+                                                 customersListFromDb = posRepository.fetchCustomerFromFirstName(data.first_name!!)
                                             }
-                                        }*/
-//                                        if (it.first_name!!.equals(value.asJsonObject.get("first_name").toString()) && it.last_name.equals(value.asJsonObject.get("last_name").toString())) {
-                                        viewModelScope.launch {
+
+                                            customersListFromDb?.forEach {
+                                                try {
+                                                    CoroutineScope(Dispatchers.IO).launch {
+                                                        posRepository.updateFinalRewards(
+                                                            data!!.final_reward!!.toInt(),
+                                                            it!!.id!!.toInt()
+                                                        )
+                                                    }
+                                                    return@forEach
+                                                }catch (e:Exception){}
+                                            }
+                                        }
+                                       /* viewModelScope.launch {
                                             if (it.phones.isNotEmpty() && it.email!=null) {
                                                 posRepository.updateFinalRewardsSync(
                                                     finalrewards = it.final_reward!!.toInt(),
@@ -644,13 +663,13 @@ class AddCustomerViewModel @Inject constructor(
                                                 )
                                             }
 
-                                        }
+                                        }*/
 //                                        }
                                     }
                                 }
                             } else {
                                 it.data.forEach {
-                                    if (it.id.toString().equals(value)) {
+                                    if (it.id.toString().equals(value.asJsonObject.get("customer_id"))) {
                                         viewModelScope.launch {
                                             posRepository.updateFinalRewards(
                                                 finalrewards = it.final_reward!!.toInt(),
