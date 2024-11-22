@@ -50,6 +50,7 @@ import java.io.StringReader
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 import javax.inject.Inject
 
 @HiltViewModel
@@ -581,6 +582,7 @@ class GiftCardViewModel @Inject constructor(
 
     fun getFormattedDateTime(): String {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        dateFormat.timeZone = TimeZone.getTimeZone("UTC")
         return dateFormat.format(Date())
     }
 
