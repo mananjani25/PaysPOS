@@ -5578,7 +5578,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (myRequest != null) {
             EventBus.getDefault()
                 .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ sellGiftCardUsingCard inside if (myRequest != null)"))
-            giftCardViewModel.sellGiftCard(myRequest)
+            if (prefProvider.getValue(Constants.GIFT_CARD_TYPE,"").equals("Physical",true)){
+                giftCardViewModel.addBalanceToPhysicalGiftCard(myRequest)
+            }
+            else {
+                giftCardViewModel.sellGiftCard(myRequest)
+            }
         }
     }
 
@@ -5617,7 +5622,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             giftCardViewModel.createAddValueInGiftCardRequestUsingCard()
         }
         if (myRequest != null) {
-            giftCardViewModel.addValueInGiftCard(false, myRequest)
+            if (prefProvider.getValue(Constants.GIFT_CARD_TYPE,"").equals("Physical",true)){
+                giftCardViewModel.addValueInPhysicalGiftCard(false,myRequest)
+            }
+            else {
+                giftCardViewModel.addValueInGiftCard(false, myRequest)
+
+            }
         }
     }
 

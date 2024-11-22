@@ -19,6 +19,7 @@ import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.calculateTipAmt
+import com.pays.pos.utils.extensions.invisible
 import com.pays.pos.utils.extensions.runOnUiThread
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -42,6 +43,7 @@ class PlasticCardNumber : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentPlasticCardNumberBinding.inflate(inflater,container,false)
+        binding.llKeypad?.tvDot?.invisible()
         return binding.root
     }
 
@@ -116,7 +118,7 @@ class PlasticCardNumber : Fragment() {
     }
 
     private fun setCardNumber(value:String,isDelete:Boolean){
-        if (isDelete && binding.edtAmount?.text?.length!! > 1) {
+        if (isDelete && binding.edtAmount?.text?.length!! >= 1) {
 
             binding.edtAmount?.setText(removeLastCharacter(binding.edtAmount?.text.toString()))
         } else if (binding.edtAmount?.text?.trim()!!.equals("") || binding.edtAmount?.text.toString()?.isEmpty()) {
@@ -242,6 +244,12 @@ class PlasticCardNumber : Fragment() {
     }
 
     private fun removeLastCharacter(str: String): String {
-        return str.substring(0, str.length - 1)
+        Log.e("checkLength","strLength:  ${str.length}")
+        if (str.length == 1){
+            return ""
+        }
+        else {
+            return str.substring(0, str.length - 1)
+        }
     }
 }
