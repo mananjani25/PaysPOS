@@ -1326,7 +1326,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     errorDisplay("Please connect a payment device.")
                 }
             } else {
-                errorDisplay("Payment Amount is zero.")
+                errorDisplay(getString(R.string.payment_amount_is_zero))
             }
 
             dashboardViewModel.paymentType = "card"
@@ -1458,7 +1458,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             cardCVV
                         )
                     } else {
-                        errorDisplay("Payment Amount is zero.")
+                        errorDisplay(getString(R.string.payment_amount_is_zero))
                     }
                 }
             }
@@ -1489,17 +1489,24 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         }
 
         binding.lnrGiftCard.setOnSingleClickListener {
-            if (prefProvider.getValueboolean(Constants.IS_PAX_PAYMENT_FAILED, false)) {
-                AlertUtils.showCustomAlert(
-                    requireContext(),
-                    getString(R.string.pax_transaction_error_message)
-                )
+            val cardAmount = binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
+                .replace(")", "").trim().toDouble()
+            val cashAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+            if (cardAmount != 0.00 && cashAmount != 0.00){
+                if (prefProvider.getValueboolean(Constants.IS_PAX_PAYMENT_FAILED, false)) {
+                    AlertUtils.showCustomAlert(
+                        requireContext(),
+                        getString(R.string.pax_transaction_error_message)
+                    )
+                } else {
+                    binding.frameLayoutId.visible()
+                    binding.relativeMain.gone()
+                    binding.llManualCard.gone()
+                    binding.llGiftCard.visible()
+                    isManualCard = false
+                }
             } else {
-                binding.frameLayoutId.visible()
-                binding.relativeMain.gone()
-                binding.llManualCard.gone()
-                binding.llGiftCard.visible()
-                isManualCard = false
+                errorDisplay(getString(R.string.payment_amount_is_zero))
             }
         }
     }
