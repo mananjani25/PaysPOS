@@ -9,10 +9,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.pays.pos.data.dao.*
 import com.pays.pos.data.entities.*
-import com.pays.pos.data.model.CharacterModel
-import com.pays.pos.data.model.PrinterQueueModel
-import com.pays.pos.data.model.ShiftRportConfiguration
-import com.pays.pos.data.model.SplitDetailListModel
+import com.pays.pos.data.model.*
 import com.pays.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
 import com.pays.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.pays.pos.data.model.responseModel.GetTipReponse
@@ -57,8 +54,8 @@ import com.pays.pos.data.typeconvert.TypeConvertorPhone
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, PAXData::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class,
-        VenueDetailsResponse.Data.WastageReason::class, TbCartItem::class, CartModelBackup::class, OrderTypeBackup::class, TbLabelPrinterSettings::class, TbDynamicPaymentRecords::class],
-    version = 24
+        VenueDetailsResponse.Data.WastageReason::class, TbCartItem::class, CartModelBackup::class, OrderTypeBackup::class, TbLabelPrinterSettings::class, TbDynamicPaymentRecords::class, ValorModel::class],
+    version = 25
 )
 @TypeConverters(
     TypeConvertersItems::class,
@@ -127,6 +124,7 @@ public abstract class AppDatabase : RoomDatabase() {
     abstract fun orderTypeBackupDao(): OrderTypeBackupDao
     abstract fun labelPrinterSettings(): LabelPrinterSettingsDao
     abstract fun dynamicPaymentDao(): DynamicPaymentDao
+    abstract fun valorDao(): ValorDao
 
     companion object {
 
@@ -481,6 +479,29 @@ public abstract class AppDatabase : RoomDatabase() {
 
         }
 
+        val MIGRATION_22_23: Migration = object : Migration(22, 23) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                try {
+                    database.execSQL(
+                        "CREATE TABLE IF NOT EXISTS `valor` " +
+                                "(`id` INTEGER PRIMARY KEY NOT NULL, " +
+                                "`appid` TEXT NOT NULL, " +
+                                "`appkey` TEXT NOT NULL, " +
+                                "`epi` TEXT NOT NULL, " +
+                                "`channel_id` TEXT NOT NULL, " +
+                                "`createdAt` TEXT NOT NULL, " +
+                                "`updatedAt` TEXT NOT NULL, " +
+                                "`enabled` INTEGER NOT NULL, " +
+                                "`deletedAt` TEXT)"
+                    )
+                    //database.execSQL("CREATE TABLE IF NOT EXISTS `TbWastageReason` (`id` INTEGER, PRIMARY KEY(`id`), `name` TEXT NOT NULL)")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+        }
+
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
                 .addMigrations(
@@ -504,7 +525,8 @@ public abstract class AppDatabase : RoomDatabase() {
                     MIGRATION_18_19,
                     MIGRATION_19_20,
                     MIGRATION_20_21,
-                    MIGRATION_21_22
+                    MIGRATION_21_22,
+                    MIGRATION_22_23
                 ).fallbackToDestructiveMigration()
                 .build()
     }
