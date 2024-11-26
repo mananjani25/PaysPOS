@@ -8792,6 +8792,38 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
     //    ----------------- Dynamic Payments -----------------------------
 
+    fun makeCashInOutCallFromCustomerDisplay(cashLogRequest:CashLogRequest){
+       viewModelScope.launch {
+           val resource = posRepository.cashInOut(cashLogRequest)
+
+           when (resource.status) {
+               Status.SUCCESS -> {
+                   _showProgress.value = Event(false)
+                   resource.data.let { response ->
+                       if (response?.status == 200) {
+
+                           resource.data?.let {
+
+                           }
+
+                       } else {
+                           _snackbarText.value = Event(resource.message)
+                       }
+                   }
+
+               }
+
+               Status.ERROR -> {
+                   _snackbarText.value = Event(resource.message)
+                   _showProgress.value = Event(false)
+               }
+
+               Status.LOADING -> {
+                   _showProgress.value = Event(true)
+               }
+           }
+       }
+    }
     override fun onCleared() {
         Log.e("CheckOnClearedViewmodel", "DashboardCategoryBoldPOS")
         super.onCleared()

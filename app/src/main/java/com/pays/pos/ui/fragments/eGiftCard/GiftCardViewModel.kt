@@ -23,6 +23,7 @@ import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
+import com.pays.pos.data.model.requestModel.CashLogRequest
 import com.pays.pos.data.remote.Constants.ENDPOINT_URL
 import com.pays.pos.data.remote.Constants.GIFT_CARD_NUMBER
 import com.pays.pos.data.remote.Constants.PHYSICAL_GIFT_CARD_NUMBER
@@ -531,7 +532,23 @@ class GiftCardViewModel @Inject constructor(
                     _showProgress.value = Event(false)
                     resource.data.let { response ->
                         if (response?.status == 200) {
-
+                            resource.data?.data?.gift_card?.let {
+//                                This cashlog call is independent, thats the reason it is not chained with any flow or call
+                                val cashLogRequest = CashLogRequest(
+                                    sellGiftCardRequestModel.gift_card.amount.toDouble(),
+                                    prefProvider.getValueInt(
+                                        Constants.EMPLOYEE_ID, 0
+                                    ),
+                                    "in",
+                                    it.id,//This may be wrong
+                                    it.payments[it.payments.size - 1].id,
+                                    "Gift card purchase",
+                                    prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
+                                    null,
+                                    null
+                                )
+                                cashLogApiOnGiftCardSellOrAdd(cashLogRequest)
+                            }
                             resource.data?.let { sellGiftCardResponse ->
 
                                 sellGiftCardResponse.data?.let {
@@ -588,6 +605,39 @@ class GiftCardViewModel @Inject constructor(
                         _showProgress.value = Event(true)
 
                 }
+            }
+        }
+    }
+
+    private suspend fun cashLogApiOnGiftCardSellOrAdd(cashLogRequest: CashLogRequest) {
+
+
+        val resource = posRepository.cashInOut(cashLogRequest)
+
+        when (resource.status) {
+            Status.SUCCESS -> {
+                _showProgress.value = Event(false)
+                resource.data.let { response ->
+                    if (response?.status == 200) {
+
+                        resource.data?.let {
+
+                        }
+
+                    } else {
+                        _snackbarText.value = Event(resource.message)
+                    }
+                }
+
+            }
+
+            Status.ERROR -> {
+                _snackbarText.value = Event(resource.message)
+                _showProgress.value = Event(false)
+            }
+
+            Status.LOADING -> {
+                _showProgress.value = Event(true)
             }
         }
     }
@@ -791,6 +841,24 @@ class GiftCardViewModel @Inject constructor(
                     _showProgress.value = Event(false)
                     resource.data.let { response ->
                         if (response?.status == 200) {
+
+                            resource.data?.data?.gift_card?.let {
+//                                This cashlog call is independent, thats the reason it is not chained with any flow or call
+                                val cashLogRequest = CashLogRequest(
+                                    giftCardAddValueRequest.gift_card.added_amount,
+                                    prefProvider.getValueInt(
+                                        Constants.EMPLOYEE_ID, 0
+                                    ),
+                                    "in",
+                                    it.id,//This may be wrong
+                                    it.payments[it.payments.size - 1].id,
+                                    "Gift card recharge",
+                                    prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
+                                    null,
+                                    null
+                                )
+                                cashLogApiOnGiftCardSellOrAdd(cashLogRequest)
+                            }
 
                             resource.data?.let { addValueInGiftCardResponse ->
 
