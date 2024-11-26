@@ -610,7 +610,10 @@ class AddCustomerViewModel @Inject constructor(
                                             } else {
                                                 CoroutineScope(Dispatchers.IO).launch {
                                                     data.let {customerData ->
-                                                        posRepository.updateFinalRewards(customerData.final_reward!!.toInt(),customerData.id!!.toInt())
+                                                        posRepository.updateFinalRewards(
+                                                            customerData.final_reward!!.toInt(),
+                                                            customerData.id!!.toInt()
+                                                        )
                                                     }
                                                 }
                                             }
