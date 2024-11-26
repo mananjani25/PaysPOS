@@ -320,6 +320,7 @@
     <string name="tv_additional_tips">Additional Tips</string>
     <string name="tv_customer_details">Customer Details</string>
     <string name="tv_kitchen_receipt_settings">Kitchen Receipt Settings</string>
+    <string name="tv_sticky_receipt_settings">Sticky Receipt Settings</string>
     <string name="search_options">Search Options</string>
     <string name="create_option">Create Option</string>
     <string name="search_discount">Search Discount</string>

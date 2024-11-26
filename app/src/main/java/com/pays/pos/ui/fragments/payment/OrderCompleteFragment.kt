@@ -231,6 +231,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     /*Added By Rahul */
     private var isOrderUpdated: Boolean = false
 
+    /*This variable will be used to check if the orderID is to be printed in the sticky receipt */
+    private var printOrderIDInStickyPrinter: Boolean = true
+
     private var printingCustomer: Boolean = false
     private var printingKitchen: Boolean = false
 
@@ -281,6 +284,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         isOrderUpdated = false
 
+        lifecycleScope.launch(Dispatchers.Main) {
+            try {
+                printOrderIDInStickyPrinter =
+                    dashboardViewModel.getLabelPrinterSettingsData().printOrderId
+            } catch (e: Exception) {
+
+            }
+        }
 //        3.3.39
         sunmiFrameworkVersion =
             prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".")
@@ -13736,17 +13747,33 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         data.printerCategories.forEach { category ->
                                             if (category.id == item.categoryId && category.printerEnable) {
                                                 for (singularity in 1..item.quantity) {
-                                                    add(
-                                                        PrinterBuilder()
-                                                            .styleBold(true)
-                                                            .styleMagnification(
-                                                                MagnificationParameter(3, 3)
-                                                            )
-                                                            .actionPrintText(
-                                                                "OrderId:${receiptModel?.order?.custom_order_id}"
-                                                            )
-                                                    )
 
+                                                    if (printOrderIDInStickyPrinter){
+                                                        add(
+                                                            PrinterBuilder()
+                                                                .styleBold(true)
+                                                                .styleMagnification(
+                                                                    MagnificationParameter(3, 3)
+                                                                )
+                                                                .actionPrintText(
+                                                                    "OrderId:${receiptModel?.order?.custom_order_id}"
+                                                                )
+                                                        )
+                                                    }
+
+                                                  /*if (prefProvider.getValueboolean(Constants.STICKY_ORDER_ID,false)){
+                                                      add(
+                                                          PrinterBuilder()
+                                                              .styleBold(true)
+                                                              .styleMagnification(
+                                                                  MagnificationParameter(3, 3)
+                                                              )
+                                                              .actionPrintText(
+                                                                  "OrderId:${receiptModel?.order?.custom_order_id}"
+                                                              )
+                                                      )
+                                                  }
+*/
                                                     actionFeedLine(1)
 
                                                     add(

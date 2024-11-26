@@ -157,6 +157,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private val customerListViewModel by activityViewModels<CustomerListViewModel>()
     /*-------------Customer Loyalty-------------*/
 
+    /*This variable will be used to check if the orderID is to be printed in the sticky receipt */
+    private var printOrderIDInStickyPrinter: Boolean = true
+
     var isupdate = false
 
     //    this isOrderUpdate is used to track is the order is really updated or just update button is clicked to move to the All Orders Screen
@@ -286,7 +289,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
         }
 
+        lifecycleScope.launch(Dispatchers.Main) {
+            try {
+                printOrderIDInStickyPrinter =
+                    viewModel.getLabelPrinterSettingsData().printOrderId
+            } catch (e: Exception) {
 
+            }
+        }
         if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
             magTekViewModel.initPOSLink(requireContext(), makeMerchantDetailsCall = false)
         }
@@ -2622,6 +2632,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     if (it?.id == item.categoryId) {
                                         if (it.categoryActive && it.printerEnable) {
                                             for (singularity in 1..item.quantity) {
+                                                if (printOrderIDInStickyPrinter){
                                                 add(
                                                     PrinterBuilder()
                                                         .styleBold(true)
@@ -2632,6 +2643,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                             "OrderId: ${createOrderResponse.data?.order.custom_order_id}"
                                                         )
                                                 )
+                                            }
 
                                                 actionFeedLine(1)
 

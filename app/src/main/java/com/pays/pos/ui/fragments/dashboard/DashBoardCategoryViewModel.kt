@@ -183,6 +183,9 @@ class DashBoardCategoryViewModel @Inject constructor(
     /*-----------Customer Loyalty------------*/
 
 
+    private val _printOrderIdInStickyReceipt = MutableLiveData<Boolean>()
+    val printOrderIdInStickyReceipt: LiveData<Boolean> = _printOrderIdInStickyReceipt
+
     val itemsFiredToTheKitchenSuccesfully = MutableLiveData<Boolean>()
 
     var isItemEditInProgress = false
@@ -600,7 +603,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     val reloadCustomerDisplay = MutableLiveData<Boolean>()
-    fun reloadCustomerDisplay(value:Boolean) {
+    fun reloadCustomerDisplay(value: Boolean) {
         if (value) {
             /* Uncomment the below code, if the customer Display is not refreshing everytime */
             reloadCustomerDisplay.postValue(value)
@@ -8042,7 +8045,12 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 try {
                                     CoroutineScope(Dispatchers.IO).launch {
-                                        posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept)
+                                        runBlocking {
+                                            var printOrderId=posRepository.getLabelPrinterSettingsData().printOrderId
+
+                                            posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept, printOrderId)
+                                        }
+
                                     }
 
                                 } catch (e: Exception) {
@@ -8761,6 +8769,17 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.getLabelPrinterSettingsData()
     }
 
+    fun updateOrderId(printOrderId: Boolean) {
+        viewModelScope.launch {
+            var insertedRows=posRepository.updateOrderId(printOrderId)
+            if (insertedRows>0){
+                _printOrderIdInStickyReceipt.postValue(true)
+            }else {
+                _printOrderIdInStickyReceipt.postValue(false)
+            }
+        }
+    }
+
     /*-------------Customer Loyalty------------------*/
     fun addCustomersList(currentPage: Int, data: List<TbCustomer>, lastCall: Boolean = false) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -8792,42 +8811,44 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
     //    ----------------- Dynamic Payments -----------------------------
 
-    fun makeCashInOutCallFromCustomerDisplay(cashLogRequest:CashLogRequest){
-       viewModelScope.launch {
-           val resource = posRepository.cashInOut(cashLogRequest)
+    fun makeCashInOutCallFromCustomerDisplay(cashLogRequest: CashLogRequest) {
+        viewModelScope.launch {
+            val resource = posRepository.cashInOut(cashLogRequest)
 
-           when (resource.status) {
-               Status.SUCCESS -> {
-                   _showProgress.value = Event(false)
-                   resource.data.let { response ->
-                       if (response?.status == 200) {
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { response ->
+                        if (response?.status == 200) {
 
-                           resource.data?.let {
+                            resource.data?.let {
 
-                           }
+                            }
 
-                       } else {
-                           _snackbarText.value = Event(resource.message)
-                       }
-                   }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
 
-               }
+                }
 
-               Status.ERROR -> {
-                   _snackbarText.value = Event(resource.message)
-                   _showProgress.value = Event(false)
-               }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
 
-               Status.LOADING -> {
-                   _showProgress.value = Event(true)
-               }
-           }
-       }
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
     }
+
     override fun onCleared() {
         Log.e("CheckOnClearedViewmodel", "DashboardCategoryBoldPOS")
         super.onCleared()
     }
+
 
     fun checkCardExistOrNot(cardNumber: String) {
 

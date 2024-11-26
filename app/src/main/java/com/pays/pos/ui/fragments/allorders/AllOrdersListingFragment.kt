@@ -150,6 +150,9 @@ class AllOrdersListingFragment(
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
     private var tipsList: List<GetTipReponse.Data> = listOf()
 
+    /*This variable will be used to check if the orderID is to be printed in the sticky receipt */
+    private var printOrderIDInStickyPrinter: Boolean = true
+
     /*Star label printer - START*/
     lateinit var settings: StarConnectionSettings
     lateinit var printer: StarPrinter
@@ -988,6 +991,14 @@ class AllOrdersListingFragment(
             }catch (e:Exception){}
         }
 
+        lifecycleScope.launch(Dispatchers.Main) {
+            try {
+                printOrderIDInStickyPrinter =
+                    dashboardViewModel.getLabelPrinterSettingsData().printOrderId
+            } catch (e: Exception) {
+
+            }
+        }
 //        viewModel.setCurrentDate(Calendar.getInstance(), "", "", orderStatus)
     }
 
@@ -5570,7 +5581,7 @@ class AllOrdersListingFragment(
                                     if (it?.id == item.categoryId) {
                                         if (it.categoryActive && it.printerEnable) {
                                             for (singularity in 1..item.quantity) {
-
+                                                if (printOrderIDInStickyPrinter){
                                                 add(
                                                     PrinterBuilder()
                                                         .styleBold(true)
@@ -5581,6 +5592,7 @@ class AllOrdersListingFragment(
                                                             "OrderId: ${orderData.custom_order_id}"
                                                         )
                                                 )
+                                            }
 
                                                 actionFeedLine(1)
 

@@ -28,6 +28,9 @@ object Constants {
     const val OLD_ITEM: String = "OLD_ITEM"
     const val OLD_ITEM_BASE: String = "OLD_ITEM_BASE"
 
+    /*This variable will track if the order id should be printed in Sticky Receipt*/
+//    const val STICKY_ORDER_ID: String = "STICKY_ORDER_ID"
+
     /**
      * This will hold old Item list when "UPDATE" from all orders is clicked
      * **/
