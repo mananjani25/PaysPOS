@@ -189,11 +189,13 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     override fun onStop() {
         super.onStop()
 
-        dashboardViewModel.apply {
-            authPaymentResponse = null
-            paymentAttributes = null
-            allOrderResponse = null
-        }
+//        dashboardViewModel.apply {
+//            authPaymentResponse = null
+//            paymentAttributes = null
+//            allOrderResponse = null
+//        }
+
+        paymentviewModel.preAuthData = null
     }
 
     override fun onCreateView(

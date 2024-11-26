@@ -227,11 +227,9 @@ class DashBoardCategoryViewModel @Inject constructor(
             .toTypedArray()
 
     /***
-     * PreAuth Payment Attribute
+     * PreAuth Payment Attribute retrieved from PAX "PRE AUTH" response
      */
     var paymentAttributes:PaymentAttributes ? = null
-    var authPaymentResponse: OnlineOrderResponseModel.Data? = null
-    var allOrderResponse: List<OnlineOrderResponseModel. Data>? = null
 
     /**
      * Tracking main cart discount

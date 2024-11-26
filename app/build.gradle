@@ -36,6 +36,9 @@ android {
             storePassword 'snackhq'
             keyAlias 'snackhq'
             keyPassword 'snackhq'
+
+            v1SigningEnabled true
+            v2SigningEnabled true
         }
 
         applicationVariants.all{

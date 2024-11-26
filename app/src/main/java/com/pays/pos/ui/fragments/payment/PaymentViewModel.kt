@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.pays.pos.data.db.AppDatabase
 import com.pays.pos.data.entities.*
+import com.pays.pos.data.model.PreAuthData
 import com.pays.pos.data.model.requestModel.*
 import com.pays.pos.data.model.responseModel.BaseResponse
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
@@ -60,6 +61,11 @@ open class PaymentViewModel @Inject constructor(
     private var totalServiceChargeM: Double? = null
     private var totalDiscountM: Double? = null
     public var extData: String = ""
+
+    /**
+     * Keep Track of Saved Card details used for "Pre Auth Transaction"
+     */
+    var preAuthData:PreAuthData? = null
 
 
     var orderCreateCallSent = false

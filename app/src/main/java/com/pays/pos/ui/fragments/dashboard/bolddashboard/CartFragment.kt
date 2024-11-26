@@ -37,6 +37,7 @@ import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.DineInModel
 import com.pays.pos.data.model.DineInOrderDetailAttributes
 import com.pays.pos.data.model.GuestPaymentCalculationModel
+import com.pays.pos.data.model.PreAuthData
 import com.pays.pos.data.model.requestModel.OrderItemsAttribute
 import com.pays.pos.data.model.requestModel.PaymentAttributes
 import com.pays.pos.data.model.responseModel.GetFloorPlanResponse
@@ -331,14 +332,13 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     isEnabled = false
                     setTextColor(Color.GREEN)
                 }else {
-
                     setOnClickListener {
                         makePaxPreAuthRequest()
                     }
                 }
 
                 try {
-                    if (viewModel.authPaymentResponse!!.payments.isNotEmpty()) {
+                    if (viewModelPayment.preAuthData!!.refNum.isNotEmpty() || viewModelPayment.preAuthData!!.refNum.isNotEmpty()) {
                         isChecked = true
                         isEnabled = false
                         setTextColor(Color.GREEN)
@@ -3548,11 +3548,13 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                             //Clear PREAUTH data
                             prefProvider.setValue(PRE_AUTH_DETAILS,"")
-                            viewModel.apply {
-                                paymentAttributes = null
-                                authPaymentResponse = null
-                                allOrderResponse = null
-                            }
+//                            viewModel.apply {
+//                                paymentAttributes = null
+//                                authPaymentResponse = null
+//                                allOrderResponse = null
+//                            }
+//
+                            viewModelPayment.preAuthData = null
                         }
 
 
@@ -4258,6 +4260,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                     "checkUpdation calling submit -> printing "
                                                 )
                                                 if (!viewModelPayment.orderCreateCallSent) request?.let { it1 ->
+                                                    prefProvider.setValue(PRE_AUTH_DETAILS,"")
                                                     viewModelPayment.submit(
                                                         it1
                                                     )
@@ -4756,11 +4759,13 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
         //CLEAR PREAUTH DATA
         prefProvider.setValue(PRE_AUTH_DETAILS,"")
-        viewModel.apply {
-            paymentAttributes = null
-            authPaymentResponse = null
-            allOrderResponse = null
-        }
+//        viewModel.apply {
+//            paymentAttributes = null
+//            authPaymentResponse = null
+//            allOrderResponse = null
+//        }
+//
+        viewModelPayment.preAuthData = null
     }
 
     // PRE AUTHORISE CARD
@@ -4879,6 +4884,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                             prefProvider.setValue(PRE_AUTH_DETAILS,Gson().toJson(paymentAttributes))
                             viewModel.paymentAttributes = paymentAttributes
+
+                            viewModelPayment.preAuthData = PreAuthData(ecrRefNum = paymentAttributes.ecr_ref_num , refNum = paymentAttributes.ref_num)
 
                         }
                     }

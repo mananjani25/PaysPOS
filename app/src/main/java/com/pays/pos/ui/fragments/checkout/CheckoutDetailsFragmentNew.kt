@@ -3849,10 +3849,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
       //  paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
 
-        val paymentDetailsResponse = dashboardViewModel.authPaymentResponse?.payments?.first()
+//        var paymentDetailsResponse = dashboardViewModel.authPaymentResponse?.payments?.first()
+//
+//        if(paymentDetailsResponse == null )
+//            paymentDetailsResponse
 
-        paymentDetailsResponse
+
+        val paymentDetailsResponse = paymentviewModel.preAuthData
+
         Log.e("Print",Gson().toJson(paymentDetailsResponse))
+
+
 
         GlobalScope.launch {
             posLink.SetCommSetting(SettingINI.getCommSettingFromFile(requireContext(),Constants.FILE_PATH + SettingINI.FILENAME))
@@ -3995,11 +4002,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                     //clear PRE AUTH DATA
                     prefProvider.setValue(PRE_AUTH_DETAILS,"")
-                    dashboardViewModel.apply {
-                        paymentAttributes = null
-                        authPaymentResponse = null
-                        allOrderResponse = null
-                    }
+//                    dashboardViewModel.apply {
+//                        paymentAttributes = null
+//                        authPaymentResponse = null
+//                        allOrderResponse = null
+//                    }
+                    paymentviewModel.preAuthData = null
 
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
@@ -4054,10 +4062,26 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         // Checking Pre-Auth condition , if any pre auth card saved with this order
             try {
-                if (dashboardViewModel.authPaymentResponse!!.payments.isNotEmpty())
-                    binding.llSavedCard.visibility = View.VISIBLE
-                else
+//                if (dashboardViewModel.authPaymentResponse!!.payments.isNotEmpty())
+//                    binding.llSavedCard.visibility = View.VISIBLE
+//                else if(dashboardViewModel.paymentAttributes != null)
+//                        binding.llSavedCard.visibility = View.VISIBLE
+//                    else binding.llSavedCard.visibility = View.GONE
+//
+
+                try {
+                    val preAuthData = paymentviewModel.preAuthData
+
+                    if(preAuthData!!.ecrRefNum.isNotEmpty() && preAuthData.refNum.isNotEmpty()) {
+                        binding.llSavedCard.visibility = View.VISIBLE
+                    }else {
+                        binding.llSavedCard.visibility = View.GONE
+                    }
+                }catch (e:Exception) {
                     binding.llSavedCard.visibility = View.GONE
+                }
+
+
             }catch (e:Exception){
                 binding.llSavedCard.visibility = View.GONE
             }

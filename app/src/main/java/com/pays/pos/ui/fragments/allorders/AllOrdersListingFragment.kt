@@ -45,6 +45,7 @@ import com.google.gson.Gson
 import com.pays.pos.R
 import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.CancelOnlineWebOrderModel
+import com.pays.pos.data.model.PreAuthData
 import com.pays.pos.data.model.requestModel.OrderItemVariationAttribute
 import com.pays.pos.data.model.requestModel.RefundRequestModelOnlineOrder
 import com.pays.pos.data.model.responseModel.*
@@ -879,9 +880,6 @@ class AllOrdersListingFragment(
                 it?.let { resource ->
                     when (resource.status) {
                         Status.SUCCESS -> {
-
-                            dashboardViewModel.allOrderResponse = resource.data?.data
-
                             ProgressUtils.dismissProgressDialog()
                             resource.data?.let {
 
@@ -1522,7 +1520,16 @@ class AllOrdersListingFragment(
             "UPDATE" -> {
                 prefProvider.setValue(OLD_ITEM_BASE_CUSTOM_ITEM, Gson().toJson(order.orderItems))
 
-                dashboardViewModel.authPaymentResponse = dashboardViewModel.allOrderResponse?.get(pos)
+            //    dashboardViewModel.authPaymentResponse = dashboardViewModel.allOrderResponse?.get(pos)
+                try {
+                    paymentViewModel.preAuthData = null
+                    paymentViewModel.preAuthData = PreAuthData(
+                        ecrRefNum = order.payments.first().ecrRefNum ?: "",
+                        refNum = order.payments.first().refNum ?: ""
+                    )
+                }catch (e:Exception) {
+                    paymentViewModel.preAuthData = null
+                }
 
                 prefProvider.setValueInt("ORDER_ID", -1)
 
@@ -1855,8 +1862,17 @@ class AllOrdersListingFragment(
 
                 try {
 
-                    dashboardViewModel.authPaymentResponse = dashboardViewModel.allOrderResponse?.get(pos)
+                   // dashboardViewModel.authPaymentResponse = dashboardViewModel.allOrderResponse?.get(pos)
 
+                    try {
+                        paymentViewModel.preAuthData = null
+                        paymentViewModel.preAuthData = PreAuthData(
+                            ecrRefNum = order.payments.first().ecrRefNum ?: "",
+                            refNum = order.payments.first().refNum ?: ""
+                        )
+                    }catch (_:Exception) {
+                        paymentViewModel.preAuthData = null
+                    }
 
                     prefProvider.setValueInt("ORDER_ID", -1)
 
