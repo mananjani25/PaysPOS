@@ -57,6 +57,9 @@ interface CustomerDao {
     @Query("SELECT * FROM TbCustomer WHERE phones LIKE '%' || :phoneNumber || '%'")
     fun fetchCustomerFromPhoneNumber(phoneNumber:String): List<TbCustomer?>?
 
+    @Query("SELECT * FROM TbCustomer WHERE id=:id")
+    fun fetchCustomerFromId(id:Int): List<TbCustomer?>?
+
     @Query("SELECT * FROM TbCustomer WHERE first_name=:firstName")
     fun fetchCustomerFromFirstName(firstName:String): List<TbCustomer?>?
 

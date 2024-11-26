@@ -597,6 +597,28 @@ class AddCustomerViewModel @Inject constructor(
                                     it.data.forEach {data->
                                         runBlocking {
                                             var customersListFromDb:List<TbCustomer?>?= arrayListOf()
+
+                                            customersListFromDb = posRepository.fetchCustomerFromId(data.id!!.toInt())
+
+                                            if (customersListFromDb.isNullOrEmpty()){
+                                                if (!data.phones.isNullOrEmpty()) {
+                                                    fetchCustomerFromPhoneNumber(data.phones[0].phone_number)
+                                                }
+                                                else {
+                                                    fetchCustomerFromPhoneNumber(data.first_name)
+                                                }
+                                            } else {
+                                                CoroutineScope(Dispatchers.IO).launch {
+                                                    data.let {customerData ->
+                                                        posRepository.updateFinalRewards(customerData.final_reward!!.toInt(),customerData.id!!.toInt())
+                                                    }
+                                                }
+                                            }
+
+                                        }
+
+                                        /*runBlocking {
+                                            var customersListFromDb:List<TbCustomer?>?= arrayListOf()
                                             if (data.phones.isNotEmpty()) {
                                                 customersListFromDb = posRepository.fetchCustomerFromPhoneNumber(data.phones?.get(0).phone_number)
 
@@ -619,52 +641,9 @@ class AddCustomerViewModel @Inject constructor(
                                                     return@forEach
                                                 }catch (e:Exception){}
                                             }
-                                        }
-                                       /* viewModelScope.launch {
-                                            if (it.phones.isNotEmpty() && it.email!=null) {
-                                                posRepository.updateFinalRewardsSync(
-                                                    finalrewards = it.final_reward!!.toInt(),
-                                                    customerId = it.id!!.toInt(),
-                                                    firstName = it.first_name.toString(),
-                                                    lastName = it.last_name.toString(),
-                                                    phoneNumber = it.phones?.get(
-                                                        0
-                                                    ).phone_number.toString(),
-                                                    it.email
-                                                    )
-                                            } else if (it.phones.isNotEmpty()) {
-                                                posRepository.updateFinalRewardsSync(
-                                                    finalrewards = it.final_reward!!.toInt(),
-                                                    customerId = it.id!!.toInt(),
-                                                    firstName = it.first_name.toString(),
-                                                    lastName = it.last_name.toString(),
-                                                    phoneNumber = it.phones?.get(
-                                                        0
-                                                    ).phone_number.toString(),
-""
-                                                    )
-                                            }else if (it.email!=null && it.email?.isNotEmpty()){
-                                                posRepository.updateFinalRewardsSyncEmail(
-                                                    finalrewards = it.final_reward!!.toInt(),
-                                                    customerId = it.id!!.toInt(),
-                                                    firstName = it.first_name.toString(),
-                                                    lastName = it.last_name.toString(),
-                                                    phoneNumber = "",
-                                                    email = it.email
-                                                    )
-                                            }else{
-                                                posRepository.updateFinalRewardsSync(
-                                                    finalrewards = it.final_reward!!.toInt(),
-                                                    customerId = it.id!!.toInt(),
-                                                    firstName = it.first_name.toString(),
-                                                    lastName = it.last_name.toString(),
-                                                    phoneNumber = "",
-                                                    email = "",
-                                                )
-                                            }
-
                                         }*/
-//                                        }
+
+
                                     }
                                 }
                             } else {

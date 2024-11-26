@@ -584,6 +584,9 @@ class PosRepository @Inject constructor(
     suspend fun fetchCustomerFromPhoneNumber(phoneNumber: String) =
         appDatabase.customerDao().fetchCustomerFromPhoneNumber(phoneNumber)
 
+    suspend fun fetchCustomerFromId(id: Int) =
+        appDatabase.customerDao().fetchCustomerFromId(id)
+
     suspend fun fetchCustomerFromFirstName(firstName: String) =
         appDatabase.customerDao().fetchCustomerFromFirstName(firstName)
 
