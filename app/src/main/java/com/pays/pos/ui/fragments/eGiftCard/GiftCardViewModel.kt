@@ -1,6 +1,7 @@
 package com.pays.pos.ui.fragments.eGiftCard
 
 import android.util.Log
+import android.view.inputmethod.CorrectionInfo
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -76,6 +77,9 @@ class GiftCardViewModel @Inject constructor(
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
+
+    private val _showGiftCardProgress = MutableLiveData<Event<Boolean>>()
+    val showGiftCardProgress : LiveData<Event<Boolean>> = _showGiftCardProgress
 
     private val _giftCardError = MutableLiveData<Event<String>>()
     val giftCardError: LiveData<Event<String>> = _giftCardError
@@ -240,14 +244,21 @@ class GiftCardViewModel @Inject constructor(
 
     //add balance to physical gift card
     fun addBalanceToPhysicalGiftCard(myRequest: SellGiftCardRequestModel?) {
+        CoroutineScope(Dispatchers.Main).launch {
+            _showGiftCardProgress.value = Event(true)
+        }
         val soapRequest = createSoapRequest("","",prefProvider.getValue(PHYSICAL_GIFT_CARD_NUMBER,""),myRequest?.gift_card?.amount ?: "")
         sendSoapRequest(soapRequest, onSuccess = {response->
             val endingBalance = parseSoapResponse(response)
             CoroutineScope(Dispatchers.Main).launch {
+                _showGiftCardProgress.value = Event(false)
                 myRequest?.let { sellGiftCard(it) }
             }
             Log.e("PhysicalGiftCard","endingBalance:  ${endingBalance}")
         }, onError = {error->
+            CoroutineScope(Dispatchers.Main).launch {
+                _showGiftCardProgress.value = Event(false)
+            }
             Log.e("PhysicalGiftCard","error:  ${error.message}")
 
         })
@@ -736,16 +747,23 @@ class GiftCardViewModel @Inject constructor(
     fun addValueInPhysicalGiftCard(
         isCashPaymentType: Boolean,
         giftCardAddValueRequest: GiftCardAddValueRequest){
+        CoroutineScope(Dispatchers.Main).launch {
+            _showGiftCardProgress.value = Event(true)
+        }
 
         val soapRequest = createSoapRequest("","",prefProvider.getValue(PHYSICAL_GIFT_CARD_NUMBER,""),giftCardAddValueRequest.gift_card.added_amount.toString() ?: "")
         sendSoapRequest(soapRequest, onSuccess = {response->
             val endingBalance = parseSoapResponse(response)
             CoroutineScope(Dispatchers.Main).launch {
+                _showGiftCardProgress.value = Event(false)
                 addValueInGiftCard(isCashPaymentType,giftCardAddValueRequest)
             }
             Log.e("PhysicalGiftCard","endingBalance:  ${endingBalance}")
         }, onError = {error->
             Log.e("PhysicalGiftCard","error:  ${error.message}")
+            CoroutineScope(Dispatchers.Main).launch {
+                _showGiftCardProgress.value = Event(false)
+            }
 
         })
 
@@ -834,6 +852,9 @@ class GiftCardViewModel @Inject constructor(
     }
     fun physicalGiftCardCheckBalanceBeforePay(giftCardCheckBalanceRequest: GiftCardCheckBalanceRequest) {
         val soapRequest = checkBalanceRequest("","",giftCardCheckBalanceRequest.name)
+        CoroutineScope(Dispatchers.Main).launch {
+            _showGiftCardProgress.value = Event(true)
+        }
         checkPhysicalCardBalanceBeforePayment(soapRequest, onSuccess = {response ->
             val endingBalance = parseXMLData(response)
 
@@ -841,6 +862,7 @@ class GiftCardViewModel @Inject constructor(
             CoroutineScope(Dispatchers.Main).launch{
                 val res = GiftCardCheckBalanceResponse(type = "Physical", status = 200, message = "", data = GiftCardCheckBalanceResponse.Data(endingBalance.toDouble()))
 
+                _showGiftCardProgress.value = Event(false)
                 _giftCardCheckBalanceData.value = Event(res)
 
             }
@@ -848,6 +870,7 @@ class GiftCardViewModel @Inject constructor(
         }, onError = {error->
 
             CoroutineScope(Dispatchers.Main).launch {
+                _showGiftCardProgress.value = Event(false)
                 _snackbarText.value = Event(error.message)
             }
             Log.e("PhysicalGiftCardBalance","error:  ${error.message}")
@@ -865,12 +888,19 @@ class GiftCardViewModel @Inject constructor(
     fun physcialGiftCardCheckBalance(giftCardCheckBalanceRequest: GiftCardCheckBalanceRequest){
 
         val soapRequest = checkBalanceRequest("","",giftCardCheckBalanceRequest.name)
+        CoroutineScope(Dispatchers.Main).launch {
+            _showGiftCardProgress.value = Event(true)
+        }
         sendSoapCheckBalanceRequest(soapRequest, onSuccess = {response->
             val endingBalance = parseSoapResponse(response)
 
+            CoroutineScope(Dispatchers.Main).launch {
+                _showGiftCardProgress.value = Event(false)
+            }
             Log.e("PhysicalGiftCardBalance","endingBalance:  ${endingBalance}")
         }, onError = {error->
             CoroutineScope(Dispatchers.Main).launch {
+                _showGiftCardProgress.value = Event(false)
                 _snackbarText.value = Event(error.message)
             }
             Log.e("PhysicalGiftCardBalance","error:  ${error.message}")

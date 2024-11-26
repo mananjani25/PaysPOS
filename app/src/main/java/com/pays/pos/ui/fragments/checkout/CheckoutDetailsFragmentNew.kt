@@ -2115,6 +2115,23 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
 
+        giftCardViewModel.showGiftCardProgress.observe(viewLifecycleOwner){event ->
+            event.getContentIfNotHandled()?.let {
+                Log.e("ObserverdGiftCardProgress",it.toString())
+                if (it){
+                    ProgressUtils.showProgressDialog(requireActivity())
+
+                }
+                else{
+                    ProgressUtils.dismissProgressDialog()
+
+                }
+
+
+            }
+
+        }
+
         giftCardViewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
@@ -5546,7 +5563,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (prefProvider.getValue(Constants.GIFT_CARD_TYPE, "").equals("Physical", true)) {
             Log.e(TAG, "checkPlastiCard  ${myRequest?.gift_card?.amount}")
 
-            giftCardViewModel.addBalanceToPhysicalGiftCard(myRequest)
+            myRequest?.let { giftCardViewModel.sellGiftCard(it) }
 
         } else {
             if (myRequest != null) {
@@ -5579,7 +5596,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             EventBus.getDefault()
                 .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ sellGiftCardUsingCard inside if (myRequest != null)"))
             if (prefProvider.getValue(Constants.GIFT_CARD_TYPE,"").equals("Physical",true)){
-                giftCardViewModel.addBalanceToPhysicalGiftCard(myRequest)
+                giftCardViewModel.sellGiftCard(myRequest)
             }
             else {
                 giftCardViewModel.sellGiftCard(myRequest)
