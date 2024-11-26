@@ -443,32 +443,42 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun startDynamicPayment(name: String?, id: Int) {
-        if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
+        val cardAmount = binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
+            .replace(")", "").trim().toDouble()
+        val cashAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+        if (cardAmount != 0.00 && cashAmount != 0.00) {
+            if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
 
-            restrictTvCashClicks()
+                restrictTvCashClicks()
 
-            custom_paymentAmount = 0.0
+                custom_paymentAmount = 0.0
 
-            if (cashDiscountType.equals("CashDiscount", ignoreCase = true)) {
-                paymentviewModel.totalPayAmount(
-                    binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
-                        .replace(")", "").trim().toDouble()
+                if (cashDiscountType.equals("CashDiscount", ignoreCase = true)) {
+                    paymentviewModel.totalPayAmount(
+                        binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
+                            .replace(")", "").trim().toDouble()
+                    )
+                    paymentAmount =
+                        binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
+                            .replace(")", "").trim().toDouble()
+                } else {
+                    paymentviewModel.totalPayAmount(
+                        binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                    )
+                    paymentAmount =
+                        binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                }
+
+                dynamicCashPaymentWithVariation(
+                    dynamicPaymentName = name ?: "", dynamicPaymentId = id
                 )
-                paymentAmount =
-                    binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
-                        .replace(")", "").trim().toDouble()
             } else {
-                paymentviewModel.totalPayAmount(
-                    binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
-                )
-                paymentAmount =
-                    binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                errorDisplay("Please check your Network Connectivity.")
             }
+        } else {
+            errorDisplay(getString(R.string.payment_amount_is_zero))
 
-            dynamicCashPaymentWithVariation(dynamicPaymentName = name ?: "", dynamicPaymentId = id)
-        } else
-            errorDisplay("Please check your Network Connectivity.")
-
+        }
 
     }
 
@@ -2505,7 +2515,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             dismissProgressDialog()
                         }
                     })
-                    errorDisplay("Payment Amount is zero.")
+                    errorDisplay(getString(R.string.payment_amount_is_zero))
                 }
             } else {
                 runOnUiThread(object:java.lang.Runnable{
@@ -2528,17 +2538,24 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         binding.lnrGiftCard.setOnSingleClickListener {
-            if (prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
-                AlertUtils.showCustomAlert(
-                    requireContext(),
-                    getString(R.string.pax_transaction_error_message)
-                )
+            val cardAmount = binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
+                .replace(")", "").trim().toDouble()
+            val cashAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+            if (cardAmount != 0.00 && cashAmount != 0.00){
+                if (prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
+                    AlertUtils.showCustomAlert(
+                        requireContext(),
+                        getString(R.string.pax_transaction_error_message)
+                    )
+                } else {
+                    binding.frameLayoutId.visible()
+                    binding.relativeMain.gone()
+                    binding.llManualCard.gone()
+                    binding.llGiftCard.visible()
+                    isManualCard = false
+                }
             } else {
-                binding.frameLayoutId.visible()
-                binding.relativeMain.gone()
-                binding.llManualCard.gone()
-                binding.llGiftCard.visible()
-                isManualCard = false
+                errorDisplay(getString(R.string.payment_amount_is_zero))
             }
         }
 
@@ -2774,7 +2791,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             cardCVV
                         )
                     } else {
-                        errorDisplay("Payment Amount is zero.")
+                        errorDisplay(getString(R.string.payment_amount_is_zero))
                     }
 
                 }
