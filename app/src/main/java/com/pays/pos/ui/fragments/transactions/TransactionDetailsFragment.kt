@@ -124,6 +124,9 @@ class TransactionDetailsFragment : Fragment() {
     lateinit var printer: StarPrinter
     /*Star label printer - END*/
 
+    /*This variable will be used to check if the orderID is to be printed in the sticky receipt */
+    private var printOrderIDInStickyPrinter: Boolean = true
+
     @Inject
     lateinit var apiModule1: ApiModule1
 
@@ -186,6 +189,14 @@ class TransactionDetailsFragment : Fragment() {
                 }
             }
 
+        lifecycleScope.launch(Dispatchers.Main) {
+            try {
+                printOrderIDInStickyPrinter =
+                    dashboardCategoryViewModel.getLabelPrinterSettingsData().printOrderId
+            } catch (e: Exception) {
+
+            }
+        }
 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
@@ -2145,17 +2156,18 @@ class TransactionDetailsFragment : Fragment() {
                                     if (it?.id == item.categoryId) {
                                         if (it.categoryActive && it.printerEnable) {
                                             for (singularity in 1..item.quantity) {
-
-                                                add(
-                                                    PrinterBuilder()
-                                                        .styleBold(true)
-                                                        .styleMagnification(
-                                                            MagnificationParameter(3, 3)
-                                                        )
-                                                        .actionPrintText(
-                                                            "OrderId: ${paymentDetailsResponse.data.custom_order_id}"
-                                                        )
-                                                )
+                                                if (printOrderIDInStickyPrinter) {
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleBold(true)
+                                                            .styleMagnification(
+                                                                MagnificationParameter(3, 3)
+                                                            )
+                                                            .actionPrintText(
+                                                                "OrderId: ${paymentDetailsResponse.data.custom_order_id}"
+                                                            )
+                                                    )
+                                                }
 
                                                 actionFeedLine(1)
 

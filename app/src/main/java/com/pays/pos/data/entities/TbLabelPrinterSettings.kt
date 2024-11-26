@@ -14,5 +14,8 @@ data class TbLabelPrinterSettings(
     @SerializedName("id") val id: Int,
 
     @SerializedName("one_item_per_reciept")
-    val oneItemPerReciept: Boolean = false
+    val oneItemPerReciept: Boolean = false,
+
+    @SerializedName("print_order_id")
+    val printOrderId: Boolean = true
 )
