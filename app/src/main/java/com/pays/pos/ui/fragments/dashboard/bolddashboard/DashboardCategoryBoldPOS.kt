@@ -325,6 +325,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         sunmiFrameworkVersion =
             prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".")
                 .toTypedArray()
+
+        prefProvider.setValueInt(
+            Constants.SERVER_ORDER_ID, -1
+        )
+
         changeCustomerDisplayState()
         reloadCustomerDisplay()
 

@@ -32,10 +32,13 @@ android {
 
     signingConfigs {
         release {
-            storeFile file('/home/ab/Documents/snackhq.jks') // Path to your keystore file
+            storeFile file('/home/rahul/Downloads/snackhq.jks') // Path to your keystore file
             storePassword 'snackhq'
             keyAlias 'snackhq'
             keyPassword 'snackhq'
+
+            v1SigningEnabled true
+            v2SigningEnabled true
         }
 
         applicationVariants.all{
