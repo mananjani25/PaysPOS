@@ -797,6 +797,7 @@ object Constants {
     const val CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE = "cashDiscountSurchargeAmountType"
     const val CASH_DISCOUNT_SURCHARGE_RATE = "cashDiscountSurchargeRate"
 
+    const val SERVER_ORDER_ID = "server_order_id"
 
     const val IS_UPDATE_ORDER = "is_update_order"
     const val IS_UPDATE_ORDER_ID = "is_update_order_id"
