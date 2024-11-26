@@ -128,7 +128,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     var isSelectedCount = 1
     private val paymentviewModel by activityViewModels<PaymentViewModel>()
     private val giftCardViewModel by activityViewModels<GiftCardViewModel>()
-//    private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
+
+    //    private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val magtekProViewModel by viewModels<MagtekViewModel>()
 
     var paymentType = "Cash"
@@ -2568,7 +2569,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             dismissProgressDialog()
                         }
                     })
-                    errorDisplay(getString(R.string.payment_amount_is_zero))
+                    errorDisplay("Payment Amount is zero.")
                 }
             } else {
                 runOnUiThread(object : java.lang.Runnable {
@@ -2591,24 +2592,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         binding.lnrGiftCard.setOnSingleClickListener {
-            val cardAmount = binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
-                .replace(")", "").trim().toDouble()
-            val cashAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
-            if (cardAmount != 0.00 && cashAmount != 0.00){
-                if (prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
-                    AlertUtils.showCustomAlert(
-                        requireContext(),
-                        getString(R.string.pax_transaction_error_message)
-                    )
-                } else {
-                    binding.frameLayoutId.visible()
-                    binding.relativeMain.gone()
-                    binding.llManualCard.gone()
-                    binding.llGiftCard.visible()
-                    isManualCard = false
-                }
+            if (prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
+                AlertUtils.showCustomAlert(
+                    requireContext(),
+                    getString(R.string.pax_transaction_error_message)
+                )
             } else {
-                errorDisplay(getString(R.string.payment_amount_is_zero))
+                binding.frameLayoutId.visible()
+                binding.relativeMain.gone()
+                binding.llManualCard.gone()
+                binding.llGiftCard.visible()
+                isManualCard = false
             }
         }
 
@@ -2855,15 +2849,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             it.isEnabled = false
             val giftCardNumber = binding.edtGiftCardNumber.rawText.toString().trim()
 
-            if (giftCardNumber.isEmpty() || giftCardNumber.length != 8) {
-                AlertUtils.showCustomAlertWithListenerWithOK(
             if (giftCardNumber.isEmpty() || giftCardNumber.length < 8) {
                 AlertUtils.showCustomAlert(
                     requireContext(),
                     "Please enter 8-digit gift card number."
-                ){ _, _ ->
-                    it.isEnabled = true
-                }
+                )
                 return@setOnSingleClickListener
             } else if (giftCardNumber.isNotEmpty() && giftCardNumber.length > 8) {
                 giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
@@ -5106,29 +5096,19 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (myRequest.order.orderTypeId == -1) {
             runBlocking {
                 CoroutineScope(Dispatchers.IO).async {
-                    dashboardViewModel.getOrderTypeBackupList(
-                        prefProvider.getValueInt(
-                            Constants.EMPLOYEE_ID,
-                            -1
-                        )
-                    )?.let {
+                    dashboardViewModel.getOrderTypeBackupList(prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1))?.let {
                         myRequest.order.apply {
                             if (it.isNotEmpty()) {
                                 orderTypeId = (it.get(0).orderType) ?: -1
                                 orderTypeName = (it.get(0).orderTypeName) ?: ""
-                            } else {
-                                if (dashboardViewModel.cartModel != null) {
+                            }else{
+                                if (dashboardViewModel.cartModel!=null) {
                                     orderTypeId = dashboardViewModel.cartModel!!.orderTypeId ?: -1
-                                    orderTypeName =
-                                        dashboardViewModel.cartModel!!.orderTypeName ?: ""
-                                } else {
+                                    orderTypeName = dashboardViewModel.cartModel!!.orderTypeName ?: ""
+                                }else{
 //                                  Fetch the order type name from the cart fragment, fetch the orderType from local database with respect to the order type name of cart fragment
-                                    var orderType = prefProvider.getValue(ORDER_TYPE, "")
-                                    dashboardViewModel.getOrderTypes.value?.data?.filter {
-                                        it.orderType.equals(
-                                            orderType
-                                        )
-                                    }?.let {
+                                    var orderType=prefProvider.getValue(ORDER_TYPE, "")
+                                    dashboardViewModel.getOrderTypes.value?.data?.filter { it.orderType.equals(orderType) }?.let {
                                         orderTypeId = it.first().id ?: -1
                                         orderTypeName = it.first().orderType ?: ""
                                     }
@@ -5141,10 +5121,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
 
-        Log.d(
-            "LOADER::",
-            "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-        )
+        Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
         val orderId = prefProvider.getValueInt("ORDER_ID", -1) //Here
         LogUtil.logE(TAG, "orderIdmyRequestOriginal ${orderId}")
@@ -5211,27 +5188,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
             paymentviewModel.submit(myRequest)
         } else {
-            Log.d(
-                "LOADER::",
-                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-            )
+            Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
             EventBus.getDefault()
                 .post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_else_before_if(textToPay)_6"))
 
             if (textToPay) {
-                Log.d(
-                    "LOADER::",
-                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                )
+                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
                 paymentviewModel.textPaySplit(orderId)
 
             } else {
-                Log.d(
-                    "LOADER::",
-                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                )
+                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
                 EventBus.getDefault()
                     .post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_else_6"))
@@ -5275,17 +5243,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 runOnUiThread(Runnable {
                     dismissProgressDialog()
                 })
-                Log.d(
-                    "LOADER::",
-                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                )
+                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
                 EventBus.getDefault()
                     .post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_paymentviewModel.splitByOrder(aa, false)_After_6"))
-                Log.d(
-                    "LOADER::",
-                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
-                )
+                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
 
             }
         }
