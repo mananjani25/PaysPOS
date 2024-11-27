@@ -559,7 +559,7 @@ class AddCustomerViewModel @Inject constructor(
         customerID: Int, sync: Boolean = false
     ) {
         CoroutineScope(Dispatchers.IO).launch {
-            var resource: Resource<CustomerSearchList> = if(sync){
+            val resource: Resource<CustomerSearchList> = if(sync){
                 posRepository.searchCustomerById(value.asJsonObject.get("customer_id").asString)
             }else {
                 posRepository.searchCustomer(value.asJsonObject.get("first_name").asString)
@@ -575,17 +575,17 @@ class AddCustomerViewModel @Inject constructor(
 
                                     /*Insert the customer to the Room DB*/
                                     val model = TbCustomer(
-                                        id = it.data.get(0).id,
-                                        first_name = it.data.get(0).first_name,
-                                        last_name = it.data.get(0).last_name,
-                                        birth_date = it.data.get(0).birth_date,
-                                        email = it.data.get(0).email,
-                                        phones = it.data.get(0).phones,
-                                        addresses = it.data.get(0).addresses,
-                                        enroll_to_loyalty = it.data.get(0).enroll_to_loyalty,
-                                        same_as_billing_address = it.data.get(0).same_as_billing_address,
-                                        final_reward = it.data.get(0).final_reward,
-                                        company = it.data.get(0).company,
+                                        id = it.data[0].id,
+                                        first_name = it.data[0].first_name,
+                                        last_name = it.data[0].last_name,
+                                        birth_date = it.data[0].birth_date,
+                                        email = it.data[0].email,
+                                        phones = it.data[0].phones,
+                                        addresses = it.data[0].addresses,
+                                        enroll_to_loyalty = it.data[0].enroll_to_loyalty,
+                                        same_as_billing_address = it.data[0].same_as_billing_address,
+                                        final_reward = it.data[0].final_reward,
+                                        company = it.data[0].company,
                                         isSelcted = true,
                                     )
 
@@ -604,15 +604,32 @@ class AddCustomerViewModel @Inject constructor(
                                             customersListFromDb = posRepository.fetchCustomerFromId(data.id!!.toInt())
 
                                             if (customersListFromDb.isNullOrEmpty()){
-                                                if (!data.phones.isNullOrEmpty()) {
-                                                    fetchCustomerFromPhoneNumber(data.phones[0].phone_number)
+                                                /*Insert the customer to the Room DB*/
+                                                val model = TbCustomer(
+                                                    id = it.data[0].id,
+                                                    first_name = it.data[0].first_name,
+                                                    last_name = it.data[0].last_name,
+                                                    birth_date = it.data[0].birth_date,
+                                                    email = it.data[0].email,
+                                                    phones = it.data[0].phones,
+                                                    addresses = it.data[0].addresses,
+                                                    enroll_to_loyalty = it.data[0].enroll_to_loyalty,
+                                                    same_as_billing_address = it.data[0].same_as_billing_address,
+                                                    final_reward = it.data[0].final_reward,
+                                                    company = it.data[0].company,
+                                                    isSelcted = true,
+                                                )
+
+                                                launch {
+                                                    posRepository.addCustomer(model)
                                                 }
-                                                else {
-                                                    fetchCustomerFromPhoneNumber(data.first_name)
+
+                                                withContext(Dispatchers.Main) {
+                                                    _customerFetchedAndAdded.postValue(model)
                                                 }
                                             } else {
                                                 CoroutineScope(Dispatchers.IO).launch {
-                                                    data.let {customerData ->
+                                                    data.let { customerData ->
                                                         posRepository.updateFinalRewards(
                                                             customerData.final_reward!!.toInt(),
                                                             customerData.id!!.toInt()
