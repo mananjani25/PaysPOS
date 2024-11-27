@@ -2937,8 +2937,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 (WholetotalPrice / isSelectedCount) + tipAmount
 
                             val giftCardBalanceAmount = it.data.amount
+                            Log.e(TAG,"checkGiftCardActualAmount:  ${actualTotalAmountWithTip}")
+                            Log.e(TAG,"checkGiftCardGiftCardBalance:  ${giftCardBalanceAmount}")
 
-                            if (actualTotalAmountWithTip < giftCardBalanceAmount) {
+                            if (actualTotalAmountWithTip <= giftCardBalanceAmount) {
                                 val giftCardNumber =
                                     binding.edtGiftCardNumber.rawText.toString().trim()
                                 prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, true)
