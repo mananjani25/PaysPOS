@@ -686,6 +686,9 @@ suspend fun updateFinalRewardsSyncEmailPhone(finalrewards: Int, customerId: Int,
     suspend fun searchCustomer(query: String) =
         apiHelperNew.searchCustomers(query)
 
+    suspend fun searchCustomerById(query: String) =
+        apiHelperNew.searchCustomersById(query)
+
     fun searchEmployeesDatabase(query: String) =
         performGetOperationDatabase(databaseQuery = {
             appDatabase.employeeDao().getEmployeeSearchResults(query)

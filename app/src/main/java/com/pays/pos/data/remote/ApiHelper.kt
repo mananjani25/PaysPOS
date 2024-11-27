@@ -267,6 +267,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun searchCustomers(query: String) =
         getResult { apiService.customerSearch(query) }
 
+    suspend fun searchCustomersById(query: String) =
+        getResult { apiService.customerSearchById(query) }
+
     suspend fun deleteItem(itemId: Int) =
         getResult { apiService.deleteItem(itemId) }
 
