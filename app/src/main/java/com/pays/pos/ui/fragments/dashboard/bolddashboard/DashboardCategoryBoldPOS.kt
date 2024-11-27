@@ -513,7 +513,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private fun loadCustomerLocalList(currentpage: Int) {
 //        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-            var pageSize = "10"
+            var pageSize = "500"
             Log.d("loadCustomerLocalList::", "${currentpage}")
             val data = LinkedHashMap<String, String>()
             data["page"] = currentpage.toString()

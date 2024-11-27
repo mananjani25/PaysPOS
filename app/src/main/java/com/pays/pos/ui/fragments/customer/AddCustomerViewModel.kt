@@ -559,8 +559,11 @@ class AddCustomerViewModel @Inject constructor(
         customerID: Int, sync: Boolean = false
     ) {
         CoroutineScope(Dispatchers.IO).launch {
-            var resource: Resource<CustomerSearchList> =
+            var resource: Resource<CustomerSearchList> = if(sync){
+                posRepository.searchCustomer(value.asJsonObject.get("customer_id").asString)
+            }else {
                 posRepository.searchCustomer(value.asJsonObject.get("first_name").asString)
+            }
 
             when (resource.status) {
                 Status.SUCCESS -> {
