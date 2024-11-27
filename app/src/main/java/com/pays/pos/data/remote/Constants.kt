@@ -204,6 +204,7 @@ object Constants {
     const val EMPLOYEES = "employees"
     const val CUSTOMERS = "customers"
     const val CUSTOMERS_SEARCH = "customers/search"
+    const val CUSTOMER_SEARCH_BY_ID = "customers/search_by_id"
     const val EMPLOYEES_UPDATE_DELETE = "employees/{id}"
     const val DISCOVERY_INTERVAL = 500
     const val EMPLOYEES_TIMESHEET = "employees/timesheet"

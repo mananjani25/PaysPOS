@@ -560,7 +560,7 @@ class AddCustomerViewModel @Inject constructor(
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             var resource: Resource<CustomerSearchList> = if(sync){
-                posRepository.searchCustomer(value.asJsonObject.get("customer_id").asString)
+                posRepository.searchCustomerById(value.asJsonObject.get("customer_id").asString)
             }else {
                 posRepository.searchCustomer(value.asJsonObject.get("first_name").asString)
             }
