@@ -850,6 +850,13 @@ object Constants {
     const val INVENTORY_SYNC = "INVENTORY_SYNC"
     const val UPDATED_CARTMODEL_ID = "updated_cartmodel_id"
 
+    /*-------Valor--------*/
+    const val VALOR_APP_ID = "VALOR_APP_ID"
+    const val VALOR_APP_KEY = "VALOR_APP_KEY"
+    const val VALOR_EPI = "VALOR_EPI"
+    const val VALOR_CHANNEL_ID = "VALOR_CHANNEL_ID"
+    /*-------Valor--------*/
+
 
     const val PERMISSION_BLUETOOTH = 1
     const val PERMISSION_BLUETOOTH_ADMIN = 2

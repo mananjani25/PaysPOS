@@ -32,6 +32,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.magtek.mobile.android.mtlib.IMTCardData
 import com.magtek.mobile.android.mtlib.MTConnectionState
@@ -52,6 +53,7 @@ import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.requestModel.*
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
+import com.pays.pos.data.model.valor.ValorSuccessResponse
 import com.pays.pos.data.remote.ApiService
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.DEFAULT_ORDER
@@ -132,7 +134,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     var isSelectedCount = 1
     private val paymentviewModel by activityViewModels<PaymentViewModel>()
     private val giftCardViewModel by activityViewModels<GiftCardViewModel>()
-//    private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
+
+    //    private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val magtekProViewModel by viewModels<MagtekViewModel>()
 
     var paymentType = "Cash"
@@ -273,15 +276,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun setLoyaltyEarnedObserver() {
-        paymentviewModel.earnedLoyaltyPoints.observe(viewLifecycleOwner,object :androidx.lifecycle.Observer<Event<Int>>{
-            override fun onChanged(t: Event<Int>?) {
-                t?.getContentIfNotHandled()?.let {
-                    if (it!=0){
-                        dashboardViewModel.setCustomerLoyaltyOnCustomerThankyouScreen(it)
+        paymentviewModel.earnedLoyaltyPoints.observe(viewLifecycleOwner,
+            object : androidx.lifecycle.Observer<Event<Int>> {
+                override fun onChanged(t: Event<Int>?) {
+                    t?.getContentIfNotHandled()?.let {
+                        if (it != 0) {
+                            dashboardViewModel.setCustomerLoyaltyOnCustomerThankyouScreen(it)
+                        }
                     }
                 }
-            }
-        })
+            })
     }
 
     // To init PosLink for pax payment
@@ -386,12 +390,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                         it.name
 
                                     itemDynamicButton.setOnSingleClickListener { view ->
-                                        view.isEnabled=false
-                                        Handler(Looper.getMainLooper()).postDelayed(object:java.lang.Runnable{
+                                        view.isEnabled = false
+                                        Handler(Looper.getMainLooper()).postDelayed(object :
+                                            java.lang.Runnable {
                                             override fun run() {
-                                                view.isEnabled=true
+                                                view.isEnabled = true
                                             }
-                                        },5000)
+                                        }, 5000)
                                         startDynamicPayment(it.name, it.id)
                                     }
 
@@ -810,7 +815,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun observeData() {
         paymentviewModel.orderCreate.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                if (it){
+                if (it) {
                     runOnUiThread(Runnable {
                         dismissProgressDialog()
                     })
@@ -1104,7 +1109,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         giftCardViewModel.giftCardData.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
-                runOnUiThread(object:java.lang.Runnable{
+                runOnUiThread(object : java.lang.Runnable {
                     override fun run() {
                         dismissProgressDialog()
                     }
@@ -1442,7 +1447,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     R.id.action_paymentBoldPosFragment_to_orderComplete,
                                     bundle
                                 )
-                            }else{
+                            } else {
                                 runOnUiThread(Runnable {
                                     dismissProgressDialog()
                                 })
@@ -1470,7 +1475,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         giftCardViewModel.addValueInGiftCardData.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
-                runOnUiThread(object:java.lang.Runnable{
+                runOnUiThread(object : java.lang.Runnable {
                     override fun run() {
                         dismissProgressDialog()
                     }
@@ -1851,20 +1856,41 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         EventBus.getDefault()
-            .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ performCashOperation_prefProvider.getValue(Constants.WHOLE_AMOUNT....).toDouble()_1: ${prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.00")}"))
+            .post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ performCashOperation_prefProvider.getValue(Constants.WHOLE_AMOUNT....).toDouble()_1: ${
+                        prefProvider.getValue(
+                            Constants.WHOLE_AMOUNT,
+                            "0.00"
+                        )
+                    }"
+                )
+            )
 
         EventBus.getDefault()
-            .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ performCashOperation_prefProvider.getValue(Constants.WHOLE_AMOUNT....).toDouble()_%.1f_2: ${String.format(
-                "%.1f",
-                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.00").toDouble()
-            ).toDouble()}"))
+            .post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ performCashOperation_prefProvider.getValue(Constants.WHOLE_AMOUNT....).toDouble()_%.1f_2: ${
+                        String.format(
+                            "%.1f",
+                            prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.00").toDouble()
+                        ).toDouble()
+                    }"
+                )
+            )
 
         /*if Below is not executed then then maybe %.2f, is raising the error*/
-  EventBus.getDefault()
-            .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ performCashOperation_prefProvider.getValue(Constants.WHOLE_AMOUNT....).toDouble()_%.2f_3: ${String.format(
-                "%.2f",
-                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.00").toDouble()
-            ).toDouble()}"))
+        EventBus.getDefault()
+            .post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ performCashOperation_prefProvider.getValue(Constants.WHOLE_AMOUNT....).toDouble()_%.2f_3: ${
+                        String.format(
+                            "%.2f",
+                            prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.00").toDouble()
+                        ).toDouble()
+                    }"
+                )
+            )
 
         var wholePrice =
             String.format(
@@ -2152,15 +2178,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         } catch (e: Exception) {
             try {
                 paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
-                    .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 2).toDouble()
+                    .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 2)
+                    .toDouble()
             } catch (e: Exception) {
                 try {
                     paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
-                        .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 1).toDouble()
+                        .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 1)
+                        .toDouble()
                 } catch (e: Exception) {
                     try {
                         paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
-                            .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".")).toDouble()
+                            .substring(0, dashboardViewModel.totalPrice.toString().indexOf("."))
+                            .toDouble()
                     } catch (e: Exception) {
                     }
                 }
@@ -2182,12 +2211,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
         cashDiscountSurcharge = if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
             0.0
-            } else {
-                MethodUtils.getLatestCashDiscountOrSurCharge(
-                    WholetotalPrice,
-                    prefProvider,
-                    requireContext()
-                ) / isSelectedCount
+        } else {
+            MethodUtils.getLatestCashDiscountOrSurCharge(
+                WholetotalPrice,
+                prefProvider,
+                requireContext()
+            ) / isSelectedCount
         }
         if (cashDiscountType.equals("CashDiscount")) {
             paymentAmount -= cashDiscountSurcharge
@@ -2228,15 +2257,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         } catch (e: Exception) {
             try {
                 paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
-                    .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 2).toDouble()
+                    .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 2)
+                    .toDouble()
             } catch (e: Exception) {
                 try {
                     paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
-                        .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 1).toDouble()
+                        .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 1)
+                        .toDouble()
                 } catch (e: Exception) {
                     try {
                         paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
-                            .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".")).toDouble()
+                            .substring(0, dashboardViewModel.totalPrice.toString().indexOf("."))
+                            .toDouble()
                     } catch (e: Exception) {
                     }
                 }
@@ -2340,7 +2372,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             if (InternetUtils.isInternetAvailable(applicationContext = requireActivity().applicationContext)) {
                 //Checking Internet connection
-                runOnUiThread(object:java.lang.Runnable{
+                runOnUiThread(object : java.lang.Runnable {
                     override fun run() {
                         showProgressDialog()
                     }
@@ -2358,7 +2390,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     )
                 )
 
-                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+                Log.d(
+                    "LOADER::",
+                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                )
                 totalServiceCharge =
                     String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
                 totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
@@ -2394,7 +2429,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     )
                 }
 
-                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+                Log.d(
+                    "LOADER::",
+                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                )
 
                 if (cashDiscountType == "SurCharge") {
                     paymentAmount =
@@ -2405,7 +2443,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 //        Above code is commented, because the split amount was not changing, below code is the solution
                 try {
                     paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
-                        .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 3).toDouble()
+                        .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 3)
+                        .toDouble()
                 } catch (e: Exception) {
                     try {
                         paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
@@ -2414,13 +2453,20 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     } catch (e: Exception) {
                         try {
                             paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
-                                .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 1)
+                                .substring(
+                                    0,
+                                    dashboardViewModel.totalPrice.toString().indexOf(".") + 1
+                                )
                                 .toDouble()
                         } catch (e: Exception) {
                             try {
-                                paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
-                                    .substring(0, dashboardViewModel.totalPrice.toString().indexOf("."))
-                                    .toDouble()
+                                paymentviewModel.tipOnAmount =
+                                    dashboardViewModel.totalPrice.toString()
+                                        .substring(
+                                            0,
+                                            dashboardViewModel.totalPrice.toString().indexOf(".")
+                                        )
+                                        .toDouble()
                             } catch (e: Exception) {
                             }
                         }
@@ -2439,7 +2485,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
 
                 paymentAmount += tipAmount
-                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+                Log.d(
+                    "LOADER::",
+                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                )
 
                 if (paymentAmount != 0.0) {
                     if (mSessionManager.isConnected) {
@@ -2508,7 +2557,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         errorDisplay("Please connect a payment device.")*/
                     }
                 } else {
-                    runOnUiThread(object:java.lang.Runnable{
+                    runOnUiThread(object : java.lang.Runnable {
                         override fun run() {
                             binding.llCreditCard.isEnabled = true
                             dismissProgressDialog()
@@ -2517,7 +2566,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     errorDisplay("Payment Amount is zero.")
                 }
             } else {
-                runOnUiThread(object:java.lang.Runnable{
+                runOnUiThread(object : java.lang.Runnable {
                     override fun run() {
                         binding.llCreditCard.isEnabled = true
                         dismissProgressDialog()
@@ -2798,7 +2847,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(),
                     "Please enter 8-digit gift card number."
-                ){ _, _ ->
+                ) { _, _ ->
                     it.isEnabled = true
                 }
                 return@setOnSingleClickListener
@@ -2852,9 +2901,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
 
-        giftCardViewModel.giftCardError.observe(viewLifecycleOwner){ event->
+        giftCardViewModel.giftCardError.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                AlertUtils.showCustomAlert(requireActivity(),it)
+                AlertUtils.showCustomAlert(requireActivity(), it)
             }
         }
 
@@ -2927,7 +2976,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     @Inject
     lateinit var paymentGatewayFactory: PaymentGatewayFactory
 
-    private fun makeValorPaymentRequest(){
+    private fun makeValorPaymentRequest() {
         GlobalScope.launch {
             CoroutineScope(Dispatchers.Main).launch {
 //                        ProgressUtils.dismissProgressDialog()
@@ -2938,30 +2987,72 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 val paymentCallback = object : PaymentCallback {
                     override fun onSuccess(transactionId: String) {
-                        println("Payment Successful! Transaction ID: $transactionId")
 
-                        launch {
-                            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
-                                /*if (prefProvider.getValueboolean(
-                                        Constants.IS_ADD_VALUE_IN_GIFT_CARD,
-                                        false
+                        var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
+                            transactionId,
+                            ValorSuccessResponse::class.java
+                        )
+
+                        transactionJsonResponse.nameValuePairs?.response?.nameValuePairs?.let {
+                            if (it.ERRORMSG != null) {
+                                dismissProgressDialog()
+                                runOnUiThread(Runnable {
+                                    AlertUtils.showCustomAlert(
+                                        requireContext(),
+                                        it.ERRORMSG
                                     )
-                                ) {
-                                    giftCardViewModel.paxResponse = response.ExtData
-                                    giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
-                                    giftCardViewModel.cardNamePax = response.CardType
-                                    giftCardViewModel.transactionID = response.PaymentTransInfo.Token
-                                    addValueInGiftCardUsingCard()
+                                })
+                            }else {
+                                if (it.AUTHRSPTEXT != null) {
+                                    if (it.AUTHRSPTEXT!!.contains(
+                                            "APPROVAL"
+                                        )
+                                    ) {
+                                        if (prefProvider.getValue(
+                                                ORDER_TYPE,
+                                                TAKEOUT
+                                            ) == GIFT_CARD
+                                        ) {
+                                            /*if (prefProvider.getValueboolean(
+                                                Constants.IS_ADD_VALUE_IN_GIFT_CARD,
+                                                false
+                                            )
+                                        ) {
+                                            giftCardViewModel.paxResponse = response.ExtData
+                                            giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
+                                            giftCardViewModel.cardNamePax = response.CardType
+                                            giftCardViewModel.transactionID = response.PaymentTransInfo.Token
+                                            addValueInGiftCardUsingCard()
+                                        }
+                                        else {
+                                            giftCardViewModel.paxResponse = response.ExtData
+                                            giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
+                                            giftCardViewModel.cardNamePax = response.CardType
+                                            giftCardViewModel.transactionID = response.PaymentTransInfo.Token
+                                            sellGiftCardUsingCard()
+                                        }*/
+                                        } else {
+                                            makePaymentCreditCardValor()
+                                        }
+                                    } else {
+                                        dismissProgressDialog()
+                                        runOnUiThread(Runnable {
+                                            AlertUtils.showCustomAlert(
+                                                requireContext(),
+                                                it.AUTHRSPTEXT
+                                            )
+                                        })
+                                    }
                                 }
-                                else {
-                                    giftCardViewModel.paxResponse = response.ExtData
-                                    giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
-                                    giftCardViewModel.cardNamePax = response.CardType
-                                    giftCardViewModel.transactionID = response.PaymentTransInfo.Token
-                                    sellGiftCardUsingCard()
-                                }*/
-                            } else {
-                                makePaymentCreditCardValor()
+                                else{
+                                    dismissProgressDialog()
+                                    runOnUiThread(Runnable {
+                                        AlertUtils.showCustomAlert(
+                                            requireContext(),
+                                            getString(R.string.error_something_wrong)
+                                        )
+                                    })
+                                }
                             }
                         }
                     }
@@ -2972,23 +3063,36 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     }
                 }
 
-                val amt = ((paymentAmount - tipAmount)*100).roundToInt()
+                val amt = ((paymentAmount - tipAmount) * 100).roundToInt()
                 val tip_amt = (tipAmount * 100).roundToInt()
 
-                var apiKey="k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
-                var appID= "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
-                var epi="2319995597"
-                var endpoint="status"
-                var transType= TransactionType.CREDIT_SALE
-                var channelID="bd967b4e0ccd6309c5ac16634bd367b6"
-                var TRAN_MODE="1"
-                var TRAN_CODE="1"
-                var amount=amt.toString()
-                var reqTxnId="INV${System.currentTimeMillis()}"
+          /*      var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
+                var appID = "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
+                var channelID = "bd967b4e0ccd6309c5ac16634bd367b6"
+                var epi = "2319995597"
+                var endpoint = "status"
+                var transType = TransactionType.CREDIT_SALE
+                var TRAN_MODE = "1"
+                var TRAN_CODE = "1"
+                var amount =
+                var reqTxnId = */
 
                 /* Process Payment */
                 context?.let {
-                    paymentGateway.processPayment(it,apiKey,appID,epi,endpoint,transType,channelID,TRAN_MODE,TRAN_CODE, reqTxnId,amount,paymentCallback)
+                    paymentGateway.processPayment(
+                        it,
+                        prefProvider.getValue(Constants.VALOR_APP_KEY,""),
+                        prefProvider.getValue(Constants.VALOR_APP_ID,""),
+                        prefProvider.getValue(Constants.VALOR_EPI,""),
+                        "status",
+                        TransactionType.CREDIT_SALE,
+                        prefProvider.getValue(Constants.VALOR_CHANNEL_ID,""),
+                        "1",
+                        "1",
+                        "INV${System.currentTimeMillis()}",
+                        amt.toString(),
+                        paymentCallback
+                    )
                 }
             }
         }
@@ -3012,11 +3116,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 ""
             )
 
-          /*  runOnUiThread(object:java.lang.Runnable{
-                override fun run() {
-                    ProgressUtils.showProgressDialog(requireActivity())
-                }
-            })*/
+            /*  runOnUiThread(object:java.lang.Runnable{
+                  override fun run() {
+                      ProgressUtils.showProgressDialog(requireActivity())
+                  }
+              })*/
 
             mPaymentRequest = PaymentRequest()
             mPaymentRequest.TransType = mPaymentRequest.ParseTransType("SALE")
@@ -3095,13 +3199,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     giftCardViewModel.paxResponse = response.ExtData
                                     giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
                                     giftCardViewModel.cardNamePax = response.CardType
-                                    giftCardViewModel.transactionID = response.PaymentTransInfo.Token
+                                    giftCardViewModel.transactionID =
+                                        response.PaymentTransInfo.Token
                                     addValueInGiftCardUsingCard()
                                 } else {
                                     giftCardViewModel.paxResponse = response.ExtData
                                     giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
                                     giftCardViewModel.cardNamePax = response.CardType
-                                    giftCardViewModel.transactionID = response.PaymentTransInfo.Token
+                                    giftCardViewModel.transactionID =
+                                        response.PaymentTransInfo.Token
                                     sellGiftCardUsingCard()
                                 }
                             } else {
@@ -3145,14 +3251,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         retryCount = 1*/
                     Log.d("PAX_LOADER_2:: ", "result.Code.toString() result.Msg")
                     AlertUtils.showCustomAlertWithListenerWithOKCancel(
-                            requireContext(),
-                            getString(R.string.pax_connect_error), getString(R.string.reconnect),
-                        )
-                        { _, _ ->
-                            // Add connect to PAX logic
-                            Log.d("PAX_LOADER_3:: ", "result.Code.toString() result.Msg")
-                            magtekProViewModel.initPOSLink(requireContext())
-                        }
+                        requireContext(),
+                        getString(R.string.pax_connect_error), getString(R.string.reconnect),
+                    )
+                    { _, _ ->
+                        // Add connect to PAX logic
+                        Log.d("PAX_LOADER_3:: ", "result.Code.toString() result.Msg")
+                        magtekProViewModel.initPOSLink(requireContext())
+                    }
 //                    }
 //
                     /*if (result.Msg.toString() == "CONNECT ERROR" || result.Msg.toString() == "TIME OUT"){
@@ -3302,11 +3408,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 )
             )
 
-            WholetotalPrice = MethodUtils.getTwoDecimal(dashboardViewModel.subTotalPrice).toPrecision(2)
-                .toDouble() + dashboardViewModel.totalTax + String.format(
-                "%.2f",
-                dashboardViewModel.totalServiceCharge
-            ).toDouble()
+            WholetotalPrice =
+                MethodUtils.getTwoDecimal(dashboardViewModel.subTotalPrice).toPrecision(2)
+                    .toDouble() + dashboardViewModel.totalTax + String.format(
+                    "%.2f",
+                    dashboardViewModel.totalServiceCharge
+                ).toDouble()
 
 
             if (redeemLoyaltyInfo?.needToApplyLoyalty == true) {
@@ -3755,7 +3862,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     PaymentBoldPosFragment.newInstance().addTipHideShow(false)
                 }
                 /*Solved BIS-4479*/
-                dashboardViewModel.isSelectCount=1
+                dashboardViewModel.isSelectCount = 1
                 /*Solved BIS-4479*/
 
                 isSelectedCount = 1
@@ -3911,7 +4018,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         paymentAmount -= tipAmount
         paymentAmount = MethodUtils.roundOffAmountDouble(paymentAmount)
         paymentType = "Card"
-        Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+        Log.d(
+            "LOADER::",
+            "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+        )
 
 //        LogUtil.logE(TAG, "cartList:  ${Gson().toJson(cartList)}")
 //        LogUtil.logE(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
@@ -3927,28 +4037,31 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             paymentviewModel.updateOrder(false, null, null, "", "")
         }
         paymentviewModel.saveOrder(false)
-        var cartModel: CartModel? =null
+        var cartModel: CartModel? = null
         try {
-             cartModel =
+            cartModel =
                 Gson().fromJson<CartModel?>(
                     prefProvider.getValue("CART_MODEL1", ""),
                     CartModel::class.java
                 )
-        }catch (e:Exception){
+        } catch (e: Exception) {
 
         }
-        var cartModel2:CartModel? = null
-        try{
-            cartModel2=Gson().fromJson<CartModel?>(
+        var cartModel2: CartModel? = null
+        try {
+            cartModel2 = Gson().fromJson<CartModel?>(
                 prefProvider.getValue("CART_MODEL2", ""),
                 CartModel::class.java
             )
-        }catch (e:Exception){
+        } catch (e: Exception) {
 
         }
 
         if (cartList == null) {
-            Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+            Log.d(
+                "LOADER::",
+                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+            )
 
             CoroutineScope(Dispatchers.Main).launch {
                 getCartModelsList()
@@ -3962,7 +4075,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 cartList = cartModel2
             } else if (dashboardViewModel.cartModel == null) {
                 runBlocking {
-                    try{
+                    try {
                         var model =
                             CoroutineScope(Dispatchers.IO).async { dashboardViewModel.getCartModelBackup() }
                                 .await().last().data
@@ -3977,19 +4090,28 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         cartList = Gson().fromJson(model, CartModel::class.java)
                         dashboardViewModel.cartModel =
                             Gson().fromJson(model, CartModel::class.java)
-                        Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+                        Log.d(
+                            "LOADER::",
+                            "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                        )
 
-                    }catch (e:Exception){
+                    } catch (e: Exception) {
                         var models =
                             CoroutineScope(Dispatchers.IO).async { dashboardViewModel.getAllCartModels() }
                                 .await()
                         if (models.isNotEmpty()) {
                             dashboardViewModel.cartModel = models.last()
-                            cartList=models.last()
-                            Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+                            cartList = models.last()
+                            Log.d(
+                                "LOADER::",
+                                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                            )
 
-                        }else{
-                            Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+                        } else {
+                            Log.d(
+                                "LOADER::",
+                                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                            )
 
                             /*Continuous loading shall occur due to the cartModel null */
 
@@ -3999,7 +4121,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
 
-        Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+        Log.d(
+            "LOADER::",
+            "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+        )
 
         oldItems = prefProvider.getValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
         val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
@@ -4022,12 +4147,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
         )
         if (cartList == null || cartList?.items == null || cartList?.items?.isEmpty() == true) {
-            Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+            Log.d(
+                "LOADER::",
+                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+            )
 
             EventBus.getDefault().post(
                 MessageEvent(
                     "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_makePaymentCreditCard() -> null Case"
-                ))
+                )
+            )
 
             var items: ArrayList<TbItem>? = ArrayList()
             /*  for (item in dashboardViewModel.currentCartItems) {*/
@@ -4226,7 +4355,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             cartList?.items = items
         }
 
-        Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+        Log.d(
+            "LOADER::",
+            "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+        )
 
         prefProvider.setValue(Constants.OLD_ITEM, "")
         prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
@@ -4280,7 +4412,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     } _1"
                 )
             )
-            Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+            Log.d(
+                "LOADER::",
+                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+            )
 
             /* //FILE ASSERTION
              MainActivity.writeToFile(
@@ -4298,7 +4433,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         paymentAmount -= tipAmount
         paymentAmount = MethodUtils.roundOffAmountDouble(paymentAmount)
         paymentType = "Card"
-        Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+        Log.d(
+            "LOADER::",
+            "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+        )
 
 //        LogUtil.logE(TAG, "cartList:  ${Gson().toJson(cartList)}")
 //        LogUtil.logE(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
@@ -4314,28 +4452,31 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             paymentviewModel.updateOrder(false, null, null, "", "")
         }
         paymentviewModel.saveOrder(false)
-        var cartModel: CartModel? =null
+        var cartModel: CartModel? = null
         try {
-             cartModel =
+            cartModel =
                 Gson().fromJson<CartModel?>(
                     prefProvider.getValue("CART_MODEL1", ""),
                     CartModel::class.java
                 )
-        }catch (e:Exception){
+        } catch (e: Exception) {
 
         }
-        var cartModel2:CartModel? = null
-        try{
-            cartModel2=Gson().fromJson<CartModel?>(
+        var cartModel2: CartModel? = null
+        try {
+            cartModel2 = Gson().fromJson<CartModel?>(
                 prefProvider.getValue("CART_MODEL2", ""),
                 CartModel::class.java
             )
-        }catch (e:Exception){
+        } catch (e: Exception) {
 
         }
 
         if (cartList == null) {
-            Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+            Log.d(
+                "LOADER::",
+                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+            )
 
             CoroutineScope(Dispatchers.Main).launch {
                 getCartModelsList()
@@ -4349,7 +4490,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 cartList = cartModel2
             } else if (dashboardViewModel.cartModel == null) {
                 runBlocking {
-                    try{
+                    try {
                         var model =
                             CoroutineScope(Dispatchers.IO).async { dashboardViewModel.getCartModelBackup() }
                                 .await().last().data
@@ -4364,19 +4505,28 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         cartList = Gson().fromJson(model, CartModel::class.java)
                         dashboardViewModel.cartModel =
                             Gson().fromJson(model, CartModel::class.java)
-                        Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+                        Log.d(
+                            "LOADER::",
+                            "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                        )
 
-                    }catch (e:Exception){
+                    } catch (e: Exception) {
                         var models =
                             CoroutineScope(Dispatchers.IO).async { dashboardViewModel.getAllCartModels() }
                                 .await()
                         if (models.isNotEmpty()) {
                             dashboardViewModel.cartModel = models.last()
-                            cartList=models.last()
-                            Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+                            cartList = models.last()
+                            Log.d(
+                                "LOADER::",
+                                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                            )
 
-                        }else{
-                            Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+                        } else {
+                            Log.d(
+                                "LOADER::",
+                                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                            )
 
                             /*Continuous loading shall occur due to the cartModel null */
 
@@ -4386,7 +4536,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
 
-        Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+        Log.d(
+            "LOADER::",
+            "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+        )
 
         oldItems = prefProvider.getValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
         val listType = object : TypeToken<java.util.ArrayList<TbCartItem>>() {}.type
@@ -4409,12 +4562,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
         )
         if (cartList == null || cartList?.items == null || cartList?.items?.isEmpty() == true) {
-            Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+            Log.d(
+                "LOADER::",
+                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+            )
 
             EventBus.getDefault().post(
                 MessageEvent(
                     "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_makePaymentCreditCard() -> null Case"
-                ))
+                )
+            )
 
             var items: ArrayList<TbItem>? = ArrayList()
             /*  for (item in dashboardViewModel.currentCartItems) {*/
@@ -4613,7 +4770,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             cartList?.items = items
         }
 
-        Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+        Log.d(
+            "LOADER::",
+            "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+        )
 
         prefProvider.setValue(Constants.OLD_ITEM, "")
         prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
@@ -4667,7 +4827,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     } _1"
                 )
             )
-            Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+            Log.d(
+                "LOADER::",
+                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+            )
 
             /* //FILE ASSERTION
              MainActivity.writeToFile(
@@ -5001,8 +5164,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
 
                 /*---------totalAmount was being sent half in case of split, so multiplied if the subtotal is greater than the totalAmount----------*/
-                if (myRequest.order.subTotal>myRequest.order.totalAmount){
-                    myRequest.order.totalAmount=myRequest.order.totalAmount*2
+                if (myRequest.order.subTotal > myRequest.order.totalAmount) {
+                    myRequest.order.totalAmount = myRequest.order.totalAmount * 2
                 }
                 /*---------totalAmount was being sent half in case of split, so multiplied if the subtotal is greater than the totalAmount----------*/
 
@@ -5436,7 +5599,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         dynamicPaymentType: String? = "",
         dynamicPaymentId: Int = -1
     ) {
-        Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+        Log.d(
+            "LOADER::",
+            "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+        )
 
         dynamicPaymentType?.let { payment ->
             if (payment.isNotEmpty() && dynamicPaymentId != -1) {
@@ -5451,19 +5617,29 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (myRequest.order.orderTypeId == -1) {
             runBlocking {
                 CoroutineScope(Dispatchers.IO).async {
-                    dashboardViewModel.getOrderTypeBackupList(prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1))?.let {
+                    dashboardViewModel.getOrderTypeBackupList(
+                        prefProvider.getValueInt(
+                            Constants.EMPLOYEE_ID,
+                            -1
+                        )
+                    )?.let {
                         myRequest.order.apply {
                             if (it.isNotEmpty()) {
                                 orderTypeId = (it.get(0).orderType) ?: -1
                                 orderTypeName = (it.get(0).orderTypeName) ?: ""
-                            }else{
-                                if (dashboardViewModel.cartModel!=null) {
+                            } else {
+                                if (dashboardViewModel.cartModel != null) {
                                     orderTypeId = dashboardViewModel.cartModel!!.orderTypeId ?: -1
-                                    orderTypeName = dashboardViewModel.cartModel!!.orderTypeName ?: ""
-                                }else{
+                                    orderTypeName =
+                                        dashboardViewModel.cartModel!!.orderTypeName ?: ""
+                                } else {
 //                                  Fetch the order type name from the cart fragment, fetch the orderType from local database with respect to the order type name of cart fragment
-                                    var orderType=prefProvider.getValue(ORDER_TYPE, "")
-                                    dashboardViewModel.getOrderTypes.value?.data?.filter { it.orderType.equals(orderType) }?.let {
+                                    var orderType = prefProvider.getValue(ORDER_TYPE, "")
+                                    dashboardViewModel.getOrderTypes.value?.data?.filter {
+                                        it.orderType.equals(
+                                            orderType
+                                        )
+                                    }?.let {
                                         orderTypeId = it.first().id ?: -1
                                         orderTypeName = it.first().orderType ?: ""
                                     }
@@ -5476,7 +5652,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
 
-        Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+        Log.d(
+            "LOADER::",
+            "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+        )
 
         val orderId = prefProvider.getValueInt("ORDER_ID", -1) //Here
         LogUtil.logE(TAG, "orderIdmyRequestOriginal ${orderId}")
@@ -5543,18 +5722,27 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
             paymentviewModel.submit(myRequest)
         } else {
-            Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+            Log.d(
+                "LOADER::",
+                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+            )
 
             EventBus.getDefault()
                 .post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_else_before_if(textToPay)_6"))
 
             if (textToPay) {
-                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+                Log.d(
+                    "LOADER::",
+                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                )
 
                 paymentviewModel.textPaySplit(orderId)
 
             } else {
-                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+                Log.d(
+                    "LOADER::",
+                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                )
 
                 EventBus.getDefault()
                     .post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_else_6"))
@@ -5598,11 +5786,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 runOnUiThread(Runnable {
                     dismissProgressDialog()
                 })
-                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+                Log.d(
+                    "LOADER::",
+                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                )
 
                 EventBus.getDefault()
                     .post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_paymentviewModel.splitByOrder(aa, false)_After_6"))
-                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+                Log.d(
+                    "LOADER::",
+                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                )
 
             }
         }
@@ -5895,10 +6089,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun sellGiftCardUsingCash() {
         paymentType = "Cash"
-        if (cartList==null){
+        if (cartList == null) {
             runBlocking {
-                lifecycleScope.async(Dispatchers.IO){
-                    cartList=dashboardViewModel.getAllCartModels().last()
+                lifecycleScope.async(Dispatchers.IO) {
+                    cartList = dashboardViewModel.getAllCartModels().last()
                 }.await()
             }
         }
@@ -5914,10 +6108,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         paymentType = "Card"
         EventBus.getDefault()
             .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ sellGiftCardUsingCard cartList->${cartList}"))
-        if (cartList==null){
+        if (cartList == null) {
             runBlocking {
-                lifecycleScope.async(Dispatchers.IO){
-                    cartList=dashboardViewModel.getAllCartModels().last()
+                lifecycleScope.async(Dispatchers.IO) {
+                    cartList = dashboardViewModel.getAllCartModels().last()
                 }.await()
             }
         }
@@ -5939,10 +6133,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun addValueInGiftCardUsingCash() {
         paymentType = "Cash"
-        if (cartList==null){
+        if (cartList == null) {
             runBlocking {
-                lifecycleScope.async(Dispatchers.IO){
-                    cartList=dashboardViewModel.getAllCartModels().last()
+                lifecycleScope.async(Dispatchers.IO) {
+                    cartList = dashboardViewModel.getAllCartModels().last()
                 }.await()
             }
         }
@@ -5956,10 +6150,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun addValueInGiftCardUsingCard() {
         paymentType = "Card"
-        if (cartList==null){
+        if (cartList == null) {
             runBlocking {
-                lifecycleScope.async(Dispatchers.IO){
-                    cartList=dashboardViewModel.getAllCartModels().last()
+                lifecycleScope.async(Dispatchers.IO) {
+                    cartList = dashboardViewModel.getAllCartModels().last()
                 }.await()
             }
         }
@@ -6321,8 +6515,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
     }
 
-    private fun dismissProgressDialog()
-    {
+    private fun dismissProgressDialog() {
         try {
             if (builder != null && builder?.isShowing == true) {
                 builder?.dismiss()

@@ -77,6 +77,10 @@ import com.pays.pos.data.remote.Constants.SYSTEM_TIMEZONE
 import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.remote.Constants.TERMINAL_ID
 import com.pays.pos.data.remote.Constants.UPDATE
+import com.pays.pos.data.remote.Constants.VALOR_APP_ID
+import com.pays.pos.data.remote.Constants.VALOR_APP_KEY
+import com.pays.pos.data.remote.Constants.VALOR_CHANNEL_ID
+import com.pays.pos.data.remote.Constants.VALOR_EPI
 import com.pays.pos.data.remote.Constants.VENUE_LOGO
 import com.pays.pos.data.remote.NetworkConnectionInterceptor
 import com.pays.pos.data.repositories.PosRepository
@@ -7868,6 +7872,24 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 } catch (e: Exception) {
 //                                    e.printStackTrace()
                                 }
+
+                                /*------------VALOR---------------*/
+                                prefProvider.setValue(
+                                    VALOR_APP_ID, it.settingData.data.valor_app_id ?: ""
+                                )
+
+                                prefProvider.setValue(
+                                    VALOR_APP_KEY, it.settingData.data.valor_app_key ?: ""
+                                )
+
+                                prefProvider.setValue(
+                                    VALOR_EPI, it.settingData.data.valor_epi ?: ""
+                                )
+                                prefProvider.setValue(
+                                    VALOR_CHANNEL_ID, it.settingData.data.valor_channel_id ?: ""
+                                )
+                                /*------------VALOR---------------*/
+
 
                                 prefProvider.setValue(
                                     PAX_SERIAL_NO, it.settingData.data.SerialNo ?: ""
