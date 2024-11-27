@@ -317,28 +317,58 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             })
     }
 
-    // To check selected order type
-    private fun checkOrderType() {
-
+    fun setUpPreAuthData() {
         if(prefProvider.getValue(ORDER_TYPE,"") == OPEN_ORDER && !isFromPayment) {
 
             binding.preAuthOption.visible()
 
             binding.preAuthOption.apply {
 
-                if(prefProvider.getValue(PRE_AUTH_DETAILS,"").isNotEmpty()) {
+                isChecked = false
+                isEnabled = true
+                setTextColor(Color.RED)
+
+                if(prefProvider.getValue(PRE_AUTH_DETAILS,"").isNotEmpty() ) {
                     visible()
                     isChecked = true
                     isEnabled = false
                     setTextColor(Color.GREEN)
                 }else {
+                    isChecked = false
+                    isEnabled = true
+                    setTextColor(Color.RED)
                     setOnClickListener {
-                        makePaxPreAuthRequest()
+
+                        if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
+                            if (prefProvider.isManager() || prefProvider.isAdmin()) {
+                                if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false))
+                                    makePaxPreAuthRequest()
+                                else {
+                                    isChecked = false
+                                    activity?.let {
+                                        AlertUtils.showCustomAlertWithListenerWithOK(
+                                            it,
+                                            getString(R.string.pax_connect_error),
+                                            null
+                                        )
+                                    }
+                                }
+                            } else {
+                                isChecked = false
+                                AlertUtils.showCustomAlert(
+                                    requireContext(),
+                                    "You do not have permission to access this feature.\nPlease contact your manager."
+                                )
+                            }
+                        } else {
+                            isChecked = false
+                            AlertUtils.showCustomAlert(requireContext(), "Please check your Network Connectivity.")
+                        }
                     }
                 }
 
                 try {
-                    if (viewModelPayment.preAuthData!!.refNum.isNotEmpty() || viewModelPayment.preAuthData!!.refNum.isNotEmpty()) {
+                    if (viewModelPayment.preAuthData !=null && viewModelPayment.preAuthData!!.refNum.isNotEmpty() || viewModelPayment.preAuthData!!.refNum.isNotEmpty()) {
                         isChecked = true
                         isEnabled = false
                         setTextColor(Color.GREEN)
@@ -351,6 +381,12 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             }
         } else
             binding.preAuthOption.gone()
+    }
+
+    // To check selected order type
+    private fun checkOrderType() {
+
+        setUpPreAuthData()
 
 //        saveVisibility()
         if (prefProvider.getValue(ORDER_TYPE, "").isEmpty()) {
@@ -4158,6 +4194,11 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                     paymentAttributes = null
                                                 } else {
                                                     paymentAttributes = Gson().fromJson(prefProvider.getValue(PRE_AUTH_DETAILS, ""), paymentType) as PaymentAttributes
+
+                                                    //If any existing order set to Pre Auth by user then need to send OrderId for payment attribute
+                                                    if(isOrderUpdate) {
+                                                        paymentAttributes.order_id = orderId
+                                                    }
                                                 }
                                             } else if(isOrderUpdate){
 

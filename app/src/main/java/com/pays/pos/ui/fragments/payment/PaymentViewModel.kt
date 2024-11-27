@@ -67,6 +67,11 @@ open class PaymentViewModel @Inject constructor(
      */
     var preAuthData:PreAuthData? = null
 
+    fun clearPreAuthDetails(){
+        prefProvider.setValue(PRE_AUTH_DETAILS,"")
+        preAuthData = null
+    }
+
 
     var orderCreateCallSent = false
 
@@ -1782,8 +1787,10 @@ open class PaymentViewModel @Inject constructor(
 
         if(isPreAuth) {
 
-            if(paymentAttributes!=null)
+            if(paymentAttributes!=null) {
                 orderAttributeRequestModel.paymentAttributes = paymentAttributes
+                orderAttributeRequestModel.paymentStatus = 1
+            }
 
         } else {
             orderAttributeRequestModel.paymentAttributes = if (needToAddPaymentAttributes == true) {
