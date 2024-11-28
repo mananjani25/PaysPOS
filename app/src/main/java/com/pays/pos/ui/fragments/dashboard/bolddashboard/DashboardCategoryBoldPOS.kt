@@ -16,6 +16,7 @@ import android.view.*
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
@@ -550,9 +551,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     }
                 }
                 Status.LOADING -> {
-
                 }
                 Status.ERROR -> {
+                    prefProvider.setValueboolean("CUSTOMER_FETCHED", false)
+
                     if (!viewModel.loggingOut) {
                         if (isAdded && view!=null) {
                             viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
