@@ -8042,9 +8042,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 try {
                                     CoroutineScope(Dispatchers.IO).launch {
                                         runBlocking {
-                                            var printOrderId=posRepository.getLabelPrinterSettingsData().printOrderId
+                                            try{
+                                                var printOrderId=posRepository.getLabelPrinterSettingsData().printOrderId
 
-                                            posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept, printOrderId)
+                                                posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept, printOrderId)
+                                            }catch (e:Exception){
+                                                posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept, true)
+                                            }
+
                                         }
 
                                     }
