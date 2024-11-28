@@ -80,12 +80,12 @@ object ApiModule {
 
                         }.build())
                     }.also { client ->
-                        if (BuildConfig.DEBUG) {
+
                             val logging = HttpLoggingInterceptor()
                             logging.setLevel(HttpLoggingInterceptor.Level.BODY)
                             client.addInterceptor(logging)
                             client.addInterceptor(networkConnectionInterceptor)
-                        }
+
                     }.build()
             )
             .addConverterFactory(GsonConverterFactory.create())

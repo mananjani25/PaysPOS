@@ -128,7 +128,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     var isSelectedCount = 1
     private val paymentviewModel by activityViewModels<PaymentViewModel>()
     private val giftCardViewModel by activityViewModels<GiftCardViewModel>()
-//    private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
+
+    //    private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val magtekProViewModel by viewModels<MagtekViewModel>()
 
     var paymentType = "Cash"
@@ -2791,7 +2792,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             cardCVV
                         )
                     } else {
-                        errorDisplay(getString(R.string.payment_amount_is_zero))
+                        errorDisplay("Payment Amount is zero.")
                     }
 
                 }
@@ -2799,18 +2800,19 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         binding.txtChargeGC.setOnSingleClickListener {
-            it.isEnabled = false
             val giftCardNumber = binding.edtGiftCardNumber.rawText.toString().trim()
 
-            if (giftCardNumber.isEmpty() || giftCardNumber.length != 8) {
-                AlertUtils.showCustomAlertWithListenerWithOK(
+            if (giftCardNumber.isEmpty() || giftCardNumber.length < 8) {
+                AlertUtils.showCustomAlert(
                     requireContext(),
                     "Please enter 8-digit gift card number."
-                ){ _, _ ->
-                    it.isEnabled = true
-                }
+                )
                 return@setOnSingleClickListener
+            } else if (giftCardNumber.isNotEmpty() && giftCardNumber.length > 8) {
+                giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
+
             } else {
+
                 giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = giftCardNumber))
             }
             /**
@@ -2860,9 +2862,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
 
-        giftCardViewModel.giftCardError.observe(viewLifecycleOwner){ event->
+        giftCardViewModel.giftCardError.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                AlertUtils.showCustomAlert(requireActivity(),it)
+                AlertUtils.showCustomAlert(requireActivity(), it)
             }
         }
 
@@ -3075,6 +3077,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             } else {
                 CoroutineScope(Dispatchers.Main).launch {
                     ProgressUtils.dismissProgressDialog()
+                    /*                    if (retryCount <= 1) {
+                                            retryCount++
+                                            magtekProViewModel.initPOSLink(requireContext())
+                                        } else {
+                                            retryCount = 1*/
                     dismissProgressDialog()
 /*                    if (retryCount <= 1) {
                         retryCount++

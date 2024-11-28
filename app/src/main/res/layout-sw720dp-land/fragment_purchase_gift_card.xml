@@ -106,7 +106,6 @@
                     android:paddingHorizontal="@dimen/_5sdp"
                     android:checked="false"
                     android:textSize="@dimen/_6ssp"
-                    android:enabled="false"
                     android:background="@drawable/radio_button_selector"
                     android:button="@android:color/transparent"
                     android:layout_height="wrap_content"/>
