@@ -2800,6 +2800,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         binding.txtChargeGC.setOnSingleClickListener {
+            it.isEnabled = false
             val giftCardNumber = binding.edtGiftCardNumber.rawText.toString().trim()
 
             if (giftCardNumber.isEmpty() || giftCardNumber.length < 8) {
@@ -2807,6 +2808,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     requireContext(),
                     "Please enter 8-digit gift card number."
                 )
+                it.isEnabled = true
                 return@setOnSingleClickListener
             } else if (giftCardNumber.isNotEmpty() && giftCardNumber.length > 8) {
                 giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
