@@ -228,10 +228,9 @@ class GiftCardViewModel @Inject constructor(
                 transaction_id = transactionId
             )
 
-
         val giftCard = GiftCard(
-            gift_card_type = "Digital",//Physical
-            name = "",
+            gift_card_type = /*"Digital"*/ prefProvider.getValue(Constants.GIFT_CARD_TYPE,""),//Physical
+            name = if (prefProvider.getValue(Constants.GIFT_CARD_TYPE,"").equals("Physical",true)){prefProvider.getValue(Constants.PHYSICAL_GIFT_CARD_NUMBER,"")} else{""},
             amount = giftCardPurchaseAmount,
             customer_id = prefProvider.getValueInt(Constants.CUSTOMER_ID, 0),
             location_id = prefProvider.getValueInt(Constants.LOCATION_ID, 1),
