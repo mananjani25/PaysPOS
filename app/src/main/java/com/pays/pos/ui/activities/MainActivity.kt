@@ -433,7 +433,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         addCustomerViewModel.customerFetchedAndAdded.observe(this, object : Observer<TbCustomer> {
             override fun onChanged(customer: TbCustomer?) {
                 customer?.let {
-                    presentation.addCustomer(it)
+                    if(this@MainActivity::presentation.isInitialized)
+                        presentation.addCustomer(it)
                 }
             }
         })
