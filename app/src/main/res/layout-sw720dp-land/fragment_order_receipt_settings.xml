@@ -87,6 +87,41 @@
             android:layout_height="1dp"
             android:background="@color/view" />
 
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/llStickyReceiptSettings"
+            android:visibility="visible"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:elevation="@dimen/_10sdp"
+                android:fontFamily="@font/sf_pro_display_semibold"
+                android:gravity="start"
+                android:paddingHorizontal="@dimen/_5sdp"
+                android:paddingVertical="@dimen/_10sdp"
+                android:text="@string/tv_sticky_receipt_settings"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/setting_inner_text_size" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                app:srcCompat="@drawable/ic_play" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/view" />
+
     </LinearLayout>
 
 
