@@ -2545,16 +2545,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 makePaxPaymentRequest()
                             }
                         }
-                    } else {
-                        /* Handle Valor Payment Request*/
+                    } else if ( prefProvider.getValue(
+                            Constants.VALOR_APP_ID,"").isNotEmpty()) {
                         makeValorPaymentRequest()
-                        /*runOnUiThread(object:java.lang.Runnable{
-                            override fun run() {
-                                binding.llCreditCard.isEnabled = true
-                                dismissProgressDialog()
-                            }
-                        })
-                        errorDisplay("Please connect a payment device.")*/
                     }
                 } else {
                     runOnUiThread(object : java.lang.Runnable {
@@ -3032,7 +3025,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                             sellGiftCardUsingCard()
                                         }*/
                                         } else {
-                                            makePaymentCreditCardValor()
+                                            makePaymentCreditCardValor(it.TXNID, it.TRANNO)
                                         }
                                     } else {
                                         dismissProgressDialog()
@@ -3079,8 +3072,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 /* Process Payment */
                 context?.let {
-                    paymentGateway.processPayment(
-                        it,
+                    paymentGateway.processPayment(it,
                         prefProvider.getValue(Constants.VALOR_APP_KEY,""),
                         prefProvider.getValue(Constants.VALOR_APP_ID,""),
                         prefProvider.getValue(Constants.VALOR_EPI,""),
@@ -3091,6 +3083,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         "1",
                         "INV${System.currentTimeMillis()}",
                         amt.toString(),
+                        if (tip_amt>0)tip_amt.toString() else "",
+                        "1",
                         paymentCallback
                     )
                 }
@@ -4014,7 +4008,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     }
 
-    private fun makePaymentCreditCardValor() {
+    private fun makePaymentCreditCardValor(txnid: String?,transactionNumber: String?) {
+        paymentviewModel.valorRefTxnId=txnid
+        paymentviewModel.valorTransactionNumber=transactionNumber
         paymentAmount -= tipAmount
         paymentAmount = MethodUtils.roundOffAmountDouble(paymentAmount)
         paymentType = "Card"
@@ -4366,6 +4362,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
         val myRequest = cartList?.let {
+            txnid?.let {
+                if (RefNumber.isEmpty()){
+                    RefNumber=it
+                }
+            }
+
             paymentviewModel.createOrderRequestForCard(
                 it,
                 subTotalPrice,

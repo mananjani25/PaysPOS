@@ -24,6 +24,7 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import com.epson.epos2.printer.Printer
 import com.epson.eposprint.BatteryStatusChangeEventListener
@@ -34,6 +35,10 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics.Param.PAYMENT_TYPE
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.pays.payments.callbacks.PaymentCallback
+import com.pays.payments.design.PaymentGatewayFactory
+import com.pays.payments.design.PaymentGatewayType
+import com.pays.payments.design.TransactionType
 import com.pays.pos.MainApplication
 import com.pays.pos.R
 import com.pays.pos.aidl.ICallback
@@ -49,6 +54,7 @@ import com.pays.pos.data.model.SplitDetailListModel
 import com.pays.pos.data.model.requestModel.giftCard.response.GiftCardAddValueResponse
 import com.pays.pos.data.model.requestModel.giftCard.response.SellGiftCardResponseModel
 import com.pays.pos.data.model.responseModel.*
+import com.pays.pos.data.model.valor.ValorSuccessResponse
 import com.pays.pos.data.remote.*
 import com.pays.pos.data.remote.Constants.BILLING_ADDRESS
 import com.pays.pos.data.remote.Constants.BLUETOOTH
@@ -281,6 +287,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         isOrderUpdated = false
 
+//        observeValorTipFromCustomerDisplay()
 //        3.3.39
         sunmiFrameworkVersion =
             prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".")
@@ -354,6 +361,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     }
 
+    @Inject
+    lateinit var paymentGatewayFactory: PaymentGatewayFactory
+
     private val tipListViewModel by activityViewModels<TipListViewModel>()
     private val transactionViewModel by viewModels<TransactionViewModel>()
 
@@ -383,9 +393,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
                 )
                 Log.e(TAG, "checkTotalPrice:  ${totalPayableAmount}")
-                var foundGiftCard=dashboardViewModel.currentCartItems.find { it.orderType.equals("GiftCard", ignoreCase = true) }
+                var foundGiftCard = dashboardViewModel.currentCartItems.find {
+                    it.orderType.equals(
+                        "GiftCard",
+                        ignoreCase = true
+                    )
+                }
 
-                if (foundGiftCard==null) {
+                if (foundGiftCard == null) {
                     presentation.showWouldYouLikeToAddTipScreen(
                         tipListViewModel,
                         transactionViewModel,
@@ -397,7 +412,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         true,
                         totalPayableAmount
                     )
-                }else{
+                } else {
                     presentation.showThankyouLayout()
                 }
             }
@@ -450,6 +465,88 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
         })
     }
+
+
+//    private fun observeValorTipFromCustomerDisplay() {
+//        dashboardViewModel.takeTipUsingValor.observe(viewLifecycleOwner,object:Observer<String?>{
+//            override fun onChanged(t: String?) {
+//                t?.let { tipAmount->
+//                    GlobalScope.launch {
+////                        ProgressUtils.dismissProgressDialog()
+//
+//                        val gatewayType = PaymentGatewayType.VALOR
+//                        val paymentGateway = paymentGatewayFactory.create(gatewayType)
+//
+//
+//                        val paymentCallback = object : PaymentCallback {
+//                            override fun onSuccess(transactionId: String) {
+//
+//                                var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
+//                                    transactionId,
+//                                    ValorSuccessResponse::class.java
+//                                )
+//                                transactionJsonResponse.nameValuePairs?.let {
+//                                    if (it.msg != null) {
+//                                        if (it.msg!!.contains(
+//                                                "APPROVED"
+//                                            )
+//                                        ) {
+//                                            paymentViewModel.valorRefTxnId=null
+//                                            paymentViewModel.valorTransactionNumber=null
+//                                            dashboardViewModel.takenTipUsingValor.postValue(Event(transactionViewModel))
+//                                        } else {
+//                                            ProgressUtils.dismissProgressDialog()
+//                                            runOnUiThread(Runnable {
+//                                                AlertUtils.showCustomAlert(
+//                                                    requireContext(),
+//                                                    it.msg
+//                                                )
+//                                            })
+//                                        }
+//                                    }
+//                                }
+//                            }
+//
+//                            override fun onFailure(errorMessage: String) {
+//                                println("Payment Failed: $errorMessage")
+//                                ProgressUtils.dismissProgressDialog()
+//
+//                                runOnUiThread(Runnable {
+//                                    AlertUtils.showCustomAlert(
+//                                        requireContext(),
+//                                        errorMessage
+//                                    )
+//                                })
+//                            }
+//                        }
+//
+//                        paymentViewModel.valorRefTxnId?.let {valorRefTxId->
+//                            context?.let {
+//                                paymentGateway.processPayment(it,
+//                                    prefProvider.getValue(Constants.VALOR_APP_KEY,""),
+//                                    prefProvider.getValue(Constants.VALOR_APP_ID,""),
+//                                    prefProvider.getValue(Constants.VALOR_EPI,""),
+//                                    Constants.VALOR_TIP_ADJUST,
+//                                    TransactionType.TIP_ADJUSTMENT,
+//                                    prefProvider.getValue(Constants.VALOR_CHANNEL_ID,""),
+//                                    "",
+//                                    "",
+//                                    valorRefTxId,
+//                                    tipAmount,
+//                                    "",
+//                                    "",
+//                                    paymentCallback
+//                                )
+//                            }
+//                        }
+//                        /* Process Tip Adjust */
+//
+//                    }
+//                }
+//            }
+//
+//        })
+//    }
 
 
     private fun getKitchenReceiptSettings() {
@@ -9255,6 +9352,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.setValueInt(Constants.ORDER_TYPE_ID, 0)
         viewModelDashBoard.customerCardAmount.value = ""
         viewModelDashBoard.customerCashAmount.value = ""
+        paymentViewModel.valorRefTxnId = null
+        paymentViewModel.valorTransactionNumber = null
         if (isSpilt) {
             if (isDineIn) {
                 val navController = findNavController()

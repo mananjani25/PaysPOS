@@ -60,6 +60,13 @@ import com.google.gson.JsonArray
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
+import com.pays.payments.callbacks.PaymentCallback
+import com.pays.payments.design.PaymentGatewayFactory
+import com.pays.payments.design.PaymentGatewayType
+import com.pays.payments.design.TransactionType
+import com.pays.payments.gateways.dejavoo.DejavooPaymentGateway
+import com.pays.payments.gateways.valor.ValorPaymentGateway
+import com.pays.pos.data.model.valor.ValorSuccessResponse
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -198,9 +205,16 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         }
 
         endTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
-            var fromDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(viewModel.startDate.value).getTime() / 1000
-            var endDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(timeCalculateForStartEndTime(hour, minute, "isend")).getTime() / 1000
-            if (fromDate<=endDate){
+            var fromDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(viewModel.startDate.value)
+                .getTime() / 1000
+            var endDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(
+                timeCalculateForStartEndTime(
+                    hour,
+                    minute,
+                    "isend"
+                )
+            ).getTime() / 1000
+            if (fromDate <= endDate) {
                 val timecalender = Calendar.getInstance()
                 timecalender.set(Calendar.HOUR_OF_DAY, hour)
                 timecalender.set(Calendar.MINUTE, minute)
@@ -217,7 +231,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     ) { _, _ ->
                     }
                 }
-            }else {
+            } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
                     "The end date cannot be earlier than the start date. Please select a valid date range."
@@ -270,7 +284,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
         binding.includeView.txtHome.setOnClickListener {
             if (findNavController().currentDestination?.id == R.id.transactionFragment) {
-                findNavController().navigate(R.id.action_transactionFragment_to_dashboardCategoryNew)            }
+                findNavController().navigate(R.id.action_transactionFragment_to_dashboardCategoryNew)
+            }
         }
 
 
@@ -279,17 +294,27 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
             if (singleTransaction?.paymentType == "Card") {
                 //Add condition according to params i.e magtek or pax data in API response
-                Log.d("RefNum11: ","RefNum ${singleTransaction?.ref_num}")
+                Log.d("RefNum11: ", "RefNum ${singleTransaction?.ref_num}")
                 /*if (singleTransaction?.ref_num.isNullOrEmpty()) {
                     magtekCall(tipAmount)
                 } else {
                     adjustPaxTips()
                 }*/
-                if (singleTransaction?.ref_num.isNullOrEmpty()) {
+                if (prefProvider.getValue(Constants.VALOR_APP_KEY, "").isNotEmpty()) {
+                    adjustValorTips()
+                } else if (singleTransaction?.ref_num.isNullOrEmpty()) {
                     magtekCall(tipAmount)
-                } else if(!singleTransaction?.ref_num.isNullOrEmpty() && prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+                } else if (!singleTransaction?.ref_num.isNullOrEmpty() && prefProvider.getValueboolean(
+                        Constants.IS_PAX_CONNECTED,
+                        false
+                    )
+                ) {
                     adjustPaxTips()
-                } else if(!singleTransaction?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+                } else if (!singleTransaction?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(
+                        Constants.IS_PAX_CONNECTED,
+                        false
+                    )
+                ) {
                     AlertUtils.showCustomAlert(
                         requireContext(),
                         "Please connect to PAX device"
@@ -405,15 +430,16 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             object : AppThreadPool.FinishInMainThreadCallback<PosLink?> {
                 override fun onFinish(result: PosLink?) {
                     posLink = result!!
-                    Log.d("initPOSLink: ","onFinish")
+                    Log.d("initPOSLink: ", "onFinish")
                 }
             })
     }
+
     // get merchant details of PAX device
     private fun getMerchantDataObserver() {
         magtekProViewModel.merchantData.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { response ->
-                Log.d("merchantData: ","merchantData observe")
+                Log.d("merchantData: ", "merchantData observe")
                 val resultCode = response.resultCode
                 val status = response.resultTxt
                 val mID = response.VarValue
@@ -431,12 +457,18 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             }
         }
     }
+
     // Adjust tip on transactions done via PAX
     private fun adjustPaxTips() {
         GlobalScope.launch {
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,FILE_PATH + SettingINI.FILENAME))
-            val tip_amt = (tipAmount*100).toInt()
-            Log.d("Amt: ","tip $tip_amt RefNo ${singleTransaction?.ref_num}")
+            posLink.SetCommSetting(
+                SettingINI.getCommSettingFromFile(
+                    context!!,
+                    FILE_PATH + SettingINI.FILENAME
+                )
+            )
+            val tip_amt = (tipAmount * 100).toInt()
+            Log.d("Amt: ", "tip $tip_amt RefNo ${singleTransaction?.ref_num}")
 
             CoroutineScope(Dispatchers.Main).launch {
                 ProgressUtils.showProgressDialog(requireActivity())
@@ -474,7 +506,12 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     "Payment Details: ",
                     "$ExtData $resultCode $resultTxt $globalUID"
                 )
-                Log.d("Payment Details: ", "$cardLastDigits $approvedAmount $CARDBIN $EDCType $tipAmount ${Gson().toJson(response)}")
+                Log.d(
+                    "Payment Details: ",
+                    "$cardLastDigits $approvedAmount $CARDBIN $EDCType $tipAmount ${
+                        Gson().toJson(response)
+                    }"
+                )
 
                 if (resultCode == "000000") {
                     CoroutineScope(Dispatchers.Main).launch {
@@ -487,15 +524,18 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 } else {
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
-                        AlertUtils.showCustomAlertWithListenerWithOK(requireContext(),resultTxt,object:
-                            DialogInterface.OnClickListener{
-                            override fun onClick(p0: DialogInterface?, p1: Int) {
-                                try {
-                                    p0?.dismiss()
-                                } catch (e: Exception) {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(),
+                            resultTxt,
+                            object :
+                                DialogInterface.OnClickListener {
+                                override fun onClick(p0: DialogInterface?, p1: Int) {
+                                    try {
+                                        p0?.dismiss()
+                                    } catch (e: Exception) {
+                                    }
                                 }
-                            }
-                        })
+                            })
 //                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
                     }
                 }
@@ -528,357 +568,413 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
         }
     }
-    // Update tip in order
-    private fun tipCall(isCard: Boolean) {
-        singleTransaction?.let { viewModel.orderUpdateTip(it.id, tipAmount, isCard) }
-    }
 
-    private fun apiCallTimeSheet() {
-        MethodUtils.hideKeyboard(requireActivity())
-        viewModel.apiCallTimeSheet(
-            currentPage,
-            getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
-            getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
-            getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
-            getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
-            getTipType(binding.includeView.spTipTypes.selectedItemPosition),
-            getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
+    @Inject
+    lateinit var paymentGatewayFactory:PaymentGatewayFactory
 
-        )
+    private fun adjustValorTips() {
 
-    }
+        GlobalScope.launch {
+            val tip_amt = (tipAmount * 100).toInt()
 
-    // validate time range filter
-    private fun differnceTrue(date1: String, date2: String?): Long {
-        var dateType1: Date
-        var dateType2: Date
-        var daydifference = "0".toLong()
-//        11/30/2021 09:40 AM
-        try {
-            var dates = SimpleDateFormat("MM/dd/yyyy")
-            dateType1 = dates.parse(date1.substringBefore(" "))
-            dateType2 = dates.parse(date2?.substringBefore(" "))
-            var differencedate = abs(dateType1.time - dateType2.time)
-            daydifference = differencedate / (24 * 60 * 60 * 1000)
-            Log.d("yash", "differnceTrue: " + daydifference)
-            return daydifference
-        } catch (e: Exception) {
-        }
-        return daydifference
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        prefProvider = PrefProvider(requireActivity())
-        viewModel.setCurrentDate(
-            myCalendar
-        )
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        searchFilter()
-    }
-
-    fun timeCalculateForStartEndTime(hour: Int, minute: Int, isStart: String): String {
-        var timestring = ""
-        var hoursfinal: Int = 0
-        if ((hour == 12 && minute > 0) || (hour > 12 && minute > 0) || (hour > 12 && minute == 0)) {
-            if (hour == 12) {
-                hoursfinal = hour
-            } else {
-                hoursfinal = hour - 12
+            withContext(Dispatchers.Main) {
+                ProgressUtils.showProgressDialog(requireActivity())
             }
-            if (hoursfinal < 10) {
-                if (minute < 10) {
-                    timestring = "0$hoursfinal:0$minute PM"
-                } else {
-                    timestring = "0$hoursfinal:$minute PM"
-                }
-            } else {
-                if (minute < 10) {
-                    timestring = "$hoursfinal:0$minute PM"
-                } else {
-                    timestring = "$hoursfinal:$minute PM"
-                }
-            }
-        } else {
-            if (hour == 0) {
-                if (minute < 10) {
-                    timestring = "${hour.plus(12)}:0$minute AM"
-                } else {
-                    timestring = "${hour.plus(12)}:$minute AM"
-                }
-            } else {
-                if (hour < 10) {
-                    if (minute < 10) {
-                        timestring = "0$hour:0$minute AM"
-                    } else {
-                        timestring = "0$hour:$minute AM"
-                    }
-                } else {
-                    if (minute < 10) {
-                        timestring = "$hour:0$minute AM"
-                    } else {
-                        timestring = "$hour:$minute AM"
+
+            val gatewayType = PaymentGatewayType.VALOR
+            val paymentGateway = paymentGatewayFactory.create(gatewayType)
+
+
+            val paymentCallback = object : PaymentCallback {
+                override fun onSuccess(transactionId: String) {
+
+                    var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
+                        transactionId,
+                        ValorSuccessResponse::class.java
+                    )
+                    transactionJsonResponse.nameValuePairs?.let {
+                        if (it.msg != null) {
+                            if (it.msg!!.contains(
+                                    "APPROVED"
+                                )
+                            ) {
+                                tipCall(true)
+                            } else {
+                                ProgressUtils.dismissProgressDialog()
+                                /* runOnUiThread(Runnable {
+                                     AlertUtils.showCustomAlert(
+                                         requireContext(),
+                                         it.msg
+                                     )
+                                 })*/
+                            }
+                        }
                     }
                 }
+
+                override fun onFailure(errorMessage: String) {
+                    println("Payment Failed: $errorMessage")
+
+                    ProgressUtils.dismissProgressDialog()
+
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(),
+                        errorMessage,
+                        object :
+                            DialogInterface.OnClickListener {
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                try {
+                                    p0?.dismiss()
+                                } catch (e: Exception) {
+                                }
+                            }
+                        })
+                }
             }
 
-        }
-
-        val myFormat = "MM/dd/yyyy" //In which you need put here
-        val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
-        var startDatestring = ""
-        if (isStart == "isstart") {
-            startDatestring = sdf.format(myCalendar.time)
-        } else {
-            startDatestring = sdf.format(myCalendar1.time)
-        }
-        return "$startDatestring $timestring"
-    }
-
-    private fun startDatePickerObserver() {
-        viewModel.startDateSelection.observe(requireActivity()) { event ->
-            event.getContentIfNotHandled()?.let {
-                currentPage = 1
-                val dialog = DatePickerDialog(
-                    requireActivity(),
-                    android.R.style.Theme_Material_Light_Dialog,
-                    startDate,
-                    myCalendar
-                        .get(Calendar.YEAR),
-                    myCalendar.get(Calendar.MONTH),
-                    myCalendar.get(Calendar.DAY_OF_MONTH)
-
-                )
-                dialog.datePicker.maxDate = Date().time
-                dialog.show()
+            singleTransaction?.ref_num.let { valorRefTxId ->
+                context?.let {
+                    paymentGateway.processPayment(
+                        context = it,
+                        apiKey = prefProvider.getValue(Constants.VALOR_APP_KEY, ""),
+                        appID = prefProvider.getValue(Constants.VALOR_APP_ID, ""),
+                        epi = prefProvider.getValue(Constants.VALOR_EPI, ""),
+                        endpoint = Constants.VALOR_TIP_ADJUST,
+                        txnType = TransactionType.TIP_ADJUSTMENT,
+                        channelId = prefProvider.getValue(Constants.VALOR_CHANNEL_ID, ""),
+                        reqTxnId = valorRefTxId.toString(),
+                        tipAmount = tipAmount.toString(),
+                        callback = paymentCallback,
+                        amount = ""
+                    )
+                }
             }
+            /* Process Tip Adjust */
 
         }
     }
 
-    private fun endDatePickerObserver() {
-        viewModel.endDateSelection.observe(requireActivity()) { event ->
-            event.getContentIfNotHandled()?.let {
-                currentPage = 1
-                val dialog = DatePickerDialog(
-                    requireActivity(),
-                    android.R.style.Theme_Material_Light_Dialog,
-                    endDate,
-                    myCalendar1
-                        .get(Calendar.YEAR),
-                    myCalendar1.get(Calendar.MONTH),
-                    myCalendar1.get(Calendar.DAY_OF_MONTH)
-
-                )
-                dialog.datePicker.maxDate = Date().time
-                dialog.show()
-            }
+        // Update tip in order
+        private fun tipCall(isCard: Boolean) {
+            singleTransaction?.let { viewModel.orderUpdateTip(it.id, tipAmount, isCard) }
         }
-    }
 
+        private fun apiCallTimeSheet() {
+            MethodUtils.hideKeyboard(requireActivity())
+            viewModel.apiCallTimeSheet(
+                currentPage,
+                getTerminalId(binding.includeView.spTerminals.selectedItemPosition).toString(),
+                getRoleId(binding.includeView.spRoles.selectedItemPosition).toString(),
+                getEmployeeId(binding.includeView.spEmployees.selectedItemPosition).toString(),
+                getOrderId(binding.includeView.spOrders.selectedItemPosition).toString(),
+                getTipType(binding.includeView.spTipTypes.selectedItemPosition),
+                getPaymentType(binding.includeView.spTransactionTypes.selectedItemPosition)
 
-    private fun setUpRoleSpinnerAdapter(teamRoleList: ArrayList<String>) {
-        val spinnerAdapter = ArrayAdapter(
-            requireActivity(),
-            R.layout.row_spinner,
-            teamRoleList
-        )
-
-        spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
-        binding.includeView.spRoles.adapter = spinnerAdapter
-
-    }
-
-    private fun setUpEmployeeSpinnerAdapter(employeeList: ArrayList<String>) {
-        val spinnerAdapter = ArrayAdapter(
-            requireActivity(),
-            R.layout.row_spinner,
-            employeeList
-        )
-
-        spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
-        binding.includeView.spEmployees.adapter = spinnerAdapter
-
-    }
-
-    private fun setUpTerminalSpinnerAdapter(terminalList: ArrayList<String>) {
-        val spinnerAdapter = ArrayAdapter(
-            requireActivity(),
-            R.layout.row_spinner,
-            terminalList
-        )
-
-        spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
-        binding.includeView.spTerminals.adapter = spinnerAdapter
-
-    }
-
-    private fun setUpOrderTypeSpinnerAdapter(orderTypeList: ArrayList<String>) {
-        val spinnerAdapter = ArrayAdapter(
-            requireActivity(),
-            R.layout.row_spinner,
-            orderTypeList
-        )
-
-        spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
-        binding.includeView.spOrders.adapter = spinnerAdapter
-
-    }
-
-    private fun setUpTipTypeSpinnerAdapter() {
-
-        tipTypeList.clear()
-        tipTypeList.add(getString(R.string.tv_all_tip_types))
-        tipTypeList.add(getString(R.string.tv_adjusted))
-        tipTypeList.add(getString(R.string.tv_unadjusted))
-
-        val spinnerAdapter = ArrayAdapter(
-            requireActivity(),
-            R.layout.row_spinner,
-            tipTypeList
-        )
-
-        spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
-        binding.includeView.spTipTypes.adapter = spinnerAdapter
-
-    }
-
-    private fun setUpPaymentTypeSpinnerAdapter() {
-
-        paymentTypeList.clear()
-        paymentTypeList.add(getString(R.string.tv_all_payment_types))
-        paymentTypeList.add(getString(R.string.tv_cash_payment))
-        paymentTypeList.add(getString(R.string.tv_card_payment))
-        paymentTypeList.add(getString(R.string.tv_giftcard_payment))
-        paymentTypeList.add(getString(R.string.external))
-
-        val spinnerAdapter = ArrayAdapter(
-            requireActivity(),
-            R.layout.row_spinner,
-            paymentTypeList
-        )
-
-        spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
-        binding.includeView.spTransactionTypes.adapter = spinnerAdapter
-
-    }
-
-    private fun getTerminalId(position: Int): Int? {
-        return if (this::terminalListGlobal.isInitialized) {
-
-            if (position == -1) {
-                terminalListGlobal?.get(0)?.id
-            } else {
-                terminalListGlobal?.get(position)?.id
-            }
-
-        } else {
-            -1
-        }
-    }
-
-    private fun getRoleId(position: Int): Int? {
-        return if (this::teamRoleListGlobal.isInitialized) {
-
-            if (position == -1) {
-                teamRoleListGlobal?.get(0)?.id
-            } else {
-                teamRoleListGlobal?.get(position)?.id
-            }
-
-        } else {
-            -1
-        }
-    }
-
-    private fun getEmployeeId(position: Int): Int? {
-        return if (this::teamEmployeeListGlobal.isInitialized) {
-
-            if (position == -1) {
-                teamEmployeeListGlobal?.get(0)?.id
-            } else {
-                teamEmployeeListGlobal?.get(position)?.id
-            }
-        } else {
-            -1
-        }
-    }
-
-    private fun getOrderId(position: Int): Int? {
-        return if (this::orderTypeListGlobal.isInitialized) {
-
-            if (position == -1) {
-                orderTypeListGlobal?.get(0)?.id
-            } else {
-                orderTypeListGlobal?.get(position)?.id
-            }
-
-        } else {
-            -1
-        }
-    }
-
-    private fun getTipType(position: Int): String {
-        return tipTypeList[position]
-    }
-
-    private fun getPaymentType(position: Int): String {
-        return paymentTypeList[position].toString()
-    }
-
-
-    private fun setUpRecyclerView() {
-        binding.rvTeamTimeSheet.addItemDecoration(
-            DividerItemDecoration(
-                context,
-                LinearLayoutManager.VERTICAL
             )
-        )
 
-        transactionAdapter = TransactionAdapter(viewModel,prefProvider)
-        transactionAdapter.setCallback(this)
-        binding.rvTeamTimeSheet.adapter = transactionAdapter
+        }
 
+        // validate time range filter
+        private fun differnceTrue(date1: String, date2: String?): Long {
+            var dateType1: Date
+            var dateType2: Date
+            var daydifference = "0".toLong()
+//        11/30/2021 09:40 AM
+            try {
+                var dates = SimpleDateFormat("MM/dd/yyyy")
+                dateType1 = dates.parse(date1.substringBefore(" "))
+                dateType2 = dates.parse(date2?.substringBefore(" "))
+                var differencedate = abs(dateType1.time - dateType2.time)
+                daydifference = differencedate / (24 * 60 * 60 * 1000)
+                Log.d("yash", "differnceTrue: " + daydifference)
+                return daydifference
+            } catch (e: Exception) {
+            }
+            return daydifference
+        }
 
-    }
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
+            prefProvider = PrefProvider(requireActivity())
+            viewModel.setCurrentDate(
+                myCalendar
+            )
+        }
 
-    private fun getEmployeesTimeSheetObserver() {
-        viewModel.data.observe(viewLifecycleOwner) { event ->
-            event.getContentIfNotHandled()?.let { timeSheet ->
-                if (timeSheet.data.payments.isNotEmpty()) {
-                    binding.txtNodata.visibility = View.GONE
-                    binding.rvTeamTimeSheet.visibility = View.VISIBLE
-                    // employeeTimeSheet.addAll(timeSheet.data.payments)
-                    TOTAL_PAGES = timeSheet.data.pagination.maxPageSize.toInt()
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
+            searchFilter()
+        }
 
-                    transactionAdapter.showLoading(false)
-
-                    if (checkFilter) {
-                        checkFilter = false
-                        transactionAdapter.clear()
-                    }
-                    transactionAdapter.addAll(timeSheet.data.payments)
-
-                    isLoading = false
-                    if (currentPage != TOTAL_PAGES) {
-
-                        transactionAdapter.showLoading(true)
-                    }
-
-
+        fun timeCalculateForStartEndTime(hour: Int, minute: Int, isStart: String): String {
+            var timestring = ""
+            var hoursfinal: Int = 0
+            if ((hour == 12 && minute > 0) || (hour > 12 && minute > 0) || (hour > 12 && minute == 0)) {
+                if (hour == 12) {
+                    hoursfinal = hour
                 } else {
-                    LogUtil.logE(TAG, "itemCount ${transactionAdapter.itemCount}")
-                    /* binding.rvTeamTimeSheet.visibility = View.GONE
-                     binding.txtNodata.visibility = View.VISIBLE
-                     binding.txtNodata.text = timeSheet.message*/
-                    if (transactionAdapter.itemCount == 0) {
-                        binding.rvTeamTimeSheet.visibility = View.GONE
-                        binding.txtNodata.visibility = View.VISIBLE
-                        binding.txtNodata.text = timeSheet.message.toString()
+                    hoursfinal = hour - 12
+                }
+                if (hoursfinal < 10) {
+                    if (minute < 10) {
+                        timestring = "0$hoursfinal:0$minute PM"
                     } else {
+                        timestring = "0$hoursfinal:$minute PM"
+                    }
+                } else {
+                    if (minute < 10) {
+                        timestring = "$hoursfinal:0$minute PM"
+                    } else {
+                        timestring = "$hoursfinal:$minute PM"
+                    }
+                }
+            } else {
+                if (hour == 0) {
+                    if (minute < 10) {
+                        timestring = "${hour.plus(12)}:0$minute AM"
+                    } else {
+                        timestring = "${hour.plus(12)}:$minute AM"
+                    }
+                } else {
+                    if (hour < 10) {
+                        if (minute < 10) {
+                            timestring = "0$hour:0$minute AM"
+                        } else {
+                            timestring = "0$hour:$minute AM"
+                        }
+                    } else {
+                        if (minute < 10) {
+                            timestring = "$hour:0$minute AM"
+                        } else {
+                            timestring = "$hour:$minute AM"
+                        }
+                    }
+                }
+
+            }
+
+            val myFormat = "MM/dd/yyyy" //In which you need put here
+            val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
+            var startDatestring = ""
+            if (isStart == "isstart") {
+                startDatestring = sdf.format(myCalendar.time)
+            } else {
+                startDatestring = sdf.format(myCalendar1.time)
+            }
+            return "$startDatestring $timestring"
+        }
+
+        private fun startDatePickerObserver() {
+            viewModel.startDateSelection.observe(requireActivity()) { event ->
+                event.getContentIfNotHandled()?.let {
+                    currentPage = 1
+                    val dialog = DatePickerDialog(
+                        requireActivity(),
+                        android.R.style.Theme_Material_Light_Dialog,
+                        startDate,
+                        myCalendar
+                            .get(Calendar.YEAR),
+                        myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)
+
+                    )
+                    dialog.datePicker.maxDate = Date().time
+                    dialog.show()
+                }
+
+            }
+        }
+
+        private fun endDatePickerObserver() {
+            viewModel.endDateSelection.observe(requireActivity()) { event ->
+                event.getContentIfNotHandled()?.let {
+                    currentPage = 1
+                    val dialog = DatePickerDialog(
+                        requireActivity(),
+                        android.R.style.Theme_Material_Light_Dialog,
+                        endDate,
+                        myCalendar1
+                            .get(Calendar.YEAR),
+                        myCalendar1.get(Calendar.MONTH),
+                        myCalendar1.get(Calendar.DAY_OF_MONTH)
+
+                    )
+                    dialog.datePicker.maxDate = Date().time
+                    dialog.show()
+                }
+            }
+        }
+
+
+        private fun setUpRoleSpinnerAdapter(teamRoleList: ArrayList<String>) {
+            val spinnerAdapter = ArrayAdapter(
+                requireActivity(),
+                R.layout.row_spinner,
+                teamRoleList
+            )
+
+            spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
+            binding.includeView.spRoles.adapter = spinnerAdapter
+
+        }
+
+        private fun setUpEmployeeSpinnerAdapter(employeeList: ArrayList<String>) {
+            val spinnerAdapter = ArrayAdapter(
+                requireActivity(),
+                R.layout.row_spinner,
+                employeeList
+            )
+
+            spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
+            binding.includeView.spEmployees.adapter = spinnerAdapter
+
+        }
+
+        private fun setUpTerminalSpinnerAdapter(terminalList: ArrayList<String>) {
+            val spinnerAdapter = ArrayAdapter(
+                requireActivity(),
+                R.layout.row_spinner,
+                terminalList
+            )
+
+            spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
+            binding.includeView.spTerminals.adapter = spinnerAdapter
+
+        }
+
+        private fun setUpOrderTypeSpinnerAdapter(orderTypeList: ArrayList<String>) {
+            val spinnerAdapter = ArrayAdapter(
+                requireActivity(),
+                R.layout.row_spinner,
+                orderTypeList
+            )
+
+            spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
+            binding.includeView.spOrders.adapter = spinnerAdapter
+
+        }
+
+        private fun setUpTipTypeSpinnerAdapter() {
+
+            tipTypeList.clear()
+            tipTypeList.add(getString(R.string.tv_all_tip_types))
+            tipTypeList.add(getString(R.string.tv_adjusted))
+            tipTypeList.add(getString(R.string.tv_unadjusted))
+
+            val spinnerAdapter = ArrayAdapter(
+                requireActivity(),
+                R.layout.row_spinner,
+                tipTypeList
+            )
+
+            spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
+            binding.includeView.spTipTypes.adapter = spinnerAdapter
+
+        }
+
+        private fun setUpPaymentTypeSpinnerAdapter() {
+
+            paymentTypeList.clear()
+            paymentTypeList.add(getString(R.string.tv_all_payment_types))
+            paymentTypeList.add(getString(R.string.tv_cash_payment))
+            paymentTypeList.add(getString(R.string.tv_card_payment))
+            paymentTypeList.add(getString(R.string.tv_giftcard_payment))
+            paymentTypeList.add(getString(R.string.external))
+
+            val spinnerAdapter = ArrayAdapter(
+                requireActivity(),
+                R.layout.row_spinner,
+                paymentTypeList
+            )
+
+            spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
+            binding.includeView.spTransactionTypes.adapter = spinnerAdapter
+
+        }
+
+        private fun getTerminalId(position: Int): Int? {
+            return if (this::terminalListGlobal.isInitialized) {
+
+                if (position == -1) {
+                    terminalListGlobal?.get(0)?.id
+                } else {
+                    terminalListGlobal?.get(position)?.id
+                }
+
+            } else {
+                -1
+            }
+        }
+
+        private fun getRoleId(position: Int): Int? {
+            return if (this::teamRoleListGlobal.isInitialized) {
+
+                if (position == -1) {
+                    teamRoleListGlobal?.get(0)?.id
+                } else {
+                    teamRoleListGlobal?.get(position)?.id
+                }
+
+            } else {
+                -1
+            }
+        }
+
+        private fun getEmployeeId(position: Int): Int? {
+            return if (this::teamEmployeeListGlobal.isInitialized) {
+
+                if (position == -1) {
+                    teamEmployeeListGlobal?.get(0)?.id
+                } else {
+                    teamEmployeeListGlobal?.get(position)?.id
+                }
+            } else {
+                -1
+            }
+        }
+
+        private fun getOrderId(position: Int): Int? {
+            return if (this::orderTypeListGlobal.isInitialized) {
+
+                if (position == -1) {
+                    orderTypeListGlobal?.get(0)?.id
+                } else {
+                    orderTypeListGlobal?.get(position)?.id
+                }
+
+            } else {
+                -1
+            }
+        }
+
+        private fun getTipType(position: Int): String {
+            return tipTypeList[position]
+        }
+
+        private fun getPaymentType(position: Int): String {
+            return paymentTypeList[position].toString()
+        }
+
+
+        private fun setUpRecyclerView() {
+            binding.rvTeamTimeSheet.addItemDecoration(
+                DividerItemDecoration(
+                    context,
+                    LinearLayoutManager.VERTICAL
+                )
+            )
+
+            transactionAdapter = TransactionAdapter(viewModel, prefProvider)
+            transactionAdapter.setCallback(this)
+            binding.rvTeamTimeSheet.adapter = transactionAdapter
+
+
+        }
+
+        private fun getEmployeesTimeSheetObserver() {
+            viewModel.data.observe(viewLifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let { timeSheet ->
+                    if (timeSheet.data.payments.isNotEmpty()) {
                         binding.txtNodata.visibility = View.GONE
                         binding.rvTeamTimeSheet.visibility = View.VISIBLE
                         // employeeTimeSheet.addAll(timeSheet.data.payments)
@@ -898,686 +994,722 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             transactionAdapter.showLoading(true)
                         }
 
-                    }
-                }
 
-
-            }
-        }
-
-    }
-
-    private fun getRoleListObserver() {
-        viewModel.getTeamRoleList.observe(viewLifecycleOwner) {
-            it?.let { resource ->
-                when (resource.status) {
-                    Status.SUCCESS -> {
-                        ProgressUtils.dismissProgressDialog()
-                        resource.data?.let { roleList ->
-
-                            teamRoleListGlobal = roleList as ArrayList<TeamRole>
-                            val isPresent = teamRoleListGlobal.any { it.name == "All Roles" }
-
-                            if (!isPresent) {
-                                // teamRoleListGlobal.removeAt(0)
-                                teamRoleListGlobal.add(0, TeamRole(-1, "All Roles", null, null))
-                            }
-                            val roleName = teamRoleListGlobal.map { it.name }
-
-                            setUpRoleSpinnerAdapter(roleName as ArrayList<String>)
-
-                            Log.d("callapi", "::callapi")
-
-                        }
-
-                    }
-                    Status.ERROR -> {
-                        ProgressUtils.dismissProgressDialog()
-                        binding.root.showAlert(resource.message)
-                    }
-                    Status.LOADING -> {
-                        try {
-                            ProgressUtils.showProgressDialog(requireActivity())
-                        }catch (e:Exception) {
-                            e.printStackTrace()
-                        }
-
-                    }
-                }
-            }
-        }
-    }
-
-    private fun loadTeams() {
-
-        viewModel.employeeData.observe(viewLifecycleOwner) {
-            it?.let { resource ->
-                when (resource.status) {
-                    Status.SUCCESS -> {
-                        ProgressUtils.dismissProgressDialog()
-                        resource.data?.let { employeeList ->
-                            teamEmployeeListGlobal = employeeList as ArrayList<Employee>
-
-                            val isPresent =
-                                teamEmployeeListGlobal.any { it.name == "All Employees" }
-                            if (!isPresent) {
-                                //  teamEmployeeListGlobal.removeAt(0)
-                                teamEmployeeListGlobal.add(
-                                    0,
-                                    Employee(
-                                        "",
-                                        "",
-                                        -1,
-                                        false,
-                                        "",
-                                        "",
-                                        -1,
-                                        "All Employees",
-                                        "",
-                                        "",
-                                        "",
-                                        false,
-                                        -1,
-                                        "",
-                                        -1,
-                                        0.0,
-                                        false
-                                    )
-                                )
-                            }
-                            val roleName = teamEmployeeListGlobal.map { it.name }
-
-                            setUpEmployeeSpinnerAdapter(roleName as ArrayList<String>)
-                        }
-                    }
-                    Status.ERROR -> {
-                        ProgressUtils.dismissProgressDialog()
-                        binding.root.showAlert(resource.message)
-
-                    }
-                    Status.LOADING -> {
-                        try{
-                            ProgressUtils.showProgressDialog(requireActivity())
-                        }catch (e:Exception) {
-                            e.printStackTrace()
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun loadTerminals() {
-
-        viewModel.getTerminalListDatabse.observe(viewLifecycleOwner) {
-            it?.let { resource ->
-                when (resource.status) {
-                    Status.SUCCESS -> {
-                        ProgressUtils.dismissProgressDialog()
-                        resource.data?.let { terminalList ->
-                            terminalListGlobal =
-                                terminalList as ArrayList<VenueDetailsResponse.Data.Terminal>
-
-                            val isPresent = terminalListGlobal.any { it.name == "All Terminals" }
-
-                            if (!isPresent) {
-                                //    terminalListGlobal.removeAt(0)
-                                terminalListGlobal.add(
-                                    0,
-                                    VenueDetailsResponse.Data.Terminal(
-                                        "",
-                                        -1,
-                                        -1,
-                                        false,
-                                        "All Terminals",
-                                        "",
-                                        ""
-                                    )
-                                )
-                            }
-
-                            val roleName = terminalListGlobal.map { it.name }
-
-                            setUpTerminalSpinnerAdapter(roleName as ArrayList<String>)
-
-                        }
-                    }
-                    Status.ERROR -> {
-                        ProgressUtils.dismissProgressDialog()
-                        binding.root.showAlert(resource.message)
-
-                    }
-                    Status.LOADING -> {
-
-                        try{
-                            ProgressUtils.showProgressDialog(requireActivity())
-                        }catch (e:Exception) {
-                            e.printStackTrace()
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun getOrderType() {
-
-        viewModel.orderTypes.observe(viewLifecycleOwner) {
-            it?.let { resource ->
-                when (resource.status) {
-                    Status.SUCCESS -> {
-                        ProgressUtils.dismissProgressDialog()
-                        resource.data?.let { terminalList ->
-                            orderTypeListGlobal =
-                                terminalList as ArrayList<TbOrderType>
-
-                            val isPresent = orderTypeListGlobal.any { it.name == "All Orders" }
-
-                            if (!isPresent) {
-                                //   orderTypeListGlobal.removeAt(0)
-                                orderTypeListGlobal.add(
-                                    0,
-                                    TbOrderType("", -1, false, -1, "All Orders", "", -1, "")
-                                )
-                            }
-                            val roleName = orderTypeListGlobal.map { it.name }
-
-                            setUpOrderTypeSpinnerAdapter(roleName as ArrayList<String>)
-
-                        }
-                    }
-                    Status.ERROR -> {
-                        ProgressUtils.dismissProgressDialog()
-                        binding.root.showAlert(resource.message)
-
-                    }
-                    Status.LOADING -> {
-                        try{
-                            ProgressUtils.showProgressDialog(requireActivity())
-                        }catch (e:Exception) {
-                            e.printStackTrace()
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-
-    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-
-        if (spinnerTouched) {
-            currentPage = 1
-            checkFilter = true
-
-            transactionAdapter.clear()
-            apiCallTimeSheet()
-        }
-        spinnerTouched = false
-    }
-
-    override fun onNothingSelected(parent: AdapterView<*>?) {
-    }
-
-    private fun backPressManage() {
-        val navController = findNavController()
-        navController.previousBackStackEntry?.savedStateHandle?.set(
-            Constants.KEY,
-            Constants.TEAM_MEMBER
-        )
-        navController.popBackStack()
-    }
-
-    private fun setupSnackbar() =
-        binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
-
-    private fun observeShowProgress() {
-
-        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
-            event.getContentIfNotHandled()?.let {
-                if (currentPage == 1) {
-                    if (it) {
-                        ProgressUtils.showProgressDialog(requireActivity())
                     } else {
-                        ProgressUtils.dismissProgressDialog()
+                        LogUtil.logE(TAG, "itemCount ${transactionAdapter.itemCount}")
+                        /* binding.rvTeamTimeSheet.visibility = View.GONE
+                         binding.txtNodata.visibility = View.VISIBLE
+                         binding.txtNodata.text = timeSheet.message*/
+                        if (transactionAdapter.itemCount == 0) {
+                            binding.rvTeamTimeSheet.visibility = View.GONE
+                            binding.txtNodata.visibility = View.VISIBLE
+                            binding.txtNodata.text = timeSheet.message.toString()
+                        } else {
+                            binding.txtNodata.visibility = View.GONE
+                            binding.rvTeamTimeSheet.visibility = View.VISIBLE
+                            // employeeTimeSheet.addAll(timeSheet.data.payments)
+                            TOTAL_PAGES = timeSheet.data.pagination.maxPageSize.toInt()
+
+                            transactionAdapter.showLoading(false)
+
+                            if (checkFilter) {
+                                checkFilter = false
+                                transactionAdapter.clear()
+                            }
+                            transactionAdapter.addAll(timeSheet.data.payments)
+
+                            isLoading = false
+                            if (currentPage != TOTAL_PAGES) {
+
+                                transactionAdapter.showLoading(true)
+                            }
+
+                        }
+                    }
+
+
+                }
+            }
+
+        }
+
+        private fun getRoleListObserver() {
+            viewModel.getTeamRoleList.observe(viewLifecycleOwner) {
+                it?.let { resource ->
+                    when (resource.status) {
+                        Status.SUCCESS -> {
+                            ProgressUtils.dismissProgressDialog()
+                            resource.data?.let { roleList ->
+
+                                teamRoleListGlobal = roleList as ArrayList<TeamRole>
+                                val isPresent = teamRoleListGlobal.any { it.name == "All Roles" }
+
+                                if (!isPresent) {
+                                    // teamRoleListGlobal.removeAt(0)
+                                    teamRoleListGlobal.add(0, TeamRole(-1, "All Roles", null, null))
+                                }
+                                val roleName = teamRoleListGlobal.map { it.name }
+
+                                setUpRoleSpinnerAdapter(roleName as ArrayList<String>)
+
+                                Log.d("callapi", "::callapi")
+
+                            }
+
+                        }
+                        Status.ERROR -> {
+                            ProgressUtils.dismissProgressDialog()
+                            binding.root.showAlert(resource.message)
+                        }
+                        Status.LOADING -> {
+                            try {
+                                ProgressUtils.showProgressDialog(requireActivity())
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+
+                        }
                     }
                 }
             }
         }
 
-    }
+        private fun loadTeams() {
 
+            viewModel.employeeData.observe(viewLifecycleOwner) {
+                it?.let { resource ->
+                    when (resource.status) {
+                        Status.SUCCESS -> {
+                            ProgressUtils.dismissProgressDialog()
+                            resource.data?.let { employeeList ->
+                                teamEmployeeListGlobal = employeeList as ArrayList<Employee>
 
-    private fun navigate() {
-        viewModel.transactionDetails.observe(viewLifecycleOwner) { event ->
-            event.getContentIfNotHandled()?.let {
-
-                if (!it.payableType.equals("Invoice", true)
-                    && !it.payableType.equals(
-                        "GiftCard",
-                        true
-                    )
-                    &&
-                    !it.payableType.equals("GiftCardAmountTab", true)
-                ) {
-                    val bundle = Bundle().apply {
-                        putInt("orderId", it.orderDetails.id)
-                        putInt("paymentId", it.id)
-                        putBoolean("isFromTrans", true)
-                        putInt(
-                            "selectedorderType",
-                            binding.includeView.spOrders.selectedItemPosition
-                        )
-                        putInt(
-                            "selectedtransactionType",
-                            binding.includeView.spTransactionTypes.selectedItemPosition
-                        )
-                        putInt(
-                            "selectedroleType",
-                            binding.includeView.spRoles.selectedItemPosition
-                        )
-                        putInt(
-                            "selectedemployeeType",
-                            binding.includeView.spEmployees.selectedItemPosition
-                        )
-                        putInt(
-                            "selectedterminalType",
-                            binding.includeView.spTerminals.selectedItemPosition
-                        )
-                    }
-
-
-                    if (findNavController().currentDestination?.id == R.id.transactionFragment) {
-                        findNavController().navigate(
-                            R.id.action_transactionFragment_to_transactionDetailsFragment,
-                            bundle
-                        )
-                    }
-                }
-            }
-        }
-
-    }
-
-    private fun orderUpdateTips() {
-        viewModel.data1.observe(viewLifecycleOwner) { event ->
-            event.getContentIfNotHandled()?.let {
-
-                binding.root.showAlert(it.message)
-
-            }
-        }
-
-        viewModel.data2.observe(viewLifecycleOwner) { event ->
-            event.getContentIfNotHandled()?.let {
-
-                transactionAdapter.updateTip(selectedPos, it)
-            }
-        }
-
-    }
-
-    override fun onItemClickListener(view: View?, pos: Int) {
-
-        selectedPos = pos
-        singleTransaction = transactionAdapter.getItem(pos)
-        if (!singleTransaction?.payableType.equals(
-                "GiftCard",
-                true
-            ) && !singleTransaction?.payableType.equals(
-                "Invoice", true
-            ) &&
-            !singleTransaction?.payableType.equals(
-                "GiftCardAmountTab", true
-            )
-        ) {
-
-
-            val bundle = Bundle()
-            bundle.putDouble("totalTip", singleTransaction!!.tips)
-            bundle.putBoolean("isFromTransaction", true)
-            singleTransaction?.amount?.let { bundle.putDouble("totalPrice", it) }
-            findNavController().navigate(
-                R.id.action_transactionFragment_to_addTipsDialog,
-                bundle
-            )
-        }
-
-
-    }
-
-    private fun magtekCall(refundAmount: Double) {
-        if (singleTransaction?.orderDetails?.orderType == "OnlineWebOrder") {
-            val model = Gson().fromJson(
-                singleTransaction?.magensaResponse,
-                MagtekOnlineOrderRefundResponse::class.java
-            )
-            val jsonArray: JsonArray?
-
-            when {
-
-                Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
-
-                    // commented by Mansi for task > Tip to be captured through RAPID CONNECT
-                    /*val amount = refundAmount
-
-                    if (model != null) {
-                        jsonArray =
-                            model.transactionOutput?.token?.let { it1 ->
-                                amount.times(100).let {
-                                    magtekRequestUtils.processTokenFirstData(
-                                        it,
-                                        it1,
-                                        model.customerTransactionID ?: "",
-                                        model.transactionOutput.transactionOutputDetails[0].value,
-                                        Constants.CAPTURE
+                                val isPresent =
+                                    teamEmployeeListGlobal.any { it.name == "All Employees" }
+                                if (!isPresent) {
+                                    //  teamEmployeeListGlobal.removeAt(0)
+                                    teamEmployeeListGlobal.add(
+                                        0,
+                                        Employee(
+                                            "",
+                                            "",
+                                            -1,
+                                            false,
+                                            "",
+                                            "",
+                                            -1,
+                                            "All Employees",
+                                            "",
+                                            "",
+                                            "",
+                                            false,
+                                            -1,
+                                            "",
+                                            -1,
+                                            0.0,
+                                            false
+                                        )
                                     )
                                 }
+                                val roleName = teamEmployeeListGlobal.map { it.name }
+
+                                setUpEmployeeSpinnerAdapter(roleName as ArrayList<String>)
                             }
-
-                        networkCall(jsonArray, 0)
-                    }*/
-                    tipCall(true)
-                }
-
-                // not support CAPTURE
-                Constants.ELAVON_GATEWAY == magtekRequestUtils.gatewayName() -> {
-
-                    jsonArray =
-                        model.transactionOutput?.token?.let { it1 ->
-                            magtekRequestUtils.processTokenElavon(
-                                (refundAmount * 100),
-                                it1,
-                                model.customerTransactionID ?: "",
-                                model.transactionOutput.transactionOutputDetails[0].value
-
-                            )
                         }
+                        Status.ERROR -> {
+                            ProgressUtils.dismissProgressDialog()
+                            binding.root.showAlert(resource.message)
 
-                    networkCall(jsonArray, 0)
-                }
-
-                Constants.EPX_GATEWAY == magtekRequestUtils.gatewayName() -> {
-
-                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                            singleTransaction?.amount?.times(100)?.let {
-                            magtekRequestUtils.processReferenceIDEPXForce(
-                                it,
-                                model.customerTransactionID ?: "", it1, Constants.CAPTURE,
-                                (tipAmount * 100).toString()
-                            )
                         }
-                    }
-                    networkCall(jsonArray, 1)
-                }
-
-                Constants.VANIT_EXORESS_GATEWAY == magtekRequestUtils.gatewayName() -> {
-
-                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                        magtekRequestUtils.processReferenceIDCapture(
-                            (refundAmount * 100),
-                            model.customerTransactionID ?: "", it1,
-                            model.transactionOutput.authCode,
-                            ""
-                        )
-                    }
-                    networkCall(jsonArray, 1)
-                }
-
-                Constants.CHASE_GATEWAY == magtekRequestUtils.gatewayName() -> {
-
-                    val amount = singleTransaction?.amount?.plus(refundAmount)
-
-                    jsonArray = amount?.times(100)?.let {
-                        magtekRequestUtils.processTokenChase(
-                            it,
-                            model.transactionOutput?.token ?: "",
-                            model.customerTransactionID ?: "",
-                            model.transactionOutput?.authCode ?: "",
-                            Constants.CAPTURE
-                        )
-                    }
-
-                    networkCall(jsonArray, 0)
-                }
-                Constants.HEARTLAND_GATEWAY == magtekRequestUtils.gatewayName() -> {
-
-                    val amount = singleTransaction?.amount?.plus(refundAmount)
-
-                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                        amount?.times(100)?.let {
-                            magtekRequestUtils.processReferenceIdHeartlandCapture(
-                                it,
-                                model.customerTransactionID ?: "",
-                                it1,
-                                model.transactionOutput.authCode,
-                                (tipAmount * 100).toString()
-                            )
-                        }
-                    }
-                    networkCall(jsonArray, 1)
-                }
-                Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
-
-                    jsonArray = model.transactionOutput.transactionID.let { it1 ->
-                        singleTransaction?.totalAmount.let {
-                            it?.let { it2 ->
-                                magtekRequestUtils.processReferenceIDTSYSCapture(
-                                    it2,
-                                    model.customerTransactionID ?: "",
-                                    it1,
-                                    (tipAmount)
-                                )
+                        Status.LOADING -> {
+                            try {
+                                ProgressUtils.showProgressDialog(requireActivity())
+                            } catch (e: Exception) {
+                                e.printStackTrace()
                             }
                         }
                     }
-                    networkCall(jsonArray, 1)
                 }
-
-
             }
-        } else {
-            val model = Gson().fromJson(
-                singleTransaction?.magensaResponse,
-                PaymentResponse.PaymentResponseItem::class.java
-            )
+        }
 
+        private fun loadTerminals() {
 
-            val jsonArray: JsonArray?
+            viewModel.getTerminalListDatabse.observe(viewLifecycleOwner) {
+                it?.let { resource ->
+                    when (resource.status) {
+                        Status.SUCCESS -> {
+                            ProgressUtils.dismissProgressDialog()
+                            resource.data?.let { terminalList ->
+                                terminalListGlobal =
+                                    terminalList as ArrayList<VenueDetailsResponse.Data.Terminal>
 
-            when {
+                                val isPresent =
+                                    terminalListGlobal.any { it.name == "All Terminals" }
 
-                Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
-
-                    // commented by Mansi for task > Tip to be captured through RAPID CONNECT
-                    /*val amount = refundAmount
-
-                    if (model != null) {
-                        jsonArray =
-                            model.transactionOutput?.token?.let { it1 ->
-                                amount.times(100).let {
-                                    magtekRequestUtils.processTokenFirstData(
-                                        it,
-                                        it1,
-                                        model.customerTransactionID ?: "",
-                                        model.transactionOutput.transactionOutputDetails[0].value,
-                                        Constants.CAPTURE
+                                if (!isPresent) {
+                                    //    terminalListGlobal.removeAt(0)
+                                    terminalListGlobal.add(
+                                        0,
+                                        VenueDetailsResponse.Data.Terminal(
+                                            "",
+                                            -1,
+                                            -1,
+                                            false,
+                                            "All Terminals",
+                                            "",
+                                            ""
+                                        )
                                     )
                                 }
+
+                                val roleName = terminalListGlobal.map { it.name }
+
+                                setUpTerminalSpinnerAdapter(roleName as ArrayList<String>)
+
                             }
-
-                        networkCall(jsonArray, 0)
-                    }*/
-                    tipCall(true)
-                }
-
-                // not support CAPTURE
-                Constants.ELAVON_GATEWAY == magtekRequestUtils.gatewayName() -> {
-
-                    jsonArray =
-                        model.transactionOutput?.token?.let { it1 ->
-                            magtekRequestUtils.processTokenElavon(
-                                (refundAmount * 100),
-                                it1,
-                                model.customerTransactionID ?: "",
-                                model.transactionOutput.transactionOutputDetails[0].value
-
-                            )
                         }
+                        Status.ERROR -> {
+                            ProgressUtils.dismissProgressDialog()
+                            binding.root.showAlert(resource.message)
 
-                    networkCall(jsonArray, 0)
-                }
-
-                Constants.EPX_GATEWAY == magtekRequestUtils.gatewayName() -> {
-
-                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                        singleTransaction?.amount?.times(100)?.let {
-                            magtekRequestUtils.processReferenceIDEPXForce(
-                                it,
-                                model.customerTransactionID ?: "", it1, Constants.CAPTURE,
-                                (tipAmount * 100).toString()
-                            )
                         }
-                    }
-                    networkCall(jsonArray, 1)
-                }
+                        Status.LOADING -> {
 
-                Constants.VANIT_EXORESS_GATEWAY == magtekRequestUtils.gatewayName() -> {
-
-                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                        magtekRequestUtils.processReferenceIDCapture(
-                            (refundAmount * 100),
-                            model.customerTransactionID ?: "", it1,
-                            model.transactionOutput.authCode,
-                            ""
-                        )
-                    }
-                    networkCall(jsonArray, 1)
-                }
-
-                Constants.CHASE_GATEWAY == magtekRequestUtils.gatewayName() -> {
-
-                    val amount = singleTransaction?.amount?.plus(refundAmount)
-
-                    jsonArray = amount?.times(100)?.let {
-                        magtekRequestUtils.processTokenChase(
-                            it,
-                            model.transactionOutput?.token ?: "",
-                            model.customerTransactionID ?: "",
-                            model.transactionOutput?.authCode ?: "",
-                            Constants.CAPTURE
-                        )
-                    }
-
-                    networkCall(jsonArray, 0)
-                }
-                Constants.HEARTLAND_GATEWAY == magtekRequestUtils.gatewayName() -> {
-
-                    val amount = singleTransaction?.amount?.plus(refundAmount)
-
-                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                        amount?.times(100)?.let {
-                            magtekRequestUtils.processReferenceIdHeartlandCapture(
-                                it,
-                                model.customerTransactionID ?: "",
-                                it1,
-                                model.transactionOutput.authCode,
-                                (tipAmount * 100).toString()
-                            )
-                        }
-                    }
-                    networkCall(jsonArray, 1)
-                }
-                Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
-
-
-                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                        singleTransaction?.totalAmount.let {
-                            it?.let { it2 ->
-                                magtekRequestUtils.processReferenceIDTSYSCapture(
-                                    it2,
-                                    model.customerTransactionID ?: "",
-                                    it1,
-                                    (tipAmount)
-                                )
+                            try {
+                                ProgressUtils.showProgressDialog(requireActivity())
+                            } catch (e: Exception) {
+                                e.printStackTrace()
                             }
                         }
                     }
-                    networkCall(jsonArray, 1)
                 }
-
-
             }
         }
 
-    }
+        private fun getOrderType() {
 
-    private fun networkCall(jsonArray1: JsonArray?, i: Int) {
+            viewModel.orderTypes.observe(viewLifecycleOwner) {
+                it?.let { resource ->
+                    when (resource.status) {
+                        Status.SUCCESS -> {
+                            ProgressUtils.dismissProgressDialog()
+                            resource.data?.let { terminalList ->
+                                orderTypeListGlobal =
+                                    terminalList as ArrayList<TbOrderType>
 
-        ProgressUtils.showProgressDialog(requireActivity())
+                                val isPresent = orderTypeListGlobal.any { it.name == "All Orders" }
 
-        val call = if (i == 1) {
-            jsonArray1?.let { apiModule1.getRetrofit1().processReferenceID(it) }
-        } else {
-            jsonArray1?.let { apiModule1.getRetrofit1().processToken(it) }
+                                if (!isPresent) {
+                                    //   orderTypeListGlobal.removeAt(0)
+                                    orderTypeListGlobal.add(
+                                        0,
+                                        TbOrderType("", -1, false, -1, "All Orders", "", -1, "")
+                                    )
+                                }
+                                val roleName = orderTypeListGlobal.map { it.name }
+
+                                setUpOrderTypeSpinnerAdapter(roleName as ArrayList<String>)
+
+                            }
+                        }
+                        Status.ERROR -> {
+                            ProgressUtils.dismissProgressDialog()
+                            binding.root.showAlert(resource.message)
+
+                        }
+                        Status.LOADING -> {
+                            try {
+                                ProgressUtils.showProgressDialog(requireActivity())
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+                    }
+                }
+            }
         }
 
-        call!!.enqueue(object : Callback<PaymentResponse> {
 
-            override fun onResponse(
-                call: Call<PaymentResponse>,
-                response: Response<PaymentResponse>
+        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+
+            if (spinnerTouched) {
+                currentPage = 1
+                checkFilter = true
+
+                transactionAdapter.clear()
+                apiCallTimeSheet()
+            }
+            spinnerTouched = false
+        }
+
+        override fun onNothingSelected(parent: AdapterView<*>?) {
+        }
+
+        private fun backPressManage() {
+            val navController = findNavController()
+            navController.previousBackStackEntry?.savedStateHandle?.set(
+                Constants.KEY,
+                Constants.TEAM_MEMBER
+            )
+            navController.popBackStack()
+        }
+
+        private fun setupSnackbar() =
+            binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
+
+        private fun observeShowProgress() {
+
+            viewModel.showProgress.observe(viewLifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let {
+                    if (currentPage == 1) {
+                        if (it) {
+                            ProgressUtils.showProgressDialog(requireActivity())
+                        } else {
+                            ProgressUtils.dismissProgressDialog()
+                        }
+                    }
+                }
+            }
+
+        }
+
+
+        private fun navigate() {
+            viewModel.transactionDetails.observe(viewLifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let {
+
+                    if (!it.payableType.equals("Invoice", true)
+                        && !it.payableType.equals(
+                            "GiftCard",
+                            true
+                        )
+                        &&
+                        !it.payableType.equals("GiftCardAmountTab", true)
+                    ) {
+                        val bundle = Bundle().apply {
+                            putInt("orderId", it.orderDetails.id)
+                            putInt("paymentId", it.id)
+                            putBoolean("isFromTrans", true)
+                            putInt(
+                                "selectedorderType",
+                                binding.includeView.spOrders.selectedItemPosition
+                            )
+                            putInt(
+                                "selectedtransactionType",
+                                binding.includeView.spTransactionTypes.selectedItemPosition
+                            )
+                            putInt(
+                                "selectedroleType",
+                                binding.includeView.spRoles.selectedItemPosition
+                            )
+                            putInt(
+                                "selectedemployeeType",
+                                binding.includeView.spEmployees.selectedItemPosition
+                            )
+                            putInt(
+                                "selectedterminalType",
+                                binding.includeView.spTerminals.selectedItemPosition
+                            )
+                        }
+
+
+                        if (findNavController().currentDestination?.id == R.id.transactionFragment) {
+                            findNavController().navigate(
+                                R.id.action_transactionFragment_to_transactionDetailsFragment,
+                                bundle
+                            )
+                        }
+                    }
+                }
+            }
+
+        }
+
+        private fun orderUpdateTips() {
+            viewModel.data1.observe(viewLifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let {
+
+                    binding.root.showAlert(it.message)
+
+                }
+            }
+
+            viewModel.data2.observe(viewLifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let {
+
+                    transactionAdapter.updateTip(selectedPos, it)
+                }
+            }
+
+        }
+
+        override fun onItemClickListener(view: View?, pos: Int) {
+
+            selectedPos = pos
+            singleTransaction = transactionAdapter.getItem(pos)
+            if (!singleTransaction?.payableType.equals(
+                    "GiftCard",
+                    true
+                ) && !singleTransaction?.payableType.equals(
+                    "Invoice", true
+                ) &&
+                !singleTransaction?.payableType.equals(
+                    "GiftCardAmountTab", true
+                )
             ) {
-                ProgressUtils.dismissProgressDialog()
-                if (response.isSuccessful) {
-                    LogUtil.logE("onResponse", Gson().toJson(response.body()))
-                    if (response.body() != null && response.body()!![0].transactionOutput != null) {
 
-                        if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {
 
-                            tipCall(true)
+                val bundle = Bundle()
+                bundle.putDouble("totalTip", singleTransaction!!.tips)
+                bundle.putBoolean("isFromTransaction", true)
+                singleTransaction?.amount?.let { bundle.putDouble("totalPrice", it) }
+                findNavController().navigate(
+                    R.id.action_transactionFragment_to_addTipsDialog,
+                    bundle
+                )
+            }
+
+
+        }
+
+        private fun magtekCall(refundAmount: Double) {
+            if (singleTransaction?.orderDetails?.orderType == "OnlineWebOrder") {
+                val model = Gson().fromJson(
+                    singleTransaction?.magensaResponse,
+                    MagtekOnlineOrderRefundResponse::class.java
+                )
+                val jsonArray: JsonArray?
+
+                when {
+
+                    Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                        // commented by Mansi for task > Tip to be captured through RAPID CONNECT
+                        /*val amount = refundAmount
+
+                        if (model != null) {
+                            jsonArray =
+                                model.transactionOutput?.token?.let { it1 ->
+                                    amount.times(100).let {
+                                        magtekRequestUtils.processTokenFirstData(
+                                            it,
+                                            it1,
+                                            model.customerTransactionID ?: "",
+                                            model.transactionOutput.transactionOutputDetails[0].value,
+                                            Constants.CAPTURE
+                                        )
+                                    }
+                                }
+
+                            networkCall(jsonArray, 0)
+                        }*/
+                        tipCall(true)
+                    }
+
+                    // not support CAPTURE
+                    Constants.ELAVON_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                        jsonArray =
+                            model.transactionOutput?.token?.let { it1 ->
+                                magtekRequestUtils.processTokenElavon(
+                                    (refundAmount * 100),
+                                    it1,
+                                    model.customerTransactionID ?: "",
+                                    model.transactionOutput.transactionOutputDetails[0].value
+
+                                )
+                            }
+
+                        networkCall(jsonArray, 0)
+                    }
+
+                    Constants.EPX_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                        jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                            singleTransaction?.amount?.times(100)?.let {
+                                magtekRequestUtils.processReferenceIDEPXForce(
+                                    it,
+                                    model.customerTransactionID ?: "", it1, Constants.CAPTURE,
+                                    (tipAmount * 100).toString()
+                                )
+                            }
+                        }
+                        networkCall(jsonArray, 1)
+                    }
+
+                    Constants.VANIT_EXORESS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                        jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                            magtekRequestUtils.processReferenceIDCapture(
+                                (refundAmount * 100),
+                                model.customerTransactionID ?: "", it1,
+                                model.transactionOutput.authCode,
+                                ""
+                            )
+                        }
+                        networkCall(jsonArray, 1)
+                    }
+
+                    Constants.CHASE_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                        val amount = singleTransaction?.amount?.plus(refundAmount)
+
+                        jsonArray = amount?.times(100)?.let {
+                            magtekRequestUtils.processTokenChase(
+                                it,
+                                model.transactionOutput?.token ?: "",
+                                model.customerTransactionID ?: "",
+                                model.transactionOutput?.authCode ?: "",
+                                Constants.CAPTURE
+                            )
+                        }
+
+                        networkCall(jsonArray, 0)
+                    }
+                    Constants.HEARTLAND_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                        val amount = singleTransaction?.amount?.plus(refundAmount)
+
+                        jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                            amount?.times(100)?.let {
+                                magtekRequestUtils.processReferenceIdHeartlandCapture(
+                                    it,
+                                    model.customerTransactionID ?: "",
+                                    it1,
+                                    model.transactionOutput.authCode,
+                                    (tipAmount * 100).toString()
+                                )
+                            }
+                        }
+                        networkCall(jsonArray, 1)
+                    }
+                    Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                        jsonArray = model.transactionOutput.transactionID.let { it1 ->
+                            singleTransaction?.totalAmount.let {
+                                it?.let { it2 ->
+                                    magtekRequestUtils.processReferenceIDTSYSCapture(
+                                        it2,
+                                        model.customerTransactionID ?: "",
+                                        it1,
+                                        (tipAmount)
+                                    )
+                                }
+                            }
+                        }
+                        networkCall(jsonArray, 1)
+                    }
+
+
+                }
+            } else {
+                val model = Gson().fromJson(
+                    singleTransaction?.magensaResponse,
+                    PaymentResponse.PaymentResponseItem::class.java
+                )
+
+
+                val jsonArray: JsonArray?
+
+                when {
+
+                    Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                        // commented by Mansi for task > Tip to be captured through RAPID CONNECT
+                        /*val amount = refundAmount
+
+                        if (model != null) {
+                            jsonArray =
+                                model.transactionOutput?.token?.let { it1 ->
+                                    amount.times(100).let {
+                                        magtekRequestUtils.processTokenFirstData(
+                                            it,
+                                            it1,
+                                            model.customerTransactionID ?: "",
+                                            model.transactionOutput.transactionOutputDetails[0].value,
+                                            Constants.CAPTURE
+                                        )
+                                    }
+                                }
+
+                            networkCall(jsonArray, 0)
+                        }*/
+                        tipCall(true)
+                    }
+
+                    // not support CAPTURE
+                    Constants.ELAVON_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                        jsonArray =
+                            model.transactionOutput?.token?.let { it1 ->
+                                magtekRequestUtils.processTokenElavon(
+                                    (refundAmount * 100),
+                                    it1,
+                                    model.customerTransactionID ?: "",
+                                    model.transactionOutput.transactionOutputDetails[0].value
+
+                                )
+                            }
+
+                        networkCall(jsonArray, 0)
+                    }
+
+                    Constants.EPX_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                        jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                            singleTransaction?.amount?.times(100)?.let {
+                                magtekRequestUtils.processReferenceIDEPXForce(
+                                    it,
+                                    model.customerTransactionID ?: "", it1, Constants.CAPTURE,
+                                    (tipAmount * 100).toString()
+                                )
+                            }
+                        }
+                        networkCall(jsonArray, 1)
+                    }
+
+                    Constants.VANIT_EXORESS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                        jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                            magtekRequestUtils.processReferenceIDCapture(
+                                (refundAmount * 100),
+                                model.customerTransactionID ?: "", it1,
+                                model.transactionOutput.authCode,
+                                ""
+                            )
+                        }
+                        networkCall(jsonArray, 1)
+                    }
+
+                    Constants.CHASE_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                        val amount = singleTransaction?.amount?.plus(refundAmount)
+
+                        jsonArray = amount?.times(100)?.let {
+                            magtekRequestUtils.processTokenChase(
+                                it,
+                                model.transactionOutput?.token ?: "",
+                                model.customerTransactionID ?: "",
+                                model.transactionOutput?.authCode ?: "",
+                                Constants.CAPTURE
+                            )
+                        }
+
+                        networkCall(jsonArray, 0)
+                    }
+                    Constants.HEARTLAND_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                        val amount = singleTransaction?.amount?.plus(refundAmount)
+
+                        jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                            amount?.times(100)?.let {
+                                magtekRequestUtils.processReferenceIdHeartlandCapture(
+                                    it,
+                                    model.customerTransactionID ?: "",
+                                    it1,
+                                    model.transactionOutput.authCode,
+                                    (tipAmount * 100).toString()
+                                )
+                            }
+                        }
+                        networkCall(jsonArray, 1)
+                    }
+                    Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+
+                        jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                            singleTransaction?.totalAmount.let {
+                                it?.let { it2 ->
+                                    magtekRequestUtils.processReferenceIDTSYSCapture(
+                                        it2,
+                                        model.customerTransactionID ?: "",
+                                        it1,
+                                        (tipAmount)
+                                    )
+                                }
+                            }
+                        }
+                        networkCall(jsonArray, 1)
+                    }
+
+
+                }
+            }
+
+        }
+
+        private fun networkCall(jsonArray1: JsonArray?, i: Int) {
+
+            ProgressUtils.showProgressDialog(requireActivity())
+
+            val call = if (i == 1) {
+                jsonArray1?.let { apiModule1.getRetrofit1().processReferenceID(it) }
+            } else {
+                jsonArray1?.let { apiModule1.getRetrofit1().processToken(it) }
+            }
+
+            call!!.enqueue(object : Callback<PaymentResponse> {
+
+                override fun onResponse(
+                    call: Call<PaymentResponse>,
+                    response: Response<PaymentResponse>
+                ) {
+                    ProgressUtils.dismissProgressDialog()
+                    if (response.isSuccessful) {
+                        LogUtil.logE("onResponse", Gson().toJson(response.body()))
+                        if (response.body() != null && response.body()!![0].transactionOutput != null) {
+
+                            if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {
+
+                                tipCall(true)
+
+                            } else {
+                                AlertUtils.showCustomAlert(
+                                    requireContext(),
+                                    response.body()!![0].transactionOutput?.transactionMessage
+                                )
+                            }
+
 
                         } else {
-                            AlertUtils.showCustomAlert(
-                                requireContext(),
-                                response.body()!![0].transactionOutput?.transactionMessage
-                            )
+                            if (response.body()!![0].mPPGv4WSFault != null)
+                                AlertUtils.showCustomAlert(
+                                    requireContext(),
+                                    response.body()!![0].mPPGv4WSFault?.faultCode + "\n" +
+                                            response.body()!![0].mPPGv4WSFault?.faultReason
+                                )
                         }
-
-
-                    } else {
-                        if (response.body()!![0].mPPGv4WSFault != null)
-                            AlertUtils.showCustomAlert(
-                                requireContext(),
-                                response.body()!![0].mPPGv4WSFault?.faultCode + "\n" +
-                                        response.body()!![0].mPPGv4WSFault?.faultReason
-                            )
                     }
                 }
-            }
 
-            override fun onFailure(call: Call<PaymentResponse>, t: Throwable) {
+                override fun onFailure(call: Call<PaymentResponse>, t: Throwable) {
 
-                ProgressUtils.dismissProgressDialog()
-            }
-        })
-    }
-
-    private fun searchFilter() {
-        binding.includeView.autoSearch.addTextChangedListener(object : TextWatcher {
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                if (s.toString() == " ") {
-                    binding.includeView.autoSearch.setText("")
+                    ProgressUtils.dismissProgressDialog()
                 }
-            }
+            })
+        }
 
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-            }
+        private fun searchFilter() {
+            binding.includeView.autoSearch.addTextChangedListener(object : TextWatcher {
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                    if (s.toString() == " ") {
+                        binding.includeView.autoSearch.setText("")
+                    }
+                }
 
-            override fun afterTextChanged(s: Editable) {
+                override fun beforeTextChanged(
+                    s: CharSequence,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
+                override fun afterTextChanged(s: Editable) {
                     transactionAdapter.showLoading(false)
                     transactionAdapter.filter.filter(s.toString().trim())
-            }
-        })
+                }
+            })
+        }
     }
-}

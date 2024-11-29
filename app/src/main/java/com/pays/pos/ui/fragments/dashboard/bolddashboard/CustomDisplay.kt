@@ -30,6 +30,13 @@ import com.google.gson.JsonArray
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
+import com.pays.payments.callbacks.PaymentCallback
+import com.pays.payments.design.PaymentGateway
+import com.pays.payments.design.PaymentGatewayFactory
+import com.pays.payments.design.PaymentGatewayType
+import com.pays.payments.design.TransactionType
+import com.pays.payments.gateways.dejavoo.DejavooPaymentGateway
+import com.pays.payments.gateways.valor.ValorPaymentGateway
 import com.pays.pos.R
 import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.DineInModel
@@ -38,6 +45,7 @@ import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.pays.pos.data.model.responseModel.GetTipReponse
 import com.pays.pos.data.model.responseModel.MagtekOnlineOrderRefundResponse
 import com.pays.pos.data.model.responseModel.TimeDetailsResponse
+import com.pays.pos.data.model.valor.ValorSuccessResponse
 import com.pays.pos.data.remote.ApiService
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.CUSTOMER_SIGN_REQUIRED_ON_CD
@@ -68,6 +76,7 @@ import com.pays.pos.ui.fragments.transactions.TransactionViewModel
 import com.pays.pos.utils.*
 import com.pays.pos.utils.MethodUtils.Companion.generalizeAmount
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
+import com.pays.pos.utils.ProgressUtils.dismissProgressDialog
 import com.pays.pos.utils.callback.MyCallback
 import com.pays.pos.utils.extensions.*
 import com.pays.pos.utils.paxUtils.AppThreadPool
@@ -80,6 +89,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayOutputStream
+import javax.inject.Inject
+import kotlin.math.roundToInt
 
 
 class CustomDisplay(
@@ -164,7 +175,10 @@ class CustomDisplay(
         getDetails()
         getLoyaltyPointListObserver()
         initDiscountLiveData()
+
     }
+
+
 
     public fun closeSecondaryDisplay() {
         System.exit(0)
@@ -2737,6 +2751,39 @@ class CustomDisplay(
         }
     }
 
+    private fun callUpdateTipValor(transactionViewModel:TransactionViewModel) {
+        mTransactionViewModel=transactionViewModel
+        lifecycleOwner.lifecycleScope.launch {
+            showProgress()
+            mTransactionViewModel.updateTipWithSignature(
+                mOrderID,
+                signatureInBase64,
+                tippedAmount
+            )
+            mTransactionViewModel.updateTipData.observe(lifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let {
+                    if (it.status == 200) {
+                        dashBoardCategoryViewModel.apply {
+                            totalTipAmount = tippedAmount
+                            customerGivenTip.value = true
+                            employeeGivenTip = false
+                        }
+
+                        dashBoardCategoryViewModel.processingTipForCard.value = false
+                        // dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=false
+
+                        prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+                        showThankYou(mWholeTotalPrice + tippedAmount)
+                    } else {
+                        showErrorLayout(it.message)
+                        dashBoardCategoryViewModel.processingTipForCard.value = false
+                    }
+                }
+            }
+
+        }
+    }
+
     private fun showErrorLayout(message: String) {
         binding.apply {
             mainCartLayout.gone()
@@ -2777,19 +2824,13 @@ class CustomDisplay(
   */
         if (mIsCardPayment /*&& !mIsSignatureRequired*/) {
 //            callUpdateTip()
-            if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
+            if ( prefProvider.getValue(Constants.VALOR_APP_ID,"").isNotEmpty()) {
+                adjustValorTips()
+            }else if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
                 magtekCall(wholeTotalPrice)
-            } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
-                    Constants.IS_PAX_CONNECTED,
-                    false
-                )
-            ) {
+            } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED,false)) {
                 adjustPaxTips()
-            } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
-                    Constants.IS_PAX_CONNECTED,
-                    false
-                )
-            ) {
+            } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED,false)) {
                 AlertUtils.showCustomAlert(
                     context,
                     "Please connect to PAX device"
@@ -2800,6 +2841,81 @@ class CustomDisplay(
         }
         if (!binding.signaturePad.isEmpty) {
             enableConfirmButton()
+        }
+    }
+
+    private fun adjustValorTips() {
+
+        GlobalScope.launch {
+//                        ProgressUtils.dismissProgressDialog()
+
+            val gatewayType = PaymentGatewayType.VALOR
+            val paymentGateway = PaymentGatewayFactory(ValorPaymentGateway(),
+                DejavooPaymentGateway()).create(gatewayType)
+
+
+            val paymentCallback = object : PaymentCallback {
+                override fun onSuccess(transactionId: String) {
+
+                    var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
+                        transactionId,
+                        ValorSuccessResponse::class.java
+                    )
+                    transactionJsonResponse.nameValuePairs?.let {
+                        if (it.msg != null) {
+                            if (it.msg!!.contains(
+                                    "APPROVED"
+                                )
+                            ) {
+                                mPaymentViewModel.valorRefTxnId=null
+                                mPaymentViewModel.valorTransactionNumber=null
+                                callUpdateTip()
+//                                dashBoardCategoryViewModel.takenTipUsingValor.postValue(Event(transactionViewModel))
+                            } else {
+                                dismissProgressDialog()
+                               /* runOnUiThread(Runnable {
+                                    AlertUtils.showCustomAlert(
+                                        requireContext(),
+                                        it.msg
+                                    )
+                                })*/
+                            }
+                        }
+                    }
+                }
+
+                override fun onFailure(errorMessage: String) {
+                    println("Payment Failed: $errorMessage")
+                    ProgressUtils.dismissProgressDialog()
+
+                    /*runOnUiThread(Runnable {
+                        AlertUtils.showCustomAlert(
+                            requireContext(),
+                            errorMessage
+                        )
+                    })*/
+                }
+            }
+
+            mPaymentViewModel.valorRefTxnId?.let {valorRefTxId->
+                context?.let {
+                    paymentGateway.processPayment(
+                        context = it,
+                        apiKey = prefProvider.getValue(Constants.VALOR_APP_KEY,""),
+                        appID = prefProvider.getValue(Constants.VALOR_APP_ID,""),
+                        epi = prefProvider.getValue(Constants.VALOR_EPI,""),
+                        endpoint = Constants.VALOR_TIP_ADJUST,
+                        txnType =TransactionType.TIP_ADJUSTMENT,
+                        channelId = prefProvider.getValue(Constants.VALOR_CHANNEL_ID,""),
+                        reqTxnId=valorRefTxId,
+                        tipAmount = /*(tippedAmount * 100).toInt()*/tippedAmount.toString(),
+                        callback = paymentCallback,
+                        amount = ""
+                    )
+                }
+            }
+            /* Process Tip Adjust */
+
         }
     }
 

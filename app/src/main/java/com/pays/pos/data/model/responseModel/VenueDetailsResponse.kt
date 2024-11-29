@@ -126,13 +126,13 @@ data class VenueDetailsResponse(
         @SerializedName("report_end_time")
         val report_end_time: String,
         @SerializedName("app_id")
-        val valor_app_id: String,
+        val valor_app_id: String?,
         @SerializedName("app_key")
-        val valor_app_key: String,
+        val valor_app_key: String?,
         @SerializedName("epi")
-        val valor_epi: String,
+        val valor_epi: String?,
         @SerializedName("channel_id")
-        val valor_channel_id: String,
+        val valor_channel_id: String?,
         @SerializedName("shift_report_configuration")
         val shift_report_configuration: ShiftRportConfiguration?,
         @SerializedName("time_zone_options")

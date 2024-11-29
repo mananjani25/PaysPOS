@@ -855,6 +855,7 @@ object Constants {
     const val VALOR_APP_KEY = "VALOR_APP_KEY"
     const val VALOR_EPI = "VALOR_EPI"
     const val VALOR_CHANNEL_ID = "VALOR_CHANNEL_ID"
+    const val VALOR_TIP_ADJUST = "tipAdjust"
     /*-------Valor--------*/
 
 

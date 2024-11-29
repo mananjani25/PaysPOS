@@ -90,6 +90,7 @@ import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.adapter.DineInTableAdapter
+import com.pays.pos.ui.fragments.transactions.TransactionViewModel
 import com.pays.pos.utils.*
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
@@ -292,6 +293,11 @@ class DashBoardCategoryViewModel @Inject constructor(
      * */
     var isCartItemClicked = false
 
+
+    /*-------------VALOR Payment gateway------------------ */
+    public val takenTipUsingValor = MutableLiveData<Event<TransactionViewModel>>()
+
+    /*-------------VALOR Payment gateway------------------ */
 
     /**
      * Tip has been added , Either from customer display or from checkoutFragment
@@ -7874,19 +7880,25 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
 
                                 /*------------VALOR---------------*/
+
+                                var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
+                                var appID = "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
+                                var channelID = "bd967b4e0ccd6309c5ac16634bd367b6"
+                                var epi = "2319995597"
+
                                 prefProvider.setValue(
-                                    VALOR_APP_ID, it.settingData.data.valor_app_id ?: ""
+                                    VALOR_APP_ID, /*it.settingData.data.valor_app_id*/appID ?: ""
                                 )
 
                                 prefProvider.setValue(
-                                    VALOR_APP_KEY, it.settingData.data.valor_app_key ?: ""
+                                    VALOR_APP_KEY, /*it.settingData.data.valor_app_key*/apiKey ?: ""
                                 )
 
                                 prefProvider.setValue(
-                                    VALOR_EPI, it.settingData.data.valor_epi ?: ""
+                                    VALOR_EPI, /*it.settingData.data.valor_epi*/epi ?: ""
                                 )
                                 prefProvider.setValue(
-                                    VALOR_CHANNEL_ID, it.settingData.data.valor_channel_id ?: ""
+                                    VALOR_CHANNEL_ID, /*it.settingData.data.valor_channel_id*/channelID ?: ""
                                 )
                                 /*------------VALOR---------------*/
 

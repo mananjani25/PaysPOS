@@ -10,6 +10,7 @@ data class ValorSuccessResponse(
     data class NameValuePairs(
 
         @SerializedName("error_no") var errorNo: String? = null,
+        @SerializedName("msg") var msg: String? = null,
         @SerializedName("response") var response: Response? = Response()
 
     ) {
