@@ -9,7 +9,10 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.pays.pos.data.dao.*
 import com.pays.pos.data.entities.*
-import com.pays.pos.data.model.*
+import com.pays.pos.data.model.CharacterModel
+import com.pays.pos.data.model.PrinterQueueModel
+import com.pays.pos.data.model.ShiftRportConfiguration
+import com.pays.pos.data.model.SplitDetailListModel
 import com.pays.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
 import com.pays.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.pays.pos.data.model.responseModel.GetTipReponse
@@ -54,7 +57,7 @@ import com.pays.pos.data.typeconvert.TypeConvertorPhone
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, PAXData::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class,
-        VenueDetailsResponse.Data.WastageReason::class, TbCartItem::class, CartModelBackup::class, OrderTypeBackup::class, TbLabelPrinterSettings::class, TbDynamicPaymentRecords::class, ValorModel::class],
+        VenueDetailsResponse.Data.WastageReason::class, TbCartItem::class, CartModelBackup::class, OrderTypeBackup::class, TbLabelPrinterSettings::class, TbDynamicPaymentRecords::class],
     version = 25
 )
 @TypeConverters(
@@ -479,7 +482,19 @@ public abstract class AppDatabase : RoomDatabase() {
 
         }
 
-        val MIGRATION_22_23: Migration = object : Migration(22, 23) {
+        private val MIGRATION_22_23: Migration = object : Migration(22, 23) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                try {
+                    database.execSQL("ALTER TABLE TbLabelPrinterSettings ADD COLUMN printOrderId INTEGER DEFAULT 1 NOT NULL")
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+        }
+
+        val MIGRATION_23_24: Migration = object : Migration(23, 24) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 try {
                     database.execSQL(
@@ -526,7 +541,8 @@ public abstract class AppDatabase : RoomDatabase() {
                     MIGRATION_19_20,
                     MIGRATION_20_21,
                     MIGRATION_21_22,
-                    MIGRATION_22_23
+                    MIGRATION_22_23,
+                    MIGRATION_23_24
                 ).fallbackToDestructiveMigration()
                 .build()
     }

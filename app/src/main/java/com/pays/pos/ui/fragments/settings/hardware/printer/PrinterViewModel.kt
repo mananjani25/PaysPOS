@@ -31,6 +31,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
@@ -383,7 +384,10 @@ class PrinterViewModel @Inject constructor(
 
                                 try {
                                     CoroutineScope(Dispatchers.IO).launch {
-                                        posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept)
+                                        runBlocking {
+                                            var printOrderId=posRepository.getLabelPrinterSettingsData().printOrderId
+                                            posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept,printOrderId)
+                                        }
                                     }
                                 } catch (e: Exception) {
 

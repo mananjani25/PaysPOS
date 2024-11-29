@@ -29,6 +29,7 @@ class PurchaseGiftCardFragment : Fragment() {
     @Inject
     lateinit var prefProvider: PrefProvider
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val TAG = "PurchaseGiftCardFragment"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -152,7 +153,9 @@ class PurchaseGiftCardFragment : Fragment() {
                 Log.d("TAG", "onClick: giftCardPurchaseAmount = $amount")
                 prefProvider.setValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, amount.toString())
 
-                findNavController().navigate(R.id.action_purchaseGiftCard_to_addCustomerToGiftCard)
+
+                    findNavController().navigate(R.id.action_purchaseGiftCard_to_addCustomerToGiftCard)
+
 
             } else {
 
@@ -164,13 +167,15 @@ class PurchaseGiftCardFragment : Fragment() {
         }
 
         binding.rdGroupSelectGiftCard.setOnCheckedChangeListener { _, i ->
+            Log.e(TAG,"checkGroupSele")
             when (i) {
+
                 binding.rdBtnDigitalGiftCard.id -> {
                     giftCardType = "Digital"
                 }
 
                 binding.rdBtnPlasticGiftCard.id -> {
-                    giftCardType = "Plastic"
+                    giftCardType = "Physical"
                 }
             }
         }

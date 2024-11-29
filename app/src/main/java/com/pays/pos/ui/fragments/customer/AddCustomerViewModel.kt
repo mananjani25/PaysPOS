@@ -559,8 +559,11 @@ class AddCustomerViewModel @Inject constructor(
         customerID: Int, sync: Boolean = false
     ) {
         CoroutineScope(Dispatchers.IO).launch {
-            var resource: Resource<CustomerSearchList> =
+            val resource: Resource<CustomerSearchList> = if(sync){
+                posRepository.searchCustomerById(value.asJsonObject.get("customer_id").asString)
+            }else {
                 posRepository.searchCustomer(value.asJsonObject.get("first_name").asString)
+            }
 
             when (resource.status) {
                 Status.SUCCESS -> {
@@ -572,17 +575,17 @@ class AddCustomerViewModel @Inject constructor(
 
                                     /*Insert the customer to the Room DB*/
                                     val model = TbCustomer(
-                                        id = it.data.get(0).id,
-                                        first_name = it.data.get(0).first_name,
-                                        last_name = it.data.get(0).last_name,
-                                        birth_date = it.data.get(0).birth_date,
-                                        email = it.data.get(0).email,
-                                        phones = it.data.get(0).phones,
-                                        addresses = it.data.get(0).addresses,
-                                        enroll_to_loyalty = it.data.get(0).enroll_to_loyalty,
-                                        same_as_billing_address = it.data.get(0).same_as_billing_address,
-                                        final_reward = it.data.get(0).final_reward,
-                                        company = it.data.get(0).company,
+                                        id = it.data[0].id,
+                                        first_name = it.data[0].first_name,
+                                        last_name = it.data[0].last_name,
+                                        birth_date = it.data[0].birth_date,
+                                        email = it.data[0].email,
+                                        phones = it.data[0].phones,
+                                        addresses = it.data[0].addresses,
+                                        enroll_to_loyalty = it.data[0].enroll_to_loyalty,
+                                        same_as_billing_address = it.data[0].same_as_billing_address,
+                                        final_reward = it.data[0].final_reward,
+                                        company = it.data[0].company,
                                         isSelcted = true,
                                     )
 
@@ -596,6 +599,48 @@ class AddCustomerViewModel @Inject constructor(
                                 } else {
                                     it.data.forEach {data->
                                         runBlocking {
+                                            var customersListFromDb:List<TbCustomer?>?= arrayListOf()
+
+                                            customersListFromDb = posRepository.fetchCustomerFromId(data.id!!.toInt())
+
+                                            if (customersListFromDb.isNullOrEmpty()){
+                                                /*Insert the customer to the Room DB*/
+                                                val model = TbCustomer(
+                                                    id = it.data[0].id,
+                                                    first_name = it.data[0].first_name,
+                                                    last_name = it.data[0].last_name,
+                                                    birth_date = it.data[0].birth_date,
+                                                    email = it.data[0].email,
+                                                    phones = it.data[0].phones,
+                                                    addresses = it.data[0].addresses,
+                                                    enroll_to_loyalty = it.data[0].enroll_to_loyalty,
+                                                    same_as_billing_address = it.data[0].same_as_billing_address,
+                                                    final_reward = it.data[0].final_reward,
+                                                    company = it.data[0].company,
+                                                    isSelcted = true,
+                                                )
+
+                                                launch {
+                                                    posRepository.addCustomer(model)
+                                                }
+
+                                                withContext(Dispatchers.Main) {
+                                                    _customerFetchedAndAdded.postValue(model)
+                                                }
+                                            } else {
+                                                CoroutineScope(Dispatchers.IO).launch {
+                                                    data.let { customerData ->
+                                                        posRepository.updateFinalRewards(
+                                                            customerData.final_reward!!.toInt(),
+                                                            customerData.id!!.toInt()
+                                                        )
+                                                    }
+                                                }
+                                            }
+
+                                        }
+
+                                        /*runBlocking {
                                             var customersListFromDb:List<TbCustomer?>?= arrayListOf()
                                             if (data.phones.isNotEmpty()) {
                                                 customersListFromDb = posRepository.fetchCustomerFromPhoneNumber(data.phones?.get(0).phone_number)
@@ -619,52 +664,9 @@ class AddCustomerViewModel @Inject constructor(
                                                     return@forEach
                                                 }catch (e:Exception){}
                                             }
-                                        }
-                                       /* viewModelScope.launch {
-                                            if (it.phones.isNotEmpty() && it.email!=null) {
-                                                posRepository.updateFinalRewardsSync(
-                                                    finalrewards = it.final_reward!!.toInt(),
-                                                    customerId = it.id!!.toInt(),
-                                                    firstName = it.first_name.toString(),
-                                                    lastName = it.last_name.toString(),
-                                                    phoneNumber = it.phones?.get(
-                                                        0
-                                                    ).phone_number.toString(),
-                                                    it.email
-                                                    )
-                                            } else if (it.phones.isNotEmpty()) {
-                                                posRepository.updateFinalRewardsSync(
-                                                    finalrewards = it.final_reward!!.toInt(),
-                                                    customerId = it.id!!.toInt(),
-                                                    firstName = it.first_name.toString(),
-                                                    lastName = it.last_name.toString(),
-                                                    phoneNumber = it.phones?.get(
-                                                        0
-                                                    ).phone_number.toString(),
-""
-                                                    )
-                                            }else if (it.email!=null && it.email?.isNotEmpty()){
-                                                posRepository.updateFinalRewardsSyncEmail(
-                                                    finalrewards = it.final_reward!!.toInt(),
-                                                    customerId = it.id!!.toInt(),
-                                                    firstName = it.first_name.toString(),
-                                                    lastName = it.last_name.toString(),
-                                                    phoneNumber = "",
-                                                    email = it.email
-                                                    )
-                                            }else{
-                                                posRepository.updateFinalRewardsSync(
-                                                    finalrewards = it.final_reward!!.toInt(),
-                                                    customerId = it.id!!.toInt(),
-                                                    firstName = it.first_name.toString(),
-                                                    lastName = it.last_name.toString(),
-                                                    phoneNumber = "",
-                                                    email = "",
-                                                )
-                                            }
-
                                         }*/
-//                                        }
+
+
                                     }
                                 }
                             } else {

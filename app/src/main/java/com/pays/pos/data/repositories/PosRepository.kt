@@ -32,6 +32,7 @@ import com.pays.pos.utils.performGetOperationDatabase
 import com.pays.pos.utils.performGetOperationNew
 import com.pays.pos.utils.statusUtils.Resource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
@@ -583,6 +584,9 @@ class PosRepository @Inject constructor(
     suspend fun fetchCustomerFromPhoneNumber(phoneNumber: String) =
         appDatabase.customerDao().fetchCustomerFromPhoneNumber(phoneNumber)
 
+    suspend fun fetchCustomerFromId(id: Int) =
+        appDatabase.customerDao().fetchCustomerFromId(id)
+
     suspend fun fetchCustomerFromFirstName(firstName: String) =
         appDatabase.customerDao().fetchCustomerFromFirstName(firstName)
 
@@ -681,6 +685,9 @@ suspend fun updateFinalRewardsSyncEmailPhone(finalrewards: Int, customerId: Int,
 
     suspend fun searchCustomer(query: String) =
         apiHelperNew.searchCustomers(query)
+
+    suspend fun searchCustomerById(query: String) =
+        apiHelperNew.searchCustomersById(query)
 
     fun searchEmployeesDatabase(query: String) =
         performGetOperationDatabase(databaseQuery = {
@@ -1603,14 +1610,18 @@ suspend fun updateFinalRewardsSyncEmailPhone(finalrewards: Int, customerId: Int,
         appDatabase.orderTypeBackupDao().add(orderType)
 
     /*This method is used to maintain the single of multiple receipt for label printer*/
-    fun insertOrUpdateLabelPrinter(data: Boolean) {
-        val tbLabelPrinterSettings = TbLabelPrinterSettings(1, data)
+    fun insertOrUpdateLabelPrinter(data: Boolean, printOrderId: Boolean) {
+        val tbLabelPrinterSettings = TbLabelPrinterSettings(1, data,printOrderId)
         var aaaaa = appDatabase.labelPrinterSettings().insertOrUpdate(tbLabelPrinterSettings)
     }
 
-    /*This method will be used to check if the merchant wants */
+    /*This method will be used to check if the merchant wants single receipt per item or order_id is to be printed.*/
     suspend fun getLabelPrinterSettingsData(): TbLabelPrinterSettings {
         return appDatabase.labelPrinterSettings().getLabelPrinterSettingsData()
+    }
+
+    suspend fun updateOrderId(printOrderId:Boolean): Int {
+        return appDatabase.labelPrinterSettings().updateOrderId(printOrderId)
     }
 
     /* This method is used to manage the Dynamic payments */

@@ -117,13 +117,7 @@ class AddValueInGiftCardFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.edtAmount.addTextChangedListener(
-            AmountTextWatcher(
-                binding.edtAmount,
-                true,
-                isFromGiftCard = true
-            )
-        )
+       binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, true,isFromGiftCard = true))
 
 
     }
@@ -215,19 +209,25 @@ class AddValueInGiftCardFragment : Fragment() {
         binding.txtNext.setOnClickListener {
             MethodUtils.hideSoftKeyboard(requireActivity())
             val amount = binding.edtAmount.text.toString().replace("$", "").trim().toDouble()
-            val giftCardNumber = binding.edtGiftCardNumber.text.toString().replace(" ", "")
+            val giftCardNumber = binding.edtGiftCardNumber.text.toString().replace(" ","")
 
-            if (giftCardNumber.length != 8) {
-                AlertUtils.showCustomAlert(
-                    requireContext(),
-                    "Please enter 8-digit gift card number."
-                )
+            if(giftCardNumber.length < 8){
+                AlertUtils.showCustomAlert(requireContext(), "Please enter 8-digit gift card number.")
                 return@setOnClickListener
             } else if (amount <= 0.0) {
                 AlertUtils.showCustomAlert(requireContext(), "Please enter amount")
                 return@setOnClickListener
             } else {
-                prefProvider.setValue(Constants.GIFT_CARD_TYPE, "Digital")
+                if (giftCardNumber.length > 8){
+                    prefProvider.setValue(Constants.PHYSICAL_GIFT_CARD_NUMBER,giftCardNumber)
+                    prefProvider.setValue(Constants.GIFT_CARD_TYPE,"Physical")
+                }
+                else{
+                    prefProvider.setValue(Constants.GIFT_CARD_TYPE,"Digital")
+
+                }
+
+
                 prefProvider.setValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, amount.toString())
                 prefProvider.setValue(Constants.GIFT_CARD_NUMBER, giftCardNumber)
                 prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, true)
@@ -323,7 +323,7 @@ class AddValueInGiftCardFragment : Fragment() {
             orderTypeName = Constants.GIFT_CARD
         }
 
-        Log.e(TAG, "tbItem:  ${Gson().toJson(tbItem)}")
+        Log.e(TAG,"tbItem:  ${Gson().toJson(tbItem)}" )
         dashboardViewModel.addCart(cm)
 
         dashboardViewModel.addItemToCartItems(tbItem)

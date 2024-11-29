@@ -35,6 +35,7 @@ import com.pays.pos.data.remote.Constants.CUSTOMERS
 import com.pays.pos.data.remote.Constants.CUSTOMERS_SEARCH
 import com.pays.pos.data.remote.Constants.CUSTOMER_RECEIPTS_UPDATE_SETTINGS
 import com.pays.pos.data.remote.Constants.CUSTOMER_RECEIPT_SETTINGS
+import com.pays.pos.data.remote.Constants.CUSTOMER_SEARCH_BY_ID
 import com.pays.pos.data.remote.Constants.CUSTOMER_UPDATE
 import com.pays.pos.data.remote.Constants.DECREASE_ONGOING_ORDER_COUNTER
 import com.pays.pos.data.remote.Constants.DELETE_ALL_QUEUE_PRINTER
@@ -475,6 +476,11 @@ interface ApiService {
     @GET(CUSTOMERS_SEARCH)
     suspend fun customerSearch(
         @Query("searchtext") searchtext: String
+    ): CustomerSearchList
+
+    @GET(CUSTOMER_SEARCH_BY_ID)
+    suspend fun customerSearchById(
+        @Query("searchtext") id: String
     ): CustomerSearchList
 
     @GET(EMPLOYEES_TIMESHEET_DETAILS)
