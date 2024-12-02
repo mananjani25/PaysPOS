@@ -757,35 +757,40 @@ class DashBoardCategoryViewModel @Inject constructor(
         System.currentTimeMillis()
         CoroutineScope(Dispatchers.IO).launch {
 
-            var listItems: ArrayList<TbCartItem> = arrayListOf()
-            cartModel.items?.forEach {
-                listItems.add(TbCartItem().convertToCartItem(it, it))
+            try {
 
-            }
-            Log.e(TAG, "checkConvertedItem: ${listItems.size}")
+                var listItems: ArrayList<TbCartItem> = arrayListOf()
+                cartModel.items?.forEach {
+                    listItems.add(TbCartItem().convertToCartItem(it, it))
 
-            for (i in 0 until listItems.size) {
-                listItems.get(i).taxes?.let { it ->
-                    for (j in 0 until it.size) {
-                        mCartModel = taxBifurcationCalculationNew(
-                            cartModel = mCartModel,
-                            item = listItems.get(i),
-                            type = ADD,
-                            orderTaxID = false
-                        )
+                }
+                Log.e(TAG, "checkConvertedItem: ${listItems.size}")
+
+                for (i in 0 until listItems.size) {
+                    listItems.get(i).taxes?.let { it ->
+                        for (j in 0 until it.size) {
+                            mCartModel = taxBifurcationCalculationNew(
+                                cartModel = mCartModel,
+                                item = listItems.get(i),
+                                type = ADD,
+                                orderTaxID = false
+                            )
+                        }
                     }
+
                 }
 
+                if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN)
+                    if (mCartModel.discountSelectdValue == null) {
+                        mCartModel.discountSelectdValue = 0.0
+                    }
+
+                posRepository.addItemCart(mCartModel)
+                destroyedList.clear()
+
+            }catch (e:Exception) {
+                Log.e("DINE IN CRASH",e.message.toString())
             }
-
-            if(prefProvider.getValue(ORDER_TYPE,"") == DINE_IN)
-                if(mCartModel.discountSelectdValue == null) {
-                    mCartModel.discountSelectdValue = 0.0
-                }
-
-            posRepository.addItemCart(mCartModel)
-            destroyedList.clear()
-
         }
 
     }
