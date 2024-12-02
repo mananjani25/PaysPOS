@@ -34,6 +34,7 @@ import com.pays.pos.R
 import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.DineInModel
 import com.pays.pos.data.model.GuestPaymentCalculationModel
+import com.pays.pos.data.model.requestModel.CashLogRequest
 import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.pays.pos.data.model.responseModel.GetTipReponse
 import com.pays.pos.data.model.responseModel.MagtekOnlineOrderRefundResponse
@@ -51,6 +52,7 @@ import com.pays.pos.databinding.ViewCustomDisplayBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.logger.CreateCustomerEvent
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.logger.SyncCustomerEvent
 import com.pays.pos.ui.adapter.ActiveTipsListAdapter
 import com.pays.pos.ui.adapter.DineInAdapter
@@ -88,7 +90,8 @@ class CustomDisplay(
     val lifecycleOwner: LifecycleOwner,
     private val dashBoardCategoryViewModel: DashBoardCategoryViewModel,
     val passcodeViewModel: PasscodeViewModel,
-    val dineInViewModel: DineInOrderTableViewModel
+    val dineInViewModel: DineInOrderTableViewModel,
+   /* val makeOneTimeReload:Boolean=false*/
 ) : Presentation(ContextThemeWrapper(context, R.style.CustomPresentationTheme), display), MyCallback, DineInAdapter.DineInCallback,
     ActiveTipsListAdapter.DiscountInterface {
 
@@ -417,6 +420,27 @@ class CustomDisplay(
                     t?.let {
                         if (it.isNotEmpty()){
                             btnSignUpOrCheckInMain.text=it
+                        }
+                    }
+                }
+            })
+
+            dashBoardCategoryViewModel.removedCustomerFromManualSaleObs.observe(lifecycleOwner,object:Observer<Boolean>{
+                override fun onChanged(t: Boolean?) {
+                    t?.let {
+                        if (it){
+                            dismiss()
+                            dismiss()
+                            binding.apply {
+                                txtCustomerName.text=""
+                                tvLoyaltyBalance.text=""
+                                tvMessage.text=resources.getString(R.string.loyalty_message)
+                            }
+//                            if (!makeOneTimeReload) {
+                            dashBoardCategoryViewModel.removedCustomerFromManualSaleObs.value=false
+
+                            dashBoardCategoryViewModel.reloadCustomerDisplay(it)
+//                            }
                         }
                     }
                 }
@@ -1060,7 +1084,10 @@ class CustomDisplay(
                     binding.tvLoyaltyPoints.text =
                         "${context.resources.getString(R.string.applied_loyalty_points)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
                 }
-                dashBoardCategoryViewModel.reloadCustomerDisplay()
+                /*dashBoardCategoryViewModel.reloadCustomerDisplay()*/
+//                if (!makeOneTimeReload) {
+                    dashBoardCategoryViewModel.reloadCustomerDisplay(false)
+//                }
             } else {
                 /*binding.tvLoyaltyBalance.invisible()
                 binding.tvLoyaltyPoints.invisible()
@@ -1084,7 +1111,10 @@ class CustomDisplay(
                 binding.splashLayout.post { binding.splashLayout.gone() }
                 binding.mainCartLayout.post { binding.mainCartLayout.visible() }
 
-                dashBoardCategoryViewModel.reloadCustomerDisplay()
+                /*dashBoardCategoryViewModel.reloadCustomerDisplay()*/
+//                if (!makeOneTimeReload) {
+                    dashBoardCategoryViewModel.reloadCustomerDisplay(false)
+//                }
 
 //                        binding.root.invalidate() // or
 //                        show()
@@ -2693,7 +2723,10 @@ class CustomDisplay(
                             customerGivenTip.value = true
                             employeeGivenTip = false
                         }
-
+                        /*TODO: Make cash_event call here with the same orderID*/
+                        if (tippedAmount>0) {
+                            makeCashEventCallToUpdateTip(tippedAmount)
+                        }
                         dashBoardCategoryViewModel.processingTipForCard.value = false
                         // dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=false
 
@@ -2707,6 +2740,22 @@ class CustomDisplay(
             }
 
         }
+    }
+
+    private fun makeCashEventCallToUpdateTip(tippedAmount: Double) {
+        val cashLogRequest = CashLogRequest(
+            tippedAmount,
+            prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
+            "in",
+            prefProvider.getValueInt(Constants.SERVER_ORDER_ID, -1),
+            prefProvider.getValueInt(Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY, -1),
+            "Tip added to the order",
+            prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
+            null,
+            null
+        )
+        dashBoardCategoryViewModel.makeCashInOutCallFromCustomerDisplay(cashLogRequest)
+
     }
 
     private fun showErrorLayout(message: String) {

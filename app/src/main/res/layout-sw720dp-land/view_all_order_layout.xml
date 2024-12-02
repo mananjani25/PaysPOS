@@ -26,9 +26,11 @@
             android:paddingHorizontal="@dimen/_10sdp">
 
             <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/orderIdLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.8"
+                android:padding="@dimen/_2sdp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -299,7 +301,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="visible">
+            android:visibility="visible"
+            >
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvOpenOrder"

@@ -411,7 +411,9 @@
             app:destination="@id/menuFragment"
             app:popUpToInclusive="true" />
 
-
+        <action
+            android:id="@+id/action_settings_to_stickyReceipt"
+            app:destination="@id/stickyReceiptSettings" />
     </fragment>
     <action
         android:id="@+id/action_global_settings"
@@ -1040,6 +1042,18 @@
         <action
             android:id="@+id/action_purchaseGiftCard_to_addCustomerToGiftCard"
             app:destination="@id/addCustomerToGiftCard" />
+        <action
+            android:id="@+id/action_purchaseGiftCard_to_plasticCardNumber"
+            app:destination="@id/plasticCardNumber" />
+    </fragment>
+
+    <fragment android:id="@+id/plasticCardNumber"
+        android:name="com.pays.pos.ui.fragments.eGiftCard.PlasticCardNumber"
+        android:label="@string/lbl_plastic_gift_card">
+
+        <action
+            android:id="@+id/action_plasticCardNumber_to_paymentBoldPosFragment"
+            app:destination="@id/paymentBoldPosFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -1817,6 +1831,9 @@
         <action
             android:id="@+id/action_addCustomerToGiftCard_to_paymentBoldPosFragment"
             app:destination="@id/paymentBoldPosFragment" />
+        <action
+            android:id="@+id/action_addCustomerToGiftCard_to_plasticCardNumber"
+            app:destination="@id/plasticCardNumber" />
     </fragment>
     <fragment
         android:id="@+id/addNewCustomerForGiftCard"
@@ -1834,5 +1851,10 @@
         android:id="@+id/balanceInquiry"
         android:name="com.pays.pos.ui.fragments.eGiftCard.BalanceInquiryFragment"
         android:label="@string/lbl_balance_inquiry"/>
+    <fragment
+        android:id="@+id/stickyReceiptSettings"
+        android:name="com.pays.pos.ui.fragments.settings.stickyreceipt.StickyReceiptSettings"
+        android:label="fragment_sticky_receipt_settings"
+        tools:layout="@layout/fragment_sticky_receipt_settings" />
 
 </navigation>

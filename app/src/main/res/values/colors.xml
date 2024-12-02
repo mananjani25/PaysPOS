@@ -139,4 +139,7 @@
 
     <color name="redColor">#FA0505</color>
     <color name="dark">#1D1D1F</color>
+
+    <color name="transparent">#00FFFFFF</color>
+    <color name="preAuthGreen">#3ACF29</color>
 </resources>

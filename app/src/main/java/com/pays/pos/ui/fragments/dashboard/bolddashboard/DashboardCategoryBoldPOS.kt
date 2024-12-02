@@ -16,6 +16,7 @@ import android.view.*
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
@@ -156,6 +157,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private val customerListViewModel by activityViewModels<CustomerListViewModel>()
     /*-------------Customer Loyalty-------------*/
 
+    /*This variable will be used to check if the orderID is to be printed in the sticky receipt */
+    private var printOrderIDInStickyPrinter: Boolean = true
+
     var isupdate = false
 
     //    this isOrderUpdate is used to track is the order is really updated or just update button is clicked to move to the All Orders Screen
@@ -285,7 +289,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
         }
 
+        lifecycleScope.launch(Dispatchers.Main) {
+            try {
+                printOrderIDInStickyPrinter =
+                    viewModel.getLabelPrinterSettingsData().printOrderId
+            } catch (e: Exception) {
 
+            }
+        }
         if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
             magTekViewModel.initPOSLink(requireContext(), makeMerchantDetailsCall = false)
         }
@@ -325,6 +336,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         sunmiFrameworkVersion =
             prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".")
                 .toTypedArray()
+
+        prefProvider.setValueInt(
+            Constants.SERVER_ORDER_ID, -1
+        )
+
         changeCustomerDisplayState()
         reloadCustomerDisplay()
 
@@ -459,7 +475,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private fun reloadCustomerDisplay() {
         viewModel.reloadCustomerDisplay.observe(viewLifecycleOwner,object:Observer<Boolean>{
             override fun onChanged(t: Boolean) {
-                if (t){
+                /*if (t){
                     getCustomerDisplay(requireContext())?.let {
                         presentation = CustomDisplay(
                             it,
@@ -471,7 +487,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         )
                     }
 
-                }
+                }*/
             }
         })
     }
@@ -513,7 +529,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private fun loadCustomerLocalList(currentpage: Int) {
 //        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-            var pageSize = "10"
+            var pageSize = "500"
             Log.d("loadCustomerLocalList::", "${currentpage}")
             val data = LinkedHashMap<String, String>()
             data["page"] = currentpage.toString()
@@ -545,9 +561,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     }
                 }
                 Status.LOADING -> {
-
                 }
                 Status.ERROR -> {
+                    prefProvider.setValueboolean("CUSTOMER_FETCHED", false)
+
                     if (!viewModel.loggingOut) {
                         if (isAdded && view!=null) {
                             viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
@@ -2615,6 +2632,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                     if (it?.id == item.categoryId) {
                                         if (it.categoryActive && it.printerEnable) {
                                             for (singularity in 1..item.quantity) {
+                                                if (printOrderIDInStickyPrinter){
                                                 add(
                                                     PrinterBuilder()
                                                         .styleBold(true)
@@ -2625,6 +2643,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                             "OrderId: ${createOrderResponse.data?.order.custom_order_id}"
                                                         )
                                                 )
+                                            }
 
                                                 actionFeedLine(1)
 

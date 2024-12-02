@@ -45,6 +45,7 @@ import com.google.gson.Gson
 import com.pays.pos.R
 import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.CancelOnlineWebOrderModel
+import com.pays.pos.data.model.PreAuthData
 import com.pays.pos.data.model.requestModel.OrderItemVariationAttribute
 import com.pays.pos.data.model.requestModel.RefundRequestModelOnlineOrder
 import com.pays.pos.data.model.responseModel.*
@@ -62,6 +63,7 @@ import com.pays.pos.data.remote.Constants.OPEN_ORDER_TAB
 import com.pays.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.pays.pos.data.remote.Constants.PHONE_ORDER
 import com.pays.pos.data.remote.Constants.PHONE_ORDER_TAB
+import com.pays.pos.data.remote.Constants.PRE_AUTH_DETAILS
 import com.pays.pos.data.remote.Constants.SHIPPING_ADDRESS
 import com.pays.pos.data.remote.Constants.SUNMI_PRINTER
 import com.pays.pos.data.remote.Constants.THIRD_PARTY_ORDER_TAB
@@ -76,6 +78,7 @@ import com.pays.pos.ui.adapter.AllOrderAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.onlineorder.OnlineDetailViewModel
 import com.pays.pos.ui.fragments.orders.ActiveOrderViewModel
+import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.ui.fragments.transactions.TransactionDetailsFragment.OnBluetoothPermissionGranted
@@ -131,6 +134,7 @@ class AllOrdersListingFragment(
     private var isPrint: Boolean = true
     private val viewModel by viewModels<AllOrdersViewModel>()
     private val ordersViewModel by activityViewModels<AllOrdersViewModel>()
+    private val paymentViewModel by activityViewModels<PaymentViewModel>()
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val onlineDetailViewModel by activityViewModels<OnlineDetailViewModel>()
     private val activeOrderViewModel by viewModels<ActiveOrderViewModel>()
@@ -149,6 +153,9 @@ class AllOrdersListingFragment(
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
     private var tipsList: List<GetTipReponse.Data> = listOf()
+
+    /*This variable will be used to check if the orderID is to be printed in the sticky receipt */
+    private var printOrderIDInStickyPrinter: Boolean = true
 
     /*Star label printer - START*/
     lateinit var settings: StarConnectionSettings
@@ -988,6 +995,14 @@ class AllOrdersListingFragment(
             }catch (e:Exception){}
         }
 
+        lifecycleScope.launch(Dispatchers.Main) {
+            try {
+                printOrderIDInStickyPrinter =
+                    dashboardViewModel.getLabelPrinterSettingsData().printOrderId
+            } catch (e: Exception) {
+
+            }
+        }
 //        viewModel.setCurrentDate(Calendar.getInstance(), "", "", orderStatus)
     }
 
@@ -1028,18 +1043,28 @@ class AllOrdersListingFragment(
         }
 
         endTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
-            val timecalender = Calendar.getInstance()
-            timecalender.set(Calendar.HOUR_OF_DAY, hour)
-            timecalender.set(Calendar.MINUTE, minute)
-            viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
-            /*checkFilter = true
+            var fromDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(viewModel.startDate.value).getTime() / 1000
+            var endDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(timeCalculateForStartEndTime(hour, minute, "isend")).getTime() / 1000
+            if (fromDate<=endDate) {
+                val timecalender = Calendar.getInstance()
+                timecalender.set(Calendar.HOUR_OF_DAY, hour)
+                timecalender.set(Calendar.MINUTE, minute)
+                viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
+                /*checkFilter = true
             currentPage = 1*/
-            if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30)
-                getAllOrders()
-            else {
+                if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30)
+                    getAllOrders()
+                else {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireActivity(),
+                        "Please Select date in 30 Days."
+                    ) { _, _ ->
+                    }
+                }
+            }else{
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
-                    "Please Select date in 30 Days."
+                    "The end date cannot be earlier than the start date. Please select a valid date range."
                 ) { _, _ ->
                 }
             }
@@ -1516,7 +1541,20 @@ class AllOrdersListingFragment(
             "UPDATE" -> {
                 prefProvider.setValue(OLD_ITEM_BASE_CUSTOM_ITEM, Gson().toJson(order.orderItems))
 
+            //    dashboardViewModel.authPaymentResponse = dashboardViewModel.allOrderResponse?.get(pos)
+                try {
+                    paymentViewModel.preAuthData = null
+                    paymentViewModel.preAuthData = PreAuthData(
+                        ecrRefNum = order.payments.first().ecrRefNum ?: "",
+                        refNum = order.payments.first().refNum ?: ""
+                    )
+                }catch (e:Exception) {
+                    paymentViewModel.preAuthData = null
+                }
+
                 prefProvider.setValueInt("ORDER_ID", -1)
+
+
 
                 dashboardViewModel.activeOrderTypeName = order.orderType
                 dashboardViewModel.activeOrderTypeText = order.orderTypeName
@@ -1844,6 +1882,19 @@ class AllOrdersListingFragment(
             "PAY" -> {
 
                 try {
+
+                   // dashboardViewModel.authPaymentResponse = dashboardViewModel.allOrderResponse?.get(pos)
+
+                    try {
+                        paymentViewModel.preAuthData = null
+                        paymentViewModel.preAuthData = PreAuthData(
+                            ecrRefNum = order.payments.first().ecrRefNum ?: "",
+                            refNum = order.payments.first().refNum ?: ""
+                        )
+                    }catch (_:Exception) {
+                        paymentViewModel.preAuthData = null
+                    }
+
                     prefProvider.setValueInt("ORDER_ID", -1)
 
                     dashboardViewModel.activeOrderTypeName = order.orderType
@@ -2169,6 +2220,7 @@ class AllOrdersListingFragment(
                     EventBus.getDefault()
                         .post(MessageEvent("${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  PAY -> prefException -> ${e.printStackTrace()}"))
                 }
+
 
 
                 findNavController().navigate(
@@ -5560,7 +5612,7 @@ class AllOrdersListingFragment(
                                     if (it?.id == item.categoryId) {
                                         if (it.categoryActive && it.printerEnable) {
                                             for (singularity in 1..item.quantity) {
-
+                                                if (printOrderIDInStickyPrinter){
                                                 add(
                                                     PrinterBuilder()
                                                         .styleBold(true)
@@ -5571,6 +5623,7 @@ class AllOrdersListingFragment(
                                                             "OrderId: ${orderData.custom_order_id}"
                                                         )
                                                 )
+                                            }
 
                                                 actionFeedLine(1)
 

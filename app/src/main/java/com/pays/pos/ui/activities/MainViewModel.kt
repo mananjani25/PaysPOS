@@ -13,10 +13,7 @@ import com.pays.pos.di.PrefProvider
 import com.pays.pos.utils.Event
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -138,7 +135,11 @@ class MainViewModel @Inject constructor(
 
                                 try {
                                     CoroutineScope(Dispatchers.IO).launch {
-                                        posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept)
+                                        runBlocking {
+                                            var printOrderId=posRepository.getLabelPrinterSettingsData().printOrderId
+                                            posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept,printOrderId)
+                                        }
+
                                     }
 
                                 } catch (e: Exception) {
