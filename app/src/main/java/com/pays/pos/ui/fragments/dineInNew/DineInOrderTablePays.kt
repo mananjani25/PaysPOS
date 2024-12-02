@@ -1814,6 +1814,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         bundle.putDouble("totalTaxB", taxGuest)
         bundle.putDouble("serviceChargeB", serviceChargeGuest)
         bundle.putDouble("dicountB", divideDiscount)
+        bundle.putInt("guestIndexForDineIn", guestIndexForDineIn)
 
 
         val adapterList = dineInTableAdapter.getList()
@@ -1840,7 +1841,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
         totalGuestCount = eligibleGuestsForDivision ?: 1
-        LogUtil.logE("TODAY", "totalGuestCount:  ${totalGuestCount}")
+        LogUtil.logE("TODAY", "dine_in_index:  ${guestIndexForDineIn}")
         LogUtil.logE("TODAY", "toFinalAmt:  ${toFinalAmt}")
 
         var divideCashDiscount = 0.0
@@ -1869,6 +1870,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
         val paymentAttr = GuestPaymentAttributes().apply {
                 amount = totalGuest
+                guestIndexForGuestPaymentDineIn = guestIndexForDineIn
                 cardName = ""
                 cardNumber = ""
                 cardType = ""
@@ -1886,6 +1888,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 order_id = orderId
                 paymentAttributes = listOf(GuestPaymentAttributes().apply {
                     amount = totalGuest
+                    guestIndexForGuestPaymentDineIn = guestIndexForDineIn
                     cardName = ""
                     cardNumber = ""
                     cardType = ""
