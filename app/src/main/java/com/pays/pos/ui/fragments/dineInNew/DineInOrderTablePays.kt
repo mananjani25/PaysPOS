@@ -12679,408 +12679,421 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
     fun checkForAutoFire(isCheckAndFire: Boolean, fireAll:Boolean = false) {
-        Log.d("###17MAR23", "checkForAutoFire: Called - Start - $isCheckAndFire")
-        var list: List<DineInModel> = arrayListOf()
-        list = dineInTableAdapter.getList() ?: arrayListOf()
-        val builder = ArrayList<String>()
-        var listItem: ArrayList<TbCartItem> = arrayListOf()
-        var listItemWithGuest: LinkedHashMap<String, ArrayList<TbCartItem>> = linkedMapOf()
 
-        for (i in 0 until list.size) {
+        try {
 
-            if (list[i].isHeader == 0 && list[i].itemsCount > 0) {
-                if (i < list.size - 1 && list[i + 1].isHeader == 1) {
-                    Log.e(TAG, "checkInsideEdge 1 ")
-                    var listItemLocal: ArrayList<TbCartItem> = arrayListOf()
-                    for (j in i + 1 until list.size) {
-                        if (list[j].isHeader == 1) {
-                            Log.e(TAG, "checkInsideEdge 2 ")
-                            list[j].item?.let { listItemLocal.add(it) }
-                            if (j == list.size - 1) {
+            Log.d("###17MAR23", "checkForAutoFire: Called - Start - $isCheckAndFire")
+            var list: List<DineInModel> = arrayListOf()
+            list = dineInTableAdapter.getList() ?: arrayListOf()
+            val builder = ArrayList<String>()
+            var listItem: ArrayList<TbCartItem> = arrayListOf()
+            var listItemWithGuest: LinkedHashMap<String, ArrayList<TbCartItem>> = linkedMapOf()
 
-                                var customer_name = list[i].customer?.first_name ?:""
+            for (i in 0 until list.size) {
 
-                                if(customer_name == "")
-                                   customer_name =  list[i].title?:""
+                if (list[i].isHeader == 0 && list[i].itemsCount > 0) {
+                    if (i < list.size - 1 && list[i + 1].isHeader == 1) {
+                        Log.e(TAG, "checkInsideEdge 1 ")
+                        var listItemLocal: ArrayList<TbCartItem> = arrayListOf()
+                        for (j in i + 1 until list.size) {
+                            if (list[j].isHeader == 1) {
+                                Log.e(TAG, "checkInsideEdge 2 ")
+                                list[j].item?.let { listItemLocal.add(it) }
+                                if (j == list.size - 1) {
+
+                                    var customer_name = list[i].customer?.first_name ?: ""
+
+                                    if (customer_name == "")
+                                        customer_name = list[i].title ?: ""
+
+                                    listItemWithGuest.put(customer_name, listItemLocal)
+                                    break
+                                }
+
+                            } else if (list[j].isHeader == 0) {
+                                Log.e(TAG, "checkInsideEdge 3 ")
+
+                                var customer_name = list[i].customer?.first_name ?: ""
+                                if (customer_name == "")
+                                    customer_name = list[i].title ?: ""
 
                                 listItemWithGuest.put(customer_name, listItemLocal)
-                                break
-                            }
-
-                        } else if (list[j].isHeader == 0) {
-                            Log.e(TAG, "checkInsideEdge 3 ")
-
-                            var customer_name = list[i].customer?.first_name ?:""
-                            if (customer_name == "")
-                                customer_name =  list[i].title?:""
-
-                           listItemWithGuest.put(customer_name, listItemLocal)
 
 //                            list[i].title?.let {
 //                                listItemWithGuest.put(it, listItemLocal)
 //                            }
 
-                            break
-                        }
+                                break
+                            }
 
+
+                        }
 
                     }
-
                 }
             }
-        }
-        Log.e(TAG, "getListOfHash  ${Gson().toJson(listItemWithGuest)}")
-        LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(list)}")
-        fireItemsList = arrayListOf()
+            Log.e(TAG, "getListOfHash  ${Gson().toJson(listItemWithGuest)}")
+            LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(list)}")
+            fireItemsList = arrayListOf()
 
 
-        var updatedItemIdsList = arrayListOf<Int>()
-        var countOfItemsToFire = 0
+            var updatedItemIdsList = arrayListOf<Int>()
+            var countOfItemsToFire = 0
 
-        list.forEachIndexed { itemIndex, it ->
-            if (it.isHeader == 1) {
-                it.item?.let {
+            list.forEachIndexed { itemIndex, it ->
+                if (it.isHeader == 1) {
+                    it.item?.let {
 
-                    /**
-                     * First condition works for manual printing and second will work for auto printing
-                     */
-                    if ( (!it.isFired && it.isChecked) || (!it.isFired && isCheckAndFire)) {
-                        fireItemsList.add(it)
-                        listItem.add(it)
-                        //it.isFired = true
-                        firedItemsList.add(itemIndex)
-
-                        //add items ids for api call
-                        it.orderItemId?.let {
-                            builder.add(it.toString())
-                        }
-                    } else {
-                        /***
-                         * If Item is already fired and then it gets updated then this logic will check for updated item to print
+                        /**
+                         * First condition works for manual printing and second will work for auto printing
                          */
-                        if(prefProvider.getValueboolean(DINE_IN_UPDATE,false)) {
-                            val foundItemList =
-                                dashboardViewModel.dineInItemsBeforeUpdate.filter { item ->
-                                    item.cartItemId == it.cartItemId &&
-                                            item.itemId == it.itemId &&
-                                            item.guestIndexForDineIn == it.guestIndexForDineIn &&
-                                            it.isFired && it.modifier_set_ids == item.modifier_set_ids
-                                }
+                        if ((!it.isFired && it.isChecked) || (!it.isFired && isCheckAndFire)) {
+                            fireItemsList.add(it)
+                            listItem.add(it)
+                            //it.isFired = true
+                            firedItemsList.add(itemIndex)
 
-                            if (foundItemList.isNotEmpty()) {
-                                val foundItem = foundItemList.first()
-
-                                /***
-                                 * Check what changes are done in item
-                                 */
-
-                                if (    it.itemQuantity != foundItem.itemQuantity ||
-                                        it.note != foundItem.note ||
-                                        !dashboardViewModel.checkModifierNew(it,foundItem)
-                                ) {
-
-
-                                    if(it.itemQuantity < foundItem.itemQuantity) {
-                                        val itemToAddInWastageModule = foundItem
-                                        foundItem.itemQuantity = foundItem.itemQuantity - it.itemQuantity
+                            //add items ids for api call
+                            it.orderItemId?.let {
+                                builder.add(it.toString())
+                            }
+                        } else {
+                            /***
+                             * If Item is already fired and then it gets updated then this logic will check for updated item to print
+                             */
+                            if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
+                                val foundItemList =
+                                    dashboardViewModel.dineInItemsBeforeUpdate.filter { item ->
+                                        item.cartItemId == it.cartItemId &&
+                                                item.itemId == it.itemId &&
+                                                item.guestIndexForDineIn == it.guestIndexForDineIn &&
+                                                it.isFired && it.modifier_set_ids == item.modifier_set_ids
                                     }
 
-                                    updatedItemIdsList.add(it.cartItemId)
+                                if (foundItemList.isNotEmpty()) {
+                                    val foundItem = foundItemList.first()
 
-                                    fireItemsList.add(it)
-                                    listItem.add(it)
-                                    //it.isFired = true
-                                    firedItemsList.add(itemIndex)
+                                    /***
+                                     * Check what changes are done in item
+                                     */
 
-                                     //add items ids for api call
-                                    it.orderItemId?.let {
-                                        builder.add(it.toString())
+                                    if (it.itemQuantity != foundItem.itemQuantity ||
+                                        it.note != foundItem.note ||
+                                        !dashboardViewModel.checkModifierNew(it, foundItem)
+                                    ) {
+
+
+                                        if (it.itemQuantity < foundItem.itemQuantity) {
+                                            val itemToAddInWastageModule = foundItem
+                                            foundItem.itemQuantity =
+                                                foundItem.itemQuantity - it.itemQuantity
+                                        }
+
+                                        updatedItemIdsList.add(it.cartItemId)
+
+                                        fireItemsList.add(it)
+                                        listItem.add(it)
+                                        //it.isFired = true
+                                        firedItemsList.add(itemIndex)
+
+                                        //add items ids for api call
+                                        it.orderItemId?.let {
+                                            builder.add(it.toString())
+                                        }
+                                    } else {
+
                                     }
                                 } else {
+                                    /***
+                                     * This will print checked and selected items which are not printed already
+                                     */
+                                    if (fireAll && it.isChecked && !it.isFired) {
+                                        fireItemsList.add(it)
+                                        listItem.add(it)
+                                        //it.isFired = true
+                                        firedItemsList.add(itemIndex)
 
+                                        //add items ids for api call
+                                        it.orderItemId?.let {
+                                            builder.add(it.toString())
+                                        }
+                                    } else {
+                                    }
                                 }
                             } else {
-                                /***
-                                 * This will print checked and selected items which are not printed already
-                                 */
-                                if(fireAll &&  it.isChecked && !it.isFired ) {
-                                    fireItemsList.add(it)
-                                    listItem.add(it)
-                                    //it.isFired = true
-                                    firedItemsList.add(itemIndex)
-
-                                    //add items ids for api call
-                                    it.orderItemId?.let {
-                                        builder.add(it.toString())
-                                    }
-                                } else { }
                             }
-                        } else { }
+                        }
                     }
                 }
             }
-        }
 
-        countOfItemsToFire = listItem.size
+            countOfItemsToFire = listItem.size
 
-        dashboardViewModel.apply {
-            dineInItemsBeforeUpdate = arrayListOf()
-        }
-
-        LogUtil.logE(TAG, "listItem:  ${Gson().toJson(listItem)}")
-        val serializedObject: String =
-            prefProvider.getValue(Constants.DINE_IN_UPDATE_LIST, "")
-        LogUtil.logE(TAG, "serializedObjectData:  ${Gson().toJson(serializedObject)}")
-        if (serializedObject.isNotEmpty()) {
-            var printOrderItems:
-                    ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
-                arrayListOf()
-
-            val gson = Gson()
-            val type = object :
-                TypeToken<List<GetOrderDetailsResponse.Data.OrderItem?>?>() {}.type
-            var arrayItems: ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
-                gson.fromJson<Any>(
-                    serializedObject,
-                    type
-                ) as ArrayList<GetOrderDetailsResponse.Data.OrderItem>
-
-            LogUtil.logE(TAG, "arrayItems:  ${Gson().toJson(arrayItems)}")
-            var itemIds: ArrayList<Int> = arrayListOf()
-            arrayItems.forEach {
-                itemIds.add(it.id)
+            dashboardViewModel.apply {
+                dineInItemsBeforeUpdate = arrayListOf()
             }
 
-            arrayItems.forEachIndexed { index, orderItem ->
-                if ((getOrderDetailsResponse?.orderItems?.size?.minus(1) ?: -1) >= index) {
-                    if (itemIds.contains(getOrderDetailsResponse?.orderItems?.get(index)?.id)) {
-                        LogUtil.logE("InsideLoop", "Inside")
-                        if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity != orderItem.quantity) {
-                            if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! > arrayItems[index].quantity) {
-                                getOrderDetailsResponse?.orderItems?.get(index)?.quantity =
-                                    getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! - arrayItems[index].quantity
-                                if (!printOrderItems.contains(
-                                        getOrderDetailsResponse?.orderItems?.get(
-                                            index
+            LogUtil.logE(TAG, "listItem:  ${Gson().toJson(listItem)}")
+            val serializedObject: String =
+                prefProvider.getValue(Constants.DINE_IN_UPDATE_LIST, "")
+            LogUtil.logE(TAG, "serializedObjectData:  ${Gson().toJson(serializedObject)}")
+            if (serializedObject.isNotEmpty()) {
+                var printOrderItems:
+                        ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
+                    arrayListOf()
+
+                val gson = Gson()
+                val type = object :
+                    TypeToken<List<GetOrderDetailsResponse.Data.OrderItem?>?>() {}.type
+                var arrayItems: ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
+                    gson.fromJson<Any>(
+                        serializedObject,
+                        type
+                    ) as ArrayList<GetOrderDetailsResponse.Data.OrderItem>
+
+                LogUtil.logE(TAG, "arrayItems:  ${Gson().toJson(arrayItems)}")
+                var itemIds: ArrayList<Int> = arrayListOf()
+                arrayItems.forEach {
+                    itemIds.add(it.id)
+                }
+
+                arrayItems.forEachIndexed { index, orderItem ->
+                    if ((getOrderDetailsResponse?.orderItems?.size?.minus(1) ?: -1) >= index) {
+                        if (itemIds.contains(getOrderDetailsResponse?.orderItems?.get(index)?.id)) {
+                            LogUtil.logE("InsideLoop", "Inside")
+                            if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity != orderItem.quantity) {
+                                if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! > arrayItems[index].quantity) {
+                                    getOrderDetailsResponse?.orderItems?.get(index)?.quantity =
+                                        getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! - arrayItems[index].quantity
+                                    if (!printOrderItems.contains(
+                                            getOrderDetailsResponse?.orderItems?.get(
+                                                index
+                                            )
                                         )
-                                    )
-                                ) {
-                                    printOrderItems.add(
-                                        getOrderDetailsResponse?.orderItems?.get(
-                                            index
-                                        )!!
-                                    )
-                                    var tbItem: TbCartItem = TbCartItem()
-                                    tbItem.categoryId =
-                                        getOrderDetailsResponse?.orderItems?.get(index)?.categoryId
-                                            ?: 0
-                                    tbItem.name =
-                                        getOrderDetailsResponse?.orderItems?.get(index)?.itemName
-                                            ?: ""
-                                    tbItem.price =
-                                        getOrderDetailsResponse?.orderItems?.get(index)?.price
-                                            ?: 0.0
-                                    tbItem.itemQuantity =
-                                        getOrderDetailsResponse?.orderItems?.get(index)?.quantity
-                                            ?: 0
-                                    if (getOrderDetailsResponse?.orderItems?.get(index)?.orderItemModifiers?.isNotEmpty() == true) {
-                                        var modifierList: ArrayList<Modifier> = arrayListOf()
-                                        getOrderDetailsResponse?.orderItems?.get(index)?.orderItemModifiers?.forEach {
-                                            val modifiers = Modifier()
-                                            modifiers.price = it.price
-                                            modifiers.name = it.name
-                                            modifiers.itemQuantity = it.quantity
-                                            modifiers.modifier_quantity = it.modifier_quantity!!
-                                            modifierList.add(modifiers)
+                                    ) {
+                                        printOrderItems.add(
+                                            getOrderDetailsResponse?.orderItems?.get(
+                                                index
+                                            )!!
+                                        )
+                                        var tbItem: TbCartItem = TbCartItem()
+                                        tbItem.categoryId =
+                                            getOrderDetailsResponse?.orderItems?.get(index)?.categoryId
+                                                ?: 0
+                                        tbItem.name =
+                                            getOrderDetailsResponse?.orderItems?.get(index)?.itemName
+                                                ?: ""
+                                        tbItem.price =
+                                            getOrderDetailsResponse?.orderItems?.get(index)?.price
+                                                ?: 0.0
+                                        tbItem.itemQuantity =
+                                            getOrderDetailsResponse?.orderItems?.get(index)?.quantity
+                                                ?: 0
+                                        if (getOrderDetailsResponse?.orderItems?.get(index)?.orderItemModifiers?.isNotEmpty() == true) {
+                                            var modifierList: ArrayList<Modifier> = arrayListOf()
+                                            getOrderDetailsResponse?.orderItems?.get(index)?.orderItemModifiers?.forEach {
+                                                val modifiers = Modifier()
+                                                modifiers.price = it.price
+                                                modifiers.name = it.name
+                                                modifiers.itemQuantity = it.quantity
+                                                modifiers.modifier_quantity = it.modifier_quantity!!
+                                                modifierList.add(modifiers)
+                                            }
+                                            tbItem.modifiers = modifierList
                                         }
-                                        tbItem.modifiers = modifierList
+
+                                        listItem.add(tbItem)
                                     }
-
-                                    listItem.add(tbItem)
                                 }
-                            }
 
-                        } else {
+                            } else {
+
+                            }
 
                         }
-
                     }
+
                 }
 
+                prefProvider.setValue(DINE_IN_UPDATE_LIST, "")
             }
 
-            prefProvider.setValue(DINE_IN_UPDATE_LIST, "")
-        }
 
 
-
-        if (listItem.isNotEmpty() && countOfItemsToFire!=0 ) {
-            var orderItemsIds: ArrayList<Int> = arrayListOf()
-            listItem.forEach {
-                it.orderItemId?.let { it1 -> orderItemsIds.add(it1) }
-            }
-            listItemWithGuest.forEach {
-                it.value.forEach { it1 ->
-                    var orderITemId = it1.orderItemId
-                    if (orderItemsIds.contains(it1.orderItemId) == false) {
-                        var listNewITems: ArrayList<TbCartItem> = arrayListOf()
-                        listNewITems.addAll(it.value)
-                        if (listNewITems.isNotEmpty()) {
-                            for (k in it.value.indices) {
-                                if (it.value[k].orderItemId == orderITemId) {
-                                    listNewITems.remove(it.value[k])
+            if (listItem.isNotEmpty() && countOfItemsToFire != 0) {
+                var orderItemsIds: ArrayList<Int> = arrayListOf()
+                listItem.forEach {
+                    it.orderItemId?.let { it1 -> orderItemsIds.add(it1) }
+                }
+                listItemWithGuest.forEach {
+                    it.value.forEach { it1 ->
+                        var orderITemId = it1.orderItemId
+                        if (orderItemsIds.contains(it1.orderItemId) == false) {
+                            var listNewITems: ArrayList<TbCartItem> = arrayListOf()
+                            listNewITems.addAll(it.value)
+                            if (listNewITems.isNotEmpty()) {
+                                for (k in it.value.indices) {
+                                    if (it.value[k].orderItemId == orderITemId) {
+                                        listNewITems.remove(it.value[k])
+                                    }
                                 }
+                                listItemWithGuest.put(it.key, listNewITems)
                             }
-                            listItemWithGuest.put(it.key, listNewITems)
                         }
                     }
                 }
-            }
 
-            // remove guest with no items
-            val it: MutableIterator<Map.Entry<String, ArrayList<TbCartItem>>> =
-                listItemWithGuest.entries.iterator()
-            while (it.hasNext()) {
-                if (it.next().value.isEmpty()) {
-                    it.remove()
+                // remove guest with no items
+                val it: MutableIterator<Map.Entry<String, ArrayList<TbCartItem>>> =
+                    listItemWithGuest.entries.iterator()
+                while (it.hasNext()) {
+                    if (it.next().value.isEmpty()) {
+                        it.remove()
+                    }
                 }
-            }
 
 
 
 
-            CoroutineScope(Dispatchers.IO).launch {
+                CoroutineScope(Dispatchers.IO).launch {
 
 
+                    if (kitchenPrinterList.isNotEmpty()) {
 
-                if(kitchenPrinterList.isNotEmpty() ){
-
-                    var autoPrintEnable = false
-                    kitchenPrinterList.forEach { kit ->
-                        if (kit.status) {
+                        var autoPrintEnable = false
+                        kitchenPrinterList.forEach { kit ->
+                            if (kit.status) {
 
 
-                            if (isCheckAndFire) {
-                                kit.orderTypes.forEach {
-                                    if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
-                                        LogUtil.logE(
-                                            TAG,
-                                            "printerSettings  ${Gson().toJson(it.printerSettings)}"
-                                        )
-                                        it.printerSettings.forEach {
-                                            if (it.printType.lowercase()
-                                                    .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
-                                            ) {
-
-                                                if (checkItemsforPrinterDineIn(
-                                                        listItem,
-                                                        kit.printerCategories.toCollection(
-                                                            arrayListOf()
-                                                        )
-                                                    )
+                                if (isCheckAndFire) {
+                                    kit.orderTypes.forEach {
+                                        if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
+                                            LogUtil.logE(
+                                                TAG,
+                                                "printerSettings  ${Gson().toJson(it.printerSettings)}"
+                                            )
+                                            it.printerSettings.forEach {
+                                                if (it.printType.lowercase()
+                                                        .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
                                                 ) {
-                                                    LogUtil.logE(TAG, "printerName  ${kit.name} ")
-                                                    autoPrintEnable = true
-                                                    if (!prefProvider.getValueboolean(
-                                                            IS_PRINTER_QUEUE_ENABLE,
-                                                            false
+
+                                                    if (checkItemsforPrinterDineIn(
+                                                            listItem,
+                                                            kit.printerCategories.toCollection(
+                                                                arrayListOf()
+                                                            )
                                                         )
                                                     ) {
-                                                        initKitchenPrinter(
-                                                            kit,
-                                                            Constants.KITCHEN,
-                                                            listItem,
-                                                            listItemWithGuest
+                                                        LogUtil.logE(
+                                                            TAG,
+                                                            "printerName  ${kit.name} "
                                                         )
+                                                        autoPrintEnable = true
+                                                        if (!prefProvider.getValueboolean(
+                                                                IS_PRINTER_QUEUE_ENABLE,
+                                                                false
+                                                            )
+                                                        ) {
+                                                            initKitchenPrinter(
+                                                                kit,
+                                                                Constants.KITCHEN,
+                                                                listItem,
+                                                                listItemWithGuest
+                                                            )
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
+
                                     }
-
-                                }
-                            } else {
-                                if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
-
-                                    if (checkItemsforPrinterDineIn(
-                                            listItem,
-                                            kit.printerCategories.toCollection(
-                                                arrayListOf()
-                                            )
+                                } else {
+                                    if (!prefProvider.getValueboolean(
+                                            IS_PRINTER_QUEUE_ENABLE,
+                                            false
                                         )
                                     ) {
 
-                                        initKitchenPrinter(
-                                            kit,
-                                            Constants.KITCHEN,
-                                            listItem,
-                                            listItemWithGuest
-                                        )
-                                    }
-                                }
+                                        if (checkItemsforPrinterDineIn(
+                                                listItem,
+                                                kit.printerCategories.toCollection(
+                                                    arrayListOf()
+                                                )
+                                            )
+                                        ) {
 
-
-                            }
-                        }
-                    }
-
-
-                    CoroutineScope(Dispatchers.Main).launch {
-
-                        /**
-                         * This will notify items already printed to kitchen
-                         */
-
-                        dashboardViewModel.itemsFiredToTheKitchenSuccesfully.observe(
-                            viewLifecycleOwner
-                        ) { it ->
-
-                            if (firedItemsList.isNotEmpty()) {
-                                if (it) {
-                                    dashboardViewModel.itemsFiredToTheKitchenSuccesfully.value =
-                                        false
-
-                                    val list = dineInTableAdapter.getList()
-
-                                    firedItemsList.forEach { index ->
-                                        list[index].item?.isFired = true
-                                        Log.e("DATA ", Gson().toJson(list[index]))
+                                            initKitchenPrinter(
+                                                kit,
+                                                Constants.KITCHEN,
+                                                listItem,
+                                                listItemWithGuest
+                                            )
+                                        }
                                     }
 
 
-                                    dineInTableAdapter.setList(ArrayList(list))
-                                    firedItemsList = mutableListOf()
-
-                                    if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
-                                        var fireAllIds = android.text.TextUtils.join(",", builder)
-                                        viewModel.fireItemToKitchen(
-                                            orderId ?: 0,
-                                            true,
-                                            fireAllIds,
-                                            true
-                                        )
-                                    }
                                 }
                             }
                         }
-                    }
 
 
+                        CoroutineScope(Dispatchers.Main).launch {
+
+                            /**
+                             * This will notify items already printed to kitchen
+                             */
+
+                            dashboardViewModel.itemsFiredToTheKitchenSuccesfully.observe(
+                                viewLifecycleOwner
+                            ) { it ->
+
+                                if (firedItemsList.isNotEmpty()) {
+                                    if (it) {
+                                        dashboardViewModel.itemsFiredToTheKitchenSuccesfully.value =
+                                            false
+
+                                        val list = dineInTableAdapter.getList()
+
+                                        firedItemsList.forEach { index ->
+                                            list[index].item?.isFired = true
+                                            Log.e("DATA ", Gson().toJson(list[index]))
+                                        }
 
 
-                } else {
-                    runOnUiThread {
-                        AlertUtils.showCustomAlert(
-                            requireContext(),
-                            "Please connect kitchen printer!"
-                        )
+                                        dineInTableAdapter.setList(ArrayList(list))
+                                        firedItemsList = mutableListOf()
+
+                                        if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
+                                            var fireAllIds =
+                                                android.text.TextUtils.join(",", builder)
+                                            viewModel.fireItemToKitchen(
+                                                orderId ?: 0,
+                                                true,
+                                                fireAllIds,
+                                                true
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+
+                    } else {
+                        runOnUiThread {
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                "Please connect kitchen printer!"
+                            )
+                        }
                     }
                 }
+
             }
 
+        }catch (e:Exception){
+            Log.e("DINE IN ERROR","${e.message}")
         }
-
-
     }
 
     fun progressDialog() {
