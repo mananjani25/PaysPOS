@@ -4790,6 +4790,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         } else {
             Log.e(TAG, "InsideDine inNoDine")
             model?.orderType?.let { prefProvider.setValue(ORDER_TYPE, it) }
+
+            viewModelPayment.preAuthData = null
             checkOrderType()
 
             addObserver()
