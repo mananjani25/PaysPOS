@@ -13,6 +13,7 @@ import androidx.annotation.Nullable
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.android.volley.AuthFailureError
 import com.android.volley.Request
 import com.android.volley.VolleyError
@@ -92,12 +93,26 @@ class KioskService : Service(), StatusChangeEventListener {
 
     private var oneItemPerReceipt: Boolean = true
 
-    private var sunmiFrameworkVersion :Array<String>? = null
+    private var sunmiFrameworkVersion: Array<String>? = null
+
+    /*This variable will be used to check if the orderID is to be printed in the sticky receipt */
+    private var printOrderIDInStickyPrinter: Boolean = true
 
     override fun onCreate() {
         super.onCreate()
 
-        sunmiFrameworkVersion = PrefProvider(this).getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".").toTypedArray()
+        sunmiFrameworkVersion =
+            PrefProvider(this).getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".")
+                .toTypedArray()
+
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                printOrderIDInStickyPrinter =
+                    posRepository.getLabelPrinterSettingsData().printOrderId
+            } catch (e: Exception) {
+
+            }
+        }
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -173,7 +188,11 @@ class KioskService : Service(), StatusChangeEventListener {
                         if (it.asJsonObject.has("location_id")) {
                             if ((PrefProvider(baseContext).getLocationId() == it.asJsonObject.get("location_id").asInt) && (it.asJsonObject.get(
                                     "new_order"
-                                ).toString().equals("true", ignoreCase = true) && (it.asJsonObject.get("order_type").toString().equals("\"KioskTakeout\"", true)))
+                                ).toString().equals(
+                                    "true",
+                                    ignoreCase = true
+                                ) && (it.asJsonObject.get("order_type").toString()
+                                    .equals("\"KioskTakeout\"", true)))
                             ) {
                                 getOrderFromServer(it.asJsonObject.get("order_id").asInt)
                             }
@@ -289,7 +308,14 @@ class KioskService : Service(), StatusChangeEventListener {
     ) {
         if (pos < kitchenList.size) {
             kitchenList.get(pos).let {
-                if (it.receiptPrintType.equals("Kitchen", ignoreCase = true) || it.receiptPrintType.equals("KitchenAndCustomer", ignoreCase = true) && it.status) {
+                if (it.receiptPrintType.equals(
+                        "Kitchen",
+                        ignoreCase = true
+                    ) || it.receiptPrintType.equals(
+                        "KitchenAndCustomer",
+                        ignoreCase = true
+                    ) && it.status
+                ) {
                     Log.d("Hey", Gson().toJson(it))
                     initKitchenPrinter(it, createOrderResponse)
                 }
@@ -386,16 +412,18 @@ class KioskService : Service(), StatusChangeEventListener {
                                     if (category.id == item.categoryId && category.printerEnable) {
                                         for (singularity in 1..item.quantity!!) {
 
-                                            add(
-                                                PrinterBuilder()
-                                                    .styleBold(true)
-                                                    .styleMagnification(
-                                                        MagnificationParameter(2, 2)
-                                                    )
-                                                    .actionPrintText(
-                                                        "OrderId:${orderData.data?.customOrderId}"
-                                                    )
-                                            )
+                                            if (printOrderIDInStickyPrinter) {
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleBold(true)
+                                                        .styleMagnification(
+                                                            MagnificationParameter(2, 2)
+                                                        )
+                                                        .actionPrintText(
+                                                            "OrderId:${orderData.data?.customOrderId}"
+                                                        )
+                                                )
+                                            }
 
                                             actionFeedLine(1)
 
@@ -801,7 +829,7 @@ class KioskService : Service(), StatusChangeEventListener {
                 }
             }
 
-        } else if(data.name.contains(LANDI_INNER_PRINTER, true)){
+        } else if (data.name.contains(LANDI_INNER_PRINTER, true)) {
             generateKitchenReceiptLandiInner(data, orderData)
         } else {
 
@@ -962,7 +990,11 @@ class KioskService : Service(), StatusChangeEventListener {
             onBluetoothPermissionGranted.onPermissionsGranted()
         }
     }
-    private fun generateKitchenReceiptLandiInner(kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters, orderData: KioskOrderResponse) {
+
+    private fun generateKitchenReceiptLandiInner(
+        kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        orderData: KioskOrderResponse
+    ) {
 //        val printer = com.dantsu.escposprinter.EscPosPrinter(BluetoothPrintersConnections.selectFirstPaired(), 203, 48f, 32)
 
         val receiptModel = orderData.data
@@ -1020,7 +1052,8 @@ class KioskService : Service(), StatusChangeEventListener {
                                     lineBreak()
 
                                     if (kitchenSettingModel.showOrderType) {
-                                        printCenter(receiptModel?.orderTypeName.toString(), isBold = true,
+                                        printCenter(
+                                            receiptModel?.orderTypeName.toString(), isBold = true,
                                             fontSize = FONT_SIZE_5X
                                         )
                                     }
@@ -1036,7 +1069,8 @@ class KioskService : Service(), StatusChangeEventListener {
                                         ) ||
                                         receiptModel?.orderType.equals(PHONE_ORDER, true)
                                     ) {
-                                        printCenter(receiptModel?.deliveryType.toString(),isBold = true,
+                                        printCenter(
+                                            receiptModel?.deliveryType.toString(), isBold = true,
                                             fontSize = FONT_SIZE_5X
                                         )
                                         lineBreak()
@@ -1098,11 +1132,13 @@ class KioskService : Service(), StatusChangeEventListener {
                                     if (receiptModel?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
 
                                         lineBreak()
-                                        printCenter("Order Note",isBold = true,
+                                        printCenter(
+                                            "Order Note", isBold = true,
                                             fontSize = FONT_SIZE_5X
                                         )
                                         lineBreak()
-                                        printCenter(receiptModel?.note.toString(),isBold = false,
+                                        printCenter(
+                                            receiptModel?.note.toString(), isBold = false,
                                             fontSize = FONT_SIZE_5X
                                         )
                                         lineBreak()
@@ -1114,7 +1150,8 @@ class KioskService : Service(), StatusChangeEventListener {
                                         if (receiptModel?.customer != null) {
 
                                             lineBreak()
-                                            printLeft("Customer Details", isBold = true,
+                                            printLeft(
+                                                "Customer Details", isBold = true,
                                                 fontSize = FONT_SIZE_5X
                                             )
                                             lineBreak()
@@ -1135,7 +1172,9 @@ class KioskService : Service(), StatusChangeEventListener {
                                             }*/
                                             try {
                                                 if (kitchenSettingModel.showCustomerName) {
-                                                    printLeft(receiptModel?.customer?.firstName + " " + receiptModel?.customer?.lastName,isBold = false,
+                                                    printLeft(
+                                                        receiptModel?.customer?.firstName + " " + receiptModel?.customer?.lastName,
+                                                        isBold = false,
                                                         fontSize = FONT_SIZE_5X
                                                     )
                                                 }
@@ -2724,6 +2763,14 @@ class KioskService : Service(), StatusChangeEventListener {
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         orderData: KioskOrderResponse
     ) {
+        sunmiFrameworkVersion =
+            PrefProvider(this).getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".")
+                .toTypedArray()
+
+        Log.d(
+            "KITCHEN_RECEIPT::",
+            "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+        )
 
         try {
 
@@ -2742,6 +2789,10 @@ class KioskService : Service(), StatusChangeEventListener {
             }
             SunmiPrintHelper.getInstance().lineWrap(1)
 
+            Log.d(
+                "KITCHEN_RECEIPT::",
+                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+            )
 
             if (kitchenSettingModel.showOrderType) {
                 PrintSunmiUtils.headerText(orderData.data?.orderTypeName.toString())
@@ -2771,57 +2822,193 @@ class KioskService : Service(), StatusChangeEventListener {
 
 
             }
-
-            PrintSunmiUtils.normalTextLarge(
-                Constants.getReceiptFormatDateFromUTCServer(
-                    applicationContext,
-                    orderData.data?.createdAt ?: ""
-                )
+            Log.d(
+                "KITCHEN_RECEIPT::",
+                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
             )
 
+            try {
+                try {
+                    PrintSunmiUtils.normalTextLarge(
+                        Constants.getReceiptFormatDateFromUTCServer(
+                            applicationContext,
+                            orderData.data?.createdAt ?: ""
+                        )
+                    )
+                } catch (e: Exception) {
+                    Log.d(
+                        "KITCHEN_RECEIPT::",
+                        "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber} -> ${
+                            Gson().toJson(e)
+                        }"
+                    )
+                }
 
 
+                try {
+                    Log.d(
+                        "KITCHEN_RECEIPT::",
+                        "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                    )
 //            PrintSunmiUtils.addHorizontalInner()
-            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
-                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
-            ) {
-                PrintSunmiUtils.addHorizontalInnerNew()
-            }else{
-                PrintSunmiUtils.addHorizontalInnerSmall()
-            }
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
+                            ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
+                        Log.d(
+                            "KITCHEN_RECEIPT::",
+                            "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                        )
 
-            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
-                PrintSunmiUtils.normalTextNew("\n")
-            }
+                        try {
+                            PrintSunmiUtils.addHorizontalInnerNew()
+                        } catch (e: Exception) {
+                            Log.d(
+                                "KITCHEN_RECEIPT::",
+                                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber} -> ${
+                                    Gson().toJson(e)
+                                }"
+                            )
+                        }
+                    } else {
+                        Log.d(
+                            "KITCHEN_RECEIPT::",
+                            "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                        )
 
-            if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
-                orderData.data?.orderItems?.let {
-                    addOrdersForKitchenOnlineOrderSunmiInnerKioskNew(
-                        it,
-                        customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
+                        try {
+                            PrintSunmiUtils.addHorizontalInnerSmall()
+                        } catch (e: Exception) {
+                            Log.d(
+                                "KITCHEN_RECEIPT::",
+                                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber} -> ${
+                                    Gson().toJson(e)
+                                }"
+                            )
+
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.d(
+                        "KITCHEN_RECEIPT::",
+                        "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber} -> ${
+                            Gson().toJson(e)
+                        }"
                     )
                 }
-            }else{
-                orderData.data?.orderItems?.let {
-                    addOrdersForKitchenOnlineOrderSunmiInnerKiosk(
-                        it,
-                        customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
+
+                try {
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
+                        Log.d(
+                            "KITCHEN_RECEIPT::",
+                            "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                        )
+
+                        PrintSunmiUtils.normalTextNew("\n")
+                    }
+                } catch (e: Exception) {
+                    Log.d(
+                        "KITCHEN_RECEIPT::",
+                        "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber} -> ${
+                            Gson().toJson(e)
+                        }"
                     )
                 }
+                Log.d(
+                    "KITCHEN_RECEIPT::",
+                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                )
+
+                try {
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
+                        Log.d(
+                            "KITCHEN_RECEIPT::",
+                            "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                        )
+
+                        try {
+                            orderData.data?.orderItems?.let {
+                                addOrdersForKitchenOnlineOrderSunmiInnerKioskNew(
+                                    it,
+                                    customerReceiptPrinters.printerCategories.toCollection(
+                                        arrayListOf()
+                                    )
+                                )
+                            }
+                        } catch (e: Exception) {
+                            Log.d(
+                                "KITCHEN_RECEIPT::",
+                                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}-> ${
+                                    Gson().toJson(e)
+                                }"
+                            )
+                        }
+                    } else {
+                        try {
+                            orderData.data?.orderItems?.let {
+                                addOrdersForKitchenOnlineOrderSunmiInnerKiosk(
+                                    it,
+                                    customerReceiptPrinters.printerCategories.toCollection(
+                                        arrayListOf()
+                                    )
+                                )
+                            }
+                        } catch (e: Exception) {
+                            Log.d(
+                                "KITCHEN_RECEIPT::",
+                                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}-> ${
+                                    Gson().toJson(e)
+                                }"
+                            )
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.d(
+                        "KITCHEN_RECEIPT::",
+                        "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber} -> ${
+                            Gson().toJson(e)
+                        }"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.d(
+                    "KITCHEN_RECEIPT::",
+                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber} -> ${
+                        Gson().toJson(e)
+                    }"
+                )
             }
+            Log.d(
+                "KITCHEN_RECEIPT::",
+                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+            )
 
             if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
 
                 PrintSunmiUtils.orderNoteInnerLarge(orderData.data?.note.toString())
             }
+            Log.d(
+                "KITCHEN_RECEIPT::",
+                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+            )
 
 
             if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
                 if (orderData.data?.customer != null) {
 
-                    PrintSunmiUtils.customerDetailsInner(true,sunmiFrameworkVersion)
+                    PrintSunmiUtils.customerDetailsInner(true, sunmiFrameworkVersion)
 
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt()!=39){
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                    ) {
                         PrintSunmiUtils.normalTextNew("\n")
                     }
 
@@ -2853,10 +3040,25 @@ class KioskService : Service(), StatusChangeEventListener {
 
 
             }
+            Log.d(
+                "KITCHEN_RECEIPT::",
+                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+            )
 
             PrintSunmiUtils.cutPaperInner()
+            Log.d(
+                "KITCHEN_RECEIPT::",
+                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+            )
+
         } catch (e: Exception) {
             // printerDialog.dismiss()
+            Log.d(
+                "KITCHEN_RECEIPT::",
+                "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber} -> ${
+                    Gson().toJson(e)
+                }"
+            )
             e.printStackTrace()
         }
 
@@ -2867,17 +3069,27 @@ class KioskService : Service(), StatusChangeEventListener {
 
         var contentIntent: PendingIntent? = null
         contentIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.getActivity(this, 0,  Intent(this, MainActivity::class.java), PendingIntent.FLAG_MUTABLE)
+            PendingIntent.getActivity(
+                this,
+                0,
+                Intent(this, MainActivity::class.java),
+                PendingIntent.FLAG_MUTABLE
+            )
         } else {
-            PendingIntent.getActivity(this, 0,  Intent(this, MainActivity::class.java), PendingIntent.FLAG_ONE_SHOT)
+            PendingIntent.getActivity(
+                this,
+                0,
+                Intent(this, MainActivity::class.java),
+                PendingIntent.FLAG_ONE_SHOT
+            )
         }
 
-      /*  val contentIntent = PendingIntent.getActivity(
-            this,
-            0,
-            Intent(this, MainActivity::class.java),
-            0
-        ) */
+        /*  val contentIntent = PendingIntent.getActivity(
+              this,
+              0,
+              Intent(this, MainActivity::class.java),
+              0
+          ) */
 
         val notification = NotificationCompat.Builder(this, notificationChannelId)
             .setContentTitle("Kiosk Sync")

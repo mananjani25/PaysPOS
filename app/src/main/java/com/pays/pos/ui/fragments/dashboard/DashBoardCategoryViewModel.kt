@@ -142,6 +142,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var wholetotalPrice = 0.0
     var tip = 0.0
     var order_note = ""
+
     /* This loggingOut variable is used to restrict the dialog which is shown after the user is logged out. the dialog is fetched from Customer's list api */
     var loggingOut = false
     var cartModel: CartModel? = null
@@ -171,11 +172,16 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _changeCustDispSignInButtonTitle = MutableLiveData<String>()
     val changeCustDispSignInButtonTitle: LiveData<String> = _changeCustDispSignInButtonTitle
 
+    public val removedCustomerFromManualSaleObs = MutableLiveData<Boolean>()
+
     private val _passcodeScreenActive = MutableLiveData<Boolean>()
     val passcodeScreenActive: LiveData<Boolean> = _passcodeScreenActive
 
     /*-----------Customer Loyalty------------*/
 
+
+    private val _printOrderIdInStickyReceipt = MutableLiveData<Boolean>()
+    val printOrderIdInStickyReceipt: LiveData<Boolean> = _printOrderIdInStickyReceipt
 
     val itemsFiredToTheKitchenSuccesfully = MutableLiveData<Boolean>()
 
@@ -376,6 +382,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun changeCustomerDispSignButtonTitle(value: String) {
         _changeCustDispSignInButtonTitle.postValue(value)
+    }
+
+    fun removedCustomerFromManualSale(value: Boolean) {
+        removedCustomerFromManualSaleObs.postValue(value)
     }
 
     fun setPasscodeScreenActive(value: Boolean) {
@@ -590,14 +600,16 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun getItemByCategoryId(id: Int) = posRepository.getItemByCategoryId(id)
 
 
-    fun refreshCartFragment(){
+    fun refreshCartFragment() {
         fragmentNeedToBeUpdated.postValue(true)
     }
 
     val reloadCustomerDisplay = MutableLiveData<Boolean>()
-    fun reloadCustomerDisplay(){
-        /* Uncomment the below code, if the customer Display is not refreshing everytime */
-//        reloadCustomerDisplay.postValue(true)
+    fun reloadCustomerDisplay(value: Boolean) {
+        if (value) {
+            /* Uncomment the below code, if the customer Display is not refreshing everytime */
+            reloadCustomerDisplay.postValue(value)
+        }
     }
 
     fun itemsByCat(id: Int): kotlinx.coroutines.flow.Flow<PagingData<TbItem>> = Pager(
@@ -605,7 +617,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             pageSize = 12, enablePlaceholders = false, initialLoadSize = 12
         )
     ) {
-            appDatabase.itemDao().getItemListByCategory(id)
+        appDatabase.itemDao().getItemListByCategory(id)
 
     }.flow.cachedIn(viewModelScope)
 /* The above .cachedIn(viewModelScope) is added by Rahul to solve the, Attempt to collect twice from pageEventFlow issue. */
@@ -8035,7 +8047,17 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 try {
                                     CoroutineScope(Dispatchers.IO).launch {
-                                        posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept)
+                                        runBlocking {
+                                            try{
+                                                var printOrderId=posRepository.getLabelPrinterSettingsData().printOrderId
+
+                                                posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept, printOrderId)
+                                            }catch (e:Exception){
+                                                posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept, true)
+                                            }
+
+                                        }
+
                                     }
 
                                 } catch (e: Exception) {
@@ -8754,6 +8776,17 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.getLabelPrinterSettingsData()
     }
 
+    fun updateOrderId(printOrderId: Boolean) {
+        viewModelScope.launch {
+            var insertedRows=posRepository.updateOrderId(printOrderId)
+            if (insertedRows>0){
+                _printOrderIdInStickyReceipt.postValue(true)
+            }else {
+                _printOrderIdInStickyReceipt.postValue(false)
+            }
+        }
+    }
+
     /*-------------Customer Loyalty------------------*/
     fun addCustomersList(currentPage: Int, data: List<TbCustomer>, lastCall: Boolean = false) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -8785,8 +8818,43 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
     //    ----------------- Dynamic Payments -----------------------------
 
+    fun makeCashInOutCallFromCustomerDisplay(cashLogRequest: CashLogRequest) {
+        viewModelScope.launch {
+            val resource = posRepository.cashInOut(cashLogRequest)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { response ->
+                        if (response?.status == 200) {
+
+                            resource.data?.let {
+
+                            }
+
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
+
     override fun onCleared() {
         Log.e("CheckOnClearedViewmodel", "DashboardCategoryBoldPOS")
         super.onCleared()
     }
+
+
 }

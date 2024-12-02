@@ -154,6 +154,9 @@ class AllOrdersListingFragment(
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
     private var tipsList: List<GetTipReponse.Data> = listOf()
 
+    /*This variable will be used to check if the orderID is to be printed in the sticky receipt */
+    private var printOrderIDInStickyPrinter: Boolean = true
+
     /*Star label printer - START*/
     lateinit var settings: StarConnectionSettings
     lateinit var printer: StarPrinter
@@ -992,6 +995,14 @@ class AllOrdersListingFragment(
             }catch (e:Exception){}
         }
 
+        lifecycleScope.launch(Dispatchers.Main) {
+            try {
+                printOrderIDInStickyPrinter =
+                    dashboardViewModel.getLabelPrinterSettingsData().printOrderId
+            } catch (e: Exception) {
+
+            }
+        }
 //        viewModel.setCurrentDate(Calendar.getInstance(), "", "", orderStatus)
     }
 
@@ -1032,18 +1043,28 @@ class AllOrdersListingFragment(
         }
 
         endTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
-            val timecalender = Calendar.getInstance()
-            timecalender.set(Calendar.HOUR_OF_DAY, hour)
-            timecalender.set(Calendar.MINUTE, minute)
-            viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
-            /*checkFilter = true
+            var fromDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(viewModel.startDate.value).getTime() / 1000
+            var endDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(timeCalculateForStartEndTime(hour, minute, "isend")).getTime() / 1000
+            if (fromDate<=endDate) {
+                val timecalender = Calendar.getInstance()
+                timecalender.set(Calendar.HOUR_OF_DAY, hour)
+                timecalender.set(Calendar.MINUTE, minute)
+                viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
+                /*checkFilter = true
             currentPage = 1*/
-            if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30)
-                getAllOrders()
-            else {
+                if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30)
+                    getAllOrders()
+                else {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireActivity(),
+                        "Please Select date in 30 Days."
+                    ) { _, _ ->
+                    }
+                }
+            }else{
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
-                    "Please Select date in 30 Days."
+                    "The end date cannot be earlier than the start date. Please select a valid date range."
                 ) { _, _ ->
                 }
             }
@@ -5591,7 +5612,7 @@ class AllOrdersListingFragment(
                                     if (it?.id == item.categoryId) {
                                         if (it.categoryActive && it.printerEnable) {
                                             for (singularity in 1..item.quantity) {
-
+                                                if (printOrderIDInStickyPrinter){
                                                 add(
                                                     PrinterBuilder()
                                                         .styleBold(true)
@@ -5602,6 +5623,7 @@ class AllOrdersListingFragment(
                                                             "OrderId: ${orderData.custom_order_id}"
                                                         )
                                                 )
+                                            }
 
                                                 actionFeedLine(1)
 

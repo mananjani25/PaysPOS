@@ -981,11 +981,11 @@
                     android:hint="@string/_xxxx_xxxx"
                     android:importantForAutofill="no"
                     android:inputType="number"
-                    android:maxLength="15"
+                    android:maxLength="17"
                     android:textColor="@color/btnColor"
                     android:textColorHint="@color/hint_color"
                     android:textSize="@dimen/_7mdpi"
-                    app:met_mask="####  ####" />
+                    app:met_mask="######  ###### ##### ####" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 

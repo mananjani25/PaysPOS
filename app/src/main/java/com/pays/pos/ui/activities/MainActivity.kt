@@ -433,7 +433,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         addCustomerViewModel.customerFetchedAndAdded.observe(this, object : Observer<TbCustomer> {
             override fun onChanged(customer: TbCustomer?) {
                 customer?.let {
-                    presentation.addCustomer(it)
+                    if(this@MainActivity::presentation.isInitialized)
+                        presentation.addCustomer(it)
                 }
             }
         })
@@ -3786,8 +3787,9 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             if (it.asJsonObject.has("customer_sync")){
                 if (it.asJsonObject.get("customer_sync").toString().equals("true")){
                     var firstName=it.asJsonObject.get("first_name")
+                    var lastName=it.asJsonObject.get("last_name")
                     var customerId=it.asJsonObject.get("customer_id")
-                    syncCustomer(firstName.asString,customerId.asInt)
+                    syncCustomer(it,customerId.asInt)
                 }
             }
 
@@ -3828,10 +3830,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
     }
 
-    private fun syncCustomer(firstName: String?, customerId: Int) {
-        firstName?.let {
-            addCustomerViewModel.fetchCustomerFromPhoneNumber(it,customerId=customerId,sync = true)
-        }
+    private fun syncCustomer(value:JsonElement, customerId: Int) {
+        addCustomerViewModel.fetchCustomerFromPhoneNumberSync(value, customerID =  customerId, sync = true)
     }
 
     private fun setSoundForOnlineOrder() {

@@ -15,6 +15,9 @@ interface LabelPrinterSettingsDao {
     @Query("SELECT * FROM TbLabelPrinterSettings LIMIT 1")
     suspend fun getLabelPrinterSettingsData(): TbLabelPrinterSettings
 
+    @Query("UPDATE TbLabelPrinterSettings SET printOrderId=:printOrderId")
+    suspend fun updateOrderId(printOrderId:Boolean):Int
+
     @Query("DELETE FROM TbLabelPrinterSettings")
     suspend fun delete()
 }

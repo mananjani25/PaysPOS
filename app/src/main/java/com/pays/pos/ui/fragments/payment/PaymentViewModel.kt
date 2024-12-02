@@ -23,6 +23,7 @@ import com.pays.pos.data.remote.Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY
 import com.pays.pos.data.remote.Constants.PHONE_ORDER
 import com.pays.pos.data.remote.Constants.PICK_UP
 import com.pays.pos.data.remote.Constants.PRE_AUTH_DETAILS
+import com.pays.pos.data.remote.Constants.SERVER_ORDER_ID
 import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.repositories.PosRepository
 import com.pays.pos.di.PrefProvider
@@ -530,6 +531,10 @@ open class PaymentViewModel @Inject constructor(
 
         prefProvider.setValueInt(
             PAYMENT_ID_FOR_CUSTOMER_DISPLAY, order.payments[order.payments.size - 1].id
+        )
+
+        prefProvider.setValueInt(
+            SERVER_ORDER_ID, order.id
         )
 
         val resource = posRepository.cashInOut(cashLogRequest)

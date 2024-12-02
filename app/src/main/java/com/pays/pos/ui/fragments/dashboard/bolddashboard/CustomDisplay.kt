@@ -2,13 +2,10 @@ package com.pays.pos.ui.fragments.dashboard.bolddashboard
 
 import android.app.Presentation
 import android.content.Context
-import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.os.Message
 import android.text.Editable
 import android.text.TextWatcher
@@ -20,7 +17,6 @@ import android.view.View
 import android.view.Window
 import android.widget.Toast
 import androidx.appcompat.view.ContextThemeWrapper
-import androidx.databinding.adapters.TextViewBindingAdapter.setText
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,6 +34,7 @@ import com.pays.pos.R
 import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.DineInModel
 import com.pays.pos.data.model.GuestPaymentCalculationModel
+import com.pays.pos.data.model.requestModel.CashLogRequest
 import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.pays.pos.data.model.responseModel.GetTipReponse
 import com.pays.pos.data.model.responseModel.MagtekOnlineOrderRefundResponse
@@ -93,7 +90,8 @@ class CustomDisplay(
     val lifecycleOwner: LifecycleOwner,
     private val dashBoardCategoryViewModel: DashBoardCategoryViewModel,
     val passcodeViewModel: PasscodeViewModel,
-    val dineInViewModel: DineInOrderTableViewModel
+    val dineInViewModel: DineInOrderTableViewModel,
+   /* val makeOneTimeReload:Boolean=false*/
 ) : Presentation(ContextThemeWrapper(context, R.style.CustomPresentationTheme), display), MyCallback, DineInAdapter.DineInCallback,
     ActiveTipsListAdapter.DiscountInterface {
 
@@ -422,6 +420,27 @@ class CustomDisplay(
                     t?.let {
                         if (it.isNotEmpty()){
                             btnSignUpOrCheckInMain.text=it
+                        }
+                    }
+                }
+            })
+
+            dashBoardCategoryViewModel.removedCustomerFromManualSaleObs.observe(lifecycleOwner,object:Observer<Boolean>{
+                override fun onChanged(t: Boolean?) {
+                    t?.let {
+                        if (it){
+                            dismiss()
+                            dismiss()
+                            binding.apply {
+                                txtCustomerName.text=""
+                                tvLoyaltyBalance.text=""
+                                tvMessage.text=resources.getString(R.string.loyalty_message)
+                            }
+//                            if (!makeOneTimeReload) {
+                            dashBoardCategoryViewModel.removedCustomerFromManualSaleObs.value=false
+
+                            dashBoardCategoryViewModel.reloadCustomerDisplay(it)
+//                            }
                         }
                     }
                 }
@@ -1065,7 +1084,10 @@ class CustomDisplay(
                     binding.tvLoyaltyPoints.text =
                         "${context.resources.getString(R.string.applied_loyalty_points)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
                 }
-                dashBoardCategoryViewModel.reloadCustomerDisplay()
+                /*dashBoardCategoryViewModel.reloadCustomerDisplay()*/
+//                if (!makeOneTimeReload) {
+                    dashBoardCategoryViewModel.reloadCustomerDisplay(false)
+//                }
             } else {
                 /*binding.tvLoyaltyBalance.invisible()
                 binding.tvLoyaltyPoints.invisible()
@@ -1089,7 +1111,10 @@ class CustomDisplay(
                 binding.splashLayout.post { binding.splashLayout.gone() }
                 binding.mainCartLayout.post { binding.mainCartLayout.visible() }
 
-                dashBoardCategoryViewModel.reloadCustomerDisplay()
+                /*dashBoardCategoryViewModel.reloadCustomerDisplay()*/
+//                if (!makeOneTimeReload) {
+                    dashBoardCategoryViewModel.reloadCustomerDisplay(false)
+//                }
 
 //                        binding.root.invalidate() // or
 //                        show()
@@ -1364,6 +1389,17 @@ class CustomDisplay(
         }
     }
 
+    fun showThankyouLayout(){
+        binding.apply {
+            mainCartLayout.gone()
+            thankYouLayout.gone()
+//            splashLayout.visible()
+            imgPaysSplash?.gone()
+            splashLoyalty?.gone()
+            thankYouLayout.visible()
+
+        }
+    }
     private fun getCustomerList() {
 
         try {
@@ -2687,7 +2723,10 @@ class CustomDisplay(
                             customerGivenTip.value = true
                             employeeGivenTip = false
                         }
-
+                        /*TODO: Make cash_event call here with the same orderID*/
+                        if (tippedAmount>0) {
+                            makeCashEventCallToUpdateTip(tippedAmount)
+                        }
                         dashBoardCategoryViewModel.processingTipForCard.value = false
                         // dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=false
 
@@ -2701,6 +2740,22 @@ class CustomDisplay(
             }
 
         }
+    }
+
+    private fun makeCashEventCallToUpdateTip(tippedAmount: Double) {
+        val cashLogRequest = CashLogRequest(
+            tippedAmount,
+            prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
+            "in",
+            prefProvider.getValueInt(Constants.SERVER_ORDER_ID, -1),
+            prefProvider.getValueInt(Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY, -1),
+            "Tip added to the order",
+            prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
+            null,
+            null
+        )
+        dashBoardCategoryViewModel.makeCashInOutCallFromCustomerDisplay(cashLogRequest)
+
     }
 
     private fun showErrorLayout(message: String) {

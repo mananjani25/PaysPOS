@@ -120,7 +120,6 @@ import com.pays.pos.utils.extensions.liveSnackBar
 import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.landi.LPrint
-import com.pays.pos.utils.landi.LPrint.printLeft
 import com.pays.pos.utils.printer.CommonPrinterTypes
 import com.pays.pos.utils.printer.LandiInnerPrinterPays
 import com.pays.pos.utils.printer.PrinterClass
@@ -233,6 +232,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     /*Added By Rahul */
     private var isOrderUpdated: Boolean = false
 
+    /*This variable will be used to check if the orderID is to be printed in the sticky receipt */
+    private var printOrderIDInStickyPrinter: Boolean = true
+
     private var printingCustomer: Boolean = false
     private var printingKitchen: Boolean = false
 
@@ -283,6 +285,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         isOrderUpdated = false
 
+        lifecycleScope.launch(Dispatchers.Main) {
+            try {
+                printOrderIDInStickyPrinter =
+                    dashboardViewModel.getLabelPrinterSettingsData().printOrderId
+            } catch (e: Exception) {
+
+            }
+        }
 //        3.3.39
         sunmiFrameworkVersion =
             prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".")
@@ -385,17 +395,23 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
                 )
                 Log.e(TAG, "checkTotalPrice:  ${totalPayableAmount}")
-                presentation.showWouldYouLikeToAddTipScreen(
-                    tipListViewModel,
-                    transactionViewModel,
-                    finalPaidAmount, paymentIdForCustomerDisplay,
-                    paymentType == "Card",
-                    paymentViewModel = paymentViewModel,
-                    magRequestUtils = magtekRequestUtils,
-                    apiModule1 = apiModule1,
-                    true,
-                    totalPayableAmount
-                )
+                var foundGiftCard=dashboardViewModel.currentCartItems.find { it.orderType.equals("GiftCard", ignoreCase = true) }
+
+                if (foundGiftCard==null) {
+                    presentation.showWouldYouLikeToAddTipScreen(
+                        tipListViewModel,
+                        transactionViewModel,
+                        finalPaidAmount, paymentIdForCustomerDisplay,
+                        paymentType == "Card",
+                        paymentViewModel = paymentViewModel,
+                        magRequestUtils = magtekRequestUtils,
+                        apiModule1 = apiModule1,
+                        true,
+                        totalPayableAmount
+                    )
+                }else{
+                    presentation.showThankyouLayout()
+                }
             }
         }
     }
@@ -13744,17 +13760,33 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         data.printerCategories.forEach { category ->
                                             if (category.id == item.categoryId && category.printerEnable) {
                                                 for (singularity in 1..item.quantity) {
-                                                    add(
-                                                        PrinterBuilder()
-                                                            .styleBold(true)
-                                                            .styleMagnification(
-                                                                MagnificationParameter(3, 3)
-                                                            )
-                                                            .actionPrintText(
-                                                                "OrderId:${receiptModel?.order?.custom_order_id}"
-                                                            )
-                                                    )
 
+                                                    if (printOrderIDInStickyPrinter){
+                                                        add(
+                                                            PrinterBuilder()
+                                                                .styleBold(true)
+                                                                .styleMagnification(
+                                                                    MagnificationParameter(3, 3)
+                                                                )
+                                                                .actionPrintText(
+                                                                    "OrderId:${receiptModel?.order?.custom_order_id}"
+                                                                )
+                                                        )
+                                                    }
+
+                                                  /*if (prefProvider.getValueboolean(Constants.STICKY_ORDER_ID,false)){
+                                                      add(
+                                                          PrinterBuilder()
+                                                              .styleBold(true)
+                                                              .styleMagnification(
+                                                                  MagnificationParameter(3, 3)
+                                                              )
+                                                              .actionPrintText(
+                                                                  "OrderId:${receiptModel?.order?.custom_order_id}"
+                                                              )
+                                                      )
+                                                  }
+*/
                                                     actionFeedLine(1)
 
                                                     add(

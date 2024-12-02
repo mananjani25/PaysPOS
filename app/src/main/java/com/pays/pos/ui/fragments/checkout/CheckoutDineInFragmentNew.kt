@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice
 import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.os.Message
 import android.text.Editable
 import android.text.InputType
@@ -64,12 +65,19 @@ import com.magtek.mobile.android.mtusdk.*
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
+import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.pays.pos.data.remote.Constants.DINE_IN
+import com.pays.pos.data.remote.Constants.IS_GIFT_CARD_REDEEM
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
 import com.pays.pos.ui.fragments.dineInNew.DineInOrderTableViewModelPays
+import com.pays.pos.ui.fragments.eGiftCard.GiftCardViewModel
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
+import com.pays.pos.utils.MethodUtils.Companion.toPrecision
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -99,6 +107,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     var serviceChargeAppliedList: ArrayList<OrderServiceChargesAttribute> = arrayListOf()
 
+    private val giftCardViewModel by activityViewModels<GiftCardViewModel>()
     private var requestCancel: Boolean = false
     private var orderId: Int? = null
     private var orderOfflineId: String = ""
@@ -762,6 +771,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             )
                         }
 
+                        if (it.data.order.paymentStatus == "Paid" && it.data.order.orderType == DINE_IN){
+                            prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, false)
+                        }
+
                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
 
                             findNavController().navigate(
@@ -877,6 +890,76 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     }
 
     private fun observeShowProgress() {
+        giftCardViewModel.giftCardError.observe(viewLifecycleOwner){ event->
+            event.getContentIfNotHandled()?.let {
+                AlertUtils.showCustomAlert(requireActivity(),it)
+            }
+        }
+
+        giftCardViewModel.giftCardCheckBalanceData.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it.data != null) {
+                    if (isAdded) {
+
+                        if (it.data.amount == 0.0) {
+                            binding.edtGiftCardNumber.setText("")
+                            prefProvider.setValueboolean(Constants.IS_GIFT_CARD_REDEEM, false)
+                            AlertUtils.showCustomAlertWithListenerWithOK(
+                                requireContext(),
+                                message = getString(R.string.msg_insufficient_gift_card_balance)
+                            ) { _, _ ->
+                            }
+                        } else {
+                            custom_paymentAmount = 0.0
+
+                            val actualTotalAmountWithTip =
+                                (WholetotalPrice / isSelectedCount) + tipAmount
+
+                            val giftCardBalanceAmount = it.data.amount
+
+                            if (actualTotalAmountWithTip < giftCardBalanceAmount) {
+                                val giftCardNumber =
+                                    binding.edtGiftCardNumber.rawText.toString().trim()
+                                prefProvider.setValueboolean(Constants.IS_GIFT_CARD_REDEEM, true)
+                                prefProvider.setValue(Constants.GIFT_CARD_NUMBER, giftCardNumber)
+                                prefProvider.setValue(Constants.GIFT_CARD_PIN, "")
+                                prefProvider.setValueboolean(
+                                    Constants.IS_ORDER_REDEEMABLE_WITH_GIFT_CARD,
+                                    true
+                                )
+                                val actualTotalAmount = (WholetotalPrice / isSelectedCount)
+                                paymentAmount = actualTotalAmount
+                                paymentviewModel.totalPayAmount(paymentAmount)
+                                redeemGiftCard()
+                            } else {
+                                prefProvider.setValueboolean(
+                                    Constants.IS_ORDER_REDEEMABLE_WITH_GIFT_CARD,
+                                    false
+                                )
+                                AlertUtils.showCustomAlertWithListenerWithOK(
+                                    requireContext(),
+                                    message = "Your GiftCard Balance is $${
+                                        giftCardBalanceAmount.toPrecision(
+                                            2
+                                        )
+                                    }. Please use split payment."
+                                ) { _, _ ->
+                                }
+                            }
+                            binding.edtGiftCardNumber.setText("")
+                        }
+                    } else {
+                        binding.edtGiftCardNumber.setText("")
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(),
+                            message = it.message
+                        ) { _, _ ->
+                        }
+                    }
+                }
+
+            }
+        }
 
         paymentviewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
@@ -918,6 +1001,25 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         }
 
 
+    }
+
+    // To purchase gift card with cash payment
+    private fun redeemGiftCard() {
+        subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
+
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_redeemGiftCard() dashboardViewModel.subTotalPrice-> ${
+                    Gson().toJson(dashboardViewModel.subTotalPrice)
+                } , isSelectedCount-> ${isSelectedCount}", true
+            )
+        )
+
+        totalServiceCharge =
+            String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
+        totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
+        totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
+        makeCashPayment()
     }
 
     private fun cashPaymentWithVariation() {
@@ -1235,7 +1337,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     errorDisplay("Please connect a payment device.")
                 }
             } else {
-                errorDisplay("Payment Amount is zero.")
+                errorDisplay(getString(R.string.payment_amount_is_zero))
             }
 
             dashboardViewModel.paymentType = "card"
@@ -1367,12 +1469,56 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             cardCVV
                         )
                     } else {
-                        errorDisplay("Payment Amount is zero.")
+                        errorDisplay(getString(R.string.payment_amount_is_zero))
                     }
                 }
             }
 
 
+        }
+        binding.txtChargeGC.setOnSingleClickListener {
+            it.isEnabled = false
+            val giftCardNumber = binding.edtGiftCardNumber.rawText.toString().trim()
+
+            if (giftCardNumber.isEmpty() || giftCardNumber.length != 8) {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    "Please enter 8-digit gift card number."
+                ){ _, _ ->
+                    it.isEnabled = true
+                }
+                return@setOnSingleClickListener
+            } else {
+                giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = giftCardNumber))
+            }
+            /**
+             * Added to prevent multiple api calls on multiple clicks.
+             */
+            Handler(Looper.getMainLooper()).postDelayed({
+                it.isEnabled = true  // Re-enable the button after delay
+            }, 3000)  // 1000ms = 1 second (adjust the delay based on your use case)
+        }
+
+        binding.lnrGiftCard.setOnSingleClickListener {
+            val cardAmount = binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
+                .replace(")", "").trim().toDouble()
+            val cashAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+            if (cardAmount != 0.00 && cashAmount != 0.00){
+                if (prefProvider.getValueboolean(Constants.IS_PAX_PAYMENT_FAILED, false)) {
+                    AlertUtils.showCustomAlert(
+                        requireContext(),
+                        getString(R.string.pax_transaction_error_message)
+                    )
+                } else {
+                    binding.frameLayoutId.visible()
+                    binding.relativeMain.gone()
+                    binding.llManualCard.gone()
+                    binding.llGiftCard.visible()
+                    isManualCard = false
+                }
+            } else {
+                errorDisplay(getString(R.string.payment_amount_is_zero))
+            }
         }
     }
 

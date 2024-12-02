@@ -137,7 +137,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     var isSelectedCount = 1
     private val paymentviewModel by activityViewModels<PaymentViewModel>()
     private val giftCardViewModel by activityViewModels<GiftCardViewModel>()
-//    private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
+
+    //    private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val magtekProViewModel by viewModels<MagtekViewModel>()
 
     var paymentType = "Cash"
@@ -452,32 +453,42 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun startDynamicPayment(name: String?, id: Int) {
-        if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
+        val cardAmount = binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
+            .replace(")", "").trim().toDouble()
+        val cashAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+        if (cardAmount != 0.00 && cashAmount != 0.00) {
+            if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
 
-            restrictTvCashClicks()
+                restrictTvCashClicks()
 
-            custom_paymentAmount = 0.0
+                custom_paymentAmount = 0.0
 
-            if (cashDiscountType.equals("CashDiscount", ignoreCase = true)) {
-                paymentviewModel.totalPayAmount(
-                    binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
-                        .replace(")", "").trim().toDouble()
+                if (cashDiscountType.equals("CashDiscount", ignoreCase = true)) {
+                    paymentviewModel.totalPayAmount(
+                        binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
+                            .replace(")", "").trim().toDouble()
+                    )
+                    paymentAmount =
+                        binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
+                            .replace(")", "").trim().toDouble()
+                } else {
+                    paymentviewModel.totalPayAmount(
+                        binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                    )
+                    paymentAmount =
+                        binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                }
+
+                dynamicCashPaymentWithVariation(
+                    dynamicPaymentName = name ?: "", dynamicPaymentId = id
                 )
-                paymentAmount =
-                    binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
-                        .replace(")", "").trim().toDouble()
             } else {
-                paymentviewModel.totalPayAmount(
-                    binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
-                )
-                paymentAmount =
-                    binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                errorDisplay("Please check your Network Connectivity.")
             }
+        } else {
+            errorDisplay(getString(R.string.payment_amount_is_zero))
 
-            dynamicCashPaymentWithVariation(dynamicPaymentName = name ?: "", dynamicPaymentId = id)
-        } else
-            errorDisplay("Please check your Network Connectivity.")
-
+        }
 
     }
 
@@ -2514,7 +2525,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             dismissProgressDialog()
                         }
                     })
-                    errorDisplay("Payment Amount is zero.")
+                    errorDisplay(getString(R.string.payment_amount_is_zero))
                 }
             } else {
                 runOnUiThread(object:java.lang.Runnable{
@@ -2726,17 +2737,24 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         binding.lnrGiftCard.setOnSingleClickListener {
-            if (prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
-                AlertUtils.showCustomAlert(
-                    requireContext(),
-                    getString(R.string.pax_transaction_error_message)
-                )
+            val cardAmount = binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
+                .replace(")", "").trim().toDouble()
+            val cashAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+            if (cardAmount != 0.00 && cashAmount != 0.00){
+                if (prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
+                    AlertUtils.showCustomAlert(
+                        requireContext(),
+                        getString(R.string.pax_transaction_error_message)
+                    )
+                } else {
+                    binding.frameLayoutId.visible()
+                    binding.relativeMain.gone()
+                    binding.llManualCard.gone()
+                    binding.llGiftCard.visible()
+                    isManualCard = false
+                }
             } else {
-                binding.frameLayoutId.visible()
-                binding.relativeMain.gone()
-                binding.llManualCard.gone()
-                binding.llGiftCard.visible()
-                isManualCard = false
+                errorDisplay(getString(R.string.payment_amount_is_zero))
             }
         }
 
@@ -2982,15 +3000,25 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         binding.txtChargeGC.setOnSingleClickListener {
             val giftCardNumber = binding.edtGiftCardNumber.rawText.toString().trim()
 
-            if (giftCardNumber.isEmpty() || giftCardNumber.length != 8) {
+            if (giftCardNumber.isEmpty() || giftCardNumber.length < 8) {
                 AlertUtils.showCustomAlert(
                     requireContext(),
                     "Please enter 8-digit gift card number."
                 )
                 return@setOnSingleClickListener
+            } else if (giftCardNumber.isNotEmpty() && giftCardNumber.length > 8) {
+                giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
+
             } else {
+
                 giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = giftCardNumber))
             }
+            /**
+             * Added to prevent multiple api calls on multiple clicks.
+             */
+            Handler(Looper.getMainLooper()).postDelayed({
+                it.isEnabled = true  // Re-enable the button after delay
+            }, 3000)  // 1000ms = 1 second (adjust the delay based on your use case)
         }
     }
 
@@ -3032,9 +3060,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
 
-        giftCardViewModel.giftCardError.observe(viewLifecycleOwner){ event->
+        giftCardViewModel.giftCardError.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                AlertUtils.showCustomAlert(requireActivity(),it)
+                AlertUtils.showCustomAlert(requireActivity(), it)
             }
         }
 
@@ -3143,6 +3171,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val result = posLink.ProcessTrans()
             Log.d("PAX_LOADER:: ", result.Code.toString() + " " + result.Msg)
             if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                Log.d("PAX_LOADER:: ", "2948")
                 val msg = Message()
                 msg.what = Constants.TRANSACTION_SUCCESSED
                 msg.obj = posLink.PaymentResponse
@@ -3178,6 +3207,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 )
 
                 if (resultCode == "000000") {
+                    Log.d("PAX_LOADER:: ", "2984")
                     Log.v("PAX_LOADER_5:: ", result.Code.toString() + " " + result.Msg)
                     // Store pax payment data to database
                     val paxData = PAXData(
@@ -3231,6 +3261,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             object : DialogInterface.OnClickListener {
                                 override fun onClick(p0: DialogInterface?, p1: Int) {
                                     try {
+                                        dismissProgressDialog()
                                         p0?.dismiss()
                                     } catch (e: Exception) {
                                     }
@@ -3244,6 +3275,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             } else {
                 CoroutineScope(Dispatchers.Main).launch {
                     ProgressUtils.dismissProgressDialog()
+                    /*                    if (retryCount <= 1) {
+                                            retryCount++
+                                            magtekProViewModel.initPOSLink(requireContext())
+                                        } else {
+                                            retryCount = 1*/
+                    dismissProgressDialog()
 /*                    if (retryCount <= 1) {
                         retryCount++
                         magtekProViewModel.initPOSLink(requireContext())

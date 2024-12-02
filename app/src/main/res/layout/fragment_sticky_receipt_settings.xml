@@ -7,117 +7,108 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:layout_marginHorizontal="@dimen/_40sdp"
         android:background="@color/bg_color"
-        android:orientation="vertical"
-        android:padding="@dimen/_10sdp">
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/view" />
+        android:orientation="vertical">
 
         <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/llCustomerReceiptSettings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="@dimen/_6sdp"
+                app:srcCompat="@drawable/ic_arrow_back" />
+
+            <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:elevation="@dimen/_10sdp"
-                android:gravity="start"
-                android:padding="@dimen/_5sdp"
-                android:text="@string/tv_customer_receipt_settings"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:layout_marginEnd="@dimen/_10sdp"
-                app:srcCompat="@drawable/ic_play" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/view" />
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/llKitchenReceiptSettings"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:elevation="@dimen/_10sdp"
-                android:fontFamily="@font/sf_pro_display_semibold"
-                android:gravity="start"
-                android:padding="@dimen/_5sdp"
-                android:text="@string/tv_kitchen_receipt_settings"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:layout_marginEnd="@dimen/_10sdp"
-                app:srcCompat="@drawable/ic_play" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/view" />
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/llStickyReceiptSettings"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:elevation="@dimen/_10sdp"
-                android:fontFamily="@font/sf_pro_display_semibold"
-                android:gravity="start"
-                android:padding="@dimen/_5sdp"
+                android:gravity="center"
                 android:text="@string/tv_sticky_receipt_settings"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_7mdpi" />
 
-            <androidx.appcompat.widget.AppCompatImageView
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtSave"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
+                android:layout_height="@dimen/_27sdp"
+                android:layout_gravity="center"
+                android:layout_weight="0.1"
+                android:background="@drawable/button_action_hover"
+                android:gravity="center"
+                android:padding="@dimen/_6sdp"
+                android:text="@string/save"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_7mdpi" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:layout_marginEnd="@dimen/_10sdp"
-                app:srcCompat="@drawable/ic_play" />
+                android:layout_weight="1"
+                android:fontFamily="@font/sf_pro_display_semibold"
+                android:gravity="start"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/tv_show_order_id_at_the_top"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/view" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:fontFamily="@font/sf_pro_display_semibold"
+                android:gravity="start"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/tv_order_id"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/swtOrderId"
+                style="@style/AppTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:scaleX="0.7"
+                android:scaleY="0.8"
+                android:showText="false"
+                android:checked="true"
+                android:thumb="@drawable/custom_thumb_printer_active_switch"
+                android:visibility="visible"
+                app:srcCompat="@drawable/ic_arrow_forward"
+                app:thumbTint="@color/switch_thumb_selector"
+                app:track="@drawable/custom_switch_track_printer"
+                app:trackTint="@color/switch_track_tint"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
     </LinearLayout>
-
-
 </layout>

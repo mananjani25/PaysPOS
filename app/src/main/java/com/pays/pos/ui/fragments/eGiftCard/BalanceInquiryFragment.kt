@@ -1,6 +1,7 @@
 package com.pays.pos.ui.fragments.eGiftCard
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,6 +46,23 @@ class BalanceInquiryFragment : Fragment() {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
+        }
+
+        giftCardViewModel.showGiftCardProgress.observe(viewLifecycleOwner){event ->
+            event.getContentIfNotHandled()?.let {
+                Log.e("ObserverdGiftCardProgress",it.toString())
+                if (it){
+                    ProgressUtils.showProgressDialog(requireActivity())
+
+                }
+                else{
+                    ProgressUtils.dismissProgressDialog()
+
+                }
+
+
+            }
+
         }
 
         giftCardViewModel.giftCardCheckBalanceData.observe(viewLifecycleOwner) { event ->
@@ -92,7 +110,12 @@ class BalanceInquiryFragment : Fragment() {
 
             if (inputGiftCardNumber.isNotEmpty() && inputGiftCardNumber.length == 8) {
                 giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = inputGiftCardNumber))
-            } else {
+            }
+            else if(inputGiftCardNumber.isNotEmpty() && (inputGiftCardNumber.length == 13 || inputGiftCardNumber.length == 17)){
+                giftCardViewModel.physcialGiftCardCheckBalance(GiftCardCheckBalanceRequest(name = inputGiftCardNumber))
+
+            }
+            else {
                 AlertUtils.showCustomAlert(requireContext(), "Please enter 8-digit gift card number.")
                 return@setOnClickListener
             }

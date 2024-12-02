@@ -34,6 +34,9 @@ object Constants {
     const val OLD_ITEM: String = "OLD_ITEM"
     const val OLD_ITEM_BASE: String = "OLD_ITEM_BASE"
 
+    /*This variable will track if the order id should be printed in Sticky Receipt*/
+//    const val STICKY_ORDER_ID: String = "STICKY_ORDER_ID"
+
     /**
      * This will hold old Item list when "UPDATE" from all orders is clicked
      * **/
@@ -210,6 +213,7 @@ object Constants {
     const val EMPLOYEES = "employees"
     const val CUSTOMERS = "customers"
     const val CUSTOMERS_SEARCH = "customers/search"
+    const val CUSTOMER_SEARCH_BY_ID = "customers/search_by_id"
     const val EMPLOYEES_UPDATE_DELETE = "employees/{id}"
     const val DISCOVERY_INTERVAL = 500
     const val EMPLOYEES_TIMESHEET = "employees/timesheet"
@@ -803,6 +807,7 @@ object Constants {
     const val CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE = "cashDiscountSurchargeAmountType"
     const val CASH_DISCOUNT_SURCHARGE_RATE = "cashDiscountSurchargeRate"
 
+    const val SERVER_ORDER_ID = "server_order_id"
 
     const val IS_UPDATE_ORDER = "is_update_order"
     const val IS_UPDATE_ORDER_ID = "is_update_order_id"
@@ -841,6 +846,7 @@ object Constants {
     const val IS_GIFT_CARD_REDEEM = "is_gift_card_redeem"
     const val IS_ORDER_REDEEMABLE_WITH_GIFT_CARD = "is_order_redeemable_with_gift_card"
     const val GIFT_CARD_NUMBER = "gift_card_number"
+    const val PHYSICAL_GIFT_CARD_NUMBER = "physical_gift_card_number"
     const val GIFT_CARD_PIN = "gift_card_pin"
     const val IS_ADD_VALUE_IN_GIFT_CARD = "is_add_value_in_gift_card"
 
@@ -861,6 +867,10 @@ object Constants {
     const val PERMISSION_BLUETOOTH_ADMIN = 2
     const val PERMISSION_BLUETOOTH_CONNECT = 3
     const val PERMISSION_BLUETOOTH_SCAN = 4
+
+    const val SOAP_ACTION = "https://www.sc-solutions.com/SmartTrackSE/RequestGateway/AuthenticateAndAuthorizeTransaction"
+    const val NAMESPACE = "https://www.sc-solutions.com/SmartTrackSE/RequestGateway"
+    const val ENDPOINT_URL = "https://demo.ecardsystems.net/requestgatewaydemo/requestgatewaywebservice.asmx"
 
     fun createCloudPrinter(ipAddress: String, portNo: Int): CloudPrinter {
         return CloudPrinterBuilder.buildPrinter(ipAddress, portNo)
