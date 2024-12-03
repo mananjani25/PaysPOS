@@ -16,7 +16,8 @@ class PriceTextWatcher(private val editText: AppCompatEditText, private val data
 
             val cleanString: String = s.replace("""[$,.]""".toRegex(), "")
 
-            val parsed = cleanString.trim().toDouble()
+//            val parsed = cleanString.trim().toDouble()
+            val parsed = cleanString.trim().toDoubleOrNull() ?: 0.0
             val formatted = NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
 
             current = formatted
