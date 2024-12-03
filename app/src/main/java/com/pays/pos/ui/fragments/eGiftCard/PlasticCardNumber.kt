@@ -58,6 +58,7 @@ class PlasticCardNumber : Fragment() {
     }
 
     private fun obserVer() {
+
          dashboardViewModel.physicalcardexistsornot.observe(viewLifecycleOwner,{
              it.getContentIfNotHandled()?.let {
 
