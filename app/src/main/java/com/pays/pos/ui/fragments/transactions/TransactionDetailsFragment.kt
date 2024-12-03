@@ -399,7 +399,14 @@ class TransactionDetailsFragment : Fragment() {
                                 ProgressUtils.showProgressDialog(requireActivity())
                             }
                             checkIfTransactionIsVoided()
-                        } else {
+                        }
+                        else if(prefProvider.getValue(
+                                Constants.VALOR_APP_ID, ""
+                            ).isNotEmpty()){
+                            /* Perform Valor Refund */
+
+                        }
+                        else {
                             activity?.let {
                                 AlertUtils.showCustomAlertWithListenerWithOK(
                                     it,

@@ -857,6 +857,7 @@ object Constants {
     const val UPDATED_CARTMODEL_ID = "updated_cartmodel_id"
 
     /*-------Valor--------*/
+    const val VALOR = "VALOR"
     const val VALOR_APP_ID = "VALOR_APP_ID"
     const val VALOR_APP_KEY = "VALOR_APP_KEY"
     const val VALOR_EPI = "VALOR_EPI"

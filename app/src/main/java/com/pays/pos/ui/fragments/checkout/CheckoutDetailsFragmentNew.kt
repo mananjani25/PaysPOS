@@ -4335,6 +4335,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             txnid?.let {
                 if (RefNumber.isEmpty()){
                     RefNumber=it
+                    ExtData=Constants.VALOR
                 }
             }
 
