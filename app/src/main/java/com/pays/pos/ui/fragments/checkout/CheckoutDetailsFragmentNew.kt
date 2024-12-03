@@ -3600,19 +3600,31 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     // Split total amount as per user's split choice
+
     private fun splitAllAmounts(TAG: String, amount: Double) {
+
+        val currentAmountString = prefProvider.getValue(TAG, "")
+
+        // Check if the value is empty, and set a default value (0.0) if it is
+        val currentAmount = if (currentAmountString.isNotEmpty()) {
+            currentAmountString.toDouble()
+        } else {
+            0.0 // Default value if the string is empty
+        }
         EventBus.getDefault().post(
             MessageEvent(
                 "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_splitAllAmounts(...) prefProvider.getValue(TAG...= ${
-                    prefProvider.getValue(
-                        TAG,
-                        ""
-                    ).toDouble()
+                    currentAmount
                 }, amount= ${amount}"
             )
         )
-        val remainingValue = prefProvider.getValue(TAG, "").toDouble() - amount
-        prefProvider.setValue(TAG, String.format("%.2f", remainingValue))
+        // Calculate the remaining value
+        val remainingValue = currentAmount - amount
+
+        // Store the remaining value back in prefProvider
+        prefProvider.setValue(TAG, String.format(Locale.ROOT, "%.2f", remainingValue))
+
+        // Log the updated value
         Log.d(TAG, "splitAllAmounts: " + prefProvider.getValue(TAG, "").toDouble())
     }
 
