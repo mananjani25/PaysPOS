@@ -602,8 +602,12 @@ class DashBoardCategoryViewModel @Inject constructor(
         fragmentNeedToBeUpdated.postValue(true)
     }
 
+    /*if (value) {
+        *//* Uncomment the below code, if the customer Display is not refreshing everytime *//*
+        reloadCustomerDisplay.postValue(value)
+    }*/
     val reloadCustomerDisplay = MutableLiveData<Boolean>()
-    fun reloadCustomerDisplay(){
+    fun reloadCustomerDisplay(value:Boolean){
         /* Uncomment the below code, if the customer Display is not refreshing everytime */
 //        reloadCustomerDisplay.postValue(true)
     }
