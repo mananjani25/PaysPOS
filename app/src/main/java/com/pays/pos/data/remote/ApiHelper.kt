@@ -32,6 +32,7 @@ import com.pays.pos.data.model.requestModel.*
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardAddValueRequest
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.requestModel.giftCard.request.SellGiftCardRequestModel
+import com.pays.pos.ui.fragments.eGiftCard.PlasticCardNumber
 import com.pays.pos.utils.FileUtils.getContentType
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
@@ -101,6 +102,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun syncVenueDetails(terminalId: Int, timeStamp: String) =
         getResult { apiService.syncVenueDetails(terminalId, true, timeStamp) }
+
+    suspend fun checkPhysicalCardExistsOrNot(cardNumber: String) =
+        getResult { apiService.checkPhysicalCardExistOrNot(cardNumber) }
 
 
     suspend fun updateTransactionLockScreen(lock_screen_after_each_transaction: Boolean) =

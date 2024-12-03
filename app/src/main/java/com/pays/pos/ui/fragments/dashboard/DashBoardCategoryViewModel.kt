@@ -162,6 +162,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _clickTakeOut = MutableLiveData<Event<Boolean>>()
     val clickTakeOut: LiveData<Event<Boolean>> = _clickTakeOut
 
+    private val _physicalGiftCardCheck = MutableLiveData<Event<Int>>()
+    val physicalcardexistsornot: LiveData<Event<Int>> = _physicalGiftCardCheck
+
+
     private val _earnedLoyaltyPoints = MutableLiveData<Event<Int>>()
     val earnedLoyaltyPoints: LiveData<Event<Int>> = _earnedLoyaltyPoints
 
@@ -8791,5 +8795,43 @@ class DashBoardCategoryViewModel @Inject constructor(
     override fun onCleared() {
         Log.e("CheckOnClearedViewmodel", "DashboardCategoryBoldPOS")
         super.onCleared()
+    }
+
+    fun checkCardExistOrNot(cardNumber: String) {
+
+        _showProgress.value = Event(true)
+            viewModelScope.launch {
+                var resource = posRepository.checkPhysicalCardExistsOrNot(cardNumber)
+
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        resource.data.let { response ->
+                            if (response?.status == 200) {
+                                _showProgress.value = Event(false)
+
+                                    _physicalGiftCardCheck.value = Event(response?.status?: 400)
+
+
+                            } else {
+                                _physicalGiftCardCheck.value= Event(response?.status?: 400)
+                            }
+                        }
+                    }
+
+                    Status.ERROR -> {
+                        _snackbarText.value = Event(resource.message)
+                        _showProgress.value = Event(false)
+                        _physicalGiftCardCheck.value= Event(resource.data?.status ?: 400)
+                    }
+
+                    Status.LOADING -> {
+                        _showProgress.value = Event(true)
+                    }
+                }
+            }
+
+
+
+
     }
 }

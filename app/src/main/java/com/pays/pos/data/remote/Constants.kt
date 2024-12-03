@@ -347,6 +347,8 @@ object Constants {
     const val CATEGORY = "categories"
 
     const val IS_PAYMENT_SCREEN = "is_payment_screen"
+    const val CHECK_PHYSICAL_CARD_EXIST_OR_NOT = "check_gift_card"
+
 
     const val WIFI = "Wifi"
     const val BLUETOOTH = "Bluetooth"

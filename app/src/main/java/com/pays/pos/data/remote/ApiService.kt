@@ -29,6 +29,7 @@ import com.pays.pos.data.remote.Constants.CASH_EVENTS
 import com.pays.pos.data.remote.Constants.CATEGORY
 import com.pays.pos.data.remote.Constants.CATEGORY_UPDATE_DELETE
 import com.pays.pos.data.remote.Constants.CHECK_PERMISSION_MANAGER
+import com.pays.pos.data.remote.Constants.CHECK_PHYSICAL_CARD_EXIST_OR_NOT
 import com.pays.pos.data.remote.Constants.CLOCK_OUT
 import com.pays.pos.data.remote.Constants.CREATE_QUEUE_PRINTER
 import com.pays.pos.data.remote.Constants.CUSTOMERS
@@ -283,6 +284,9 @@ interface ApiService {
         @Query("time_stamp") timeStamp: String = "",
         @Query("new_response") newResponse: Boolean = true
     ): VenueDetailsResponse
+
+    @GET(CHECK_PHYSICAL_CARD_EXIST_OR_NOT)
+    suspend fun checkPhysicalCardExistOrNot(@Query("name")cardNumber:String):BaseResponse
 
     @GET(ONLINE_ORDER_NOTIFICATION_COUNT)
     suspend fun getCountOnlineOrdering(): OnlineOrderNotificationCount

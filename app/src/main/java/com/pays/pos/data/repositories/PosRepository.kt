@@ -173,6 +173,7 @@ class PosRepository @Inject constructor(
         ),
         /* prefProvider.getValue(SYNC_SETTING_TIME_STAMP, "")*/""
     )
+    suspend fun checkPhysicalCardExistsOrNot(cardNumber:String) = apiHelperNew.checkPhysicalCardExistsOrNot(cardNumber)
 
     suspend fun getOnlineOrderNotificationCount() = apiHelperNew.getOnlineOrderCountNoti()
 

@@ -53,7 +53,109 @@ class PlasticCardNumber : Fragment() {
         getData()
         onClick()
         onClickKeypad()
+        obserVer()
 
+    }
+
+    private fun obserVer() {
+         dashboardViewModel.physicalcardexistsornot.observe(viewLifecycleOwner,{
+             it.getContentIfNotHandled()?.let {
+
+             if (it != 200){
+
+                 AlertUtils.showCustomAlert(requireContext(),"Gift Card number has already been taken.")
+             }else{
+                 prefProvider.setValue(
+                     Constants.CUSTOMER_NAME,
+                     customer?.first_name + " " + customer?.last_name
+                 )
+
+                 prefProvider.setValue(Constants.PHYSICAL_GIFT_CARD_NUMBER,binding.edtAmount?.text.toString().trim())
+
+                 prefProvider.setValue(
+                     Constants.RECEIPT_CUSTOMER_NAME,
+                     customer?.first_name + " " + customer?.last_name
+                 )
+                 var orderTypeIdFromDb: Int = 0
+                 synchronized(this) {
+                     CoroutineScope(Dispatchers.IO).launch {
+                         orderTypeIdFromDb = dashboardViewModel.orderTypeByName(Constants.TAKEOUT)
+                     }
+                 }
+                 customer?.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
+
+                 prefProvider.saveCustomerData(customer)
+
+                 prefProvider.setValue("PaidAmount", "")
+                 prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+                 prefProvider.setValueInt("cardCount", 0)
+                 prefProvider.setValue(Constants.SUB_TOTAL, "")
+                 prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+                 prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+                 prefProvider.setValue(Constants.TIP, "")
+                 prefProvider.setValue(Constants.TAX_CHARGE, "")
+                 prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+
+                 dashboardViewModel.deleteCart()
+
+                 prefProvider.setValue(Constants.ORDER_TYPE, Constants.GIFT_CARD)
+                 prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.GIFT_CARD_NAME)
+                 prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)
+
+                 val cm = CartModel()
+                 val tbItem = TbCartItem()
+                 tbItem.name = "Physical Gift Card"
+                 tbItem.quantity = 1
+                 tbItem.itemQuantity = 1
+                 val totalPrice =
+                     prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0").toDouble()
+                 tbItem.price = totalPrice
+                 tbItem.employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+                 tbItem.orderTypeId = orderTypeIdFromDb
+                 tbItem.orderType = Constants.GIFT_CARD
+                 tbItem.orderTypeName = Constants.GIFT_CARD
+
+                 cm.apply {
+                     employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+                     terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+                     isOpenOrder = false
+                     orderTypeId = orderTypeIdFromDb
+                     orderType = Constants.GIFT_CARD
+                     orderTypeName = Constants.GIFT_CARD
+                     locationId = prefProvider.getLocationId()
+                 }
+                 Log.e(TAG, "checkItems: ${Gson().toJson(tbItem)}")
+
+                 dashboardViewModel.addCart(cm)
+                 dashboardViewModel.addItemToCartItems(tbItem)
+
+
+                 CoroutineScope(Dispatchers.IO).launch {
+                     delay(100)
+
+                     runOnUiThread(kotlinx.coroutines.Runnable {
+                         val bundle = Bundle()
+                         bundle.putBoolean("update", true)
+                         bundle.putDouble("totalPrice", totalPrice)
+                         bundle.putDouble("finalprice", totalPrice)
+                         bundle.putDouble("cashDiscountSurcharge", 0.0)
+                         bundle.putDouble("subTotalPrice", totalPrice)
+                         bundle.putDouble("totalTax", 0.0)
+                         bundle.putDouble("totalDiscount", 0.0)
+                         bundle.putDouble("totalServiceCharge", 0.0)
+                         bundle.putParcelable("cartList", cm)
+
+                         findNavController().navigate(
+                             R.id.action_plasticCardNumber_to_paymentBoldPosFragment,
+                             bundle
+                         )
+                     })
+                 }
+
+             }
+             }
+
+         })
     }
 
     private fun getData() {
@@ -149,92 +251,9 @@ class PlasticCardNumber : Fragment() {
             }
             else{
 
-                prefProvider.setValue(
-                    Constants.CUSTOMER_NAME,
-                    customer?.first_name + " " + customer?.last_name
-                )
-
-                prefProvider.setValue(Constants.PHYSICAL_GIFT_CARD_NUMBER,binding.edtAmount?.text.toString().trim())
-
-                prefProvider.setValue(
-                    Constants.RECEIPT_CUSTOMER_NAME,
-                    customer?.first_name + " " + customer?.last_name
-                )
-                var orderTypeIdFromDb: Int = 0
-                synchronized(this) {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        orderTypeIdFromDb = dashboardViewModel.orderTypeByName(Constants.TAKEOUT)
-                    }
-                }
-                customer?.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
-
-                prefProvider.saveCustomerData(customer)
-
-                prefProvider.setValue("PaidAmount", "")
-                prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
-                prefProvider.setValueInt("cardCount", 0)
-                prefProvider.setValue(Constants.SUB_TOTAL, "")
-                prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
-                prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
-                prefProvider.setValue(Constants.TIP, "")
-                prefProvider.setValue(Constants.TAX_CHARGE, "")
-                prefProvider.setValue(Constants.SERVICE_CHARGE, "")
-
-                dashboardViewModel.deleteCart()
-
-                prefProvider.setValue(Constants.ORDER_TYPE, Constants.GIFT_CARD)
-                prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.GIFT_CARD_NAME)
-                prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)
-
-                val cm = CartModel()
-                val tbItem = TbCartItem()
-                tbItem.name = "Physical Gift Card"
-                tbItem.quantity = 1
-                tbItem.itemQuantity = 1
-                val totalPrice =
-                    prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0").toDouble()
-                tbItem.price = totalPrice
-                tbItem.employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
-                tbItem.orderTypeId = orderTypeIdFromDb
-                tbItem.orderType = Constants.GIFT_CARD
-                tbItem.orderTypeName = Constants.GIFT_CARD
-
-                cm.apply {
-                    employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
-                    terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
-                    isOpenOrder = false
-                    orderTypeId = orderTypeIdFromDb
-                    orderType = Constants.GIFT_CARD
-                    orderTypeName = Constants.GIFT_CARD
-                    locationId = prefProvider.getLocationId()
-                }
-                Log.e(TAG, "checkItems: ${Gson().toJson(tbItem)}")
-
-                dashboardViewModel.addCart(cm)
-                dashboardViewModel.addItemToCartItems(tbItem)
+                dashboardViewModel.checkCardExistOrNot(binding.edtAmount?.text.toString().trim())
 
 
-                CoroutineScope(Dispatchers.IO).launch {
-                    delay(100)
-
-                    runOnUiThread(kotlinx.coroutines.Runnable {
-                        val bundle = Bundle()
-                        bundle.putBoolean("update", true)
-                        bundle.putDouble("totalPrice", totalPrice)
-                        bundle.putDouble("finalprice", totalPrice)
-                        bundle.putDouble("cashDiscountSurcharge", 0.0)
-                        bundle.putDouble("subTotalPrice", totalPrice)
-                        bundle.putDouble("totalTax", 0.0)
-                        bundle.putDouble("totalDiscount", 0.0)
-                        bundle.putDouble("totalServiceCharge", 0.0)
-                        bundle.putParcelable("cartList", cm)
-
-                        findNavController().navigate(
-                            R.id.action_plasticCardNumber_to_paymentBoldPosFragment,
-                            bundle
-                        )
-                    })
-                }
 
             }
         }
