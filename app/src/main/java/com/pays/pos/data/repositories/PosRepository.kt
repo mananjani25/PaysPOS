@@ -575,6 +575,9 @@ class PosRepository @Inject constructor(
     suspend fun addCustomersList(data: List<TbCustomer>) =
         appDatabase.customerDao().addAllCustomers(data)
 
+    suspend fun addSearchedCustomersList(data: ArrayList<TbCustomer?>) =
+        appDatabase.customerDao().addAllSearchCustomer(data)
+
     suspend fun hasItem() =
         appDatabase.customerDao().hasItem()
 

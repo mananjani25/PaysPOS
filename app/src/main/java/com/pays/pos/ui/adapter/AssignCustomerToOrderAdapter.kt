@@ -157,7 +157,7 @@ class AssignCustomerToOrderAdapter :
     ) {
         try {
             holder.bind(filterList[position])
-        }catch (e:Exception){
+        }catch (_:Exception){
 
         }
     }

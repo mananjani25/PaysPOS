@@ -13,6 +13,9 @@ interface CustomerDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAllCustomer(customerList: List<TbCustomer>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun addAllSearchCustomer(customerList: List<TbCustomer?>)
+
     @get:Query("select * from TbCustomer ORDER BY TbCustomer.id DESC")
     val allCustomer: LiveData<List<TbCustomer>>
 

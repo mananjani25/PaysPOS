@@ -67,22 +67,45 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/etSearch"
-                style="@style/CustomFontBold"
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@null"
-                android:drawableStart="@drawable/ic_search"
-                android:drawablePadding="@dimen/_10sdp"
-                android:hint="@string/search_customer"
-                android:imeOptions="actionDone"
-                android:inputType="textVisiblePassword"
-                android:padding="@dimen/_10sdp"
-                android:textColor="@color/txtColor"
-                android:layout_marginHorizontal="@dimen/_100sdp"
-                android:textColorHint="@color/hintColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:paddingStart="@dimen/_100sdp"
+                android:paddingEnd="@dimen/_110sdp"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/etSearch"
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:drawableStart="@drawable/ic_search"
+                    android:drawablePadding="@dimen/_10sdp"
+                    android:hint="@string/search_customer"
+                    android:imeOptions="actionSearch"
+                    android:inputType="textVisiblePassword"
+                    android:padding="@dimen/_10sdp"
+                    android:textColor="@color/txtColor"
+                    android:textColorHint="@color/hintColor"
+                    android:textSize="@dimen/_6mdpi"
+                    android:layout_weight="1"/>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtSearchCustomer"
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/button_action_hover"
+                    android:gravity="center"
+                    android:padding="@dimen/_7sdp"
+                    android:text="@string/search_customer"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_6sdp"
+                    app:textAllCaps="false"/>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
             <View
                 android:layout_width="match_parent"

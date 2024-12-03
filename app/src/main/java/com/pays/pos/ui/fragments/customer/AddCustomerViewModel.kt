@@ -58,6 +58,12 @@ class AddCustomerViewModel @Inject constructor(
     private val _customerModel = MutableLiveData<Event<TbCustomer>>()
     val customerModel: LiveData<Event<TbCustomer>> = _customerModel
 
+    private val _customerListResponse = MutableLiveData<Event<ArrayList<TbCustomer?>>>()
+    val customerListResponse: MutableLiveData<Event<ArrayList<TbCustomer?>>> = _customerListResponse
+
+    private val _customerNoDataFound = MutableLiveData<Event<String>>()
+    val customerNoDataFound: MutableLiveData<Event<String>> = _customerNoDataFound
+
     private val _customerFetchedAndAdded = MutableLiveData<TbCustomer>()
     val customerFetchedAndAdded: LiveData<TbCustomer> = _customerFetchedAndAdded
 
@@ -469,6 +475,101 @@ class AddCustomerViewModel @Inject constructor(
 
     }
 
+    private var searchJob: Job? = null
+
+    /**
+     * Fetch missing customer from server and add in database.
+     */
+
+    fun searchCustomerForAssignCustomerOrderFragment(value: String?){
+        //Show loading until we get server response.
+        _showProgress.value = Event(true)
+
+        // Check if the search value is null or empty
+        if (value.isNullOrEmpty()) {
+            // Return early if the search value is invalid, skipping the network call
+            viewModelScope.launch(Dispatchers.Main) {  // Launch a coroutine in the main thread
+                _snackbarText.value = Event("Search query cannot be empty.")
+                _showProgress.value = Event(false)
+            }
+            return // Skip the search operation
+        }
+
+        // Cancel the previous search job if it's running
+        searchJob?.cancel()
+
+        // Launch the search in viewModelScope, running in IO dispatcher for background work
+        searchJob = viewModelScope.launch(Dispatchers.IO) {
+            val resource: Resource<CustomerSearchList> = posRepository.searchCustomer(value ?: "")
+
+            when(resource.status) {
+                Status.SUCCESS -> {
+                    withContext(Dispatchers.Main) {
+                        _showProgress.value = Event(false)
+                    }
+
+                    resource.data?.let { response ->
+                        if (response.status == 200){
+                            resource.data.let { customerList ->
+                                val customerDataList: ArrayList<TbCustomer?> = arrayListOf<TbCustomer?>()
+                                customerList.data.forEach {
+
+                                    val customer = TbCustomer(
+                                        id = it.id,
+                                        first_name = it.first_name,
+                                        last_name = it.last_name,
+                                        birth_date = it.birth_date,
+                                        email = it.email,
+                                        enroll_to_loyalty = it.enroll_to_loyalty,
+                                        final_reward = it.final_reward,
+                                        company = it.company,
+                                        phones = it.phones,
+                                        addresses = it.addresses
+                                    )
+
+                                    customerDataList.add(customer)
+
+                                }
+                                async {
+                                    customerDataList.let {
+                                        posRepository.addSearchedCustomersList(it)
+                                    }
+                                }
+
+                                withContext(Dispatchers.Main) {
+                                    if (customerList.data.isNotEmpty()) {
+                                        _customerListResponse.value = Event(customerDataList)
+                                    } else {
+                                        _snackbarText.value = Event(customerList.message)
+                                    }
+                                }
+                            }
+                        } else {
+                            withContext(Dispatchers.Main) {
+                                _snackbarText.value = Event(resource.message)
+                            }
+                        }
+                    }
+                }
+
+                Status.ERROR -> {
+                    // Handle error more explicitly, e.g. show a message to the user
+                    withContext(Dispatchers.Main) {
+                        _snackbarText.value = Event("An error occurred. Please try again.")
+                        _showProgress.value = Event(false)
+                    }
+                }
+
+                Status.LOADING -> {
+                    // Handle error if necessary
+                    withContext(Dispatchers.Main) {
+                        _showProgress.value = Event(false)
+                    }
+                }
+            }
+        }
+    }
+
     public fun fetchCustomerFromPhoneNumber(
         value: String?,
         lastName: String? = "",
@@ -481,24 +582,24 @@ class AddCustomerViewModel @Inject constructor(
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.postValue(Event(false))
-                    resource.data.let {
-                        if (it?.status == 200) {
-                            if (it.data.isNotEmpty()) {
+                    resource.data.let { customerSearchList ->
+                        if (customerSearchList?.status == 200) {
+                            if (customerSearchList.data.isNotEmpty()) {
                                 if (!sync) {
 
                                     /*Insert the customer to the Room DB*/
                                     val model = TbCustomer(
-                                        id = it.data.get(0).id,
-                                        first_name = it.data.get(0).first_name,
-                                        last_name = it.data.get(0).last_name,
-                                        birth_date = it.data.get(0).birth_date,
-                                        email = it.data.get(0).email,
-                                        phones = it.data.get(0).phones,
-                                        addresses = it.data.get(0).addresses,
-                                        enroll_to_loyalty = it.data.get(0).enroll_to_loyalty,
-                                        same_as_billing_address = it.data.get(0).same_as_billing_address,
-                                        final_reward = it.data.get(0).final_reward,
-                                        company = it.data.get(0).company,
+                                        id = customerSearchList.data[0].id,
+                                        first_name = customerSearchList.data[0].first_name,
+                                        last_name = customerSearchList.data[0].last_name,
+                                        birth_date = customerSearchList.data[0].birth_date,
+                                        email = customerSearchList.data[0].email,
+                                        phones = customerSearchList.data[0].phones,
+                                        addresses = customerSearchList.data[0].addresses,
+                                        enroll_to_loyalty = customerSearchList.data[0].enroll_to_loyalty,
+                                        same_as_billing_address = customerSearchList.data[0].same_as_billing_address,
+                                        final_reward = customerSearchList.data[0].final_reward,
+                                        company = customerSearchList.data[0].company,
                                         isSelcted = true,
                                     )
 
@@ -510,7 +611,7 @@ class AddCustomerViewModel @Inject constructor(
                                         _customerFetchedAndAdded.postValue(model)
                                     }
                                 } else {
-                                    it.data.forEach {
+                                    customerSearchList.data.forEach {
                                         if (it.first_name.equals(
                                                 value,
                                                 ignoreCase = true
@@ -527,7 +628,7 @@ class AddCustomerViewModel @Inject constructor(
                                     }
                                 }
                             } else {
-                                it.data.forEach {
+                                customerSearchList.data.forEach {
                                     if (it.id.toString().equals(value)) {
                                         viewModelScope.launch {
                                             posRepository.updateFinalRewards(
