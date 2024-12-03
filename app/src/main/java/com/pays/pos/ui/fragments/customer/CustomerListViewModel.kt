@@ -100,7 +100,7 @@ public class CustomerListViewModel @Inject constructor(
         }
     }
 
-    var searchJob: Job?=null
+    private var searchJob: Job? = null
     fun searchByTextCustomer(query: String) {
         searchJob?.cancel()
         searchJob=viewModelScope.launch {
@@ -109,12 +109,11 @@ public class CustomerListViewModel @Inject constructor(
                 Status.SUCCESS -> {
                     resource.data?.let { response ->
                         if (response.status == 200) {
-                            resource.data?.let { customerlist ->
+                            resource.data.let { customerList ->
 
-                                var customerdatalist: ArrayList<TbCustomer?> =
-                                    arrayListOf<TbCustomer?>()
-                                customerlist.data.forEach {
-                                    customerdatalist.add(
+                                val customerDataList: ArrayList<TbCustomer?> = arrayListOf<TbCustomer?>()
+                                customerList.data.forEach {
+                                    customerDataList.add(
                                         TbCustomer(
                                             id = it.id,
                                             first_name = it.first_name,
@@ -129,10 +128,10 @@ public class CustomerListViewModel @Inject constructor(
                                         )
                                     )
                                 }
-                                if (customerlist.data.isNotEmpty()) {
-                                    _customerListResponse.value = Event(customerdatalist)
+                                if (customerList.data.isNotEmpty()) {
+                                    _customerListResponse.value = Event(customerDataList)
                                 } else {
-                                    _customerNoDataFound.value = Event(customerlist.message)
+                                    _customerNoDataFound.value = Event(customerList.message)
                                 }
 
                             }
