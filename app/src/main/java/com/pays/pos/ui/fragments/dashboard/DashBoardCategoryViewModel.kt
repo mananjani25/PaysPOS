@@ -8854,7 +8854,43 @@ class DashBoardCategoryViewModel @Inject constructor(
         super.onCleared()
     }
 
+    fun checkCardExistOrNot(cardNumber: String) {
 
+        _showProgress.value = Event(true)
+            viewModelScope.launch {
+                var resource = posRepository.checkPhysicalCardExistsOrNot(cardNumber)
+
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        resource.data.let { response ->
+                            if (response?.status == 200) {
+                                _showProgress.value = Event(false)
+
+                                    _physicalGiftCardCheck.value = Event(response?.status?: 400)
+
+
+                            } else {
+                                _physicalGiftCardCheck.value= Event(response?.status?: 400)
+                            }
+                        }
+                    }
+
+                    Status.ERROR -> {
+                        _snackbarText.value = Event(resource.message)
+                        _showProgress.value = Event(false)
+                        _physicalGiftCardCheck.value= Event(resource.data?.status ?: 400)
+                    }
+
+                    Status.LOADING -> {
+                        _showProgress.value = Event(true)
+                    }
+                }
+            }
+
+
+
+
+    }
     fun checkCardExistOrNot(cardNumber: String) {
 
         _showProgress.value = Event(true)
