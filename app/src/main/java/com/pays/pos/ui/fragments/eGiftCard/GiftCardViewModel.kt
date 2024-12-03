@@ -1,7 +1,7 @@
 package com.pays.pos.ui.fragments.eGiftCard
 
-import android.util.Log
 import android.view.inputmethod.CorrectionInfo
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -49,12 +49,14 @@ import org.json.JSONObject
 import org.json.XML
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
-import java.io.IOException
+
 import java.io.StringReader
+
+import java.util.TimeZone
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.TimeZone
 import javax.inject.Inject
 
 @HiltViewModel

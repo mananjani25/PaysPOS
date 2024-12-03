@@ -1858,20 +1858,41 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         EventBus.getDefault()
-            .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ performCashOperation_prefProvider.getValue(Constants.WHOLE_AMOUNT....).toDouble()_1: ${prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.00")}"))
+            .post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ performCashOperation_prefProvider.getValue(Constants.WHOLE_AMOUNT....).toDouble()_1: ${
+                        prefProvider.getValue(
+                            Constants.WHOLE_AMOUNT,
+                            "0.00"
+                        )
+                    }"
+                )
+            )
 
         EventBus.getDefault()
-            .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ performCashOperation_prefProvider.getValue(Constants.WHOLE_AMOUNT....).toDouble()_%.1f_2: ${String.format(
-                "%.1f",
-                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.00").toDouble()
-            ).toDouble()}"))
+            .post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ performCashOperation_prefProvider.getValue(Constants.WHOLE_AMOUNT....).toDouble()_%.1f_2: ${
+                        String.format(
+                            "%.1f",
+                            prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.00").toDouble()
+                        ).toDouble()
+                    }"
+                )
+            )
 
         /*if Below is not executed then then maybe %.2f, is raising the error*/
-  EventBus.getDefault()
-            .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ performCashOperation_prefProvider.getValue(Constants.WHOLE_AMOUNT....).toDouble()_%.2f_3: ${String.format(
-                "%.2f",
-                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.00").toDouble()
-            ).toDouble()}"))
+        EventBus.getDefault()
+            .post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ performCashOperation_prefProvider.getValue(Constants.WHOLE_AMOUNT....).toDouble()_%.2f_3: ${
+                        String.format(
+                            "%.2f",
+                            prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.00").toDouble()
+                        ).toDouble()
+                    }"
+                )
+            )
 
         var wholePrice =
             String.format(
@@ -2235,15 +2256,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         } catch (e: Exception) {
             try {
                 paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
-                    .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 2).toDouble()
+                    .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 2)
+                    .toDouble()
             } catch (e: Exception) {
                 try {
                     paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
-                        .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 1).toDouble()
+                        .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 1)
+                        .toDouble()
                 } catch (e: Exception) {
                     try {
                         paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
-                            .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".")).toDouble()
+                            .substring(0, dashboardViewModel.totalPrice.toString().indexOf("."))
+                            .toDouble()
                     } catch (e: Exception) {
                     }
                 }
@@ -2365,7 +2389,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     )
                 )
 
-                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+                Log.d(
+                    "LOADER::",
+                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                )
                 totalServiceCharge =
                     String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
                 totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
@@ -2401,7 +2428,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     )
                 }
 
-                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+                Log.d(
+                    "LOADER::",
+                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                )
 
                 if (cashDiscountType == "SurCharge") {
                     paymentAmount =
@@ -2412,7 +2442,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 //        Above code is commented, because the split amount was not changing, below code is the solution
                 try {
                     paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
-                        .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 3).toDouble()
+                        .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 3)
+                        .toDouble()
                 } catch (e: Exception) {
                     try {
                         paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
@@ -2421,13 +2452,20 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     } catch (e: Exception) {
                         try {
                             paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
-                                .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 1)
+                                .substring(
+                                    0,
+                                    dashboardViewModel.totalPrice.toString().indexOf(".") + 1
+                                )
                                 .toDouble()
                         } catch (e: Exception) {
                             try {
-                                paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
-                                    .substring(0, dashboardViewModel.totalPrice.toString().indexOf("."))
-                                    .toDouble()
+                                paymentviewModel.tipOnAmount =
+                                    dashboardViewModel.totalPrice.toString()
+                                        .substring(
+                                            0,
+                                            dashboardViewModel.totalPrice.toString().indexOf(".")
+                                        )
+                                        .toDouble()
                             } catch (e: Exception) {
                             }
                         }
@@ -2446,7 +2484,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
 
                 paymentAmount += tipAmount
-                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+                Log.d(
+                    "LOADER::",
+                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                )
 
                 if (paymentAmount != 0.0) {
                     if (mSessionManager.isConnected) {
@@ -2501,7 +2542,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             }
                         }
                     } else {
-                        runOnUiThread(object:java.lang.Runnable{
+                        runOnUiThread(object : java.lang.Runnable {
                             override fun run() {
                                 binding.llCreditCard.isEnabled = true
                                 dismissProgressDialog()
@@ -2510,7 +2551,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         errorDisplay("Please connect a payment device.")
                     }
                 } else {
-                    runOnUiThread(object:java.lang.Runnable{
+                    runOnUiThread(object : java.lang.Runnable {
                         override fun run() {
                             binding.llCreditCard.isEnabled = true
                             dismissProgressDialog()
@@ -2519,7 +2560,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     errorDisplay(getString(R.string.payment_amount_is_zero))
                 }
             } else {
-                runOnUiThread(object:java.lang.Runnable{
+                runOnUiThread(object : java.lang.Runnable {
                     override fun run() {
                         binding.llCreditCard.isEnabled = true
                         dismissProgressDialog()
@@ -3037,13 +3078,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     giftCardViewModel.paxResponse = response.ExtData
                                     giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
                                     giftCardViewModel.cardNamePax = response.CardType
-                                    giftCardViewModel.transactionID = response.PaymentTransInfo.Token
+                                    giftCardViewModel.transactionID =
+                                        response.PaymentTransInfo.Token
                                     addValueInGiftCardUsingCard()
                                 } else {
                                     giftCardViewModel.paxResponse = response.ExtData
                                     giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
                                     giftCardViewModel.cardNamePax = response.CardType
-                                    giftCardViewModel.transactionID = response.PaymentTransInfo.Token
+                                    giftCardViewModel.transactionID =
+                                        response.PaymentTransInfo.Token
                                     sellGiftCardUsingCard()
                                 }
                             } else {
@@ -3207,23 +3250,23 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     }"
                 )
             )
-/*
+            /*
 
-            var subTotal = 0.0
-            var loyaltyAmt = 0.0
-            dashboardViewModel.currentCartItems.forEach {
-                subTotal += it.price * it.itemQuantity
-                if (it.modifiers.isNotEmpty()) {
-                    it.modifiers.forEach { modifier ->
-                        subTotal += (modifier.price * modifier.modifier_quantity) * it.itemQuantity
-                    }
-                }
-            }
-            dashboardViewModel.redeemLoyaltyInfo?.let { loyalty ->
-                if(loyalty.isLoyaltyApplied == true) loyaltyAmt  = loyalty.usedLoyaltyAmount
-            }
-            dashboardViewModel.subTotalPrice = subTotal - dashboardViewModel.totalDiscount - loyaltyAmt
-*/
+                        var subTotal = 0.0
+                        var loyaltyAmt = 0.0
+                        dashboardViewModel.currentCartItems.forEach {
+                            subTotal += it.price * it.itemQuantity
+                            if (it.modifiers.isNotEmpty()) {
+                                it.modifiers.forEach { modifier ->
+                                    subTotal += (modifier.price * modifier.modifier_quantity) * it.itemQuantity
+                                }
+                            }
+                        }
+                        dashboardViewModel.redeemLoyaltyInfo?.let { loyalty ->
+                            if(loyalty.isLoyaltyApplied == true) loyaltyAmt  = loyalty.usedLoyaltyAmount
+                        }
+                        dashboardViewModel.subTotalPrice = subTotal - dashboardViewModel.totalDiscount - loyaltyAmt
+            */
 
             EventBus.getDefault().post(
                 MessageEvent(
@@ -3249,11 +3292,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 )
             )
 
-            WholetotalPrice = MethodUtils.getTwoDecimal(dashboardViewModel.subTotalPrice).toPrecision(2)
-                .toDouble() + dashboardViewModel.totalTax + String.format(
-                "%.2f",
-                dashboardViewModel.totalServiceCharge
-            ).toDouble()
+            WholetotalPrice =
+                MethodUtils.getTwoDecimal(dashboardViewModel.subTotalPrice).toPrecision(2)
+                    .toDouble() + dashboardViewModel.totalTax + String.format(
+                    "%.2f",
+                    dashboardViewModel.totalServiceCharge
+                ).toDouble()
 
 
             if (redeemLoyaltyInfo?.needToApplyLoyalty == true) {
@@ -5126,7 +5170,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 paymentviewModel.textPaySplit(orderId)
 
             } else {
-                Log.d("LOADER::","${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}")
+                Log.d(
+                    "LOADER::",
+                    "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
+                )
 
                 EventBus.getDefault()
                     .post(MessageEvent("${Constants.LINE_BREAK_TAB} paymentAttributesRequest(myRequest: OrderRequestModel)_else_6"))
@@ -5477,8 +5524,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         val myRequest = cartList?.let {
             giftCardViewModel.createSellGiftCardRequestUsingCash()
         }
-        if (myRequest != null) {
-            giftCardViewModel.sellGiftCard(myRequest)
+
+
+        if (prefProvider.getValue(Constants.GIFT_CARD_TYPE, "").equals("Physical", true)) {
+            Log.e(TAG, "checkPlastiCard  ${myRequest?.gift_card?.amount}")
+
+            myRequest?.let { giftCardViewModel.sellGiftCard(it) }
+
+        } else {
+            if (myRequest != null) {
+                giftCardViewModel.sellGiftCard(myRequest)
+            }
         }
     }
 
@@ -5505,7 +5561,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (myRequest != null) {
             EventBus.getDefault()
                 .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ sellGiftCardUsingCard inside if (myRequest != null)"))
-            giftCardViewModel.sellGiftCard(myRequest)
+            if (prefProvider.getValue(Constants.GIFT_CARD_TYPE,"").equals("Physical",true)){
+                giftCardViewModel.sellGiftCard(myRequest)
+            }
+            else {
+                giftCardViewModel.sellGiftCard(myRequest)
+            }
         }
     }
 
@@ -5522,7 +5583,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             giftCardViewModel.createAddValueInGiftCardRequestUsingCash()
         }
         if (myRequest != null) {
-            giftCardViewModel.addValueInGiftCard(true, myRequest)
+            if (prefProvider.getValue(Constants.GIFT_CARD_TYPE, "").equals("Physical", true)) {
+                myRequest.gift_card.gift_card_type = "Physical"
+                giftCardViewModel.addValueInPhysicalGiftCard(true, myRequest)
+            } else {
+
+                giftCardViewModel.addValueInGiftCard(true, myRequest)
+            }
         }
     }
 
@@ -5539,7 +5606,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             giftCardViewModel.createAddValueInGiftCardRequestUsingCard()
         }
         if (myRequest != null) {
-            giftCardViewModel.addValueInGiftCard(false, myRequest)
+            if (prefProvider.getValue(Constants.GIFT_CARD_TYPE,"").equals("Physical",true)){
+                myRequest.gift_card.gift_card_type = "Physical"
+                giftCardViewModel.addValueInPhysicalGiftCard(false,myRequest)
+            }
+            else {
+                giftCardViewModel.addValueInGiftCard(false, myRequest)
+
+            }
         }
     }
 
