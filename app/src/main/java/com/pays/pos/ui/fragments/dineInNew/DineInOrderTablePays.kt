@@ -2563,8 +2563,6 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
         var current = position + 1
 
-        list[current].item?.isChecked = guestChecked
-
         while(current < list.size){
 
             if(list[current].isHeader == 1){

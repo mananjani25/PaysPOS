@@ -439,13 +439,21 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 index++
             }
 
-
-            binding.checkedForFire?.apply {
-                isChecked = allItemsFired
-                isPressed = allItemsFired
-                isEnabled = !allItemsFired
-                buttonTintList = ColorStateList.valueOf(if (allItemsFired) Color.GREEN else Color.RED)
+            if(allItemsFired) {
+                binding.checkedForFire?.apply {
+                    isChecked = allItemsFired
+                    isEnabled = false
+                    buttonTintList = ColorStateList.valueOf(Color.GREEN)
+                }
             }
+
+            //header
+//            binding.checkedForFire?.apply {
+//                isChecked = allItemsFired
+//                isPressed = allItemsFired
+//                isEnabled = !allItemsFired
+//              //  buttonTintList = ColorStateList.valueOf(if (allItemsFired) Color.GREEN else Color.RED)
+//            }
             //
 
             binding.imgPrint.setOnClickListener {
@@ -499,13 +507,14 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
             if(list[position].item?.isFired == true) {
-
+                //header
                 binding.checkedForFire?.apply {
                     isChecked = true
                     isEnabled = false
                 }
             }
 
+            //header
             binding.checkedForFire?.setOnClickListener {
 
                 if( binding.checkedForFire.isChecked  ) {
@@ -611,6 +620,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             }
 
+            //item
             binding.checkedForFire?.setOnClickListener {
                 list[position].item?.isChecked = binding.checkedForFire.isChecked
             }
@@ -642,6 +652,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.chkIsFired.isEnabled = false
                 binding.ivWastage.visibility = View.VISIBLE
 
+                //item
                 binding.checkedForFire?.apply {
                     isChecked = true
                     isEnabled = false
@@ -653,6 +664,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.chkIsFired.isEnabled = true
                 binding.ivWastage.visibility = View.GONE
 
+                //item
                 binding.checkedForFire?.apply {
                     isChecked = false
                     isEnabled = true
@@ -662,6 +674,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 }
             }
 
+            //item
             binding.checkedForFire?.apply {
                 if(model.item?.isFired == false)
                 isChecked = list[bindingAdapterPosition].item?.isChecked == true
