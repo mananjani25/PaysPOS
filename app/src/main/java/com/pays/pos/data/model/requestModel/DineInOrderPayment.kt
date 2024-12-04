@@ -5,6 +5,6 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class DineInOrderPayment(@SerializedName("order") var orderRequestModel: DineInPaymentUpdateModel?=null) :
-    Parcelable {
+data class DineInOrderPayment(@SerializedName("order") var orderRequestModel: DineInPaymentUpdateModel?=null
+) : Parcelable {
 }

@@ -300,7 +300,8 @@ open class PaymentViewModel @Inject constructor(
                                                     }
                                                 }
                                             }
-                                        } else {
+                                        }
+                                        else {
                                             _showProgress.postValue(Event(false))
                                             _data.value = Event(createOrderResponse)
                                             EventBus.getDefault().post(

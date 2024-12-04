@@ -99,7 +99,7 @@ class DineInOrderTableViewModel @Inject constructor(
     var totalAmount = 0.0
     var subTotalAmount = 0.0
     var totalServiceChargeAmount = 0.0
-    private var totalPayAmounts: Double = 0.0
+    var totalPayAmounts: Double = 0.0
 
     fun getTipsList() = posRepository.getTipsList()
     fun getCustomerPrinterList(): LiveData<Resource<List<PrinterResponse.Data.CustomerReceiptPrinters>>> {
@@ -154,13 +154,15 @@ class DineInOrderTableViewModel @Inject constructor(
                 }
 
                 Status.ERROR -> {
-                    _guestPayment.value = Event(resource.data!!)
-                    if (cashPaymentType(model)) {
-                        _showProgressCash.value = Event(false)
-                    } else
-                        _showProgress.value = Event(false)
+                    try {
+                        _guestPayment.value = Event(resource.data!!)
+                        if (cashPaymentType(model)) {
+                            _showProgressCash.value = Event(false)
+                        } else
+                            _showProgress.value = Event(false)
 
 //                    _showProgress.value = Event(false)
+                    }catch (e:Exception) {}
                 }
 
                 Status.LOADING -> {
