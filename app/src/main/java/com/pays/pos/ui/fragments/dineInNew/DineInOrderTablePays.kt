@@ -2561,7 +2561,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
         var list = dineInTableAdapter.getList()
 
-        var current = position+1
+        var current = position + 1
+
+        list[current].item?.isChecked = guestChecked
 
         while(current < list.size){
 
@@ -3897,7 +3899,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 if (target.layoutPosition != 0 && dineInTableAdapter.getList()
                         .get(viewHolder.layoutPosition).isHeader != 0
                 ) {
-                     val oldPos = viewHolder.layoutPosition
+                    val oldPos = viewHolder.layoutPosition
                     val newPos = target.layoutPosition
 
                     if(newPos == 0){
@@ -3919,6 +3921,27 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     dineInCartItemMoved = true
                     return true
                 } else {
+
+                    if(dineInTableAdapter.getList().get(viewHolder.layoutPosition).isHeader != 0) {
+                        val oldPos = viewHolder.layoutPosition
+                        val newPos = 1
+
+
+                        if (dragFrom == -1) {
+                            dragFrom = oldPos
+                        }
+                        dragTo = newPos
+
+
+                        dineInTableAdapter.onItemMove(
+                            viewHolder.layoutPosition,
+                            newPos
+                        )
+                        dineInCartItemMoved = true
+                        return true
+                    }
+
+
                     dineInCartItemMoved = false
                     return false
                 }

@@ -504,11 +504,6 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     isChecked = true
                     isEnabled = false
                 }
-            } else {
-                binding.checkedForFire?.apply {
-                    isChecked = false
-                    isEnabled = true
-                }
             }
 
             binding.checkedForFire?.setOnClickListener {
