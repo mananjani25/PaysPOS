@@ -2737,7 +2737,6 @@ class CustomDisplay(
                             customerGivenTip.value = true
                             employeeGivenTip = false
                         }
-                        /*TODO: Make cash_event call here with the same orderID*/
                         if (tippedAmount>0) {
                             makeCashEventCallToUpdateTip(tippedAmount)
                         }
@@ -2865,9 +2864,14 @@ class CustomDisplay(
         }
     }
 
+    lateinit var paymentCoroutineScope: CoroutineScope
+    val paymentCoroutineExceptionHandler= CoroutineExceptionHandler { coroutineContext, exception ->
+        EventBus.getDefault()
+            .post(MessageEvent("${Constants.LINE_BREAK_TAB} CustomDisplay adjustValorTips()-> ${Gson().toJson(exception)} "))
+    }
     private fun adjustValorTips() {
-
-        GlobalScope.launch {
+        paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutineScope.launch {
 //                        ProgressUtils.dismissProgressDialog()
 
             val gatewayType = PaymentGatewayType.VALOR
@@ -2906,7 +2910,6 @@ class CustomDisplay(
                 }
 
                 override fun onFailure(errorMessage: String) {
-                    println("Payment Failed: $errorMessage")
                     ProgressUtils.dismissProgressDialog()
 
                     /*runOnUiThread(Runnable {
@@ -3284,5 +3287,12 @@ class CustomDisplay(
              this.onDisplayChanged()
              this.onContentChanged()
          }*/
+    }
+
+    override fun onStop() {
+        if (this@CustomDisplay::paymentCoroutineScope.isInitialized) {
+            paymentCoroutineScope.cancel()
+        }
+        super.onStop()
     }
 }

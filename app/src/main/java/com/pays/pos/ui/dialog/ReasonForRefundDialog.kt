@@ -49,14 +49,18 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.pax.poslink.*
+import com.pays.payments.callbacks.PaymentCallback
+import com.pays.payments.design.PaymentGatewayFactory
+import com.pays.payments.design.PaymentGatewayType
+import com.pays.pos.data.model.valor.ValorSuccessResponse
 import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.pays.pos.logger.MessageEvent
+import com.pays.pos.utils.extensions.runOnUiThread
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
-import org.kobjects.util.Util
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import retrofit2.Call
@@ -91,6 +95,9 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
     private var requiredNABServerPostAPICall = false
     private var paxData = ""
 
+    @Inject
+    lateinit var paymentGatewayFactory: PaymentGatewayFactory
+
     // PAX variables
     private lateinit var mPaymentRequest: PaymentRequest
     private var posLink: PosLink = PosLink()
@@ -106,6 +113,13 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 
     companion object {
         fun newInstance() = ReasonForRefundDialog()
+    }
+
+    override fun onStop() {
+        if (this@ReasonForRefundDialog::paymentCoroutine.isInitialized) {
+            paymentCoroutine.cancel()
+        }
+        super.onStop()
     }
 
     override fun onCreateView(
@@ -157,42 +171,52 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             )
 
 
-        binding.txtDone.setOnClickListener {
-            Log.d("referenceNo: ", "referenceNo $referenceNo")
-            if (MethodUtils.isDoubleClick()) return@setOnClickListener
-            /*if (!referenceNo.isNullOrEmpty()) {
-                refundViaPAX()
-            } else {
-                doneClick()
-            }*/
-
-
-            if (requiredNABServerPostAPICall && paxData.isNotEmpty()) {
-                runBlocking {
-                    proceedWithServerPostApiRefund()
-                }
-            } else {
-                if (referenceNo.isNullOrEmpty()) {
+        binding.txtDone.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(p0: View?) {
+                Log.d("referenceNo: ", "referenceNo $referenceNo")
+                if (MethodUtils.isDoubleClick()) return
+                /*if (!referenceNo.isNullOrEmpty()) {
+                    refundViaPAX()
+                } else {
                     doneClick()
-                } else if (!referenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
-                        Constants.IS_PAX_CONNECTED,
-                        false
-                    )
+                }*/
+
+                if (prefProvider.getValue(
+                        Constants.VALOR_APP_ID, ""
+                    ).isNotEmpty() && paxExtData.equals(Constants.VALOR)
                 ) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                    refundViaValor()
+                } else {
+                    if (requiredNABServerPostAPICall && paxData.isNotEmpty()) {
+                        runBlocking {
+                            proceedWithServerPostApiRefund()
+                        }
+                    } else {
+                        if (referenceNo.isNullOrEmpty()) {
+                            doneClick()
+                        } else if (!referenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
 //                refundViaPAX()
-                    getBatchLocalReport()
-                } else if (!referenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
-                        Constants.IS_PAX_CONNECTED,
-                        false
-                    )
-                ) {
-                    AlertUtils.showCustomAlert(
-                        requireContext(),
-                        "Please connect to PAX device"
-                    )
+                            getBatchLocalReport()
+                        } else if (!referenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                "Please connect to PAX device"
+                            )
+                        }
+                    }
                 }
             }
-        }
+        })
+
 
         setupSnackbar()
         observeShowProgress()
@@ -208,6 +232,64 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 //        getBatchLocalReport()
 
         return binding.root
+    }
+
+    lateinit var paymentCoroutine: CoroutineScope
+    val paymentCoroutineExceptionHandler = CoroutineExceptionHandler { _, exception ->
+        EventBus.getDefault()
+            .post(MessageEvent("${Constants.LINE_BREAK_TAB} ReasonForRefundDialog refundViaValor()-> ${Gson().toJson(exception)} "))
+    }
+
+    private fun refundViaValor() {
+       paymentCoroutine = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+
+        paymentCoroutine.launch{
+            val gatewayType = PaymentGatewayType.VALOR
+            val paymentGateway = paymentGatewayFactory.create(gatewayType)
+
+            val paymentCallback = object : PaymentCallback {
+                override fun onSuccess(transactionId: String) {
+                    var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
+                        transactionId,
+                        ValorSuccessResponse::class.java
+                    )
+
+                    transactionJsonResponse.nameValuePairs?.let {
+                        if (it.msg != null) {
+                            if (it.msg.equals("APPROVED", ignoreCase = true)) {
+                                refundCall()
+                            } else {
+                                /*if crashes, then put inside Runnable in runOnUiThread, example: runOnUiThread(Runnable{})*/
+                                runOnUiThread {
+                                    AlertUtils.showCustomAlert(requireContext(), it.msg)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                override fun onFailure(errorMessage: String) {
+                    runOnUiThread {
+                        AlertUtils.showCustomAlert(requireContext(), errorMessage)
+                    }
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+            /*Start Refund Process Payment */
+            paymentGateway.refundPayment(
+                requireContext(),
+                prefProvider.getValue(Constants.VALOR_APP_KEY, ""),
+                prefProvider.getValue(Constants.VALOR_APP_ID, ""),
+                prefProvider.getValue(Constants.VALOR_EPI, ""),
+                "refund",
+                "refund",
+                paymentCallback,
+                refundAmount.toString(),
+                "1",
+                "1",
+                referenceNo.toString()
+            )
+        }
     }
 
     private suspend fun proceedWithServerPostApiRefund() {
@@ -277,10 +359,10 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             CoroutineScope(Dispatchers.IO).async {
                 val queue = Volley.newRequestQueue(requireContext())
                 var url = ""
-                if (Constants.isPaxInDebugMode){
-                    url=Constants.paxDebug
-                }else{
-                    url=Constants.paxLive
+                if (Constants.isPaxInDebugMode) {
+                    url = Constants.paxDebug
+                } else {
+                    url = Constants.paxLive
                 }
                 val getRequest: StringRequest = object : StringRequest(
                     Request.Method.POST, url,
@@ -406,11 +488,11 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
         ORIG_AUTH_GUID: String
     ) {
         val queue = Volley.newRequestQueue(requireContext())
-        var url=""
-        if (Constants.isPaxInDebugMode){
-            url=Constants.paxDebug
-        }else{
-            url=Constants.paxLive
+        var url = ""
+        if (Constants.isPaxInDebugMode) {
+            url = Constants.paxDebug
+        } else {
+            url = Constants.paxLive
         }
         val getRequest: StringRequest = object : StringRequest(
             Request.Method.POST, url,
@@ -582,7 +664,12 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 
     private fun checkBroadPOSVersion() {
         GlobalScope.launch {
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
+            posLink.SetCommSetting(
+                SettingINI.getCommSettingFromFile(
+                    context!!,
+                    Constants.FILE_PATH + SettingINI.FILENAME
+                )
+            )
 
             val manageRequest = ManageRequest()
             manageRequest.TransType = manageRequest.ParseTransType("INIT")
@@ -628,7 +715,12 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             withContext(Dispatchers.Main) {
 
             }
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
+            posLink.SetCommSetting(
+                SettingINI.getCommSettingFromFile(
+                    context!!,
+                    Constants.FILE_PATH + SettingINI.FILENAME
+                )
+            )
 
             Log.d("paxRefNo: ", "paxRefNo: ${referenceNo}")
             requireActivity().let {
@@ -708,7 +800,12 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
         if (refundAmount != 0.0 || refundAmount > 0.0) {
             if (paymentType == "Card") {
                 GlobalScope.launch {
-                    posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
+                    posLink.SetCommSetting(
+                        SettingINI.getCommSettingFromFile(
+                            context!!,
+                            Constants.FILE_PATH + SettingINI.FILENAME
+                        )
+                    )
 
                     val amt = (refundAmount * 100).toInt()
                     val refund = PaymentRequest()
@@ -779,7 +876,12 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
         if (refundAmount != 0.0 || refundAmount > 0.0) {
             if (paymentType == "Card") {
                 GlobalScope.launch {
-                    posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
+                    posLink.SetCommSetting(
+                        SettingINI.getCommSettingFromFile(
+                            context!!,
+                            Constants.FILE_PATH + SettingINI.FILENAME
+                        )
+                    )
 
                     /*CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.showProgressDialog(requireActivity())
@@ -918,7 +1020,12 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
         if (refundAmount != 0.0 || refundAmount > 0.0) {
             if (paymentType == "Card") {
                 GlobalScope.launch {
-                    posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
+                    posLink.SetCommSetting(
+                        SettingINI.getCommSettingFromFile(
+                            context!!,
+                            Constants.FILE_PATH + SettingINI.FILENAME
+                        )
+                    )
 
                     /*CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.showProgressDialog(requireActivity())
@@ -1284,7 +1391,9 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                                     }
 
                                 } else if (data[i].name.startsWith(/*"InnerPrinter"*/
-                                        SUNMI_INNER_PRINTER, true)) {
+                                        SUNMI_INNER_PRINTER, true
+                                    )
+                                ) {
 
                                     if (woyouService != null) {
                                         sendToTransaction()
@@ -1318,10 +1427,13 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                                     }
 
                                 } else if (data[i].name.startsWith(
-                                        LANDI_INNER_PRINTER, true)) {
+                                        LANDI_INNER_PRINTER, true
+                                    )
+                                ) {
 
 //                                    if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
-                                        EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+                                    EventBus.getDefault()
+                                        .post(MessageEvent(Constants.CASHBOX, true))
 //                                    }
                                     sendToTransaction()
 

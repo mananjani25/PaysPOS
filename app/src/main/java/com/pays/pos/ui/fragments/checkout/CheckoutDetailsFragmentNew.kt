@@ -334,6 +334,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             presentation.show()
             // presentation.onLogOutOrClockOutWithApiService(apiService)
         }
+
+        if (this@CheckoutDetailsFragmentNew::paymentCoroutineScope.isInitialized){
+            paymentCoroutineScope.cancel()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -2941,15 +2945,21 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     @Inject
     lateinit var paymentGatewayFactory: PaymentGatewayFactory
+    lateinit var paymentCoroutineScope: CoroutineScope
+
+    val paymentCoroutineExceptionHandler= CoroutineExceptionHandler { coroutineContext, exception ->
+        EventBus.getDefault()
+            .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${Gson().toJson(exception)} "))
+    }
 
     private fun makeValorPaymentRequest() {
-        GlobalScope.launch {
-            CoroutineScope(Dispatchers.Main).launch {
+        paymentCoroutineScope= CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutineScope.launch {
+//            CoroutineScope(Dispatchers.Main).launch {
 //                        ProgressUtils.dismissProgressDialog()
 
                 val gatewayType = PaymentGatewayType.VALOR
                 val paymentGateway = paymentGatewayFactory.create(gatewayType)
-
 
                 val paymentCallback = object : PaymentCallback {
                     override fun onSuccess(transactionId: String) {
@@ -3024,7 +3034,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     }
 
                     override fun onFailure(errorMessage: String) {
-                        println("Payment Failed: $errorMessage")
+                        EventBus.getDefault()
+                            .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${Gson().toJson(errorMessage)} "))
                         dismissProgressDialog()
                     }
                 }
@@ -3061,7 +3072,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         paymentCallback
                     )
                 }
-            }
+//            }
         }
     }
 
@@ -4335,6 +4346,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             txnid?.let {
                 if (RefNumber.isEmpty()){
                     RefNumber=it
+                    /*We are adding VALOR in EXT DATA because, this extData variable goes empty, now we can utilize the variable for checking the payment gateway*/
                     ExtData=Constants.VALOR
                 }
             }

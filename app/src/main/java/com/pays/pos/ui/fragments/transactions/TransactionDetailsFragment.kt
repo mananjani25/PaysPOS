@@ -67,16 +67,18 @@ import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
 import com.google.gson.reflect.TypeToken
 import com.pax.poslink.ReportRequest
+import com.pays.payments.callbacks.PaymentCallback
+import com.pays.payments.design.PaymentGatewayFactory
+import com.pays.payments.design.PaymentGatewayType
 import com.pays.pos.data.model.requestModel.RefundRequestModel
+import com.pays.pos.data.model.valor.ValorSuccessResponse
 import com.pays.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.pays.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
-import com.pays.pos.data.remote.Constants.LARGE
 import com.pays.pos.data.remote.Constants.VENUE_LOGO
 import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.pays.pos.ui.fragments.payment.OrderCompleteFragment.OnBluetoothPermissionGranted
 import com.pays.pos.utils.landi.LPrint
 import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
@@ -123,6 +125,9 @@ class TransactionDetailsFragment : Fragment() {
     lateinit var settings: StarConnectionSettings
     lateinit var printer: StarPrinter
     /*Star label printer - END*/
+
+    @Inject
+    lateinit var paymentGatewayFactory: PaymentGatewayFactory
 
     /*This variable will be used to check if the orderID is to be printed in the sticky receipt */
     private var printOrderIDInStickyPrinter: Boolean = true
@@ -178,16 +183,16 @@ class TransactionDetailsFragment : Fragment() {
         )
 
 
-            lifecycleScope.launch {
-                try {
-                    runBlocking {
-                        oneItemPerReceipt =
-                            dashboardCategoryViewModel.getLabelPrinterSettingsData().oneItemPerReciept
-                    }
-                } catch (e: Exception) {
-                    oneItemPerReceipt = false
+        lifecycleScope.launch {
+            try {
+                runBlocking {
+                    oneItemPerReceipt =
+                        dashboardCategoryViewModel.getLabelPrinterSettingsData().oneItemPerReciept
                 }
+            } catch (e: Exception) {
+                oneItemPerReceipt = false
             }
+        }
 
         lifecycleScope.launch(Dispatchers.Main) {
             try {
@@ -392,21 +397,22 @@ class TransactionDetailsFragment : Fragment() {
                 mLastClickTime = SystemClock.elapsedRealtime()
                 try {
                     if (!paymentDetailsResponse.data.ext_data.isNullOrEmpty()) {
+                        if (paymentDetailsResponse.data.ext_data.equals(Constants.VALOR) && prefProvider.getValue(
+                                Constants.VALOR_APP_ID, ""
+                            ).isNotEmpty()
+                        ) {
+                            ProgressUtils.showProgressDialog(requireActivity())
+                            startVoidWithValor(paymentDetailsResponse)
+
+                        }
 //                    Check if the the PAX is connected or not then perform the void checking
-                        if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
+                        else if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
 //                    Check if the transaction is void or not
                             CoroutineScope(Dispatchers.Main).launch {
                                 ProgressUtils.showProgressDialog(requireActivity())
                             }
                             checkIfTransactionIsVoided()
-                        }
-                        else if(prefProvider.getValue(
-                                Constants.VALOR_APP_ID, ""
-                            ).isNotEmpty()){
-                            /* Perform Valor Refund */
-
-                        }
-                        else {
+                        } else {
                             activity?.let {
                                 AlertUtils.showCustomAlertWithListenerWithOK(
                                     it,
@@ -440,6 +446,85 @@ class TransactionDetailsFragment : Fragment() {
         }
 
     }
+
+    lateinit var paymentCoroutineScope: CoroutineScope
+    var paymentCoroutineExceptionHandler =
+        CoroutineExceptionHandler { coroutineContext, exception ->
+            EventBus.getDefault()
+                .post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} TransactionDetailsFragment startVoidWithValor()-> ${
+                            Gson().toJson(
+                                exception
+                            )
+                        } "
+                    )
+                )
+        }
+
+    private fun startVoidWithValor(paymentDetailsResponse: GetPaymentOrderDetailsResponse) {
+        paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutineScope.launch {
+            val gatewayType = PaymentGatewayType.VALOR
+            val paymentGateway = paymentGatewayFactory.create(gatewayType)
+
+            val paymentCallback = object : PaymentCallback {
+                override fun onSuccess(transactionId: String) {
+                    var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
+                        transactionId,
+                        ValorSuccessResponse::class.java
+                    )
+
+                    transactionJsonResponse.nameValuePairs?.let {
+                        if (it.msg != null) {
+                            if (it.msg.equals("APPROVED", ignoreCase = true)) {
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    refundCall(paymentDetailsResponse.data.amount)
+                                }
+                            } else {
+                                startRefund()
+                            }
+                        }
+                    }
+                }
+
+                override fun onFailure(errorMessage: String) {
+                    println("Payment Failed: $errorMessage")
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+
+            /*      var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
+                  var appID = "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
+                  var channelID = "bd967b4e0ccd6309c5ac16634bd367b6"
+                  var epi = "2319995597"
+                  var endpoint = "status"
+                  var transType = TransactionType.CREDIT_SALE
+                  var TRAN_MODE = "1"
+                  var TRAN_CODE = "1"
+                  var amount =
+                  var reqTxnId = */
+
+            /* Process Payment */
+            context?.let {
+                paymentGateway.voidPayment(
+                    it,
+                    prefProvider.getValue(Constants.VALOR_APP_KEY, ""),
+                    prefProvider.getValue(Constants.VALOR_APP_ID, ""),
+                    prefProvider.getValue(Constants.VALOR_EPI, ""),
+                    "void",
+                    "",
+                    paymentCallback,
+                    paymentDetailsResponse.data.amount.toString(),
+                    "1",
+                    paymentDetailsResponse.data.ref_num,
+                    ""
+                )
+            }
+//            }
+        }
+    }
+
 
     private fun startRefund() {
         CoroutineScope(Dispatchers.Main).launch {
@@ -560,7 +645,10 @@ class TransactionDetailsFragment : Fragment() {
 
                     putBoolean("isItemRefund", isItemRefund)
                     putBoolean("isAmountRefund", isAmountRefund)
-                    putString("screenTotalAmount",(paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips).toString())
+                    putString(
+                        "screenTotalAmount",
+                        (paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips).toString()
+                    )
                 }
                 bundle.putString("isFrom", "refund")
 
@@ -584,7 +672,12 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun checkIfTransactionIsVoided() {
         GlobalScope.launch {
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
+            posLink.SetCommSetting(
+                SettingINI.getCommSettingFromFile(
+                    context!!,
+                    Constants.FILE_PATH + SettingINI.FILENAME
+                )
+            )
 
             val report = ReportRequest()
             report.TransType = report.ParseTransType("LOCALDETAILREPORT") //recommend
@@ -661,7 +754,12 @@ class TransactionDetailsFragment : Fragment() {
             if (paymentDetailsResponse.data.ref_num != null) {
                 if (paymentDetailsResponse.data.ref_num.isNotEmpty()) {
                     GlobalScope.launch {
-                        posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
+                        posLink.SetCommSetting(
+                            SettingINI.getCommSettingFromFile(
+                                context!!,
+                                Constants.FILE_PATH + SettingINI.FILENAME
+                            )
+                        )
 
                         val report = ReportRequest()
                         report.TransType = report.ParseTransType("LOCALDETAILREPORT") //recommend
@@ -730,7 +828,12 @@ class TransactionDetailsFragment : Fragment() {
         if (refundAmount != 0.0) {
             if (paymentDetailsResponse.data.payment_type.equals("Card", ignoreCase = true)) {
                 GlobalScope.launch {
-                    posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
+                    posLink.SetCommSetting(
+                        SettingINI.getCommSettingFromFile(
+                            context!!,
+                            Constants.FILE_PATH + SettingINI.FILENAME
+                        )
+                    )
 
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.showProgressDialog(requireActivity())
@@ -891,7 +994,12 @@ class TransactionDetailsFragment : Fragment() {
     // Adjust tip on transactions done via PAX
     private fun adjustPaxTips() {
         GlobalScope.launch {
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
+            posLink.SetCommSetting(
+                SettingINI.getCommSettingFromFile(
+                    context!!,
+                    Constants.FILE_PATH + SettingINI.FILENAME
+                )
+            )
             val tip_amt = (tipAmount * 100).toInt()
             Log.d("Amt: ", "tip $tip_amt RefNo ${paymentDetailsResponse.data?.ref_num}")
 
@@ -1615,7 +1723,11 @@ class TransactionDetailsFragment : Fragment() {
                 }
 
 
-                if (paymentDetailsResponse.data.payment_type.equals("Card", true) || paymentDetailsResponse.data.payment_type.equals("Cash", true)) {
+                if (paymentDetailsResponse.data.payment_type.equals(
+                        "Card",
+                        true
+                    ) || paymentDetailsResponse.data.payment_type.equals("Cash", true)
+                ) {
                     val total = String.format("%.2f", paymentDetailsResponse.data.amount)
                     val refundedAmount = String.format(
                         "%.2f",
@@ -1719,7 +1831,11 @@ class TransactionDetailsFragment : Fragment() {
     }
 
     private fun enableDisableRefundButton() {
-        if (paymentDetailsResponse.data.payment_type.contains(getString(R.string.external),ignoreCase = true)){
+        if (paymentDetailsResponse.data.payment_type.contains(
+                getString(R.string.external),
+                ignoreCase = true
+            )
+        ) {
             binding.tvIssueRefund.gone()
         }
     }
@@ -1948,24 +2064,26 @@ class TransactionDetailsFragment : Fragment() {
                                                                         .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
                                                                 ) {
 
-                                                                   try{
-                                                                       if (checkItemsforTransactionPrinter(
-                                                                               (paymentDetailsResponse.data.order.order_items
-                                                                                   ?: arrayListOf()) as List<GetOrderDetailsResponse.Data.OrderItem>,
-                                                                               kitchenPrinterList[i].printerCategories.toCollection(
-                                                                                   arrayListOf()
-                                                                               )
-                                                                           )
-                                                                       ) {
+                                                                    try {
+                                                                        if (checkItemsforTransactionPrinter(
+                                                                                (paymentDetailsResponse.data.order.order_items
+                                                                                    ?: arrayListOf()) as List<GetOrderDetailsResponse.Data.OrderItem>,
+                                                                                kitchenPrinterList[i].printerCategories.toCollection(
+                                                                                    arrayListOf()
+                                                                                )
+                                                                            )
+                                                                        ) {
 
-                                                                           initKitchenPrinter(
-                                                                               kitchenPrinterList.get(i),
-                                                                               Constants.KITCHEN
-                                                                           )
-                                                                       }
-                                                                   }catch (e:Exception){
+                                                                            initKitchenPrinter(
+                                                                                kitchenPrinterList.get(
+                                                                                    i
+                                                                                ),
+                                                                                Constants.KITCHEN
+                                                                            )
+                                                                        }
+                                                                    } catch (e: Exception) {
 
-                                                                   }
+                                                                    }
 
                                                                 }
                                                             }
@@ -2043,7 +2161,7 @@ class TransactionDetailsFragment : Fragment() {
             }
 
 
-        }else if (customerReceiptPrinters.name.startsWith(LANDI_INNER_PRINTER, true)) {
+        } else if (customerReceiptPrinters.name.startsWith(LANDI_INNER_PRINTER, true)) {
             printFromLandiInnerPrinter(customerReceiptPrinters)
         } else {
 
@@ -2137,8 +2255,7 @@ class TransactionDetailsFragment : Fragment() {
                     generateKitchenReceiptSunmi(data, type)
                 }
             }
-        }
-        else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains(
+        } else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains(
                 "SP",
                 ignoreCase = true
             )))
@@ -2191,7 +2308,14 @@ class TransactionDetailsFragment : Fragment() {
 
                                                 actionFeedLine(1)
 
-                                                if (paymentDetailsResponse.data.order.order_type_name.contains("Phone", true) || (paymentDetailsResponse.data.order.order_type_name.equals("OnlineWebOrder",ignoreCase = true))) {
+                                                if (paymentDetailsResponse.data.order.order_type_name.contains(
+                                                        "Phone",
+                                                        true
+                                                    ) || (paymentDetailsResponse.data.order.order_type_name.equals(
+                                                        "OnlineWebOrder",
+                                                        ignoreCase = true
+                                                    ))
+                                                ) {
                                                     add(
                                                         PrinterBuilder()
                                                             .styleBold(true)
@@ -2359,7 +2483,11 @@ class TransactionDetailsFragment : Fragment() {
 
                             actionFeedLine(1)
 
-                            if ((paymentDetailsResponse.data.order.order_type.equals(Constants.PHONE_ORDER_)) || (paymentDetailsResponse.data.order.order_type.equals("OnlineWebOrder",ignoreCase = true))) {
+                            if ((paymentDetailsResponse.data.order.order_type.equals(Constants.PHONE_ORDER_)) || (paymentDetailsResponse.data.order.order_type.equals(
+                                    "OnlineWebOrder",
+                                    ignoreCase = true
+                                ))
+                            ) {
                                 add(
                                     PrinterBuilder()
                                         .styleBold(true)
@@ -2575,8 +2703,7 @@ class TransactionDetailsFragment : Fragment() {
 
             }
 
-        }
-        else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
+        } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(200)
@@ -3485,7 +3612,9 @@ class TransactionDetailsFragment : Fragment() {
             if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                 if (paymentDetailsResponse.data.order.customer != null) {
                     PrintSunmiUtils.customerDetails()
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.normalText("\n")
@@ -4009,7 +4138,7 @@ class TransactionDetailsFragment : Fragment() {
                     ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
             ) {
                 PrintSunmiUtils.addHorizontalInnerNew()
-            }else{
+            } else {
                 PrintSunmiUtils.addHorizontalInner()
             }
 
@@ -4037,16 +4166,20 @@ class TransactionDetailsFragment : Fragment() {
             SunmiPrintHelper.getInstance().lineWrap(1)
             if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                 if (paymentDetailsResponse.data.order.customer != null) {
-                    PrintSunmiUtils.customerDetailsInner(true,sunmiFrameworkVersion)
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    PrintSunmiUtils.customerDetailsInner(true, sunmiFrameworkVersion)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.addHorizontalInnerNew()
-                    }else{
+                    } else {
                         PrintSunmiUtils.addHorizontalInner()
                     }
 
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.normalText("\n")
@@ -5506,7 +5639,9 @@ class TransactionDetailsFragment : Fragment() {
                         )
                     )
 
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.normalText("\n")
@@ -5526,7 +5661,9 @@ class TransactionDetailsFragment : Fragment() {
                             )
                         )
                     }
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.normalText("\n")
@@ -5861,7 +5998,9 @@ class TransactionDetailsFragment : Fragment() {
                 if (paymentDetailsResponse?.data.order?.customer != null) {
 
                     PrintSunmiUtils.customerDetails()
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.normalText("\n")
@@ -6116,7 +6255,7 @@ class TransactionDetailsFragment : Fragment() {
             ) {
                 PrintSunmiUtils.addHorizontalInnerNew()
                 PrintSunmiUtils.normalText("\n")
-            }else{
+            } else {
                 PrintSunmiUtils.addHorizontalInner()
             }
 
@@ -6131,7 +6270,7 @@ class TransactionDetailsFragment : Fragment() {
                         customerSettingModel.showModifiers
                     )
                 }
-            }else{
+            } else {
                 paymentDetailsResponse.data.order.order_items.let {
                     addOrderItemsTransactionInner(
                         it,
@@ -6161,7 +6300,7 @@ class TransactionDetailsFragment : Fragment() {
                         ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                 ) {
                     PrintSunmiUtils.normalTextNew(str1)
-                }else{
+                } else {
                     PrintSunmiUtils.normalText(str1)
                 }
             }
@@ -6176,7 +6315,7 @@ class TransactionDetailsFragment : Fragment() {
                     ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
             ) {
                 PrintSunmiUtils.normalTextNew(sub)
-            }else{
+            } else {
                 PrintSunmiUtils.normalText(sub)
             }
 
@@ -6194,7 +6333,7 @@ class TransactionDetailsFragment : Fragment() {
                             PrintSunmiUtils.lineChar()
                         ).toString()
                     )
-                }else{
+                } else {
                     PrintSunmiUtils.normalText(
                         padLine(
                             "Tax",
@@ -6220,7 +6359,7 @@ class TransactionDetailsFragment : Fragment() {
                             PrintSunmiUtils.lineChar()
                         ).toString()
                     )
-                }else{
+                } else {
 
                     PrintSunmiUtils.normalText(
                         padLine(
@@ -6249,7 +6388,7 @@ class TransactionDetailsFragment : Fragment() {
                             }, PrintSunmiUtils.lineChar()
                         ).toString()
                     )
-                }else{
+                } else {
                     PrintSunmiUtils.normalText(
                         padLine(
                             "Tips",
@@ -6280,11 +6419,13 @@ class TransactionDetailsFragment : Fragment() {
                         ).toString()
 
 
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.normalTextNew(surCharge)
-                    }else {
+                    } else {
                         PrintSunmiUtils.normalText(surCharge)
                     }
                 } else if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Cash".lowercase() && paymentDetailsResponse?.data?.cash_discount_type.lowercase() == "CashDiscount".lowercase()) {
@@ -6299,11 +6440,13 @@ class TransactionDetailsFragment : Fragment() {
                         }, PrintSunmiUtils.lineChar()
                     ).toString()
 
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.normalTextNew(cashDisc)
-                    }else{
+                    } else {
                         PrintSunmiUtils.normalText(cashDisc)
                     }
                 }
@@ -6322,11 +6465,13 @@ class TransactionDetailsFragment : Fragment() {
                             )
                         }, PrintSunmiUtils.lineChar()
                     ).toString()
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.normalTextNew(loyaltyAmount)
-                    }else{
+                    } else {
                         PrintSunmiUtils.normalText(loyaltyAmount)
                     }
 
@@ -6340,11 +6485,13 @@ class TransactionDetailsFragment : Fragment() {
                         PrintSunmiUtils.lineChar()
                     ).toString()
 
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.normalTextNew(loyaltyPoint)
-                    }else{
+                    } else {
                         PrintSunmiUtils.normalText(loyaltyPoint)
                     }
                 }
@@ -6364,7 +6511,7 @@ class TransactionDetailsFragment : Fragment() {
                         PrintSunmiUtils.lineChar()
                     ).toString()
                 )
-            }else{
+            } else {
                 PrintSunmiUtils.boldText(
                     padLine(
                         "Total Price",
@@ -6392,7 +6539,9 @@ class TransactionDetailsFragment : Fragment() {
                 if (customerSettingModel.showTipLineForCash) {
 
 
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         if (customerSettingModel.fonts == Constants.LARGE) {
@@ -6401,7 +6550,7 @@ class TransactionDetailsFragment : Fragment() {
                         } else {
                             PrintSunmiUtils.boldTextNew("Tips                              _____________")
                         }
-                    }else{
+                    } else {
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             PrintSunmiUtils.boldText("Tips      _____________")
                             SunmiPrintHelper.getInstance().lineWrap(1)
@@ -6420,7 +6569,7 @@ class TransactionDetailsFragment : Fragment() {
                 ) {
                     PrintSunmiUtils.addHorizontalInnerNew()
                     PrintSunmiUtils.normalText("\n")
-                }else{
+                } else {
                     PrintSunmiUtils.addHorizontalInner()
                 }
 
@@ -6434,7 +6583,7 @@ class TransactionDetailsFragment : Fragment() {
                             customerSettingModel.fonts
                         )
                     }
-                }else{
+                } else {
                     if (tipsList.isNotEmpty()) {
                         PrintSunmiUtils.addTipListInner(
                             tipsList,
@@ -6458,7 +6607,7 @@ class TransactionDetailsFragment : Fragment() {
                     ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
             ) {
                 PrintSunmiUtils.normalTextNew(tranId)
-            }else{
+            } else {
                 PrintSunmiUtils.normalText(tranId)
             }
 
@@ -6473,12 +6622,14 @@ class TransactionDetailsFragment : Fragment() {
                         ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                 ) {
                     PrintSunmiUtils.normalTextNew(tranType)
-                }else{
+                } else {
                     PrintSunmiUtils.normalText(tranType)
                 }
 
                 try {
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.cardDetailsInnerNew(
@@ -6488,7 +6639,7 @@ class TransactionDetailsFragment : Fragment() {
                             paymentDetailsResponse.data.card_number,
                             customerSettingModel.fonts
                         )
-                    }else{
+                    } else {
                         PrintSunmiUtils.cardDetailsInner(
                             paymentDetailsResponse.data.card_name,
                             /*paymentDetailsResponse.data.card_type ?: ""*/
@@ -6516,7 +6667,7 @@ class TransactionDetailsFragment : Fragment() {
                         ).toString()
                     )
 
-                }else{
+                } else {
                     PrintSunmiUtils.normalText(
                         padLine(
                             "Transaction Type",
@@ -6536,9 +6687,11 @@ class TransactionDetailsFragment : Fragment() {
 
                 if (paymentDetailsResponse?.data.order?.customer != null) {
 
-                    PrintSunmiUtils.customerDetailsInner(false,sunmiFrameworkVersion)
+                    PrintSunmiUtils.customerDetailsInner(false, sunmiFrameworkVersion)
 
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.normalText("\n")
@@ -6627,7 +6780,7 @@ class TransactionDetailsFragment : Fragment() {
 
         val order = receiptModel?.order
 
-        this.checkBluetoothPermissions(object: OnBluetoothPermissionGranted {
+        this.checkBluetoothPermissions(object : OnBluetoothPermissionGranted {
             override fun onPermissionsGranted() {
                 val order = paymentDetailsResponse.data
                 GlobalScope.launch {
@@ -6653,7 +6806,7 @@ class TransactionDetailsFragment : Fragment() {
                             LPrint.apply {
                                 setOutputStream(outputStream)
 
-                                try  {
+                                try {
 
                                     if (customerSettingModel.showOrderIdTop) {
 
@@ -6705,10 +6858,12 @@ class TransactionDetailsFragment : Fragment() {
                                         prefProvider.getValue(BUSINESS_ADDRESS, "")
                                     } else ""
 
-                                    var businessPhoneNumber = MethodUtils.getUSFormatNumber(prefProvider.getValue(
-                                        BUSINESS_PHONE_NO,
-                                        ""
-                                    ))
+                                    var businessPhoneNumber = MethodUtils.getUSFormatNumber(
+                                        prefProvider.getValue(
+                                            BUSINESS_PHONE_NO,
+                                            ""
+                                        )
+                                    )
 
                                     printCenter(venueAddress, fontSize = SMALL_SIZE)
                                     lineBreak()
@@ -6748,9 +6903,14 @@ class TransactionDetailsFragment : Fragment() {
                                             .equals("Online Order", true) ||
                                         paymentDetailsResponse.data.order.order_type.trim()
                                             .equals("OnlineWebOrder", true) ||
-                                        paymentDetailsResponse.data.order.order_type.trim().equals(PHONE_ORDER, true)
+                                        paymentDetailsResponse.data.order.order_type.trim()
+                                            .equals(PHONE_ORDER, true)
                                     ) {
-                                        printCenter(paymentDetailsResponse.data.order.delivery_type, isBold = true, fontSize = FONT_SIZE_4X)
+                                        printCenter(
+                                            paymentDetailsResponse.data.order.delivery_type,
+                                            isBold = true,
+                                            fontSize = FONT_SIZE_4X
+                                        )
                                         lineBreak()
                                         lineBreak()
                                     }
@@ -6849,13 +7009,15 @@ class TransactionDetailsFragment : Fragment() {
                                      * Print Tax Amount
                                      */
                                     if (paymentDetailsResponse.data?.tax_amount != null) {
-                                            printLeft(
-                                                padLine(
-                                                    "Tax",
-                                                    "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.tax_amount),
-                                                    PrintSunmiUtils.lineChar()
-                                                ).toString()
-                                            )
+                                        printLeft(
+                                            padLine(
+                                                "Tax",
+                                                "$" + MethodUtils.roundOffAmountString(
+                                                    paymentDetailsResponse.data.tax_amount
+                                                ),
+                                                PrintSunmiUtils.lineChar()
+                                            ).toString()
+                                        )
                                         lineBreak()
                                     }
 
@@ -6865,28 +7027,30 @@ class TransactionDetailsFragment : Fragment() {
 
                                     if (paymentDetailsResponse.data?.service_charge_amount != null && paymentDetailsResponse.data.order.service_charge_enabled) {
 
-                                            printLeft(
-                                                padLine(
-                                                    "Service Charge",
-                                                    "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.service_charge_amount),
-                                                    PrintSunmiUtils.lineChar()
-                                                ).toString()
-                                            )
+                                        printLeft(
+                                            padLine(
+                                                "Service Charge",
+                                                "$" + MethodUtils.roundOffAmountString(
+                                                    paymentDetailsResponse.data.service_charge_amount
+                                                ),
+                                                PrintSunmiUtils.lineChar()
+                                            ).toString()
+                                        )
                                         lineBreak()
                                     }
 
                                     if (paymentDetailsResponse.data?.tips != 0.0) {
 
-                                            printLeft(
-                                                padLine(
-                                                    "Tips",
-                                                    "$" + paymentDetailsResponse.data.tips?.let {
-                                                        MethodUtils.roundOffAmountString(
-                                                            it
-                                                        )
-                                                    }, PrintSunmiUtils.lineChar()
-                                                ).toString()
-                                            )
+                                        printLeft(
+                                            padLine(
+                                                "Tips",
+                                                "$" + paymentDetailsResponse.data.tips?.let {
+                                                    MethodUtils.roundOffAmountString(
+                                                        it
+                                                    )
+                                                }, PrintSunmiUtils.lineChar()
+                                            ).toString()
+                                        )
                                         lineBreak()
                                     }
 
@@ -6900,9 +7064,13 @@ class TransactionDetailsFragment : Fragment() {
                                                 padLine(
                                                     Constants.SURCHARGE_TEXT,
                                                     if (paymentDetailsResponse.data.cash_discount_or_surcharge != 0.0) {
-                                                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data?.cash_discount_or_surcharge)
+                                                        "$" + MethodUtils.roundOffAmountString(
+                                                            paymentDetailsResponse.data?.cash_discount_or_surcharge
+                                                        )
                                                     } else {
-                                                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.cash_discount_or_surcharge)
+                                                        "$" + MethodUtils.roundOffAmountString(
+                                                            paymentDetailsResponse.data.order?.cash_discount_or_surcharge
+                                                        )
                                                     }, PrintSunmiUtils.lineChar()
                                                 ).toString()
                                             printLeft(surCharge)
@@ -6913,9 +7081,13 @@ class TransactionDetailsFragment : Fragment() {
                                             val cashDisc = padLine(
                                                 "Cash Discount",
                                                 if (paymentDetailsResponse.data.cash_discount_or_surcharge != 0.0) {
-                                                    "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data?.cash_discount_or_surcharge)
+                                                    "-$" + MethodUtils.roundOffAmountString(
+                                                        paymentDetailsResponse.data?.cash_discount_or_surcharge
+                                                    )
                                                 } else {
-                                                    "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.cash_discount_or_surcharge)
+                                                    "$" + MethodUtils.roundOffAmountString(
+                                                        paymentDetailsResponse.data.order?.cash_discount_or_surcharge
+                                                    )
                                                 }, PrintSunmiUtils.lineChar()
                                             ).toString()
 
@@ -6959,13 +7131,13 @@ class TransactionDetailsFragment : Fragment() {
                                     val totalAmt =
                                         MethodUtils.roundOffAmountDouble(paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips)
 
-                                        printBoldLeft(
-                                            padLine(
-                                                "Total Price",
-                                                "$" + MethodUtils.roundOffAmountString(totalAmt),
-                                                PrintSunmiUtils.lineChar()
-                                            ).toString()
-                                        )
+                                    printBoldLeft(
+                                        padLine(
+                                            "Total Price",
+                                            "$" + MethodUtils.roundOffAmountString(totalAmt),
+                                            PrintSunmiUtils.lineChar()
+                                        ).toString()
+                                    )
                                     lineBreak()
 
                                     if (paymentDetailsResponse?.data?.order.refund_detail != null && paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount != 0.0 && customerSettingModel.showRefundAmount) {
@@ -6973,7 +7145,9 @@ class TransactionDetailsFragment : Fragment() {
                                         printBoldLeft(
                                             padLine(
                                                 "Refund Amount",
-                                                "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount),
+                                                "-$" + MethodUtils.roundOffAmountString(
+                                                    paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount
+                                                ),
                                                 PrintSunmiUtils.lineChar()
                                             ).toString()
                                         )
@@ -6985,12 +7159,12 @@ class TransactionDetailsFragment : Fragment() {
                                     if (paymentDetailsResponse.data.order?.total_tips == 0.0) {
                                         if (customerSettingModel.showTipLineForCash) {
 
-                                                if (customerSettingModel.fonts == Constants.LARGE) {
-                                                    printBoldLeft("Tips      _____________")
-                                                    lineBreak()
-                                                } else {
-                                                    printBoldLeft("Tips                              _____________")
-                                                }
+                                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                                printBoldLeft("Tips      _____________")
+                                                lineBreak()
+                                            } else {
+                                                printBoldLeft("Tips                              _____________")
+                                            }
 
                                         }
                                     }
@@ -7040,26 +7214,26 @@ class TransactionDetailsFragment : Fragment() {
                                         lineBreak()
 
                                         try {
-                                                PrintSunmiUtils.cardDetailsInnerLandi(
-                                                    paymentDetailsResponse.data.card_name,
-                                                    /*paymentDetailsResponse.data.card_type ?: ""*/
-                                                    MethodUtils.getCardType(paymentDetailsResponse.data.ext_data),
-                                                    paymentDetailsResponse.data.card_number,
-                                                    customerSettingModel.fonts,
-                                                    LPrint
-                                                )
+                                            PrintSunmiUtils.cardDetailsInnerLandi(
+                                                paymentDetailsResponse.data.card_name,
+                                                /*paymentDetailsResponse.data.card_type ?: ""*/
+                                                MethodUtils.getCardType(paymentDetailsResponse.data.ext_data),
+                                                paymentDetailsResponse.data.card_number,
+                                                customerSettingModel.fonts,
+                                                LPrint
+                                            )
                                         } catch (e: Exception) {
 
                                         }
 
                                     } else {
-                                            printLeft(
-                                                padLine(
-                                                    "Transaction Type",
-                                                    paymentDetailsResponse.data.payment_type ?: "Cash",
-                                                    PrintSunmiUtils.lineChar()
-                                                ).toString()
-                                            )
+                                        printLeft(
+                                            padLine(
+                                                "Transaction Type",
+                                                paymentDetailsResponse.data.payment_type ?: "Cash",
+                                                PrintSunmiUtils.lineChar()
+                                            ).toString()
+                                        )
                                         lineBreak()
                                     }
 
@@ -7074,7 +7248,7 @@ class TransactionDetailsFragment : Fragment() {
 
                                         if (paymentDetailsResponse?.data.order?.customer != null) {
 
-                                            PrintSunmiUtils.customerDetailsInnerLandi(false,LPrint)
+                                            PrintSunmiUtils.customerDetailsInnerLandi(false, LPrint)
 
                                             if (customerSettingModel.showCustomerName) {
 
@@ -7085,11 +7259,12 @@ class TransactionDetailsFragment : Fragment() {
                                             if (customerSettingModel.showCustomerPhone) {
                                                 if (paymentDetailsResponse?.data?.order?.customer?.phones?.isNotEmpty()) {
 
-                                                    val phoneNoFormatted = MethodUtils.getUSFormatNumber(
-                                                        paymentDetailsResponse.data.order.customer.phones.get(
-                                                            paymentDetailsResponse.data.order.customer.phones.size - 1
-                                                        ).phoneNumber
-                                                    )
+                                                    val phoneNoFormatted =
+                                                        MethodUtils.getUSFormatNumber(
+                                                            paymentDetailsResponse.data.order.customer.phones.get(
+                                                                paymentDetailsResponse.data.order.customer.phones.size - 1
+                                                            ).phoneNumber
+                                                        )
                                                     printLeft(phoneNoFormatted)
                                                     lineBreak()
 
@@ -7261,5 +7436,13 @@ class TransactionDetailsFragment : Fragment() {
 
         PrintSunmiUtils.printLogo(newBitmap)
 
+    }
+
+    override fun onStop() {
+        if (this@TransactionDetailsFragment::paymentCoroutineScope.isInitialized){
+            paymentCoroutineScope.cancel()
+        }
+
+        super.onStop()
     }
 }
