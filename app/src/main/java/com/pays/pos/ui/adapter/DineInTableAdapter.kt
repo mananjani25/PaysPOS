@@ -668,7 +668,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.checkedForFire?.apply {
                     isChecked = false
                     isEnabled = true
-                    buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.redColor))
+                    buttonTintList = ColorStateList.valueOf(Color.RED)
+//                    buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.redColor))
                    // Log.e("Items fired call","ITEM not fired")
 
                 }
