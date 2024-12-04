@@ -15,6 +15,9 @@ class GuestPaymentAttributes : Parcelable {
     @SerializedName("guest_index_for_dine_in")
     var guestIndexForGuestPaymentDineIn: Int = 404
 
+    @SerializedName("gift_card_redeemed_amount")
+    var gift_card_redeemed_amount: Double? = null
+
     @SerializedName("card_name")
     var cardName: String = ""
 
@@ -102,8 +105,5 @@ class GuestPaymentAttributes : Parcelable {
 
     @SerializedName("ref_num")
     var ref_num: String = ""
-
-    @SerializedName("gift_card_redeemed_amount")
-    var gift_card_redeemed_amount: Double? = 0.0
 
 }
