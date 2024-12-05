@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -49,7 +48,6 @@ import com.pays.pos.utils.callback.ItemCallback
 import com.pays.pos.utils.callback.PaginationScrollListener
 import com.pays.pos.utils.extensions.liveSnackBar
 import com.pays.pos.utils.extensions.showAlert
-import com.pays.pos.utils.extensions.toast
 import com.pays.pos.utils.paxUtils.AppThreadPool
 import com.pays.pos.utils.paxUtils.POSLinkCreatorWrapper
 import com.pays.pos.utils.paxUtils.SettingINI
@@ -60,6 +58,7 @@ import com.google.gson.JsonArray
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
+import com.pays.pos.data.model.requestModel.CashLogRequest
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -297,9 +296,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 }
             } else {
                 tipCall(false)
+                cashLogEventCall(bundle)
             }
-
-
         }
 
         binding.includeView.spTerminals.setOnTouchListener { v, event ->
@@ -386,6 +384,30 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 }
         }
         return binding.root
+    }
+
+    private fun cashLogEventCall(bundle: Bundle) {
+        if(bundle.containsKey("tipAmount")){
+            if (bundle.getDouble("tipAmount")>0.0){
+                makeCashEventCallToUpdateTip(bundle.getDouble("tipAmount"))
+            }
+        }
+    }
+
+    private fun makeCashEventCallToUpdateTip(tippedAmount: Double) {
+        val cashLogRequest = CashLogRequest(
+            tippedAmount,
+            prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
+            "in",
+            singleTransaction?.orderId?:-1,
+            singleTransaction?.id?:-1,
+            "Tip added to the order",
+            prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
+            null,
+            null
+        )
+        dashboardViewModel.makeCashInOutCallFromCustomerDisplay(cashLogRequest)
+
     }
 
     @Inject

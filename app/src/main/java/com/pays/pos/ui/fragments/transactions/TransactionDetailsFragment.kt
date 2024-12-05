@@ -67,6 +67,7 @@ import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
 import com.google.gson.reflect.TypeToken
 import com.pax.poslink.ReportRequest
+import com.pays.pos.data.model.requestModel.CashLogRequest
 import com.pays.pos.data.model.requestModel.RefundRequestModel
 import com.pays.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.pays.pos.data.remote.Constants.BUSINESS_PHONE_NO
@@ -379,6 +380,7 @@ class TransactionDetailsFragment : Fragment() {
                 }
             } else {
                 tipCall(false)
+                cashLogEventCall(bundle)
             }
 
 
@@ -431,6 +433,30 @@ class TransactionDetailsFragment : Fragment() {
             openReceiptDialog(2)
 
         }
+
+    }
+
+    private fun cashLogEventCall(bundle: Bundle) {
+        if(bundle.containsKey("tipAmount")){
+            if (bundle.getDouble("tipAmount")>0.0){
+                makeCashEventCallToUpdateTip(bundle.getDouble("tipAmount"))
+            }
+        }
+    }
+
+    private fun makeCashEventCallToUpdateTip(tippedAmount: Double) {
+        val cashLogRequest = CashLogRequest(
+            tippedAmount,
+            prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
+            "in",
+            orderId,
+            paymentId,
+            "Tip added to the order",
+            prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
+            null,
+            null
+        )
+        dashboardCategoryViewModel.makeCashInOutCallFromCustomerDisplay(cashLogRequest)
 
     }
 
