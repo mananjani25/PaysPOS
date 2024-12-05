@@ -406,7 +406,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         magRequestUtils = magtekRequestUtils,
                         apiModule1 = apiModule1,
                         true,
-                        totalPayableAmount
+                        totalPayableAmount,
+                        prefProvider.getValueInt(
+                            Constants.SERVER_ORDER_ID, 0
+                        ),
+                        prefProvider.getValueInt(
+                            Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
+                        )
                     )
                 }else{
                     presentation.showThankyouLayout()

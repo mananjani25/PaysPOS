@@ -52,7 +52,6 @@ import com.pays.pos.databinding.ViewCustomDisplayBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.logger.CreateCustomerEvent
-import com.pays.pos.logger.MessageEvent
 import com.pays.pos.logger.SyncCustomerEvent
 import com.pays.pos.ui.adapter.ActiveTipsListAdapter
 import com.pays.pos.ui.adapter.DineInAdapter
@@ -91,8 +90,9 @@ class CustomDisplay(
     private val dashBoardCategoryViewModel: DashBoardCategoryViewModel,
     val passcodeViewModel: PasscodeViewModel,
     val dineInViewModel: DineInOrderTableViewModel,
-   /* val makeOneTimeReload:Boolean=false*/
-) : Presentation(ContextThemeWrapper(context, R.style.CustomPresentationTheme), display), MyCallback, DineInAdapter.DineInCallback,
+    /* val makeOneTimeReload:Boolean=false*/
+) : Presentation(ContextThemeWrapper(context, R.style.CustomPresentationTheme), display),
+    MyCallback, DineInAdapter.DineInCallback,
     ActiveTipsListAdapter.DiscountInterface {
 
     private var mWholeTotalPrice: Double = 0.0
@@ -173,49 +173,51 @@ class CustomDisplay(
     }
 
     private fun observePasscodeScreen() {
-        dashBoardCategoryViewModel.passcodeScreenActive.observe(lifecycleOwner, object:Observer<Boolean>{
-            override fun onChanged(t: Boolean?) {
-                with(binding){
-                t?.let {
-                    if (it) {
-                        /*Passcode screen is active, show the splash screen with logo*/
-                        onLogOutOrClockOut(true)
-                    } else {
-                        /*Passcode screen is inactive, show the splash screen with sign up button*/
-                        onLogOutOrClockOut(false)
+        dashBoardCategoryViewModel.passcodeScreenActive.observe(
+            lifecycleOwner,
+            object : Observer<Boolean> {
+                override fun onChanged(t: Boolean?) {
+                    with(binding) {
+                        t?.let {
+                            if (it) {
+                                /*Passcode screen is active, show the splash screen with logo*/
+                                onLogOutOrClockOut(true)
+                            } else {
+                                /*Passcode screen is inactive, show the splash screen with sign up button*/
+                                onLogOutOrClockOut(false)
+                            }
+                        }
                     }
                 }
-            }
-            }
-        })
+            })
     }
 
     /*-------------Customer Loyalty---------------*/
     private fun initViews() {
 
-        if (prefProvider.getValueboolean(Constants.IS_PAYMENT_SCREEN,false)){
-            lifecycleOwner.lifecycleScope.launch(Dispatchers.Main){
+        if (prefProvider.getValueboolean(Constants.IS_PAYMENT_SCREEN, false)) {
+            lifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
                 binding.btnSignUpOrCheckInMain.apply {
                     gone()
                 }
             }
 
-        }else{
-            lifecycleOwner.lifecycleScope.launch(Dispatchers.Main){
+        } else {
+            lifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
                 binding.btnSignUpOrCheckInMain.apply {
                     visible()
                 }
             }
         }
         lifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-            if (dashBoardCategoryViewModel.allSplit().isEmpty()){
-                withContext(Dispatchers.Main){
+            if (dashBoardCategoryViewModel.allSplit().isEmpty()) {
+                withContext(Dispatchers.Main) {
                     binding.apply {
                         /*Commented for now because we don't need to show the signIn or change mobile button on Checkout Screen*/
 //                        btnSignUpOrCheckInMain.visible()
                     }
                 }
-            }else{
+            } else {
                 withContext(Dispatchers.Main) {
                     binding.apply {
                         btnSignUpOrCheckInMain.gone()
@@ -227,14 +229,17 @@ class CustomDisplay(
         with(binding) {
 
             if (prefProvider.getValue(
-                Constants.VENUE_LOGO,
-                ""
-            ).isNotEmpty()){
+                    Constants.VENUE_LOGO,
+                    ""
+                ).isNotEmpty()
+            ) {
                 imgBusiness?.let {
-                    val decodedString: ByteArray = Base64.decode(prefProvider.getValue(
-                        Constants.VENUE_LOGO,
-                        ""
-                    ), Base64.DEFAULT)
+                    val decodedString: ByteArray = Base64.decode(
+                        prefProvider.getValue(
+                            Constants.VENUE_LOGO,
+                            ""
+                        ), Base64.DEFAULT
+                    )
                     val decodedByte: Bitmap =
                         BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
 
@@ -245,7 +250,7 @@ class CustomDisplay(
                     it.visible()
                 }
 
-            }else{
+            } else {
                 imgBusiness?.gone()
             }
             if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isNotEmpty()) {
@@ -255,7 +260,7 @@ class CustomDisplay(
                 btnSignUpOrCheckInMain.gone()
                 btnSignUpOrCheckIn.gone()
                 tvMessage?.text = "Customer added successfully"
-            }else{
+            } else {
                 btnSignUpOrCheckIn?.text = resources.getString(R.string.sign_up_or_check_in)
                 btnSignUpOrCheckInMain?.text = resources.getString(R.string.sign_up_or_check_in)
                 btnSignUpOrCheckInMain.visible()
@@ -283,13 +288,13 @@ class CustomDisplay(
 
             tvCancel?.setOnSingleClickListener(object : View.OnClickListener {
                 override fun onClick(p0: View?) {
-                    if (cartAdapter.cartList.isNotEmpty()){
+                    if (cartAdapter.cartList.isNotEmpty()) {
                         mainCartLayout.visible()
                         splashLayout.gone()
                         keypadLayout?.gone()
                         tvErrorMessage?.text = ""
 
-                    }else{
+                    } else {
                         splashLayout.visible()
                         keypadLayout?.gone()
                     }
@@ -360,12 +365,17 @@ class CustomDisplay(
 
             btnBackSpace?.setOnClickListener(object : View.OnClickListener {
                 override fun onClick(p0: View?) {
-                    tvPhoneNumber?.setText(MethodUtils.removeChars(tvPhoneNumber?.text.toString(), 1))
+                    tvPhoneNumber?.setText(
+                        MethodUtils.removeChars(
+                            tvPhoneNumber?.text.toString(),
+                            1
+                        )
+                    )
                     tvErrorMessage?.text = ""
                 }
             })
 
-            btnBackSpace?.setOnLongClickListener(object:View.OnLongClickListener{
+            btnBackSpace?.setOnLongClickListener(object : View.OnLongClickListener {
                 override fun onLongClick(p0: View?): Boolean {
                     tvPhoneNumber?.setText("")
                     return true
@@ -381,7 +391,8 @@ class CustomDisplay(
                     //  2. if customer not present then create the customer
 
                     Log.v("4732", "Done Clicked")
-                    var mobileNumber = tvPhoneNumber?.text.toString().trim().replace(Regex("[^0-9]"), "")
+                    var mobileNumber =
+                        tvPhoneNumber?.text.toString().trim().replace(Regex("[^0-9]"), "")
 
                     tvPhoneNumber.addTextChangedListener(object : TextWatcher {
                         override fun afterTextChanged(s: Editable?) {
@@ -393,11 +404,21 @@ class CustomDisplay(
                             }
                         }
 
-                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                        override fun beforeTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            count: Int,
+                            after: Int
+                        ) {
                             // No need to implement this for this use case
                         }
 
-                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                        override fun onTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            before: Int,
+                            count: Int
+                        ) {
                             // No need to implement this for this use case
                         }
                     })
@@ -407,7 +428,8 @@ class CustomDisplay(
                         tvPhoneNumber?.text?.clear()
                         tvErrorMessage?.text = ""
                     } else {
-                        Toast.makeText(context,"Enter Valid Mobile Number", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Enter Valid Mobile Number", Toast.LENGTH_SHORT)
+                            .show()
                         tvErrorMessage?.text = "Invalid Number"
                     }
 //                    [{"id":2,"phone_number":"5555575575"}]
@@ -415,36 +437,39 @@ class CustomDisplay(
             })
 
 
-            dashBoardCategoryViewModel.changeCustDispSignInButtonTitle.observe(lifecycleOwner,object :Observer<String>{
-                override fun onChanged(t: String?) {
-                    t?.let {
-                        if (it.isNotEmpty()){
-                            btnSignUpOrCheckInMain.text=it
-                        }
-                    }
-                }
-            })
-
-            dashBoardCategoryViewModel.removedCustomerFromManualSaleObs.observe(lifecycleOwner,object:Observer<Boolean>{
-                override fun onChanged(t: Boolean?) {
-                    t?.let {
-                        if (it){
-                            dismiss()
-                            dismiss()
-                            binding.apply {
-                                txtCustomerName.text=""
-                                tvLoyaltyBalance.text=""
-                                tvMessage.text=resources.getString(R.string.loyalty_message)
+            dashBoardCategoryViewModel.changeCustDispSignInButtonTitle.observe(lifecycleOwner,
+                object : Observer<String> {
+                    override fun onChanged(t: String?) {
+                        t?.let {
+                            if (it.isNotEmpty()) {
+                                btnSignUpOrCheckInMain.text = it
                             }
-//                            if (!makeOneTimeReload) {
-                            dashBoardCategoryViewModel.removedCustomerFromManualSaleObs.value=false
-
-                            dashBoardCategoryViewModel.reloadCustomerDisplay(it)
-//                            }
                         }
                     }
-                }
-            })
+                })
+
+            dashBoardCategoryViewModel.removedCustomerFromManualSaleObs.observe(lifecycleOwner,
+                object : Observer<Boolean> {
+                    override fun onChanged(t: Boolean?) {
+                        t?.let {
+                            if (it) {
+                                dismiss()
+                                dismiss()
+                                binding.apply {
+                                    txtCustomerName.text = ""
+                                    tvLoyaltyBalance.text = ""
+                                    tvMessage.text = resources.getString(R.string.loyalty_message)
+                                }
+//                            if (!makeOneTimeReload) {
+                                dashBoardCategoryViewModel.removedCustomerFromManualSaleObs.value =
+                                    false
+
+                                dashBoardCategoryViewModel.reloadCustomerDisplay(it)
+//                            }
+                            }
+                        }
+                    }
+                })
         }
     }
 
@@ -489,9 +514,9 @@ class CustomDisplay(
 
 
     private fun createCustomer(phoneNumber: String) {
-      /*  binding.tvMessage?.post {
-            binding.tvMessage?.text="Loading..."
-        }*/
+        /*  binding.tvMessage?.post {
+              binding.tvMessage?.text="Loading..."
+          }*/
 
         CoroutineScope(Dispatchers.Main).launch {
             binding.apply {
@@ -513,7 +538,7 @@ class CustomDisplay(
             Constants.CUSTOMER_NAME,
             customer.first_name + " " + customer.last_name
         )
-        dashBoardCategoryViewModel.selectedCustomer=customer
+        dashBoardCategoryViewModel.selectedCustomer = customer
         prefProvider.setValue(
             Constants.RECEIPT_CUSTOMER_NAME,
             customer.first_name + " " + customer.last_name
@@ -539,14 +564,14 @@ class CustomDisplay(
         CoroutineScope(Dispatchers.Main).launch {
             displayCustomer()
             binding.apply {
-                tvMessage?.text="Customer added successfully"
-                btnSignUpOrCheckInMain.text=resources.getString(R.string.change_mobile_number)
+                tvMessage?.text = "Customer added successfully"
+                btnSignUpOrCheckInMain.text = resources.getString(R.string.change_mobile_number)
 
                 /*Gone is temporary, we will remove this in future*/
                 btnSignUpOrCheckInMain.gone()
                 btnSignUpOrCheckIn.gone()
 
-                btnSignUpOrCheckIn.text=resources.getString(R.string.change_mobile_number)
+                btnSignUpOrCheckIn.text = resources.getString(R.string.change_mobile_number)
                 txtCustomerName.visible()
                 txtCustomerName.apply { text = customer.first_name + " " + customer.last_name }
                 keypadLayout?.gone()
@@ -558,7 +583,7 @@ class CustomDisplay(
 ////            if (savedInstanceStateBackup!=null){
 ////                onCreate(savedInstanceStateBackup)
             dashBoardCategoryViewModel.refreshCartFragment()
-            }
+        }
 ////            onCreate(null)
 //
 
@@ -594,7 +619,7 @@ class CustomDisplay(
                             ProgressUtils.dismissProgressDialog()
                             run breaking@{
                                 resource.data?.forEach {
-                                    if (it.isEnable){
+                                    if (it.isEnable) {
                                         binding.tvRewards?.text = getPreparedRewardStatement(it)
                                         return@breaking
                                     }
@@ -1063,15 +1088,15 @@ class CustomDisplay(
 //            CoroutineScope(Dispatchers.Main).launch {
             binding.apply {
                 txtCustomerName.post { txtCustomerName.visible() }
-                txtCustomerName.post { txtCustomerName.text=name }
-                txtLoyaltyPointsLabel.post {  txtLoyaltyPointsLabel.visible() }
+                txtCustomerName.post { txtCustomerName.text = name }
+                txtLoyaltyPointsLabel.post { txtLoyaltyPointsLabel.visible() }
             }
 
 //                show()
 //                binding.root.invalidate() // or
 //                this@CustomDisplay.window?.decorView?.invalidate()
 //                show()
-                Log.v("4732", "inside displayCustomer()_2 -> ${name}")
+            Log.v("4732", "inside displayCustomer()_2 -> ${name}")
 //            }
 
             if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
@@ -1086,7 +1111,7 @@ class CustomDisplay(
                 }
                 /*dashBoardCategoryViewModel.reloadCustomerDisplay()*/
 //                if (!makeOneTimeReload) {
-                    dashBoardCategoryViewModel.reloadCustomerDisplay(false)
+                dashBoardCategoryViewModel.reloadCustomerDisplay(false)
 //                }
             } else {
                 /*binding.tvLoyaltyBalance.invisible()
@@ -1096,15 +1121,21 @@ class CustomDisplay(
 
 //              CoroutineScope(Dispatchers.Main).launch {
 //                    binding.apply {
-                binding.tvMessage.post { binding.tvMessage.text="Customer added successfully" }
-                binding.btnSignUpOrCheckInMain.post { binding.btnSignUpOrCheckInMain.text=resources.getString(R.string.change_mobile_number)
+                binding.tvMessage.post { binding.tvMessage.text = "Customer added successfully" }
+                binding.btnSignUpOrCheckInMain.post {
+                    binding.btnSignUpOrCheckInMain.text =
+                        resources.getString(R.string.change_mobile_number)
                     /*Gone is temprary*/
-                binding.btnSignUpOrCheckInMain.gone() }
-                binding.btnSignUpOrCheckIn.post { binding.btnSignUpOrCheckIn.text=resources.getString(R.string.change_mobile_number)
+                    binding.btnSignUpOrCheckInMain.gone()
+                }
+                binding.btnSignUpOrCheckIn.post {
+                    binding.btnSignUpOrCheckIn.text =
+                        resources.getString(R.string.change_mobile_number)
                     /*Gone is temprary*/
-                    binding.btnSignUpOrCheckIn.gone()}
-                binding.txtCustomerName.post { binding.txtCustomerName.visibility=View.VISIBLE }
-                binding.txtCustomerName.post { binding.txtCustomerName.text=name }
+                    binding.btnSignUpOrCheckIn.gone()
+                }
+                binding.txtCustomerName.post { binding.txtCustomerName.visibility = View.VISIBLE }
+                binding.txtCustomerName.post { binding.txtCustomerName.text = name }
 //                        txtCustomerName.invalidate()
 //                        txtCustomerName.postInvalidate()
                 binding.keypadLayout.post { binding.keypadLayout.gone() }
@@ -1113,7 +1144,7 @@ class CustomDisplay(
 
                 /*dashBoardCategoryViewModel.reloadCustomerDisplay()*/
 //                if (!makeOneTimeReload) {
-                    dashBoardCategoryViewModel.reloadCustomerDisplay(false)
+                dashBoardCategoryViewModel.reloadCustomerDisplay(false)
 //                }
 
 //                        binding.root.invalidate() // or
@@ -1152,15 +1183,15 @@ class CustomDisplay(
                         }
                     }"
                 binding.txtCustomerName.text = name
-                binding.txtCustomerName.post { binding.txtCustomerName.text=name }
+                binding.txtCustomerName.post { binding.txtCustomerName.text = name }
             }
 
 
         } else {
-         /*   binding.txtLoyaltyPointsLabel.invisible()
-            binding.txtCustomerName.invisible()
-            binding.tvLoyaltyBalance.invisible()
-            binding.tvLoyaltyPoints.invisible()*/
+            /*   binding.txtLoyaltyPointsLabel.invisible()
+               binding.txtCustomerName.invisible()
+               binding.tvLoyaltyBalance.invisible()
+               binding.tvLoyaltyPoints.invisible()*/
             Log.v("4732", "inside displayCustomer() removed loyalty")
             /*----------Customer Loyalty--------------*/
             binding.txtLoyaltyPointsLabel.gone()
@@ -1276,8 +1307,8 @@ class CustomDisplay(
             progressLayout.gone()
 
             thankYouLayout.visible()
-            try{
-                if (dashBoardCategoryViewModel.selectedCustomer!=null) {
+            try {
+                if (dashBoardCategoryViewModel.selectedCustomer != null) {
                     txtEarnedLoyalty?.visible()
                     txtEarnedLoyalty?.post {
                         /*if (dashBoardCategoryViewModel.selectedCustomer?.final_reward.toString()
@@ -1319,12 +1350,12 @@ class CustomDisplay(
 
                             )
 //                        }
-                        }catch (e:Exception){
+                        } catch (e: Exception) {
 
                         }
                     }
                 }
-            }catch (e:Exception){
+            } catch (e: Exception) {
 
             }
 
@@ -1379,7 +1410,7 @@ class CustomDisplay(
 //            splashLayout.visible()
                 imgPaysSplash?.visible()
                 splashLoyalty?.gone()
-            }else{
+            } else {
                 mainCartLayout.gone()
                 thankYouLayout.gone()
 //            splashLayout.visible()
@@ -1389,7 +1420,7 @@ class CustomDisplay(
         }
     }
 
-    fun showThankyouLayout(){
+    fun showThankyouLayout() {
         binding.apply {
             mainCartLayout.gone()
             thankYouLayout.gone()
@@ -1400,6 +1431,7 @@ class CustomDisplay(
 
         }
     }
+
     private fun getCustomerList() {
 
         try {
@@ -2538,19 +2570,26 @@ class CustomDisplay(
         allCustomerList.addAll(list)
     }
 
+    var cashLogServerOrderIdMain: Int = 0
+    var cashLogPaymentIdMain: Int = 0
 
     fun showWouldYouLikeToAddTipScreen(
         tipListViewModel: TipListViewModel,
         transactionViewModel: TransactionViewModel,
         wholeTotalPrice: Double,
-        orderId: Int,
+        orderId: Int, //This is payment id but the variable name is order id
         isCardPayment: Boolean,
         paymentViewModel: PaymentViewModel,
         magRequestUtils: MagtekRequestUtils,
         apiModule1: ApiModule1,
         fromKeypad: Boolean = false,
-        totalPrice: Double
+        totalPrice: Double,
+        cashLogServerOrderId: Int,
+        cashLogPaymentId: Int
     ) {
+        cashLogServerOrderIdMain=cashLogServerOrderId
+        cashLogPaymentIdMain=cashLogPaymentId
+
         mTipListViewModel = tipListViewModel
         mOrderID = orderId
         mIsCardPayment = isCardPayment
@@ -2724,8 +2763,8 @@ class CustomDisplay(
                             employeeGivenTip = false
                         }
                         /*TODO: Make cash_event call here with the same orderID*/
-                        if (tippedAmount>0) {
-                            makeCashEventCallToUpdateTip(tippedAmount)
+                        if (tippedAmount > 0) {
+                            makeCashEventCallToUpdateTip(mOrderID, tippedAmount)
                         }
                         dashBoardCategoryViewModel.processingTipForCard.value = false
                         // dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=false
@@ -2742,13 +2781,13 @@ class CustomDisplay(
         }
     }
 
-    private fun makeCashEventCallToUpdateTip(tippedAmount: Double) {
+    private fun makeCashEventCallToUpdateTip(mOrderID: Int, tippedAmount: Double) {
         val cashLogRequest = CashLogRequest(
             tippedAmount,
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
             "in",
-            prefProvider.getValueInt(Constants.SERVER_ORDER_ID, -1),
-            prefProvider.getValueInt(Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY, -1),
+            cashLogServerOrderIdMain,
+            cashLogPaymentIdMain,
             "Tip added to the order",
             prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
             null,
