@@ -2989,24 +2989,24 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                                 TAKEOUT
                                             ) == GIFT_CARD
                                         ) {
-                                            /*if (prefProvider.getValueboolean(
+                                            if (prefProvider.getValueboolean(
                                                 Constants.IS_ADD_VALUE_IN_GIFT_CARD,
                                                 false
                                             )
                                         ) {
-                                            giftCardViewModel.paxResponse = response.ExtData
-                                            giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
-                                            giftCardViewModel.cardNamePax = response.CardType
-                                            giftCardViewModel.transactionID = response.PaymentTransInfo.Token
+                                            giftCardViewModel.paxResponse = ""/*response.ExtData*/
+                                            giftCardViewModel.cardNumberLast4 = ""/*response.BogusAccountNum*/
+                                            giftCardViewModel.cardNamePax = ""/*response.CardType*/
+                                            giftCardViewModel.transactionID = it.TXNID.toString()/*response.PaymentTransInfo.Token*/
                                             addValueInGiftCardUsingCard()
                                         }
                                         else {
-                                            giftCardViewModel.paxResponse = response.ExtData
-                                            giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
-                                            giftCardViewModel.cardNamePax = response.CardType
-                                            giftCardViewModel.transactionID = response.PaymentTransInfo.Token
+                                            giftCardViewModel.paxResponse = ""/*response.ExtData*/
+                                            giftCardViewModel.cardNumberLast4 = ""/*response.BogusAccountNum*/
+                                            giftCardViewModel.cardNamePax = ""/*response.CardType*/
+                                            giftCardViewModel.transactionID =it.TXNID.toString()/*response.PaymentTransInfo.Token*/
                                             sellGiftCardUsingCard()
-                                        }*/
+                                        }
                                         } else {
                                             makePaymentCreditCardValor(it.TXNID, it.TRANNO)
                                         }
