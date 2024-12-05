@@ -2777,7 +2777,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         }
 
-        binding.lnrGiftCard.setOnSingleClickListener {
+        binding.lnrGiftCard.setOnClickListener {
             val cardAmount = binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
                 .replace(")", "").trim().toDouble()
             val cashAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
