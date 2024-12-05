@@ -173,6 +173,7 @@ class PosRepository @Inject constructor(
         ),
         /* prefProvider.getValue(SYNC_SETTING_TIME_STAMP, "")*/""
     )
+    suspend fun checkPhysicalCardExistsOrNot(cardNumber:String) = apiHelperNew.checkPhysicalCardExistsOrNot(cardNumber)
 
     suspend fun getOnlineOrderNotificationCount() = apiHelperNew.getOnlineOrderCountNoti()
 
@@ -573,6 +574,9 @@ class PosRepository @Inject constructor(
 
     suspend fun addCustomersList(data: List<TbCustomer>) =
         appDatabase.customerDao().addAllCustomers(data)
+
+    suspend fun addSearchedCustomersList(data: ArrayList<TbCustomer?>) =
+        appDatabase.customerDao().addAllSearchCustomer(data)
 
     suspend fun hasItem() =
         appDatabase.customerDao().hasItem()

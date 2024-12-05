@@ -164,6 +164,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _clickTakeOut = MutableLiveData<Event<Boolean>>()
     val clickTakeOut: LiveData<Event<Boolean>> = _clickTakeOut
 
+    private val _physicalGiftCardCheck = MutableLiveData<Event<Int>>()
+    val physicalcardexistsornot: LiveData<Event<Int>> = _physicalGiftCardCheck
+
+
     private val _earnedLoyaltyPoints = MutableLiveData<Event<Int>>()
     val earnedLoyaltyPoints: LiveData<Event<Int>> = _earnedLoyaltyPoints
 
@@ -605,12 +609,14 @@ class DashBoardCategoryViewModel @Inject constructor(
         fragmentNeedToBeUpdated.postValue(true)
     }
 
+    /*if (value) {
+        *//* Uncomment the below code, if the customer Display is not refreshing everytime *//*
+        reloadCustomerDisplay.postValue(value)
+    }*/
     val reloadCustomerDisplay = MutableLiveData<Boolean>()
-    fun reloadCustomerDisplay(value: Boolean) {
-        if (value) {
-            /* Uncomment the below code, if the customer Display is not refreshing everytime */
-            reloadCustomerDisplay.postValue(value)
-        }
+    fun reloadCustomerDisplay(value:Boolean){
+        /* Uncomment the below code, if the customer Display is not refreshing everytime */
+//        reloadCustomerDisplay.postValue(true)
     }
 
     fun itemsByCat(id: Int): kotlinx.coroutines.flow.Flow<PagingData<TbItem>> = Pager(
@@ -8868,4 +8874,42 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
 
+
+    fun checkCardExistOrNot(cardNumber: String) {
+
+        _showProgress.value = Event(true)
+            viewModelScope.launch {
+                var resource = posRepository.checkPhysicalCardExistsOrNot(cardNumber)
+
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        resource.data.let { response ->
+                            if (response?.status == 200) {
+                                _showProgress.value = Event(false)
+
+                                    _physicalGiftCardCheck.value = Event(response?.status?: 400)
+
+
+                            } else {
+                                _physicalGiftCardCheck.value= Event(response?.status?: 400)
+                            }
+                        }
+                    }
+
+                    Status.ERROR -> {
+                        _snackbarText.value = Event(resource.message)
+                        _showProgress.value = Event(false)
+                        _physicalGiftCardCheck.value= Event(resource.data?.status ?: 400)
+                    }
+
+                    Status.LOADING -> {
+                        _showProgress.value = Event(true)
+                    }
+                }
+            }
+
+
+
+
+    }
 }

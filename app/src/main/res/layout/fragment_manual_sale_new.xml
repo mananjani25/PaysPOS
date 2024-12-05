@@ -640,6 +640,7 @@
                             android:padding="@dimen/_2sdp">
 
                             <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvDiscountText"
                                 style="@style/CustomFontMediumStyle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
