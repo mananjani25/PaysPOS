@@ -60,7 +60,8 @@ class GetPaymentOrderDetailsResponse(
         var ecr_ref_num: String = "",
         @SerializedName("pax_transaction_token")
         var pax_transaction_token: String = "",
-        @SerializedName("ref_num") var ref_num: String = ""
+        @SerializedName("ref_num") var ref_num: String = "",
+        @SerializedName("guest_index_for_dine_in") val guest_index_for_dine_in:Int = -1
     ) : Parcelable {
         fun showFormattedValue(value: Double) = "$" + String.format(
             "%.2f",

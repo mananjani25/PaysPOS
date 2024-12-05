@@ -20,6 +20,7 @@ import com.pays.pos.data.entities.TbServiceCharge
 import com.pays.pos.data.model.GetPaymentOrderDetailsResponse
 import com.pays.pos.data.model.requestModel.RefundRequestModel
 import com.pays.pos.data.model.requestModel.RefundRequestModelOnlineOrder
+import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE
 import com.pays.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_RATE
@@ -576,32 +577,101 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         }
 
         if (paymentOrderDetailsResponse.data.loyalty_amount == 0.0) {
-            refundItemListAdapter.addItems(
-                (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount),
-                paymentOrderDetailsResponse.data.order.order_items,
-                serviceChargesList,
-                paymentOrderDetailsResponse.data.cash_discount_or_surcharge,
-                if (paymentOrderDetailsResponse.data.cash_discount_type != null) paymentOrderDetailsResponse.data.cash_discount_type else "",
-                paymentOrderDetailsResponse.data.payment_type,
-                if (paymentOrderDetailsResponse.data.total_discount > totalItemDiscount) paymentOrderDetailsResponse.data.total_discount - totalItemDiscount else 0.0,
-                paymentOrderDetailsResponse.data.loyalty_amount,
-                paymentOrderDetailsResponse.data.tips,
-                paymentOrderDetailsResponse.data.order.order_type
-            )
+
+            if(paymentOrderDetailsResponse.data.order.order_type == DINE_IN) {
+
+
+                var orderItems = mutableListOf<GetOrderDetailsResponse.Data.OrderItem>()
+
+                val it = paymentOrderDetailsResponse
+
+                if (it.data.payable_type == "Guest") {
+
+                    it.data.order.order_items.forEach { item ->
+                        if (item.guestIndexForDineIn == it.data.guest_index_for_dine_in || item.guestIndexForDineIn == 0) {
+                             orderItems.add(item)
+                        }
+                    }
+                } else {
+                    orderItems = it.data.order.order_items.toMutableList()
+                }
+
+
+                refundItemListAdapter.addItems(
+                    (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount),
+                    orderItems,
+                    serviceChargesList,
+                    paymentOrderDetailsResponse.data.cash_discount_or_surcharge,
+                    if (paymentOrderDetailsResponse.data.cash_discount_type != null) paymentOrderDetailsResponse.data.cash_discount_type else "",
+                    paymentOrderDetailsResponse.data.payment_type,
+                    if (paymentOrderDetailsResponse.data.total_discount > totalItemDiscount) paymentOrderDetailsResponse.data.total_discount - totalItemDiscount else 0.0,
+                    paymentOrderDetailsResponse.data.loyalty_amount,
+                    paymentOrderDetailsResponse.data.tips,
+                    paymentOrderDetailsResponse.data.order.order_type
+                )
+            }else {
+                refundItemListAdapter.addItems(
+                    (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount),
+                    paymentOrderDetailsResponse.data.order.order_items,
+                    serviceChargesList,
+                    paymentOrderDetailsResponse.data.cash_discount_or_surcharge,
+                    if (paymentOrderDetailsResponse.data.cash_discount_type != null) paymentOrderDetailsResponse.data.cash_discount_type else "",
+                    paymentOrderDetailsResponse.data.payment_type,
+                    if (paymentOrderDetailsResponse.data.total_discount > totalItemDiscount) paymentOrderDetailsResponse.data.total_discount - totalItemDiscount else 0.0,
+                    paymentOrderDetailsResponse.data.loyalty_amount,
+                    paymentOrderDetailsResponse.data.tips,
+                    paymentOrderDetailsResponse.data.order.order_type
+                )
+            }
         } else {
-            refundItemListAdapter.addItems(
+
+            if(paymentOrderDetailsResponse.data.order.order_type == DINE_IN) {
+
+
+                var orderItems = mutableListOf<GetOrderDetailsResponse.Data.OrderItem>()
+
+                val it = paymentOrderDetailsResponse
+
+                if (it.data.payable_type == "Guest") {
+
+                    it.data.order.order_items.forEach { item ->
+                        if (item.guestIndexForDineIn == it.data.guest_index_for_dine_in || item.guestIndexForDineIn == 0) {
+                            orderItems.add(item)
+                        }
+                    }
+                } else {
+                    orderItems = it.data.order.order_items.toMutableList()
+                }
+
+
+                refundItemListAdapter.addItems(
+                    (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount),
+                    orderItems,
+                    serviceChargesList,
+                    paymentOrderDetailsResponse.data.cash_discount_or_surcharge,
+                    if (paymentOrderDetailsResponse.data.cash_discount_type != null) paymentOrderDetailsResponse.data.cash_discount_type else "",
+                    paymentOrderDetailsResponse.data.payment_type,
+                    if (paymentOrderDetailsResponse.data.total_discount > totalItemDiscount) paymentOrderDetailsResponse.data.total_discount - totalItemDiscount else 0.0,
+                    paymentOrderDetailsResponse.data.loyalty_amount,
+                    paymentOrderDetailsResponse.data.tips,
+                    paymentOrderDetailsResponse.data.order.order_type
+                )
+            }else {
+
+                refundItemListAdapter.addItems(
 //    IF GETTING MORE PROBLEMS, THEN UNCOMMENT IT AND REMOVE THE IMMEDIATE BELOW LINE        (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount),
-                (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount + paymentOrderDetailsResponse.data.cash_discount_or_surcharge),
-                paymentOrderDetailsResponse.data.order.order_items,
-                serviceChargesList,
-                paymentOrderDetailsResponse.data.cash_discount_or_surcharge,
-                if (paymentOrderDetailsResponse.data.cash_discount_type != null) paymentOrderDetailsResponse.data.cash_discount_type else "",
-                paymentOrderDetailsResponse.data.payment_type,
-                if (paymentOrderDetailsResponse.data.total_discount > totalItemDiscount) paymentOrderDetailsResponse.data.total_discount - totalItemDiscount else 0.0,
-                paymentOrderDetailsResponse.data.loyalty_amount,
-                paymentOrderDetailsResponse.data.tips,
-                paymentOrderDetailsResponse.data.order.order_type
-            )
+                    (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount + paymentOrderDetailsResponse.data.cash_discount_or_surcharge),
+                    paymentOrderDetailsResponse.data.order.order_items,
+                    serviceChargesList,
+                    paymentOrderDetailsResponse.data.cash_discount_or_surcharge,
+                    if (paymentOrderDetailsResponse.data.cash_discount_type != null) paymentOrderDetailsResponse.data.cash_discount_type else "",
+                    paymentOrderDetailsResponse.data.payment_type,
+                    if (paymentOrderDetailsResponse.data.total_discount > totalItemDiscount) paymentOrderDetailsResponse.data.total_discount - totalItemDiscount else 0.0,
+                    paymentOrderDetailsResponse.data.loyalty_amount,
+                    paymentOrderDetailsResponse.data.tips,
+                    paymentOrderDetailsResponse.data.order.order_type
+                )
+            }
         }
 
 

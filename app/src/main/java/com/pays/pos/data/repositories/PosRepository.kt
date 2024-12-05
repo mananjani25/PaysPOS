@@ -74,9 +74,8 @@ class PosRepository @Inject constructor(
     suspend fun updateCustomerPrinterStatus(status: Boolean, id: Int) =
         appDatabase.printerDao().updateCustomerStatus(status, id)
 
-    fun getPrinters() = performGetOperation(databaseQuery = {
-        appDatabase.printerDao().customerPrintList
-    },
+    fun getPrinters() = performGetOperation(
+        databaseQuery = { appDatabase.printerDao().customerPrintList },
         networkCall = { apiHelperNew.getPrinterData(prefProvider.getValueInt(TERMINAL_ID, 0)) },
         saveCallResult = {
             if (it.data.customerReceiptPrinters?.isEmpty() == true || it.data.customerReceiptPrinters?.size == 0) {

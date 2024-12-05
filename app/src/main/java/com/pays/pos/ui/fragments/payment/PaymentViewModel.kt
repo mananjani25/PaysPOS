@@ -9,9 +9,11 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.pays.pos.data.db.AppDatabase
 import com.pays.pos.data.entities.*
+import com.pays.pos.data.model.PreAuthData
 import com.pays.pos.data.model.requestModel.*
 import com.pays.pos.data.model.responseModel.BaseResponse
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
+import com.pays.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.DINE_IN
 import com.pays.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
@@ -20,6 +22,7 @@ import com.pays.pos.data.remote.Constants.PAYMENT_ID
 import com.pays.pos.data.remote.Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY
 import com.pays.pos.data.remote.Constants.PHONE_ORDER
 import com.pays.pos.data.remote.Constants.PICK_UP
+import com.pays.pos.data.remote.Constants.PRE_AUTH_DETAILS
 import com.pays.pos.data.remote.Constants.SERVER_ORDER_ID
 import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.repositories.PosRepository
@@ -59,6 +62,17 @@ open class PaymentViewModel @Inject constructor(
     private var totalServiceChargeM: Double? = null
     private var totalDiscountM: Double? = null
     public var extData: String = ""
+
+    /**
+     * Keep Track of Saved Card details used for "Pre Auth Transaction"
+     */
+    var preAuthData:PreAuthData? = null
+
+    fun clearPreAuthDetails(){
+        prefProvider.setValue(PRE_AUTH_DETAILS,"")
+        preAuthData = null
+    }
+
 
     var orderCreateCallSent = false
 
@@ -192,6 +206,8 @@ open class PaymentViewModel @Inject constructor(
 
                             resource.data?.let { createOrderResponse ->
 
+                                prefProvider.setValue(PRE_AUTH_DETAILS,"")
+
                                 if (createOrderResponse.data.order.customer != null) {
                                     if (createOrderResponse.data.order.payments.isNotEmpty()) {
                                         if (!createOrderResponse.data.order.payments.last().paymentType.equals(
@@ -284,7 +300,8 @@ open class PaymentViewModel @Inject constructor(
                                                     }
                                                 }
                                             }
-                                        } else {
+                                        }
+                                        else {
                                             _showProgress.postValue(Event(false))
                                             _data.value = Event(createOrderResponse)
                                             EventBus.getDefault().post(
@@ -1567,7 +1584,9 @@ open class PaymentViewModel @Inject constructor(
         finaldiscount: Double,
         needToAddPaymentAttributes: Boolean?,
         paymentType: String,
-        cashdiscountType: String
+        cashdiscountType: String,
+        isPreAuth:Boolean = false,
+        paymentAttributes: PaymentAttributes? = null
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -1772,24 +1791,34 @@ open class PaymentViewModel @Inject constructor(
         }
 
 
-        orderAttributeRequestModel.paymentAttributes = if (needToAddPaymentAttributes == true) {
-            paymentAttributes(
-                cartModel,
-                totalPrice,
-                subTotalPrice,
-                totalServiceCharge,
-                totalTax,
-                totalDiscount,
-                tipAmount,
-                splitValue,
-                finaldiscount,
-                paymentType,
-                orderAttributeRequestModel.cash_discount_type,
-                redeemLoyaltyInfo = redeemLoyaltyInfo
-            )
+        if(isPreAuth) {
+
+            if(paymentAttributes!=null) {
+                orderAttributeRequestModel.paymentAttributes = paymentAttributes
+                orderAttributeRequestModel.paymentStatus = 1
+            }
+
         } else {
-            null
+            orderAttributeRequestModel.paymentAttributes = if (needToAddPaymentAttributes == true) {
+                paymentAttributes(
+                    cartModel,
+                    totalPrice,
+                    subTotalPrice,
+                    totalServiceCharge,
+                    totalTax,
+                    totalDiscount,
+                    tipAmount,
+                    splitValue,
+                    finaldiscount,
+                    paymentType,
+                    orderAttributeRequestModel.cash_discount_type,
+                    redeemLoyaltyInfo = redeemLoyaltyInfo
+                )
+            } else {
+                null
+            }
         }
+
         if (cartModel.orderType == DINE_IN) {
             orderAttributeRequestModel.orderServiceChargesAttributes = serviceChargeListApplied
         } else {

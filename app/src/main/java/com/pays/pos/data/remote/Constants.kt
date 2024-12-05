@@ -23,6 +23,12 @@ object Constants {
     const val paxLive="https://secure.epx.com/"
     const val paxDebug="https://secure.epxuap.com/"
 
+    /**
+     * THis will used to save Pref Auth Data from PAX
+     */
+    const val PRE_AUTH_DETAILS = "pre_auth_details"
+    const val PRE_AUTH_AMOUNT = 1.0
+
     const val DO_PRINT: String = "DO_PRINT"
     const val DO_PRINT_CUSTOM: String = "DO_PRINT_CUSTOM"
     const val OLD_ITEM: String = "OLD_ITEM"

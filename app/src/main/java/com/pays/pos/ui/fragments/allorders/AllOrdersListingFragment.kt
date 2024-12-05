@@ -45,6 +45,7 @@ import com.google.gson.Gson
 import com.pays.pos.R
 import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.CancelOnlineWebOrderModel
+import com.pays.pos.data.model.PreAuthData
 import com.pays.pos.data.model.requestModel.OrderItemVariationAttribute
 import com.pays.pos.data.model.requestModel.RefundRequestModelOnlineOrder
 import com.pays.pos.data.model.responseModel.*
@@ -62,6 +63,7 @@ import com.pays.pos.data.remote.Constants.OPEN_ORDER_TAB
 import com.pays.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.pays.pos.data.remote.Constants.PHONE_ORDER
 import com.pays.pos.data.remote.Constants.PHONE_ORDER_TAB
+import com.pays.pos.data.remote.Constants.PRE_AUTH_DETAILS
 import com.pays.pos.data.remote.Constants.SHIPPING_ADDRESS
 import com.pays.pos.data.remote.Constants.SUNMI_PRINTER
 import com.pays.pos.data.remote.Constants.THIRD_PARTY_ORDER_TAB
@@ -76,6 +78,7 @@ import com.pays.pos.ui.adapter.AllOrderAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.onlineorder.OnlineDetailViewModel
 import com.pays.pos.ui.fragments.orders.ActiveOrderViewModel
+import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.ui.fragments.transactions.TransactionDetailsFragment.OnBluetoothPermissionGranted
@@ -131,6 +134,7 @@ class AllOrdersListingFragment(
     private var isPrint: Boolean = true
     private val viewModel by viewModels<AllOrdersViewModel>()
     private val ordersViewModel by activityViewModels<AllOrdersViewModel>()
+    private val paymentViewModel by activityViewModels<PaymentViewModel>()
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val onlineDetailViewModel by activityViewModels<OnlineDetailViewModel>()
     private val activeOrderViewModel by viewModels<ActiveOrderViewModel>()
@@ -1537,7 +1541,20 @@ class AllOrdersListingFragment(
             "UPDATE" -> {
                 prefProvider.setValue(OLD_ITEM_BASE_CUSTOM_ITEM, Gson().toJson(order.orderItems))
 
+            //    dashboardViewModel.authPaymentResponse = dashboardViewModel.allOrderResponse?.get(pos)
+                try {
+                    paymentViewModel.preAuthData = null
+                    paymentViewModel.preAuthData = PreAuthData(
+                        ecrRefNum = order.payments.first().ecrRefNum ?: "",
+                        refNum = order.payments.first().refNum ?: ""
+                    )
+                }catch (e:Exception) {
+                    paymentViewModel.preAuthData = null
+                }
+
                 prefProvider.setValueInt("ORDER_ID", -1)
+
+
 
                 dashboardViewModel.activeOrderTypeName = order.orderType
                 dashboardViewModel.activeOrderTypeText = order.orderTypeName
@@ -1865,6 +1882,19 @@ class AllOrdersListingFragment(
             "PAY" -> {
 
                 try {
+
+                   // dashboardViewModel.authPaymentResponse = dashboardViewModel.allOrderResponse?.get(pos)
+
+                    try {
+                        paymentViewModel.preAuthData = null
+                        paymentViewModel.preAuthData = PreAuthData(
+                            ecrRefNum = order.payments.first().ecrRefNum ?: "",
+                            refNum = order.payments.first().refNum ?: ""
+                        )
+                    }catch (_:Exception) {
+                        paymentViewModel.preAuthData = null
+                    }
+
                     prefProvider.setValueInt("ORDER_ID", -1)
 
                     dashboardViewModel.activeOrderTypeName = order.orderType
@@ -2190,6 +2220,7 @@ class AllOrdersListingFragment(
                     EventBus.getDefault()
                         .post(MessageEvent("${Constants.LINE_BREAK_TAB} AllOrdersListingFragment.kt  PAY -> prefException -> ${e.printStackTrace()}"))
                 }
+
 
 
                 findNavController().navigate(

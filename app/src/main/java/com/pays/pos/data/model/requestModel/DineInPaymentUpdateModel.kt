@@ -8,5 +8,5 @@ import kotlinx.parcelize.Parcelize
 data class DineInPaymentUpdateModel(
     @SerializedName("id")
     var id: Int? = null
-):Parcelable {
+):Parcelable{
 }

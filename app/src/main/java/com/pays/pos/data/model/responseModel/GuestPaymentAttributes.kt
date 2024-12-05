@@ -9,6 +9,15 @@ class GuestPaymentAttributes : Parcelable {
     @SerializedName("amount")
     var amount: Double = 0.0
 
+    /**
+     * 404 used for guest not found.
+     */
+    @SerializedName("guest_index_for_dine_in")
+    var guestIndexForGuestPaymentDineIn: Int = 404
+
+    @SerializedName("gift_card_redeemed_amount")
+    var gift_card_redeemed_amount: Double? = null
+
     @SerializedName("card_name")
     var cardName: String = ""
 
