@@ -4,11 +4,14 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.TextUtils
 import android.text.style.TextAppearanceSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.pays.pos.MainApplication
 import com.pays.pos.R
@@ -22,7 +25,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class AssignCustomerToOrderAdapter :
-    RecyclerView.Adapter<AssignCustomerToOrderAdapter.MyViewHolder>(), Filterable {
+    ListAdapter<TbCustomer, AssignCustomerToOrderAdapter.MyViewHolder>(CustomerDiffCallback()), Filterable {
 
     private var mList = ArrayList<TbCustomer>()
     private var filterList = ArrayList<TbCustomer>()
@@ -32,14 +35,16 @@ class AssignCustomerToOrderAdapter :
         mCallback = callback
     }
 
-    fun getItem(position: Int): TbCustomer {
+    public override fun getItem(position: Int): TbCustomer {
         return filterList[position]
     }
 
     fun add(categoryModel: List<TbCustomer>) {
         this.mList = categoryModel as ArrayList<TbCustomer>
+        submitList(mList)
         this.filterList = categoryModel
-        notifyDataSetChanged()
+        submitList(filterList)
+//        notifyDataSetChanged()
     }
 
     inner class MyViewHolder(private val binding: ViewCustomerAssignOrderBinding) :
@@ -158,7 +163,7 @@ class AssignCustomerToOrderAdapter :
         try {
             holder.bind(filterList[position])
         }catch (_:Exception){
-
+            Log.e("AssignCustomerToOrderAdapter", "Error binding view at position $position")
         }
     }
 
@@ -225,9 +230,22 @@ class AssignCustomerToOrderAdapter :
                     filterList = results.values as ArrayList<TbCustomer>
                 }
 
-                notifyDataSetChanged()
+                submitList(filterList)
+
+//                notifyDataSetChanged()
 
             }
         }
     }
+
+    class CustomerDiffCallback : DiffUtil.ItemCallback<TbCustomer>() {
+        override fun areItemsTheSame(oldItem: TbCustomer, newItem: TbCustomer): Boolean {
+            return oldItem.id == newItem.id // Assuming TbCustomer has a unique id
+        }
+
+        override fun areContentsTheSame(oldItem: TbCustomer, newItem: TbCustomer): Boolean {
+            return oldItem == newItem
+        }
+    }
+
 }
