@@ -100,7 +100,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.imgPrint.visibility = View.VISIBLE
             }
 
-            if (list[position].title?.trim()?.lowercase() == "Whole Table".trim().lowercase() || isAnyPaymentDone) {
+            if (list[position].title?.trim()?.lowercase() == "Whole Table".trim().lowercase() || isAnyPaymentDone ) {
                 binding.llRemoveGuest.visibility = View.INVISIBLE
             } else {
                 if(list[position].itemsCount == 0 && !list[position].isPaid) {

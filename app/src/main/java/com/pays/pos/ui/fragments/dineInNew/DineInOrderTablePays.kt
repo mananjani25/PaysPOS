@@ -649,6 +649,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 val currentList = dineInTableAdapter.getList()
 
+                    eligibleGuestsForDivision =
+                        dineInTableAdapter.getList()[0].eligibleGuestsForDivision
+
                 var guestCount = 0
                 var guestPaid = 0
                 currentList.forEach {
@@ -670,7 +673,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     if(guestPaid>0) {
                                         list[j].item?.price.let {
-                                            val totalPricePaid = it?.div(guestCount)
+                                            val totalPricePaid = it?.div(eligibleGuestsForDivision)
 
                                             list[j].item?.price = totalPricePaid?.let { it1 ->
                                                 list[j].item?.price?.minus(
@@ -692,8 +695,6 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
 
                 var dividedOrderDiscount = 0.0
-                eligibleGuestsForDivision =
-                    dineInTableAdapter.getList()[0].eligibleGuestsForDivision
                 totalGuestCount = eligibleGuestsForDivision
                 var tmpOrderDis = 0.0
                 if (paidGuestAmount > 0 && globalOrderDiscount > 0.0) {
@@ -884,6 +885,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 //                    }
 
                     dashboardViewModel.currentCartItems.filter {!it.isPaid}.forEach { cartItem ->
+                        val item = cartItem.price
                         dashboardViewModel.addItemToCartItems(cartItem)
                     }
                 }
@@ -2575,7 +2577,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             current++
         }
 
-        dineInTableAdapter.setList(ArrayList(list))
+        dineInTableAdapter.setList(ArrayList(list),notPayAnyAmount)
     }
 
     private fun guestPrint(
@@ -2670,7 +2672,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                     Log.d(TAG, "2255 dineinlisttest setList: " + newList as ArrayList<DineInModel>)
                     dineInTableAdapter.setList(
-                        newList as ArrayList<DineInModel>
+                        newList as ArrayList<DineInModel>,
+                        notPayAnyAmount
                     )
                 }
             }
@@ -3781,7 +3784,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             Log.d(TAG, "3297 dineinlisttest setList: " + newList)
             dineInTableAdapter.setList(
-                newList
+                newList,
+                notPayAnyAmount
             )
 
             //Added to resolve , Items are not getting moved guest wise
@@ -13081,7 +13085,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         }
 
 
-                                        dineInTableAdapter.setList(ArrayList(list))
+                                        dineInTableAdapter.setList(ArrayList(list),notPayAnyAmount)
                                         firedItemsList = mutableListOf()
 
                                         if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
