@@ -922,33 +922,41 @@ class GiftCardViewModel @Inject constructor(
         }
     }
     fun physicalGiftCardCheckBalanceBeforePay(giftCardCheckBalanceRequest: GiftCardCheckBalanceRequest) {
-        val soapRequest = checkBalanceRequest("","",giftCardCheckBalanceRequest.name)
-        CoroutineScope(Dispatchers.Main).launch {
-            _showGiftCardProgress.value = Event(true)
-        }
-        checkPhysicalCardBalanceBeforePayment(soapRequest, onSuccess = {response ->
-            val endingBalance = parseXMLData(response)
-
-            Log.e("PhysicalGiftCardBalance","endingBalance:  ${endingBalance}")
-            CoroutineScope(Dispatchers.Main).launch{
-                val res = GiftCardCheckBalanceResponse(type = "Physical", status = 200, message = "", data = GiftCardCheckBalanceResponse.Data(endingBalance.toDouble()))
-
-                _showGiftCardProgress.value = Event(false)
-                _giftCardCheckBalanceData.value = Event(res)
-
-            }
-
-        }, onError = {error->
-
+        try {
+            val soapRequest = checkBalanceRequest("", "", giftCardCheckBalanceRequest.name)
             CoroutineScope(Dispatchers.Main).launch {
-                _showGiftCardProgress.value = Event(false)
-                _snackbarText.value = Event(error.message)
+                _showGiftCardProgress.value = Event(true)
             }
-            Log.e("PhysicalGiftCardBalance","error:  ${error.message}")
+            checkPhysicalCardBalanceBeforePayment(soapRequest, onSuccess = { response ->
+                val endingBalance = parseXMLData(response)
 
-        })
+                Log.e("PhysicalGiftCardBalance", "endingBalance:  ${endingBalance}")
+                CoroutineScope(Dispatchers.Main).launch {
+                    val res = GiftCardCheckBalanceResponse(
+                        type = "Physical",
+                        status = 200,
+                        message = "",
+                        data = GiftCardCheckBalanceResponse.Data(endingBalance.toDouble())
+                    )
 
+                    _showGiftCardProgress.value = Event(false)
+                    _giftCardCheckBalanceData.value = Event(res)
 
+                }
+
+            }, onError = { error ->
+
+                CoroutineScope(Dispatchers.Main).launch {
+                    _showGiftCardProgress.value = Event(false)
+                    _snackbarText.value = Event(error.message)
+                }
+                Log.e("PhysicalGiftCardBalance", "error:  ${error.message}")
+
+            })
+
+        }catch (e:Exception){
+            e.printStackTrace()
+        }
 
 
 
