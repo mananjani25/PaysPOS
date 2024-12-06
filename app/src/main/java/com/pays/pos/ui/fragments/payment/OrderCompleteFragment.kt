@@ -680,6 +680,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.llHome.isEnabled = false
+
         initOmniDriver()
         Binding()
         setupSnackbar()
@@ -695,13 +697,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
         }
-
-
-        ProgressUtils.showProgressDialog(requireActivity())
-        binding.llHome.isEnabled = false
+        //Commented because of multiple loading dialogs causing flickering effect.
+//        ProgressUtils.showProgressDialog(requireActivity())
         Handler().postDelayed({
             binding.llHome.isEnabled = true
-        }, 500)
+        }, 1000)
 
         arguments?.let {
             orderTypeToCheckKiosk = it.getString("orderType_to_check_kiosk", "")
@@ -10151,7 +10151,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
                 Status.LOADING -> {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                    //Commented because of multiple loading dialogs causing flickering effect.
+//                    ProgressUtils.showProgressDialog(requireActivity())
                 }
             }
         }
