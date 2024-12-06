@@ -71,15 +71,16 @@ object ProgressUtils {
             WindowManager.LayoutParams.WRAP_CONTENT
         )
 
-        if (!builder?.isShowing!!) {
-            val activity: Activity = context as Activity
-            if (!activity.isFinishing && !activity.isDestroyed) {
-                try {
-                    builder?.show()
-                } catch (e: Exception) {
-                    e.printStackTrace()
+        builder?.isShowing?.let { isShowing ->
+            if (!isShowing) {
+                val activity: Activity = context as Activity
+                if (!activity.isFinishing && !activity.isDestroyed) {
+                    try {
+                        builder?.show()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
-
             }
         }
     }
