@@ -603,7 +603,7 @@ open class PaymentViewModel @Inject constructor(
         val amount =
             MethodUtils.roundOffAmountDouble(totalPayAmounts) - (order.payments[order.payments.size - 1].amount + order.payments[order.payments.size - 1].tips)
 
-        if (amount > 0 && (amount != 0.01 || amount != 0.1)) {
+        if (amount.toInt() > 0 && (amount != 0.01 || amount != 0.1)) {
 
             val cashLogRequest = CashLogRequest(
                 amount,
