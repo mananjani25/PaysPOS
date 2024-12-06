@@ -52,6 +52,8 @@ import com.pax.poslink.*
 import com.pays.payments.callbacks.PaymentCallback
 import com.pays.payments.design.PaymentGatewayFactory
 import com.pays.payments.design.PaymentGatewayType
+import com.pays.payments.design.TransactionType
+import com.pays.payments.design.Valor
 import com.pays.pos.data.model.valor.ValorSuccessResponse
 import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.SUNMI_INNER_PRINTER
@@ -276,18 +278,30 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                 }
             }
             /*Start Refund Process Payment */
+            var valor= Valor(
+                apiKey = prefProvider.getValue(Constants.VALOR_APP_KEY, ""),
+                appID = prefProvider.getValue(Constants.VALOR_APP_ID, ""),
+                epi = prefProvider.getValue(Constants.VALOR_EPI, ""),
+                endpoint = "refund",
+                txnType = TransactionType.REFUND,
+                channelId = prefProvider.getValue(Constants.VALOR_CHANNEL_ID, ""),
+                transMode = "1",
+                transCode = "1",
+                reqTxnId = "INV${System.currentTimeMillis()}",
+                amount = refundAmount.toString(),
+                tipAmount = "",
+                tipEntry = "1",
+                txn_type = "refund",
+                surchargeIndicator = "1",
+                sale_refund = "1",
+                ref_txn_id = referenceNo.toString(),
+                transactionId = ""
+            )
+
             paymentGateway.refundPayment(
                 requireContext(),
-                prefProvider.getValue(Constants.VALOR_APP_KEY, ""),
-                prefProvider.getValue(Constants.VALOR_APP_ID, ""),
-                prefProvider.getValue(Constants.VALOR_EPI, ""),
-                "refund",
-                "refund",
-                paymentCallback,
-                refundAmount.toString(),
-                "1",
-                "1",
-                referenceNo.toString()
+                valor,
+                paymentCallback
             )
         }
     }
