@@ -3051,76 +3051,83 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                             TAKEOUT
                                         ) == GIFT_CARD
                                     ) {
-                                        /*if (prefProvider.getValueboolean(
-                                            Constants.IS_ADD_VALUE_IN_GIFT_CARD,
-                                            false
-                                        )
-                                    ) {
-                                        if (prefProvider.getValue(
-                                                ORDER_TYPE,
-                                                TAKEOUT
-                                            ) == GIFT_CARD
-                                        ) {
-                                            if (prefProvider.getValueboolean(
+                                        if (prefProvider.getValueboolean(
                                                 Constants.IS_ADD_VALUE_IN_GIFT_CARD,
                                                 false
                                             )
                                         ) {
-                                            giftCardViewModel.paxResponse = ""/*response.ExtData*/
-                                            giftCardViewModel.cardNumberLast4 = ""/*response.BogusAccountNum*/
-                                            giftCardViewModel.cardNamePax = ""/*response.CardType*/
-                                            giftCardViewModel.transactionID = it.TXNID.toString()/*response.PaymentTransInfo.Token*/
-                                            addValueInGiftCardUsingCard()
-                                        }
-                                        else {
-                                            giftCardViewModel.paxResponse = ""/*response.ExtData*/
-                                            giftCardViewModel.cardNumberLast4 = ""/*response.BogusAccountNum*/
-                                            giftCardViewModel.cardNamePax = ""/*response.CardType*/
-                                            giftCardViewModel.transactionID =it.TXNID.toString()/*response.PaymentTransInfo.Token*/
-                                            sellGiftCardUsingCard()
-                                        }
+                                            if (prefProvider.getValue(
+                                                    ORDER_TYPE,
+                                                    TAKEOUT
+                                                ) == GIFT_CARD
+                                            ) {
+                                                if (prefProvider.getValueboolean(
+                                                        Constants.IS_ADD_VALUE_IN_GIFT_CARD,
+                                                        false
+                                                    )
+                                                ) {
+                                                    giftCardViewModel.paxResponse =
+                                                        ""/*response.ExtData*/
+                                                    giftCardViewModel.cardNumberLast4 =
+                                                        ""/*response.BogusAccountNum*/
+                                                    giftCardViewModel.cardNamePax =
+                                                        ""/*response.CardType*/
+                                                    giftCardViewModel.transactionID =
+                                                        it.TXNID.toString()/*response.PaymentTransInfo.Token*/
+                                                    addValueInGiftCardUsingCard()
+                                                } else {
+                                                    giftCardViewModel.paxResponse =
+                                                        ""/*response.ExtData*/
+                                                    giftCardViewModel.cardNumberLast4 =
+                                                        ""/*response.BogusAccountNum*/
+                                                    giftCardViewModel.cardNamePax =
+                                                        ""/*response.CardType*/
+                                                    giftCardViewModel.transactionID =
+                                                        it.TXNID.toString()/*response.PaymentTransInfo.Token*/
+                                                    sellGiftCardUsingCard()
+                                                }
+                                            } else {
+                                                makePaymentCreditCardValor(it.TXNID, it.TRANNO)
+                                            }
                                         } else {
                                             makePaymentCreditCardValor(it.TXNID, it.TRANNO)
                                         }
                                     } else {
-                                        makePaymentCreditCardValor(it.TXNID, it.TRANNO)
+                                        dismissProgressDialog()
+                                        runOnUiThread(Runnable {
+                                            AlertUtils.showCustomAlert(
+                                                requireContext(),
+                                                it.AUTHRSPTEXT
+                                            )
+                                        })
                                     }
                                 } else {
                                     dismissProgressDialog()
                                     runOnUiThread(Runnable {
                                         AlertUtils.showCustomAlert(
                                             requireContext(),
-                                            it.AUTHRSPTEXT
+                                            getString(R.string.error_something_wrong)
                                         )
                                     })
                                 }
-                            } else {
-                                dismissProgressDialog()
-                                runOnUiThread(Runnable {
-                                    AlertUtils.showCustomAlert(
-                                        requireContext(),
-                                        getString(R.string.error_something_wrong)
-                                    )
-                                })
                             }
                         }
                     }
                 }
-
-                override fun onFailure(errorMessage: String) {
-                    EventBus.getDefault()
-                        .post(
-                            MessageEvent(
-                                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
-                                    Gson().toJson(
-                                        errorMessage
-                                    )
-                                } "
+                    override fun onFailure(errorMessage: String) {
+                        EventBus.getDefault()
+                            .post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
+                                        Gson().toJson(
+                                            errorMessage
+                                        )
+                                    } "
+                                )
                             )
-                        )
-                    dismissProgressDialog()
+                        dismissProgressDialog()
+                    }
                 }
-            }
 
             val amt = ((paymentAmount - tipAmount) * 100).roundToInt()
             val tip_amt = (tipAmount * 100).roundToInt()
@@ -3164,9 +3171,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     paymentCallback
                 )
             }
-//            }
+            }
         }
-    }
 
     // To make card payment using PAX device
     private fun makePaxPaymentRequest() {
