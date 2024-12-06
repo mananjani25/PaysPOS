@@ -70,6 +70,8 @@ import com.pax.poslink.ReportRequest
 import com.pays.payments.callbacks.PaymentCallback
 import com.pays.payments.design.PaymentGatewayFactory
 import com.pays.payments.design.PaymentGatewayType
+import com.pays.payments.design.TransactionType
+import com.pays.payments.design.Valor
 import com.pays.pos.data.model.requestModel.RefundRequestModel
 import com.pays.pos.data.model.valor.ValorSuccessResponse
 import com.pays.pos.data.remote.Constants.BUSINESS_ADDRESS
@@ -507,18 +509,25 @@ class TransactionDetailsFragment : Fragment() {
 
             /* Process Payment */
             context?.let {
+                var valor = Valor(
+                    apiKey = prefProvider.getValue(Constants.VALOR_APP_KEY, ""),
+                    appID = prefProvider.getValue(Constants.VALOR_APP_ID, ""),
+                    epi = prefProvider.getValue(Constants.VALOR_EPI, ""),
+                    endpoint = Constants.VALOR_VOID,
+                    txnType = TransactionType.TIP_ADJUSTMENT,
+                    channelId = prefProvider.getValue(Constants.VALOR_CHANNEL_ID, ""),
+                    amount = paymentDetailsResponse.data.amount.toString(),
+                    txn_type = Constants.VALOR_VOID,
+                    ref_txn_id = paymentDetailsResponse.data.ref_num,
+                    surchargeIndicator="",
+                    sale_refund = "",
+                    transactionId = ""
+                )
+
                 paymentGateway.voidPayment(
                     it,
-                    prefProvider.getValue(Constants.VALOR_APP_KEY, ""),
-                    prefProvider.getValue(Constants.VALOR_APP_ID, ""),
-                    prefProvider.getValue(Constants.VALOR_EPI, ""),
-                    "void",
-                    "",
-                    paymentCallback,
-                    paymentDetailsResponse.data.amount.toString(),
-                    "1",
-                    paymentDetailsResponse.data.ref_num,
-                    ""
+                    valor,
+                    paymentCallback
                 )
             }
 //            }
