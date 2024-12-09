@@ -2696,10 +2696,6 @@ class CustomDisplay(
         tipListViewModel: TipListViewModel,
         transactionViewModel: TransactionViewModel? = null,
         wholeTotalPrice: Double,
-        orderId: Int,
-        isCardPayment: Boolean = false,
-        paymentViewModel: PaymentViewModel? = null,
-        magRequestUtils: MagtekRequestUtils? = null,
         orderId: Int, //This is payment id but the variable name is order id
         isCardPayment: Boolean,
         paymentViewModel: PaymentViewModel,
