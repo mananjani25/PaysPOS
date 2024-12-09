@@ -10274,6 +10274,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             } else if (customerReceiptPrinters.name.startsWith(LANDI_INNER_PRINTER, true)) {
                 if (IS_GIFT_CARD_TYPE) {
+                    printingCustomer=false
                     landiInnerPrintForGiftCard(isAutoPrint, customerReceiptPrinters)
                 } else {
                     printFromLandiInnerPrinter(isAutoPrint, customerReceiptPrinters)

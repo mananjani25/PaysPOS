@@ -105,7 +105,7 @@ class GiftCardViewModel @Inject constructor(
         cardNumberLast4 = cardNumber1
     }
 
-    fun createSellGiftCardRequestUsingCash(): SellGiftCardRequestModel {
+    fun createSellGiftCardRequestUsingCash(paymentType:String?=""): SellGiftCardRequestModel {
 
         val giftCardPurchaseAmount =
             prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0")
@@ -121,7 +121,7 @@ class GiftCardViewModel @Inject constructor(
                     prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
                 ),
                 payable_type = "GiftCard",
-                payment_type = "Cash",
+                payment_type = paymentType?:"Cash",
                 sub_total = giftCardPurchaseAmount.toDouble(),
                 terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
                 transaction_id = ""
@@ -535,21 +535,23 @@ class GiftCardViewModel @Inject constructor(
                     resource.data.let { response ->
                         if (response?.status == 200) {
                             resource.data?.data?.gift_card?.let {
+                                if (!it.payments[it.payments.size - 1].payment_type.equals("External")) {
 //                                This cashlog call is independent, thats the reason it is not chained with any flow or call
-                                val cashLogRequest = CashLogRequest(
-                                    sellGiftCardRequestModel.gift_card.amount.toDouble(),
-                                    prefProvider.getValueInt(
-                                        Constants.EMPLOYEE_ID, 0
-                                    ),
-                                    "in",
-                                    it.id,//This may be wrong
-                                    it.payments[it.payments.size - 1].id,
-                                    "Gift card purchase",
-                                    prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
-                                    null,
-                                    null
-                                )
-                                cashLogApiOnGiftCardSellOrAdd(cashLogRequest)
+                                    val cashLogRequest = CashLogRequest(
+                                        sellGiftCardRequestModel.gift_card.amount.toDouble(),
+                                        prefProvider.getValueInt(
+                                            Constants.EMPLOYEE_ID, 0
+                                        ),
+                                        "in",
+                                        it.id,//This may be wrong
+                                        it.payments[it.payments.size - 1].id,
+                                        "Gift card purchase",
+                                        prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
+                                        null,
+                                        null
+                                    )
+                                    cashLogApiOnGiftCardSellOrAdd(cashLogRequest)
+                                }
                             }
                             resource.data?.let { sellGiftCardResponse ->
 

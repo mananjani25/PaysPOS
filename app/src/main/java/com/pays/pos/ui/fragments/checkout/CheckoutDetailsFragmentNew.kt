@@ -30,11 +30,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.android.volley.AuthFailureError
-import com.android.volley.Request
-import com.android.volley.VolleyError
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.reflect.TypeToken
@@ -100,12 +95,9 @@ import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
-import org.xmlpull.v1.XmlPullParser
-import org.xmlpull.v1.XmlPullParserFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.StringReader
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -1465,6 +1457,201 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             }
 
                         }
+
+                        "External" -> {
+                            LogUtil.logE("TipAmount 4:: ", tipAmount.toString())
+
+                            val bundle = Bundle()
+                            bundle.putBoolean("isDineIn", false)
+
+                            if (remainingAmount == 0.0) {
+                                if (custom_paymentAmount != 0.0) {
+                                    bundle.putDouble("PaidAmount", custom_paymentAmount)
+                                } else {
+                                    bundle.putDouble("PaidAmount", paymentAmount)
+                                }
+                            } else {
+                                bundle.putDouble("PaidAmount", remainingAmount)
+                            }
+
+                            var wholePrice =
+                                String.format(
+                                    "%.2f",
+                                    prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
+                                ).toDouble()
+
+                            bundle.putDouble("WholetotalPrice", wholePrice)
+                            var remainingValue = 0.0
+                            if (custom_paymentAmount != 0.0) {
+                                if (cashDiscountType == "CashDiscount") {
+                                    wholePrice -= cashDiscountSurcharge
+                                }
+                                if (custom_paymentAmount != 0.0 && isSelectedCount != 1) {
+                                    var splitChange = 0.0
+                                    splitChange = custom_paymentAmount - paymentAmount
+                                    bundle.putDouble(
+                                        "splitChange", String.format("%.2f", splitChange).toDouble()
+                                    )
+                                    remainingValue =
+                                        wholePrice - (custom_paymentAmount - splitChange)
+                                    bundle.putDouble(
+                                        "remainingAmount",
+                                        remainingValue
+                                    )
+                                } else {
+                                    if (custom_paymentAmount >= wholePrice) {
+                                        remainingValue =
+                                            custom_paymentAmount - wholePrice
+                                        bundle.putDouble(
+                                            "remainingAmount",
+                                            remainingValue
+                                        )
+                                    } else {
+                                        remainingValue =
+                                            wholePrice - custom_paymentAmount
+                                        bundle.putDouble(
+                                            "remainingAmount",
+                                            remainingValue
+                                        )
+                                    }
+
+                                }
+
+                                prefProvider.setValue(
+                                    Constants.WHOLE_AMOUNT,
+                                    String.format("%.2f", remainingValue).toString()
+                                )
+                            } else {
+                                remainingValue = if (cashDiscountType == "CashDiscount") {
+                                    wholePrice - String.format(
+                                        "%.2f",
+                                        paymentAmount + cashDiscountSurcharge
+                                    ).toDouble()
+                                } else {
+                                    wholePrice - paymentAmount
+                                }
+
+                                if (remainingValue <= 0.0) {
+                                    remainingValue = 0.0
+                                }
+                                bundle.putDouble(
+                                    "remainingAmount",
+                                    remainingValue
+                                )
+                                prefProvider.setValue(
+                                    Constants.WHOLE_AMOUNT,
+                                    String.format("%.2f", remainingValue)
+                                )
+                            }
+
+                            if (remainingValue == 0.0 || remainingValue <= 0.0) {
+                                bundle.putBoolean("isSpilt", false)
+                                bundle.putBoolean("isSplitByNo", false)
+                                prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false)
+                                bundle.putBoolean("isCustomCash", false)
+                                splitAllAmounts(Constants.SUB_TOTAL, 0.0)
+                                splitAllAmounts(Constants.TOTAL_DISCOUNT, 0.0)
+                                splitAllAmounts(Constants.TAX_CHARGE, 0.0)
+                                splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
+                                splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
+                                splitAllAmounts(Constants.TIP, 0.0)
+                                EventBus.getDefault()
+                                    .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _4"))
+
+                            } else {
+                                if (custom_paymentAmount != 0.0 && isSelectedCount != 1) {
+                                    prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true)
+                                    bundle.putBoolean("isSpilt", true)
+                                    bundle.putBoolean("isSplitByNo", true)
+                                    bundle.putBoolean("isCustomCash", true)
+                                    splitAllAmounts(Constants.SUB_TOTAL, subTotalPrice)
+                                    splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
+                                    splitAllAmounts(Constants.TAX_CHARGE, totalTax)
+                                    splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
+                                    //                                if (cashDiscountType == "CashDiscount") {
+                                    splitAllAmounts(
+                                        Constants.CASH_DISCOUNT_SURCHARGE,
+                                        cashDiscountSurcharge
+                                    )
+                                    //                                }
+
+                                    splitAllAmounts(Constants.TIP, 0.0)
+
+                                    EventBus.getDefault()
+                                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _4"))
+                                    EventBus.getDefault()
+                                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ remainingValue -> ${remainingValue} _4"))
+
+                                } else if (custom_paymentAmount != 0.0) {
+                                    bundle.putBoolean("isSpilt", false)
+                                    prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false)
+                                    bundle.putBoolean("isSplitByNo", false)
+                                    bundle.putBoolean("isCustomCash", true)
+                                    splitAllAmounts(Constants.SUB_TOTAL, subTotalPrice)
+                                    splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
+                                    splitAllAmounts(Constants.TAX_CHARGE, totalTax)
+                                    splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
+                                    //                                if (cashDiscountType == "CashDiscount") {
+                                    splitAllAmounts(
+                                        Constants.CASH_DISCOUNT_SURCHARGE,
+                                        cashDiscountSurcharge
+                                    )
+                                    //                                }
+
+                                    splitAllAmounts(Constants.TIP, 0.0)
+                                    EventBus.getDefault()
+                                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _5"))
+
+                                } else {
+                                    bundle.putBoolean("isSpilt", true)
+                                    bundle.putBoolean("isSplitByNo", true)
+                                    bundle.putBoolean("isCustomCash", false)
+                                    prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true)
+                                    splitAllAmounts(Constants.SUB_TOTAL, subTotalPrice)
+                                    splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
+                                    splitAllAmounts(Constants.TAX_CHARGE, totalTax)
+                                    splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
+                                    //                                if (cashDiscountType == "CashDiscount") {
+                                    splitAllAmounts(
+                                        Constants.CASH_DISCOUNT_SURCHARGE,
+                                        cashDiscountSurcharge
+                                    )
+                                    //                                }
+
+                                    splitAllAmounts(Constants.TIP, 0.0)
+
+                                    EventBus.getDefault()
+                                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _5"))
+                                    EventBus.getDefault()
+                                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ custom_paymentAmount -> ${custom_paymentAmount} _5"))
+
+                                }
+
+                            }
+
+
+                            bundle.putInt("orderID", it.data.gift_card.id ?: 0)
+                            bundle.putParcelable("giftCardReceiptData", it.data)
+                            bundle.putInt("splitValue", isSelectedCount)
+                            bundle.putBoolean("isSplitByAmount", false)
+                            bundle.putString("paymentType", "External")
+                            bundle.putParcelable("cartList", cartList)
+                            bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
+                            bundle.putDouble("TipAmount", tipAmount)
+
+                            bundle.putDouble("noCashAdj", cashDiscountSurcharge)
+                            bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
+
+
+                            if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
+                                clearObserver()
+                                findNavController().navigate(
+                                    R.id.action_paymentBoldPosFragment_to_orderComplete,
+                                    bundle
+                                )
+                            }
+
+                        }
                     }
                 } else {
                     runOnUiThread(Runnable {
@@ -2312,7 +2499,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             if (prefProvider.getValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)) {
                 addValueInGiftCardUsingCash()
             } else {
-                sellGiftCardUsingCash()
+                if (prefProvider.getValue(Constants.GIFT_CARD_TYPE, "").equals("Physical") || (prefProvider.getValue(Constants.GIFT_CARD_TYPE, "").equals("Digital")) ){
+                    sellGiftCardUsingCash(
+                        dynamicPaymentType = dynamicPaymentName,
+                        dynamicPaymentId = dynamicPaymentId)
+                }else {
+                    sellGiftCardUsingCash()
+                }
             }
         } else {
             makeDynamicCashPayment(
@@ -5950,8 +6143,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         })
     }
 
-    private fun sellGiftCardUsingCash() {
-        paymentType = "Cash"
+    private fun sellGiftCardUsingCash(dynamicPaymentType:String="", dynamicPaymentId: Int =0) {
+//        paymentType = "Cash"
+
+        paymentType = if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
+            "External"
+        } else if (dynamicPaymentType.isNotEmpty()){
+            "External"
+        } else {
+            "Cash"
+        }
+
         if (cartList==null){
             runBlocking {
                 lifecycleScope.async(Dispatchers.IO){
@@ -5960,7 +6162,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
         val myRequest = cartList?.let {
-            giftCardViewModel.createSellGiftCardRequestUsingCash()
+            giftCardViewModel.createSellGiftCardRequestUsingCash(paymentType=paymentType)
         }
 
 
