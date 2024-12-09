@@ -9,6 +9,7 @@ import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
+import android.widget.RadioButton
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -37,6 +38,8 @@ import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
+import com.pays.pos.utils.extensions.gone
+import com.pays.pos.utils.extensions.visible
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import okhttp3.internal.toImmutableList
@@ -566,6 +569,68 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         return found
     }
 
+
+    fun setUpAmountTab() {
+        binding.rbItems.gone()
+        binding.rvItemListRefund.gone()
+        isItem = true
+        binding.llItemList.visibility = View.GONE
+        binding.llRefundAmount.visibility = View.VISIBLE
+        binding.tvRefundPaymentDetails.visibility = View.VISIBLE
+        binding.tvRefundItemDetails.visibility = View.GONE
+        binding.rbItems.background =
+            requireActivity().getDrawable(R.drawable.background_square_border_grey)
+        binding.rbAmount.background =
+            requireActivity().getDrawable(R.drawable.btn_background_secondary)
+        binding.rbAmount.setTextColor(requireActivity().resources.getColor(R.color.white))
+        binding.rbItems.setTextColor(requireActivity().resources.getColor(R.color.txtColor))
+        val mData = paymentOrderDetailsResponse.data
+
+        if (mData.order.refund_detail.refunded_amount.equals(0.0)) {
+
+            if (mData.payment_type == "Card") {
+                var totalamount_tip = mData.amount + tipCalculation(mData.tips)
+                MethodUtils.setRefundPriceTextView(
+                    binding.tvTotalRefundAmount,
+                    (totalamount_tip)
+                )
+                Log.d("edtAmount: ", "edtAmount " + (totalamount_tip * 100).toString())
+                binding.edtAmount.setText((totalamount_tip * 100).toString())
+            } else {
+                MethodUtils.setRefundPriceTextView(
+                    binding.tvTotalRefundAmount,
+                    (mData.amount)
+                )
+
+                binding.edtAmount.setText((mData.amount * 100).toString())
+            }
+        } else {
+            if (mData.payment_type == "Card") {
+                val price =
+                    (mData.amount + tipCalculation(mData.tips)) - mData.order.refund_detail.refunded_amount
+                MethodUtils.setRefundPriceTextView(
+                    binding.tvTotalRefundAmount,
+                    price
+                )
+
+
+                binding.edtAmount.setText(price.toString())
+                //binding.edtAmount.setText((price * 100).toString())
+            } else {
+                val price =
+                    (mData.amount) - mData.order.refund_detail.refunded_amount
+                MethodUtils.setRefundPriceTextView(
+                    binding.tvTotalRefundAmount,
+                    price
+                )
+
+                binding.edtAmount.setText((price * 100).toString())
+            }
+        }
+
+    }
+
+
     private fun setUpRecyclerView() {
         refundItemListAdapter = RefundItemListAdapter(viewModel)
         binding.rvItemListRefund.adapter = refundItemListAdapter
@@ -578,38 +643,51 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
         if (paymentOrderDetailsResponse.data.loyalty_amount == 0.0) {
 
-            if(paymentOrderDetailsResponse.data.order.order_type == DINE_IN) {
+            if (paymentOrderDetailsResponse.data.order.order_type == DINE_IN) {
 
 
-                var orderItems = mutableListOf<GetOrderDetailsResponse.Data.OrderItem>()
+                if (paymentOrderDetailsResponse.data.payable_type == "Guest") {
 
-                val it = paymentOrderDetailsResponse
+                    binding.rbItems.visible()
+                    binding.rvItemListRefund.visible()
 
-                if (it.data.payable_type == "Guest") {
+                    var orderItems = mutableListOf<GetOrderDetailsResponse.Data.OrderItem>()
+
+                    val it = paymentOrderDetailsResponse
+
+                    //  if (it.data.payable_type == "Guest") {
 
                     it.data.order.order_items.forEach { item ->
-                        if (item.guestIndexForDineIn == it.data.guest_index_for_dine_in || item.guestIndexForDineIn == 0) {
-                             orderItems.add(item)
+                        if (item.guestIndexForDineIn == it.data.guest_index_for_dine_in && item.guestIndexForDineIn != 0) {
+                            orderItems.add(item)
                         }
                     }
+                    //     }
+
+//                    else {
+//                        orderItems = it.data.order.order_items.toMutableList()
+//                    }
+
+
+                    refundItemListAdapter.addItems(
+                        (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount),
+                        orderItems,
+                        serviceChargesList,
+                        paymentOrderDetailsResponse.data.cash_discount_or_surcharge,
+                        if (paymentOrderDetailsResponse.data.cash_discount_type != null) paymentOrderDetailsResponse.data.cash_discount_type else "",
+                        paymentOrderDetailsResponse.data.payment_type,
+                        if (paymentOrderDetailsResponse.data.total_discount > totalItemDiscount) paymentOrderDetailsResponse.data.total_discount - totalItemDiscount else 0.0,
+                        paymentOrderDetailsResponse.data.loyalty_amount,
+                        paymentOrderDetailsResponse.data.tips,
+                        paymentOrderDetailsResponse.data.order.order_type
+                    )
                 } else {
-                    orderItems = it.data.order.order_items.toMutableList()
+                   setUpAmountTab()
                 }
+            } else {
+                binding.rbItems.visible()
+                binding.rvItemListRefund.visible()
 
-
-                refundItemListAdapter.addItems(
-                    (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount),
-                    orderItems,
-                    serviceChargesList,
-                    paymentOrderDetailsResponse.data.cash_discount_or_surcharge,
-                    if (paymentOrderDetailsResponse.data.cash_discount_type != null) paymentOrderDetailsResponse.data.cash_discount_type else "",
-                    paymentOrderDetailsResponse.data.payment_type,
-                    if (paymentOrderDetailsResponse.data.total_discount > totalItemDiscount) paymentOrderDetailsResponse.data.total_discount - totalItemDiscount else 0.0,
-                    paymentOrderDetailsResponse.data.loyalty_amount,
-                    paymentOrderDetailsResponse.data.tips,
-                    paymentOrderDetailsResponse.data.order.order_type
-                )
-            }else {
                 refundItemListAdapter.addItems(
                     (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount),
                     paymentOrderDetailsResponse.data.order.order_items,
@@ -625,38 +703,43 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             }
         } else {
 
-            if(paymentOrderDetailsResponse.data.order.order_type == DINE_IN) {
+            if (paymentOrderDetailsResponse.data.order.order_type == DINE_IN) {
 
 
-                var orderItems = mutableListOf<GetOrderDetailsResponse.Data.OrderItem>()
+                if (paymentOrderDetailsResponse.data.payable_type == "Guest") {
 
-                val it = paymentOrderDetailsResponse
+                    var orderItems = mutableListOf<GetOrderDetailsResponse.Data.OrderItem>()
 
-                if (it.data.payable_type == "Guest") {
+                    val it = paymentOrderDetailsResponse
 
-                    it.data.order.order_items.forEach { item ->
-                        if (item.guestIndexForDineIn == it.data.guest_index_for_dine_in || item.guestIndexForDineIn == 0) {
-                            orderItems.add(item)
+                   // if (it.data.payable_type == "Guest") {
+
+                        it.data.order.order_items.forEach { item ->
+                            if (item.guestIndexForDineIn == it.data.guest_index_for_dine_in && item.guestIndexForDineIn != 0) {
+                                orderItems.add(item)
+                            }
                         }
-                    }
+//                    } else {
+//                        orderItems = it.data.order.order_items.toMutableList()
+//                    }
+
+
+                    refundItemListAdapter.addItems(
+                        (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount),
+                        orderItems,
+                        serviceChargesList,
+                        paymentOrderDetailsResponse.data.cash_discount_or_surcharge,
+                        if (paymentOrderDetailsResponse.data.cash_discount_type != null) paymentOrderDetailsResponse.data.cash_discount_type else "",
+                        paymentOrderDetailsResponse.data.payment_type,
+                        if (paymentOrderDetailsResponse.data.total_discount > totalItemDiscount) paymentOrderDetailsResponse.data.total_discount - totalItemDiscount else 0.0,
+                        paymentOrderDetailsResponse.data.loyalty_amount,
+                        paymentOrderDetailsResponse.data.tips,
+                        paymentOrderDetailsResponse.data.order.order_type
+                    )
                 } else {
-                    orderItems = it.data.order.order_items.toMutableList()
+                    setUpAmountTab()
                 }
-
-
-                refundItemListAdapter.addItems(
-                    (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount),
-                    orderItems,
-                    serviceChargesList,
-                    paymentOrderDetailsResponse.data.cash_discount_or_surcharge,
-                    if (paymentOrderDetailsResponse.data.cash_discount_type != null) paymentOrderDetailsResponse.data.cash_discount_type else "",
-                    paymentOrderDetailsResponse.data.payment_type,
-                    if (paymentOrderDetailsResponse.data.total_discount > totalItemDiscount) paymentOrderDetailsResponse.data.total_discount - totalItemDiscount else 0.0,
-                    paymentOrderDetailsResponse.data.loyalty_amount,
-                    paymentOrderDetailsResponse.data.tips,
-                    paymentOrderDetailsResponse.data.order.order_type
-                )
-            }else {
+            } else {
 
                 refundItemListAdapter.addItems(
 //    IF GETTING MORE PROBLEMS, THEN UNCOMMENT IT AND REMOVE THE IMMEDIATE BELOW LINE        (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount),
