@@ -148,9 +148,12 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URI
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 
@@ -1712,13 +1715,21 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             CoroutineScope(Dispatchers.IO).launch {
 
                 val folder = externalCacheDir
-                val file = File(folder, "log_steps.txt")
+                if (folder != null) {
+                    // Get the current date in "yyyy-MM-dd" format
+                    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    val currentDate = dateFormat.format(Date())
 
-                val stream = FileOutputStream(file, true)
-                try {
-                    stream.write(text.toByteArray())
-                } finally {
-                    stream.close()
+                    // Create a file with the current date as its name
+                    val fileName = "log_steps_$currentDate.txt"
+                    val file = File(folder, fileName)
+                    // Append text to the file
+                    val stream = FileOutputStream(file, true)
+                    try {
+                        stream.write(text.toByteArray())
+                    } finally {
+                        stream.close()
+                    }
                 }
 
             }
@@ -1731,17 +1742,26 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     public fun logNewTrack(text: String) {
         /* This function will log the data to a file*/
         try {
+            CoroutineScope(Dispatchers.IO).launch {
 
-            val folder = externalCacheDir
-            val file = File(folder, "log_steps_new_track.txt")
+                val folder = externalCacheDir
+                if (folder != null) {
+                    // Get the current date in "yyyy-MM-dd" format
+                    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    val currentDate = dateFormat.format(Date())
 
-            val stream = FileOutputStream(file, true)
-            try {
-                stream.write(text.toByteArray())
-            } finally {
-                stream.close()
+                    // Create a file with the current date as its name
+                    val fileName = "log_steps_new_track_$currentDate.txt"
+                    val file = File(folder, fileName)
+                    // Append text to the file
+                    val stream = FileOutputStream(file, true)
+                    try {
+                        stream.write(text.toByteArray())
+                    } finally {
+                        stream.close()
+                    }
+                }
             }
-
 
         } catch (e: IOException) {
             Log.e("Exception", "File write failed: $e")
