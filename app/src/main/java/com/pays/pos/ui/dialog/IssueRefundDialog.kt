@@ -681,6 +681,11 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                         paymentOrderDetailsResponse.data.tips,
                         paymentOrderDetailsResponse.data.order.order_type
                     )
+                    refundItemListAdapter.setSelectedItemList(
+                        ArrayList(orderItems),
+                        prefProvider.getValue(CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE, ""),
+                        prefProvider.getValue(CASH_DISCOUNT_SURCHARGE_RATE, "")
+                    )
                 } else {
                    setUpAmountTab()
                 }
@@ -699,6 +704,14 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     paymentOrderDetailsResponse.data.loyalty_amount,
                     paymentOrderDetailsResponse.data.tips,
                     paymentOrderDetailsResponse.data.order.order_type
+                )
+
+                refundItemListAdapter.setSelectedItemList(
+                    paymentOrderDetailsResponse.data.order.order_items.toCollection(
+                        arrayListOf()
+                    ),
+                    prefProvider.getValue(CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE, ""),
+                    prefProvider.getValue(CASH_DISCOUNT_SURCHARGE_RATE, "")
                 )
             }
         } else {
@@ -736,6 +749,14 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                         paymentOrderDetailsResponse.data.tips,
                         paymentOrderDetailsResponse.data.order.order_type
                     )
+
+                    refundItemListAdapter.setSelectedItemList(
+                       ArrayList(orderItems),
+                        prefProvider.getValue(CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE, ""),
+                        prefProvider.getValue(CASH_DISCOUNT_SURCHARGE_RATE, "")
+                    )
+
+
                 } else {
                     setUpAmountTab()
                 }
@@ -754,17 +775,25 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     paymentOrderDetailsResponse.data.tips,
                     paymentOrderDetailsResponse.data.order.order_type
                 )
+
+                refundItemListAdapter.setSelectedItemList(
+                    paymentOrderDetailsResponse.data.order.order_items.toCollection(
+                        arrayListOf()
+                    ),
+                    prefProvider.getValue(CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE, ""),
+                    prefProvider.getValue(CASH_DISCOUNT_SURCHARGE_RATE, "")
+                )
             }
         }
 
 
-        refundItemListAdapter.setSelectedItemList(
-            paymentOrderDetailsResponse.data.order.order_items.toCollection(
-                arrayListOf()
-            ),
-            prefProvider.getValue(CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE, ""),
-            prefProvider.getValue(CASH_DISCOUNT_SURCHARGE_RATE, "")
-        )
+//        refundItemListAdapter.setSelectedItemList(
+//            paymentOrderDetailsResponse.data.order.order_items.toCollection(
+//                arrayListOf()
+//            ),
+//            prefProvider.getValue(CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE, ""),
+//            prefProvider.getValue(CASH_DISCOUNT_SURCHARGE_RATE, "")
+//        )
         refundItemListAdapter.showItemSubTotal = {
 
             //    calculationOfItems()
