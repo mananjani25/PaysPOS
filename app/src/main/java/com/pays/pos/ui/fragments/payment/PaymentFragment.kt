@@ -1,11 +1,16 @@
 package com.pays.pos.ui.fragments.payment
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -47,6 +52,7 @@ import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.visible
 import com.google.gson.Gson
 import com.pays.pos.logger.MessageEvent
+import com.pays.pos.utils.extensions.runOnUiThread
 import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
@@ -1841,6 +1847,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
+                runOnUiThread(kotlinx.coroutines.Runnable {
+                    dismissProgressDialog()
+                })
                 LogUtil.logE("observe : splitValue", splitValue.toString())
 
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
@@ -2352,5 +2361,55 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
             }
         }
+    }
+
+    private var builder: Dialog? = null
+
+    private fun showProgressDialog() {
+
+
+        if (builder == null)
+            builder = Dialog(requireContext())
+
+        val inflater = LayoutInflater.from(context)
+
+        val dialogView = inflater.inflate(R.layout.view_loading, null)
+        builder?.setContentView(dialogView)
+
+        builder?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+//        builder?.window?.setBackgroundDrawable(
+//            ColorDrawable(Color.WHITE)
+//        )
+        builder?.setCanceledOnTouchOutside(false)
+        builder?.setCancelable(false)
+        builder?.window?.setLayout(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+
+        if (!builder?.isShowing!!) {
+            val activity: Activity = requireActivity()
+            if (!activity.isFinishing && !activity?.isDestroyed) {
+                try {
+                    builder?.show()
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+
+            }
+        }
+    }
+
+    private fun dismissProgressDialog()
+    {
+        try {
+            if (builder != null && builder?.isShowing == true) {
+                builder?.dismiss()
+                builder = null
+            }
+        } catch (e: java.lang.Exception) {
+            Log.d("pos", "dismissProgressDialog: " + e.message)
+        }
+
     }
 }

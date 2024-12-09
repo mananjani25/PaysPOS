@@ -29,12 +29,14 @@ import com.pays.pos.data.remote.Constants.CASH_EVENTS
 import com.pays.pos.data.remote.Constants.CATEGORY
 import com.pays.pos.data.remote.Constants.CATEGORY_UPDATE_DELETE
 import com.pays.pos.data.remote.Constants.CHECK_PERMISSION_MANAGER
+import com.pays.pos.data.remote.Constants.CHECK_PHYSICAL_CARD_EXIST_OR_NOT
 import com.pays.pos.data.remote.Constants.CLOCK_OUT
 import com.pays.pos.data.remote.Constants.CREATE_QUEUE_PRINTER
 import com.pays.pos.data.remote.Constants.CUSTOMERS
 import com.pays.pos.data.remote.Constants.CUSTOMERS_SEARCH
 import com.pays.pos.data.remote.Constants.CUSTOMER_RECEIPTS_UPDATE_SETTINGS
 import com.pays.pos.data.remote.Constants.CUSTOMER_RECEIPT_SETTINGS
+import com.pays.pos.data.remote.Constants.CUSTOMER_SEARCH_BY_ID
 import com.pays.pos.data.remote.Constants.CUSTOMER_UPDATE
 import com.pays.pos.data.remote.Constants.DECREASE_ONGOING_ORDER_COUNTER
 import com.pays.pos.data.remote.Constants.DELETE_ALL_QUEUE_PRINTER
@@ -284,6 +286,9 @@ interface ApiService {
         @Query("new_response") newResponse: Boolean = true
     ): VenueDetailsResponse
 
+    @GET(CHECK_PHYSICAL_CARD_EXIST_OR_NOT)
+    suspend fun checkPhysicalCardExistOrNot(@Query("name")cardNumber:String):BaseResponse
+
     @GET(ONLINE_ORDER_NOTIFICATION_COUNT)
     suspend fun getCountOnlineOrdering(): OnlineOrderNotificationCount
 
@@ -475,6 +480,11 @@ interface ApiService {
     @GET(CUSTOMERS_SEARCH)
     suspend fun customerSearch(
         @Query("searchtext") searchtext: String
+    ): CustomerSearchList
+
+    @GET(CUSTOMER_SEARCH_BY_ID)
+    suspend fun customerSearchById(
+        @Query("searchtext") id: String
     ): CustomerSearchList
 
     @GET(EMPLOYEES_TIMESHEET_DETAILS)

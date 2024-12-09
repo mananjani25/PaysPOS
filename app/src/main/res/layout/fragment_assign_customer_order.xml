@@ -84,6 +84,14 @@
                 android:textColorHint="@color/hintColor"
                 android:textSize="@dimen/_6mdpi" />
 
+            <Button
+                android:id="@+id/txtSearchCustomer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/search_customer">
+
+            </Button>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"

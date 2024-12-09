@@ -7,6 +7,8 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
+import android.os.Message
+import android.os.SystemClock
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
@@ -26,18 +28,23 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.pax.poslink.PaymentRequest
+import com.pax.poslink.PosLink
+import com.pax.poslink.ProcessTransResult
+import com.pax.poslink.ReportRequest
 import com.pays.pos.R
 import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.DineInModel
 import com.pays.pos.data.model.DineInOrderDetailAttributes
 import com.pays.pos.data.model.GuestPaymentCalculationModel
+import com.pays.pos.data.model.PreAuthData
 import com.pays.pos.data.model.requestModel.OrderItemsAttribute
+import com.pays.pos.data.model.requestModel.PaymentAttributes
 import com.pays.pos.data.model.responseModel.GetFloorPlanResponse
 import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.pays.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.pays.pos.data.remote.ApiService
 import com.pays.pos.data.remote.Constants
-import com.pays.pos.data.remote.Constants.ADD
 import com.pays.pos.data.remote.Constants.CUSTOMER_ID
 import com.pays.pos.data.remote.Constants.DELETE
 import com.pays.pos.data.remote.Constants.DELIVERY
@@ -69,6 +76,8 @@ import com.pays.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.pays.pos.data.remote.Constants.PERCENTAGE
 import com.pays.pos.data.remote.Constants.PHONE_ORDER
 import com.pays.pos.data.remote.Constants.PICK_UP
+import com.pays.pos.data.remote.Constants.PRE_AUTH_AMOUNT
+import com.pays.pos.data.remote.Constants.PRE_AUTH_DETAILS
 import com.pays.pos.data.remote.Constants.REDIRECT_FROM
 import com.pays.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
 import com.pays.pos.data.remote.Constants.TAKEOUT
@@ -83,7 +92,6 @@ import com.pays.pos.ui.adapter.OrderTypeAdapter
 import com.pays.pos.ui.adapter.boldpos.CartItemsAdapter
 import com.pays.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS.Companion
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
@@ -91,6 +99,7 @@ import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
 import com.pays.pos.utils.*
 import com.pays.pos.utils.callback.*
 import com.pays.pos.utils.extensions.*
+import com.pays.pos.utils.paxUtils.SettingINI
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
@@ -100,11 +109,11 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.Runnable
 import java.lang.System
-import java.security.spec.ECField
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
+import kotlin.math.roundToInt
 
 
 @AndroidEntryPoint
@@ -296,6 +305,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         return binding.root
     }
 
+
     private fun setUpdateCartFooterObservable() {
         viewModel.updateCartFooterObservable.observe(viewLifecycleOwner,
             object : androidx.lifecycle.Observer<Event<Boolean>> {
@@ -309,8 +319,76 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             })
     }
 
+    fun setUpPreAuthData() {
+        if(prefProvider.getValue(ORDER_TYPE,"") == OPEN_ORDER && !isFromPayment) {
+
+            binding.preAuthOption.visible()
+
+            binding.preAuthOption.apply {
+
+                isChecked = false
+                isEnabled = true
+                setTextColor(Color.RED)
+
+                if(prefProvider.getValue(PRE_AUTH_DETAILS,"").isNotEmpty() ) {
+                    visible()
+                    isChecked = true
+                    isEnabled = false
+                    setTextColor(Color.GREEN)
+                }else {
+                    isChecked = false
+                    isEnabled = true
+                    setTextColor(Color.RED)
+                    setOnClickListener {
+
+                        if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
+                            if (prefProvider.isManager() || prefProvider.isAdmin()) {
+                                if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false))
+                                    makePaxPreAuthRequest()
+                                else {
+                                    isChecked = false
+                                    activity?.let {
+                                        AlertUtils.showCustomAlertWithListenerWithOK(
+                                            it,
+                                            getString(R.string.pax_connect_error),
+                                            null
+                                        )
+                                    }
+                                }
+                            } else {
+                                isChecked = false
+                                AlertUtils.showCustomAlert(
+                                    requireContext(),
+                                    "You do not have permission to access this feature.\nPlease contact your manager."
+                                )
+                            }
+                        } else {
+                            isChecked = false
+                            AlertUtils.showCustomAlert(requireContext(), "Please check your Network Connectivity.")
+                        }
+                    }
+                }
+
+                try {
+                    if (viewModelPayment.preAuthData !=null && viewModelPayment.preAuthData!!.refNum.isNotEmpty() || viewModelPayment.preAuthData!!.refNum.isNotEmpty()) {
+                        isChecked = true
+                        isEnabled = false
+                        setTextColor(Color.GREEN)
+                    }
+                }catch (e:Exception) {
+
+                }
+
+
+            }
+        } else
+            binding.preAuthOption.gone()
+    }
+
     // To check selected order type
     private fun checkOrderType() {
+
+      //  setUpPreAuthData()
 
 //        saveVisibility()
         if (prefProvider.getValue(ORDER_TYPE, "").isEmpty()) {
@@ -566,22 +644,26 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             viewLifecycleOwner,
             object : androidx.lifecycle.Observer<Event<Boolean>> {
                 override fun onChanged(t: Event<Boolean>?) {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        binding.rvOrderType.layoutManager?.childCount?.let {
-                            for (position in 0..it) {
-                                if (binding.rvOrderType.findViewHolderForAdapterPosition(position)?.itemView?.findViewById<TextView>(
-                                        R.id.txtTitle
-                                    )?.text?.contains(/*"Take out"*/binding.orderTypeDisplay.text.toString(), ignoreCase = true) ?: false
-                                ) {
-                                    performClickOnOrderTypeAndSetCustomer(position)
-                                    break
-                                }else if (!binding.orderTypeDisplay.text.toString().trim().contains(':')){
-                                    performClickOnOrderTypeAndSetCustomer(0)
-                                    break
+//                    CoroutineScope(Dispatchers.Main).launch {
+                        runOnUiThread(object :Runnable{
+                            override fun run() {
+                                binding.rvOrderType.layoutManager?.childCount?.let {
+                                    for (position in 0..it) {
+                                        if (binding.rvOrderType.findViewHolderForAdapterPosition(position)?.itemView?.findViewById<TextView>(
+                                                R.id.txtTitle
+                                            )?.text?.contains(/*"Take out"*/binding.orderTypeDisplay.text.toString(), ignoreCase = true) ?: false
+                                        ) {
+                                            performClickOnOrderTypeAndSetCustomer(position)
+                                            break
+                                        }else if (!binding.orderTypeDisplay.text.toString().trim().contains(':')){
+                                            performClickOnOrderTypeAndSetCustomer(0)
+                                            break
+                                        }
+                                    }
                                 }
                             }
-                        }
-                    }
+                        })
+//                    }
                 }
             })
     }
@@ -1130,6 +1212,11 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                     binding.tvPayNow.text =
                         "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
+                    if (viewModel.cartModel?.discountSelectdValue != 0.0 && viewModel.cartModel?.discountSelectdValue != null) {
+                        binding.txtDiscountText.text = "Discount (${viewModel.cartModel?.discountSelectdValue}%)"
+                    } else {
+                        binding.txtDiscountText.text = "Discount"
+                    }
                     Log.e("totalDiscount", viewModel.totalDiscount.toString())
                     binding.txtDiscount.text =
                         "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
@@ -1151,11 +1238,13 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                 binding.liinearInfoLayout.layoutParams.height =
                                     resources.getDimension(R.dimen._50sdp).toInt()
                                 binding.relativeLoylatyPoints.visibility = View.GONE
+
                                 binding.lblLoyaltyPoints.visibility = View.GONE
                                 binding.lblLoyaltyBalance.visibility = View.GONE
                             } else {
                                 binding.liinearInfoLayout.layoutParams.height =
                                     resources.getDimension(R.dimen._70sdp).toInt()
+
                                 binding.relativeLoylatyPoints.visibility = View.VISIBLE
                                 binding.lblLoyaltyPoints.visibility = View.VISIBLE
                                 binding.lblLoyaltyBalance.visibility = View.VISIBLE
@@ -1185,6 +1274,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         binding.relativeLoylatyPoints.visibility = View.GONE
                         binding.lblLoyaltyPoints.visibility = View.GONE
                         binding.lblLoyaltyBalance.visibility = View.GONE
+
+
                     }
 
                     viewModel.itemCalculationCartModelNew(it, binding.txtTotal, requireContext())
@@ -1201,6 +1292,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     binding.txtTotal.text = MethodUtils.roundOffAmount(0.00)
                     binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.00)
                     binding.txtTax.text = MethodUtils.roundOffAmount(0.00)
+                    binding.txtDiscountText.text = "Discount"
                     binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.00)
                     if (prefProvider.getValue(
                             OPTION_TYPE, "CashDiscount"
@@ -1222,12 +1314,16 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             binding.relativeLoylatyPoints.visibility = View.VISIBLE
                             binding.lblLoyaltyPoints.visibility = View.VISIBLE
                             binding.lblLoyaltyBalance.visibility = View.VISIBLE
+
+
                         } else {
                             binding.liinearInfoLayout.layoutParams.height =
                                 resources.getDimension(R.dimen._50sdp).toInt()
                             binding.relativeLoylatyPoints.visibility = View.GONE
                             binding.lblLoyaltyPoints.visibility = View.GONE
                             binding.lblLoyaltyBalance.visibility = View.GONE
+
+
                         }
                     }
 
@@ -1606,6 +1702,11 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             )
                                             binding.txtServiceCharge.text =
                                                 MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
+                                            if (viewModel.cartModel?.discountSelectdValue != 0.0 && viewModel.cartModel?.discountSelectdValue != null) {
+                                                binding.txtDiscountText.text = "Discount (${viewModel.cartModel?.discountSelectdValue}%)"
+                                            } else {
+                                                binding.txtDiscountText.text = "Discount"
+                                            }
                                             binding.txtDiscount.text =
                                                 "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
                                             if (prefProvider.getValue(
@@ -1630,6 +1731,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             binding.relativeLoylatyPoints.visibility = View.GONE
                                             binding.lblLoyaltyPoints.visibility = View.GONE
                                             binding.lblLoyaltyBalance.visibility = View.GONE
+
+
 
                                         } else {
                                             //                                        cartlist = arrayListOf()
@@ -1667,6 +1770,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             binding.relativeLoylatyPoints.visibility = View.GONE
                                             binding.lblLoyaltyPoints.visibility = View.GONE
                                             binding.lblLoyaltyBalance.visibility = View.GONE
+
+
 
 
                                         }
@@ -2052,6 +2157,11 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             )
                                             binding.txtServiceCharge.text =
                                                 MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
+                                            if (viewModel.cartModel?.discountSelectdValue != 0.0 && viewModel.cartModel?.discountSelectdValue != null) {
+                                                binding.txtDiscountText.text = "Discount (${viewModel.cartModel?.discountSelectdValue}%)"
+                                            } else {
+                                                binding.txtDiscountText.text = "Discount"
+                                            }
                                             binding.txtDiscount.text =
                                                 "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
                                             if (prefProvider.getValue(
@@ -2076,6 +2186,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             binding.relativeLoylatyPoints.visibility = View.GONE
                                             binding.lblLoyaltyPoints.visibility = View.GONE
                                             binding.lblLoyaltyBalance.visibility = View.GONE
+
 
                                         } else {
                                             //                                        cartlist = arrayListOf()
@@ -2113,6 +2224,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             binding.relativeLoylatyPoints.visibility = View.GONE
                                             binding.lblLoyaltyPoints.visibility = View.GONE
                                             binding.lblLoyaltyBalance.visibility = View.GONE
+
 
 
                                         }
@@ -2184,23 +2296,33 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                 viewModel.selectedCustomer =
                                                     prefProvider.getCustomerData()
 
-                                                if (MethodUtils.isEnableCashDiscount(requireContext()) && prefProvider.getValue(
-                                                        ORDER_TYPE, TAKEOUT
-                                                    ) != Constants.GIFT_CARD
+//                                                if (MethodUtils.isEnableCashDiscount(requireContext()) && prefProvider.getValue(
+//                                                        ORDER_TYPE, TAKEOUT
+//                                                    ) != Constants.GIFT_CARD
+//                                                ) {
+//
+//                                                    binding.linearCashDiscount.visible()
+//                                                    if (prefProvider.getValue(
+//                                                            OPTION_TYPE, "CashDiscount"
+//                                                        ) == "CashDiscount"
+//                                                    ) {
+//                                                        binding.labelCashSurcharge?.text =
+//                                                            "Cash Discount"
+//                                                    } else {
+//                                                        showSurchargeWithPercentage()
+//                                                    }
+//                                                } else {
+//                                                    binding.linearCashDiscount.gone()
+//                                                }
+                                                binding.linearCashDiscount.visible()
+                                                if (prefProvider.getValue(
+                                                        OPTION_TYPE, "CashDiscount"
+                                                    ) == "CashDiscount"
                                                 ) {
-
-                                                    binding.linearCashDiscount.visible()
-                                                    if (prefProvider.getValue(
-                                                            OPTION_TYPE, "CashDiscount"
-                                                        ) == "CashDiscount"
-                                                    ) {
-                                                        binding.labelCashSurcharge?.text =
-                                                            "Cash Discount"
-                                                    } else {
-                                                        showSurchargeWithPercentage()
-                                                    }
+                                                    binding.labelCashSurcharge?.text =
+                                                        "Cash Discount"
                                                 } else {
-                                                    binding.linearCashDiscount.gone()
+                                                    showSurchargeWithPercentage()
                                                 }
                                                 binding.linearButtonView.gone()
                                                 binding.relPreoceedToFire.gone()
@@ -2441,6 +2563,12 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             }
 
 
+            if (viewModel.cartModel?.discountSelectdValue != 0.0 && viewModel.cartModel?.discountSelectdValue != null) {
+                binding.txtDiscountText.text = "Discount (${viewModel.cartModel?.discountSelectdValue}%)"
+            } else {
+                binding.txtDiscountText.text = "Discount"
+            }
+
             binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
 
 
@@ -2448,8 +2576,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 binding.txtTotal.text =
                     MethodUtils.roundOffAmount(viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge)
 
+                Log.e("Dine in","1 BEFORE DATA ALREADY UPDATED ${viewModel.totalPriceUpdated.value} = sub = ${viewModel.subTotalPrice} , tax = ${viewModel.totalTax}, service charges = ${viewModel.totalServiceCharge}\"")
                 viewModel.totalPriceUpdated.value =
                     viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge
+                Log.e("Dine in","2 DATA ALREADY UPDATED CART ${viewModel.totalPriceUpdated.value} = sub = ${ viewModel.subTotalPrice} , tax = ${viewModel.totalTax}, service charges = ${viewModel.totalServiceCharge}")
 
                 Log.e(
                     "Service charges",
@@ -2484,6 +2614,34 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
 
             } else {
+
+                if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+                    viewModel.cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                        viewModel.totalPriceUpdated.value ?: 0.0,
+                        prefProvider,
+                        requireContext()
+                    )
+                } else {
+                    if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                        val total =
+                            viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge - viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
+                        viewModel.cashdiscountAmount = MethodUtils.getLatestCashDiscountOrSurCharge(
+                            total,
+                            prefProvider,
+                            requireContext()
+                        )
+                    } else {
+                        val total =
+                            viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge
+                        viewModel.cashdiscountAmount = MethodUtils.getLatestCashDiscountOrSurCharge(
+                            total,
+                            prefProvider,
+                            requireContext()
+                        )
+                    }
+
+                }
+
                 binding.txtNoncashAdj.text =
                     MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
             }
@@ -2514,12 +2672,15 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             binding.lblLoyaltyPoints.visibility = View.VISIBLE
                             binding.lblLoyaltyBalance.visibility = View.VISIBLE
                             binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
+
                             binding.checkloylaty.visibility = View.GONE
                             binding.txtLoyaltyAmount.text = "- $${
                                 String.format(
                                     "%.2f", viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
                                 )
                             }"
+
+
                             binding.txtLoyaltyPoints.text =
                                 "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
                             /*  binding.txtLoyaltyBalance.text =
@@ -2533,6 +2694,20 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             binding.relativeLoylatyPoints.visibility = View.GONE
                             binding.lblLoyaltyPoints.visibility = View.GONE
                             binding.lblLoyaltyBalance.visibility = View.GONE
+
+
+                        }
+                        if (findNavController().currentDestination!!.label!!.contains("Dashboard", ignoreCase = true)){
+                            isFromPayment=false
+                            arguments?.apply {
+                                putBoolean("isFromPayment",false)
+                            }
+
+//                                updateCartFooter(it)
+                            /*Refreshing the current fragment*/
+                            val id = findNavController().currentDestination?.id
+                            findNavController().popBackStack(id!!,true)
+                            findNavController().navigate(id)
                         }
                     } else {
                         binding.liinearInfoLayout.layoutParams.height =
@@ -2540,6 +2715,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         binding.relativeLoylatyPoints.visibility = View.VISIBLE
                         binding.lblLoyaltyPoints.visibility = View.VISIBLE
                         binding.lblLoyaltyBalance.visibility = View.VISIBLE
+
+
                         Log.e(TAG, "InsideLoyalty")
                         Log.e(
                             TAG, Gson().toJson(viewModel.redeemLoyaltyInfo)
@@ -2573,6 +2750,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         relativeLoylatyPoints.visibility = View.GONE
                         lblLoyaltyPoints.visibility = View.GONE
                         lblLoyaltyBalance.visibility = View.GONE
+
                     }
                    /* binding.liinearInfoLayout.layoutParams.height =
                                   resources.getDimension(R.dimen._50sdp).toInt()
@@ -2600,6 +2778,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 binding.relativeLoylatyPoints.visibility = View.GONE
                 binding.lblLoyaltyPoints.visibility = View.GONE
                 binding.lblLoyaltyBalance.visibility = View.GONE
+
             }
         } else {
             cartModelsList = arrayListOf()
@@ -2616,6 +2795,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             binding.txtTotal.text = MethodUtils.roundOffAmount(0.00)
             binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.00)
             binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
+            binding.txtDiscountText.text = "Discount"
             binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.00)
             if (prefProvider.getValue(
                     OPTION_TYPE, "CashDiscount"
@@ -2646,6 +2826,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     binding.relativeLoylatyPoints.visibility = View.GONE
                     binding.lblLoyaltyPoints.visibility = View.GONE
                     binding.lblLoyaltyBalance.visibility = View.GONE
+
                 }
             } else {
                 binding.liinearInfoLayout.layoutParams.height =
@@ -2653,6 +2834,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 binding.relativeLoylatyPoints.visibility = View.GONE
                 binding.lblLoyaltyPoints.visibility = View.GONE
                 binding.lblLoyaltyBalance.visibility = View.GONE
+
+
             }
         }
 
@@ -2998,10 +3181,12 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
     // Update UI after removing guest from order
     private fun removeGuestObserver() {
-        viewModel.removeGuestSuccess.observe(viewLifecycleOwner) { event ->
-            AlertUtils.showCustomAlertWithListenerWithOK(
-                requireContext(), event.getContentIfNotHandled().toString()
-            ) { _, _ -> }
+        if (isAdded) {
+            viewModel.removeGuestSuccess.observe(viewLifecycleOwner) { event ->
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(), event.getContentIfNotHandled().toString()
+                ) { _, _ -> }
+            }
         }
     }
 
@@ -3193,6 +3378,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         viewModel.assignCustomer = null
         binding.liinearInfoLayout.layoutParams.height =
             resources.getDimension(R.dimen._50sdp).toInt()
+
         binding.relativeLoylatyPoints.visibility = View.GONE
         binding.lblLoyaltyPoints.visibility = View.GONE
         binding.lblLoyaltyBalance.visibility = View.GONE
@@ -3437,6 +3623,16 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             popupMenu.dismiss() //For resolving BIS-273
                             clearCart()
                             cleanOrderBackupDetails()
+
+                            //Clear PREAUTH data
+                            prefProvider.setValue(PRE_AUTH_DETAILS,"")
+//                            viewModel.apply {
+//                                paymentAttributes = null
+//                                authPaymentResponse = null
+//                                allOrderResponse = null
+//                            }
+//
+                            viewModelPayment.preAuthData = null
                         }
 
 
@@ -3687,9 +3883,6 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             }
                         }
                     }
-
-                    EventBus.getDefault()
-                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} CartFragment -> tvPayNow()"))
 
                     viewModel.selectedCatetory = 0
                     prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
@@ -4029,6 +4222,31 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                 }"
                                             )
 
+                                            /**
+                                             * Pre Auth for OPEN ORDER
+                                             */
+                                            val paymentType = object : TypeToken<PaymentAttributes>() {}.type
+
+                                            var isPreAuth = prefProvider.getValue(PRE_AUTH_DETAILS,"").isNotEmpty()
+
+                                            var paymentAttributes:PaymentAttributes? = null
+                                            if(isPreAuth) {
+                                                if (prefProvider.getValue(ORDER_TYPE, "") != OPEN_ORDER) {
+                                                    isPreAuth = false
+                                                    paymentAttributes = null
+                                                } else {
+                                                    paymentAttributes = Gson().fromJson(prefProvider.getValue(PRE_AUTH_DETAILS, ""), paymentType) as PaymentAttributes
+
+                                                    //If any existing order set to Pre Auth by user then need to send OrderId for payment attribute
+                                                    if(isOrderUpdate) {
+                                                        paymentAttributes.order_id = orderId
+                                                    }
+                                                }
+                                            } else if(isOrderUpdate){
+
+                                            }
+                                            //END Pre AUTH
+
                                             val request = cartModel?.let {
                                                 viewModelPayment.createOpenOrderRequestNew(
                                                     viewModel.currentCartItems,
@@ -4052,10 +4270,15 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                     ),
                                                     false,
                                                     "Cash",
-                                                    cashDiscountType
+                                                    cashDiscountType,
+                                                    isPreAuth = isPreAuth,
+                                                    paymentAttributes
 
                                                 )
                                             }
+
+
+
                                             isSaveOrder = true
                                             viewModelPayment.saveOrder(true)
 
@@ -4120,6 +4343,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                     "checkUpdation calling submit -> printing "
                                                 )
                                                 if (!viewModelPayment.orderCreateCallSent) request?.let { it1 ->
+                                                    prefProvider.setValue(PRE_AUTH_DETAILS,"")
                                                     viewModelPayment.submit(
                                                         it1
                                                     )
@@ -4608,6 +4832,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         } else {
             Log.e(TAG, "InsideDine inNoDine")
             model?.orderType?.let { prefProvider.setValue(ORDER_TYPE, it) }
+
+            viewModelPayment.preAuthData = null
             checkOrderType()
 
             addObserver()
@@ -4616,7 +4842,170 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             increaseOnGoingOrderCounter()
         }
 
+        //CLEAR PREAUTH DATA
+        prefProvider.setValue(PRE_AUTH_DETAILS,"")
+//        viewModel.apply {
+//            paymentAttributes = null
+//            authPaymentResponse = null
+//            allOrderResponse = null
+//        }
+//
+        viewModelPayment.preAuthData = null
+    }
 
+    // PRE AUTHORISE CARD
+    private fun makePaxPreAuthRequest() {
+        var posLink: PosLink = PosLink()
+
+        // PAX variables
+        lateinit var mPaymentRequest: PaymentRequest
+        var CARDBIN = ""
+        var cardLastDigits = ""
+        var CardName = ""
+        var EDCType = ""
+        var GlobalUID = ""
+        var RefNumber = ""
+        var ECRRefNumber = ""
+        var PAXtoken = ""
+        var ExtData = ""
+
+        GlobalScope.launch {
+            Log.d("getCommSettingFromFile ","getCommSettingFromFile: "+Gson().toJson(SettingINI.getCommSettingFromFile(requireContext(),"/storage/emulated/0/Download/"+ SettingINI.FILENAME)))
+            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(requireContext(),"/storage/emulated/0/Download/"+ SettingINI.FILENAME))
+            val amt = PRE_AUTH_AMOUNT * 10
+            val tip_amt = 0
+            ECRRefNumber = System.currentTimeMillis().toString()
+            var broadPOS_version = prefProvider.getValue(
+                Constants.BROADPOS_VERSION,
+                ""
+            )
+
+            CoroutineScope(Dispatchers.Main).launch {
+                ProgressUtils.showProgressDialog(requireActivity())
+            }
+            mPaymentRequest = PaymentRequest()
+            mPaymentRequest.TransType = mPaymentRequest.ParseTransType("AUTH")
+            mPaymentRequest.TenderType = mPaymentRequest.ParseTenderType("CREDIT")
+            mPaymentRequest.Amount = amt.toString()
+            mPaymentRequest.TipAmt = tip_amt.toString()
+            mPaymentRequest.ECRRefNum = ECRRefNumber
+            if (broadPOS_version.contains("TSYS")) {
+                mPaymentRequest.ExtData = "<Force>T</Force>"
+            } else if (broadPOS_version.contains("Rapid")) {
+                mPaymentRequest.ExtData = "<Force>T</Force><TokenRequest>1</TokenRequest>"
+            }
+
+            Log.d("ECRRefNum", "ECRRefNum: $ECRRefNumber")
+
+            posLink.PaymentRequest = mPaymentRequest
+            val result = posLink.ProcessTrans()
+            Log.d("result: ", result.Code.toString() + " " + result.Msg)
+            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                val msg = Message()
+                msg.what = Constants.TRANSACTION_SUCCESSED
+                msg.obj = posLink.PaymentResponse
+
+                val response = msg.obj as com.pax.poslink.PaymentResponse
+                val resultCode = response.ResultCode
+                val resultTxt = response.ResultTxt
+                val approvedAmount = response.ApprovedAmount
+                ExtData = response.ExtData
+                RefNumber = response.RefNum
+
+                cardLastDigits = response.BogusAccountNum
+                EDCType = response.CardType
+                CARDBIN = response.CardInfo.CardBin
+                var tipAmount = response.ApprovedTipAmount
+                GlobalUID = response.PaymentTransInfo.GlobalUid
+                viewModelPayment.setPAXData(RefNumber, GlobalUID)
+//                prefProvider.setValue(Constants.GLOBAL_ID, globalUID!!)
+
+//                dineInDataModel.guestPaymentReq?.paymentAttributes?.let { it ->
+//                    it.cardName = response.CardType
+//                    it.cardNumber = cardLastDigits
+//                    it.cardType = 0.toString()
+//
+//                }
+
+                //implementation("org.dom4j:dom4j:2.1.3")
+                PAXtoken = response.PaymentTransInfo.Token
+                Log.d("token:", "token $PAXtoken")
+                Log.d("token:", "EXT $ExtData")
+                Log.d(
+                    "Payment Details: ",
+                    "$ExtData $resultCode $resultTxt $GlobalUID $RefNumber"
+                )
+                Log.d("Payment Details: ", "$cardLastDigits $approvedAmount $CARDBIN $EDCType $tipAmount ${Gson().toJson(response)}")
+
+                if (resultCode == "000000") {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        ProgressUtils.dismissProgressDialog()
+                        coroutineScope {
+                            Log.e("PRE AUTH DATA ",Gson().toJson(response.ExtData))
+
+                            binding.preAuthOption.apply {
+                                isChecked = true
+                                isEnabled = false
+                                setTextColor(Color.GREEN)
+                            }
+
+                            val paymentAttributes = PaymentAttributes()
+
+                            paymentAttributes.apply {
+                                amount = PRE_AUTH_AMOUNT
+                                cardName = CardName
+                                cardNumber = ""
+                                ecr_ref_num = ECRRefNumber
+                                employeeId = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                                ext_data = ExtData
+                                global_uniq_id = GlobalUID
+                                pax_transaction_token =""
+                                payableType = "Order"
+                                paymentType = "Card"
+                                ref_num = response.RefNum
+                                subTotal = 1.0
+                                terminalId = prefProvider.getTerminalId()
+                            }
+
+                            prefProvider.setValue(PRE_AUTH_DETAILS,Gson().toJson(paymentAttributes))
+                            viewModel.paymentAttributes = paymentAttributes
+
+                            viewModelPayment.preAuthData = PreAuthData(ecrRefNum = paymentAttributes.ecr_ref_num , refNum = paymentAttributes.ref_num)
+
+                        }
+                    }
+                } else {
+
+                    runOnUiThread(object:java.lang.Runnable{
+                        override fun run() {
+                            dismissProgressDialog()
+                        }
+                    })
+                    CoroutineScope(Dispatchers.Main).launch {
+                        ProgressUtils.dismissProgressDialog()
+                        AlertUtils.showCustomAlertWithListenerWithOK(requireContext(),resultTxt,object:
+                            DialogInterface.OnClickListener{
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                try {
+
+                                    binding.preAuthOption.apply {
+                                        isChecked = false
+                                        isEnabled = true
+                                        setTextColor(Color.RED)
+                                    }
+
+                                    p0?.dismiss()
+                                } catch (e: Exception) {
+                                }
+                            }
+                        })
+//                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
+//                        connectBP()
+                    }
+                }
+            }
+
+        }
     }
 
     override fun onStart() {
@@ -4628,6 +5017,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
     override fun onStop() {
         super.onStop()
         prefProvider.setValue(Constants.OLD_ITEM, "")
+
+
 
         org.greenrobot.eventbus.EventBus.getDefault().unregister(this)
 

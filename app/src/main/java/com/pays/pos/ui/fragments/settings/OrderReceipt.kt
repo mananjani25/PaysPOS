@@ -60,6 +60,18 @@ class OrderReceipt : Fragment() {
             }
         }
 
+        binding.llStickyReceiptSettings.setOnClickListener(object:View.OnClickListener{
+            override fun onClick(p0: View?) {
+                try {
+                    if (findNavController().currentDestination?.id == R.id.settings) {
+                        findNavController().navigate(R.id.action_settings_to_stickyReceipt)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        })
+
         return binding.root
     }
 

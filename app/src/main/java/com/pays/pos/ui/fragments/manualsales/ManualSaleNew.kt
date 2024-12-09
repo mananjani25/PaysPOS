@@ -45,6 +45,9 @@ import com.pays.pos.ui.adapter.ManualSaleCartAdapter
 import com.pays.pos.ui.adapter.ManualSaleCartAdapterNew
 import com.pays.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
+import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
+import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.utils.*
 import com.pays.pos.utils.MethodUtils.Companion.getSaltString
 import com.pays.pos.utils.callback.ManualSaleOptionsCustomCallback
@@ -88,6 +91,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     var tabCartItemModel = TbCartItem()
     private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
     var selectedHeaderPosition: Int = 0
+    private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
+    private val dineInViewModel by activityViewModels<DineInOrderTableViewModel>()
+    private lateinit var presentation: CustomDisplay
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -112,6 +118,28 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             selectedHeaderPosition = requireArguments().getInt("selectedHeaderPosition", 0)
         }
         binding.layoutHeader.edtSearch.visibility = View.GONE
+
+        viewModel.reloadCustomerDisplay.observe(viewLifecycleOwner,object:Observer<Boolean>{
+            override fun onChanged(t: Boolean) {
+                if (t){
+                    getCustomerDisplay(requireContext())?.let {
+                        presentation = CustomDisplay(
+                            it,
+                            requireContext(),
+                            viewLifecycleOwner,
+                            dashBoardCategoryViewModel = viewModel,
+                            passcodeViewModel,
+                            dineInViewModel,
+                        )
+
+                        if (presentation!=null) {
+                            presentation.show()
+                        }
+                    }
+
+                }
+            }
+        })
 
         return binding.root
     }
@@ -517,6 +545,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             "%.2f",
             viewModel.totalServiceCharge
         )
+        if (viewModel.cartModel?.discountSelectdValue != 0.0 && viewModel.cartModel?.discountSelectdValue != null) {
+            binding.tvDiscountText.text = "Discount (${viewModel.cartModel?.discountSelectdValue}%)"
+        } else {
+            binding.tvDiscountText.text = "Discount"
+        }
         binding.txtDiscount.text = "- $" + String.format(
             "%.2f",
             viewModel.totalDiscount
@@ -530,6 +563,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             "%.2f",
             viewModel.totalPrice
         )
+        if (viewModel.cartModel?.discountSelectdValue != 0.0 && viewModel.cartModel?.discountSelectdValue != null) {
+            binding.tvDiscountText.text = "Discount (${viewModel.cartModel?.discountSelectdValue}%)"
+        } else {
+            binding.tvDiscountText.text = "Discount"
+        }
         binding.tvDiscount.text = "-$" + String.format(
             "%.2f",
             viewModel.totalDiscount
@@ -1032,6 +1070,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                                     prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                                     binding.txtTotalAmount.text = "$0.00"
                                     binding.txtTotal.text = "$0.00"
+                                    binding.tvDiscountText.text = "Discount"
                                     binding.tvDiscount.text = "-$0.00"
                                     binding.txtSubTotal.text = "$0.00"
                                     binding.txtTax.text = "$0.00"
@@ -1064,6 +1103,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                                 viewModel.addCart(cartModelsList!![0])
                             }
                             clearCustomer()
+                            viewModel.changeCustomerDispSignButtonTitle(getString(R.string.sign_up_or_check_in))
+                            viewModel.removedCustomerFromManualSale(true)
 
                         }
 
@@ -1292,6 +1333,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             Log.d("orderDiscountPrice", binding.tvDiscount.text.toString())
             Log.d("selectedvalue", binding.tvDiscount.text.toString())
             try {
+                if (viewModel.cartModel?.discountSelectdValue != 0.0 && viewModel.cartModel?.discountSelectdValue != null) {
+                    binding.tvDiscountText.text = "Discount (${viewModel.cartModel?.discountSelectdValue}%)"
+                } else {
+                    binding.tvDiscountText.text = "Discount"
+                }
                 bundle.putDouble(
                     "orderDiscountPrice",
                     binding.tvDiscount.text.toString().toDouble() ?: 0.0
@@ -1304,6 +1350,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             }
 
             try {
+                if (viewModel.cartModel?.discountSelectdValue != 0.0 && viewModel.cartModel?.discountSelectdValue != null) {
+                    binding.tvDiscountText.text = "Discount (${viewModel.cartModel?.discountSelectdValue}%)"
+                } else {
+                    binding.tvDiscountText.text = "Discount"
+                }
                 bundle.putDouble(
                     "selectedvalue",
                     binding.tvDiscount.text.toString().toDouble() ?: 0.0
@@ -1676,6 +1727,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
             if (value == 0.0) {
                 Log.d("FRAGMENT_RESULT", value.toString())
+                binding.tvDiscountText.text = "Discount"
                 binding.txtDiscount.text = ""
 
 
@@ -2038,6 +2090,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             "%.2f",
             viewModel.totalServiceCharge
         )
+        if (viewModel.cartModel?.discountSelectdValue != 0.0 && viewModel.cartModel?.discountSelectdValue != null) {
+            binding.tvDiscountText.text = "Discount (${viewModel.cartModel?.discountSelectdValue}%)"
+        } else {
+            binding.tvDiscountText.text = "Discount"
+        }
         txtDiscount.text = "- $" + String.format(
             "%.2f",
             viewModel.totalDiscount

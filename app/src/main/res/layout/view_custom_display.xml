@@ -17,7 +17,7 @@
         android:layout_height="match_parent"
         android:background="@color/backgroundColor"
         android:orientation="vertical"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -43,6 +43,7 @@
                 android:textColor="@color/btnColorDark"
                 android:textSize="@dimen/_6mdpi"
                 android:textStyle="bold"
+                android:text="Customer name"
                 app:layout_constraintStart_toStartOf="parent"
                 tools:text="Customer Name" />
 

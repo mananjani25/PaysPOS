@@ -8,7 +8,6 @@ import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
 import android.os.StrictMode
-import android.system.StructTimespec
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
@@ -25,9 +24,11 @@ import com.pays.pos.data.entities.ModifierSet
 import com.pays.pos.data.model.DineInModel
 import com.pays.pos.data.model.DineInOrderDetailAttributes
 import com.pays.pos.data.model.GuestPaymentCalculationModel
+import com.pays.pos.data.model.SplitDetailListModel
 import com.pays.pos.data.model.requestModel.*
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.pays.pos.data.model.responseModel.OnlineOrderNotificationCount
+import com.pays.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.pays.pos.data.model.responseModel.OrderTypeResponse
 import com.pays.pos.data.model.responseModel.PrinterResponse
 import com.pays.pos.data.model.responseModel.allOrders.AllOrdersCountResponse
@@ -78,6 +79,7 @@ import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.remote.Constants.TERMINAL_ID
 import com.pays.pos.data.remote.Constants.UPDATE
 import com.pays.pos.data.remote.Constants.VENUE_LOGO
+import com.pays.pos.data.remote.Constants.discountSelectedValue
 import com.pays.pos.data.remote.NetworkConnectionInterceptor
 import com.pays.pos.data.repositories.PosRepository
 import com.pays.pos.data.repositories.TaxServiceChargeRepository
@@ -141,6 +143,9 @@ class DashBoardCategoryViewModel @Inject constructor(
     var wholetotalPrice = 0.0
     var tip = 0.0
     var order_note = ""
+
+    /* This loggingOut variable is used to restrict the dialog which is shown after the user is logged out. the dialog is fetched from Customer's list api */
+    var loggingOut = false
     var cartModel: CartModel? = null
     var manualCartOrderNote: String? = ""
     var currentCartItems: ArrayList<TbCartItem> = arrayListOf()
@@ -153,11 +158,15 @@ class DashBoardCategoryViewModel @Inject constructor(
     val getBusinessData = posRepository.getBusinessData()
     val loyaltyPoints = taxServiceChargeRepository.loyaltyPointList()
 
-    private val _loadCustomersList = MutableLiveData<Pair<Int,Boolean>>()
-    val loadCustomersList: LiveData<Pair<Int,Boolean>> = _loadCustomersList
+    private val _loadCustomersList = MutableLiveData<Pair<Int, Boolean>>()
+    val loadCustomersList: LiveData<Pair<Int, Boolean>> = _loadCustomersList
 
     private val _clickTakeOut = MutableLiveData<Event<Boolean>>()
     val clickTakeOut: LiveData<Event<Boolean>> = _clickTakeOut
+
+    private val _physicalGiftCardCheck = MutableLiveData<Event<Int>>()
+    val physicalcardexistsornot: LiveData<Event<Int>> = _physicalGiftCardCheck
+
 
     private val _earnedLoyaltyPoints = MutableLiveData<Event<Int>>()
     val earnedLoyaltyPoints: LiveData<Event<Int>> = _earnedLoyaltyPoints
@@ -168,11 +177,16 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _changeCustDispSignInButtonTitle = MutableLiveData<String>()
     val changeCustDispSignInButtonTitle: LiveData<String> = _changeCustDispSignInButtonTitle
 
+    public val removedCustomerFromManualSaleObs = MutableLiveData<Boolean>()
+
     private val _passcodeScreenActive = MutableLiveData<Boolean>()
     val passcodeScreenActive: LiveData<Boolean> = _passcodeScreenActive
 
     /*-----------Customer Loyalty------------*/
 
+
+    private val _printOrderIdInStickyReceipt = MutableLiveData<Boolean>()
+    val printOrderIdInStickyReceipt: LiveData<Boolean> = _printOrderIdInStickyReceipt
 
     val itemsFiredToTheKitchenSuccesfully = MutableLiveData<Boolean>()
 
@@ -222,6 +236,11 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun getSunmiFrameWorkVersion() =
         prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".")
             .toTypedArray()
+
+    /***
+     * PreAuth Payment Attribute retrieved from PAX "PRE AUTH" response
+     */
+    var paymentAttributes:PaymentAttributes ? = null
 
     /**
      * Tracking main cart discount
@@ -273,6 +292,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     val latestDiscount: LiveData<Double> = _latestDiscount
 
     public val tipButtonOnCustomerDisplayClicked = MutableLiveData<Boolean>()
+
+    public val tipErrorObservable = MutableLiveData<String>()
 
     var isUpdatedOnce = false
 
@@ -354,20 +375,28 @@ class DashBoardCategoryViewModel @Inject constructor(
         changeAvailable.postValue(Event(title))
     }
 
+    fun setTipErrorObservable(message: String) {
+        tipErrorObservable.postValue(message)
+    }
+
     /*------------Customer Loyalty----------*/
-    fun setCustomerLoyaltyOnCustomerThankyouScreen(reward:Int){
+    fun setCustomerLoyaltyOnCustomerThankyouScreen(reward: Int) {
         _earnedLoyaltyPoints.postValue(Event(reward))
     }
 
-    fun callUpdateCartFooter(value:Boolean){
+    fun callUpdateCartFooter(value: Boolean) {
         _updateCartFooterObservable.postValue(Event(value))
     }
 
-    fun changeCustomerDispSignButtonTitle(value:String){
+    fun changeCustomerDispSignButtonTitle(value: String) {
         _changeCustDispSignInButtonTitle.postValue(value)
     }
 
-    fun setPasscodeScreenActive(value:Boolean){
+    fun removedCustomerFromManualSale(value: Boolean) {
+        removedCustomerFromManualSaleObs.postValue(value)
+    }
+
+    fun setPasscodeScreenActive(value: Boolean) {
         _passcodeScreenActive.postValue(value)
     }
     /*------------Customer Loyalty----------*/
@@ -579,6 +608,20 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun getItemByCategoryId(id: Int) = posRepository.getItemByCategoryId(id)
 
 
+    fun refreshCartFragment() {
+        fragmentNeedToBeUpdated.postValue(true)
+    }
+
+    /*if (value) {
+        *//* Uncomment the below code, if the customer Display is not refreshing everytime *//*
+        reloadCustomerDisplay.postValue(value)
+    }*/
+    val reloadCustomerDisplay = MutableLiveData<Boolean>()
+    fun reloadCustomerDisplay(value:Boolean){
+        /* Uncomment the below code, if the customer Display is not refreshing everytime */
+//        reloadCustomerDisplay.postValue(true)
+    }
+
     fun itemsByCat(id: Int): kotlinx.coroutines.flow.Flow<PagingData<TbItem>> = Pager(
         config = PagingConfig(
             pageSize = 12, enablePlaceholders = false, initialLoadSize = 12
@@ -648,6 +691,10 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.getDineInCartItems(guestIndexForDineIn)
     }
 
+    suspend fun allSplit(): List<SplitDetailListModel> {
+        return posRepository.allSplit()
+    }
+
     fun updateDineInCartItemGuestDineInPositions(removedGuestIndex: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             posRepository.updateDineInCartItemGuestDineInPositions(removedGuestIndex)
@@ -707,7 +754,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             }
 
-            currentCartIdWhenInserted= posRepository.addItemCartGetId(mCartModel)!!
+            currentCartIdWhenInserted = posRepository.addItemCartGetId(mCartModel)!!
             destroyedList.clear()
 
         }
@@ -719,30 +766,40 @@ class DashBoardCategoryViewModel @Inject constructor(
         System.currentTimeMillis()
         CoroutineScope(Dispatchers.IO).launch {
 
-            var listItems: ArrayList<TbCartItem> = arrayListOf()
-            cartModel.items?.forEach {
-                listItems.add(TbCartItem().convertToCartItem(it, it))
+            try {
 
-            }
-            Log.e(TAG, "checkConvertedItem: ${listItems.size}")
+                var listItems: ArrayList<TbCartItem> = arrayListOf()
+                cartModel.items?.forEach {
+                    listItems.add(TbCartItem().convertToCartItem(it, it))
 
-            for (i in 0 until listItems.size) {
-                listItems.get(i).taxes?.let { it ->
-                    for (j in 0 until it.size) {
-                        mCartModel = taxBifurcationCalculationNew(
-                            cartModel = mCartModel,
-                            item = listItems.get(i),
-                            type = ADD,
-                            orderTaxID = false
-                        )
+                }
+                Log.e(TAG, "checkConvertedItem: ${listItems.size}")
+
+                for (i in 0 until listItems.size) {
+                    listItems.get(i).taxes?.let { it ->
+                        for (j in 0 until it.size) {
+                            mCartModel = taxBifurcationCalculationNew(
+                                cartModel = mCartModel,
+                                item = listItems.get(i),
+                                type = ADD,
+                                orderTaxID = false
+                            )
+                        }
                     }
+
                 }
 
+                if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN)
+                    if (mCartModel.discountSelectdValue == null) {
+                        mCartModel.discountSelectdValue = 0.0
+                    }
+
+                posRepository.addItemCart(mCartModel)
+                destroyedList.clear()
+
+            }catch (e:Exception) {
+                Log.e("DINE IN CRASH",e.message.toString())
             }
-
-            posRepository.addItemCart(mCartModel)
-            destroyedList.clear()
-
         }
 
     }
@@ -5018,13 +5075,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                     order_note = cartModel?.note ?: ""
 
                     var finalTotal = 0.0
-                    if (subTotalPrice == 00.0 || subTotalPrice == 0.00 || subTotalPrice == 00.00){
+                    if (subTotalPrice == 00.0 || subTotalPrice == 0.00 || subTotalPrice == 00.00) {
                         subTotalPrice = 0.00
                         totalTax = 0.00
                         totalServiceCharge = 0.00
                         finalTotal = 0.00
-                    }
-                    else {
+                    } else {
 
                         finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
                     }
@@ -8011,7 +8067,17 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 try {
                                     CoroutineScope(Dispatchers.IO).launch {
-                                        posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept)
+                                        runBlocking {
+                                            try{
+                                                var printOrderId=posRepository.getLabelPrinterSettingsData().printOrderId
+
+                                                posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept, printOrderId)
+                                            }catch (e:Exception){
+                                                posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept, true)
+                                            }
+
+                                        }
+
                                     }
 
                                 } catch (e: Exception) {
@@ -8730,16 +8796,27 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.getLabelPrinterSettingsData()
     }
 
+    fun updateOrderId(printOrderId: Boolean) {
+        viewModelScope.launch {
+            var insertedRows=posRepository.updateOrderId(printOrderId)
+            if (insertedRows>0){
+                _printOrderIdInStickyReceipt.postValue(true)
+            }else {
+                _printOrderIdInStickyReceipt.postValue(false)
+            }
+        }
+    }
+
     /*-------------Customer Loyalty------------------*/
-    fun addCustomersList(currentPage:Int, data:List<TbCustomer>, lastCall:Boolean=false){
+    fun addCustomersList(currentPage: Int, data: List<TbCustomer>, lastCall: Boolean = false) {
         CoroutineScope(Dispatchers.IO).launch {
-            var data= posRepository.addCustomersList(data)
+            var data = posRepository.addCustomersList(data)
             if (!lastCall) {
                 _loadCustomersList.postValue(Pair(currentPage, true))
             }
 //            _loadCustomersList.postValue(Pair(currentPage,false))
             /*Check for Identical if not identical then find then call the livedata which will call the recursive function*/
-            Log.d("addCustomersList:S","$data")
+            Log.d("addCustomersList:S", "$data")
         }
     }
     /*-------------Customer Loyalty------------------*/
@@ -8761,8 +8838,81 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
     //    ----------------- Dynamic Payments -----------------------------
 
+    fun makeCashInOutCallFromCustomerDisplay(cashLogRequest: CashLogRequest) {
+        viewModelScope.launch {
+            val resource = posRepository.cashInOut(cashLogRequest)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { response ->
+                        if (response?.status == 200) {
+
+                            resource.data?.let {
+
+                            }
+
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
+
     override fun onCleared() {
-        Log.e("CheckOnClearedViewmodel","DashboardCategoryBoldPOS")
+        Log.e("CheckOnClearedViewmodel", "DashboardCategoryBoldPOS")
         super.onCleared()
+    }
+
+
+
+    fun checkCardExistOrNot(cardNumber: String) {
+
+        _showProgress.value = Event(true)
+            viewModelScope.launch {
+                var resource = posRepository.checkPhysicalCardExistsOrNot(cardNumber)
+
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        resource.data.let { response ->
+                            if (response?.status == 200) {
+                                _showProgress.value = Event(false)
+
+                                    _physicalGiftCardCheck.value = Event(response?.status?: 400)
+
+
+                            } else {
+                                _physicalGiftCardCheck.value= Event(response?.status?: 400)
+                            }
+                        }
+                    }
+
+                    Status.ERROR -> {
+                        _snackbarText.value = Event(resource.message)
+                        _showProgress.value = Event(false)
+                        _physicalGiftCardCheck.value= Event(resource.data?.status ?: 400)
+                    }
+
+                    Status.LOADING -> {
+                        _showProgress.value = Event(true)
+                    }
+                }
+            }
+
+
+
+
     }
 }

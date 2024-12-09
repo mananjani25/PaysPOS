@@ -67,6 +67,7 @@ import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
 import com.google.gson.reflect.TypeToken
 import com.pax.poslink.ReportRequest
+import com.pays.pos.data.model.requestModel.CashLogRequest
 import com.pays.pos.data.model.requestModel.RefundRequestModel
 import com.pays.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.pays.pos.data.remote.Constants.BUSINESS_PHONE_NO
@@ -123,6 +124,9 @@ class TransactionDetailsFragment : Fragment() {
     lateinit var settings: StarConnectionSettings
     lateinit var printer: StarPrinter
     /*Star label printer - END*/
+
+    /*This variable will be used to check if the orderID is to be printed in the sticky receipt */
+    private var printOrderIDInStickyPrinter: Boolean = true
 
     @Inject
     lateinit var apiModule1: ApiModule1
@@ -186,6 +190,14 @@ class TransactionDetailsFragment : Fragment() {
                 }
             }
 
+        lifecycleScope.launch(Dispatchers.Main) {
+            try {
+                printOrderIDInStickyPrinter =
+                    dashboardCategoryViewModel.getLabelPrinterSettingsData().printOrderId
+            } catch (e: Exception) {
+
+            }
+        }
 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
@@ -368,6 +380,7 @@ class TransactionDetailsFragment : Fragment() {
                 }
             } else {
                 tipCall(false)
+                cashLogEventCall(bundle)
             }
 
 
@@ -420,6 +433,30 @@ class TransactionDetailsFragment : Fragment() {
             openReceiptDialog(2)
 
         }
+
+    }
+
+    private fun cashLogEventCall(bundle: Bundle) {
+        if(bundle.containsKey("tipAmount")){
+            if (bundle.getDouble("tipAmount")>0.0){
+                makeCashEventCallToUpdateTip(bundle.getDouble("tipAmount"))
+            }
+        }
+    }
+
+    private fun makeCashEventCallToUpdateTip(tippedAmount: Double) {
+        val cashLogRequest = CashLogRequest(
+            tippedAmount,
+            prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
+            "in",
+            orderId,
+            paymentId,
+            "Tip added to the order",
+            prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
+            null,
+            null
+        )
+        dashboardCategoryViewModel.makeCashInOutCallFromCustomerDisplay(cashLogRequest)
 
     }
 
@@ -511,6 +548,7 @@ class TransactionDetailsFragment : Fragment() {
 
                 var isItemRefund = false
                 var isAmountRefund = false
+
 
                 paymentDetailsResponse.data.order.order_items.forEach {
                     if (it.refundedAmount != 0.0)
@@ -1361,7 +1399,7 @@ class TransactionDetailsFragment : Fragment() {
                 val jsonString = Gson().toJson(paymentDetailsResponse)
                 Log.e("paymentDetailsResponse", "paymentDetailsResponse result = $jsonString")
 
-                if (paymentDetailsResponse.data.order.order_split_type == "OrderAmountTab" || paymentDetailsResponse.data.order.order_split_type == "OrderGuestTab") {
+                if (paymentDetailsResponse.data.order.order_split_type == "OrderAmountTab" /*|| paymentDetailsResponse.data.order.order_split_type == "OrderGuestTab"*/) {
                     isSplitPayment = true
                 }
 
@@ -1461,7 +1499,39 @@ class TransactionDetailsFragment : Fragment() {
                     binding.tvCustomerName.text = ""
                 }
                 binding.orderDetails = it
-                orderDetailsItemAdapter.addOrderDetailsItems(it.data.order.order_items)
+
+                /**
+                 * Applied this logic for DineIn - Item wise refund for Guest Payment
+                 */
+
+                if(it.data.order.order_type == DINE_IN) {
+                        var orderItems = mutableListOf<GetOrderDetailsResponse.Data.OrderItem>()
+
+                        if (it.data.payable_type == "Guest") {
+
+                            it.data.order.order_items.forEach { item ->
+                                if (item.guestIndexForDineIn == it.data.guest_index_for_dine_in || item.guestIndexForDineIn == 0) {
+
+                                    if (item.guestIndexForDineIn == 0) {
+
+                                        val _item = item
+                                        _item.price /= it.data.guestCount ?: 0
+
+                                        orderItems.add(_item)
+                                    } else orderItems.add(item)
+                                }
+                            }
+                    } else {
+                        orderItems = it.data.order.order_items.toMutableList()
+                    }
+
+                    orderDetailsItemAdapter.addOrderDetailsItems(orderItems)
+                }else {
+
+                    orderDetailsItemAdapter.addOrderDetailsItems(it.data.order.order_items)
+
+                }
+
                 Log.e("OrderTypeId", it.data.order.order_type_id.toString())
                 if (it.data.order.order_type_id.equals(5) || it.data.order.order_type_id.equals(2) || it.data.order.order_type_id.equals(
                         6
@@ -2145,17 +2215,18 @@ class TransactionDetailsFragment : Fragment() {
                                     if (it?.id == item.categoryId) {
                                         if (it.categoryActive && it.printerEnable) {
                                             for (singularity in 1..item.quantity) {
-
-                                                add(
-                                                    PrinterBuilder()
-                                                        .styleBold(true)
-                                                        .styleMagnification(
-                                                            MagnificationParameter(3, 3)
-                                                        )
-                                                        .actionPrintText(
-                                                            "OrderId: ${paymentDetailsResponse.data.custom_order_id}"
-                                                        )
-                                                )
+                                                if (printOrderIDInStickyPrinter) {
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleBold(true)
+                                                            .styleMagnification(
+                                                                MagnificationParameter(3, 3)
+                                                            )
+                                                            .actionPrintText(
+                                                                "OrderId: ${paymentDetailsResponse.data.custom_order_id}"
+                                                            )
+                                                    )
+                                                }
 
                                                 actionFeedLine(1)
 

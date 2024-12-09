@@ -100,7 +100,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.imgPrint.visibility = View.VISIBLE
             }
 
-            if (list[position].title?.trim()?.lowercase() == "Whole Table".trim().lowercase() || isAnyPaymentDone) {
+            if (list[position].title?.trim()?.lowercase() == "Whole Table".trim().lowercase() || isAnyPaymentDone ) {
                 binding.llRemoveGuest.visibility = View.INVISIBLE
             } else {
                 if(list[position].itemsCount == 0 && !list[position].isPaid) {
@@ -394,6 +394,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     }
 
                     LogUtil.logE(TAG, "listItemWTGuestPay:  ${Gson().toJson(listItemWT)}")
+
+
                     listner.onGuestPay(
                         list[position],
                         position,
@@ -405,13 +407,56 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         list[0].guestDividedAmt,
                         listItemWT,
                         listItem,
-                        list[position].item?.guestIndexForDineIn?:0
+                        list[position+1].item?.guestIndexForDineIn ?: -1
                     )
                 }
             }
 
+
+            // if all items fired for guest -> Header checkbox will be selected by default
+            var allItemsFired = true
+            var index = bindingAdapterPosition + 1
+
+            if (index == list.size && list[bindingAdapterPosition].isHeader == 0) {
+                allItemsFired = false
+            }
+
+            while (index < list.size) {
+                val item = list[index]
+
+                if (item.isHeader != 0 && !(item.item?.isFired == true)) {
+                    allItemsFired = false
+                    break
+                }
+
+                if (item.isHeader == 0) {
+                    if (index - bindingAdapterPosition == 1) {
+                        allItemsFired = false
+                    }
+                    break
+                }
+
+                index++
+            }
+
+            if(allItemsFired) {
+                binding.checkedForFire?.apply {
+                    isChecked = allItemsFired
+                    isEnabled = false
+                    buttonTintList = ColorStateList.valueOf(Color.GREEN)
+                }
+            }
+
+            //header
+//            binding.checkedForFire?.apply {
+//                isChecked = allItemsFired
+//                isPressed = allItemsFired
+//                isEnabled = !allItemsFired
+//              //  buttonTintList = ColorStateList.valueOf(if (allItemsFired) Color.GREEN else Color.RED)
+//            }
+            //
+
             binding.imgPrint.setOnClickListener {
-                var fisrtTime: Boolean = false
                 var listItem: ArrayList<TbCartItem> = arrayListOf()
                 var listItemWT: ArrayList<TbCartItem> = arrayListOf()
                 for (i in 1 until list.size) {
@@ -462,13 +507,14 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
             if(list[position].item?.isFired == true) {
-
+                //header
                 binding.checkedForFire?.apply {
                     isChecked = true
                     isEnabled = false
                 }
             }
 
+            //header
             binding.checkedForFire?.setOnClickListener {
 
                 if( binding.checkedForFire.isChecked  ) {
@@ -574,6 +620,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             }
 
+            //item
             binding.checkedForFire?.setOnClickListener {
                 list[position].item?.isChecked = binding.checkedForFire.isChecked
             }
@@ -605,6 +652,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.chkIsFired.isEnabled = false
                 binding.ivWastage.visibility = View.VISIBLE
 
+                //item
                 binding.checkedForFire?.apply {
                     isChecked = true
                     isEnabled = false
@@ -616,15 +664,18 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.chkIsFired.isEnabled = true
                 binding.ivWastage.visibility = View.GONE
 
+                //item
                 binding.checkedForFire?.apply {
                     isChecked = false
                     isEnabled = true
-                    buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.redColor))
+                    buttonTintList = ColorStateList.valueOf(Color.RED)
+//                    buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.redColor))
                    // Log.e("Items fired call","ITEM not fired")
 
                 }
             }
 
+            //item
             binding.checkedForFire?.apply {
                 if(model.item?.isFired == false)
                 isChecked = list[bindingAdapterPosition].item?.isChecked == true

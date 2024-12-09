@@ -98,7 +98,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:button="@android:color/transparent"
-                        android:checked="true"
+                        android:checked="false"
                         android:gravity="center"
                         android:padding="@dimen/border_view_padding_x_large"
                         android:text="@string/tv_items"

@@ -32,6 +32,7 @@ import com.pays.pos.utils.performGetOperationDatabase
 import com.pays.pos.utils.performGetOperationNew
 import com.pays.pos.utils.statusUtils.Resource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
@@ -73,9 +74,8 @@ class PosRepository @Inject constructor(
     suspend fun updateCustomerPrinterStatus(status: Boolean, id: Int) =
         appDatabase.printerDao().updateCustomerStatus(status, id)
 
-    fun getPrinters() = performGetOperation(databaseQuery = {
-        appDatabase.printerDao().customerPrintList
-    },
+    fun getPrinters() = performGetOperation(
+        databaseQuery = { appDatabase.printerDao().customerPrintList },
         networkCall = { apiHelperNew.getPrinterData(prefProvider.getValueInt(TERMINAL_ID, 0)) },
         saveCallResult = {
             if (it.data.customerReceiptPrinters?.isEmpty() == true || it.data.customerReceiptPrinters?.size == 0) {
@@ -173,6 +173,7 @@ class PosRepository @Inject constructor(
         ),
         /* prefProvider.getValue(SYNC_SETTING_TIME_STAMP, "")*/""
     )
+    suspend fun checkPhysicalCardExistsOrNot(cardNumber:String) = apiHelperNew.checkPhysicalCardExistsOrNot(cardNumber)
 
     suspend fun getOnlineOrderNotificationCount() = apiHelperNew.getOnlineOrderCountNoti()
 
@@ -497,6 +498,10 @@ class PosRepository @Inject constructor(
         appDatabase.splitDao().addSplit(model)
     }
 
+    suspend fun allSplit(): List<SplitDetailListModel> {
+        return appDatabase.splitDao().allSplit()
+    }
+
     suspend fun createNote(data: CreateNoteRequest) = apiHelperNew.createNote(data)
 
     suspend fun createNoteDatabase(data: NoteResponse.Data) =
@@ -570,14 +575,29 @@ class PosRepository @Inject constructor(
     suspend fun addCustomersList(data: List<TbCustomer>) =
         appDatabase.customerDao().addAllCustomers(data)
 
+    suspend fun addSearchedCustomersList(data: ArrayList<TbCustomer?>) =
+        appDatabase.customerDao().addAllSearchCustomer(data)
+
     suspend fun hasItem() =
         appDatabase.customerDao().hasItem()
 
     suspend fun allCustomerList() =
         appDatabase.customerDao().allCustomerList()
 
-    suspend fun fetchCustomerFromPhoneNumber(phoneNumber:String) =
+    suspend fun fetchCustomerFromPhoneNumber(phoneNumber: String) =
         appDatabase.customerDao().fetchCustomerFromPhoneNumber(phoneNumber)
+
+    suspend fun fetchCustomerFromId(id: Int) =
+        appDatabase.customerDao().fetchCustomerFromId(id)
+
+    suspend fun fetchCustomerFromFirstName(firstName: String) =
+        appDatabase.customerDao().fetchCustomerFromFirstName(firstName)
+
+    suspend fun fetchCustomerFromFirstNameAndLastName(firstName: String,lastName: String) =
+        appDatabase.customerDao().fetchCustomerFromFirstNameAndLastName(firstName,lastName)
+
+    suspend fun fetchCustomerFromEmail(email: String) =
+        appDatabase.customerDao().fetchCustomerFromEmail(email)
     /*------------Customer Loyalty--------------*/
 
 
@@ -616,6 +636,18 @@ class PosRepository @Inject constructor(
 
     suspend fun updateFinalRewards(finalrewards: Int, customerId: Int) =
         appDatabase.customerDao().updateLoyaltyRewards(finalrewards, customerId)
+
+    suspend fun updateFinalRewards(finalrewards: Int, customerId: Int, firstName: String) =
+        appDatabase.customerDao().updateLoyaltyRewards(finalrewards, customerId, firstName)
+
+   suspend fun updateFinalRewardsSync(finalrewards: Int, customerId: Int, firstName: String, lastName: String, phoneNumber: String, email: String) =
+        appDatabase.customerDao().updateLoyaltyRewardsSync(finalrewards, firstName,lastName,phoneNumber)
+
+   suspend fun updateFinalRewardsSyncEmail(finalrewards: Int, customerId: Int, firstName: String, lastName: String, phoneNumber: String, email: String) =
+        appDatabase.customerDao().updateLoyaltyRewardsSyncEmailPhone(finalrewards, firstName,lastName,phoneNumber,email)
+
+suspend fun updateFinalRewardsSyncEmailPhone(finalrewards: Int, customerId: Int, firstName: String, lastName: String, phoneNumber: String, email: String) =
+        appDatabase.customerDao().updateLoyaltyRewardsSyncEmail(finalrewards, firstName,lastName,email)
 
     fun getCustomerDetailsByID(id: Int?): LiveData<TbCustomer> {
 
@@ -656,6 +688,9 @@ class PosRepository @Inject constructor(
 
     suspend fun searchCustomer(query: String) =
         apiHelperNew.searchCustomers(query)
+
+    suspend fun searchCustomerById(query: String) =
+        apiHelperNew.searchCustomersById(query)
 
     fun searchEmployeesDatabase(query: String) =
         performGetOperationDatabase(databaseQuery = {
@@ -808,7 +843,7 @@ class PosRepository @Inject constructor(
         return appDatabase.cartDao().getManualSaleFromCart(employeeId)
     }
 
-    fun addItemCartGetId(cartModel: CartModel):Long? {
+    fun addItemCartGetId(cartModel: CartModel): Long? {
         synchronized(this) {
             //  appDatabase.beginTransaction()
             return appDatabase.cartDao().addSuspended(cartModel)
@@ -816,6 +851,7 @@ class PosRepository @Inject constructor(
         }
 
     }
+
     fun addItemCart(cartModel: CartModel) {
         synchronized(this) {
             //  appDatabase.beginTransaction()
@@ -969,7 +1005,12 @@ class PosRepository @Inject constructor(
         guestIndexForDineIn: Int
     ) {
         appDatabase.cartDao()
-            .updateDineInCartItemsByIdGuestIndex(itemQuantity, itemId,  modifiers,guestIndexForDineIn)
+            .updateDineInCartItemsByIdGuestIndex(
+                itemQuantity,
+                itemId,
+                modifiers,
+                guestIndexForDineIn
+            )
     }
 
 
@@ -1526,8 +1567,8 @@ class PosRepository @Inject constructor(
         appDatabase.dynamicPaymentDao().deleteDynamicPaymentById(idList)
     }
 
-    suspend fun deleteDynamicPaymentByName(name: String, createdAt:String) {
-        appDatabase.dynamicPaymentDao().deleteDynamicPaymentByName(name,createdAt)
+    suspend fun deleteDynamicPaymentByName(name: String, createdAt: String) {
+        appDatabase.dynamicPaymentDao().deleteDynamicPaymentByName(name, createdAt)
     }
 
 
@@ -1572,14 +1613,18 @@ class PosRepository @Inject constructor(
         appDatabase.orderTypeBackupDao().add(orderType)
 
     /*This method is used to maintain the single of multiple receipt for label printer*/
-    fun insertOrUpdateLabelPrinter(data: Boolean) {
-        val tbLabelPrinterSettings = TbLabelPrinterSettings(1, data)
+    fun insertOrUpdateLabelPrinter(data: Boolean, printOrderId: Boolean) {
+        val tbLabelPrinterSettings = TbLabelPrinterSettings(1, data,printOrderId)
         var aaaaa = appDatabase.labelPrinterSettings().insertOrUpdate(tbLabelPrinterSettings)
     }
 
-    /*This method will be used to check if the merchant wants */
+    /*This method will be used to check if the merchant wants single receipt per item or order_id is to be printed.*/
     suspend fun getLabelPrinterSettingsData(): TbLabelPrinterSettings {
         return appDatabase.labelPrinterSettings().getLabelPrinterSettingsData()
+    }
+
+    suspend fun updateOrderId(printOrderId:Boolean): Int {
+        return appDatabase.labelPrinterSettings().updateOrderId(printOrderId)
     }
 
     /* This method is used to manage the Dynamic payments */
@@ -1594,7 +1639,7 @@ class PosRepository @Inject constructor(
     fun getDynamicPaymentRecords(isActive: Boolean, locationId: Int) =
         appDatabase.dynamicPaymentDao().getDynamicPaymentRecords(isActive, locationId)
 
-       fun getAllDynamicPayments() =
+    fun getAllDynamicPayments() =
         appDatabase.dynamicPaymentDao().getAllDynamicPayments
 
 

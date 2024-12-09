@@ -144,14 +144,13 @@
                             android:layout_below="@+id/llcard_info"
                             android:layout_marginTop="11dp"
                             android:orientation="horizontal"
-                            android:weightSum="2">
-
+                            android:weightSum="3">
 
                             <androidx.appcompat.widget.LinearLayoutCompat
                                 android:id="@+id/llCreditCard"
                                 android:layout_width="match_parent"
                                 android:layout_height="@dimen/_30sdp"
-                                android:layout_weight="1"
+                                android:layout_weight="2"
                                 android:background="@color/colorRed"
                                 android:gravity="center_horizontal"
                                 android:orientation="horizontal"
@@ -174,6 +173,42 @@
                                     android:layout_gravity="center_vertical"
                                     android:layout_marginLeft="@dimen/_5sdp"
                                     android:text="@string/card"
+                                    android:textColor="@color/txtColor"
+                                    android:textSize="@dimen/_7mdpi" />
+
+
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:id="@+id/llSavedCard"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/_30sdp"
+                                android:layout_weight="1"
+                                android:visibility="gone"
+                                android:layout_marginHorizontal="12dp"
+                                android:background="@color/preAuthGreen"
+                                android:gravity="center_horizontal"
+                                android:orientation="horizontal"
+                                android:paddingVertical="@dimen/_5sdp">
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_horizontal"
+                                    android:padding="@dimen/_3sdp"
+                                    android:src="@drawable/ic_credit_card" />
+
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tvCreditCard1"
+                                    style="@style/CustomFontBold"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/tvCard"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginLeft="@dimen/_5sdp"
+                                    android:text="Saved Card"
                                     android:textColor="@color/txtColor"
                                     android:textSize="@dimen/_7mdpi" />
 
@@ -364,9 +399,9 @@
                             android:text="@string/tv_other"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_7mdpi"
-                            android:visibility="gone" />
+                            android:visibility="visible" />
 
-                        <androidx.core.widget.NestedScrollView
+                        <!--<androidx.core.widget.NestedScrollView
                             android:id="@+id/nsvDynamicLink"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -383,7 +418,7 @@
 
                             </androidx.appcompat.widget.LinearLayoutCompat>
 
-                        </androidx.core.widget.NestedScrollView>
+                        </androidx.core.widget.NestedScrollView>-->
 
 
                         <androidx.appcompat.widget.LinearLayoutCompat
@@ -395,6 +430,7 @@
                             android:orientation="horizontal"
                             android:visibility="visible">
 
+
                             <androidx.appcompat.widget.LinearLayoutCompat
                                 android:id="@+id/lnrGiftCard"
                                 android:layout_width="0dp"
@@ -403,7 +439,7 @@
                                 android:background="@drawable/background_txt_selector"
                                 android:gravity="center_vertical|center_horizontal"
                                 android:paddingVertical="@dimen/_10sdp"
-                                android:visibility="gone">
+                                android:visibility="visible">
 
                                 <ImageView
                                     android:layout_width="wrap_content"
@@ -427,6 +463,25 @@
                                     android:visibility="visible" />
 
                             </androidx.appcompat.widget.LinearLayoutCompat>
+
+                            <androidx.core.widget.NestedScrollView
+                                android:id="@+id/nsvDynamicLink"
+                                android:layout_marginStart="10dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                >
+
+                                <androidx.appcompat.widget.LinearLayoutCompat
+                                    android:id="@+id/llDynamicLink"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:nestedScrollingEnabled="true"
+                                    android:orientation="horizontal"
+                                    android:visibility="visible">
+
+                                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                            </androidx.core.widget.NestedScrollView>
 
                             <!-- <androidx.appcompat.widget.LinearLayoutCompat
                                  android:id="@+id/llDynamicPayment"
@@ -926,11 +981,11 @@
                     android:hint="@string/_xxxx_xxxx"
                     android:importantForAutofill="no"
                     android:inputType="number"
-                    android:maxLength="15"
+                    android:maxLength="17"
                     android:textColor="@color/btnColor"
                     android:textColorHint="@color/hint_color"
                     android:textSize="@dimen/_7mdpi"
-                    app:met_mask="####  ####" />
+                    app:met_mask="######  ###### ##### ####" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 

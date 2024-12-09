@@ -83,7 +83,7 @@ data class GetOrderDetailsResponse(
         @SerializedName("payment_status")
         val paymentStatus: String,
         @SerializedName("payments")
-        val payments: List<Payment>,
+        var payments: List<Payment>,
         @SerializedName("service_charge_enabled")
         val serviceChargeEnabled: Boolean,
         @SerializedName("sub_total")
@@ -285,7 +285,7 @@ data class GetOrderDetailsResponse(
             @SerializedName("order_item_taxes")
             val orderItemTaxes: List<OrderItemTaxe>,
             @SerializedName("price")
-            val price: Double,
+            var price: Double,
             @SerializedName("quantity")
             var quantity: Int,
             @SerializedName("timestamp")

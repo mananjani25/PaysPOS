@@ -16,7 +16,7 @@ data class CheckOutDineInDataModel(
     val orderId: Int,
     val splitModel: DineInOrderPayment,
     val dineInAdapterList:List<DineInModel>?= listOf(),
-    val dineInOrderDetails:GetOrderDetailsResponse.Data?=null,
+    var dineInOrderDetails:GetOrderDetailsResponse.Data?=null,
     val guestPaymentModel:GuestDataModel? = null,
     val guestPosition:Int?=null,
     val servicChargeAppliedlist:ArrayList<OrderServiceChargesAttribute>?=null

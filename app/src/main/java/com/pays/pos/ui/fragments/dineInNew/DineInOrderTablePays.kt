@@ -649,6 +649,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 val currentList = dineInTableAdapter.getList()
 
+                    eligibleGuestsForDivision =
+                        dineInTableAdapter.getList()[0].eligibleGuestsForDivision
+
                 var guestCount = 0
                 var guestPaid = 0
                 currentList.forEach {
@@ -670,7 +673,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     if(guestPaid>0) {
                                         list[j].item?.price.let {
-                                            val totalPricePaid = it?.div(guestCount)
+                                            val totalPricePaid = it?.div(eligibleGuestsForDivision)
 
                                             list[j].item?.price = totalPricePaid?.let { it1 ->
                                                 list[j].item?.price?.minus(
@@ -692,8 +695,6 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 prefProvider.setValue(Constants.ORDER_TYPE, DINE_IN)
 
                 var dividedOrderDiscount = 0.0
-                eligibleGuestsForDivision =
-                    dineInTableAdapter.getList()[0].eligibleGuestsForDivision
                 totalGuestCount = eligibleGuestsForDivision
                 var tmpOrderDis = 0.0
                 if (paidGuestAmount > 0 && globalOrderDiscount > 0.0) {
@@ -884,6 +885,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 //                    }
 
                     dashboardViewModel.currentCartItems.filter {!it.isPaid}.forEach { cartItem ->
+                        val item = cartItem.price
                         dashboardViewModel.addItemToCartItems(cartItem)
                     }
                 }
@@ -1097,7 +1099,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     getOrderDetailsResponse?.orderTypeName ?: DINE_IN
                 )
 
+                prefProvider.setValue(
+                    Constants.WHOLE_AMOUNT,
+                    "0.0"
+                )
 
+                    val whole_ = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
+                Log.e("Dine in","DATA WHOLE $whole_")
 
                 Handler().postDelayed({
                     if (findNavController().currentDestination?.id == R.id.dineInOrderTable)
@@ -1808,6 +1816,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         bundle.putDouble("totalTaxB", taxGuest)
         bundle.putDouble("serviceChargeB", serviceChargeGuest)
         bundle.putDouble("dicountB", divideDiscount)
+        bundle.putInt("guestIndexForDineIn", guestIndexForDineIn)
 
 
         val adapterList = dineInTableAdapter.getList()
@@ -1834,7 +1843,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
         totalGuestCount = eligibleGuestsForDivision ?: 1
-        LogUtil.logE("TODAY", "totalGuestCount:  ${totalGuestCount}")
+        LogUtil.logE("TODAY", "dine_in_index:  ${guestIndexForDineIn}")
         LogUtil.logE("TODAY", "toFinalAmt:  ${toFinalAmt}")
 
         var divideCashDiscount = 0.0
@@ -1863,6 +1872,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
         val paymentAttr = GuestPaymentAttributes().apply {
                 amount = totalGuest
+                guestIndexForGuestPaymentDineIn = guestIndexForDineIn
                 cardName = ""
                 cardNumber = ""
                 cardType = ""
@@ -1880,6 +1890,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 order_id = orderId
                 paymentAttributes = listOf(GuestPaymentAttributes().apply {
                     amount = totalGuest
+                    guestIndexForGuestPaymentDineIn = guestIndexForDineIn
                     cardName = ""
                     cardNumber = ""
                     cardType = ""
@@ -2552,7 +2563,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
         var list = dineInTableAdapter.getList()
 
-        var current = position+1
+        var current = position + 1
 
         while(current < list.size){
 
@@ -2566,7 +2577,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             current++
         }
 
-        dineInTableAdapter.setList(ArrayList(list))
+        dineInTableAdapter.setList(ArrayList(list),notPayAnyAmount)
     }
 
     private fun guestPrint(
@@ -2661,7 +2672,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                     Log.d(TAG, "2255 dineinlisttest setList: " + newList as ArrayList<DineInModel>)
                     dineInTableAdapter.setList(
-                        newList as ArrayList<DineInModel>
+                        newList as ArrayList<DineInModel>,
+                        notPayAnyAmount
                     )
                 }
             }
@@ -3772,7 +3784,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             Log.d(TAG, "3297 dineinlisttest setList: " + newList)
             dineInTableAdapter.setList(
-                newList
+                newList,
+                notPayAnyAmount
             )
 
             //Added to resolve , Items are not getting moved guest wise
@@ -3891,6 +3904,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     val oldPos = viewHolder.layoutPosition
                     val newPos = target.layoutPosition
 
+                    if(newPos == 0){
+                        return false
+                    }
+
                     if (dragFrom == -1) {
                         dragFrom = oldPos
                     }
@@ -3906,37 +3923,59 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     dineInCartItemMoved = true
                     return true
                 } else {
-                    dineInCartItemMoved = false
-                    return false
-                }
 
-                /*val oldPos = viewHolder.layoutPosition
-                val newPos = target.layoutPosition
+                    if(dineInTableAdapter.getList().get(viewHolder.layoutPosition).isHeader != 0) {
+                        val oldPos = viewHolder.layoutPosition
+                        val newPos = 1
 
-                // Check if the target position is the 0th or the last item in the list
-                val itemCount = dineInTableAdapter.itemCount ?: 0
-                if (newPos == 0 ) {
-                    return false
-                }
 
-                if (dineInTableAdapter.getList()[oldPos].isHeader != 0) {
-                    if (dragFrom == -1) {
-                        dragFrom = oldPos
+                        if (dragFrom == -1) {
+                            dragFrom = oldPos
+                        }
+                        dragTo = newPos
+
+
+                        dineInTableAdapter.onItemMove(
+                            viewHolder.layoutPosition,
+                            newPos
+                        )
+                        dineInCartItemMoved = true
+                        return true
                     }
-                    dragTo = newPos
 
-                    Log.e(
-                        "Dragged FROM ",
-                        "OLD POS = $oldPos, New POS = $newPos, Drag From = $dragFrom, Drag To = $dragTo"
-                    )
 
-                    dineInTableAdapter.onItemMove(oldPos, newPos)
-                    dineInCartItemMoved = true
-                    return true
-                } else {
                     dineInCartItemMoved = false
                     return false
-                }*/
+                }
+
+
+//                    val oldPos = viewHolder.layoutPosition
+//                    val newPos = target.layoutPosition
+//
+//                    // Check if the target position is the 0th or the last item in the list
+//                    val itemCount = dineInTableAdapter.itemCount ?: 0
+//                    if (newPos == 0) {
+//                        return false
+//                    }
+//
+//                    if (dineInTableAdapter.getList()[oldPos].isHeader != 0) {
+//                        if (dragFrom == -1) {
+//                            dragFrom = oldPos
+//                        }
+//                        dragTo = newPos
+//
+//                        Log.e(
+//                            "Dragged FROM ",
+//                            "OLD POS = $oldPos, New POS = $newPos, Drag From = $dragFrom, Drag To = $dragTo"
+//                        )
+//
+//                        dineInTableAdapter.onItemMove(oldPos, newPos)
+//                        dineInCartItemMoved = true
+//                        return true
+//                    } else {
+//                        dineInCartItemMoved = false
+//                        return false
+//                    }
 
             }
 
@@ -9795,72 +9834,90 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.d("###17MAR23", "initKitchenPrinter: Called - Start")
         Log.d("###17MAR23", "ProgressShow: Called - Start")
 
-        if (data.name.startsWith(SUNMI_PRINTER, true)) {
+            if (data.name.startsWith(SUNMI_PRINTER, true)) {
 
-            SunmiPrinterApi.getInstance()
-                .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
+                SunmiPrinterApi.getInstance()
+                    .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
 
-            if (!SunmiPrinterApi.getInstance().isConnected) {
+                if (!SunmiPrinterApi.getInstance().isConnected) {
 //                runOnUiThread {
 //                    ProgressUtils.showProgressDialog(requireActivity())
 //                }
-                SunmiPrinterApi.getInstance()
-                    .connectPrinter(requireContext(), object : ConnectCallback {
+                    SunmiPrinterApi.getInstance()
+                        .connectPrinter(requireContext(), object : ConnectCallback {
 
-                        override fun onFound() {
-                            Log.d("###17MAR23", "SunmiPrinterFound: Called")
-                            println("onFound")
-                        }
+                            override fun onFound() {
+                                Log.d("###17MAR23", "SunmiPrinterFound: Called")
+                                println("onFound")
+                            }
 
-                        override fun onUnfound() {
-                            println("onUnfound")
-                            Log.d("###17MAR23", "SunmiPrinterUnfound: Called")
-                        }
+                            override fun onUnfound() {
+                                println("onUnfound")
+                                Log.d("###17MAR23", "SunmiPrinterUnfound: Called")
+                            }
 
-                        override fun onConnect() {
-                            println("onConnect")
-                            Log.d("###17MAR23", "SunmiPrinterConnect: Called")
-                            //ProgressUtils.dismissProgressDialog()
-                            //generateKitchenReceiptSunmi(data, type, item, listItemWithGuest)
+                            override fun onConnect() {
+                                println("onConnect")
+                                Log.d("###17MAR23", "SunmiPrinterConnect: Called")
+                                //ProgressUtils.dismissProgressDialog()
+                                //generateKitchenReceiptSunmi(data, type, item, listItemWithGuest)
 
-                            generateKitchenReceiptCommon(CommonPrinterTypes.SunmiCloudPrinter,data, type, item, listItemWithGuest)
+                                generateKitchenReceiptCommon(
+                                    CommonPrinterTypes.SunmiCloudPrinter,
+                                    data,
+                                    type,
+                                    item,
+                                    listItemWithGuest
+                                )
 
-                        }
+                            }
 
-                        override fun onDisconnect() {
-                            println("onDisconnect")
-                            Log.d("###17MAR23", "SunmiPrinterDisConnect: Called")
-                        }
+                            override fun onDisconnect() {
+                                println("onDisconnect")
+                                Log.d("###17MAR23", "SunmiPrinterDisConnect: Called")
+                            }
 
-                    })
-            } else {
+                        })
+                } else {
 
-                if (SunmiPrinterApi.getInstance().isConnected)
-                    generateKitchenReceiptCommon(CommonPrinterTypes.SunmiCloudPrinter,data, type, item, listItemWithGuest)
+                    if (SunmiPrinterApi.getInstance().isConnected)
+                        generateKitchenReceiptCommon(
+                            CommonPrinterTypes.SunmiCloudPrinter,
+                            data,
+                            type,
+                            item,
+                            listItemWithGuest
+                        )
                     //generateKitchenReceiptSunmi(data, type, item, listItemWithGuest)
-            }
+                }
 
-        } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
+            } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
-            SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-            viewLifecycleOwner.lifecycleScope.launch {
-                delay(100)
-                //setService(data, type, item, listItemWithGuest)
-                generateKitchenReceiptCommon(CommonPrinterTypes.SunmiInnerPrinter,data, type, item, listItemWithGuest)
+                SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+                viewLifecycleOwner.lifecycleScope.launch {
+                    delay(100)
+                    //setService(data, type, item, listItemWithGuest)
+                    generateKitchenReceiptCommon(
+                        CommonPrinterTypes.SunmiInnerPrinter,
+                        data,
+                        type,
+                        item,
+                        listItemWithGuest
+                    )
 
-            }
-        } else if(data.name.startsWith(LANDI_INNER_PRINTER,true)){
+                }
+            } else if (data.name.startsWith(LANDI_INNER_PRINTER, true)) {
 
-            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.lifecycleScope.launch {
 
-                checkBluetoothPermissions(object :
-                    OrderCompleteFragment.OnBluetoothPermissionGranted {
-                    override fun onPermissionsGranted() {
-                        GlobalScope.launch {
-                            LPrint.connectLandiInnerPrinter(data.macAddress)
-                                ?.let { outputStream ->
+                    checkBluetoothPermissions(object :
+                        OrderCompleteFragment.OnBluetoothPermissionGranted {
+                        override fun onPermissionsGranted() {
+                            GlobalScope.launch {
+                                LPrint.connectLandiInnerPrinter(data.macAddress)
+                                    ?.let { outputStream ->
 
-                                    LPrint.apply {
+                                        LPrint.apply {
 
 //                                        LPrint.printKitchenReceiptDineInLandi(
 //                                            requireContext(),
@@ -9874,30 +9931,36 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 //                                            getOrderDetailsResponse
 //                                        )
 
-                                        LPrint.setOutputStream(outputStream)
+                                            LPrint.setOutputStream(outputStream)
 
-                                        generateKitchenReceiptCommon(CommonPrinterTypes.LandiInnerPrinter,data, type, item, listItemWithGuest)
+                                            generateKitchenReceiptCommon(
+                                                CommonPrinterTypes.LandiInnerPrinter,
+                                                data,
+                                                type,
+                                                item,
+                                                listItemWithGuest
+                                            )
+                                        }
                                     }
-                                }
+                            }
                         }
-                    }
-                })
-            }
+                    })
+                }
 
 
-        }else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains(
-                "SP",
-                ignoreCase = true
-            )))
-        ) {
+            } else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains(
+                    "SP",
+                    ignoreCase = true
+                )))
+            ) {
 
-            //remove comments to work on star printer for dine in
-            try {
-                settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
-                printer = StarPrinter(settings, requireContext())
+                //remove comments to work on star printer for dine in
+                try {
+                    settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
+                    printer = StarPrinter(settings, requireContext())
 
 
-                /*viewLifecycleOwner.lifecycleScope.launch {
+                    /*viewLifecycleOwner.lifecycleScope.launch {
 
                         generateKitchenReceiptStarPrinter(
                             data,
@@ -9909,118 +9972,124 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         )
 
                 }*/
-                generateKitchenReceiptCommon(CommonPrinterTypes.TspStarPrinter,data, type, item, listItemWithGuest)
-            } catch (e:Exception){
-
-            } finally {
-                GlobalScope.launch {
-                    try {
-                        printer.closeAsync().await()
-                    } catch (e: Exception) {
-                    }
-            }
-        }
-
-        } else {
-
-            if (!data.name.substring(0, 6).toString().lowercase().contains("TM-m".lowercase())) {
-                var mPrinter = if (data.name.substring(0, 6).toString().lowercase()
-                        .contains("TM-m".lowercase())
-                ) {
-                    Log.e(TAG, "YesContains")
-                    Printer(
-                        Printer.TM_M30,
-                        Printer.MODEL_ANK, requireContext()
+                    generateKitchenReceiptCommon(
+                        CommonPrinterTypes.TspStarPrinter,
+                        data,
+                        type,
+                        item,
+                        listItemWithGuest
                     )
-                } else {
-                    Printer(
-                        Printer.TM_U220,
-                        Printer.MODEL_ANK, requireContext()
-                    )
+                } catch (e: Exception) {
 
-
-                }
-
-                mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
-
-                    Log.e(
-                        TAG,
-                        "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
-                    )
-                    if (printerStatusInfo.online == 1) {
+                } finally {
+                    GlobalScope.launch {
                         try {
-                            printer.disconnect()
-
-                        } catch (e: java.lang.Exception) {
-                            e.printStackTrace()
+                            printer.closeAsync().await()
+                        } catch (e: Exception) {
                         }
                     }
                 }
 
-                try {
-                    Log.e(TAG, "printerDataType:  ${data.printer_type}")
+            } else {
 
-                    var printerAdd =
-                        if (data.printer_type == Constants.BLUETOOTH) "BT:" + data.macAddress else "TCP:" + data.ipAddress
-                    mPrinter.connect(
-                        printerAdd,
-                        Printer.PARAM_DEFAULT
-                    )
-                    mPrinter.startMonitor()
+                if (!data.name.substring(0, 6).toString().lowercase()
+                        .contains("TM-m".lowercase())
+                ) {
+                    var mPrinter = if (data.name.substring(0, 6).toString().lowercase()
+                            .contains("TM-m".lowercase())
+                    ) {
+                        Log.e(TAG, "YesContains")
+                        Printer(
+                            Printer.TM_M30,
+                            Printer.MODEL_ANK, requireContext()
+                        )
+                    } else {
+                        Printer(
+                            Printer.TM_U220,
+                            Printer.MODEL_ANK, requireContext()
+                        )
 
-                    generateReceiptForU220(data, type, item, mPrinter)
 
-                } catch (e: java.lang.Exception) {
-                    e.printStackTrace()
-                }
-
-
-            }
-            else {
-
-                PrinterClass.setPrinter(null)
-                if (PrinterClass.getPrinter() == null) {
-                    var printer: Print? = Print(requireContext())
-                    if (printer != null) {
-//                printer.setStatusChangeEventCallback(this)
-//                printer.setBatteryStatusChangeEventCallback(this)
                     }
 
-                    val enabled = Print.FALSE
+                    mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
+
+                        Log.e(
+                            TAG,
+                            "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
+                        )
+                        if (printerStatusInfo.online == 1) {
+                            try {
+                                printer.disconnect()
+
+                            } catch (e: java.lang.Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+                    }
 
                     try {
+                        Log.e(TAG, "printerDataType:  ${data.printer_type}")
 
-                        printer?.openPrinter(
-                            if (data.printer_type == Constants.BLUETOOTH) {
-                                Print.DEVTYPE_BLUETOOTH
-                            } else {
-                                Print.DEVTYPE_TCP
-                            },
-                            data.ipAddress,
-                            enabled,
-                            1000
+                        var printerAdd =
+                            if (data.printer_type == Constants.BLUETOOTH) "BT:" + data.macAddress else "TCP:" + data.ipAddress
+                        mPrinter.connect(
+                            printerAdd,
+                            Printer.PARAM_DEFAULT
                         )
-                        // printer?.setStatusChangeEventCallback(this)
+                        mPrinter.startMonitor()
 
-                    } catch (e: Exception) {
-                        LogUtil.logE(TAG, "PrinterException: " + e.message)
-                        printer = null
-                        return
+                        generateReceiptForU220(data, type, item, mPrinter)
+
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
                     }
 
-                    if (printer != null) {
-                        PrinterClass.setPrinter(printer)
-
-                        generateKitchenReceipt(data, type, item, listItemWithGuest)
-
-                    }
 
                 } else {
-                    LogUtil.logE(TAG, "PrinterIsNotNull:")
+
+                    PrinterClass.setPrinter(null)
+                    if (PrinterClass.getPrinter() == null) {
+                        var printer: Print? = Print(requireContext())
+                        if (printer != null) {
+//                printer.setStatusChangeEventCallback(this)
+//                printer.setBatteryStatusChangeEventCallback(this)
+                        }
+
+                        val enabled = Print.FALSE
+
+                        try {
+
+                            printer?.openPrinter(
+                                if (data.printer_type == Constants.BLUETOOTH) {
+                                    Print.DEVTYPE_BLUETOOTH
+                                } else {
+                                    Print.DEVTYPE_TCP
+                                },
+                                data.ipAddress,
+                                enabled,
+                                1000
+                            )
+                            // printer?.setStatusChangeEventCallback(this)
+
+                        } catch (e: Exception) {
+                            LogUtil.logE(TAG, "PrinterException: " + e.message)
+                            printer = null
+                            return
+                        }
+
+                        if (printer != null) {
+                            PrinterClass.setPrinter(printer)
+
+                            generateKitchenReceipt(data, type, item, listItemWithGuest)
+
+                        }
+
+                    } else {
+                        LogUtil.logE(TAG, "PrinterIsNotNull:")
+                    }
                 }
             }
-        }
-
     }
 
     private fun generateKitchenReceiptForU220(
@@ -10459,6 +10528,16 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
     }
+
+    override fun onStop() {
+        super.onStop()
+
+        prefProvider.setValue(
+            Constants.WHOLE_AMOUNT,
+            "0.0"
+        )
+    }
+
 
     var onBluetoothPermissionGranted: OrderCompleteFragment.OnBluetoothPermissionGranted? = null
 
@@ -11924,136 +12003,159 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                     actionFeedLine(1)
 
 
-                                    listItemWithGuest.forEach {
+                                            listItemWithGuest.forEach {
 
-                                        add(
-                                            PrinterBuilder()
-                                                .styleAlignment(Alignment.Left)
-                                                .styleBold(true)
-                                                .actionPrintText(
-                                                    "------------------------------------------------"
-                                                )
-                                        )
+                                                var isGuestNamePrinted = false
 
-                                        add(
-                                            PrinterBuilder()
-                                                .styleAlignment(Alignment.Center)
-                                                .styleMagnification(
-                                                    MagnificationParameter(2, 2)
-                                                )
-                                                .actionPrintText(
-                                                    it.key
-                                                )
-                                        )
+                                                it.value.forEach { obj ->
+                                                    customerReceiptPrinters.printerCategories.forEach { printer ->
+                                                        if (printer.id == obj.categoryId && printer.printerEnable && printer.categoryActive) {
 
-                                        add(
-                                            PrinterBuilder()
-                                                .styleAlignment(Alignment.Left)
-                                                .styleBold(true)
-                                                .actionPrintText(
-                                                    "------------------------------------------------"
-                                                )
-                                        )
+                                                            if (!isGuestNamePrinted) {
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleAlignment(Alignment.Left)
+                                                                        .styleBold(true)
+                                                                        .actionPrintText(
+                                                                            "------------------------------------------------"
+                                                                        )
+                                                                )
 
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleAlignment(Alignment.Center)
+                                                                        .styleMagnification(
+                                                                            MagnificationParameter(
+                                                                                2,
+                                                                                2
+                                                                            )
+                                                                        )
+                                                                        .actionPrintText(
+                                                                            it.key
+                                                                        )
+                                                                )
 
-                                        it.value.forEach { obj ->
-                                            add(
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleAlignment(Alignment.Left)
+                                                                        .styleBold(true)
+                                                                        .actionPrintText(
+                                                                            "------------------------------------------------"
+                                                                        )
+                                                                )
+                                                                isGuestNamePrinted = true
+                                                            }
 
-                                                PrinterBuilder()
-                                                    .styleAlignment(Alignment.Left)
-                                                    .styleMagnification(
-                                                        MagnificationParameter(2, 2)
-                                                    )
-                                                    .actionPrintText(
-                                                        obj.itemQuantity.toString() + " " + obj.name.uppercase()
-                                                    )
-                                            )
+                                                            add(
 
-                                            if (obj.modifiers.isNotEmpty()) {
-                                                for (j in 0 until obj.modifiers.size) {
-                                                    val modifierObj = obj.modifiers.get(j)
-
-
-                                                    add(
-                                                        PrinterBuilder()
-                                                            .styleAlignment(Alignment.Left)
-                                                            .styleBold(true)
-                                                            .styleMagnification(
-                                                                MagnificationParameter(1, 1)
+                                                                PrinterBuilder()
+                                                                    .styleAlignment(Alignment.Left)
+                                                                    .styleMagnification(
+                                                                        MagnificationParameter(2, 2)
+                                                                    )
+                                                                    .actionPrintText(
+                                                                        obj.itemQuantity.toString() + " " + obj.name.uppercase()
+                                                                    )
                                                             )
-                                                            .actionPrintText(
-                                                                "  " + if (modifierObj.modifier_quantity == 1) {
-                                                                    "   "
-                                                                } else {
-                                                                    "" + modifierObj.modifier_quantity + "x "
-                                                                } + modifierObj.name.uppercase()
-                                                            )
-                                                    )
 
+                                                            if (obj.modifiers.isNotEmpty()) {
+                                                                for (j in 0 until obj.modifiers.size) {
+                                                                    val modifierObj =
+                                                                        obj.modifiers.get(j)
+
+
+                                                                    add(
+                                                                        PrinterBuilder()
+                                                                            .styleAlignment(
+                                                                                Alignment.Left
+                                                                            )
+                                                                            .styleBold(true)
+                                                                            .styleMagnification(
+                                                                                MagnificationParameter(
+                                                                                    1,
+                                                                                    1
+                                                                                )
+                                                                            )
+                                                                            .actionPrintText(
+                                                                                "  " + if (modifierObj.modifier_quantity == 1) {
+                                                                                    "   "
+                                                                                } else {
+                                                                                    "" + modifierObj.modifier_quantity + "x "
+                                                                                } + modifierObj.name.uppercase()
+                                                                            )
+                                                                    )
+
+                                                                }
+                                                            }
+                                                            if (obj.note.isNotEmpty()) {
+
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleAlignment(Alignment.Left)
+                                                                        .styleBold(true)
+                                                                        .styleMagnification(
+                                                                            MagnificationParameter(
+                                                                                1,
+                                                                                1
+                                                                            )
+                                                                        )
+                                                                        .actionPrintText(
+                                                                            "  Note:" + obj.note
+                                                                        )
+                                                                )
+
+
+                                                            }
+
+
+
+                                                        actionFeedLine(1)
+
+                                                        if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+                                                            if (orderNote.isNotEmpty())
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleAlignment(Alignment.Center)
+                                                                        .styleBold(true)
+                                                                        .styleMagnification(
+                                                                            MagnificationParameter(
+                                                                                2,
+                                                                                2
+                                                                            )
+                                                                        )
+                                                                        .actionPrintText(
+                                                                            "Order Note \n" + orderNote
+                                                                        )
+                                                                )
+                                                            actionFeedLine(1)
+                                                        }
+
+
+                                                        dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(
+                                                            true
+                                                        )
+                                                    }
+                                                    }
                                                 }
                                             }
-                                            if (obj.note.isNotEmpty()) {
+                                            actionCut(CutType.Partial)
 
-                                                add(
-                                                    PrinterBuilder()
-                                                        .styleAlignment(Alignment.Left)
-                                                        .styleBold(true)
-                                                        .styleMagnification(
-                                                            MagnificationParameter(1, 1)
-                                                        )
-                                                        .actionPrintText(
-                                                            "  Note:" + obj.note
-                                                        )
-                                                )
-
-
-                                            }
-                                        }
-
-                                    }
-
-                                    actionFeedLine(1)
-
-                                    if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
-                                        if (orderNote.isNotEmpty())
-                                            add(
-                                                PrinterBuilder()
-                                                    .styleAlignment(Alignment.Center)
-                                                    .styleBold(true)
-                                                    .styleMagnification(
-                                                        MagnificationParameter(2, 2)
-                                                    )
-                                                    .actionPrintText(
-                                                        "Order Note \n" + orderNote
-                                                    )
+                                            var document = DocumentBuilder()
+                                                .addPrinter(printerBuilder)
+                                            builder.addDocument(
+                                                document
                                             )
-                                        actionFeedLine(1)
-                                    }
+
+                                            val commands = builder.getCommands()
+
+                                            printer.openAsync().await()
 
 
-                                    dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(
-                                        true
-                                    )
+                                            printer.printAsync(commands).await()
+                                            printer.closeAsync().await()
 
 
-
-                                    actionCut(CutType.Partial)
-
-                                    var document = DocumentBuilder()
-                                        .addPrinter(printerBuilder)
-                                    builder.addDocument(
-                                        document
-                                    )
-
-                                    val commands = builder.getCommands()
-
-                                    printer.openAsync().await()
-
-
-                                    printer.printAsync(commands).await()
-                                    printer.closeAsync().await()
                                 }
-
                             } catch (e: Exception) {
                                 Log.e("START DINE IN KITCHEN RECEIPT ", "" + e.printStackTrace())
                             }
@@ -12602,398 +12704,421 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
     fun checkForAutoFire(isCheckAndFire: Boolean, fireAll:Boolean = false) {
-        Log.d("###17MAR23", "checkForAutoFire: Called - Start - $isCheckAndFire")
-        var list: List<DineInModel> = arrayListOf()
-        list = dineInTableAdapter.getList() ?: arrayListOf()
-        val builder = ArrayList<String>()
-        var listItem: ArrayList<TbCartItem> = arrayListOf()
-        var listItemWithGuest: LinkedHashMap<String, ArrayList<TbCartItem>> = linkedMapOf()
 
-        for (i in 0 until list.size) {
+        try {
 
-            if (list[i].isHeader == 0) {
-                if (i < list.size - 1 && list[i + 1].isHeader == 1) {
-                    Log.e(TAG, "checkInsideEdge 1 ")
-                    var listItemLocal: ArrayList<TbCartItem> = arrayListOf()
-                    for (j in i + 1 until list.size) {
-                        if (list[j].isHeader == 1) {
-                            Log.e(TAG, "checkInsideEdge 2 ")
-                            list[j].item?.let { listItemLocal.add(it) }
-                            if (j == list.size - 1) {
+            Log.d("###17MAR23", "checkForAutoFire: Called - Start - $isCheckAndFire")
+            var list: List<DineInModel> = arrayListOf()
+            list = dineInTableAdapter.getList() ?: arrayListOf()
+            val builder = ArrayList<String>()
+            var listItem: ArrayList<TbCartItem> = arrayListOf()
+            var listItemWithGuest: LinkedHashMap<String, ArrayList<TbCartItem>> = linkedMapOf()
 
-                                var customer_name = list[i].customer?.first_name ?:""
+            for (i in 0 until list.size) {
 
-                                if(customer_name == "")
-                                   customer_name =  list[i].title?:""
+                if (list[i].isHeader == 0 && list[i].itemsCount > 0) {
+                    if (i < list.size - 1 && list[i + 1].isHeader == 1) {
+                        Log.e(TAG, "checkInsideEdge 1 ")
+                        var listItemLocal: ArrayList<TbCartItem> = arrayListOf()
+                        for (j in i + 1 until list.size) {
+                            if (list[j].isHeader == 1) {
+                                Log.e(TAG, "checkInsideEdge 2 ")
+                                list[j].item?.let { listItemLocal.add(it) }
+                                if (j == list.size - 1) {
+
+                                    var customer_name = list[i].customer?.first_name ?: ""
+
+                                    if (customer_name == "")
+                                        customer_name = list[i].title ?: ""
+
+                                    listItemWithGuest.put(customer_name, listItemLocal)
+                                    break
+                                }
+
+                            } else if (list[j].isHeader == 0) {
+                                Log.e(TAG, "checkInsideEdge 3 ")
+
+                                var customer_name = list[i].customer?.first_name ?: ""
+                                if (customer_name == "")
+                                    customer_name = list[i].title ?: ""
 
                                 listItemWithGuest.put(customer_name, listItemLocal)
-                                break
-                            }
-
-                        } else if (list[j].isHeader == 0) {
-                            Log.e(TAG, "checkInsideEdge 3 ")
-
-                            var customer_name = list[i].customer?.first_name ?:""
-                            if (customer_name == "")
-                                customer_name =  list[i].title?:""
-
-                           listItemWithGuest.put(customer_name, listItemLocal)
 
 //                            list[i].title?.let {
 //                                listItemWithGuest.put(it, listItemLocal)
 //                            }
 
-                            break
-                        }
+                                break
+                            }
 
+
+                        }
 
                     }
-
                 }
             }
-        }
-        Log.e(TAG, "getListOfHash  ${Gson().toJson(listItemWithGuest)}")
-        LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(list)}")
-        fireItemsList = arrayListOf()
+            Log.e(TAG, "getListOfHash  ${Gson().toJson(listItemWithGuest)}")
+            LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(list)}")
+            fireItemsList = arrayListOf()
 
 
-        var updatedItemIdsList = arrayListOf<Int>()
-        var countOfItemsToFire = 0
+            var updatedItemIdsList = arrayListOf<Int>()
+            var countOfItemsToFire = 0
 
-        list.forEachIndexed { itemIndex, it ->
-            if (it.isHeader == 1) {
-                it.item?.let {
+            list.forEachIndexed { itemIndex, it ->
+                if (it.isHeader == 1) {
+                    it.item?.let {
 
-                    /**
-                     * First condition works for manual printing and second will work for auto printing
-                     */
-                    if ( (!it.isFired && it.isChecked) || (!it.isFired && isCheckAndFire)) {
-                        fireItemsList.add(it)
-                        listItem.add(it)
-                        //it.isFired = true
-                        firedItemsList.add(itemIndex)
-
-                        //add items ids for api call
-                        it.orderItemId?.let {
-                            builder.add(it.toString())
-                        }
-                    } else {
-                        /***
-                         * If Item is already fired and then it gets updated then this logic will check for updated item to print
+                        /**
+                         * First condition works for manual printing and second will work for auto printing
                          */
-                        if(prefProvider.getValueboolean(DINE_IN_UPDATE,false)) {
-                            val foundItemList =
-                                dashboardViewModel.dineInItemsBeforeUpdate.filter { item ->
-                                    item.cartItemId == it.cartItemId &&
-                                            item.itemId == it.itemId &&
-                                            item.guestIndexForDineIn == it.guestIndexForDineIn &&
-                                            it.isFired && it.modifier_set_ids == item.modifier_set_ids
-                                }
+                        if ((!it.isFired && it.isChecked) || (!it.isFired && isCheckAndFire)) {
+                            fireItemsList.add(it)
+                            listItem.add(it)
+                            //it.isFired = true
+                            firedItemsList.add(itemIndex)
 
-                            if (foundItemList.isNotEmpty()) {
-                                val foundItem = foundItemList.first()
-
-                                /***
-                                 * Check what changes are done in item
-                                 */
-
-                                if (    it.itemQuantity != foundItem.itemQuantity ||
-                                        it.note != foundItem.note ||
-                                        !dashboardViewModel.checkModifierNew(it,foundItem)
-                                ) {
-
-
-                                    if(it.itemQuantity < foundItem.itemQuantity) {
-                                        val itemToAddInWastageModule = foundItem
-                                        foundItem.itemQuantity = foundItem.itemQuantity - it.itemQuantity
+                            //add items ids for api call
+                            it.orderItemId?.let {
+                                builder.add(it.toString())
+                            }
+                        } else {
+                            /***
+                             * If Item is already fired and then it gets updated then this logic will check for updated item to print
+                             */
+                            if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
+                                val foundItemList =
+                                    dashboardViewModel.dineInItemsBeforeUpdate.filter { item ->
+                                        item.cartItemId == it.cartItemId &&
+                                                item.itemId == it.itemId &&
+                                                item.guestIndexForDineIn == it.guestIndexForDineIn &&
+                                                it.isFired && it.modifier_set_ids == item.modifier_set_ids
                                     }
 
-                                    updatedItemIdsList.add(it.cartItemId)
+                                if (foundItemList.isNotEmpty()) {
+                                    val foundItem = foundItemList.first()
 
-                                    fireItemsList.add(it)
-                                    listItem.add(it)
-                                    //it.isFired = true
-                                    firedItemsList.add(itemIndex)
+                                    /***
+                                     * Check what changes are done in item
+                                     */
 
-                                     //add items ids for api call
-                                    it.orderItemId?.let {
-                                        builder.add(it.toString())
+                                    if (it.itemQuantity != foundItem.itemQuantity ||
+                                        it.note != foundItem.note ||
+                                        !dashboardViewModel.checkModifierNew(it, foundItem)
+                                    ) {
+
+
+                                        if (it.itemQuantity < foundItem.itemQuantity) {
+                                            val itemToAddInWastageModule = foundItem
+                                            foundItem.itemQuantity =
+                                                foundItem.itemQuantity - it.itemQuantity
+                                        }
+
+                                        updatedItemIdsList.add(it.cartItemId)
+
+                                        fireItemsList.add(it)
+                                        listItem.add(it)
+                                        //it.isFired = true
+                                        firedItemsList.add(itemIndex)
+
+                                        //add items ids for api call
+                                        it.orderItemId?.let {
+                                            builder.add(it.toString())
+                                        }
+                                    } else {
+
                                     }
                                 } else {
+                                    /***
+                                     * This will print checked and selected items which are not printed already
+                                     */
+                                    if (fireAll && it.isChecked && !it.isFired) {
+                                        fireItemsList.add(it)
+                                        listItem.add(it)
+                                        //it.isFired = true
+                                        firedItemsList.add(itemIndex)
 
+                                        //add items ids for api call
+                                        it.orderItemId?.let {
+                                            builder.add(it.toString())
+                                        }
+                                    } else {
+                                    }
                                 }
                             } else {
-                                /***
-                                 * This will print checked and selected items which are not printed already
-                                 */
-                                if(fireAll &&  it.isChecked && !it.isFired ) {
-                                    fireItemsList.add(it)
-                                    listItem.add(it)
-                                    //it.isFired = true
-                                    firedItemsList.add(itemIndex)
-
-                                    //add items ids for api call
-                                    it.orderItemId?.let {
-                                        builder.add(it.toString())
-                                    }
-                                } else { }
                             }
-                        } else { }
+                        }
                     }
                 }
             }
-        }
 
-        countOfItemsToFire = listItem.size
+            countOfItemsToFire = listItem.size
 
-        dashboardViewModel.apply {
-            dineInItemsBeforeUpdate = arrayListOf()
-        }
-
-        LogUtil.logE(TAG, "listItem:  ${Gson().toJson(listItem)}")
-        val serializedObject: String =
-            prefProvider.getValue(Constants.DINE_IN_UPDATE_LIST, "")
-        LogUtil.logE(TAG, "serializedObjectData:  ${Gson().toJson(serializedObject)}")
-        if (serializedObject.isNotEmpty()) {
-            var printOrderItems:
-                    ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
-                arrayListOf()
-
-            val gson = Gson()
-            val type = object :
-                TypeToken<List<GetOrderDetailsResponse.Data.OrderItem?>?>() {}.type
-            var arrayItems: ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
-                gson.fromJson<Any>(
-                    serializedObject,
-                    type
-                ) as ArrayList<GetOrderDetailsResponse.Data.OrderItem>
-
-            LogUtil.logE(TAG, "arrayItems:  ${Gson().toJson(arrayItems)}")
-            var itemIds: ArrayList<Int> = arrayListOf()
-            arrayItems.forEach {
-                itemIds.add(it.id)
+            dashboardViewModel.apply {
+                dineInItemsBeforeUpdate = arrayListOf()
             }
 
-            arrayItems.forEachIndexed { index, orderItem ->
-                if ((getOrderDetailsResponse?.orderItems?.size?.minus(1) ?: -1) >= index) {
-                    if (itemIds.contains(getOrderDetailsResponse?.orderItems?.get(index)?.id)) {
-                        LogUtil.logE("InsideLoop", "Inside")
-                        if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity != orderItem.quantity) {
-                            if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! > arrayItems[index].quantity) {
-                                getOrderDetailsResponse?.orderItems?.get(index)?.quantity =
-                                    getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! - arrayItems[index].quantity
-                                if (!printOrderItems.contains(
-                                        getOrderDetailsResponse?.orderItems?.get(
-                                            index
+            LogUtil.logE(TAG, "listItem:  ${Gson().toJson(listItem)}")
+            val serializedObject: String =
+                prefProvider.getValue(Constants.DINE_IN_UPDATE_LIST, "")
+            LogUtil.logE(TAG, "serializedObjectData:  ${Gson().toJson(serializedObject)}")
+            if (serializedObject.isNotEmpty()) {
+                var printOrderItems:
+                        ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
+                    arrayListOf()
+
+                val gson = Gson()
+                val type = object :
+                    TypeToken<List<GetOrderDetailsResponse.Data.OrderItem?>?>() {}.type
+                var arrayItems: ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
+                    gson.fromJson<Any>(
+                        serializedObject,
+                        type
+                    ) as ArrayList<GetOrderDetailsResponse.Data.OrderItem>
+
+                LogUtil.logE(TAG, "arrayItems:  ${Gson().toJson(arrayItems)}")
+                var itemIds: ArrayList<Int> = arrayListOf()
+                arrayItems.forEach {
+                    itemIds.add(it.id)
+                }
+
+                arrayItems.forEachIndexed { index, orderItem ->
+                    if ((getOrderDetailsResponse?.orderItems?.size?.minus(1) ?: -1) >= index) {
+                        if (itemIds.contains(getOrderDetailsResponse?.orderItems?.get(index)?.id)) {
+                            LogUtil.logE("InsideLoop", "Inside")
+                            if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity != orderItem.quantity) {
+                                if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! > arrayItems[index].quantity) {
+                                    getOrderDetailsResponse?.orderItems?.get(index)?.quantity =
+                                        getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! - arrayItems[index].quantity
+                                    if (!printOrderItems.contains(
+                                            getOrderDetailsResponse?.orderItems?.get(
+                                                index
+                                            )
                                         )
-                                    )
-                                ) {
-                                    printOrderItems.add(
-                                        getOrderDetailsResponse?.orderItems?.get(
-                                            index
-                                        )!!
-                                    )
-                                    var tbItem: TbCartItem = TbCartItem()
-                                    tbItem.categoryId =
-                                        getOrderDetailsResponse?.orderItems?.get(index)?.categoryId
-                                            ?: 0
-                                    tbItem.name =
-                                        getOrderDetailsResponse?.orderItems?.get(index)?.itemName
-                                            ?: ""
-                                    tbItem.price =
-                                        getOrderDetailsResponse?.orderItems?.get(index)?.price
-                                            ?: 0.0
-                                    tbItem.itemQuantity =
-                                        getOrderDetailsResponse?.orderItems?.get(index)?.quantity
-                                            ?: 0
-                                    if (getOrderDetailsResponse?.orderItems?.get(index)?.orderItemModifiers?.isNotEmpty() == true) {
-                                        var modifierList: ArrayList<Modifier> = arrayListOf()
-                                        getOrderDetailsResponse?.orderItems?.get(index)?.orderItemModifiers?.forEach {
-                                            val modifiers = Modifier()
-                                            modifiers.price = it.price
-                                            modifiers.name = it.name
-                                            modifiers.itemQuantity = it.quantity
-                                            modifiers.modifier_quantity = it.modifier_quantity!!
-                                            modifierList.add(modifiers)
+                                    ) {
+                                        printOrderItems.add(
+                                            getOrderDetailsResponse?.orderItems?.get(
+                                                index
+                                            )!!
+                                        )
+                                        var tbItem: TbCartItem = TbCartItem()
+                                        tbItem.categoryId =
+                                            getOrderDetailsResponse?.orderItems?.get(index)?.categoryId
+                                                ?: 0
+                                        tbItem.name =
+                                            getOrderDetailsResponse?.orderItems?.get(index)?.itemName
+                                                ?: ""
+                                        tbItem.price =
+                                            getOrderDetailsResponse?.orderItems?.get(index)?.price
+                                                ?: 0.0
+                                        tbItem.itemQuantity =
+                                            getOrderDetailsResponse?.orderItems?.get(index)?.quantity
+                                                ?: 0
+                                        if (getOrderDetailsResponse?.orderItems?.get(index)?.orderItemModifiers?.isNotEmpty() == true) {
+                                            var modifierList: ArrayList<Modifier> = arrayListOf()
+                                            getOrderDetailsResponse?.orderItems?.get(index)?.orderItemModifiers?.forEach {
+                                                val modifiers = Modifier()
+                                                modifiers.price = it.price
+                                                modifiers.name = it.name
+                                                modifiers.itemQuantity = it.quantity
+                                                modifiers.modifier_quantity = it.modifier_quantity!!
+                                                modifierList.add(modifiers)
+                                            }
+                                            tbItem.modifiers = modifierList
                                         }
-                                        tbItem.modifiers = modifierList
+
+                                        listItem.add(tbItem)
                                     }
-
-                                    listItem.add(tbItem)
                                 }
-                            }
 
-                        } else {
+                            } else {
+
+                            }
 
                         }
-
                     }
+
                 }
 
+                prefProvider.setValue(DINE_IN_UPDATE_LIST, "")
             }
 
-            prefProvider.setValue(DINE_IN_UPDATE_LIST, "")
-        }
 
 
-
-        if (listItem.isNotEmpty() && countOfItemsToFire!=0 ) {
-            var orderItemsIds: ArrayList<Int> = arrayListOf()
-            listItem.forEach {
-                it.orderItemId?.let { it1 -> orderItemsIds.add(it1) }
-            }
-            listItemWithGuest.forEach {
-                it.value.forEach { it1 ->
-                    var orderITemId = it1.orderItemId
-                    if (orderItemsIds.contains(it1.orderItemId) == false) {
-                        var listNewITems: ArrayList<TbCartItem> = arrayListOf()
-                        listNewITems.addAll(it.value)
-                        if (listNewITems.isNotEmpty()) {
-                            for (k in it.value.indices) {
-                                if (it.value[k].orderItemId == orderITemId) {
-                                    listNewITems.remove(it.value[k])
+            if (listItem.isNotEmpty() && countOfItemsToFire != 0) {
+                var orderItemsIds: ArrayList<Int> = arrayListOf()
+                listItem.forEach {
+                    it.orderItemId?.let { it1 -> orderItemsIds.add(it1) }
+                }
+                listItemWithGuest.forEach {
+                    it.value.forEach { it1 ->
+                        var orderITemId = it1.orderItemId
+                        if (orderItemsIds.contains(it1.orderItemId) == false) {
+                            var listNewITems: ArrayList<TbCartItem> = arrayListOf()
+                            listNewITems.addAll(it.value)
+                            if (listNewITems.isNotEmpty()) {
+                                for (k in it.value.indices) {
+                                    if (it.value[k].orderItemId == orderITemId) {
+                                        listNewITems.remove(it.value[k])
+                                    }
                                 }
+                                listItemWithGuest.put(it.key, listNewITems)
                             }
-                            listItemWithGuest.put(it.key, listNewITems)
                         }
                     }
                 }
-            }
 
-            // remove guest with no items
-            val it: MutableIterator<Map.Entry<String, ArrayList<TbCartItem>>> =
-                listItemWithGuest.entries.iterator()
-            while (it.hasNext()) {
-                if (it.next().value.isEmpty()) {
-                    it.remove()
+                // remove guest with no items
+                val it: MutableIterator<Map.Entry<String, ArrayList<TbCartItem>>> =
+                    listItemWithGuest.entries.iterator()
+                while (it.hasNext()) {
+                    if (it.next().value.isEmpty()) {
+                        it.remove()
+                    }
                 }
-            }
 
 
 
 
-            CoroutineScope(Dispatchers.IO).launch {
+                CoroutineScope(Dispatchers.IO).launch {
 
 
+                    if (kitchenPrinterList.isNotEmpty()) {
 
-                if(kitchenPrinterList.isNotEmpty() ){
-
-                    var autoPrintEnable = false
-                    kitchenPrinterList.forEach { kit ->
-                        if (kit.status) {
+                        var autoPrintEnable = false
+                        kitchenPrinterList.forEach { kit ->
+                            if (kit.status) {
 
 
-                            if (isCheckAndFire) {
-                                kit.orderTypes.forEach {
-                                    if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
-                                        LogUtil.logE(
-                                            TAG,
-                                            "printerSettings  ${Gson().toJson(it.printerSettings)}"
-                                        )
-                                        it.printerSettings.forEach {
-                                            if (it.printType.lowercase()
-                                                    .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
-                                            ) {
-
-                                                if (checkItemsforPrinterDineIn(
-                                                        listItem,
-                                                        kit.printerCategories.toCollection(
-                                                            arrayListOf()
-                                                        )
-                                                    )
+                                if (isCheckAndFire) {
+                                    kit.orderTypes.forEach {
+                                        if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
+                                            LogUtil.logE(
+                                                TAG,
+                                                "printerSettings  ${Gson().toJson(it.printerSettings)}"
+                                            )
+                                            it.printerSettings.forEach {
+                                                if (it.printType.lowercase()
+                                                        .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
                                                 ) {
-                                                    LogUtil.logE(TAG, "printerName  ${kit.name} ")
-                                                    autoPrintEnable = true
-                                                    if (!prefProvider.getValueboolean(
-                                                            IS_PRINTER_QUEUE_ENABLE,
-                                                            false
+
+                                                    if (checkItemsforPrinterDineIn(
+                                                            listItem,
+                                                            kit.printerCategories.toCollection(
+                                                                arrayListOf()
+                                                            )
                                                         )
                                                     ) {
-                                                        initKitchenPrinter(
-                                                            kit,
-                                                            Constants.KITCHEN,
-                                                            listItem,
-                                                            listItemWithGuest
+                                                        LogUtil.logE(
+                                                            TAG,
+                                                            "printerName  ${kit.name} "
                                                         )
+                                                        autoPrintEnable = true
+                                                        if (!prefProvider.getValueboolean(
+                                                                IS_PRINTER_QUEUE_ENABLE,
+                                                                false
+                                                            )
+                                                        ) {
+                                                            initKitchenPrinter(
+                                                                kit,
+                                                                Constants.KITCHEN,
+                                                                listItem,
+                                                                listItemWithGuest
+                                                            )
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
+
                                     }
-
-                                }
-                            } else {
-                                if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
-                                    initKitchenPrinter(
-                                        kit,
-                                        Constants.KITCHEN,
-                                        listItem,
-                                        listItemWithGuest
-                                    )
-                                }
-
-
-                            }
-                        }
-                    }
-
-
-                    CoroutineScope(Dispatchers.Main).launch {
-
-                        /**
-                         * This will notify items already printed to kitchen
-                         */
-
-                        dashboardViewModel.itemsFiredToTheKitchenSuccesfully.observe(
-                            viewLifecycleOwner
-                        ) { it ->
-
-                            if (firedItemsList.isNotEmpty()) {
-                                if (it) {
-                                    dashboardViewModel.itemsFiredToTheKitchenSuccesfully.value =
-                                        false
-
-                                    val list = dineInTableAdapter.getList()
-
-                                    firedItemsList.forEach { index ->
-                                        list[index].item?.isFired = true
-                                        Log.e("DATA ", Gson().toJson(list[index]))
-                                    }
-
-
-                                    dineInTableAdapter.setList(ArrayList(list))
-                                    firedItemsList = mutableListOf()
-
-                                    if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
-                                        var fireAllIds = android.text.TextUtils.join(",", builder)
-                                        viewModel.fireItemToKitchen(
-                                            orderId ?: 0,
-                                            true,
-                                            fireAllIds,
-                                            true
+                                } else {
+                                    if (!prefProvider.getValueboolean(
+                                            IS_PRINTER_QUEUE_ENABLE,
+                                            false
                                         )
+                                    ) {
+
+                                        if (checkItemsforPrinterDineIn(
+                                                listItem,
+                                                kit.printerCategories.toCollection(
+                                                    arrayListOf()
+                                                )
+                                            )
+                                        ) {
+
+                                            initKitchenPrinter(
+                                                kit,
+                                                Constants.KITCHEN,
+                                                listItem,
+                                                listItemWithGuest
+                                            )
+                                        }
+                                    }
+
+
+                                }
+                            }
+                        }
+
+
+                        CoroutineScope(Dispatchers.Main).launch {
+
+                            /**
+                             * This will notify items already printed to kitchen
+                             */
+
+                            dashboardViewModel.itemsFiredToTheKitchenSuccesfully.observe(
+                                viewLifecycleOwner
+                            ) { it ->
+
+                                if (firedItemsList.isNotEmpty()) {
+                                    if (it) {
+                                        dashboardViewModel.itemsFiredToTheKitchenSuccesfully.value =
+                                            false
+
+                                        val list = dineInTableAdapter.getList()
+
+                                        firedItemsList.forEach { index ->
+                                            list[index].item?.isFired = true
+                                            Log.e("DATA ", Gson().toJson(list[index]))
+                                        }
+
+
+                                        dineInTableAdapter.setList(ArrayList(list),notPayAnyAmount)
+                                        firedItemsList = mutableListOf()
+
+                                        if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
+                                            var fireAllIds =
+                                                android.text.TextUtils.join(",", builder)
+                                            viewModel.fireItemToKitchen(
+                                                orderId ?: 0,
+                                                true,
+                                                fireAllIds,
+                                                true
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
 
 
-
-
-                } else {
-                    runOnUiThread {
-                        AlertUtils.showCustomAlert(
-                            requireContext(),
-                            "Please connect kitchen printer!"
-                        )
+                    } else {
+                        runOnUiThread {
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                "Please connect kitchen printer!"
+                            )
+                        }
                     }
                 }
+
             }
 
+        }catch (e:Exception){
+            Log.e("DINE IN ERROR","${e.message}")
         }
-
-
     }
 
     fun progressDialog() {

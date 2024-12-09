@@ -2,6 +2,7 @@ package com.pays.pos.ui.fragments.orderassign
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -16,6 +17,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.pays.pos.R
 import com.pays.pos.data.entities.CartModel
@@ -32,11 +34,15 @@ import com.pays.pos.databinding.FragmentAssignCustomerOrderBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.adapter.AssignCustomerToOrderAdapter
+import com.pays.pos.ui.fragments.customer.AddCustomerViewModel
 import com.pays.pos.ui.fragments.customer.CustomerListViewModel
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.LogUtil
+import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.callback.ItemCallback
 import com.pays.pos.utils.callback.PaginationScrollListener
+import com.pays.pos.utils.extensions.liveSnackBar
+import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import org.greenrobot.eventbus.EventBus
@@ -54,6 +60,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
 
     private lateinit var binding: FragmentAssignCustomerOrderBinding
     private val viewModel by viewModels<CustomerListViewModel>()
+    private val addCustomerViewModel by viewModels<AddCustomerViewModel>()
     private lateinit var adapter: AssignCustomerToOrderAdapter
     private var isFromDineIn: Boolean? = false
     private var dineInPosition: Int? = null
@@ -70,8 +77,12 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
     private var isLastPage = false
     private var firstDetailLoad = false
     private var selectedDate: String? = null
+    private var searchedCustomer: String = ""
     private var cartList: ArrayList<CartModel> = arrayListOf()
+    private val dynamicCustomerList: java.util.ArrayList<TbCustomer> =
+        arrayListOf()
     val data = LinkedHashMap<String, String>()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -86,8 +97,9 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
         data["page"] = currentpage.toString()
         data["per_page"] = perpagedata.toString()
 
-
+        setUpSnackBar()
         setupUI()
+        addObserver()
 
         loadCustomerLocalList(currentpage)
         if (arguments != null) {
@@ -114,6 +126,48 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             .post(MessageEvent("${Constants.LINE_BREAK_TAB} AssignCustomerOrderFragment.kt onCreateView"))
 
         return binding.root
+    }
+
+    private fun addObserver() {
+        addCustomerViewModel.customerListResponse.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { customerList ->
+                val data: java.util.ArrayList<TbCustomer>
+                if (customerList.isNotEmpty()) {
+                    dynamicCustomerList.clear()
+                    data = customerList as java.util.ArrayList<TbCustomer>
+                    dynamicCustomerList.addAll(data)
+                    adapter.add(data)
+
+                    Handler().postDelayed({
+                        val s = binding.etSearch.text.toString()
+                        adapter.filter.filter(s.toString().lowercase().trim())
+                    },500)
+                }
+            }
+        }
+
+        addCustomerViewModel.customerNoDataFound.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { customerListResponse ->
+                if (customerListResponse.isNotEmpty()) {
+                    AlertUtils.showCustomAlert(requireContext(), customerListResponse)
+                }
+            }
+        }
+
+        addCustomerViewModel.showProgress.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+
+        }
+    }
+
+    private fun setUpSnackBar() {
+        binding.root.liveSnackBar(this, addCustomerViewModel.snackbarText, Snackbar.LENGTH_SHORT)
     }
 
     private fun setupUI() {
@@ -165,9 +219,19 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             override fun afterTextChanged(s: Editable) {
 
                 adapter.filter.filter(s.toString().lowercase().trim())
+                searchedCustomer = s.toString().lowercase().trim()
 
             }
         })
+
+        binding.txtSearchCustomer.setOnSingleClickListener {
+            it.isEnabled = false
+            hideKeyboard()
+            addCustomerViewModel.searchCustomerForAssignCustomerOrderFragment(searchedCustomer)
+            Handler().postDelayed({
+                it.isEnabled = true
+            }, 2000)
+        }
 
         binding.imgBack.setOnClickListener {
             hideKeyboard()

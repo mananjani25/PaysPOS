@@ -369,7 +369,9 @@ class Customer : Fragment(), ItemCallback {
             findNavController().navigate(R.id.action_customer_to_menuFragment2)
         }
         binding.layoutTool.txtHome.setOnClickListener {
-            findNavController().navigate(R.id.action_customer_to_dashboardCategoryNew)
+            if (findNavController().currentDestination?.id == R.id.customer) {
+                findNavController().navigate(R.id.action_customer_to_dashboardCategoryNew)
+            }
         }
         binding.layoutTool.imgOptionMenu.setImageResource(R.drawable.ic_add)
 

@@ -202,15 +202,21 @@ class CategoryFragment(val listner: ItemListner?=null, val edtSearch: AutoComple
                                         Log.e("ItemAdapter", "AddedItem 1 ")
                                         Log.e("ItemAdapter", "itemListSize  ${itemList1.size}")
 
-                                        lifecycleScope.launch(Dispatchers.IO) {
-                                            viewModel.itemsByCat(categoryList1[0].category.id)
-                                                .collectLatest {
-                                                    Log.e("CollectItems", "Collect")
-                                                    lifecycleScope.launch(Dispatchers.Main) {
-                                                        itemAdapter.submitData(it)
-                                                    }
+
+                                            lifecycleScope.launch(Dispatchers.IO) {
+                                                try {
+                                                    viewModel.itemsByCat(categoryList1[0].category.id)
+                                                        .collectLatest {
+                                                            Log.e("CollectItems", "Collect")
+                                                            lifecycleScope.launch(Dispatchers.Main) {
+                                                                itemAdapter.submitData(it)
+                                                            }
+                                                        }
+                                                }catch (e:Exception){
+                                                    e.printStackTrace()
                                                 }
-                                        }
+                                            }
+
                                         runOnUiThread(Runnable {
                                             binding.rvItemList.adapter = null
                                             /*  itemAdapter = ItemAdapterPagDash(
@@ -324,13 +330,17 @@ class CategoryFragment(val listner: ItemListner?=null, val edtSearch: AutoComple
 
 
                     lifecycleScope.launch(Dispatchers.IO) {
-                        viewModel.itemsByCat(categoryList1[tabPos].category.id).collectLatest {
+                        try {
+                            viewModel.itemsByCat(categoryList1[tabPos].category.id).collectLatest {
 
-                            lifecycleScope.launch(Dispatchers.Main) {
-                                itemAdapter.submitData(it)
+                                lifecycleScope.launch(Dispatchers.Main) {
+                                    itemAdapter.submitData(it)
+                                }
+
+
                             }
-
-
+                        }catch (e:Exception){
+                            e.printStackTrace()
                         }
                     }
 
@@ -470,6 +480,7 @@ class CategoryFragment(val listner: ItemListner?=null, val edtSearch: AutoComple
                 itemList.addAll(it1)
             }
             lifecycleScope.launch(Dispatchers.IO) {
+                try{
                 viewModel.itemsByCat(categoryList1[tabPos].category.id).collectLatest {
 
                     lifecycleScope.launch(Dispatchers.Main) {
@@ -488,6 +499,9 @@ class CategoryFragment(val listner: ItemListner?=null, val edtSearch: AutoComple
                     //itemAdapter.notifyDataSetChanged()
 
 
+                }
+                }catch (e:Exception){
+                    e.printStackTrace()
                 }
             }
 
@@ -620,26 +634,30 @@ class CategoryFragment(val listner: ItemListner?=null, val edtSearch: AutoComple
     private fun getItemsByCategory(catId: Int) {
 
         lifecycleScope.launch(Dispatchers.IO) {
-            viewModel.itemsByCat(catId).collectLatest {
+            try {
+                viewModel.itemsByCat(catId).collectLatest {
 
 
-                //itemAdapter.setPos(-2)
+                    //itemAdapter.setPos(-2)
 
-                lifecycleScope.launch(Dispatchers.Main) {
+                    lifecycleScope.launch(Dispatchers.Main) {
 
-                    edtSearch?.text?.clear()
-                    if (prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0) == 0) {
+                        edtSearch?.text?.clear()
+                        if (prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0) == 0) {
+
+                            itemAdapter.submitData(it)
+                            binding.rvCategoryParent.scrollToPosition(0)
+
+
+                        } else {
+                            changePositionOfCate()
+                        }
 
                         itemAdapter.submitData(it)
-                        binding.rvCategoryParent.scrollToPosition(0)
-
-
-                    } else {
-                        changePositionOfCate()
                     }
-
-                    itemAdapter.submitData(it)
                 }
+            }catch (e:Exception){
+                e.printStackTrace()
             }
 
 

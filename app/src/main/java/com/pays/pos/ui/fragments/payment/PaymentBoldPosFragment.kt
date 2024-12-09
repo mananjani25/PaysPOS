@@ -30,6 +30,7 @@ import com.pays.pos.data.remote.Constants.KIOSK_OPEN_ORDER
 import com.pays.pos.data.remote.Constants.MANUAL_SALE
 import com.pays.pos.data.remote.Constants.OPEN_ORDER
 import com.pays.pos.data.remote.Constants.ORDER_TYPE
+import com.pays.pos.data.remote.Constants.PRE_AUTH_DETAILS
 import com.pays.pos.data.remote.Constants.REDIRECT_FROM
 import com.pays.pos.data.remote.Constants.SPLIT_DINEIN_CHECKOUT
 import com.pays.pos.data.remote.Constants.SPLIT_DINEIN_MODEL
@@ -359,6 +360,8 @@ class PaymentBoldPosFragment : Fragment() {
     private fun onBackPress() {
         Log.d(TAG, "onViewCreated: " + prefProvider.getValueboolean(SPLIT_ENABLE, false))
 
+        if(isFromActiveOrder)
+            prefProvider.setValue(PRE_AUTH_DETAILS,"")
 
 
         if (prefProvider.getValueboolean(Constants.SPLIT_ENABLE, false)) {
@@ -416,6 +419,7 @@ class PaymentBoldPosFragment : Fragment() {
                 if ((prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.PHONE_ORDER) && !findNavController().backStack.elementAtOrNull(findNavController().backStack.size-2)?.destination?.label?.equals("DashboardCategoryBoldPOS")!!) {
                     findNavController().navigate(R.id.action_paymentBoldPosFragment_to_allOrdersFragment)
                 }else {
+                    Log.e("NeedToCheckPop","POPBACK")
                     findNavController().popBackStack()
                 }
          //       }
