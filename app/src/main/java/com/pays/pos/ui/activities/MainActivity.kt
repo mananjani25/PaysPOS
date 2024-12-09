@@ -1429,7 +1429,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MainApplication.mainActivity = this
-
         permissionCheck()
 //        sdkHandler = SDKHandler(this, true)
         CoroutineScope(Dispatchers.IO).launch {

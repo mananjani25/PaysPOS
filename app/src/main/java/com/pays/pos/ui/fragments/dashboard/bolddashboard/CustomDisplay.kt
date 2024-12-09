@@ -2875,7 +2875,11 @@ class CustomDisplay(
 //            callUpdateTip()
             if (prefProvider.getValue(Constants.VALOR_APP_ID, "").isNotEmpty()) {
                 adjustValorTips()
-            } else if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
+            }else if (prefProvider.getValue(
+                    Constants.VALOR_APP_ID, ""
+                ).isNullOrEmpty()){
+                makeDejavooTipAdjustmentRequest()
+            }else if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
                 magtekCall(wholeTotalPrice)
             } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
                     Constants.IS_PAX_CONNECTED,
@@ -2899,6 +2903,10 @@ class CustomDisplay(
         if (!binding.signaturePad.isEmpty) {
             enableConfirmButton()
         }
+    }
+
+    private fun makeDejavooTipAdjustmentRequest() {
+
     }
 
     lateinit var paymentCoroutineScope: CoroutineScope
