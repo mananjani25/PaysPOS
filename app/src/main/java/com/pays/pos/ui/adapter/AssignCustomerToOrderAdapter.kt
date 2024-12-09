@@ -41,10 +41,10 @@ class AssignCustomerToOrderAdapter :
 
     fun add(categoryModel: List<TbCustomer>) {
         this.mList = categoryModel as ArrayList<TbCustomer>
-        submitList(mList)
+//        submitList(mList)
         this.filterList = categoryModel
-        submitList(filterList)
-//        notifyDataSetChanged()
+//        submitList(filterList)
+        notifyDataSetChanged()
     }
 
     inner class MyViewHolder(private val binding: ViewCustomerAssignOrderBinding) :
@@ -230,9 +230,9 @@ class AssignCustomerToOrderAdapter :
                     filterList = results.values as ArrayList<TbCustomer>
                 }
 
-                submitList(filterList)
+//                submitList(filterList)
 
-//                notifyDataSetChanged()
+                notifyDataSetChanged()
 
             }
         }
