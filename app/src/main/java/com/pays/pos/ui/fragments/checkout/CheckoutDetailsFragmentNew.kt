@@ -2940,20 +2940,20 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         for (i in 0 until this.length) {
 
                             when ((this.item(i) as Element).tagName.toString()) {
-                                "Message" -> Message = this.item(i).childNodes.item(0).nodeValue
-                                "RefId" -> RefId = this.item(i).childNodes.item(0).nodeValue
-                                "RegisterId" -> RegisterId = this.item(i).childNodes.item(0).nodeValue
-                                "TPN" -> TPN = this.item(i).childNodes.item(0).nodeValue
-                                "AuthCode" -> AuthCode = this.item(i).childNodes.item(0).nodeValue
-                                "PNRef" -> PNRef = this.item(i).childNodes.item(0).nodeValue
-                                "TransNum" -> TransNum = this.item(i).childNodes.item(0).nodeValue
-                                "ResultCode" -> ResultCode = this.item(i).childNodes.item(0).nodeValue
-                                "RespMSG" -> RespMSG = this.item(i).childNodes.item(0).nodeValue
-                                "PaymentType" -> PaymentType = this.item(i).childNodes.item(0).nodeValue
-                                "Voided" -> Voided = this.item(i).childNodes.item(0).nodeValue
-                                "TransType" -> TransType = this.item(i).childNodes.item(0).nodeValue
-                                "SN" -> SN = this.item(i).childNodes.item(0).nodeValue
-                                "ExtData" -> ExtData = this.item(i).childNodes.item(0).nodeValue
+                                "Message" -> Message = this.item(i).childNodes.item(0).nodeValue?:""
+                                "RefId" -> RefId = this.item(i).childNodes.item(0).nodeValue?:""
+                                "RegisterId" -> RegisterId = this.item(i).childNodes.item(0).nodeValue?:""
+                                "TPN" -> TPN = this.item(i).childNodes.item(0).nodeValue?:""
+                                "AuthCode" -> AuthCode = this.item(i).childNodes.item(0).nodeValue?:""
+                                "PNRef" -> PNRef = this.item(i).childNodes.item(0).nodeValue?:""
+                                "TransNum" -> TransNum = this.item(i).childNodes.item(0).nodeValue?:""
+                                "ResultCode" -> ResultCode = this.item(i).childNodes.item(0).nodeValue?:""
+                                "RespMSG" -> RespMSG = this.item(i).childNodes.item(0).nodeValue?:""
+                                "PaymentType" -> PaymentType = this.item(i).childNodes.item(0).nodeValue?:""
+                                "Voided" -> Voided = this.item(i).childNodes.item(0).nodeValue?:""
+                                "TransType" -> TransType = this.item(i).childNodes.item(0).nodeValue?:""
+                                "SN" -> SN = this.item(i).childNodes.item(0).nodeValue?:""
+                                "ExtData" -> ExtData = this.item(i).childNodes.item(0).nodeValue?:""
                                 else -> {
 
                                 }
@@ -2963,9 +2963,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
                     if (Message.equals("Canceled") || Message.equals("Error")){
                         dismissProgressDialog()
-                        AlertUtils.showCustomAlert(requireContext(),RespMSG)
+                        AlertUtils.showCustomAlert(requireContext(),RespMSG.replace("%20", " "))
                     }else if (Message.contains("Approved")){
-                        makePaymentCreditCardDejavoo()
+                        makePaymentCreditCardDejavoo(RefId, ExtData)
                     }
 
                 }
