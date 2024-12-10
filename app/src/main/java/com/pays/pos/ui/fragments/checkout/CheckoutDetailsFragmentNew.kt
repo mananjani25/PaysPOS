@@ -3094,12 +3094,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                         }
                                     } else {
                                         dismissProgressDialog()
-                                        runOnUiThread(Runnable {
+                                        makePaymentCreditCardValor(it.TXNID, it.TRANNO)
+                                       /* runOnUiThread(Runnable {
                                             AlertUtils.showCustomAlert(
                                                 requireContext(),
                                                 it.AUTHRSPTEXT
                                             )
-                                        })
+                                        })*/
                                     }
                                 } else {
                                     dismissProgressDialog()
