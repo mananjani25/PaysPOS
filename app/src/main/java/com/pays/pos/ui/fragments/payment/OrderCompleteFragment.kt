@@ -3703,9 +3703,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             PrintSunmiUtils.addHorizontal()
 
 
-            if (listWTitems.isNotEmpty())
+            if (listWTitems.isNotEmpty()) {
                 PrintSunmiUtils.printTextCenter("Whole Table")
-
+            }
             for (i in 0 until listWTitems.size) {
 
                 addWholeTbItemToGuest(
@@ -4163,7 +4163,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                                    printCenter("Whole Table")
+                                    if (listWTitems.isNotEmpty()) {
+                                        printCenter("Whole Table")
+                                    }
                                     lineBreak()
 
                                     var guestCount: Int =
@@ -4770,7 +4772,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             } ?: 1
 
 
-            PrintSunmiUtils.normalTextCenter("Whole Table")
+            if (listWTitems.isNotEmpty()) {
+                PrintSunmiUtils.normalTextCenter("Whole Table")
+            }
             for (i in 0 until listWTitems.size) {
                 addWholeTbItemToGuestInner(
                     listWTitems.get(i),
