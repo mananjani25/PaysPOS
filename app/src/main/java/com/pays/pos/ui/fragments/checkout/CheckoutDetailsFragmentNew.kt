@@ -5069,7 +5069,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
     }
 
-    private fun makePaymentCreditCardDejavoo() {
+    private fun makePaymentCreditCardDejavoo(txnid: String?, extData: String?) {
+//        paymentviewModel.valorRefTxnId = txnid
+//        paymentviewModel.valorTransactionNumber = transactionNumber
         paymentAmount -= tipAmount
         paymentAmount = MethodUtils.roundOffAmountDouble(paymentAmount)
         paymentType = "Card"
@@ -5421,6 +5423,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
         val myRequest = cartList?.let {
+            txnid?.let {
+                if (RefNumber.isEmpty()) {
+                    RefNumber = it
+                    /*We are adding DEJAVOO in EXT DATA, This will change in further release, we will send the Dejavoo's Ext_Data in this Parameter */
+                    ExtData = Constants.DEJAVOO
+                }
+            }
+
             paymentviewModel.createOrderRequestForCard(
                 it,
                 subTotalPrice,

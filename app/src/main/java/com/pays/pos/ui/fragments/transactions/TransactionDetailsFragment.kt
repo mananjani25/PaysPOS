@@ -67,6 +67,7 @@ import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
 import com.google.gson.reflect.TypeToken
 import com.pax.poslink.ReportRequest
+import com.pax.poslink.log.LogFilter.Const
 import com.pays.payments.callbacks.PaymentCallback
 import com.pays.payments.design.PaymentGatewayFactory
 import com.pays.payments.design.PaymentGatewayType
@@ -398,6 +399,7 @@ class TransactionDetailsFragment : Fragment() {
                 }
                 mLastClickTime = SystemClock.elapsedRealtime()
                 try {
+
                     if (!paymentDetailsResponse.data.ext_data.isNullOrEmpty()) {
                         if (paymentDetailsResponse.data.ext_data.equals(Constants.VALOR) && prefProvider.getValue(
                                 Constants.VALOR_APP_ID, ""
@@ -406,7 +408,7 @@ class TransactionDetailsFragment : Fragment() {
                             ProgressUtils.showProgressDialog(requireActivity())
                             startVoidWithValor(paymentDetailsResponse)
 
-                        }
+                        }else if (paymentDetailsResponse.data.ext_data.equals(Constants.DEJAVOO))
 //                    Check if the the PAX is connected or not then perform the void checking
                         else if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
 //                    Check if the transaction is void or not
