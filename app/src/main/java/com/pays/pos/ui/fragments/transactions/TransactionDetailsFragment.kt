@@ -411,7 +411,7 @@ class TransactionDetailsFragment : Fragment() {
                             ProgressUtils.showProgressDialog(requireActivity())
                             startVoidWithValor(paymentDetailsResponse)
 
-                        }else if (paymentDetailsResponse.data.ext_data.equals(Constants.DEJAVOO)){
+                        } else if (paymentDetailsResponse.data.ext_data.equals(Constants.DEJAVOO)) {
                             ProgressUtils.showProgressDialog(requireActivity())
                             startVoidWithDejavoo(paymentDetailsResponse)
                         }
@@ -497,39 +497,47 @@ class TransactionDetailsFragment : Fragment() {
                     xpp.setInput(StringReader(transactionJsonResponse))
                     var eventType = xpp.eventType
 
-                    val parsedXml = parseXml(transactionJsonResponse)/*.getElementsByTagName("xmp").item(0)?.textContent.toString()*/
-                    var Message=""
-                    var RefId=""
-                    var RegisterId=""
-                    var TPN=""
-                    var AuthCode=""
-                    var PNRef=""
-                    var TransNum=""
-                    var ResultCode=""
-                    var RespMSG=""
-                    var PaymentType=""
-                    var Voided=""
-                    var TransType=""
-                    var SN=""
-                    var ExtData=""
+                    var Message = ""
+                    var RefId = ""
+                    var RegisterId = ""
+                    var TPN = ""
+                    var AuthCode = ""
+                    var PNRef = ""
+                    var TransNum = ""
+                    var ResultCode = ""
+                    var RespMSG = ""
+                    var PaymentType = ""
+                    var Voided = ""
+                    var TransType = ""
+                    var SN = ""
+                    var ExtData = ""
                     with(parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes) {
                         for (i in 0 until this.length) {
 
                             when ((this.item(i) as Element).tagName.toString()) {
-                                "Message" -> Message = this.item(i).childNodes.item(0).nodeValue?:""
-                                "RefId" -> RefId = this.item(i).childNodes.item(0).nodeValue?:""
-                                "RegisterId" -> RegisterId = this.item(i).childNodes.item(0).nodeValue?:""
-                                "TPN" -> TPN = this.item(i).childNodes.item(0).nodeValue?:""
-                                "AuthCode" -> AuthCode = this.item(i).childNodes.item(0).nodeValue?:""
-                                "PNRef" -> PNRef = this.item(i).childNodes.item(0).nodeValue?:""
-                                "TransNum" -> TransNum = this.item(i).childNodes.item(0).nodeValue?:""
-                                "ResultCode" -> ResultCode = this.item(i).childNodes.item(0).nodeValue?:""
-                                "RespMSG" -> RespMSG = this.item(i).childNodes.item(0).nodeValue?:""
-                                "PaymentType" -> PaymentType = this.item(i).childNodes.item(0).nodeValue?:""
-                                "Voided" -> Voided = this.item(i).childNodes.item(0).nodeValue?:""
-                                "TransType" -> TransType = this.item(i).childNodes.item(0).nodeValue?:""
-                                "SN" -> SN = this.item(i).childNodes.item(0).nodeValue?:""
-                                "ExtData" -> ExtData = this.item(i).childNodes.item(0).nodeValue?:""
+                                "Message" -> Message =
+                                    this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "RefId" -> RefId = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "RegisterId" -> RegisterId =
+                                    this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "TPN" -> TPN = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "AuthCode" -> AuthCode =
+                                    this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "PNRef" -> PNRef = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "TransNum" -> TransNum =
+                                    this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "ResultCode" -> ResultCode =
+                                    this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "RespMSG" -> RespMSG =
+                                    this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "PaymentType" -> PaymentType =
+                                    this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "Voided" -> Voided = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "TransType" -> TransType =
+                                    this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "SN" -> SN = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "ExtData" -> ExtData =
+                                    this.item(i).childNodes.item(0).nodeValue ?: ""
                                 else -> {
 
                                 }
@@ -537,17 +545,18 @@ class TransactionDetailsFragment : Fragment() {
                         }
                     }
 //                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
-                    if (Message.equals("Canceled") || Message.equals("Error")){
+                    if (Message.equals("Canceled") || Message.equals("Error")) {
                         ProgressUtils.dismissProgressDialog()
-                        AlertUtils.showCustomAlert(requireContext(),RespMSG.replace("%20", " "))
-                    }else if (Message.contains("Approved")){
+                        AlertUtils.showCustomAlert(requireContext(), RespMSG.replace("%20", " "))
+                    } else if (Message.contains("Approved")) {
                         CoroutineScope(Dispatchers.Main).launch {
                             refundCall(paymentDetailsResponse.data.amount)
                         }
-                    }else{
+                    } else {
                         startRefund()
                     }
                 }
+
                 override fun onFailure(errorMessage: String) {
                     EventBus.getDefault()
                         .post(
@@ -575,23 +584,21 @@ class TransactionDetailsFragment : Fragment() {
                   var amount =
                   var reqTxnId = */
 
-            /* Process Payment */
+            /* Process Void */
             context?.let {
                 var dejavoo = Dejavoo(
-                    amount="",
-                        authKey="",
-                isProd = false,
-                paymentType="",
-                performedBy="",
-                printReceipt=false,
-                refId="",
-                registerId="",
-                tip="",
- tpn="",
- transType="",
- txnType=TransactionType.REFUND,
-
-                )
+                    authKey = "kwg2GRbykg",
+                    registerId = "4986101",
+                    tpn = "659324491704",
+                    amount = paymentDetailsResponse.data.amount.toString(),
+                    isProd = false,
+                    paymentType = "Credit",
+                    performedBy = "",
+                    printReceipt = false,
+                    refId = paymentDetailsResponse.data.ref_num,
+                    tip = "",
+                    transType = "Void",
+                    txnType = TransactionType.VOID)
 
                 paymentGateway.voidPayment(
                     it,
@@ -658,7 +665,7 @@ class TransactionDetailsFragment : Fragment() {
                     amount = paymentDetailsResponse.data.amount.toString(),
                     txn_type = Constants.VALOR_VOID,
                     ref_txn_id = paymentDetailsResponse.data.ref_num,
-                    surchargeIndicator="",
+                    surchargeIndicator = "",
                     sale_refund = "",
                     transactionId = ""
                 )
@@ -7587,7 +7594,7 @@ class TransactionDetailsFragment : Fragment() {
     }
 
     override fun onStop() {
-        if (this@TransactionDetailsFragment::paymentCoroutineScope.isInitialized){
+        if (this@TransactionDetailsFragment::paymentCoroutineScope.isInitialized) {
             paymentCoroutineScope.cancel()
         }
 
