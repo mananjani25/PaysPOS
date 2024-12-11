@@ -1862,7 +1862,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
             //    WholetotalPrice =  viewModel.totalPriceUpdated.value ?: 0.0
 
-            Log.e("Dine in"," 4 BEFORE DATA ALREADY UPDATED WHOLE = $WholetotalPrice ${viewModel.totalPriceUpdated.value}")
+            Log.e("Dine in"," Whole Table Price = $WholetotalPrice ${viewModel.totalPriceUpdated.value}")
         }
 
         if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty() || prefProvider.getValue(
@@ -1975,14 +1975,14 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             }
         }
         paymentviewModel.saveActualValue(
-            viewModel.totalPrice,
+            viewModel.totalPriceUpdated.value ?: viewModel.totalPrice,
             viewModel.subTotalPrice,
             viewModel.totalTax,
             viewModel.totalServiceCharge,
             viewModel.tip,
             viewModel.totalDiscount,
             viewModel.cashdiscountAmount,
-            viewModel.totalPrice
+            viewModel.totalPriceUpdated.value ?: viewModel.totalPrice
         )
 
         setupPaymentScreen(isSelectedCount)
@@ -2018,6 +2018,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             binding.tvCash0,
             getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
         )
+
+        Log.e("Whole Table Price","Whole Table Price SPC = $WholetotalPrice")
+
         binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
         MethodUtils.setPriceTextView(
             binding.tvCard,
@@ -2107,13 +2110,13 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     private fun getCalCashDiscWithAmount(totalprice: Double, isCash: Boolean): Double {
         return if (isCash) {
             if (cashDiscountType == "CashDiscount") {
-                totalprice - cashDiscountSurcharge
+                totalprice - viewModel.cashdiscountAmount
             } else {
                 totalprice
             }
         } else {
             if (cashDiscountType == "SurCharge") {
-                totalprice + cashDiscountSurcharge
+                totalprice + viewModel.cashdiscountAmount
             } else {
                 totalprice
             }
