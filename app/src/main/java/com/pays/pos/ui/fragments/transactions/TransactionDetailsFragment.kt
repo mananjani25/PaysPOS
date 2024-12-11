@@ -69,10 +69,7 @@ import com.google.gson.reflect.TypeToken
 import com.pax.poslink.ReportRequest
 import com.pax.poslink.log.LogFilter.Const
 import com.pays.payments.callbacks.PaymentCallback
-import com.pays.payments.design.PaymentGatewayFactory
-import com.pays.payments.design.PaymentGatewayType
-import com.pays.payments.design.TransactionType
-import com.pays.payments.design.Valor
+import com.pays.payments.design.*
 import com.pays.pos.data.model.requestModel.RefundRequestModel
 import com.pays.pos.data.model.valor.ValorSuccessResponse
 import com.pays.pos.data.remote.Constants.BUSINESS_ADDRESS
@@ -99,12 +96,18 @@ import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
+import org.w3c.dom.Document
+import org.w3c.dom.Element
+import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.StringReader
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
+import javax.xml.parsers.DocumentBuilderFactory
 
 @AndroidEntryPoint
 class TransactionDetailsFragment : Fragment() {
@@ -408,7 +411,10 @@ class TransactionDetailsFragment : Fragment() {
                             ProgressUtils.showProgressDialog(requireActivity())
                             startVoidWithValor(paymentDetailsResponse)
 
-                        }else if (paymentDetailsResponse.data.ext_data.equals(Constants.DEJAVOO))
+                        }else if (paymentDetailsResponse.data.ext_data.equals(Constants.DEJAVOO)){
+                            ProgressUtils.showProgressDialog(requireActivity())
+                            startVoidWithDejavoo(paymentDetailsResponse)
+                        }
 //                    Check if the the PAX is connected or not then perform the void checking
                         else if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
 //                    Check if the transaction is void or not
@@ -465,6 +471,137 @@ class TransactionDetailsFragment : Fragment() {
                     )
                 )
         }
+
+    fun parseXml(xmlContent: String): Document {
+        val factory = DocumentBuilderFactory.newInstance()
+        val builder = factory.newDocumentBuilder()
+        return builder.parse(xmlContent.byteInputStream())
+    }
+
+
+    private fun startVoidWithDejavoo(paymentDetailsResponse: GetPaymentOrderDetailsResponse) {
+        paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutineScope.launch {
+            val gatewayType = PaymentGatewayType.DEJAVOO
+            val paymentGateway = paymentGatewayFactory.create(gatewayType)
+
+            val paymentCallback = object : PaymentCallback {
+                override fun onSuccess(transactionId: String) {
+                    var transactionJsonResponse = Gson().fromJson<String>(
+                        transactionId,
+                        String::class.java
+                    )
+                    val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
+                    factory.setNamespaceAware(true)
+                    val xpp: XmlPullParser = factory.newPullParser()
+                    xpp.setInput(StringReader(transactionJsonResponse))
+                    var eventType = xpp.eventType
+
+                    val parsedXml = parseXml(transactionJsonResponse)/*.getElementsByTagName("xmp").item(0)?.textContent.toString()*/
+                    var Message=""
+                    var RefId=""
+                    var RegisterId=""
+                    var TPN=""
+                    var AuthCode=""
+                    var PNRef=""
+                    var TransNum=""
+                    var ResultCode=""
+                    var RespMSG=""
+                    var PaymentType=""
+                    var Voided=""
+                    var TransType=""
+                    var SN=""
+                    var ExtData=""
+                    with(parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes) {
+                        for (i in 0 until this.length) {
+
+                            when ((this.item(i) as Element).tagName.toString()) {
+                                "Message" -> Message = this.item(i).childNodes.item(0).nodeValue?:""
+                                "RefId" -> RefId = this.item(i).childNodes.item(0).nodeValue?:""
+                                "RegisterId" -> RegisterId = this.item(i).childNodes.item(0).nodeValue?:""
+                                "TPN" -> TPN = this.item(i).childNodes.item(0).nodeValue?:""
+                                "AuthCode" -> AuthCode = this.item(i).childNodes.item(0).nodeValue?:""
+                                "PNRef" -> PNRef = this.item(i).childNodes.item(0).nodeValue?:""
+                                "TransNum" -> TransNum = this.item(i).childNodes.item(0).nodeValue?:""
+                                "ResultCode" -> ResultCode = this.item(i).childNodes.item(0).nodeValue?:""
+                                "RespMSG" -> RespMSG = this.item(i).childNodes.item(0).nodeValue?:""
+                                "PaymentType" -> PaymentType = this.item(i).childNodes.item(0).nodeValue?:""
+                                "Voided" -> Voided = this.item(i).childNodes.item(0).nodeValue?:""
+                                "TransType" -> TransType = this.item(i).childNodes.item(0).nodeValue?:""
+                                "SN" -> SN = this.item(i).childNodes.item(0).nodeValue?:""
+                                "ExtData" -> ExtData = this.item(i).childNodes.item(0).nodeValue?:""
+                                else -> {
+
+                                }
+                            }
+                        }
+                    }
+//                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
+                    if (Message.equals("Canceled") || Message.equals("Error")){
+                        ProgressUtils.dismissProgressDialog()
+                        AlertUtils.showCustomAlert(requireContext(),RespMSG.replace("%20", " "))
+                    }else if (Message.contains("Approved")){
+                        CoroutineScope(Dispatchers.Main).launch {
+                            refundCall(paymentDetailsResponse.data.amount)
+                        }
+                    }else{
+                        startRefund()
+                    }
+                }
+                override fun onFailure(errorMessage: String) {
+                    EventBus.getDefault()
+                        .post(
+                            MessageEvent(
+                                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
+                                    Gson().toJson(
+                                        errorMessage
+                                    )
+                                } "
+                            )
+                        )
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+
+
+            /*      var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
+                  var appID = "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
+                  var channelID = "bd967b4e0ccd6309c5ac16634bd367b6"
+                  var epi = "2319995597"
+                  var endpoint = "status"
+                  var transType = TransactionType.CREDIT_SALE
+                  var TRAN_MODE = "1"
+                  var TRAN_CODE = "1"
+                  var amount =
+                  var reqTxnId = */
+
+            /* Process Payment */
+            context?.let {
+                var dejavoo = Dejavoo(
+                    amount="",
+                        authKey="",
+                isProd = false,
+                paymentType="",
+                performedBy="",
+                printReceipt=false,
+                refId="",
+                registerId="",
+                tip="",
+ tpn="",
+ transType="",
+ txnType=TransactionType.REFUND,
+
+                )
+
+                paymentGateway.voidPayment(
+                    it,
+                    dejavoo,
+                    paymentCallback
+                )
+            }
+//            }
+        }
+    }
 
     private fun startVoidWithValor(paymentDetailsResponse: GetPaymentOrderDetailsResponse) {
         paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
