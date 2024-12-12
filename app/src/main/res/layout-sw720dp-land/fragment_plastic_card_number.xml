@@ -75,12 +75,22 @@
             android:background="@null"
             android:digits="0123456789"
             android:gravity="center"
-            android:maxLength="17"
+            android:maxLength="18"
             android:editable="true"
             android:enabled="false"
             android:textColor="@color/btnColor"
             android:textSize="@dimen/_6sdp"
             tools:ignore="MissingConstraints" />
+
+        <ImageView
+            android:id="@+id/btnReadCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:tint="@color/white"
+            android:src="@drawable/ic_round_qr_code_scanner_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

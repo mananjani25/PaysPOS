@@ -266,7 +266,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         setLoyaltyEarnedObserver()
 //        setCommSetting()
 
+        initClickListener()
         return binding.root
+    }
+
+    private fun initClickListener() {
+        binding.btnReadCard.setOnClickListener(object :View.OnClickListener{
+            override fun onClick(p0: View?) {
+                startPAXTestWithGiftCard()
+            }
+        })
     }
 
     private fun setLoyaltyEarnedObserver() {
