@@ -36,9 +36,7 @@ import com.google.gson.reflect.TypeToken
 import com.magtek.mobile.android.mtlib.IMTCardData
 import com.magtek.mobile.android.mtlib.MTConnectionState
 import com.magtek.mobile.android.mtusdk.*
-import com.pax.poslink.PaymentRequest
-import com.pax.poslink.PosLink
-import com.pax.poslink.ProcessTransResult
+import com.pax.poslink.*
 import com.pax.poslink.aidl.BasePOSLinkCallback
 import com.pax.poslink.broadpos.BroadPOSCommunicator
 import com.pax.poslink.fullIntegration.InputAccount
@@ -63,6 +61,7 @@ import com.pays.pos.data.remote.Constants.PRE_AUTH_DETAILS
 import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.remote.Constants.TIP_ADDED
 import com.pays.pos.data.remote.Constants.TIP_ADDED_AMOUNT
+import com.pays.pos.data.remote.PRINT_TRANSACTION_TYPE
 import com.pays.pos.databinding.FragmentCheckoutDetailsNewBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.MagtekModule
@@ -2974,7 +2973,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val cardAmount = binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
                 .replace(")", "").trim().toDouble()
             val cashAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
-            if (cardAmount != 0.00 && cashAmount != 0.00){
+
+            startPAXTestWithGiftCard()
+
+//            Uncomment below code
+            /*if (cardAmount != 0.00 && cashAmount != 0.00){
                 if (prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
                     AlertUtils.showCustomAlert(
                         requireContext(),
@@ -2989,7 +2992,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
             } else {
                 errorDisplay(getString(R.string.payment_amount_is_zero))
-            }
+            }*/
         }
 
         /*binding.llDynamicPayment.setOnSingleClickListener {
@@ -3255,6 +3258,35 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             Handler(Looper.getMainLooper()).postDelayed({
                 it.isEnabled = true  // Re-enable the button after delay
             }, 3000)  // 1000ms = 1 second (adjust the delay based on your use case)
+        }
+    }
+
+    private fun startPAXTestWithGiftCard() {
+        GlobalScope.launch {
+            posLink.SetCommSetting(
+                SettingINI.getCommSettingFromFile(
+                    requireContext(),
+                    "/storage/emulated/0/Download/" + SettingINI.FILENAME
+                )
+            )
+
+            val manageRequest = ManageRequest()
+            manageRequest.TransType = manageRequest.ParseTransType("INPUTACCOUNT")
+            manageRequest.EDCType=manageRequest.ParseEDCType("GIFT")
+            manageRequest.MagneticSwipeEntryFlag = "1"; // Enable swipe entry (adjust based on your use case)
+            manageRequest.ECRRefNum = System.currentTimeMillis().toString(); // Enable swipe entry (adjust based on your use case)
+            posLink.ManageRequest = manageRequest
+            val result = posLink.ProcessTrans()
+
+            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                val msg = Message()
+                msg.what = Constants.TRANSACTION_SUCCESSED
+                msg.obj = posLink.ManageResponse
+
+            } else {
+
+            }
+
         }
     }
 
