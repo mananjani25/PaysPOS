@@ -8926,7 +8926,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         var totalAmt =
             MethodUtils.roundOffAmountDouble(
-                (getDineInOrderDetails?.totalAmount!! + getDineInOrderDetails?.totalServiceCharges!!)
+                (getDineInOrderDetails?.totalAmount!!)
             )
 
         if (payTypeGlb.lowercase() == "Card".lowercase() && prefProvider.getValue(
@@ -8950,7 +8950,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         SunmiPrintHelper.getInstance().lineWrap(1)
         val str5 = padLine(
             "Total Price",
-            "$" + MethodUtils.roundOffAmountString(totalAmt + finalServiceCharges),
+            "$" + MethodUtils.roundOffAmountString(totalAmt),
             if (customerSettingModel.fonts == LARGE) 23 else 48
         ).toString()
         PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(), str5)
