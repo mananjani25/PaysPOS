@@ -1213,7 +1213,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     binding.tvPayNow.text =
                         "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
                     if (viewModel.cartModel?.discountSelectdValue != 0.0 && viewModel.cartModel?.discountSelectdValue != null) {
-                        binding.txtDiscountText.text = "Discount (${viewModel.cartModel?.discountSelectdValue}%)"
+                        binding.txtDiscountText.text = "Discount (${MethodUtils.roundOffAmountDouble(viewModel.cartModel?.discountSelectdValue)}%)"
                     } else {
                         binding.txtDiscountText.text = "Discount"
                     }
@@ -1703,7 +1703,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             binding.txtServiceCharge.text =
                                                 MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                                             if (viewModel.cartModel?.discountSelectdValue != 0.0 && viewModel.cartModel?.discountSelectdValue != null) {
-                                                binding.txtDiscountText.text = "Discount (${viewModel.cartModel?.discountSelectdValue}%)"
+                                                binding.txtDiscountText.text = "Discount (${MethodUtils.roundOffAmountDouble(viewModel.cartModel?.discountSelectdValue)}%)"
                                             } else {
                                                 binding.txtDiscountText.text = "Discount"
                                             }
@@ -2158,7 +2158,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             binding.txtServiceCharge.text =
                                                 MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                                             if (viewModel.cartModel?.discountSelectdValue != 0.0 && viewModel.cartModel?.discountSelectdValue != null) {
-                                                binding.txtDiscountText.text = "Discount (${viewModel.cartModel?.discountSelectdValue}%)"
+                                                binding.txtDiscountText.text = "Discount (${MethodUtils.roundOffAmountDouble(viewModel.cartModel?.discountSelectdValue)}%)"
                                             } else {
                                                 binding.txtDiscountText.text = "Discount"
                                             }
@@ -2564,7 +2564,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
 
             if (viewModel.cartModel?.discountSelectdValue != 0.0 && viewModel.cartModel?.discountSelectdValue != null) {
-                binding.txtDiscountText.text = "Discount (${viewModel.cartModel?.discountSelectdValue}%)"
+                binding.txtDiscountText.text = "Discount (${MethodUtils.roundOffAmountDouble(viewModel.cartModel?.discountSelectdValue)}%)"
             } else {
                 binding.txtDiscountText.text = "Discount"
             }

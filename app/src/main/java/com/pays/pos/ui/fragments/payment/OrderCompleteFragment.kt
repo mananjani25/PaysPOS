@@ -1221,6 +1221,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     /*Added By Rahul  */
     private fun setUpdateEnabledInReceiptModel() {
         if (prefProvider.getValue(Constants.OPEN_ORDER_ITEMS_OLD, "").isNotEmpty()) {
+            if (prefProvider.getValue(Constants.GIFT_CARD_TYPE, "").isEmpty()){ //this block was executed in case of gift card also, hence we are applying the restriction
             var oldDataModel: List<OnlineOrderResponseModel.Data.OrderItem> =
                 Gson().fromJson(
                     prefProvider.getValue(Constants.OPEN_ORDER_ITEMS_OLD, ""),
@@ -1245,6 +1246,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
             Log.d("isOrderUpdated", "870 -> ${isOrderUpdated}")
             isOrderUpdated = isUpdated
+        }else{
+                prefProvider.setValue(Constants.OPEN_ORDER_ITEMS_OLD, "")
+            }
         }
     }
 
@@ -10274,6 +10278,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             } else if (customerReceiptPrinters.name.startsWith(LANDI_INNER_PRINTER, true)) {
                 if (IS_GIFT_CARD_TYPE) {
+                    printingCustomer=false
                     landiInnerPrintForGiftCard(isAutoPrint, customerReceiptPrinters)
                 } else {
                     printFromLandiInnerPrinter(isAutoPrint, customerReceiptPrinters)

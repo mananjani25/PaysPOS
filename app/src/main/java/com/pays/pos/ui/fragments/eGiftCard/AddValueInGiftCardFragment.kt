@@ -27,7 +27,10 @@ import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.utils.*
 import com.pays.pos.utils.extensions.runOnUiThread
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -42,6 +45,7 @@ class AddValueInGiftCardFragment : Fragment() {
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val giftCardViewModel: GiftCardViewModel by viewModels()
     private val TAG = "AddValueInGiftCardFragment"
+    private var giftCardNumberGlb =""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -82,6 +86,26 @@ class AddValueInGiftCardFragment : Fragment() {
     }
 
     private fun setObservables() {
+        dashboardViewModel.physicalcardexistsornot.observe(viewLifecycleOwner,{
+            it.getContentIfNotHandled()?.let {
+
+                Log.e(TAG,"checkIT:  ${it}")
+                if (it == 200){
+
+                    AlertUtils.showCustomAlert(requireContext(),"No gift card found with this number.")
+                }else{
+                    giftCardViewModel.giftCardCheckBalance(
+                        GiftCardCheckBalanceRequest(
+                            giftCardNumberGlb
+                        )
+                    )
+
+                }
+            }
+
+        })
+
+
         giftCardViewModel.giftCardCheckBalanceData.observe(
             viewLifecycleOwner,
             object : Observer<Event<GiftCardCheckBalanceResponse?>> {
@@ -216,6 +240,7 @@ class AddValueInGiftCardFragment : Fragment() {
             MethodUtils.hideSoftKeyboard(requireActivity())
             val amount = binding.edtAmount.text.toString().replace("$", "").trim().toDouble()
             val giftCardNumber = binding.edtGiftCardNumber.text.toString().replace(" ", "")
+            giftCardNumberGlb = giftCardNumber
 
             if(giftCardNumber.length < 8){
                 AlertUtils.showCustomAlert(requireContext(), "Please enter 8-digit gift card number.")
@@ -247,11 +272,14 @@ class AddValueInGiftCardFragment : Fragment() {
 
                 activity?.let {
                     if (InternetUtils.isInternetAvailable(it.applicationContext)) {
-                        giftCardViewModel.giftCardCheckBalance(
+                        dashboardViewModel.checkCardExistOrNot(giftCardNumber)
+
+                       /* giftCardViewModel.giftCardCheckBalance(
                             GiftCardCheckBalanceRequest(
                                 giftCardNumber
                             )
                         )
+                        */
                     }
                 }
 
