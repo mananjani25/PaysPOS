@@ -98,6 +98,16 @@
                     android:textSize="@dimen/_6sdp"
                     app:met_mask="####  #### #### #####" />
 
+                <ImageView
+                    android:id="@+id/btnReadCard"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:tint="@color/white"
+                    android:src="@drawable/ic_round_qr_code_scanner_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/edtGiftCardNumber"
+                    app:layout_constraintTop_toTopOf="parent" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 <!--

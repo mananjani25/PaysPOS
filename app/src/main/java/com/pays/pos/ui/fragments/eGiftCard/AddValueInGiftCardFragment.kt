@@ -3,6 +3,7 @@ package com.pays.pos.ui.fragments.eGiftCard
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
+import android.os.Message
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
+import com.pax.poslink.ManageRequest
+import com.pax.poslink.PosLink
+import com.pax.poslink.ProcessTransResult
 import com.pays.pos.R
 import com.pays.pos.data.entities.CartModel
 import com.pays.pos.data.entities.TbCartItem
@@ -26,13 +30,9 @@ import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.utils.*
 import com.pays.pos.utils.extensions.runOnUiThread
+import com.pays.pos.utils.paxUtils.SettingINI
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -46,6 +46,7 @@ class AddValueInGiftCardFragment : Fragment() {
     private val giftCardViewModel: GiftCardViewModel by viewModels()
     private val TAG = "AddValueInGiftCardFragment"
     private var giftCardNumberGlb =""
+    private var posLink: PosLink = PosLink()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,7 +59,54 @@ class AddValueInGiftCardFragment : Fragment() {
         setObservables()
         setupSnackbar()
         setupProgress()
+        startPAXTestWithGiftCard()
         return binding.root
+    }
+
+    private fun startPAXTestWithGiftCard() {
+        GlobalScope.launch {
+            posLink.SetCommSetting(
+                SettingINI.getCommSettingFromFile(
+                    requireContext(),
+                    "/storage/emulated/0/Download/" + SettingINI.FILENAME
+                )
+            )
+
+            val manageRequest = ManageRequest()
+            manageRequest.TransType = manageRequest.ParseTransType("INPUTACCOUNT")
+            manageRequest.EDCType=manageRequest.ParseEDCType("GIFT")
+            manageRequest.MagneticSwipeEntryFlag = "1";
+            manageRequest.ManualEntryFlag = "1";
+            manageRequest.ContactlessEntryFlag = "0";
+            manageRequest.TimeOut = "1000";
+            manageRequest.ContinuousScreen = "0";
+            manageRequest.ECRRefNum = System.currentTimeMillis().toString(); // Enable swipe entry (adjust based on your use case)
+            posLink.ManageRequest = manageRequest
+            val result = posLink.ProcessTrans()
+
+            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                val msg = Message()
+                msg.what = Constants.TRANSACTION_SUCCESSED
+                msg.obj = posLink.ManageResponse
+                val response = msg.obj as com.pax.poslink.ManageResponse
+                val resultCode = response.ResultCode
+
+                if (resultCode == "000000") {
+                    runOnUiThread(Runnable {
+                        with(binding){
+                            edtGiftCardNumber.text?.clear()
+                            edtGiftCardNumber.setText(response.PAN.toString())
+                        }
+                    })
+                }else{
+                    runOnUiThread(Runnable {
+                        AlertUtils.showCustomAlert(requireContext(),response.ResultTxt)
+                    })
+                }
+
+            }
+
+        }
     }
 
     private fun setupProgress() {
@@ -229,7 +277,26 @@ class AddValueInGiftCardFragment : Fragment() {
         return str.substring(0, str.length - 1)
     }
 
+    private fun closePaxRequest(){
+        try{
+            posLink.CancelTrans()
+        }catch (e:Exception){}
+    }
+
+    override fun onStop() {
+        closePaxRequest()
+        super.onStop()
+    }
+
     private fun onClick() {
+        binding.btnReadCard?.let {
+            it.setOnClickListener(object:View.OnClickListener{
+                override fun onClick(p0: View?) {
+                    startPAXTestWithGiftCard()
+                }
+            })
+        }
+
 
         binding.imgBack.setOnClickListener {
             clearCartOnBackPress()
@@ -237,6 +304,7 @@ class AddValueInGiftCardFragment : Fragment() {
         }
 
         binding.txtNext.setOnClickListener {
+            closePaxRequest()
             MethodUtils.hideSoftKeyboard(requireActivity())
             val amount = binding.edtAmount.text.toString().replace("$", "").trim().toDouble()
             val giftCardNumber = binding.edtGiftCardNumber.text.toString().replace(" ", "")

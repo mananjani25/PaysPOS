@@ -103,11 +103,11 @@
                     android:importantForAutofill="no"
                     android:inputType="number"
                     android:padding="@dimen/_3sdp"
-                    android:maxLength="15"
+                    android:maxLength="17"
                     android:textColor="@color/btnColor"
                     android:textColorHint="@color/hint_color"
                     android:textSize="@dimen/_6sdp"
-                    app:met_mask="####  ####" />
+                    app:met_mask="#### #### #### ###" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

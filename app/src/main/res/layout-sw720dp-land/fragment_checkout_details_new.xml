@@ -952,6 +952,7 @@
                     android:text="@string/hint_enter_your_gift_card_number"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_8mdpi" />
+
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.LinearLayoutCompat
@@ -981,11 +982,21 @@
                     android:hint="@string/_xxxx_xxxx"
                     android:importantForAutofill="no"
                     android:inputType="number"
-                    android:maxLength="17"
+                    android:maxLength="18"
                     android:textColor="@color/btnColor"
                     android:textColorHint="@color/hint_color"
                     android:textSize="@dimen/_7mdpi"
                     app:met_mask="######  ###### ##### ####" />
+
+                <ImageView
+                    android:id="@+id/btnReadCard"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:tint="@color/white"
+                    android:src="@drawable/ic_round_qr_code_scanner_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/edtGiftCardNumber"
+                    app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
