@@ -67,7 +67,6 @@ import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
 import com.google.gson.reflect.TypeToken
 import com.pax.poslink.ReportRequest
-import com.pax.poslink.log.LogFilter.Const
 import com.pays.payments.callbacks.PaymentCallback
 import com.pays.payments.design.*
 import com.pays.pos.data.model.requestModel.RefundRequestModel
@@ -413,7 +412,7 @@ class TransactionDetailsFragment : Fragment() {
 
                         } else if (paymentDetailsResponse.data.ext_data.equals(Constants.DEJAVOO)) {
                             ProgressUtils.showProgressDialog(requireActivity())
-                            startVoidWithDejavoo(paymentDetailsResponse)
+                            checkIfDejavooTransactionEligibleForVoid(paymentDetailsResponse)
                         }
 //                    Check if the the PAX is connected or not then perform the void checking
                         else if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
@@ -479,7 +478,124 @@ class TransactionDetailsFragment : Fragment() {
     }
 
 
-    private fun startVoidWithDejavoo(paymentDetailsResponse: GetPaymentOrderDetailsResponse) {
+    private fun checkIfDejavooTransactionEligibleForVoid(paymentDetailsResponse: GetPaymentOrderDetailsResponse) {
+        paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutineScope.launch {
+            val gatewayType = PaymentGatewayType.DEJAVOO
+            val paymentGateway = paymentGatewayFactory.create(gatewayType)
+
+            val paymentCallback = object : PaymentCallback {
+                override fun onSuccess(transactionId: String) {
+                    var transactionJsonResponse = Gson().fromJson<String>(
+                        transactionId,
+                        String::class.java
+                    )
+                    val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
+                    factory.setNamespaceAware(true)
+                    val xpp: XmlPullParser = factory.newPullParser()
+                    xpp.setInput(StringReader(transactionJsonResponse))
+                    var eventType = xpp.eventType
+
+                    var Message = ""
+                    var ResultCode = ""
+                    var RespMSG = ""
+                    with(parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes) {
+                        for (i in 0 until this.length) {
+
+                            when ((this.item(i) as Element).tagName.toString()) {
+                                "Message" -> Message =
+                                    this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "ResultCode" -> ResultCode =
+                                    this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "RespMSG" -> RespMSG =
+                                    this.item(i).childNodes.item(0).nodeValue ?: ""
+                                else -> {
+
+                                }
+                            }
+                        }
+                    }
+//                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
+                    if (Message.equals("Canceled") || Message.equals("Error")) {
+                        ProgressUtils.dismissProgressDialog()
+                        AlertUtils.showCustomAlert(requireContext(), RespMSG.replace("%20", " "))
+                    } else if (ResultCode.equals("0")) { // Found the transaction, proceed with VOID
+                        CoroutineScope(Dispatchers.Main).launch {
+                            startVoidWithDejavoo()
+                        }
+                    }else if (ResultCode.equals("1")){
+                        startRefund()
+                    }
+                }
+
+                override fun onFailure(errorMessage: String) {
+                    EventBus.getDefault()
+                        .post(
+                            MessageEvent(
+                                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
+                                    Gson().toJson(
+                                        errorMessage
+                                    )
+                                } "
+                            )
+                        )
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+
+
+          /*  context?.let {
+                var dejavoo = Dejavoo(
+                    authKey = "kwg2GRbykg",
+                    registerId = "4986101",
+                    tpn = "659324491704",
+                    amount = paymentDetailsResponse.data.amount.toString(),
+                    isProd = false,
+                    paymentType = "Credit",
+                    performedBy = "",
+                    printReceipt = false,
+                    refId = paymentDetailsResponse.data.ref_num,
+                    tip = "",
+                    transType = *//*"Return"*//*"Void",
+                    txnType = TransactionType.VOID)
+
+                paymentGateway.voidPayment(
+                    it,
+                    dejavoo,
+                    paymentCallback
+                )
+            }*/
+
+
+
+
+//            ---------------------------------------------- To Fetch Transaction Details--------------
+            context?.let {
+                var dejavoo = Dejavoo(
+                    authKey = "kwg2GRbykg",
+                    registerId = "4986101",
+                    tpn = "659324491704",
+                    amount = "",
+                    isProd = false,
+                    paymentType = "Credit",
+                    performedBy = "",
+                    printReceipt = false,
+                    refId = paymentDetailsResponse.data.ref_num,
+                    tip = "",
+                    transType ="Status",
+                    txnType = TransactionType.VOID)
+
+                paymentGateway.voidPayment(
+                    it,
+                    dejavoo,
+                    paymentCallback
+                )
+            }
+//            }
+        }
+    }
+
+    private fun startVoidWithDejavoo(){
         paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
         paymentCoroutineScope.launch {
             val gatewayType = PaymentGatewayType.DEJAVOO
@@ -548,11 +664,11 @@ class TransactionDetailsFragment : Fragment() {
                     if (Message.equals("Canceled") || Message.equals("Error")) {
                         ProgressUtils.dismissProgressDialog()
                         AlertUtils.showCustomAlert(requireContext(), RespMSG.replace("%20", " "))
-                    } else if (Message.contains("Approved")) {
+                    } else if (ResultCode.equals("0")) { // Found the transaction, proceed with VOID
                         CoroutineScope(Dispatchers.Main).launch {
                             refundCall(paymentDetailsResponse.data.amount)
                         }
-                    } else {
+                    }else if (ResultCode.equals("0")){
                         startRefund()
                     }
                 }
@@ -572,32 +688,19 @@ class TransactionDetailsFragment : Fragment() {
                 }
             }
 
-
-            /*      var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
-                  var appID = "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
-                  var channelID = "bd967b4e0ccd6309c5ac16634bd367b6"
-                  var epi = "2319995597"
-                  var endpoint = "status"
-                  var transType = TransactionType.CREDIT_SALE
-                  var TRAN_MODE = "1"
-                  var TRAN_CODE = "1"
-                  var amount =
-                  var reqTxnId = */
-
-            /* Process Void */
-            context?.let {
-                var dejavoo = Dejavoo(
-                    authKey = "kwg2GRbykg",
-                    registerId = "4986101",
-                    tpn = "659324491704",
-                    amount = paymentDetailsResponse.data.amount.toString(),
-                    isProd = false,
-                    paymentType = "Credit",
-                    performedBy = "",
-                    printReceipt = false,
-                    refId = paymentDetailsResponse.data.ref_num,
-                    tip = "",
-                    transType = /*"Return"*/"Void",
+              context?.let {
+                  var dejavoo = Dejavoo(
+                      authKey = "kwg2GRbykg",
+                      registerId = "4986101",
+                      tpn = "659324491704",
+                      amount = paymentDetailsResponse.data.amount.toString(),
+                      isProd = false,
+                      paymentType = "Credit",
+                      performedBy = "",
+                      printReceipt = false,
+                      refId = paymentDetailsResponse.data.ref_num,
+                      tip = "",
+                      transType = "Void",
                     txnType = TransactionType.VOID)
 
                 paymentGateway.voidPayment(
