@@ -597,7 +597,7 @@ class TransactionDetailsFragment : Fragment() {
                     printReceipt = false,
                     refId = paymentDetailsResponse.data.ref_num,
                     tip = "",
-                    transType = "Void",
+                    transType = /*"Return"*/"Void",
                     txnType = TransactionType.VOID)
 
                 paymentGateway.voidPayment(
