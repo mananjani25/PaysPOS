@@ -8924,10 +8924,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //            it.amount++
 //        }
 
-        var totalAmt =
-            MethodUtils.roundOffAmountDouble(
-                (getDineInOrderDetails?.totalAmount!!)
-            )
+        var totalAmt = 0.0
+        if (tipAmount != 0.0 && tipAmount != null) {
+            totalAmt =
+                MethodUtils.roundOffAmountDouble(
+                    getDineInOrderDetails?.subTotal!! + getDineInOrderDetails?.totalTaxAmount!! + getDineInOrderDetails?.totalServiceCharges!! + tipAmount
+                )
+        } else {
+            totalAmt =
+                MethodUtils.roundOffAmountDouble(
+                    getDineInOrderDetails?.subTotal!! + getDineInOrderDetails?.totalTaxAmount!! + getDineInOrderDetails?.totalServiceCharges!!
+                )
+        }
 
         if (payTypeGlb.lowercase() == "Card".lowercase() && prefProvider.getValue(
                 OPTION_TYPE,
