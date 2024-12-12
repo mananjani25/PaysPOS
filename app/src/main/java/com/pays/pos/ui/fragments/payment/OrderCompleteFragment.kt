@@ -8925,7 +8925,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //        }
 
         var totalAmt = 0.0
-        if (tipAmount != 0.0 && tipAmount != null) {
+        if (tipAmount != 0.0) {
             totalAmt =
                 MethodUtils.roundOffAmountDouble(
                     getDineInOrderDetails?.subTotal!! + getDineInOrderDetails?.totalTaxAmount!! + getDineInOrderDetails?.totalServiceCharges!! + tipAmount
