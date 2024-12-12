@@ -2977,7 +2977,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             startPAXTestWithGiftCard()
 
 //            Uncomment below code
-            /*if (cardAmount != 0.00 && cashAmount != 0.00){
+            if (cardAmount != 0.00 && cashAmount != 0.00){
                 if (prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
                     AlertUtils.showCustomAlert(
                         requireContext(),
@@ -2992,7 +2992,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
             } else {
                 errorDisplay(getString(R.string.payment_amount_is_zero))
-            }*/
+            }
         }
 
         /*binding.llDynamicPayment.setOnSingleClickListener {
@@ -3142,9 +3142,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         binding.imgBackGiftCard.setOnSingleClickListener {
             MethodUtils.hideKeyboard(requireActivity())
             isManualCard = false
-            binding.relativeMain.visible()
-            binding.llGiftCard.gone()
+            with(binding) {
+                relativeMain.visible()
+                llGiftCard.gone()
+                edtGiftCardNumber.text?.clear()
+            }
+            try {
+                posLink.CancelTrans()
+            }catch (e:Exception){
 
+            }
         }
 
         binding.txtCharge.setOnSingleClickListener {
@@ -3273,7 +3280,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val manageRequest = ManageRequest()
             manageRequest.TransType = manageRequest.ParseTransType("INPUTACCOUNT")
             manageRequest.EDCType=manageRequest.ParseEDCType("GIFT")
-            manageRequest.MagneticSwipeEntryFlag = "1"; // Enable swipe entry (adjust based on your use case)
+            manageRequest.MagneticSwipeEntryFlag = "1";
+            manageRequest.ManualEntryFlag = "1";
+            manageRequest.ContactlessEntryFlag = "0";
+            manageRequest.TimeOut = "1000";
+            manageRequest.ContinuousScreen = "0";
             manageRequest.ECRRefNum = System.currentTimeMillis().toString(); // Enable swipe entry (adjust based on your use case)
             posLink.ManageRequest = manageRequest
             val result = posLink.ProcessTrans()
@@ -3282,8 +3293,21 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 val msg = Message()
                 msg.what = Constants.TRANSACTION_SUCCESSED
                 msg.obj = posLink.ManageResponse
+                val response = msg.obj as com.pax.poslink.ManageResponse
+                val resultCode = response.ResultCode
 
-            } else {
+                if (resultCode == "000000") {
+                    runOnUiThread(Runnable {
+                        with(binding){
+                            edtGiftCardNumber.text?.clear()
+                            edtGiftCardNumber.setText(response.PAN.toString())
+                        }
+                    })
+                }else{
+                    runOnUiThread(Runnable {
+                        AlertUtils.showCustomAlert(requireContext(),response.ResultTxt)
+                    })
+                }
 
             }
 
@@ -3340,7 +3364,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     if (isAdded) {
 
                         if (it.data.amount == 0.0) {
-                            binding.edtGiftCardNumber.setText("")
+//                            binding.edtGiftCardNumber.setText("")
                             prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, false)
                             AlertUtils.showCustomAlertWithListenerWithOK(
                                 requireContext(),
