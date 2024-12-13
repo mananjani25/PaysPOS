@@ -34,6 +34,8 @@ object Constants {
     const val OLD_ITEM: String = "OLD_ITEM"
     const val OLD_ITEM_BASE: String = "OLD_ITEM_BASE"
 
+
+
     /*This variable will track if the order id should be printed in Sticky Receipt*/
 //    const val STICKY_ORDER_ID: String = "STICKY_ORDER_ID"
 
@@ -154,6 +156,9 @@ object Constants {
     const val BUNDLE_PAYMENT_OFFLINE_ID = "BUNDLE_PAYMENT_OFFLINE_ID"
     const val BUNDLE_ORDER_OFFLINE_ID = "BUNDLE_ORDER_OFFLINE_ID"
     const val BUNDLE_ISLOYALTYAPPLIED = "BUNDLE_ISLOYALTYAPPLIED"
+
+    const val SUNMI_APP_ID = "889a389072224d10b641e90b9cc26856"
+    const val RANDOM_NUMBER_FOR_SUNMI = "A2B5C9"
 
     const val TAKEOUT = "TakeOut"
     const val DINE_IN = "DineIn"
