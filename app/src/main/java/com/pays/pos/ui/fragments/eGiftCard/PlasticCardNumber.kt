@@ -1,11 +1,13 @@
 package com.pays.pos.ui.fragments.eGiftCard
 
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Message
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -25,6 +27,7 @@ import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.calculateTipAmt
 import com.pays.pos.utils.extensions.invisible
 import com.pays.pos.utils.extensions.runOnUiThread
+import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.paxUtils.SettingINI
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -61,8 +64,11 @@ class PlasticCardNumber : Fragment() {
         startPAXTestWithGiftCard()
 
     }
+    private var countDownTimer: CountDownTimer? = null
 
     private fun closePaxRequest(){
+        countDownTimer?.cancel()
+        countDownTimer=null
         try{
             posLink.CancelTrans()
         }catch (e:Exception){}
@@ -104,9 +110,7 @@ class PlasticCardNumber : Fragment() {
                         }
                     })
                 } else {
-                    runOnUiThread(Runnable {
-                        AlertUtils.showCustomAlert(requireContext(), response.ResultTxt)
-                    })
+
                 }
 
             }
@@ -302,8 +306,20 @@ class PlasticCardNumber : Fragment() {
     private fun onClick() {
 
         binding.btnReadCard?.let {
-            it.setOnClickListener(object:View.OnClickListener{
+            it.setOnSingleClickListener(object:View.OnClickListener{
                 override fun onClick(p0: View?) {
+
+                    countDownTimer?.cancel()
+                    binding.btnReadCard?.isClickable=false
+
+                    countDownTimer = object : CountDownTimer(5000, 1000) {
+                        override fun onTick(millisUntilFinished: Long) {
+                        }
+                        override fun onFinish() {
+                            binding.btnReadCard?.isClickable=false
+                        }
+                    }.start()
+
                     startPAXTestWithGiftCard()
                 }
             })
@@ -333,10 +349,8 @@ class PlasticCardNumber : Fragment() {
             if (binding.edtAmount?.text.toString().trim().length < 13) {
                 AlertUtils.showCustomAlert(requireContext(), "Please enter Valid Gift Card number")
             } else {
-
+               closePaxRequest()
                 dashboardViewModel.checkCardExistOrNot(binding.edtAmount?.text.toString().trim())
-
-
             }
         }
 

@@ -8,10 +8,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
+import android.os.*
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -270,9 +267,22 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         return binding.root
     }
 
+    private var countDownTimer: CountDownTimer? = null
     private fun initClickListener() {
-        binding.btnReadCard.setOnClickListener(object :View.OnClickListener{
+        binding.btnReadCard.setOnSingleClickListener(object :View.OnClickListener{
             override fun onClick(p0: View?) {
+
+                countDownTimer?.cancel()
+                binding.btnReadCard?.isClickable=false
+
+                countDownTimer = object : CountDownTimer(5000, 1000) {
+                    override fun onTick(millisUntilFinished: Long) {
+                    }
+                    override fun onFinish() {
+                        binding.btnReadCard?.isClickable=false
+                    }
+                }.start()
+
                 startPAXTestWithGiftCard()
             }
         })
@@ -333,10 +343,19 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     override fun onStop() {
         super.onStop()
+        closePaxRequest()
         if (this::presentation.isInitialized) {
             presentation.show()
             // presentation.onLogOutOrClockOutWithApiService(apiService)
         }
+    }
+
+    private fun closePaxRequest(){
+        countDownTimer?.cancel()
+        countDownTimer=null
+        try{
+            posLink.CancelTrans()
+        }catch (e:Exception){}
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -3262,6 +3281,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 it.isEnabled = true
                 return@setOnSingleClickListener
             } else if (giftCardNumber.isNotEmpty() && giftCardNumber.length > 8) {
+                closePaxRequest()
                 giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
 
             } else {
@@ -3313,9 +3333,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         }
                     })
                 }else{
-                    runOnUiThread(Runnable {
-                        AlertUtils.showCustomAlert(requireContext(),response.ResultTxt)
-                    })
+
                 }
 
             }

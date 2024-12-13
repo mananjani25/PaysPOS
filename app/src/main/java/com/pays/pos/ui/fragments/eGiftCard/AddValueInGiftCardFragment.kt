@@ -3,6 +3,7 @@ package com.pays.pos.ui.fragments.eGiftCard
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Message
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -30,6 +32,7 @@ import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.utils.*
 import com.pays.pos.utils.extensions.runOnUiThread
+import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.paxUtils.SettingINI
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -99,9 +102,7 @@ class AddValueInGiftCardFragment : Fragment() {
                         }
                     })
                 }else{
-                    runOnUiThread(Runnable {
-                        AlertUtils.showCustomAlert(requireContext(),response.ResultTxt)
-                    })
+
                 }
 
             }
@@ -278,6 +279,8 @@ class AddValueInGiftCardFragment : Fragment() {
     }
 
     private fun closePaxRequest(){
+        countDownTimer?.cancel()
+        countDownTimer=null
         try{
             posLink.CancelTrans()
         }catch (e:Exception){}
@@ -288,10 +291,22 @@ class AddValueInGiftCardFragment : Fragment() {
         super.onStop()
     }
 
+    private var countDownTimer: CountDownTimer? = null
     private fun onClick() {
         binding.btnReadCard?.let {
-            it.setOnClickListener(object:View.OnClickListener{
+            it.setOnSingleClickListener(object:View.OnClickListener{
                 override fun onClick(p0: View?) {
+                    countDownTimer?.cancel()
+                    binding.btnReadCard?.isClickable=false
+
+                    countDownTimer = object : CountDownTimer(5000, 1000) {
+                        override fun onTick(millisUntilFinished: Long) {
+                        }
+                        override fun onFinish() {
+                            binding.btnReadCard?.isClickable=false
+                        }
+                    }.start()
+
                     startPAXTestWithGiftCard()
                 }
             })

@@ -1,6 +1,7 @@
 package com.pays.pos.ui.fragments.eGiftCard
 
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Message
 import android.util.Log
 import android.view.LayoutInflater
@@ -23,6 +24,7 @@ import com.pays.pos.utils.MethodUtils.Companion.toPrecision
 import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.runOnUiThread
+import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.paxUtils.SettingINI
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.GlobalScope
@@ -49,6 +51,8 @@ class BalanceInquiryFragment : Fragment() {
     }
 
     private fun closePaxRequest(){
+        countDownTimer?.cancel()
+        countDownTimer=null
         try{
             posLink.CancelTrans()
         }catch (e:Exception){}
@@ -94,9 +98,7 @@ class BalanceInquiryFragment : Fragment() {
                         }
                     })
                 }else{
-                    runOnUiThread(kotlinx.coroutines.Runnable {
-                        AlertUtils.showCustomAlert(requireContext(), response.ResultTxt)
-                    })
+
                 }
 
             }
@@ -165,11 +167,25 @@ class BalanceInquiryFragment : Fragment() {
         }
     }
 
+
+    private var countDownTimer: CountDownTimer? = null
+
     private fun onClick() {
 
         binding.btnReadCard?.let {
-            it.setOnClickListener(object:View.OnClickListener{
+            it.setOnSingleClickListener(object:View.OnClickListener{
                 override fun onClick(p0: View?) {
+
+                    countDownTimer?.cancel()
+                    binding.btnReadCard?.isClickable=false
+
+                    countDownTimer = object : CountDownTimer(5000, 1000) {
+                        override fun onTick(millisUntilFinished: Long) {
+                        }
+                        override fun onFinish() {
+                            binding.btnReadCard?.isClickable=false
+                        }
+                    }.start()
                     startPAXTestWithGiftCard()
                 }
             })
@@ -186,6 +202,7 @@ class BalanceInquiryFragment : Fragment() {
                 giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = inputGiftCardNumber))
             }
             else if(inputGiftCardNumber.isNotEmpty() && (inputGiftCardNumber.length == 13 || inputGiftCardNumber.length == 17)){
+                closePaxRequest()
                 giftCardViewModel.physcialGiftCardCheckBalance(GiftCardCheckBalanceRequest(name = inputGiftCardNumber))
 
             }
