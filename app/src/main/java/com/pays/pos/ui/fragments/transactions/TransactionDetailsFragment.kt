@@ -519,11 +519,11 @@ class TransactionDetailsFragment : Fragment() {
                     if (Message.equals("Canceled") || Message.equals("Error")) {
                         ProgressUtils.dismissProgressDialog()
                         AlertUtils.showCustomAlert(requireContext(), RespMSG.replace("%20", " "))
-                    } else if (ResultCode.equals("0")) { // Found the transaction, proceed with VOID
+                    } else if (Message.contains("approved", ignoreCase = true)) { // Found the transaction, proceed with VOID
                         CoroutineScope(Dispatchers.Main).launch {
                             startVoidWithDejavoo()
                         }
-                    }else if (ResultCode.equals("1")){
+                    }else if (Message.contains("Not found", ignoreCase = true)){
                         startRefund()
                     }
                 }
