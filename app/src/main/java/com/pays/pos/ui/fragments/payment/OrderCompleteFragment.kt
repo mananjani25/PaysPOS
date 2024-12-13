@@ -4386,7 +4386,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     val str5 = padLine(
                                         "Total Price",
                                         "$" + MethodUtils.roundOffAmountString(
-                                            guestPayment?.amount ?: 0.0
+                                            (guestPayment!!.amount + tipAmount) ?: 0.0
                                         ),
                                         48
                                     ).toString()
@@ -4411,7 +4411,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                         val str7 = padLine(
                                             "Change Amount",
-                                            "$" + MethodUtils.roundOffAmountString(changeAmtGlobal + tipAmount),
+                                            "$" + MethodUtils.roundOffAmountString((paidAmount + tipAmount) - (guestPayment!!.amount + tipAmount) ),
                                             48
                                         ).toString()
 
@@ -4903,23 +4903,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-//            var totalAmt = checkOutDineInModel.subTotal + checkOutDineInModel.totalTax + checkOutDineInModel.totalServiceCharge - checkOutDineInModel.totalDiscount + tipAmount
+            var totalAmt = checkOutDineInModel.subTotal + checkOutDineInModel.totalTax + checkOutDineInModel.totalServiceCharge - checkOutDineInModel.totalDiscount + tipAmount
 
-            var totalAmt = checkOutDineInModel.totalAmount + tipAmount
 
-//            if (payTypeGlb.lowercase() == "Cash".lowercase() && prefProvider.getValue(
-//                    OPTION_TYPE,
-//                    ""
-//                ).lowercase() == "CashDiscount".lowercase()
-//            ) {
-//
-//                totalAmt = MethodUtils.roundOffAmountDouble(totalAmt - noCashAdjGlobal)
-//            } else if (payTypeGlb.lowercase() == "Card".lowercase() && prefProvider.getValue(
-//                    OPTION_TYPE, ""
-//                ).lowercase() == "SurCharge".lowercase()
-//            ) {
-//                totalAmt = MethodUtils.roundOffAmountDouble(totalAmt + noCashAdjGlobal)
-//            }
+            if (payTypeGlb.lowercase() == "Cash".lowercase() && prefProvider.getValue(
+                    OPTION_TYPE,
+                    ""
+                ).lowercase() == "CashDiscount".lowercase()
+            ) {
+
+                totalAmt = MethodUtils.roundOffAmountDouble(totalAmt - noCashAdjGlobal)
+            } else if (payTypeGlb.lowercase() == "Card".lowercase() && prefProvider.getValue(
+                    OPTION_TYPE, ""
+                ).lowercase() == "SurCharge".lowercase()
+            ) {
+                totalAmt = MethodUtils.roundOffAmountDouble(totalAmt + noCashAdjGlobal)
+            }
 
             SunmiPrintHelper.getInstance().lineWrap(1)
 
@@ -4950,7 +4949,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             val str7 = padLine(
                 "Change Amount",
-                "$" + MethodUtils.roundOffAmountString(totalAmt - (paidAmount + tipAmount)),
+                "$" + MethodUtils.roundOffAmountString((paidAmount + tipAmount) - totalAmt),
                 if (customerSettingModel.fonts == LARGE) 23 else 48
             ).toString()
 
