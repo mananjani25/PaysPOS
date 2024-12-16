@@ -297,7 +297,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     override fun onTick(millisUntilFinished: Long) {
                     }
                     override fun onFinish() {
-                        binding.btnReadCard?.isClickable=false
+                        binding.btnReadCard?.isClickable=true
                     }
                 }.start()
 

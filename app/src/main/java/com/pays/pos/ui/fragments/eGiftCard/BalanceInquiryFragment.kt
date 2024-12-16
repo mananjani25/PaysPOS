@@ -184,7 +184,7 @@ class BalanceInquiryFragment : Fragment() {
                         override fun onTick(millisUntilFinished: Long) {
                         }
                         override fun onFinish() {
-                            binding.btnReadCard?.isClickable=false
+                            binding.btnReadCard?.isClickable=true
                         }
                     }.start()
                     startPAXTestWithGiftCard()
