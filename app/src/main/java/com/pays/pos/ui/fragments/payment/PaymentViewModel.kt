@@ -141,6 +141,7 @@ open class PaymentViewModel @Inject constructor(
     var paxGlobalID: String? = null
     public var magensaResponseDataClass: MagensaResponse? = null
 
+    var dejavooRefTxnId: String? = null
     var valorRefTxnId: String? = null
     var valorTransactionNumber: String? = null
 

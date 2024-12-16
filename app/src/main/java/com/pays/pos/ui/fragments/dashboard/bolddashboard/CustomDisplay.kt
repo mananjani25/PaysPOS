@@ -88,8 +88,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayOutputStream
-import javax.inject.Inject
-import kotlin.math.roundToInt
 
 
 class CustomDisplay(
@@ -2878,7 +2876,7 @@ class CustomDisplay(
             }else if (prefProvider.getValue(
                     Constants.VALOR_APP_ID, ""
                 ).isNullOrEmpty()){
-                makeDejavooTipAdjustmentRequest()
+                adjustDejavooTips()
             }else if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
                 magtekCall(wholeTotalPrice)
             } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
@@ -2905,7 +2903,7 @@ class CustomDisplay(
         }
     }
 
-    private fun makeDejavooTipAdjustmentRequest() {
+    private fun adjustDejavooTips() {
         paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
         paymentCoroutineScope.launch {
             val gatewayType = PaymentGatewayType.DEJAVOO
@@ -2922,6 +2920,7 @@ class CustomDisplay(
                         transactionId,
                         String::class.java
                     )
+                    mPaymentViewModel.dejavooRefTxnId=null
 //                    transactionJsonResponse.nameValuePairs?.let {
 //                        if (it.msg != null) {
 //                            if (it.msg!!.contains(
@@ -2956,26 +2955,28 @@ class CustomDisplay(
                     })*/
                 }
             }
-            var dejavoo=Dejavoo(
-                registerId=  "4986101",
-                authKey=  "kwg2GRbykg",
-                tpn= "659324491704",
-                paymentType = "Credit",
-                transType="TipAdjust",
-                amount= tippedAmount.toString(),
-                refId= "Ref${System.currentTimeMillis()}",
-                printReceipt= false,
-                performedBy=  prefProvider.employeeName(),
-                isProd= false,
-                txnType = TransactionType.TIP_ADJUSTMENT
-            )
-                    paymentGateway.processPayment(
-                        context,
-                        dejavoo,
-                        paymentCallback
-                    )
-            /* Process Tip Adjust */
 
+            mPaymentViewModel.dejavooRefTxnId?.let {dejavooRefTxnId->
+                var dejavoo=Dejavoo(
+                    registerId=  "4986101",
+                    authKey=  "kwg2GRbykg",
+                    tpn= "659324491704",
+                    paymentType = "Credit",
+                    transType="TipAdjust",
+                    amount= tippedAmount.toString(),
+                    refId= dejavooRefTxnId,
+                    printReceipt= false,
+                    performedBy=  prefProvider.employeeName(),
+                    isProd= false,
+                    txnType = TransactionType.TIP_ADJUSTMENT
+                )
+                paymentGateway.processPayment(
+                    context,
+                    dejavoo,
+                    paymentCallback
+                )
+                /* Process Tip Adjust */
+            }
         }
     }
 

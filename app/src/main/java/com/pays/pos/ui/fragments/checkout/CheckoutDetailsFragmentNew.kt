@@ -5070,7 +5070,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun makePaymentCreditCardDejavoo(txnid: String?, extData: String?) {
-//        paymentviewModel.valorRefTxnId = txnid
+        paymentviewModel.dejavooRefTxnId = txnid
 //        paymentviewModel.valorTransactionNumber = transactionNumber
         paymentAmount -= tipAmount
         paymentAmount = MethodUtils.roundOffAmountDouble(paymentAmount)
