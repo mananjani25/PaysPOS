@@ -10792,7 +10792,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                          */
 
                                         val calculateTotal = order?.let {
-                                            it.subTotal + it.totalServiceCharges + it.totalTaxAmount
+                                            it.subTotal + it.totalServiceCharges + it.totalTaxAmount + it.totalTips - it.loyaltyAmount
                                         }
                                         val totalAmt =
                                             MethodUtils.roundOffAmountDouble(calculateTotal)
