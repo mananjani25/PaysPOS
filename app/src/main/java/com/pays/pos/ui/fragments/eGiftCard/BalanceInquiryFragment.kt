@@ -46,16 +46,16 @@ class BalanceInquiryFragment : Fragment() {
         hideDefaultKeypads()
         onClick()
         showProgressObserver()
-        startPAXTestWithGiftCard()
+//        startPAXTestWithGiftCard()
         return binding.root
     }
 
     private fun closePaxRequest(){
         countDownTimer?.cancel()
         countDownTimer=null
-        try{
-            posLink.CancelTrans()
-        }catch (e:Exception){}
+//        try{
+//            posLink.CancelTrans()
+//        }catch (e:Exception){}
     }
 
     override fun onStop() {
@@ -95,6 +95,7 @@ class BalanceInquiryFragment : Fragment() {
                         with(binding) {
                             edtGiftCardNumber.text?.clear()
                             edtGiftCardNumber.setText(response.PAN.toString())
+                            checkBalanceEnquiryForGiftcard()
                         }
                     })
                 }else{
@@ -196,21 +197,24 @@ class BalanceInquiryFragment : Fragment() {
 
         // to check balance of existing gift card
         binding.txtCheckBalance.setOnClickListener {
-            val inputGiftCardNumber = binding.edtGiftCardNumber.text.toString().replace(" ","")
+            checkBalanceEnquiryForGiftcard()
+        }
+    }
 
-            if (inputGiftCardNumber.isNotEmpty() && inputGiftCardNumber.length == 8) {
-                giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = inputGiftCardNumber))
-            }
-            else if(inputGiftCardNumber.isNotEmpty() && (inputGiftCardNumber.length == 13 || inputGiftCardNumber.length == 17)){
-                closePaxRequest()
-                giftCardViewModel.physcialGiftCardCheckBalance(GiftCardCheckBalanceRequest(name = inputGiftCardNumber))
+    private fun checkBalanceEnquiryForGiftcard() {
+        val inputGiftCardNumber = binding.edtGiftCardNumber.text.toString().replace(" ","")
 
-            }
-            else {
-                AlertUtils.showCustomAlert(requireContext(), "Please enter 8-digit gift card number.")
-                return@setOnClickListener
-            }
+        if (inputGiftCardNumber.isNotEmpty() && inputGiftCardNumber.length == 8) {
+            giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = inputGiftCardNumber))
+        }
+        else if(inputGiftCardNumber.isNotEmpty() && (inputGiftCardNumber.length == 13 || inputGiftCardNumber.length == 17)){
+//                closePaxRequest()
+            giftCardViewModel.physcialGiftCardCheckBalance(GiftCardCheckBalanceRequest(name = inputGiftCardNumber))
 
+        }
+        else {
+            AlertUtils.showCustomAlert(requireContext(), "Please enter 8-digit gift card number.")
+            return
         }
     }
 

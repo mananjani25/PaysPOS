@@ -263,8 +263,26 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         setLoyaltyEarnedObserver()
 //        setCommSetting()
 
+        initProgressObserver()
         initClickListener()
         return binding.root
+    }
+
+    private fun initProgressObserver() {
+        giftCardViewModel.showGiftCardProgress.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                Log.e("ObserverdGiftCardProgress", it.toString())
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+
+                }
+
+
+            }
+        }
     }
 
     private var countDownTimer: CountDownTimer? = null
@@ -353,9 +371,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun closePaxRequest(){
         countDownTimer?.cancel()
         countDownTimer=null
-        try{
+       /* try{
             posLink.CancelTrans()
-        }catch (e:Exception){}
+        }catch (e:Exception){}*/
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -3002,7 +3020,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 .replace(")", "").trim().toDouble()
             val cashAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
 
-            startPAXTestWithGiftCard()
+//            startPAXTestWithGiftCard()
 
 //            Uncomment below code
             if (cardAmount != 0.00 && cashAmount != 0.00){
@@ -3175,11 +3193,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 llGiftCard.gone()
                 edtGiftCardNumber.text?.clear()
             }
-            try {
+            /*try {
                 posLink.CancelTrans()
             }catch (e:Exception){
 
-            }
+            }*/
         }
 
         binding.txtCharge.setOnSingleClickListener {
@@ -3270,31 +3288,35 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         binding.txtChargeGC.setOnSingleClickListener {
-            it.isEnabled = false
-            val giftCardNumber = binding.edtGiftCardNumber.rawText.toString().trim()
-
-            if (giftCardNumber.isEmpty() || giftCardNumber.length < 8) {
-                AlertUtils.showCustomAlert(
-                    requireContext(),
-                    "Please enter 8-digit gift card number."
-                )
-                it.isEnabled = true
-                return@setOnSingleClickListener
-            } else if (giftCardNumber.isNotEmpty() && giftCardNumber.length > 8) {
-                closePaxRequest()
-                giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
-
-            } else {
-
-                giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = giftCardNumber))
-            }
-            /**
-             * Added to prevent multiple api calls on multiple clicks.
-             */
-            Handler(Looper.getMainLooper()).postDelayed({
-                it.isEnabled = true  // Re-enable the button after delay
-            }, 3000)  // 1000ms = 1 second (adjust the delay based on your use case)
+            startTransactionWithGiftCardPayment()
         }
+    }
+
+    private fun startTransactionWithGiftCardPayment() {
+        binding.txtChargeGC.isEnabled = false
+        val giftCardNumber = binding.edtGiftCardNumber.rawText.toString().trim()
+
+        if (giftCardNumber.isEmpty() || giftCardNumber.length < 8) {
+            AlertUtils.showCustomAlert(
+                requireContext(),
+                "Please enter 8-digit gift card number."
+            )
+            binding.txtChargeGC.isEnabled = true
+            return
+        } else if (giftCardNumber.isNotEmpty() && giftCardNumber.length > 8) {
+                closePaxRequest()
+            giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
+
+        } else {
+
+            giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = giftCardNumber))
+        }
+        /**
+         * Added to prevent multiple api calls on multiple clicks.
+         */
+        Handler(Looper.getMainLooper()).postDelayed({
+            binding.txtChargeGC.isEnabled = true  // Re-enable the button after delay
+        }, 3000)  // 1000ms = 1 second (adjust the delay based on your use case)
     }
 
     private fun startPAXTestWithGiftCard() {
@@ -3330,6 +3352,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         with(binding){
                             edtGiftCardNumber.text?.clear()
                             edtGiftCardNumber.setText(response.PAN.toString())
+//                            ProgressUtils.showProgressDialog(requireActivity())
+                            startTransactionWithGiftCardPayment()
                         }
                     })
                 }else{

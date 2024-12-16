@@ -61,7 +61,7 @@ class PlasticCardNumber : Fragment() {
         onClick()
         onClickKeypad()
         obserVer()
-        startPAXTestWithGiftCard()
+//        startPAXTestWithGiftCard()
 
     }
     private var countDownTimer: CountDownTimer? = null
@@ -69,9 +69,9 @@ class PlasticCardNumber : Fragment() {
     private fun closePaxRequest(){
         countDownTimer?.cancel()
         countDownTimer=null
-        try{
-            posLink.CancelTrans()
-        }catch (e:Exception){}
+//        try{
+//            posLink.CancelTrans()
+//        }catch (e:Exception){}
     }
     private fun startPAXTestWithGiftCard() {
         GlobalScope.launch {
@@ -107,6 +107,7 @@ class PlasticCardNumber : Fragment() {
                         with(binding) {
                             edtAmount?.text?.clear()
                             edtAmount?.setText(response.PAN.toString())
+                            startProcessingWithGiftcard()
                         }
                     })
                 } else {
@@ -346,15 +347,19 @@ class PlasticCardNumber : Fragment() {
 
 
         binding.txtNext?.setOnClickListener {
-            if (binding.edtAmount?.text.toString().trim().length < 13) {
-                AlertUtils.showCustomAlert(requireContext(), "Please enter Valid Gift Card number")
-            } else {
-               closePaxRequest()
-                dashboardViewModel.checkCardExistOrNot(binding.edtAmount?.text.toString().trim())
-            }
+            startProcessingWithGiftcard()
         }
 
 
+    }
+
+    private fun startProcessingWithGiftcard() {
+        if (binding.edtAmount?.text.toString().trim().length < 13) {
+            AlertUtils.showCustomAlert(requireContext(), "Please enter Valid Gift Card number")
+        } else {
+            closePaxRequest()
+            dashboardViewModel.checkCardExistOrNot(binding.edtAmount?.text.toString().trim())
+        }
     }
 
     private fun removeLastCharacter(str: String): String {
