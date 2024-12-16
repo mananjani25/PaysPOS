@@ -88,7 +88,7 @@ class PlasticCardNumber : Fragment() {
             manageRequest.MagneticSwipeEntryFlag = "1";
             manageRequest.ManualEntryFlag = "1";
             manageRequest.ContactlessEntryFlag = "0";
-            manageRequest.TimeOut = "1000";
+            manageRequest.TimeOut = "200";
             manageRequest.ContinuousScreen = "0";
             manageRequest.ECRRefNum = System.currentTimeMillis()
                 .toString(); // Enable swipe entry (adjust based on your use case)
