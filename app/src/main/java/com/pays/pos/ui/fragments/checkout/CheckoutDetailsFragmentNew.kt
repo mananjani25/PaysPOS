@@ -8,10 +8,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
+import android.os.*
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -36,9 +33,7 @@ import com.google.gson.reflect.TypeToken
 import com.magtek.mobile.android.mtlib.IMTCardData
 import com.magtek.mobile.android.mtlib.MTConnectionState
 import com.magtek.mobile.android.mtusdk.*
-import com.pax.poslink.PaymentRequest
-import com.pax.poslink.PosLink
-import com.pax.poslink.ProcessTransResult
+import com.pax.poslink.*
 import com.pax.poslink.aidl.BasePOSLinkCallback
 import com.pax.poslink.broadpos.BroadPOSCommunicator
 import com.pax.poslink.fullIntegration.InputAccount
@@ -64,6 +59,7 @@ import com.pays.pos.data.remote.Constants.PRE_AUTH_DETAILS
 import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.remote.Constants.TIP_ADDED
 import com.pays.pos.data.remote.Constants.TIP_ADDED_AMOUNT
+import com.pays.pos.data.remote.PRINT_TRANSACTION_TYPE
 import com.pays.pos.databinding.FragmentCheckoutDetailsNewBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.MagtekModule
@@ -268,7 +264,29 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         setLoyaltyEarnedObserver()
 //        setCommSetting()
 
+        initClickListener()
         return binding.root
+    }
+
+    private var countDownTimer: CountDownTimer? = null
+    private fun initClickListener() {
+        binding.btnReadCard.setOnSingleClickListener(object :View.OnClickListener{
+            override fun onClick(p0: View?) {
+
+                countDownTimer?.cancel()
+                binding.btnReadCard?.isClickable=false
+
+                countDownTimer = object : CountDownTimer(5000, 1000) {
+                    override fun onTick(millisUntilFinished: Long) {
+                    }
+                    override fun onFinish() {
+                        binding.btnReadCard?.isClickable=false
+                    }
+                }.start()
+
+                startPAXTestWithGiftCard()
+            }
+        })
     }
 
     private fun setLoyaltyEarnedObserver() {
@@ -332,10 +350,19 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     override fun onStop() {
         super.onStop()
+        closePaxRequest()
         if (this::presentation.isInitialized) {
             presentation.show()
             // presentation.onLogOutOrClockOutWithApiService(apiService)
         }
+    }
+
+    private fun closePaxRequest(){
+        countDownTimer?.cancel()
+        countDownTimer=null
+        try{
+            posLink.CancelTrans()
+        }catch (e:Exception){}
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -3075,6 +3102,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val cardAmount = binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
                 .replace(")", "").trim().toDouble()
             val cashAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+
+            startPAXTestWithGiftCard()
+
+//            Uncomment below code
             if (cardAmount != 0.00 && cashAmount != 0.00){
                 if (prefProvider.getValueboolean(IS_PAX_PAYMENT_FAILED, false)) {
                     AlertUtils.showCustomAlert(
@@ -3240,9 +3271,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         binding.imgBackGiftCard.setOnSingleClickListener {
             MethodUtils.hideKeyboard(requireActivity())
             isManualCard = false
-            binding.relativeMain.visible()
-            binding.llGiftCard.gone()
+            with(binding) {
+                relativeMain.visible()
+                llGiftCard.gone()
+                edtGiftCardNumber.text?.clear()
+            }
+            try {
+                posLink.CancelTrans()
+            }catch (e:Exception){
 
+            }
         }
 
         binding.txtCharge.setOnSingleClickListener {
@@ -3344,6 +3382,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 it.isEnabled = true
                 return@setOnSingleClickListener
             } else if (giftCardNumber.isNotEmpty() && giftCardNumber.length > 8) {
+                closePaxRequest()
                 giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
 
             } else {
@@ -3356,6 +3395,50 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             Handler(Looper.getMainLooper()).postDelayed({
                 it.isEnabled = true  // Re-enable the button after delay
             }, 3000)  // 1000ms = 1 second (adjust the delay based on your use case)
+        }
+    }
+
+    private fun startPAXTestWithGiftCard() {
+        GlobalScope.launch {
+            posLink.SetCommSetting(
+                SettingINI.getCommSettingFromFile(
+                    requireContext(),
+                    "/storage/emulated/0/Download/" + SettingINI.FILENAME
+                )
+            )
+
+            val manageRequest = ManageRequest()
+            manageRequest.TransType = manageRequest.ParseTransType("INPUTACCOUNT")
+            manageRequest.EDCType=manageRequest.ParseEDCType("GIFT")
+            manageRequest.MagneticSwipeEntryFlag = "1";
+            manageRequest.ManualEntryFlag = "1";
+            manageRequest.ContactlessEntryFlag = "0";
+            manageRequest.TimeOut = "1000";
+            manageRequest.ContinuousScreen = "0";
+            manageRequest.ECRRefNum = System.currentTimeMillis().toString(); // Enable swipe entry (adjust based on your use case)
+            posLink.ManageRequest = manageRequest
+            val result = posLink.ProcessTrans()
+
+            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                val msg = Message()
+                msg.what = Constants.TRANSACTION_SUCCESSED
+                msg.obj = posLink.ManageResponse
+                val response = msg.obj as com.pax.poslink.ManageResponse
+                val resultCode = response.ResultCode
+
+                if (resultCode == "000000") {
+                    runOnUiThread(Runnable {
+                        with(binding){
+                            edtGiftCardNumber.text?.clear()
+                            edtGiftCardNumber.setText(response.PAN.toString())
+                        }
+                    })
+                }else{
+
+                }
+
+            }
+
         }
     }
 
@@ -3409,7 +3492,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     if (isAdded) {
 
                         if (it.data.amount == 0.0) {
-                            binding.edtGiftCardNumber.setText("")
+//                            binding.edtGiftCardNumber.setText("")
                             prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, false)
                             AlertUtils.showCustomAlertWithListenerWithOK(
                                 requireContext(),

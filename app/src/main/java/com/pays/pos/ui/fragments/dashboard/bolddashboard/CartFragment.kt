@@ -1339,10 +1339,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 viewModel.observeLatestCartModel().observe(viewLifecycleOwner) {
                     var latestCartModel: CartModel? = null
 
-                    Log.e(
-                        "AddItemFragment.kt",
-                        "currentCartItems:    ${Gson().toJson(viewModel.currentCartItems)}"
-                    )
+//                    to solve BIS-4962
+
+//                    Log.e( "AddItemFragment.kt", "currentCartItems:    ${Gson().toJson(viewModel.currentCartItems)}" )
 
                     if (it.isNotEmpty())
                         cartModelsList = ArrayList(it)
