@@ -92,11 +92,11 @@
                     android:hint="@string/hint_enter_your_gift_card_number"
                     android:importantForAutofill="no"
                     android:inputType="number"
-                    android:maxLength="17"
+                    android:maxLength="21"
                     android:textColor="@color/btnColor"
                     android:textColorHint="@color/hint_color"
                     android:textSize="@dimen/_6sdp"
-                    app:met_mask="####  #### #### #####" />
+                    app:met_mask="####  #### #### #######" />
 
                 <ImageView
                     android:id="@+id/btnReadCard"

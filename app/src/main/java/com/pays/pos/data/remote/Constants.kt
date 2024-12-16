@@ -872,7 +872,8 @@ object Constants {
 
     const val SOAP_ACTION = "https://www.sc-solutions.com/SmartTrackSE/RequestGateway/AuthenticateAndAuthorizeTransaction"
     const val NAMESPACE = "https://www.sc-solutions.com/SmartTrackSE/RequestGateway"
-    const val ENDPOINT_URL = "https://demo.ecardsystems.net/requestgatewaydemo/requestgatewaywebservice.asmx"
+    //const val ENDPOINT_URL = "https://demo.ecardsystems.net/requestgatewaydemo/requestgatewaywebservice.asmx"
+    const val ENDPOINT_URL = "https://www.ecardsystems.net/requestgateway/requestgatewaywebservice.asmx"
 
     fun createCloudPrinter(ipAddress: String, portNo: Int): CloudPrinter {
         return CloudPrinterBuilder.buildPrinter(ipAddress, portNo)

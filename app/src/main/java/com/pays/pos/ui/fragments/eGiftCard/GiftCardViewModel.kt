@@ -251,7 +251,7 @@ class GiftCardViewModel @Inject constructor(
         CoroutineScope(Dispatchers.Main).launch {
             _showGiftCardProgress.value = Event(true)
         }
-        val soapRequest = createSoapRequest("","",prefProvider.getValue(PHYSICAL_GIFT_CARD_NUMBER,""),myRequest?.gift_card?.amount ?: "")
+        val soapRequest = createSoapRequest("m117115rgw","T98PZAGEHT",prefProvider.getValue(PHYSICAL_GIFT_CARD_NUMBER,""),myRequest?.gift_card?.amount ?: "")
         sendSoapRequest(soapRequest, onSuccess = {response->
             val endingBalance = parseSoapResponse(response)
             CoroutineScope(Dispatchers.Main).launch {
@@ -474,10 +474,11 @@ class GiftCardViewModel @Inject constructor(
             }
 
             override fun onResponse(call: Call, response: okhttp3.Response) {
-                Log.e("PhysicalGiftCard","onResponse: ")
+                Log.e("PhysicalGiftCard","onResponsecheckBf: ${response.isSuccessful}")
                 if (response?.isSuccessful == true) {
-                    Log.e("PhysicalGiftCard","onResponse:  ${Gson().toJson(response.body?.toString())}")
-                    response.body?.toString()?.let {
+                    val response = response.body?.toString()
+                    Log.e("PhysicalGiftCard","onResponse:  ${Gson().toJson(response)}")
+                    response?.let {
                         onSuccess(it)
                     } ?: onError(IOException("Empty response"))
                 } else {
@@ -500,8 +501,8 @@ class GiftCardViewModel @Inject constructor(
             <soap:Body>
                 <AuthenticateAndAuthorizeTransaction xmlns="${Constants.NAMESPACE}">
                 <credential>
-                        <Username>m101293rgw</Username>
-                        <Password>WXYSLZD3WN</Password>
+                        <Username>${username}</Username>
+                        <Password>${password}</Password>
                     </credential>
                     <authRequest>
                         <Account>$giftCardNumber</Account>
@@ -806,7 +807,7 @@ class GiftCardViewModel @Inject constructor(
             _showGiftCardProgress.value = Event(true)
         }
 
-        val soapRequest = createSoapRequest("","",prefProvider.getValue(PHYSICAL_GIFT_CARD_NUMBER,""),giftCardAddValueRequest.gift_card.added_amount.toString() ?: "")
+        val soapRequest = createSoapRequest("m117115rgw","T98PZAGEHT",prefProvider.getValue(PHYSICAL_GIFT_CARD_NUMBER,""),giftCardAddValueRequest.gift_card.added_amount.toString() ?: "")
         sendSoapRequest(soapRequest, onSuccess = {response->
             val endingBalance = parseSoapResponse(response)
             CoroutineScope(Dispatchers.Main).launch {
@@ -925,7 +926,7 @@ class GiftCardViewModel @Inject constructor(
     }
     fun physicalGiftCardCheckBalanceBeforePay(giftCardCheckBalanceRequest: GiftCardCheckBalanceRequest) {
         try {
-            val soapRequest = checkBalanceRequest("", "", giftCardCheckBalanceRequest.name)
+            val soapRequest = checkBalanceRequest("m117115rgw", "T98PZAGEHT", giftCardCheckBalanceRequest.name)
             CoroutineScope(Dispatchers.Main).launch {
                 _showGiftCardProgress.value = Event(true)
             }
@@ -968,7 +969,7 @@ class GiftCardViewModel @Inject constructor(
 
     fun physcialGiftCardCheckBalance(giftCardCheckBalanceRequest: GiftCardCheckBalanceRequest){
 
-        val soapRequest = checkBalanceRequest("","",giftCardCheckBalanceRequest.name)
+        val soapRequest = checkBalanceRequest("m117115rgw","T98PZAGEHT",giftCardCheckBalanceRequest.name)
         CoroutineScope(Dispatchers.Main).launch {
             _showGiftCardProgress.value = Event(true)
         }
@@ -1004,8 +1005,8 @@ class GiftCardViewModel @Inject constructor(
             <soap:Body>
                 <AuthenticateAndAuthorizeTransaction xmlns="${Constants.NAMESPACE}">
                 <credential>
-                        <Username>m101293rgw</Username>
-                        <Password>WXYSLZD3WN</Password>
+                        <Username>${username}</Username>
+                        <Password>${password}</Password>
                     </credential>
                     <authRequest>
                         <Account>$giftCardNumber</Account>
