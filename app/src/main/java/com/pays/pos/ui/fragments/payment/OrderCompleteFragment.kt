@@ -10803,11 +10803,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                          * Print total amount
                                          */
 
-//                                        val calculateTotal = order?.let {
-//                                            it.subTotal + it.totalServiceCharges + it.totalTaxAmount
-//                                        }
+                                        val calculateTotal = order?.let {
+                                            it.subTotal + it.totalServiceCharges + it.totalTaxAmount + it.totalTips - it.loyaltyAmount
+                                        }
                                         val totalAmt =
-                                            MethodUtils.roundOffAmountDouble(order!!.totalAmount)
+                                            MethodUtils.roundOffAmountDouble(calculateTotal)
 
 
                                         val totalAmountToPrint =
