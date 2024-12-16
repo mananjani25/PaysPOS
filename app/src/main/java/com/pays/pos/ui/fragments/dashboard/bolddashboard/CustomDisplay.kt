@@ -2292,7 +2292,7 @@ class CustomDisplay(
                     ) {
                         activeTipsListAdapter?.setList(
                             it.data,
-                            binding.txtTotalCash.text.toString().trim().replace('$', ' ').trim()
+                            wholeTotalPrice
                                 .toDouble()
                         )
                     } else if (dashBoardCategoryViewModel.paymentTypeForTip.equals(
@@ -2302,7 +2302,7 @@ class CustomDisplay(
                     ) {
                         activeTipsListAdapter?.setList(
                             it.data,
-                            binding.txtTotalCard.text.toString().trim().replace('$', ' ').trim()
+                            wholeTotalPrice
                                 .toDouble()
                         )
                     } else {
@@ -2320,7 +2320,7 @@ class CustomDisplay(
                         ) {
                             activeTipsListAdapter?.setList(
                                 it.data,
-                                binding.txtTotalCash.text.toString().trim().replace('$', ' ').trim()
+                                wholeTotalPrice
                                     .toDouble()
                             )
                         } else if (dashBoardCategoryViewModel.paymentTypeForTip.equals(
@@ -2330,7 +2330,7 @@ class CustomDisplay(
                         ) {
                             activeTipsListAdapter?.setList(
                                 it.data,
-                                binding.txtTotalCard.text.toString().trim().replace('$', ' ').trim()
+                                wholeTotalPrice
                                     .toDouble()
                             )
                         } else {
