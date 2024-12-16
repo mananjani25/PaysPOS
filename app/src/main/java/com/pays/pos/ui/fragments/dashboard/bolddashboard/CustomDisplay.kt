@@ -2906,7 +2906,77 @@ class CustomDisplay(
     }
 
     private fun makeDejavooTipAdjustmentRequest() {
+        paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutineScope.launch {
+            val gatewayType = PaymentGatewayType.DEJAVOO
+            val paymentGateway = PaymentGatewayFactory(
+                ValorPaymentGateway(),
+                DejavooPaymentGateway()
+            ).create(gatewayType)
 
+
+            val paymentCallback = object : PaymentCallback {
+                override fun onSuccess(transactionId: String) {
+
+                    var transactionJsonResponse = Gson().fromJson<String>(
+                        transactionId,
+                        String::class.java
+                    )
+//                    transactionJsonResponse.nameValuePairs?.let {
+//                        if (it.msg != null) {
+//                            if (it.msg!!.contains(
+//                                    "APPROVED"
+//                                )
+//                            ) {
+//                                mPaymentViewModel.valorRefTxnId = null
+//                                mPaymentViewModel.valorTransactionNumber = null
+//                                callUpdateTip()
+////                                dashBoardCategoryViewModel.takenTipUsingValor.postValue(Event(transactionViewModel))
+//                            } else {
+//                                dismissProgressDialog()
+//                                /* runOnUiThread(Runnable {
+//                                     AlertUtils.showCustomAlert(
+//                                         requireContext(),
+//                                         it.msg
+//                                     )
+//                                 })*/
+//                            }
+//                        }
+//                    }
+                }
+
+                override fun onFailure(errorMessage: String) {
+                    ProgressUtils.dismissProgressDialog()
+
+                    /*runOnUiThread(Runnable {
+                        AlertUtils.showCustomAlert(
+                            requireContext(),
+                            errorMessage
+                        )
+                    })*/
+                }
+            }
+            var dejavoo=Dejavoo(
+                registerId=  "4986101",
+                authKey=  "kwg2GRbykg",
+                tpn= "659324491704",
+                paymentType = "Credit",
+                transType="TipAdjust",
+                amount= tippedAmount.toString(),
+                refId= "Ref${System.currentTimeMillis()}",
+                printReceipt= false,
+                performedBy=  prefProvider.employeeName(),
+                isProd= false,
+                txnType = TransactionType.TIP_ADJUSTMENT
+            )
+                    paymentGateway.processPayment(
+                        context,
+                        dejavoo,
+                        paymentCallback
+                    )
+            /* Process Tip Adjust */
+
+        }
     }
 
     lateinit var paymentCoroutineScope: CoroutineScope
