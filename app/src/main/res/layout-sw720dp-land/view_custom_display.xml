@@ -1851,7 +1851,7 @@
         android:layout_height="match_parent"
         android:background="#1D1D1F"
         android:paddingHorizontal="@dimen/_5sdp"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/wouldYouLikeToAddTipLabelBefore"
@@ -1891,6 +1891,7 @@
                 android:id="@+id/otherNoTipLayoutTipBefore"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_marginHorizontal="5dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout

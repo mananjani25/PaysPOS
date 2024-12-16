@@ -189,6 +189,7 @@ class CustomDisplay(
 
         binding.noTipRootLayoutTipBefore.setOnClickListener {
 
+            activeTipsListAdapter?.clearSelectedItem()
             dashBoardCategoryViewModel.apply {
                 totalTipAmount = 0.0
                 customerGivenTipBefore.value = true
@@ -205,19 +206,19 @@ class CustomDisplay(
 
             var wholeAmount = 0.0
 
-            try {
-                 wholeAmount = prefProvider.getValue(
+            wholeAmount = try {
+                prefProvider.getValue(
                     Constants.WHOLE_AMOUNT,
                     "0.0"
                 ).toDouble()
 
-//                val finalAmount = MethodUtils.calculateCashDiscount(wholeAmount,prefProvider,context)
-//
-//                Log.e("FINAL AMOUNT","FINAL AMOUNT $finalAmount")
-//
-//                wholeAmount += finalAmount
+        //                val finalAmount = MethodUtils.calculateCashDiscount(wholeAmount,prefProvider,context)
+        //
+        //                Log.e("FINAL AMOUNT","FINAL AMOUNT $finalAmount")
+        //
+        //                wholeAmount += finalAmount
             }catch (e:Exception) {
-                wholeAmount = dashBoardCategoryViewModel.totalPrice
+                dashBoardCategoryViewModel.totalPrice
             }
 
             Log.e("Total Tip Check ","SPLIT COUNT $it AND WHOLE AMOUNT = $wholeAmount")
