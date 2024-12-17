@@ -27,8 +27,10 @@ import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.paxUtils.SettingINI
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class BalanceInquiryFragment : Fragment() {
@@ -91,13 +93,13 @@ class BalanceInquiryFragment : Fragment() {
                 val resultCode = response.ResultCode
 
                 if (resultCode == "000000") {
-                    runOnUiThread(kotlinx.coroutines.Runnable {
-                        with(binding) {
-                            edtGiftCardNumber.text?.clear()
+                    withContext(Dispatchers.Main){
+                        binding.apply {
+                            Log.d("VALID: ", "Here__: ${response.PAN.toString()}")
                             edtGiftCardNumber.setText(response.PAN.toString())
                             checkBalanceEnquiryForGiftcard()
                         }
-                    })
+                    }
                 }else{
 
                 }
@@ -197,22 +199,26 @@ class BalanceInquiryFragment : Fragment() {
 
         // to check balance of existing gift card
         binding.txtCheckBalance.setOnClickListener {
+            Log.d("VALID: ", "txtCheckBalance Called")
             checkBalanceEnquiryForGiftcard()
         }
     }
 
     private fun checkBalanceEnquiryForGiftcard() {
         val inputGiftCardNumber = binding.edtGiftCardNumber.text.toString().replace(" ","")
-
+        Log.d("VALID: ", "${inputGiftCardNumber.toString()}")
         if (inputGiftCardNumber.isNotEmpty() && inputGiftCardNumber.length == 8) {
+            Log.d("VALID: ", "Here_1")
             giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = inputGiftCardNumber))
         }
         else if(inputGiftCardNumber.isNotEmpty() && (inputGiftCardNumber.length == 13 || inputGiftCardNumber.length == 17)){
 //                closePaxRequest()
+            Log.d("VALID: ", "Here_2")
             giftCardViewModel.physcialGiftCardCheckBalance(GiftCardCheckBalanceRequest(name = inputGiftCardNumber))
 
         }
         else {
+            Log.d("VALID: ", "Here_3")
             AlertUtils.showCustomAlert(requireContext(), "Please enter 8-digit gift card number.")
             return
         }

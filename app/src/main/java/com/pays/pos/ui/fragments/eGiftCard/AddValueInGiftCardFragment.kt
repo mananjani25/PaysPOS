@@ -345,6 +345,7 @@ class AddValueInGiftCardFragment : Fragment() {
         giftCardNumberGlb = giftCardNumber
 
         if(giftCardNumber.length < 8){
+            Log.d("VALID: ", "Here_4: ${giftCardNumber}")
             AlertUtils.showCustomAlert(requireContext(), "Please enter 8-digit gift card number.")
             return
         }else if (giftCardNumber.length>8 && giftCardNumber.length<13){
