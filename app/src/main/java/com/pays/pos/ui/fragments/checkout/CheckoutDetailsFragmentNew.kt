@@ -400,28 +400,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 dashboardViewModel.customerGivenTipBefore.value = false
 
-                var cashTip = 0.0
-                var cardTip = 0.0
+                var cashTip = tipAmount
+                var cardTip = tipAmount + MethodUtils.calculateCashDiscount(
+                    tipAmount ,
+                    prefProvider,
+                    requireContext()
+                )
 
-                if (prefProvider.getValue(
-                        OPTION_TYPE, "CashDiscount"
-                    ) == "CashDiscount"
-                ) {
-
-                    //Add Cash discount  related changes
-
-                    cashTip = tipAmount
-                    cardTip = tipAmount
-
-                } else {
-                    cardTip = tipAmount + MethodUtils.calculateCashDiscount(
-                        tipAmount ,
-                        prefProvider,
-                        requireContext()
-                    )
-
-                    cashTip = tipAmount
-                }
 
                 dashboardViewModel.apply {
                     employeeGivenTip = true
@@ -672,28 +657,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
              * Used to show Given TIPS on OrderCompleted Fragment
              */
 
-            var cashTip = 0.0
-            var cardTip = 0.0
-
-            if (prefProvider.getValue(
-                    OPTION_TYPE, "CashDiscount"
-                ) == "CashDiscount"
-            ) {
-
-                //Add Cash discount  related changes
-
-                cashTip = tipAmount
-                cardTip = tipAmount
-
-            } else {
-                cardTip = tipAmount + MethodUtils.calculateCashDiscount(
-                    tipAmount ,
-                    prefProvider,
-                    requireContext()
-                )
-
-                cashTip = tipAmount
-            }
+            var cashTip = tipAmount
+            var cardTip = tipAmount + MethodUtils.calculateCashDiscount(
+                tipAmount ,
+                prefProvider,
+                requireContext()
+            )
 
             dashboardViewModel.apply {
                 totalTipAmount = tipAmount
@@ -2717,6 +2686,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         prefProvider,
                         requireContext()
                     ) / isSelectedCount
+
 //                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
 //                        0.0
 //                    } else {
