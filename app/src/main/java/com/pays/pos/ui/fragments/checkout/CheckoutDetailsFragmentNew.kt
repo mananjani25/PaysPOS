@@ -49,6 +49,7 @@ import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.requestModel.*
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
+import com.pays.pos.data.model.valor.ValorSuccessResponse
 import com.pays.pos.data.remote.ApiService
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.DEFAULT_ORDER
@@ -2776,7 +2777,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 makePaxPaymentRequest()
                             }
                         }
-                    } else {
+                    }  else if (prefProvider.getValue(
+                            Constants.VALOR_APP_ID, ""
+                        ).isNotEmpty()
+                    ) {
+                        makeValorPaymentRequest()
+                    }else {
                         runOnUiThread(object : java.lang.Runnable {
                             override fun run() {
                                 binding.llCreditCard.isEnabled = true
