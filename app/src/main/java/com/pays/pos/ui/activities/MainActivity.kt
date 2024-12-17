@@ -66,6 +66,7 @@ import com.hosopy.actioncable.ActionCable
 import com.hosopy.actioncable.Channel
 import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
+import com.pays.payments.design.TransactionType
 import com.pays.pos.MainApplication
 import com.pays.pos.R
 import com.pays.pos.data.entities.TbCustomer
@@ -436,7 +437,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         addCustomerViewModel.customerFetchedAndAdded.observe(this, object : Observer<TbCustomer> {
             override fun onChanged(customer: TbCustomer?) {
                 customer?.let {
-                    if(this@MainActivity::presentation.isInitialized)
+                    if (this@MainActivity::presentation.isInitialized)
                         presentation.addCustomer(it)
                 }
             }
@@ -3803,12 +3804,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 }
             }
 
-            if (it.asJsonObject.has("customer_sync")){
-                if (it.asJsonObject.get("customer_sync").toString().equals("true")){
-                    var firstName=it.asJsonObject.get("first_name")
-                    var lastName=it.asJsonObject.get("last_name")
-                    var customerId=it.asJsonObject.get("customer_id")
-                    syncCustomer(it,customerId.asInt)
+            if (it.asJsonObject.has("customer_sync")) {
+                if (it.asJsonObject.get("customer_sync").toString().equals("true")) {
+                    var firstName = it.asJsonObject.get("first_name")
+                    var lastName = it.asJsonObject.get("last_name")
+                    var customerId = it.asJsonObject.get("customer_id")
+                    syncCustomer(it, customerId.asInt)
                 }
             }
 
@@ -3849,8 +3850,12 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         }
     }
 
-    private fun syncCustomer(value:JsonElement, customerId: Int) {
-        addCustomerViewModel.fetchCustomerFromPhoneNumberSync(value, customerID =  customerId, sync = true)
+    private fun syncCustomer(value: JsonElement, customerId: Int) {
+        addCustomerViewModel.fetchCustomerFromPhoneNumberSync(
+            value,
+            customerID = customerId,
+            sync = true
+        )
     }
 
     private fun setSoundForOnlineOrder() {
