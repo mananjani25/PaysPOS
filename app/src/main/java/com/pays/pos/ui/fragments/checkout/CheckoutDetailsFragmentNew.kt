@@ -3348,14 +3348,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 val resultCode = response.ResultCode
 
                 if (resultCode == "000000") {
-                    runOnUiThread(Runnable {
-                        with(binding){
-                            edtGiftCardNumber.text?.clear()
-                            edtGiftCardNumber.setText(response.PAN.toString())
-//                            ProgressUtils.showProgressDialog(requireActivity())
+                    withContext(Dispatchers.Main){
+                        binding.apply {
+                            if (response.PAN.isNullOrEmpty()){
+                                edtGiftCardNumber.setText(response.Track2Data.toString())
+                                Log.d("VALID: ", "Here__Track: ${response.Track2Data.toString()}")
+                            }else{
+                                edtGiftCardNumber.setText(response.PAN.toString())
+                                Log.d("VALID: ", "Here__Pan: ${response.PAN.toString()}")
+                            }
                             startTransactionWithGiftCardPayment()
                         }
-                    })
+                    }
                 }else{
 
                 }

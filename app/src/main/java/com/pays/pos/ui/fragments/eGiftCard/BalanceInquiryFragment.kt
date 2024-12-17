@@ -95,8 +95,13 @@ class BalanceInquiryFragment : Fragment() {
                 if (resultCode == "000000") {
                     withContext(Dispatchers.Main){
                         binding.apply {
-                            Log.d("VALID: ", "Here__: ${response.PAN.toString()}")
-                            edtGiftCardNumber.setText(response.PAN.toString())
+                            if (response.PAN.isNullOrEmpty()){
+                                edtGiftCardNumber.setText(response.Track2Data.toString())
+                                Log.d("VALID: ", "Here__Track: ${response.Track2Data.toString()}")
+                            }else{
+                                edtGiftCardNumber.setText(response.PAN.toString())
+                                Log.d("VALID: ", "Here__Pan: ${response.PAN.toString()}")
+                            }
                             checkBalanceEnquiryForGiftcard()
                         }
                     }

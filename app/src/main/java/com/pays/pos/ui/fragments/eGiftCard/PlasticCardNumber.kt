@@ -103,11 +103,26 @@ class PlasticCardNumber : Fragment() {
                 val resultCode = response.ResultCode
 
                 if (resultCode == "000000") {
+
+                    withContext(Dispatchers.Main){
+                        binding.apply {
+                            if (response.PAN.isNullOrEmpty()){
+                                edtAmount?.setText(response.Track2Data.toString())
+                                Log.d("VALID: ", "Here__Track: ${response.Track2Data.toString()}")
+                            }else{
+                                edtAmount?.setText(response.PAN.toString())
+                                Log.d("VALID: ", "Here__Pan: ${response.PAN.toString()}")
+                            }
+                            startProcessingWithGiftcard()
+                        }
+                    }
+
+
                     runOnUiThread(Runnable {
                         with(binding) {
                             edtAmount?.text?.clear()
                             edtAmount?.setText(response.PAN.toString())
-                            startProcessingWithGiftcard()
+
                         }
                     })
                 } else {
