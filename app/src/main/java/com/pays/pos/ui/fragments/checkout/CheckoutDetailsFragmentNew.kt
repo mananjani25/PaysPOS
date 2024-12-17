@@ -3007,6 +3007,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 paymentType = "Credit",
                 transType="Sale",
                 amount= amt.toString(),
+                tip = if (tip_amt > 0) tip_amt.toString() else "",
                 refId= "Ref${System.currentTimeMillis()}",
                 printReceipt= false,
                 performedBy=  prefProvider.employeeName(),
