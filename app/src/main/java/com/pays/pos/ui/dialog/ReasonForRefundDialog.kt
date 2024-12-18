@@ -190,7 +190,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                 ) {
                     ProgressUtils.showProgressDialog(requireActivity())
                     refundViaValor()
-                } else if(paxExtData.equals(Constants.DEJAVOO)){
+                } else if(paxExtData.contains(Constants.DEJAVOO)){
                     ProgressUtils.showProgressDialog(requireActivity())
                     refundViaDejavoo()
                 }

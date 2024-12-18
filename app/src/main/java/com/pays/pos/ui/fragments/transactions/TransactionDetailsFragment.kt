@@ -410,7 +410,7 @@ class TransactionDetailsFragment : Fragment() {
                             ProgressUtils.showProgressDialog(requireActivity())
                             startVoidWithValor(paymentDetailsResponse)
 
-                        } else if (paymentDetailsResponse.data.ext_data.equals(Constants.DEJAVOO)) {
+                        } else if (paymentDetailsResponse.data.ext_data.contains(Constants.DEJAVOO)) {
                             ProgressUtils.showProgressDialog(requireActivity())
                             checkIfDejavooTransactionEligibleForVoid(paymentDetailsResponse)
                         }
