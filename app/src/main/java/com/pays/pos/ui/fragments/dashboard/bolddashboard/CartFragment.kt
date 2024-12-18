@@ -1591,6 +1591,12 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                                 binding.relPreoceedToFire.visible()
                                             }
 
+                                            orderId?.let { it1 ->
+                                                prefProvider.setValueInt(Constants.ORDER_ID,
+                                                    it1
+                                                )
+                                            }
+
                                             if (prefProvider.getValueboolean(
                                                     Constants.DINE_IN_UPDATE, false
                                                 )
@@ -1669,6 +1675,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                                                     }
                                                     //                                                }
+                                                    prefProvider.getValueInt(orderId.toString(), -1)
                                                     prefProvider.setValue(
                                                         Constants.DINE_IN_UPDATE_LIST,
                                                         Gson().toJson(listItemDine)
