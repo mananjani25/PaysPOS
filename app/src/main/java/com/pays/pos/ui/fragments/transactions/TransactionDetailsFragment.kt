@@ -826,7 +826,7 @@ class TransactionDetailsFragment : Fragment() {
         val ordersItemList =
             mutableListOf<RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute>()
 
-        paymentDetailsResponse.data.order.order_items.forEach {
+        orderDetailsItemAdapter.taxList.forEach {
             val order =
                 RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute()
 
@@ -842,8 +842,26 @@ class TransactionDetailsFragment : Fragment() {
                     0
                 )
             ordersItemList.add(order)
-
         }
+
+//        paymentDetailsResponse.data.order.order_items.forEach {
+//            val order =
+//                RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute()
+//
+//            order.orderId = it.orderId
+//            order.orderItemId = it.id
+//            order.paymentId = paymentId
+//            order.amount = it.totalPrice
+//            order.quantity = it.quantity
+//            order.refundType = 0
+//            order.employeeId =
+//                prefProvider.getValueInt(
+//                    Constants.EMPLOYEE_ID,
+//                    0
+//                )
+//            ordersItemList.add(order)
+//
+//        }
 
         var refundData = RefundRequestModel()
         var paymentRefund = RefundRequestModel.PaymentRefund()

@@ -2715,7 +2715,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     //Manan's Code
                     //for Merge Icon
                     if (baseResponse.floorPlanTable.status == MERGEDANDOCCUPIED) {
-                        binding.imgMergeTable.visibility = View.VISIBLE
+//                        To Hide Unmerge Table button
+//                        binding.imgMergeTable.visibility = View.VISIBLE
                         binding.imgMergeTable.setImageDrawable(
                             requireContext().resources.getDrawable(
                                 R.drawable.ic_unmerge

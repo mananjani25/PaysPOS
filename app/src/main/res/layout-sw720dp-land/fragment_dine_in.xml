@@ -52,6 +52,7 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <LinearLayout
+            android:id="@+id/Footer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -96,6 +97,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/llinear_floorplan"
+            android:layout_above="@+id/Footer"
             android:layout_marginTop="@dimen/_10sdp">
 
             <FrameLayout
