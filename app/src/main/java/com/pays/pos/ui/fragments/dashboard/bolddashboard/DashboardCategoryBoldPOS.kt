@@ -124,6 +124,7 @@ import java.io.IOException
 import java.lang.Runnable
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -414,7 +415,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             printerProgress()
             observeShowProgress()
             allOrdersPendingCountObserver()
-            getDineInData()
+            //getDineInData()
             checkSearch()
             observeServiceChargeUpdate()
             observerSyncItemPriceChange()   // putting these methods in onviewcreated due to UI glitch issue
@@ -2331,11 +2332,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 //            dineInList
 //        )
 
-        CoroutineScope(Dispatchers.IO).launch {
-            viewModel.currentCartItems.forEach { item ->
-                viewModel.addItemToCartItems(item)
-            }
-        }
+//        CoroutineScope(Dispatchers.IO).launch {
+//            viewModel.currentCartItems.forEach { item ->
+//                viewModel.addItemToCartItems(item)
+//            }
+//        }
 
     }
 
@@ -2386,7 +2387,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                         serviceCharge = serviceChargesList
                         orderId = arguments?.getInt("orderId")
-                        listOfItemRemoved = dineInList[0].listOfItemsMoved
+                        listOfItemRemoved = dineInList!![0].listOfItemsMoved
 
                         note = arguments?.getString("order_note") ?: ""
 
@@ -2438,8 +2439,18 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 viewModel.cartModel = cartList[0]
 
 
+//                CoroutineScope(Dispatchers.IO).launch {
+//                    viewModel.currentCartItems.forEach {
+//                        viewModel.addItemToCartItems(it)
+//                    }
+//                }
+
+
+                Log.e("DINE IN DATA","DINE IN DATA -> CURRENT CART ITEMS = ${viewModel.currentDineCartItems.size}")
+
+                dineInList = ArrayList( dineInList.filter { it.title != null && it.title?.toLowerCase() != "null" && it.isHeader == 0 } )
                 viewModel.updateDineInCart(
-                    viewModel.currentCartItems,
+                    viewModel.currentDineCartItems,
                     null,
                     Constants.ADD,
                     false,

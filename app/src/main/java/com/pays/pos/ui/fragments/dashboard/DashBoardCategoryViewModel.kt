@@ -149,6 +149,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var cartModel: CartModel? = null
     var manualCartOrderNote: String? = ""
     var currentCartItems: ArrayList<TbCartItem> = arrayListOf()
+    var currentDineCartItems: ArrayList<TbCartItem> = arrayListOf()
     var duplicateCurrentCartItem: ArrayList<TbCartItem> = arrayListOf()
 
     /**
