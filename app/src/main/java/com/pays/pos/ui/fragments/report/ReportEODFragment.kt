@@ -655,6 +655,15 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                                 addItemsInOrderSalesDetailsLandiInner(it)
                                                 lineBreak()
                                             }
+
+                                            var totalAmount = 0.0
+
+                                            eodReportData?.orderSalesDetails?.data?.forEach {
+
+                                                totalAmount += it.amount
+                                            }
+                                            printDashedLineAndBreak()
+                                            LPrint.print("Total                                  ${MethodUtils.roundOffAmount(totalAmount)}")
                                         }
                                         lineBreak()
                                     }
@@ -2801,6 +2810,12 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                 eodReportData?.orderSalesDetails?.data?.forEach {
                     addItemsInOrderSalesDetails(it)
                 }
+                var totalAmount = 0.0
+                eodReportData?.orderSalesDetails?.data?.forEach {
+
+                    totalAmount += it.amount
+                }
+                PrintSunmiUtils.orderTime("Total                                ${MethodUtils.roundOffAmount(totalAmount)}")
 
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
@@ -3279,12 +3294,34 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     eodReportData?.orderSalesDetails?.data?.forEach {
                         addItemsInOrderSalesDetailsInnerNew(it)
                     }
+
+                    var totalAmount = 0.0
+
+                    eodReportData?.orderSalesDetails?.data?.forEach {
+
+                        totalAmount += it.amount
+                    }
+                    PrintSunmiUtils.addHorizontalInnerNew()
+//                    PrintSunmiUtils.normalTextNew("\n")
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+                    PrintSunmiUtils.normalTextNew("Total                                  ${MethodUtils.roundOffAmount(totalAmount)}")
+
                 } else {
                     addSixHeaderForOrderSaleDetailsSunmiInner()
                     PrintSunmiUtils.addHorizontalInner()
                     eodReportData?.orderSalesDetails?.data?.forEach {
                         addItemsInOrderSalesDetailsInner(it)
                     }
+
+                    var totalAmount = 0.0
+
+                    eodReportData?.orderSalesDetails?.data?.forEach {
+
+                        totalAmount += it.amount
+                    }
+//                    PrintSunmiUtils.normalText("\n")
+                    SunmiPrintHelper.getInstance().lineWrap(1)
+                    PrintSunmiUtils.normalText("Total                                  ${MethodUtils.roundOffAmount(totalAmount)}")
                 }
 
                 SunmiPrintHelper.getInstance().lineWrap(1)

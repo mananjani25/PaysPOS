@@ -124,6 +124,7 @@ import java.io.IOException
 import java.lang.Runnable
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -414,7 +415,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             printerProgress()
             observeShowProgress()
             allOrdersPendingCountObserver()
-            getDineInData()
+            //getDineInData()
             checkSearch()
             observeServiceChargeUpdate()
             observerSyncItemPriceChange()   // putting these methods in onviewcreated due to UI glitch issue
@@ -2331,11 +2332,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 //            dineInList
 //        )
 
-        CoroutineScope(Dispatchers.IO).launch {
-            viewModel.currentCartItems.forEach { item ->
-                viewModel.addItemToCartItems(item)
-            }
-        }
+//        CoroutineScope(Dispatchers.IO).launch {
+//            viewModel.currentCartItems.forEach { item ->
+//                viewModel.addItemToCartItems(item)
+//            }
+//        }
 
     }
 
@@ -2386,7 +2387,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                         serviceCharge = serviceChargesList
                         orderId = arguments?.getInt("orderId")
-                        listOfItemRemoved = dineInList[0].listOfItemsMoved
+                        listOfItemRemoved = dineInList!![0].listOfItemsMoved
 
                         note = arguments?.getString("order_note") ?: ""
 
@@ -2438,8 +2439,18 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 viewModel.cartModel = cartList[0]
 
 
+//                CoroutineScope(Dispatchers.IO).launch {
+//                    viewModel.currentCartItems.forEach {
+//                        viewModel.addItemToCartItems(it)
+//                    }
+//                }
+
+
+                Log.e("DINE IN DATA","DINE IN DATA -> CURRENT CART ITEMS = ${viewModel.currentDineCartItems.size}")
+
+                dineInList = ArrayList( dineInList.filter { it.title != null && it.title?.toLowerCase() != "null" && it.isHeader == 0 } )
                 viewModel.updateDineInCart(
-                    viewModel.currentCartItems,
+                    viewModel.currentDineCartItems,
                     null,
                     Constants.ADD,
                     false,
@@ -2628,179 +2639,723 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                         if (!oneItemPerReceipt) {
                             createOrderResponse.data?.order.orderItems.forEach { item ->
-                                data.printerCategories.toCollection(arrayListOf())?.forEach {
-                                    if (it?.id == item.categoryId) {
-                                        if (it.categoryActive && it.printerEnable) {
-                                            for (singularity in 1..item.quantity) {
-                                                if (printOrderIDInStickyPrinter){
-                                                add(
-                                                    PrinterBuilder()
-                                                        .styleBold(true)
-                                                        .styleMagnification(
-                                                            MagnificationParameter(3, 3)
-                                                        )
-                                                        .actionPrintText(
-                                                            "OrderId: ${createOrderResponse.data?.order.custom_order_id}"
-                                                        )
-                                                )
-                                            }
-
-                                                actionFeedLine(1)
-
-                                                add(
-                                                    PrinterBuilder()
-                                                        .styleBold(true)
-                                                        .styleMagnification(
-                                                            MagnificationParameter(2, 2)
-                                                        )
-                                                        .actionPrintText(
-                                                            "${createOrderResponse.data?.order?.orderTypeName}"
-                                                        )
-                                                )
-
-                                                actionFeedLine(1)
-
-                                                if (createOrderResponse.data?.order?.orderType?.contains(
-                                                        "Phone",
-                                                        true
-                                                    ) == true
-                                                ) {
-                                                    add(
-                                                        PrinterBuilder()
-                                                            .styleBold(true)
-                                                            .styleMagnification(
-                                                                MagnificationParameter(2, 2)
+                                when(item.isEdited){
+                                    true->{
+                                        //In case of new order isEdited will come true, it is working in reverse order
+                                        data.printerCategories.toCollection(arrayListOf())?.forEach {
+                                            if (it?.id == item.categoryId) {
+                                                if (it.categoryActive && it.printerEnable) {
+                                                    for (singularity in 1..item.quantity) {
+                                                        if (printOrderIDInStickyPrinter) {
+                                                            add(
+                                                                PrinterBuilder()
+                                                                    .styleBold(true)
+                                                                    .styleMagnification(
+                                                                        MagnificationParameter(3, 3)
+                                                                    )
+                                                                    .actionPrintText(
+                                                                        "OrderId: ${createOrderResponse.data?.order.custom_order_id}"
+                                                                    )
                                                             )
-                                                            .actionPrintText(
-                                                                "${createOrderResponse.data?.order?.deliveryType}"
-                                                            )
-                                                    )
+                                                        }
 
-                                                    actionFeedLine(1)
-                                                }
+                                                        actionFeedLine(1)
 
-                                                add(
-                                                    PrinterBuilder()
-                                                        .styleAlignment(Alignment.Left)
-                                                        .styleMagnification(
-                                                            MagnificationParameter(2, 2)
-                                                        )
-                                                        .actionPrintText(
-                                                            content = addSingleOrdersForStarKitchen(
-                                                                1,
-                                                                item,
-                                                                data.printerCategories.toCollection(
-                                                                    arrayListOf()
+                                                        add(
+                                                            PrinterBuilder()
+                                                                .styleBold(true)
+                                                                .styleMagnification(
+                                                                    MagnificationParameter(2, 2)
                                                                 )
-                                                            )
+                                                                .actionPrintText(
+                                                                    "${createOrderResponse.data?.order?.orderTypeName}"
+                                                                )
                                                         )
-                                                )
 
+                                                        actionFeedLine(1)
 
-                                                actionFeedLine(1)
-                                                if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                    add(
-                                                        PrinterBuilder()
-                                                            .styleAlignment(Alignment.Center)
-                                                            .styleBold(true)
-                                                            .actionPrintText(
-                                                                content = if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                                    "--------------------------------------------\nOrder Note"
-                                                                } else ""
+                                                        if (createOrderResponse.data?.order?.orderType?.contains(
+                                                                "Phone",
+                                                                true
+                                                            ) == true
+                                                        ) {
+                                                            add(
+                                                                PrinterBuilder()
+                                                                    .styleBold(true)
+                                                                    .styleMagnification(
+                                                                        MagnificationParameter(2, 2)
+                                                                    )
+                                                                    .actionPrintText(
+                                                                        "${createOrderResponse.data?.order?.deliveryType}"
+                                                                    )
                                                             )
-                                                    )
-                                                }
-                                                if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                    add(
-                                                        PrinterBuilder()
-                                                            .styleAlignment(Alignment.Center)
-                                                            .actionPrintText(
-                                                                content = if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                                    createOrderResponse.data?.order?.note.toString()
-                                                                } else ""
+
+                                                            actionFeedLine(1)
+                                                        }
+
+                                                        add(
+                                                            PrinterBuilder()
+                                                                .styleAlignment(Alignment.Left)
+                                                                .styleMagnification(
+                                                                    MagnificationParameter(2, 2)
+                                                                )
+                                                                .actionPrintText(
+                                                                    content = addSingleOrdersForStarKitchen(
+                                                                        1,
+                                                                        item,
+                                                                        data.printerCategories.toCollection(
+                                                                            arrayListOf()
+                                                                        )
+                                                                    )
+                                                                )
+                                                        )
+
+
+                                                        actionFeedLine(1)
+                                                        if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                            add(
+                                                                PrinterBuilder()
+                                                                    .styleAlignment(Alignment.Center)
+                                                                    .styleBold(true)
+                                                                    .actionPrintText(
+                                                                        content = if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                            "--------------------------------------------\nOrder Note"
+                                                                        } else ""
+                                                                    )
                                                             )
-                                                    )
-                                                }
-
-                                                actionFeedLine(1)
-                                                actionFeedLine(1)
-
-                                                try {
-                                                    var printedName = StringBuilder("")
-                                                    createOrderResponse.data?.order?.customer?.firstName?.let { firstName ->
-                                                        createOrderResponse.data?.order?.customer?.lastName?.let { lastName ->
-                                                            if (kitchenSettingModel.showCustomerName) {
-                                                                if (!firstName.contains(
-                                                                        "customer",
-                                                                        ignoreCase = true
+                                                        }
+                                                        if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                            add(
+                                                                PrinterBuilder()
+                                                                    .styleAlignment(Alignment.Center)
+                                                                    .actionPrintText(
+                                                                        content = if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                            createOrderResponse.data?.order?.note.toString()
+                                                                        } else ""
                                                                     )
-                                                                ) {
-                                                                    printedName.append(firstName)
-                                                                    printedName.append(" ")
-                                                                }
+                                                            )
+                                                        }
 
-                                                                if (!lastName.isBlank()) {
-                                                                    printedName.append(lastName)
-                                                                }
+                                                        actionFeedLine(1)
+                                                        actionFeedLine(1)
 
-                                                                if (printedName.isNotEmpty()) {
-                                                                    add(
-                                                                        PrinterBuilder()
-                                                                            .styleAlignment(
-                                                                                Alignment.Left
+                                                        try {
+                                                            var printedName = StringBuilder("")
+                                                            createOrderResponse.data?.order?.customer?.firstName?.let { firstName ->
+                                                                createOrderResponse.data?.order?.customer?.lastName?.let { lastName ->
+                                                                    if (kitchenSettingModel.showCustomerName) {
+                                                                        if (!firstName.contains(
+                                                                                "customer",
+                                                                                ignoreCase = true
                                                                             )
-                                                                            .styleBold(true)
-                                                                            .actionPrintText(
-                                                                                content = "Customer Details\n"
-                                                                            )
-                                                                    )
+                                                                        ) {
+                                                                            printedName.append(firstName)
+                                                                            printedName.append(" ")
+                                                                        }
 
-                                                                    add(
-                                                                        PrinterBuilder()
-                                                                            .styleAlignment(
-                                                                                Alignment.Center
-                                                                            )
-                                                                            .actionPrintText(
-                                                                                content =
-                                                                                "-------------------------------------------"
-                                                                            )
-                                                                    )
+                                                                        if (!lastName.isBlank()) {
+                                                                            printedName.append(lastName)
+                                                                        }
 
-                                                                    add(
-                                                                        PrinterBuilder()
-                                                                            .styleAlignment(
-                                                                                Alignment.Left
+                                                                        if (printedName.isNotEmpty()) {
+                                                                            add(
+                                                                                PrinterBuilder()
+                                                                                    .styleAlignment(
+                                                                                        Alignment.Left
+                                                                                    )
+                                                                                    .styleBold(true)
+                                                                                    .actionPrintText(
+                                                                                        content = "Customer Details\n"
+                                                                                    )
                                                                             )
-                                                                            .actionPrintText(
-                                                                                content = printedName.toString()
+
+                                                                            add(
+                                                                                PrinterBuilder()
+                                                                                    .styleAlignment(
+                                                                                        Alignment.Center
+                                                                                    )
+                                                                                    .actionPrintText(
+                                                                                        content =
+                                                                                        "-------------------------------------------"
+                                                                                    )
                                                                             )
-                                                                    )
+
+                                                                            add(
+                                                                                PrinterBuilder()
+                                                                                    .styleAlignment(
+                                                                                        Alignment.Left
+                                                                                    )
+                                                                                    .actionPrintText(
+                                                                                        content = printedName.toString()
+                                                                                    )
+                                                                            )
+
+                                                                        }
+                                                                    }
 
                                                                 }
                                                             }
+                                                        } catch (e: Exception) {
+                                                        }
+
+                                                        actionFeedLine(1)
+
+                                                        add(
+                                                            PrinterBuilder()
+                                                                .actionPrintText(
+                                                                    Constants.getReceiptFormatDateFromUTCServer(
+                                                                        requireContext(),
+                                                                        createOrderResponse.data?.order.createdAt.toString()
+                                                                    )
+                                                                )
+                                                        )
+
+                                                        actionFeedLine(1)
+                                                        actionCut(CutType.Partial)
+
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    false->{
+                                        if (item.isItemEdited==false && item.isPrinted==false){
+                                            data.printerCategories.toCollection(arrayListOf())?.forEach {
+                                                if (it?.id == item.categoryId) {
+                                                    if (it.categoryActive && it.printerEnable) {
+                                                        for (singularity in 1..item.quantity) {
+                                                            if (printOrderIDInStickyPrinter) {
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleBold(true)
+                                                                        .styleMagnification(
+                                                                            MagnificationParameter(3, 3)
+                                                                        )
+                                                                        .actionPrintText(
+                                                                            "OrderId: ${createOrderResponse.data?.order.custom_order_id}"
+                                                                        )
+                                                                )
+                                                            }
+
+                                                            actionFeedLine(1)
+
+                                                            add(
+                                                                PrinterBuilder()
+                                                                    .styleBold(true)
+                                                                    .styleMagnification(
+                                                                        MagnificationParameter(2, 2)
+                                                                    )
+                                                                    .actionPrintText(
+                                                                        "${createOrderResponse.data?.order?.orderTypeName}"
+                                                                    )
+                                                            )
+
+                                                            actionFeedLine(1)
+
+                                                            if (createOrderResponse.data?.order?.orderType?.contains(
+                                                                    "Phone",
+                                                                    true
+                                                                ) == true
+                                                            ) {
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleBold(true)
+                                                                        .styleMagnification(
+                                                                            MagnificationParameter(2, 2)
+                                                                        )
+                                                                        .actionPrintText(
+                                                                            "${createOrderResponse.data?.order?.deliveryType}"
+                                                                        )
+                                                                )
+
+                                                                actionFeedLine(1)
+                                                            }
+
+                                                            add(
+                                                                PrinterBuilder()
+                                                                    .styleAlignment(Alignment.Left)
+                                                                    .styleMagnification(
+                                                                        MagnificationParameter(2, 2)
+                                                                    )
+                                                                    .actionPrintText(
+                                                                        content = addSingleOrdersForStarKitchen(
+                                                                            1,
+                                                                            item,
+                                                                            data.printerCategories.toCollection(
+                                                                                arrayListOf()
+                                                                            )
+                                                                        )
+                                                                    )
+                                                            )
+
+
+                                                            actionFeedLine(1)
+                                                            if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleAlignment(Alignment.Center)
+                                                                        .styleBold(true)
+                                                                        .actionPrintText(
+                                                                            content = if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                                "--------------------------------------------\nOrder Note"
+                                                                            } else ""
+                                                                        )
+                                                                )
+                                                            }
+                                                            if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleAlignment(Alignment.Center)
+                                                                        .actionPrintText(
+                                                                            content = if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                                createOrderResponse.data?.order?.note.toString()
+                                                                            } else ""
+                                                                        )
+                                                                )
+                                                            }
+
+                                                            actionFeedLine(1)
+                                                            actionFeedLine(1)
+
+                                                            try {
+                                                                var printedName = StringBuilder("")
+                                                                createOrderResponse.data?.order?.customer?.firstName?.let { firstName ->
+                                                                    createOrderResponse.data?.order?.customer?.lastName?.let { lastName ->
+                                                                        if (kitchenSettingModel.showCustomerName) {
+                                                                            if (!firstName.contains(
+                                                                                    "customer",
+                                                                                    ignoreCase = true
+                                                                                )
+                                                                            ) {
+                                                                                printedName.append(firstName)
+                                                                                printedName.append(" ")
+                                                                            }
+
+                                                                            if (!lastName.isBlank()) {
+                                                                                printedName.append(lastName)
+                                                                            }
+
+                                                                            if (printedName.isNotEmpty()) {
+                                                                                add(
+                                                                                    PrinterBuilder()
+                                                                                        .styleAlignment(
+                                                                                            Alignment.Left
+                                                                                        )
+                                                                                        .styleBold(true)
+                                                                                        .actionPrintText(
+                                                                                            content = "Customer Details\n"
+                                                                                        )
+                                                                                )
+
+                                                                                add(
+                                                                                    PrinterBuilder()
+                                                                                        .styleAlignment(
+                                                                                            Alignment.Center
+                                                                                        )
+                                                                                        .actionPrintText(
+                                                                                            content =
+                                                                                            "-------------------------------------------"
+                                                                                        )
+                                                                                )
+
+                                                                                add(
+                                                                                    PrinterBuilder()
+                                                                                        .styleAlignment(
+                                                                                            Alignment.Left
+                                                                                        )
+                                                                                        .actionPrintText(
+                                                                                            content = printedName.toString()
+                                                                                        )
+                                                                                )
+
+                                                                            }
+                                                                        }
+
+                                                                    }
+                                                                }
+                                                            } catch (e: Exception) {
+                                                            }
+
+                                                            actionFeedLine(1)
+
+                                                            add(
+                                                                PrinterBuilder()
+                                                                    .actionPrintText(
+                                                                        Constants.getReceiptFormatDateFromUTCServer(
+                                                                            requireContext(),
+                                                                            createOrderResponse.data?.order.createdAt.toString()
+                                                                        )
+                                                                    )
+                                                            )
+
+                                                            actionFeedLine(1)
+                                                            actionCut(CutType.Partial)
 
                                                         }
                                                     }
-                                                } catch (e: Exception) {
                                                 }
+                                            }
+                                        }else if (item.isItemEdited){
+                                            data.printerCategories.toCollection(arrayListOf())?.forEach {
+                                                if (it?.id == item.categoryId) {
+                                                    if (it.categoryActive && it.printerEnable) {
+                                                        for (singularity in 1..item.quantity) {
+                                                            if (printOrderIDInStickyPrinter) {
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleBold(true)
+                                                                        .styleMagnification(
+                                                                            MagnificationParameter(3, 3)
+                                                                        )
+                                                                        .actionPrintText(
+                                                                            "OrderId: ${createOrderResponse.data?.order.custom_order_id}"
+                                                                        )
+                                                                )
+                                                            }
 
-                                                actionFeedLine(1)
+                                                            actionFeedLine(1)
 
-                                                add(
-                                                    PrinterBuilder()
-                                                        .actionPrintText(
-                                                            Constants.getReceiptFormatDateFromUTCServer(
-                                                                requireContext(),
-                                                                createOrderResponse.data?.order.createdAt.toString()
+                                                            add(
+                                                                PrinterBuilder()
+                                                                    .styleBold(true)
+                                                                    .styleMagnification(
+                                                                        MagnificationParameter(2, 2)
+                                                                    )
+                                                                    .actionPrintText(
+                                                                        "${createOrderResponse.data?.order?.orderTypeName}"
+                                                                    )
                                                             )
-                                                        )
-                                                )
 
-                                                actionFeedLine(1)
-                                                actionCut(CutType.Partial)
+                                                            actionFeedLine(1)
 
+                                                            if (createOrderResponse.data?.order?.orderType?.contains(
+                                                                    "Phone",
+                                                                    true
+                                                                ) == true
+                                                            ) {
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleBold(true)
+                                                                        .styleMagnification(
+                                                                            MagnificationParameter(2, 2)
+                                                                        )
+                                                                        .actionPrintText(
+                                                                            "${createOrderResponse.data?.order?.deliveryType}"
+                                                                        )
+                                                                )
+
+                                                                actionFeedLine(1)
+                                                            }
+
+                                                            add(
+                                                                PrinterBuilder()
+                                                                    .styleAlignment(Alignment.Left)
+                                                                    .styleMagnification(
+                                                                        MagnificationParameter(2, 2)
+                                                                    )
+                                                                    .actionPrintText(
+                                                                        content = addSingleOrdersForStarKitchen(
+                                                                            1,
+                                                                            item,
+                                                                            data.printerCategories.toCollection(
+                                                                                arrayListOf()
+                                                                            )
+                                                                        )
+                                                                    )
+                                                            )
+
+
+                                                            actionFeedLine(1)
+                                                            if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleAlignment(Alignment.Center)
+                                                                        .styleBold(true)
+                                                                        .actionPrintText(
+                                                                            content = if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                                "--------------------------------------------\nOrder Note"
+                                                                            } else ""
+                                                                        )
+                                                                )
+                                                            }
+                                                            if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                add(
+                                                                    PrinterBuilder()
+                                                                        .styleAlignment(Alignment.Center)
+                                                                        .actionPrintText(
+                                                                            content = if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                                createOrderResponse.data?.order?.note.toString()
+                                                                            } else ""
+                                                                        )
+                                                                )
+                                                            }
+
+                                                            actionFeedLine(1)
+                                                            actionFeedLine(1)
+
+                                                            try {
+                                                                var printedName = StringBuilder("")
+                                                                createOrderResponse.data?.order?.customer?.firstName?.let { firstName ->
+                                                                    createOrderResponse.data?.order?.customer?.lastName?.let { lastName ->
+                                                                        if (kitchenSettingModel.showCustomerName) {
+                                                                            if (!firstName.contains(
+                                                                                    "customer",
+                                                                                    ignoreCase = true
+                                                                                )
+                                                                            ) {
+                                                                                printedName.append(firstName)
+                                                                                printedName.append(" ")
+                                                                            }
+
+                                                                            if (!lastName.isBlank()) {
+                                                                                printedName.append(lastName)
+                                                                            }
+
+                                                                            if (printedName.isNotEmpty()) {
+                                                                                add(
+                                                                                    PrinterBuilder()
+                                                                                        .styleAlignment(
+                                                                                            Alignment.Left
+                                                                                        )
+                                                                                        .styleBold(true)
+                                                                                        .actionPrintText(
+                                                                                            content = "Customer Details\n"
+                                                                                        )
+                                                                                )
+
+                                                                                add(
+                                                                                    PrinterBuilder()
+                                                                                        .styleAlignment(
+                                                                                            Alignment.Center
+                                                                                        )
+                                                                                        .actionPrintText(
+                                                                                            content =
+                                                                                            "-------------------------------------------"
+                                                                                        )
+                                                                                )
+
+                                                                                add(
+                                                                                    PrinterBuilder()
+                                                                                        .styleAlignment(
+                                                                                            Alignment.Left
+                                                                                        )
+                                                                                        .actionPrintText(
+                                                                                            content = printedName.toString()
+                                                                                        )
+                                                                                )
+
+                                                                            }
+                                                                        }
+
+                                                                    }
+                                                                }
+                                                            } catch (e: Exception) {
+                                                            }
+
+                                                            actionFeedLine(1)
+
+                                                            add(
+                                                                PrinterBuilder()
+                                                                    .actionPrintText(
+                                                                        Constants.getReceiptFormatDateFromUTCServer(
+                                                                            requireContext(),
+                                                                            createOrderResponse.data?.order.createdAt.toString()
+                                                                        )
+                                                                    )
+                                                            )
+
+                                                            actionFeedLine(1)
+                                                            actionCut(CutType.Partial)
+
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
+                                        /*when(item.isItemEdited){
+                                            false->{
+                                                when(item.isPrinted){
+                                                    true->{}
+                                                    false->{
+                                                        data.printerCategories.toCollection(arrayListOf())?.forEach {
+                                                            if (it?.id == item.categoryId) {
+                                                                if (it.categoryActive && it.printerEnable) {
+                                                                    for (singularity in 1..item.quantity) {
+                                                                        if (printOrderIDInStickyPrinter) {
+                                                                            add(
+                                                                                PrinterBuilder()
+                                                                                    .styleBold(true)
+                                                                                    .styleMagnification(
+                                                                                        MagnificationParameter(3, 3)
+                                                                                    )
+                                                                                    .actionPrintText(
+                                                                                        "OrderId: ${createOrderResponse.data?.order.custom_order_id}"
+                                                                                    )
+                                                                            )
+                                                                        }
+
+                                                                        actionFeedLine(1)
+
+                                                                        add(
+                                                                            PrinterBuilder()
+                                                                                .styleBold(true)
+                                                                                .styleMagnification(
+                                                                                    MagnificationParameter(2, 2)
+                                                                                )
+                                                                                .actionPrintText(
+                                                                                    "${createOrderResponse.data?.order?.orderTypeName}"
+                                                                                )
+                                                                        )
+
+                                                                        actionFeedLine(1)
+
+                                                                        if (createOrderResponse.data?.order?.orderType?.contains(
+                                                                                "Phone",
+                                                                                true
+                                                                            ) == true
+                                                                        ) {
+                                                                            add(
+                                                                                PrinterBuilder()
+                                                                                    .styleBold(true)
+                                                                                    .styleMagnification(
+                                                                                        MagnificationParameter(2, 2)
+                                                                                    )
+                                                                                    .actionPrintText(
+                                                                                        "${createOrderResponse.data?.order?.deliveryType}"
+                                                                                    )
+                                                                            )
+
+                                                                            actionFeedLine(1)
+                                                                        }
+
+                                                                        add(
+                                                                            PrinterBuilder()
+                                                                                .styleAlignment(Alignment.Left)
+                                                                                .styleMagnification(
+                                                                                    MagnificationParameter(2, 2)
+                                                                                )
+                                                                                .actionPrintText(
+                                                                                    content = addSingleOrdersForStarKitchen(
+                                                                                        1,
+                                                                                        item,
+                                                                                        data.printerCategories.toCollection(
+                                                                                            arrayListOf()
+                                                                                        )
+                                                                                    )
+                                                                                )
+                                                                        )
+
+
+                                                                        actionFeedLine(1)
+                                                                        if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                            add(
+                                                                                PrinterBuilder()
+                                                                                    .styleAlignment(Alignment.Center)
+                                                                                    .styleBold(true)
+                                                                                    .actionPrintText(
+                                                                                        content = if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                                            "--------------------------------------------\nOrder Note"
+                                                                                        } else ""
+                                                                                    )
+                                                                            )
+                                                                        }
+                                                                        if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                            add(
+                                                                                PrinterBuilder()
+                                                                                    .styleAlignment(Alignment.Center)
+                                                                                    .actionPrintText(
+                                                                                        content = if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                                            createOrderResponse.data?.order?.note.toString()
+                                                                                        } else ""
+                                                                                    )
+                                                                            )
+                                                                        }
+
+                                                                        actionFeedLine(1)
+                                                                        actionFeedLine(1)
+
+                                                                        try {
+                                                                            var printedName = StringBuilder("")
+                                                                            createOrderResponse.data?.order?.customer?.firstName?.let { firstName ->
+                                                                                createOrderResponse.data?.order?.customer?.lastName?.let { lastName ->
+                                                                                    if (kitchenSettingModel.showCustomerName) {
+                                                                                        if (!firstName.contains(
+                                                                                                "customer",
+                                                                                                ignoreCase = true
+                                                                                            )
+                                                                                        ) {
+                                                                                            printedName.append(firstName)
+                                                                                            printedName.append(" ")
+                                                                                        }
+
+                                                                                        if (!lastName.isBlank()) {
+                                                                                            printedName.append(lastName)
+                                                                                        }
+
+                                                                                        if (printedName.isNotEmpty()) {
+                                                                                            add(
+                                                                                                PrinterBuilder()
+                                                                                                    .styleAlignment(
+                                                                                                        Alignment.Left
+                                                                                                    )
+                                                                                                    .styleBold(true)
+                                                                                                    .actionPrintText(
+                                                                                                        content = "Customer Details\n"
+                                                                                                    )
+                                                                                            )
+
+                                                                                            add(
+                                                                                                PrinterBuilder()
+                                                                                                    .styleAlignment(
+                                                                                                        Alignment.Center
+                                                                                                    )
+                                                                                                    .actionPrintText(
+                                                                                                        content =
+                                                                                                        "-------------------------------------------"
+                                                                                                    )
+                                                                                            )
+
+                                                                                            add(
+                                                                                                PrinterBuilder()
+                                                                                                    .styleAlignment(
+                                                                                                        Alignment.Left
+                                                                                                    )
+                                                                                                    .actionPrintText(
+                                                                                                        content = printedName.toString()
+                                                                                                    )
+                                                                                            )
+
+                                                                                        }
+                                                                                    }
+
+                                                                                }
+                                                                            }
+                                                                        } catch (e: Exception) {
+                                                                        }
+
+                                                                        actionFeedLine(1)
+
+                                                                        add(
+                                                                            PrinterBuilder()
+                                                                                .actionPrintText(
+                                                                                    Constants.getReceiptFormatDateFromUTCServer(
+                                                                                        requireContext(),
+                                                                                        createOrderResponse.data?.order.createdAt.toString()
+                                                                                    )
+                                                                                )
+                                                                        )
+
+                                                                        actionFeedLine(1)
+                                                                        actionCut(CutType.Partial)
+
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }*/
                                     }
                                 }
                             }
