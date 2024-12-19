@@ -320,9 +320,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
     fun setUpPreAuthData() {
         if(prefProvider.getValue(ORDER_TYPE,"") == OPEN_ORDER && !isFromPayment) {
 
-            binding.preAuthOption.visible()
+            binding.preAuthOption?.visible()
 
-            binding.preAuthOption.apply {
+            binding.preAuthOption?.apply {
 
                 isChecked = false
                 isEnabled = true
@@ -380,13 +380,13 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
             }
         } else
-            binding.preAuthOption.gone()
+            binding.preAuthOption?.gone()
     }
 
     // To check selected order type
     private fun checkOrderType() {
 
-      //  setUpPreAuthData()
+        setUpPreAuthData()
 
 //        saveVisibility()
         if (prefProvider.getValue(ORDER_TYPE, "").isEmpty()) {
@@ -1211,9 +1211,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     binding.tvPayNow.text =
                         "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
                     if (viewModel.cartModel?.discountSelectdValue != 0.0 && viewModel.cartModel?.discountSelectdValue != null) {
-                        binding.txtDiscountText.text = "Discount (${MethodUtils.roundOffAmountDouble(viewModel.cartModel?.discountSelectdValue)}%)"
+                        binding.txtDiscountText?.text = "Discount (${MethodUtils.roundOffAmountDouble(viewModel.cartModel?.discountSelectdValue)}%)"
                     } else {
-                        binding.txtDiscountText.text = "Discount"
+                        binding.txtDiscountText?.text = "Discount"
                     }
                     Log.e("totalDiscount", viewModel.totalDiscount.toString())
                     binding.txtDiscount.text =
@@ -1290,7 +1290,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     binding.txtTotal.text = MethodUtils.roundOffAmount(0.00)
                     binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.00)
                     binding.txtTax.text = MethodUtils.roundOffAmount(0.00)
-                    binding.txtDiscountText.text = "Discount"
+                    binding.txtDiscountText?.text = "Discount"
                     binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.00)
                     if (prefProvider.getValue(
                             OPTION_TYPE, "CashDiscount"
@@ -1700,9 +1700,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             binding.txtServiceCharge.text =
                                                 MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                                             if (viewModel.cartModel?.discountSelectdValue != 0.0 && viewModel.cartModel?.discountSelectdValue != null) {
-                                                binding.txtDiscountText.text = "Discount (${MethodUtils.roundOffAmountDouble(viewModel.cartModel?.discountSelectdValue)}%)"
+                                                binding.txtDiscountText?.text = "Discount (${MethodUtils.roundOffAmountDouble(viewModel.cartModel?.discountSelectdValue)}%)"
                                             } else {
-                                                binding.txtDiscountText.text = "Discount"
+                                                binding.txtDiscountText?.text = "Discount"
                                             }
                                             binding.txtDiscount.text =
                                                 "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
@@ -2155,9 +2155,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                             binding.txtServiceCharge.text =
                                                 MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                                             if (viewModel.cartModel?.discountSelectdValue != 0.0 && viewModel.cartModel?.discountSelectdValue != null) {
-                                                binding.txtDiscountText.text = "Discount (${MethodUtils.roundOffAmountDouble(viewModel.cartModel?.discountSelectdValue)}%)"
+                                                binding.txtDiscountText?.text = "Discount (${MethodUtils.roundOffAmountDouble(viewModel.cartModel?.discountSelectdValue)}%)"
                                             } else {
-                                                binding.txtDiscountText.text = "Discount"
+                                                binding.txtDiscountText?.text = "Discount"
                                             }
                                             binding.txtDiscount.text =
                                                 "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
@@ -2561,9 +2561,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
 
             if (viewModel.cartModel?.discountSelectdValue != 0.0 && viewModel.cartModel?.discountSelectdValue != null) {
-                binding.txtDiscountText.text = "Discount (${MethodUtils.roundOffAmountDouble(viewModel.cartModel?.discountSelectdValue)}%)"
+                binding.txtDiscountText?.text = "Discount (${MethodUtils.roundOffAmountDouble(viewModel.cartModel?.discountSelectdValue)}%)"
             } else {
-                binding.txtDiscountText.text = "Discount"
+                binding.txtDiscountText?.text = "Discount"
             }
 
             binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
@@ -2792,7 +2792,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             binding.txtTotal.text = MethodUtils.roundOffAmount(0.00)
             binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.00)
             binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
-            binding.txtDiscountText.text = "Discount"
+            binding.txtDiscountText?.text = "Discount"
             binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.00)
             if (prefProvider.getValue(
                     OPTION_TYPE, "CashDiscount"
@@ -4923,7 +4923,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         coroutineScope {
                             Log.e("PRE AUTH DATA ",Gson().toJson(response.ExtData))
 
-                            binding.preAuthOption.apply {
+                            binding.preAuthOption?.apply {
                                 isChecked = true
                                 isEnabled = false
                                 setTextColor(Color.GREEN)
@@ -4968,7 +4968,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             override fun onClick(p0: DialogInterface?, p1: Int) {
                                 try {
 
-                                    binding.preAuthOption.apply {
+                                    binding.preAuthOption?.apply {
                                         isChecked = false
                                         isEnabled = true
                                         setTextColor(Color.RED)

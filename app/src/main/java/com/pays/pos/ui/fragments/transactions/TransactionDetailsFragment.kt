@@ -68,16 +68,20 @@ import com.pax.poslink.ProcessTransResult
 import com.google.gson.reflect.TypeToken
 import com.pax.poslink.ReportRequest
 import com.pays.pos.data.model.requestModel.CashLogRequest
+import com.pays.payments.callbacks.PaymentCallback
+import com.pays.payments.design.PaymentGatewayFactory
+import com.pays.payments.design.PaymentGatewayType
+import com.pays.payments.design.TransactionType
+import com.pays.payments.design.Valor
 import com.pays.pos.data.model.requestModel.RefundRequestModel
+import com.pays.pos.data.model.valor.ValorSuccessResponse
 import com.pays.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.pays.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
-import com.pays.pos.data.remote.Constants.LARGE
 import com.pays.pos.data.remote.Constants.VENUE_LOGO
 import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.pays.pos.ui.fragments.payment.OrderCompleteFragment.OnBluetoothPermissionGranted
 import com.pays.pos.utils.landi.LPrint
 import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
@@ -124,6 +128,9 @@ class TransactionDetailsFragment : Fragment() {
     lateinit var settings: StarConnectionSettings
     lateinit var printer: StarPrinter
     /*Star label printer - END*/
+
+    @Inject
+    lateinit var paymentGatewayFactory: PaymentGatewayFactory
 
     /*This variable will be used to check if the orderID is to be printed in the sticky receipt */
     private var printOrderIDInStickyPrinter: Boolean = true
@@ -179,16 +186,16 @@ class TransactionDetailsFragment : Fragment() {
         )
 
 
-            lifecycleScope.launch {
-                try {
-                    runBlocking {
-                        oneItemPerReceipt =
-                            dashboardCategoryViewModel.getLabelPrinterSettingsData().oneItemPerReciept
-                    }
-                } catch (e: Exception) {
-                    oneItemPerReceipt = false
+        lifecycleScope.launch {
+            try {
+                runBlocking {
+                    oneItemPerReceipt =
+                        dashboardCategoryViewModel.getLabelPrinterSettingsData().oneItemPerReciept
                 }
+            } catch (e: Exception) {
+                oneItemPerReceipt = false
             }
+        }
 
         lifecycleScope.launch(Dispatchers.Main) {
             try {
@@ -394,8 +401,16 @@ class TransactionDetailsFragment : Fragment() {
                 mLastClickTime = SystemClock.elapsedRealtime()
                 try {
                     if (!paymentDetailsResponse.data.ext_data.isNullOrEmpty()) {
+                        if (paymentDetailsResponse.data.ext_data.equals(Constants.VALOR) && prefProvider.getValue(
+                                Constants.VALOR_APP_ID, ""
+                            ).isNotEmpty()
+                        ) {
+                            ProgressUtils.showProgressDialog(requireActivity())
+                            startVoidWithValor(paymentDetailsResponse)
+
+                        }
 //                    Check if the the PAX is connected or not then perform the void checking
-                        if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
+                        else if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
 //                    Check if the transaction is void or not
                             CoroutineScope(Dispatchers.Main).launch {
                                 ProgressUtils.showProgressDialog(requireActivity())
@@ -435,6 +450,92 @@ class TransactionDetailsFragment : Fragment() {
         }
 
     }
+
+    lateinit var paymentCoroutineScope: CoroutineScope
+    var paymentCoroutineExceptionHandler =
+        CoroutineExceptionHandler { coroutineContext, exception ->
+            EventBus.getDefault()
+                .post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} TransactionDetailsFragment startVoidWithValor()-> ${
+                            Gson().toJson(
+                                exception
+                            )
+                        } "
+                    )
+                )
+        }
+
+    private fun startVoidWithValor(paymentDetailsResponse: GetPaymentOrderDetailsResponse) {
+        paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutineScope.launch {
+            val gatewayType = PaymentGatewayType.VALOR
+            val paymentGateway = paymentGatewayFactory.create(gatewayType)
+
+            val paymentCallback = object : PaymentCallback {
+                override fun onSuccess(transactionId: String) {
+                    var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
+                        transactionId,
+                        ValorSuccessResponse::class.java
+                    )
+
+                    transactionJsonResponse.nameValuePairs?.let {
+                        if (it.msg != null) {
+                            if (it.msg.equals("APPROVED", ignoreCase = true)) {
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    refundCall(paymentDetailsResponse.data.amount)
+                                }
+                            } else {
+                                startRefund()
+                            }
+                        }
+                    }
+                }
+
+                override fun onFailure(errorMessage: String) {
+                    println("Payment Failed: $errorMessage")
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+
+            /*      var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
+                  var appID = "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
+                  var channelID = "bd967b4e0ccd6309c5ac16634bd367b6"
+                  var epi = "2319995597"
+                  var endpoint = "status"
+                  var transType = TransactionType.CREDIT_SALE
+                  var TRAN_MODE = "1"
+                  var TRAN_CODE = "1"
+                  var amount =
+                  var reqTxnId = */
+
+            /* Process Payment */
+            context?.let {
+                var valor = Valor(
+                    apiKey = prefProvider.getValue(Constants.VALOR_APP_KEY, ""),
+                    appID = prefProvider.getValue(Constants.VALOR_APP_ID, ""),
+                    epi = prefProvider.getValue(Constants.VALOR_EPI, ""),
+                    endpoint = Constants.VALOR_VOID,
+                    txnType = TransactionType.TIP_ADJUSTMENT,
+                    channelId = prefProvider.getValue(Constants.VALOR_CHANNEL_ID, ""),
+                    amount = paymentDetailsResponse.data.amount.toString(),
+                    txn_type = Constants.VALOR_VOID,
+                    ref_txn_id = paymentDetailsResponse.data.ref_num,
+                    surchargeIndicator="",
+                    sale_refund = "",
+                    transactionId = ""
+                )
+
+                paymentGateway.voidPayment(
+                    it,
+                    valor,
+                    paymentCallback
+                )
+            }
+//            }
+        }
+    }
+
 
     private fun cashLogEventCall(bundle: Bundle) {
         if(bundle.containsKey("tipAmount")){

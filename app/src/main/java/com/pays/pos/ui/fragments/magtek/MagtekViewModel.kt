@@ -86,7 +86,12 @@ class MagtekViewModel @Inject constructor(
         GlobalScope.launch {
             try {
 
-                posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context,Constants.FILE_PATH + SettingINI.FILENAME))
+                posLink.SetCommSetting(
+                    SettingINI.getCommSettingFromFile(
+                        context,
+                        Constants.FILE_PATH + SettingINI.FILENAME
+                    )
+                )
 
                 val manageRequest = ManageRequest()
                 manageRequest.TransType = manageRequest.ParseTransType("INIT")
@@ -125,7 +130,7 @@ class MagtekViewModel @Inject constructor(
         }
     }
 
-    fun initPOSLink(context: Context, makeMerchantDetailsCall:Boolean=true) {
+    fun initPOSLink(context: Context, makeMerchantDetailsCall: Boolean = true) {
         POSLinkCreatorWrapper.createSync(
             context,
             object : AppThreadPool.FinishInMainThreadCallback<PosLink?> {
@@ -137,7 +142,7 @@ class MagtekViewModel @Inject constructor(
             })
     }
 
-    private fun paxNetworkCall(context: Context, makeMerchantDetailsCall:Boolean=true) {
+    private fun paxNetworkCall(context: Context, makeMerchantDetailsCall: Boolean = true) {
 //        ProgressUtils.showProgressDialog("Connecting to PAX", context, View.GONE)
         _progressDialog.postValue(Event(true))
         val srNo = prefProvider.getValue(
@@ -164,6 +169,7 @@ class MagtekViewModel @Inject constructor(
                         "onResponse",
                         response.body().toString() + response.body()!!.ipAddress
                     )
+                    clearOtherPaymentCreds()
                     var ipAddress = response.body()!!.ipAddress
                     var port = response.body()!!.port
                     prefProvider.setValue(
@@ -178,7 +184,7 @@ class MagtekViewModel @Inject constructor(
                     setCommSetting(context, ipAddress, port.toString())
                     if (makeMerchantDetailsCall) {
                         getMerchantDetails(context)
-                    }else{
+                    } else {
                         _progressDialog.postValue(Event(false))
                     }
 //                    connectBP()
@@ -212,6 +218,27 @@ class MagtekViewModel @Inject constructor(
         })
     }
 
+    /*Clear Valor and Dejavoo credentails*/
+    private fun clearOtherPaymentCreds() {
+
+        prefProvider.setValue(
+            Constants.VALOR_APP_ID, ""
+        )
+
+        prefProvider.setValue(
+            Constants.VALOR_APP_KEY, ""
+        )
+
+        prefProvider.setValue(
+            Constants.VALOR_EPI, ""
+        )
+
+        prefProvider.setValue(
+            Constants.VALOR_CHANNEL_ID, ""
+        )
+
+    }
+
     private fun setCommSetting(context: Context, edtIP: String, edtPort: String) {
         //create commsetting object
         var file: File? = null
@@ -226,7 +253,7 @@ class MagtekViewModel @Inject constructor(
         }
         /*val iniFile =
         activity!!.applicationContext.filesDir.absolutePath + "/" + SettingINI.FILENAME*/
-        val commset: CommSetting = SettingINI.getCommSettingFromFile(context!!,iniFile)
+        val commset: CommSetting = SettingINI.getCommSettingFromFile(context!!, iniFile)
         Log.d("iniFile: ", "iniFile $iniFile ${file.absolutePath}")
 
         //initialization value  for comsetting's attribute
@@ -245,7 +272,7 @@ class MagtekViewModel @Inject constructor(
                     + "; coms.DestIP=" + commset.destIP + "; coms.DestPort=" + commset.destPort + "; coms.MacAddr=" + commset.macAddr + "; coms.EnableProxy=" + commset.isEnableProxy
         )
         POSLinkAndroid.initPOSListener(context, commset)
-        SettingINI.saveCommSettingToFile(context,iniFile, commset)
+        SettingINI.saveCommSettingToFile(context, iniFile, commset)
         // set the folder to save the "comsetting.ini" file
         posLink.appDataFolder = file.absolutePath
         posLink.SetCommSetting(commset)
