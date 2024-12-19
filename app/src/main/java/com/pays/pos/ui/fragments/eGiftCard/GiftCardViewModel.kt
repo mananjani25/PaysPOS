@@ -100,6 +100,10 @@ class GiftCardViewModel @Inject constructor(
     var transactionID: String = ""
 
 
+    fun clearGiftCardObserver(){
+        _giftCardError.value= Event("")
+        _giftCardCheckBalanceData.value= Event(null)
+    }
     fun setMagensaResponse(response: String?, cardNumber1: String) {
         magensaResponse = response
         cardNumberLast4 = cardNumber1

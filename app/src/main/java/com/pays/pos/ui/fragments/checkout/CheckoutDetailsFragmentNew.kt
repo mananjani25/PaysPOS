@@ -3414,7 +3414,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         giftCardViewModel.giftCardError.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                AlertUtils.showCustomAlert(requireActivity(), it)
+                if(it.isNotEmpty()) {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireActivity(),
+                        it,
+                        object : DialogInterface.OnClickListener {
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                giftCardViewModel.clearGiftCardObserver()
+                            }
+                        })
+                }
             }
         }
 
