@@ -3324,6 +3324,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }, 3000)  // 1000ms = 1 second (adjust the delay based on your use case)
     }
 
+    /* This function will call the pax for gift card reading */
     private fun startPAXTestWithGiftCard() {
         GlobalScope.launch {
             posLink.SetCommSetting(
@@ -3349,28 +3350,30 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 val msg = Message()
                 msg.what = Constants.TRANSACTION_SUCCESSED
                 msg.obj = posLink.ManageResponse
+                if (msg.obj!=null) {
                 val response = msg.obj as com.pax.poslink.ManageResponse
-                val resultCode = response.ResultCode
 
-                if (resultCode == "000000") {
-                    withContext(Dispatchers.Main){
-                        binding.apply {
-                            if (response.PAN.isNullOrEmpty()){
-                                edtGiftCardNumber.setText(response.Track2Data.toString())
-                                Log.d("VALID: ", "Here__Track: ${response.Track2Data.toString()}")
-                            }else{
-                                edtGiftCardNumber.setText(response.PAN.toString())
-                                Log.d("VALID: ", "Here__Pan: ${response.PAN.toString()}")
+                    val resultCode = response.ResultCode
+                    if (resultCode == "000000") {
+                        withContext(Dispatchers.Main) {
+                            binding.apply {
+                                if (response.PAN.isNullOrEmpty()) {
+                                    edtGiftCardNumber.setText(response.Track2Data.toString())
+                                    Log.d(
+                                        "VALID: ",
+                                        "Here__Track: ${response.Track2Data.toString()}"
+                                    )
+                                } else {
+                                    edtGiftCardNumber.setText(response.PAN.toString())
+                                    Log.d("VALID: ", "Here__Pan: ${response.PAN.toString()}")
+                                }
+                                startTransactionWithGiftCardPayment()
                             }
-                            startTransactionWithGiftCardPayment()
                         }
+                    } else {
                     }
-                }else{
-
                 }
-
             }
-
         }
     }
 
@@ -3789,6 +3792,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         }
                     }
                 } else {
+                    initPOSLink()
                     runOnUiThread(Runnable {
                         dismissProgressDialog()
                     })
