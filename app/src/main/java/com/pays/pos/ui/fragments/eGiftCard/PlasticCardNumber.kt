@@ -106,25 +106,33 @@ class PlasticCardNumber : Fragment() {
 
                     withContext(Dispatchers.Main){
                         binding.apply {
+                            var cardValue=""
                             if (response.PAN.isNullOrEmpty()){
-                                edtAmount?.setText(response.Track2Data.toString())
                                 Log.d("VALID: ", "Here__Track: ${response.Track2Data.toString()}")
+                                cardValue=response.Track2Data.toString()
                             }else{
-                                edtAmount?.setText(response.PAN.toString())
+                                cardValue=response.PAN.toString()
                                 Log.d("VALID: ", "Here__Pan: ${response.PAN.toString()}")
                             }
-                            startProcessingWithGiftcard()
+
+                            if (!cardValue.contains('*')){
+                                edtAmount?.setText(cardValue)
+                                startProcessingWithGiftcard()
+                            }else{
+                                AlertUtils.showCustomAlert(requireContext(), getString(R.string.invalid_card))
+                            }
+
                         }
                     }
 
 
-                    runOnUiThread(Runnable {
+                    /*runOnUiThread(Runnable {
                         with(binding) {
                             edtAmount?.text?.clear()
                             edtAmount?.setText(response.PAN.toString())
 
                         }
-                    })
+                    })*/
                 } else {
 
                 }

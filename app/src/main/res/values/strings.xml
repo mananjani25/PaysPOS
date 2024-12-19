@@ -953,6 +953,7 @@
     <string name="type_here">Type here</string>
     <string name="change_mobile_number">Change mobile number</string>
     <string name="payment_amount_is_zero">Payment Amount is zero.</string>
+    <string name="invalid_card">Invalid card</string>
     <!-- Customer Loyalty -->
 </resources>
 
