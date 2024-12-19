@@ -16,18 +16,30 @@ import com.android.volley.Request
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.epson.epos2.printer.Printer
+import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.pax.poslink.*
+import com.pays.payments.callbacks.PaymentCallback
+import com.pays.payments.design.*
+import com.pays.payments.gateways.dejavoo.DejavooPaymentGateway
 import com.pays.pos.MainApplication
 import com.pays.pos.R
 import com.pays.pos.aidl.ICallback
 import com.pays.pos.aidl.IWoyouService
 import com.pays.pos.data.model.requestModel.RefundRequestModel
 import com.pays.pos.data.model.responseModel.PrinterResponse
+import com.pays.pos.data.model.valor.ValorSuccessResponse
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.EXTERNAL_PAYMENT
+import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.REFUND1
+import com.pays.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.pays.pos.databinding.DialogRefundReasonBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.pays.pos.ui.fragments.magtek.MagtekViewModel
@@ -39,24 +51,12 @@ import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.extensions.liveSnackBar
+import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.toast
 import com.pays.pos.utils.paxUtils.AppThreadPool
 import com.pays.pos.utils.paxUtils.POSLinkCreatorWrapper
 import com.pays.pos.utils.paxUtils.SettingINI
 import com.pays.pos.utils.statusUtils.Status
-import com.epson.epos2.printer.Printer
-import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.pax.poslink.*
-import com.pays.payments.callbacks.PaymentCallback
-import com.pays.payments.design.*
-import com.pays.pos.data.model.GetPaymentOrderDetailsResponse
-import com.pays.pos.data.model.valor.ValorSuccessResponse
-import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
-import com.pays.pos.data.remote.Constants.SUNMI_INNER_PRINTER
-import com.pays.pos.logger.MessageEvent
-import com.pays.pos.utils.extensions.runOnUiThread
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -69,7 +69,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.StringReader
-import java.util.HashMap
+import java.util.regex.Pattern
 import javax.inject.Inject
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -192,7 +192,8 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                     refundViaValor()
                 } else if(paxExtData.contains(Constants.DEJAVOO)){
                     ProgressUtils.showProgressDialog(requireActivity())
-                    refundViaDejavoo()
+//                    refundViaDejavoo() SPIN Api calling
+                    refundViaDejavooUsingTransactApi()
                 }
                 else {
                     if (requiredNABServerPostAPICall && paxData.isNotEmpty()) {
@@ -239,6 +240,131 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 //        getBatchLocalReport()
 
         return binding.root
+    }
+
+    private fun refundViaDejavooUsingTransactApi() {
+
+        paymentCoroutine = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutine.launch {
+            val gatewayType = PaymentGatewayType.DEJAVOO
+            val paymentGateway = paymentGatewayFactory.create(gatewayType)
+
+            val paymentCallback = object : PaymentCallback {
+                override fun onSuccess(transactionId: String) {
+                    var transactionJsonResponse = Gson().fromJson<String>(
+                        transactionId,
+                        String::class.java
+                    )
+                    val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
+                    factory.setNamespaceAware(true)
+                    val xpp: XmlPullParser = factory.newPullParser()
+                    xpp.setInput(StringReader(transactionJsonResponse))
+                    var eventType = xpp.eventType
+
+                    var Message = ""
+                    var RefId = ""
+                    var RegisterId = ""
+                    var TPN = ""
+                    var AuthCode = ""
+                    var PNRef = ""
+                    var TransNum = ""
+                    var ResultCode = ""
+                    var RespMSG = ""
+                    var PaymentType = ""
+                    var Voided = ""
+                    var TransType = ""
+                    var SN = ""
+                    var ExtData = ""
+                    with(parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes) {
+                        for (i in 0 until this.length) {
+
+                            when ((this.item(i) as Element).tagName.toString()) {
+                                "Message" -> Message =
+                                    this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "RefId" -> RefId = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "RegisterId" -> RegisterId =
+                                    this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "TPN" -> TPN = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "AuthCode" -> AuthCode =
+                                    this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "PNRef" -> PNRef = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "TransNum" -> TransNum =
+                                    this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "ResultCode" -> ResultCode =
+                                    this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "RespMSG" -> RespMSG =
+                                    this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "PaymentType" -> PaymentType =
+                                    this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "Voided" -> Voided = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "TransType" -> TransType =
+                                    this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "SN" -> SN = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                "ExtData" -> ExtData =
+                                    this.item(i).childNodes.item(0).nodeValue ?: ""
+                                else -> {
+
+                                }
+                            }
+                        }
+                    }
+//                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
+                    if (Message.equals("Canceled") || Message.equals("Error")) {
+                        ProgressUtils.dismissProgressDialog()
+                        AlertUtils.showCustomAlert(requireContext(), RespMSG.replace("%20", " "))
+                    } else if (Message.contains("Approved",ignoreCase = true)) {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            refundCall()
+                        }
+                    } else {
+                        runOnUiThread {
+                            AlertUtils.showCustomAlert(requireContext(), Message.replace("%20", " "))
+                        }
+                    }
+                }
+
+                override fun onFailure(errorMessage: String) {
+                    EventBus.getDefault()
+                        .post(
+                            MessageEvent(
+                                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
+                                    Gson().toJson(
+                                        errorMessage
+                                    )
+                                } "
+                            )
+                        )
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+
+            var rrnValue=((paxExtData.substring(paxExtData.indexOf("RRN=")).substring(4, paxExtData.substring(paxExtData.indexOf("RRN=")).indexOf(','))))
+
+            var dejavoo = Dejavoo(
+                authKey = "kwg2GRbykg",
+                registerId = "4986101",
+                tpn = "659324491704",
+                amount = refundAmount.toString(),
+                isProd = false,
+                paymentType = "Credit",
+                performedBy = "",
+                printReceipt = false,
+                refId = referenceNo.toString(),
+                tip = "",
+                transType = "3",
+                txnType = TransactionType.REFUND,
+                rrn = rrnValue,
+                authToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0cG4iOiI2NTkzMjQ0OTE3MDQiLCJlbWFpbCI6InN1cHBvcnQrMUBwYXlzcG9zLmNvbSIsImlhdCI6MTczMzc0ODk4M30.spR9JiJS6jt0VMB0MGu9HZQYKUrNaWV-U_pzQ4VCvYw")
+
+            (paymentGateway as DejavooPaymentGateway).refundPaymentusingRRN(
+                context!!,
+                dejavoo,
+                paymentCallback
+            )
+            /* Process Void */
+//            }
+        }
+
     }
 
     fun parseXml(xmlContent: String): Document {

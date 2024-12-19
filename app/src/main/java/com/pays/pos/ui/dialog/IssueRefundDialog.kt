@@ -546,11 +546,13 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
 
 
+                if (findNavController()?.currentDestination?.id == R.id.issueRefundFragment) {
+                    findNavController().navigate(
+                        R.id.action_issueRefundFragment_to_reasonForRefundDialog,
+                        bundle
+                    )
+                }
 
-                findNavController().navigate(
-                    R.id.action_issueRefundFragment_to_reasonForRefundDialog,
-                    bundle
-                )
             }
         }
     }

@@ -5428,7 +5428,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 if (RefNumber.isEmpty()) {
                     RefNumber = it
                     /*We are adding DEJAVOO in EXT DATA, This will change in further release, we will send the Dejavoo's Ext_Data in this Parameter */
-                    ExtData = "${Constants.DEJAVOO} : extData?"
+                    ExtData = "${Constants.DEJAVOO} : $extData?"
                 }
             }
 
