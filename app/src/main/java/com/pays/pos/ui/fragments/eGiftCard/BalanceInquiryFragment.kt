@@ -157,6 +157,7 @@ class BalanceInquiryFragment : Fragment() {
                         requireContext(),
                         message = it.message
                     ) { _, _ ->
+                        giftCardViewModel.clearGiftCardObserver()
                     }
                 }
 

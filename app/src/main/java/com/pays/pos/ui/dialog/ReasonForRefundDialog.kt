@@ -261,7 +261,6 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                             if (it.msg.equals("APPROVED", ignoreCase = true)) {
                                 refundCall()
                             } else {
-                                /*if crashes, then put inside Runnable in runOnUiThread, example: runOnUiThread(Runnable{})*/
                                 runOnUiThread {
                                     AlertUtils.showCustomAlert(requireContext(), it.msg)
                                 }
