@@ -3,18 +3,24 @@ package com.pays.pos.ui.fragments.eGiftCard
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
+import android.os.CountDownTimer
+import android.os.Message
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
+import com.pax.poslink.ManageRequest
+import com.pax.poslink.PosLink
+import com.pax.poslink.ProcessTransResult
 import com.pays.pos.R
 import com.pays.pos.data.entities.CartModel
 import com.pays.pos.data.entities.TbCartItem
@@ -26,13 +32,10 @@ import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.utils.*
 import com.pays.pos.utils.extensions.runOnUiThread
+import com.pays.pos.utils.extensions.setOnSingleClickListener
+import com.pays.pos.utils.paxUtils.SettingINI
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -46,6 +49,7 @@ class AddValueInGiftCardFragment : Fragment() {
     private val giftCardViewModel: GiftCardViewModel by viewModels()
     private val TAG = "AddValueInGiftCardFragment"
     private var giftCardNumberGlb =""
+    private var posLink: PosLink = PosLink()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,7 +62,58 @@ class AddValueInGiftCardFragment : Fragment() {
         setObservables()
         setupSnackbar()
         setupProgress()
+//        startPAXTestWithGiftCard()
         return binding.root
+    }
+
+    private fun startPAXTestWithGiftCard() {
+        GlobalScope.launch {
+            posLink.SetCommSetting(
+                SettingINI.getCommSettingFromFile(
+                    requireContext(),
+                    "/storage/emulated/0/Download/" + SettingINI.FILENAME
+                )
+            )
+
+            val manageRequest = ManageRequest()
+            manageRequest.TransType = manageRequest.ParseTransType("INPUTACCOUNT")
+            manageRequest.EDCType=manageRequest.ParseEDCType("GIFT")
+            manageRequest.MagneticSwipeEntryFlag = "1";
+            manageRequest.ManualEntryFlag = "1";
+            manageRequest.ContactlessEntryFlag = "0";
+            manageRequest.TimeOut = "200";
+            manageRequest.ContinuousScreen = "0";
+            manageRequest.ECRRefNum = System.currentTimeMillis().toString(); // Enable swipe entry (adjust based on your use case)
+            posLink.ManageRequest = manageRequest
+            val result = posLink.ProcessTrans()
+
+            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                val msg = Message()
+                msg.what = Constants.TRANSACTION_SUCCESSED
+                msg.obj = posLink.ManageResponse
+                val response = msg.obj as com.pax.poslink.ManageResponse
+                val resultCode = response.ResultCode
+
+                if (resultCode == "000000") {
+                    withContext(Dispatchers.Main){
+                        binding.apply {
+                            if (response.PAN.isNullOrEmpty()){
+                                edtGiftCardNumber.setText(response.Track2Data.toString())
+                                Log.d("VALID: ", "Here__Track: ${response.Track2Data.toString()}")
+                            }else{
+                                edtGiftCardNumber.setText(response.PAN.toString())
+                                Log.d("VALID: ", "Here__Pan: ${response.PAN.toString()}")
+                            }
+                            startProcessingForAddValue()
+                        }
+                    }
+                }else{
+
+                }
+
+            }
+
+        }
     }
 
     private fun setupProgress() {
@@ -229,7 +284,40 @@ class AddValueInGiftCardFragment : Fragment() {
         return str.substring(0, str.length - 1)
     }
 
+    private fun closePaxRequest(){
+        countDownTimer?.cancel()
+        countDownTimer=null
+//        try{
+//            posLink.CancelTrans()
+//        }catch (e:Exception){}
+    }
+
+    override fun onStop() {
+        closePaxRequest()
+        super.onStop()
+    }
+
+    private var countDownTimer: CountDownTimer? = null
     private fun onClick() {
+        binding.btnReadCard?.let {
+            it.setOnSingleClickListener(object:View.OnClickListener{
+                override fun onClick(p0: View?) {
+                    countDownTimer?.cancel()
+                    binding.btnReadCard?.isClickable=false
+
+                    countDownTimer = object : CountDownTimer(5000, 1000) {
+                        override fun onTick(millisUntilFinished: Long) {
+                        }
+                        override fun onFinish() {
+                            binding.btnReadCard?.isClickable=true
+                        }
+                    }.start()
+
+                    startPAXTestWithGiftCard()
+                }
+            })
+        }
+
 
         binding.imgBack.setOnClickListener {
             clearCartOnBackPress()
@@ -237,54 +325,7 @@ class AddValueInGiftCardFragment : Fragment() {
         }
 
         binding.txtNext.setOnClickListener {
-            MethodUtils.hideSoftKeyboard(requireActivity())
-            val amount = binding.edtAmount.text.toString().replace("$", "").trim().toDouble()
-            val giftCardNumber = binding.edtGiftCardNumber.text.toString().replace(" ", "")
-            giftCardNumberGlb = giftCardNumber
-
-            if(giftCardNumber.length < 8){
-                AlertUtils.showCustomAlert(requireContext(), "Please enter 8-digit gift card number.")
-                return@setOnClickListener
-            }else if (giftCardNumber.length>8 && giftCardNumber.length<13){
-                AlertUtils.showCustomAlert(requireContext(), "Invalid Gift Card Number.")
-                return@setOnClickListener
-            }
-
-            else if (amount <= 0.0) {
-                AlertUtils.showCustomAlert(requireContext(), "Please enter amount")
-                return@setOnClickListener
-            }
-
-            else {
-                if (giftCardNumber.length > 8){
-                    prefProvider.setValue(Constants.PHYSICAL_GIFT_CARD_NUMBER,giftCardNumber)
-                    prefProvider.setValue(Constants.GIFT_CARD_TYPE,"Physical")
-                }
-                else{
-                    prefProvider.setValue(Constants.GIFT_CARD_TYPE,"Digital")
-
-                }
-
-
-                prefProvider.setValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, amount.toString())
-                prefProvider.setValue(Constants.GIFT_CARD_NUMBER, giftCardNumber)
-                prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, true)
-
-                activity?.let {
-                    if (InternetUtils.isInternetAvailable(it.applicationContext)) {
-                        dashboardViewModel.checkCardExistOrNot(giftCardNumber)
-
-                       /* giftCardViewModel.giftCardCheckBalance(
-                            GiftCardCheckBalanceRequest(
-                                giftCardNumber
-                            )
-                        )
-                        */
-                    }
-                }
-
-//                moveToCheckout()
-            }
+            startProcessingForAddValue()
         }
 
         binding.llKeypad.txt10.setOnClickListener {
@@ -297,6 +338,60 @@ class AddValueInGiftCardFragment : Fragment() {
 
         binding.llKeypad.txt30.setOnClickListener {
             binding.edtAmount.setText(MethodUtils.roundOffAmount(35.0))
+        }
+    }
+
+    private fun startProcessingForAddValue() {
+
+//            closePaxRequest()
+        MethodUtils.hideSoftKeyboard(requireActivity())
+        val amount = binding.edtAmount.text.toString().replace("$", "").trim().toDouble()
+        val giftCardNumber = binding.edtGiftCardNumber.text.toString().replace(" ", "")
+        giftCardNumberGlb = giftCardNumber
+
+        if(giftCardNumber.length < 8){
+            Log.d("VALID: ", "Here_4: ${giftCardNumber}")
+            AlertUtils.showCustomAlert(requireContext(), "Please enter 8-digit gift card number.")
+            return
+        }else if (giftCardNumber.length>8 && giftCardNumber.length<13){
+            AlertUtils.showCustomAlert(requireContext(), "Invalid Gift Card Number.")
+            return
+        }
+
+        else if (amount <= 0.0) {
+            AlertUtils.showCustomAlert(requireContext(), "Please enter amount")
+            return
+        }
+
+        else {
+            if (giftCardNumber.length > 8){
+                prefProvider.setValue(Constants.PHYSICAL_GIFT_CARD_NUMBER,giftCardNumber)
+                prefProvider.setValue(Constants.GIFT_CARD_TYPE,"Physical")
+            }
+            else{
+                prefProvider.setValue(Constants.GIFT_CARD_TYPE,"Digital")
+
+            }
+
+
+            prefProvider.setValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, amount.toString())
+            prefProvider.setValue(Constants.GIFT_CARD_NUMBER, giftCardNumber)
+            prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, true)
+
+            activity?.let {
+                if (InternetUtils.isInternetAvailable(it.applicationContext)) {
+                    dashboardViewModel.checkCardExistOrNot(giftCardNumber)
+
+                    /* giftCardViewModel.giftCardCheckBalance(
+                         GiftCardCheckBalanceRequest(
+                             giftCardNumber
+                         )
+                     )
+                     */
+                }
+            }
+
+//                moveToCheckout()
         }
     }
 

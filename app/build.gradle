@@ -16,8 +16,8 @@ android {
         applicationId "com.pays.pos"
         minSdkVersion 24
         targetSdkVersion 33
-        versionCode 25
-        versionName "1.25"
+        versionCode 26
+        versionName "1.26"
 
 
         sourceSets { main { jniLibs.srcDirs = ['src/main/jniLibs/'] } }
@@ -270,5 +270,7 @@ dependencies {
     implementation 'com.github.anrwatchdog:anrwatchdog:1.4.0'
 
 //    implementation 'com.github.santalu:maskara:1.0.0'
+
+    implementation files('libs/payments.aar')
 
 }

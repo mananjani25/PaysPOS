@@ -78,6 +78,10 @@ import com.pays.pos.data.remote.Constants.SYSTEM_TIMEZONE
 import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.remote.Constants.TERMINAL_ID
 import com.pays.pos.data.remote.Constants.UPDATE
+import com.pays.pos.data.remote.Constants.VALOR_APP_ID
+import com.pays.pos.data.remote.Constants.VALOR_APP_KEY
+import com.pays.pos.data.remote.Constants.VALOR_CHANNEL_ID
+import com.pays.pos.data.remote.Constants.VALOR_EPI
 import com.pays.pos.data.remote.Constants.VENUE_LOGO
 import com.pays.pos.data.remote.Constants.discountSelectedValue
 import com.pays.pos.data.remote.NetworkConnectionInterceptor
@@ -88,6 +92,7 @@ import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.adapter.DineInTableAdapter
+import com.pays.pos.ui.fragments.transactions.TransactionViewModel
 import com.pays.pos.utils.*
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
@@ -303,6 +308,11 @@ class DashBoardCategoryViewModel @Inject constructor(
      * */
     var isCartItemClicked = false
 
+
+    /*-------------VALOR Payment gateway------------------ */
+    public val takenTipUsingValor = MutableLiveData<Event<TransactionViewModel>>()
+
+    /*-------------VALOR Payment gateway------------------ */
 
     /**
      * Tip has been added , Either from customer display or from checkoutFragment
@@ -7896,6 +7906,30 @@ class DashBoardCategoryViewModel @Inject constructor(
 //                                    e.printStackTrace()
                                 }
 
+                                /*------------VALOR---------------*/
+
+                                var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
+                                var appID = "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
+                                var channelID = "bd967b4e0ccd6309c5ac16634bd367b6"
+                                var epi = "2319995597"
+
+                                prefProvider.setValue(
+                                    VALOR_APP_ID, /*it.settingData.data.valor_app_id*/appID ?: ""
+                                )
+
+                                prefProvider.setValue(
+                                    VALOR_APP_KEY, /*it.settingData.data.valor_app_key*/apiKey ?: ""
+                                )
+
+                                prefProvider.setValue(
+                                    VALOR_EPI, /*it.settingData.data.valor_epi*/epi ?: ""
+                                )
+                                prefProvider.setValue(
+                                    VALOR_CHANNEL_ID, /*it.settingData.data.valor_channel_id*/channelID ?: ""
+                                )
+                                /*------------VALOR---------------*/
+
+
                                 prefProvider.setValue(
                                     PAX_SERIAL_NO, it.settingData.data.SerialNo ?: ""
                                 )
@@ -8067,7 +8101,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     CoroutineScope(Dispatchers.IO).launch {
                                         runBlocking {
                                             try{
-                                                var printOrderId=posRepository.getLabelPrinterSettingsData().printOrderId
+                                                var printOrderId=posRepository.getLabelPrinterSettingsData().printOrderId?:true
 
                                                 posRepository.insertOrUpdateLabelPrinter(it.settingData.data.oneItemPerReciept, printOrderId)
                                             }catch (e:Exception){
