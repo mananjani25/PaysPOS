@@ -2810,11 +2810,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             if (InternetUtils.isInternetAvailable(applicationContext = requireActivity().applicationContext)) {
 
-                runOnUiThread(object:java.lang.Runnable{
-                    override fun run() {
-                        showProgressDialog()
-                    }
-                })
                 restrictTvCashClicks()
 
                 val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
@@ -2930,6 +2925,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 if (paymentAmount != 0.0) {
                     if (mSessionManager.isConnected) {
+                        runOnUiThread(object:java.lang.Runnable{
+                            override fun run() {
+                                showProgressDialog()
+                            }
+                        })
                         magtekModule.stopListner(false)
                         if (device == 0) {
                             magtekPaymentCall()
@@ -2942,6 +2942,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             false
                         ) && !mSessionManager.isConnected
                     ) {
+                        runOnUiThread(object:java.lang.Runnable{
+                            override fun run() {
+                                showProgressDialog()
+                            }
+                        })
                         CoroutineScope(Dispatchers.Main).launch {
                             var paxData: PAXData? = paymentviewModel.getPaxPaymentData()
                             if (paxData != null) {
@@ -3718,7 +3723,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
     private fun makeValorPaymentRequest() {
-        paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        CoroutineScope(Dispatchers.Main).launch {
+            ProgressUtils.showProgressDialog("Please wait...",requireActivity(),0)
+        }
+
+        if (this@CheckoutDetailsFragmentNew::paymentCoroutineScope.isInitialized){
+            if (!paymentCoroutineScope.isActive){
+                paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+            }
+        }else{
+            paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        }
+
         paymentCoroutineScope.launch {
 //            CoroutineScope(Dispatchers.Main).launch {
 //                        ProgressUtils.dismissProgressDialog()
@@ -3733,6 +3749,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         transactionId,
                         ValorSuccessResponse::class.java
                     )
+                    transactionJsonResponse.nameValuePairs?.run {
+                                this.note?.let {
+                                    if (it.contains("Please Send A New Request") || this.msg?.contains("ready", ignoreCase = true)?:false){
+
+                                        Handler(Looper.getMainLooper()).postDelayed({
+                                            ProgressUtils.updateMessage("It is taking longer than usual, Please wait...")
+                                        }, 100)
+                                        makeValorPaymentRequest()
+                                        return
+                                    }
+                                }
+                    }
 
                     transactionJsonResponse.nameValuePairs?.response?.nameValuePairs?.let {
                         if (it.ERRORMSG != null) {

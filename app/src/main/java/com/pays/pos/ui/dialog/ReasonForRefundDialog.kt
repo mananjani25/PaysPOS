@@ -262,6 +262,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                                 refundCall()
                             } else {
                                 runOnUiThread {
+                                    ProgressUtils.dismissProgressDialog()
                                     AlertUtils.showCustomAlert(requireContext(), it.msg)
                                 }
                             }

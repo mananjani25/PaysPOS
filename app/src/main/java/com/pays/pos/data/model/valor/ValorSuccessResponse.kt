@@ -9,6 +9,7 @@ data class ValorSuccessResponse(
 ) {
     data class NameValuePairs(
 
+        @SerializedName("note") var note: String? = null,
         @SerializedName("error_no") var errorNo: String? = null,
         @SerializedName("msg") var msg: String? = null,
         @SerializedName("response") var response: Response? = Response()
@@ -18,9 +19,9 @@ data class ValorSuccessResponse(
 
             @SerializedName("nameValuePairs") var nameValuePairs: NameValuePairs? = NameValuePairs()
 
-        ){
+        ) {
             data class NameValuePairs(
-
+                @SerializedName("MSG") var MSG: String? = null,
                 @SerializedName("ERROR_CODE") var ERRORCODE: String? = null,
                 @SerializedName("ERROR_MSG") var ERRORMSG: String? = null,
                 @SerializedName("STATE") var STATE: Int? = null,
@@ -57,7 +58,7 @@ data class ValorSuccessResponse(
             )
 
         }
-}
+    }
 
 
 }
