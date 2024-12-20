@@ -2573,7 +2573,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
     override fun guestCheckboxClicked(position: Int, guestChecked: Boolean) {
 
+        Log.e("DINE IN","DINE IN ----> $guestChecked")
+
         var list = dineInTableAdapter.getList()
+
+        list[position].isChecked = guestChecked
 
         var current = position + 1
 
