@@ -752,9 +752,11 @@ class MethodUtils {
                 str.substring(0, str.length - numberOfCharactersToRemove)
             } else ""
         }
+
+        public fun convertAsciiToString(asciiValues: List<Int>): String {
+            return asciiValues.map { it.toChar() }.joinToString("")
+        }
     }
-
-
 }
 
 fun Context.disconnectSocket() {

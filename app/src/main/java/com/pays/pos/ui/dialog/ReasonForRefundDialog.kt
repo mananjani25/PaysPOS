@@ -28,6 +28,8 @@ import com.pays.pos.MainApplication
 import com.pays.pos.R
 import com.pays.pos.aidl.ICallback
 import com.pays.pos.aidl.IWoyouService
+import com.pays.pos.data.model.dejavoo.DejavooErrorResponse
+import com.pays.pos.data.model.dejavoo.DejavooResponse
 import com.pays.pos.data.model.requestModel.RefundRequestModel
 import com.pays.pos.data.model.responseModel.PrinterResponse
 import com.pays.pos.data.model.valor.ValorSuccessResponse
@@ -251,79 +253,41 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 
             val paymentCallback = object : PaymentCallback {
                 override fun onSuccess(transactionId: String) {
-                    var transactionJsonResponse = Gson().fromJson<String>(
+                    var transactionJsonResponse = Gson().fromJson<DejavooResponse>(
                         transactionId,
-                        String::class.java
+                        DejavooResponse::class.java
                     )
-                    val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
-                    factory.setNamespaceAware(true)
-                    val xpp: XmlPullParser = factory.newPullParser()
-                    xpp.setInput(StringReader(transactionJsonResponse))
-                    var eventType = xpp.eventType
 
-                    var Message = ""
-                    var RefId = ""
-                    var RegisterId = ""
-                    var TPN = ""
-                    var AuthCode = ""
-                    var PNRef = ""
-                    var TransNum = ""
-                    var ResultCode = ""
-                    var RespMSG = ""
-                    var PaymentType = ""
-                    var Voided = ""
-                    var TransType = ""
-                    var SN = ""
-                    var ExtData = ""
-                    with(parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes) {
-                        for (i in 0 until this.length) {
-
-                            when ((this.item(i) as Element).tagName.toString()) {
-                                "Message" -> Message =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "RefId" -> RefId = this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "RegisterId" -> RegisterId =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "TPN" -> TPN = this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "AuthCode" -> AuthCode =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "PNRef" -> PNRef = this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "TransNum" -> TransNum =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "ResultCode" -> ResultCode =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "RespMSG" -> RespMSG =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "PaymentType" -> PaymentType =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "Voided" -> Voided = this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "TransType" -> TransType =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "SN" -> SN = this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "ExtData" -> ExtData =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                else -> {
-
-                                }
+                    transactionJsonResponse.nameValuePairs?.let {
+                        if (it.iposhpresponse?.nameValuePairs?.responseCode.equals("200") && it.iposhpresponse?.nameValuePairs?.responseMessage.equals("Success")){
+                            CoroutineScope(Dispatchers.Main).launch {
+                                refundCall()
                             }
-                        }
-                    }
-//                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
-                    if (Message.equals("Canceled") || Message.equals("Error")) {
-                        ProgressUtils.dismissProgressDialog()
-                        AlertUtils.showCustomAlert(requireContext(), RespMSG.replace("%20", " "))
-                    } else if (Message.contains("Approved",ignoreCase = true)) {
-                        CoroutineScope(Dispatchers.Main).launch {
-                            refundCall()
-                        }
-                    } else {
-                        runOnUiThread {
-                            AlertUtils.showCustomAlert(requireContext(), Message.replace("%20", " "))
+                        }else{
+                            AlertUtils.showCustomAlert(requireContext(), transactionJsonResponse.respMSG?.replace("%20", " "))
                         }
                     }
                 }
 
                 override fun onFailure(errorMessage: String) {
+                    try{
+                        var errorResponse = Gson().fromJson<DejavooErrorResponse>(
+                            errorMessage,
+                            DejavooErrorResponse::class.java
+                        )
+                        errorResponse.networkResponse?.let {
+                            var errorData = Gson().fromJson<DejavooErrorResponse>(
+                                MethodUtils.convertAsciiToString(it.data),
+                                DejavooErrorResponse::class.java
+                            )
+
+                            AlertUtils.showCustomAlert(requireContext(),errorData.errors.get(0).message)
+
+                        }
+
+                    }catch (e:Exception){
+
+                    }
                     EventBus.getDefault()
                         .post(
                             MessageEvent(
@@ -344,12 +308,12 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                 authKey = "kwg2GRbykg",
                 registerId = "4986101",
                 tpn = "659324491704",
-                amount = refundAmount.toString(),
+                amount = (refundAmount*100).toInt().toString(),
                 isProd = false,
                 paymentType = "Credit",
                 performedBy = "",
                 printReceipt = false,
-                refId = referenceNo.toString(),
+                refId = "REFUND${System.currentTimeMillis()}",
                 tip = "",
                 transType = "3",
                 txnType = TransactionType.REFUND,
