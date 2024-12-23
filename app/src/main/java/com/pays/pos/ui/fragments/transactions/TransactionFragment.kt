@@ -59,6 +59,14 @@ import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
 import com.pays.pos.data.model.requestModel.CashLogRequest
+import com.pays.payments.callbacks.PaymentCallback
+import com.pays.payments.design.PaymentGatewayFactory
+import com.pays.payments.design.PaymentGatewayType
+import com.pays.payments.design.TransactionType
+import com.pays.payments.design.Valor
+import com.pays.payments.gateways.dejavoo.DejavooPaymentGateway
+import com.pays.payments.gateways.valor.ValorPaymentGateway
+import com.pays.pos.data.model.valor.ValorSuccessResponse
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -269,7 +277,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
         binding.includeView.txtHome.setOnClickListener {
             if (findNavController().currentDestination?.id == R.id.transactionFragment) {
-                findNavController().navigate(R.id.action_transactionFragment_to_dashboardCategoryNew)            }
+                findNavController().navigate(R.id.action_transactionFragment_to_dashboardCategoryNew)
+            }
         }
 
 
@@ -278,17 +287,27 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
             if (singleTransaction?.paymentType == "Card") {
                 //Add condition according to params i.e magtek or pax data in API response
-                Log.d("RefNum11: ","RefNum ${singleTransaction?.ref_num}")
+                Log.d("RefNum11: ", "RefNum ${singleTransaction?.ref_num}")
                 /*if (singleTransaction?.ref_num.isNullOrEmpty()) {
                     magtekCall(tipAmount)
                 } else {
                     adjustPaxTips()
                 }*/
-                if (singleTransaction?.ref_num.isNullOrEmpty()) {
+                if (prefProvider.getValue(Constants.VALOR_APP_KEY, "").isNotEmpty()) {
+                    adjustValorTips()
+                } else if (singleTransaction?.ref_num.isNullOrEmpty()) {
                     magtekCall(tipAmount)
-                } else if(!singleTransaction?.ref_num.isNullOrEmpty() && prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+                } else if (!singleTransaction?.ref_num.isNullOrEmpty() && prefProvider.getValueboolean(
+                        Constants.IS_PAX_CONNECTED,
+                        false
+                    )
+                ) {
                     adjustPaxTips()
-                } else if(!singleTransaction?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+                } else if (!singleTransaction?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(
+                        Constants.IS_PAX_CONNECTED,
+                        false
+                    )
+                ) {
                     AlertUtils.showCustomAlert(
                         requireContext(),
                         "Please connect to PAX device"
@@ -427,15 +446,16 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             object : AppThreadPool.FinishInMainThreadCallback<PosLink?> {
                 override fun onFinish(result: PosLink?) {
                     posLink = result!!
-                    Log.d("initPOSLink: ","onFinish")
+                    Log.d("initPOSLink: ", "onFinish")
                 }
             })
     }
+
     // get merchant details of PAX device
     private fun getMerchantDataObserver() {
         magtekProViewModel.merchantData.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { response ->
-                Log.d("merchantData: ","merchantData observe")
+                Log.d("merchantData: ", "merchantData observe")
                 val resultCode = response.resultCode
                 val status = response.resultTxt
                 val mID = response.VarValue
@@ -453,6 +473,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             }
         }
     }
+
     // Adjust tip on transactions done via PAX
     private fun adjustPaxTips() {
         GlobalScope.launch {
@@ -550,6 +571,104 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
         }
     }
+
+    @Inject
+    lateinit var paymentGatewayFactory: PaymentGatewayFactory
+
+    private fun adjustValorTips() {
+
+        GlobalScope.launch {
+            val tip_amt = (tipAmount * 100).toInt()
+
+            withContext(Dispatchers.Main) {
+                ProgressUtils.showProgressDialog(requireActivity())
+            }
+
+            val gatewayType = PaymentGatewayType.VALOR
+            val paymentGateway = paymentGatewayFactory.create(gatewayType)
+
+
+            val paymentCallback = object : PaymentCallback {
+                override fun onSuccess(transactionId: String) {
+
+                    var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
+                        transactionId,
+                        ValorSuccessResponse::class.java
+                    )
+                    transactionJsonResponse.nameValuePairs?.let {
+                        if (it.msg != null) {
+                            if (it.msg!!.contains(
+                                    "APPROVED"
+                                )
+                            ) {
+                                tipCall(true)
+                            } else {
+                                ProgressUtils.dismissProgressDialog()
+                                /* runOnUiThread(Runnable {
+                                     AlertUtils.showCustomAlert(
+                                         requireContext(),
+                                         it.msg
+                                     )
+                                 })*/
+                            }
+                        }
+                    }
+                }
+
+                override fun onFailure(errorMessage: String) {
+                    println("Payment Failed: $errorMessage")
+
+                    ProgressUtils.dismissProgressDialog()
+
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(),
+                        errorMessage,
+                        object :
+                            DialogInterface.OnClickListener {
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                try {
+                                    p0?.dismiss()
+                                } catch (e: Exception) {
+                                }
+                            }
+                        })
+                }
+            }
+
+            singleTransaction?.ref_num.let { valorRefTxId ->
+                context?.let {
+                    var valor = Valor(
+                        apiKey = prefProvider.getValue(Constants.VALOR_APP_KEY, ""),
+                        appID = prefProvider.getValue(Constants.VALOR_APP_ID, ""),
+                        epi = prefProvider.getValue(Constants.VALOR_EPI, ""),
+                        endpoint = Constants.VALOR_TIP_ADJUST,
+                        txnType = TransactionType.TIP_ADJUSTMENT,
+                        channelId = prefProvider.getValue(Constants.VALOR_CHANNEL_ID, ""),
+                        transMode = "",
+                        transCode = "",
+                        reqTxnId = valorRefTxId.toString(),
+                        amount = "",
+                        tipAmount = tipAmount.toString(),
+                        tipEntry = "1",
+                        txn_type = "",
+                        surchargeIndicator = "",
+                        sale_refund = "",
+                        ref_txn_id = "",
+                        transactionId = ""
+                    )
+
+                    paymentGateway.processPayment(
+                        context = it,
+                        valor,
+                        callback = paymentCallback,
+                    )
+                }
+            }
+            /* Process Tip Adjust */
+
+        }
+    }
+
     // Update tip in order
     private fun tipCall(isCard: Boolean) {
         singleTransaction?.let { viewModel.orderUpdateTip(it.id, tipAmount, isCard) }
@@ -860,7 +979,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             )
         )
 
-        transactionAdapter = TransactionAdapter(viewModel,prefProvider)
+        transactionAdapter = TransactionAdapter(viewModel, prefProvider)
         transactionAdapter.setCallback(this)
         binding.rvTeamTimeSheet.adapter = transactionAdapter
 

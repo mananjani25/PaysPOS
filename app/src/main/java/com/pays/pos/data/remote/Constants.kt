@@ -864,6 +864,16 @@ object Constants {
     const val INVENTORY_SYNC = "INVENTORY_SYNC"
     const val UPDATED_CARTMODEL_ID = "updated_cartmodel_id"
 
+    /*-------Valor--------*/
+    const val VALOR = "VALOR"
+    const val VALOR_APP_ID = "VALOR_APP_ID"
+    const val VALOR_APP_KEY = "VALOR_APP_KEY"
+    const val VALOR_EPI = "VALOR_EPI"
+    const val VALOR_CHANNEL_ID = "VALOR_CHANNEL_ID"
+    const val VALOR_TIP_ADJUST = "tipAdjust"
+    const val VALOR_VOID = "void"
+    /*-------Valor--------*/
+
 
     const val PERMISSION_BLUETOOTH = 1
     const val PERMISSION_BLUETOOTH_ADMIN = 2
@@ -872,7 +882,8 @@ object Constants {
 
     const val SOAP_ACTION = "https://www.sc-solutions.com/SmartTrackSE/RequestGateway/AuthenticateAndAuthorizeTransaction"
     const val NAMESPACE = "https://www.sc-solutions.com/SmartTrackSE/RequestGateway"
-    const val ENDPOINT_URL = "https://demo.ecardsystems.net/requestgatewaydemo/requestgatewaywebservice.asmx"
+    //const val ENDPOINT_URL = "https://demo.ecardsystems.net/requestgatewaydemo/requestgatewaywebservice.asmx"
+    const val ENDPOINT_URL = "https://www.ecardsystems.net/requestgateway/requestgatewaywebservice.asmx"
 
     fun createCloudPrinter(ipAddress: String, portNo: Int): CloudPrinter {
         return CloudPrinterBuilder.buildPrinter(ipAddress, portNo)

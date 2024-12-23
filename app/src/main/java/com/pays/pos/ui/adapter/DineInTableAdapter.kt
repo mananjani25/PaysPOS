@@ -23,6 +23,8 @@ import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
 import com.google.gson.Gson
 import com.pays.pos.utils.extensions.gone
+import com.pays.pos.utils.extensions.invisible
+import com.pays.pos.utils.extensions.visible
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -424,7 +426,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             while (index < list.size) {
                 val item = list[index]
 
-                if (item.isHeader != 0 && !(item.item?.isFired == true)) {
+                if (item.isHeader == 1 && item.item?.isFired != true) {
                     allItemsFired = false
                     break
                 }
@@ -439,13 +441,6 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 index++
             }
 
-            if(allItemsFired) {
-                binding.checkedForFire?.apply {
-                    isChecked = allItemsFired
-                    isEnabled = false
-                    buttonTintList = ColorStateList.valueOf(Color.GREEN)
-                }
-            }
 
             //header
 //            binding.checkedForFire?.apply {
@@ -506,30 +501,64 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             }
 
-            if(list[position].item?.isFired == true) {
+            if(list[position].item?.isChecked == true) {
                 //header
-                binding.checkedForFire?.apply {
+                binding.checkedForFireHeader.apply {
                     isChecked = true
                     isEnabled = false
                 }
+            } else {
+                binding.checkedForFireHeader.apply {
+                    isChecked = false
+                    isEnabled = true
+                }
             }
+
+            if (list[position].itemsCount == 0) {
+                binding.checkedForFireHeader.gone()
+            } else  binding.checkedForFireHeader.visible()
 
             //header
-            binding.checkedForFire?.setOnClickListener {
+                binding.checkedForFireHeader.setOnClickListener {
 
-                if( binding.checkedForFire.isChecked  ) {
-                  //  model.item?.isChecked = true
-                    listner.guestCheckboxClicked(position,guestChecked = true)
-                }
-                else {
-                //    model.item?.isChecked = false
-                    listner.guestCheckboxClicked(position, guestChecked = false)
-                }
-            }
+                    listner.guestCheckboxClicked(position, guestChecked = binding.checkedForFireHeader.isChecked)
 
-            binding.llRemoveGuest.setOnClickListener {
-                listner.onRemoveGuest(layoutPosition)
-            }
+//                    if (binding.checkedForFire.isChecked) {
+////                          list[position].item?.isChecked = true
+//                        listner.guestCheckboxClicked(position, guestChecked = true)
+//                    } else {
+////                        list[position].item?.isChecked = false
+//                        listner.guestCheckboxClicked(position, guestChecked = false)
+//                    }
+                }
+
+                binding.llRemoveGuest.setOnClickListener {
+                    listner.onRemoveGuest(layoutPosition)
+                }
+
+                if(allItemsFired) {
+                    binding.checkedForFireHeader.apply {
+                        isChecked = true
+                        isEnabled = false
+                        buttonTintList = ColorStateList.valueOf(Color.GREEN)
+                        invisible()
+                    }
+                } else {
+                    binding.checkedForFireHeader.apply {
+                        isChecked = list[position].isChecked
+                        isEnabled = true
+                        buttonTintList = ColorStateList.valueOf(resources.getColor(R.color.btnColorDark_))
+
+                        if(list[position].itemsCount == 0)
+                            invisible()
+                        else
+                            visible()
+                    }
+                }
+
+                //remove next line‘s comment to enable guest checkbox
+                Log.e("DINE IN ---->","DINE IN ----> FIRED GUEST =${model.title} -- $allItemsFired")
+
         }
 
         init {

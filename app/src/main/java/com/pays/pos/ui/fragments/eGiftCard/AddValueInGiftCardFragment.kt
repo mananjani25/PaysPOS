@@ -62,7 +62,7 @@ class AddValueInGiftCardFragment : Fragment() {
         setObservables()
         setupSnackbar()
         setupProgress()
-        startPAXTestWithGiftCard()
+//        startPAXTestWithGiftCard()
         return binding.root
     }
 
@@ -81,7 +81,7 @@ class AddValueInGiftCardFragment : Fragment() {
             manageRequest.MagneticSwipeEntryFlag = "1";
             manageRequest.ManualEntryFlag = "1";
             manageRequest.ContactlessEntryFlag = "0";
-            manageRequest.TimeOut = "1000";
+            manageRequest.TimeOut = "200";
             manageRequest.ContinuousScreen = "0";
             manageRequest.ECRRefNum = System.currentTimeMillis().toString(); // Enable swipe entry (adjust based on your use case)
             posLink.ManageRequest = manageRequest
@@ -95,12 +95,18 @@ class AddValueInGiftCardFragment : Fragment() {
                 val resultCode = response.ResultCode
 
                 if (resultCode == "000000") {
-                    runOnUiThread(Runnable {
-                        with(binding){
-                            edtGiftCardNumber.text?.clear()
-                            edtGiftCardNumber.setText(response.PAN.toString())
+                    withContext(Dispatchers.Main){
+                        binding.apply {
+                            if (response.PAN.isNullOrEmpty()){
+                                edtGiftCardNumber.setText(response.Track2Data.toString())
+                                Log.d("VALID: ", "Here__Track: ${response.Track2Data.toString()}")
+                            }else{
+                                edtGiftCardNumber.setText(response.PAN.toString())
+                                Log.d("VALID: ", "Here__Pan: ${response.PAN.toString()}")
+                            }
+                            startProcessingForAddValue()
                         }
-                    })
+                    }
                 }else{
 
                 }
@@ -281,9 +287,9 @@ class AddValueInGiftCardFragment : Fragment() {
     private fun closePaxRequest(){
         countDownTimer?.cancel()
         countDownTimer=null
-        try{
-            posLink.CancelTrans()
-        }catch (e:Exception){}
+//        try{
+//            posLink.CancelTrans()
+//        }catch (e:Exception){}
     }
 
     override fun onStop() {
@@ -303,7 +309,7 @@ class AddValueInGiftCardFragment : Fragment() {
                         override fun onTick(millisUntilFinished: Long) {
                         }
                         override fun onFinish() {
-                            binding.btnReadCard?.isClickable=false
+                            binding.btnReadCard?.isClickable=true
                         }
                     }.start()
 
@@ -319,55 +325,7 @@ class AddValueInGiftCardFragment : Fragment() {
         }
 
         binding.txtNext.setOnClickListener {
-            closePaxRequest()
-            MethodUtils.hideSoftKeyboard(requireActivity())
-            val amount = binding.edtAmount.text.toString().replace("$", "").trim().toDouble()
-            val giftCardNumber = binding.edtGiftCardNumber.text.toString().replace(" ", "")
-            giftCardNumberGlb = giftCardNumber
-
-            if(giftCardNumber.length < 8){
-                AlertUtils.showCustomAlert(requireContext(), "Please enter 8-digit gift card number.")
-                return@setOnClickListener
-            }else if (giftCardNumber.length>8 && giftCardNumber.length<13){
-                AlertUtils.showCustomAlert(requireContext(), "Invalid Gift Card Number.")
-                return@setOnClickListener
-            }
-
-            else if (amount <= 0.0) {
-                AlertUtils.showCustomAlert(requireContext(), "Please enter amount")
-                return@setOnClickListener
-            }
-
-            else {
-                if (giftCardNumber.length > 8){
-                    prefProvider.setValue(Constants.PHYSICAL_GIFT_CARD_NUMBER,giftCardNumber)
-                    prefProvider.setValue(Constants.GIFT_CARD_TYPE,"Physical")
-                }
-                else{
-                    prefProvider.setValue(Constants.GIFT_CARD_TYPE,"Digital")
-
-                }
-
-
-                prefProvider.setValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, amount.toString())
-                prefProvider.setValue(Constants.GIFT_CARD_NUMBER, giftCardNumber)
-                prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, true)
-
-                activity?.let {
-                    if (InternetUtils.isInternetAvailable(it.applicationContext)) {
-                        dashboardViewModel.checkCardExistOrNot(giftCardNumber)
-
-                       /* giftCardViewModel.giftCardCheckBalance(
-                            GiftCardCheckBalanceRequest(
-                                giftCardNumber
-                            )
-                        )
-                        */
-                    }
-                }
-
-//                moveToCheckout()
-            }
+            startProcessingForAddValue()
         }
 
         binding.llKeypad.txt10.setOnClickListener {
@@ -380,6 +338,60 @@ class AddValueInGiftCardFragment : Fragment() {
 
         binding.llKeypad.txt30.setOnClickListener {
             binding.edtAmount.setText(MethodUtils.roundOffAmount(35.0))
+        }
+    }
+
+    private fun startProcessingForAddValue() {
+
+//            closePaxRequest()
+        MethodUtils.hideSoftKeyboard(requireActivity())
+        val amount = binding.edtAmount.text.toString().replace("$", "").trim().toDouble()
+        val giftCardNumber = binding.edtGiftCardNumber.text.toString().replace(" ", "")
+        giftCardNumberGlb = giftCardNumber
+
+        if(giftCardNumber.length < 8){
+            Log.d("VALID: ", "Here_4: ${giftCardNumber}")
+            AlertUtils.showCustomAlert(requireContext(), "Please enter 8-digit gift card number.")
+            return
+        }else if (giftCardNumber.length>8 && giftCardNumber.length<13){
+            AlertUtils.showCustomAlert(requireContext(), "Invalid Gift Card Number.")
+            return
+        }
+
+        else if (amount <= 0.0) {
+            AlertUtils.showCustomAlert(requireContext(), "Please enter amount")
+            return
+        }
+
+        else {
+            if (giftCardNumber.length > 8){
+                prefProvider.setValue(Constants.PHYSICAL_GIFT_CARD_NUMBER,giftCardNumber)
+                prefProvider.setValue(Constants.GIFT_CARD_TYPE,"Physical")
+            }
+            else{
+                prefProvider.setValue(Constants.GIFT_CARD_TYPE,"Digital")
+
+            }
+
+
+            prefProvider.setValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, amount.toString())
+            prefProvider.setValue(Constants.GIFT_CARD_NUMBER, giftCardNumber)
+            prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, true)
+
+            activity?.let {
+                if (InternetUtils.isInternetAvailable(it.applicationContext)) {
+                    dashboardViewModel.checkCardExistOrNot(giftCardNumber)
+
+                    /* giftCardViewModel.giftCardCheckBalance(
+                         GiftCardCheckBalanceRequest(
+                             giftCardNumber
+                         )
+                     )
+                     */
+                }
+            }
+
+//                moveToCheckout()
         }
     }
 

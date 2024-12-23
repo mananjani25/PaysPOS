@@ -140,5 +140,8 @@ object ProgressUtils {
 
     }
 
+    fun updateMessage(newMessage: String) {
+        builder?.findViewById<AppCompatTextView>(R.id.txtMessage)?.text = newMessage
+    }
 
 }

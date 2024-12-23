@@ -155,6 +155,9 @@ open class PaymentViewModel @Inject constructor(
     var paxGlobalID: String? = null
     public var magensaResponseDataClass: MagensaResponse? = null
 
+    var valorRefTxnId: String? = null
+    var valorTransactionNumber: String? = null
+
     public val _steps = MutableLiveData<String>()
 
 
@@ -1867,7 +1870,7 @@ open class PaymentViewModel @Inject constructor(
         cashdiscountType: String,
         tipID: Int? = null,
         globalUID: String = "",
-        refNum: String = "",
+        refNum: String = "", //Valor Transaction ID will be passed into this parameter
         extData: String = "",
         ECRRefNumber: String = "",
         PAXtoken: String = "",

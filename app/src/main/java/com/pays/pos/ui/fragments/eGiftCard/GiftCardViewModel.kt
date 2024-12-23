@@ -100,6 +100,10 @@ class GiftCardViewModel @Inject constructor(
     var transactionID: String = ""
 
 
+    fun clearGiftCardObserver(){
+        _giftCardError.value= Event("")
+        _giftCardCheckBalanceData.value= Event(null)
+    }
     fun setMagensaResponse(response: String?, cardNumber1: String) {
         magensaResponse = response
         cardNumberLast4 = cardNumber1
@@ -251,7 +255,7 @@ class GiftCardViewModel @Inject constructor(
         CoroutineScope(Dispatchers.Main).launch {
             _showGiftCardProgress.value = Event(true)
         }
-        val soapRequest = createSoapRequest("","",prefProvider.getValue(PHYSICAL_GIFT_CARD_NUMBER,""),myRequest?.gift_card?.amount ?: "")
+        val soapRequest = createSoapRequest("m117115rgw","T98PZAGEHT",prefProvider.getValue(PHYSICAL_GIFT_CARD_NUMBER,""),myRequest?.gift_card?.amount ?: "")
         sendSoapRequest(soapRequest, onSuccess = {response->
             val endingBalance = parseSoapResponse(response)
             CoroutineScope(Dispatchers.Main).launch {
@@ -474,10 +478,11 @@ class GiftCardViewModel @Inject constructor(
             }
 
             override fun onResponse(call: Call, response: okhttp3.Response) {
-                Log.e("PhysicalGiftCard","onResponse: ")
+                Log.e("PhysicalGiftCard","onResponsecheckBf: ${response.isSuccessful}")
                 if (response?.isSuccessful == true) {
-                    Log.e("PhysicalGiftCard","onResponse:  ${Gson().toJson(response.body?.toString())}")
-                    response.body?.toString()?.let {
+                    val response = response.body?.toString()
+                    Log.e("PhysicalGiftCard","onResponse:  ${Gson().toJson(response)}")
+                    response?.let {
                         onSuccess(it)
                     } ?: onError(IOException("Empty response"))
                 } else {
@@ -500,8 +505,8 @@ class GiftCardViewModel @Inject constructor(
             <soap:Body>
                 <AuthenticateAndAuthorizeTransaction xmlns="${Constants.NAMESPACE}">
                 <credential>
-                        <Username>m101293rgw</Username>
-                        <Password>WXYSLZD3WN</Password>
+                        <Username>${username}</Username>
+                        <Password>${password}</Password>
                     </credential>
                     <authRequest>
                         <Account>$giftCardNumber</Account>
@@ -652,11 +657,12 @@ class GiftCardViewModel @Inject constructor(
         return dateFormat.format(Date())
     }
 
-    fun createAddValueInGiftCardRequestUsingCash(): GiftCardAddValueRequest {
+    fun createAddValueInGiftCardRequestUsingCash(paymentType: String = ""): GiftCardAddValueRequest {
 
         val giftCardPurchaseAmount =
             prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0")
         val giftCardNumber = prefProvider.getValue(Constants.GIFT_CARD_NUMBER, "")
+
 
         val paymentAttributes =
             GiftCardAddValueRequest.GiftCardAmountTab.PaymentAttributes(
@@ -669,7 +675,11 @@ class GiftCardViewModel @Inject constructor(
                     prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
                 ),
                 payable_type = "GiftCardAmountTab",
-                payment_type = "Cash",
+                payment_type = if (paymentType.isNotEmpty()){
+                    Constants.EXTERNAL_PAYMENT
+                }else{
+                    "Cash"
+                },
                 sub_total = giftCardPurchaseAmount.toDouble(),
                 terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
                 transaction_id = ""
@@ -806,7 +816,7 @@ class GiftCardViewModel @Inject constructor(
             _showGiftCardProgress.value = Event(true)
         }
 
-        val soapRequest = createSoapRequest("","",prefProvider.getValue(PHYSICAL_GIFT_CARD_NUMBER,""),giftCardAddValueRequest.gift_card.added_amount.toString() ?: "")
+        val soapRequest = createSoapRequest("m117115rgw","T98PZAGEHT",prefProvider.getValue(PHYSICAL_GIFT_CARD_NUMBER,""),giftCardAddValueRequest.gift_card.added_amount.toString() ?: "")
         sendSoapRequest(soapRequest, onSuccess = {response->
             val endingBalance = parseSoapResponse(response)
             CoroutineScope(Dispatchers.Main).launch {
@@ -847,21 +857,23 @@ class GiftCardViewModel @Inject constructor(
                         if (response?.status == 200) {
 
                             resource.data?.data?.gift_card?.let {
+                                if (it.payments[it.payments.size - 1].payment_type.equals("Cash",ignoreCase = true)) {
 //                                This cashlog call is independent, thats the reason it is not chained with any flow or call
-                                val cashLogRequest = CashLogRequest(
-                                    giftCardAddValueRequest.gift_card.added_amount,
-                                    prefProvider.getValueInt(
-                                        Constants.EMPLOYEE_ID, 0
-                                    ),
-                                    "in",
-                                    it.id,//This may be wrong
-                                    it.payments[it.payments.size - 1].id,
-                                    "Gift card recharge",
-                                    prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
-                                    null,
-                                    null
-                                )
-                                cashLogApiOnGiftCardSellOrAdd(cashLogRequest)
+                                    val cashLogRequest = CashLogRequest(
+                                        giftCardAddValueRequest.gift_card.added_amount,
+                                        prefProvider.getValueInt(
+                                            Constants.EMPLOYEE_ID, 0
+                                        ),
+                                        "in",
+                                        it.id,//This may be wrong
+                                        it.payments[it.payments.size - 1].id,
+                                        "Gift card recharge",
+                                        prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
+                                        null,
+                                        null
+                                    )
+                                    cashLogApiOnGiftCardSellOrAdd(cashLogRequest)
+                                }
                             }
 
                             resource.data?.let { addValueInGiftCardResponse ->
@@ -925,7 +937,7 @@ class GiftCardViewModel @Inject constructor(
     }
     fun physicalGiftCardCheckBalanceBeforePay(giftCardCheckBalanceRequest: GiftCardCheckBalanceRequest) {
         try {
-            val soapRequest = checkBalanceRequest("", "", giftCardCheckBalanceRequest.name)
+            val soapRequest = checkBalanceRequest("m117115rgw", "T98PZAGEHT", giftCardCheckBalanceRequest.name)
             CoroutineScope(Dispatchers.Main).launch {
                 _showGiftCardProgress.value = Event(true)
             }
@@ -968,7 +980,7 @@ class GiftCardViewModel @Inject constructor(
 
     fun physcialGiftCardCheckBalance(giftCardCheckBalanceRequest: GiftCardCheckBalanceRequest){
 
-        val soapRequest = checkBalanceRequest("","",giftCardCheckBalanceRequest.name)
+        val soapRequest = checkBalanceRequest("m117115rgw","T98PZAGEHT",giftCardCheckBalanceRequest.name)
         CoroutineScope(Dispatchers.Main).launch {
             _showGiftCardProgress.value = Event(true)
         }
@@ -1004,8 +1016,8 @@ class GiftCardViewModel @Inject constructor(
             <soap:Body>
                 <AuthenticateAndAuthorizeTransaction xmlns="${Constants.NAMESPACE}">
                 <credential>
-                        <Username>m101293rgw</Username>
-                        <Password>WXYSLZD3WN</Password>
+                        <Username>${username}</Username>
+                        <Password>${password}</Password>
                     </credential>
                     <authRequest>
                         <Account>$giftCardNumber</Account>

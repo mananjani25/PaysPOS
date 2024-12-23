@@ -1151,9 +1151,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
         binding.txtEditOrder.setOnClickListener {
             val list = dineInTableAdapter.getList()
-            val newList: ArrayList<DineInModel> = arrayListOf()
+            var newList: ArrayList<DineInModel> = arrayListOf()
 
             dashboardViewModel.currentDestination = DINE_IN_UPDATE
+
+            dashboardViewModel.currentDineCartItems = arrayListOf()
 
             dashboardViewModel.dineInHeaderPosition = 0
             dashboardViewModel.isDineInUpdate = true
@@ -1220,10 +1222,19 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                        // if(!it.isPaid)
                         dashboardViewModel.currentCartItems.add(it)
+                        dashboardViewModel.currentDineCartItems.add(it)
                         dashboardViewModel.dineInItemsBeforeUpdate.add(it)
 
                         Log.d(TAG, "testDineInUpdate onClick: " + Gson().toJson(it))
+
+                        val itt = TbItem().convertCartToItem(it,it)
+
+                        model.items.add(itt)
+
                     }
+
+
+
 
                     newList.add(model)
 
@@ -1233,6 +1244,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             }
 
+            newList = ArrayList(list)
 
 
             LogUtil.logE(TAG, "listOfMoveItemIds:  ${listOfMoveItemIds.size}")
@@ -2561,7 +2573,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
     override fun guestCheckboxClicked(position: Int, guestChecked: Boolean) {
 
+        Log.e("DINE IN","DINE IN ----> $guestChecked")
+
         var list = dineInTableAdapter.getList()
+
+        list[position].isChecked = guestChecked
 
         var current = position + 1
 
@@ -2715,7 +2731,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     //Manan's Code
                     //for Merge Icon
                     if (baseResponse.floorPlanTable.status == MERGEDANDOCCUPIED) {
-                        binding.imgMergeTable.visibility = View.VISIBLE
+//                        To Hide Unmerge Table button
+//                        binding.imgMergeTable.visibility = View.VISIBLE
                         binding.imgMergeTable.setImageDrawable(
                             requireContext().resources.getDrawable(
                                 R.drawable.ic_unmerge

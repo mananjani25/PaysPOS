@@ -24,6 +24,7 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import com.epson.epos2.printer.Printer
 import com.epson.eposprint.BatteryStatusChangeEventListener
@@ -34,6 +35,10 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics.Param.PAYMENT_TYPE
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.pays.payments.callbacks.PaymentCallback
+import com.pays.payments.design.PaymentGatewayFactory
+import com.pays.payments.design.PaymentGatewayType
+import com.pays.payments.design.TransactionType
 import com.pays.pos.MainApplication
 import com.pays.pos.R
 import com.pays.pos.aidl.ICallback
@@ -49,6 +54,7 @@ import com.pays.pos.data.model.SplitDetailListModel
 import com.pays.pos.data.model.requestModel.giftCard.response.GiftCardAddValueResponse
 import com.pays.pos.data.model.requestModel.giftCard.response.SellGiftCardResponseModel
 import com.pays.pos.data.model.responseModel.*
+import com.pays.pos.data.model.valor.ValorSuccessResponse
 import com.pays.pos.data.remote.*
 import com.pays.pos.data.remote.Constants.BILLING_ADDRESS
 import com.pays.pos.data.remote.Constants.BLUETOOTH
@@ -58,6 +64,7 @@ import com.pays.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.pays.pos.data.remote.Constants.BUSINESS_WEBSITE
 import com.pays.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE
 import com.pays.pos.data.remote.Constants.CUSTOMER
+import com.pays.pos.data.remote.Constants.DINE_IN
 import com.pays.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.pays.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.pays.pos.data.remote.Constants.GIFT_CARD
@@ -285,6 +292,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         isOrderUpdated = false
 
+//        observeValorTipFromCustomerDisplay()
         lifecycleScope.launch(Dispatchers.Main) {
             try {
                 printOrderIDInStickyPrinter =
@@ -3703,9 +3711,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             PrintSunmiUtils.addHorizontal()
 
 
-            if (listWTitems.isNotEmpty())
+            if (listWTitems.isNotEmpty()) {
                 PrintSunmiUtils.printTextCenter("Whole Table")
-
+            }
             for (i in 0 until listWTitems.size) {
 
                 addWholeTbItemToGuest(
@@ -4163,7 +4171,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                                    printCenter("Whole Table")
+                                    if (listWTitems.isNotEmpty()) {
+                                        printCenter("Whole Table")
+                                    }
                                     lineBreak()
 
                                     var guestCount: Int =
@@ -4384,7 +4394,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     val str5 = padLine(
                                         "Total Price",
                                         "$" + MethodUtils.roundOffAmountString(
-                                            guestPayment?.amount ?: 0.0
+                                            (guestPayment!!.amount + tipAmount) ?: 0.0
                                         ),
                                         48
                                     ).toString()
@@ -4409,7 +4419,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                         val str7 = padLine(
                                             "Change Amount",
-                                            "$" + MethodUtils.roundOffAmountString(changeAmtGlobal + tipAmount),
+                                            "$" + MethodUtils.roundOffAmountString((paidAmount + tipAmount) - (guestPayment!!.amount + tipAmount) ),
                                             48
                                         ).toString()
 
@@ -4770,7 +4780,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             } ?: 1
 
 
-            PrintSunmiUtils.normalTextCenter("Whole Table")
+            if (listWTitems.isNotEmpty()) {
+                PrintSunmiUtils.normalTextCenter("Whole Table")
+            }
             for (i in 0 until listWTitems.size) {
                 addWholeTbItemToGuestInner(
                     listWTitems.get(i),
@@ -4899,8 +4911,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-            var totalAmt =
-                checkOutDineInModel.subTotal + checkOutDineInModel.totalTax + checkOutDineInModel.totalServiceCharge - checkOutDineInModel.totalDiscount + tipAmount
+            var totalAmt = checkOutDineInModel.subTotal + checkOutDineInModel.totalTax + checkOutDineInModel.totalServiceCharge - checkOutDineInModel.totalDiscount + tipAmount
+
 
             if (payTypeGlb.lowercase() == "Cash".lowercase() && prefProvider.getValue(
                     OPTION_TYPE,
@@ -4945,7 +4957,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             val str7 = padLine(
                 "Change Amount",
-                "$" + MethodUtils.roundOffAmountString(changeAmtGlobal),
+                "$" + MethodUtils.roundOffAmountString((paidAmount + tipAmount) - totalAmt),
                 if (customerSettingModel.fonts == LARGE) 23 else 48
             ).toString()
 
@@ -8920,33 +8932,41 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //            it.amount++
 //        }
 
-        var totalAmt =
-            MethodUtils.roundOffAmountDouble(
-                (getDineInOrderDetails?.totalAmount!! + getDineInOrderDetails?.totalServiceCharges!!)
-            )
+        var totalAmt = receiptModel?.order?.totalAmount!!
+//        if (tipAmount != 0.0) {
+//            totalAmt =
+//                MethodUtils.roundOffAmountDouble(
+//                    getDineInOrderDetails?.subTotal!! + getDineInOrderDetails?.totalTaxAmount!! + getDineInOrderDetails?.totalServiceCharges!! + tipAmount
+//                )
+//        } else {
+//            totalAmt =
+//                MethodUtils.roundOffAmountDouble(
+//                    getDineInOrderDetails?.subTotal!! + getDineInOrderDetails?.totalTaxAmount!! + getDineInOrderDetails?.totalServiceCharges!!
+//                )
+//        }
 
-        if (payTypeGlb.lowercase() == "Card".lowercase() && prefProvider.getValue(
-                OPTION_TYPE,
-                ""
-            ).lowercase() == "SurCharge".lowercase()
-        ) {
-            totalAmt += receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cash_discount_or_surcharge!!
-        }
-
-        if (payTypeGlb == "Cash" && prefProvider.getValue(
-                OPTION_TYPE,
-                ""
-            ).lowercase() == "CashDiscount".lowercase()
-        ) {
-
-            totalAmt = MethodUtils.roundOffAmountDouble(totalAmt - noCashAdjGlobal)
-        }
+//        if (payTypeGlb.lowercase() == "Card".lowercase() && prefProvider.getValue(
+//                OPTION_TYPE,
+//                ""
+//            ).lowercase() == "SurCharge".lowercase()
+//        ) {
+//            totalAmt += receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cash_discount_or_surcharge!!
+//        }
+//
+//        if (payTypeGlb == "Cash" && prefProvider.getValue(
+//                OPTION_TYPE,
+//                ""
+//            ).lowercase() == "CashDiscount".lowercase()
+//        ) {
+//
+//            totalAmt = MethodUtils.roundOffAmountDouble(totalAmt - noCashAdjGlobal)
+//        }
 
 
         SunmiPrintHelper.getInstance().lineWrap(1)
         val str5 = padLine(
             "Total Price",
-            "$" + MethodUtils.roundOffAmountString(totalAmt + finalServiceCharges),
+            "$" + MethodUtils.roundOffAmountString(totalAmt),
             if (customerSettingModel.fonts == LARGE) 23 else 48
         ).toString()
         PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(), str5)
@@ -8966,7 +8986,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         val str7 = padLine(
             "Change Amount",
-            "$" + MethodUtils.roundOffAmountString(changeAmtGlobal),
+            "$" + MethodUtils.roundOffAmountString((paidAmount + tipAmount) - totalAmt),
             if (customerSettingModel.fonts == LARGE) 23 else 48
         ).toString()
         PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(), str7)
@@ -10792,7 +10812,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                          */
 
                                         val calculateTotal = order?.let {
-                                            it.subTotal + it.totalServiceCharges + it.totalTaxAmount
+                                            it.subTotal + it.totalServiceCharges + it.totalTaxAmount + it.totalTips - it.loyaltyAmount
                                         }
                                         val totalAmt =
                                             MethodUtils.roundOffAmountDouble(calculateTotal)
@@ -10917,7 +10937,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                         val changeAmt = padLine(
                                             "Change Amount",
-                                            "$" + MethodUtils.roundOffAmountString(changeAmtGlobal),
+                                            "$" + MethodUtils.roundOffAmountString(((paidAmount + tipAmount) - order!!.totalAmount)),
                                             if (customerSettingModel.fonts == LARGE) 23 else 48
                                         ).toString()
 
@@ -20087,10 +20107,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-        Runtime.getRuntime().apply {
-            gc()
-            System.gc()
-            freeMemory()
+        if (isLastPayment && !isDineIn) {
+            Runtime.getRuntime().apply {
+                gc()
+                System.gc()
+                freeMemory()
+            }
         }
 
 

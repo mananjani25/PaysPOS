@@ -401,6 +401,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     putParcelable("refundData", refundData)
                     putDouble("refundAmount", refundAmount)
                     putString("pax_ref_num", paymentOrderDetailsResponse.data.ref_num)
+
                     putString(
                         "pax_ecrref_num",
                         paymentOrderDetailsResponse.data.ecr_ref_num
@@ -548,12 +549,12 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
 
 
-
-
-                findNavController().navigate(
-                    R.id.action_issueRefundFragment_to_reasonForRefundDialog,
-                    bundle
-                )
+                if (findNavController().currentDestination?.id == R.id.issueRefundFragment) {
+                    findNavController().navigate(
+                        R.id.action_issueRefundFragment_to_reasonForRefundDialog,
+                        bundle
+                    )
+                }
             }
         }
     }

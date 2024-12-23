@@ -61,7 +61,7 @@ class PlasticCardNumber : Fragment() {
         onClick()
         onClickKeypad()
         obserVer()
-        startPAXTestWithGiftCard()
+//        startPAXTestWithGiftCard()
 
     }
     private var countDownTimer: CountDownTimer? = null
@@ -69,9 +69,9 @@ class PlasticCardNumber : Fragment() {
     private fun closePaxRequest(){
         countDownTimer?.cancel()
         countDownTimer=null
-        try{
-            posLink.CancelTrans()
-        }catch (e:Exception){}
+//        try{
+//            posLink.CancelTrans()
+//        }catch (e:Exception){}
     }
     private fun startPAXTestWithGiftCard() {
         GlobalScope.launch {
@@ -88,7 +88,7 @@ class PlasticCardNumber : Fragment() {
             manageRequest.MagneticSwipeEntryFlag = "1";
             manageRequest.ManualEntryFlag = "1";
             manageRequest.ContactlessEntryFlag = "0";
-            manageRequest.TimeOut = "1000";
+            manageRequest.TimeOut = "200";
             manageRequest.ContinuousScreen = "0";
             manageRequest.ECRRefNum = System.currentTimeMillis()
                 .toString(); // Enable swipe entry (adjust based on your use case)
@@ -103,12 +103,36 @@ class PlasticCardNumber : Fragment() {
                 val resultCode = response.ResultCode
 
                 if (resultCode == "000000") {
-                    runOnUiThread(Runnable {
+
+                    withContext(Dispatchers.Main){
+                        binding.apply {
+                            var cardValue=""
+                            if (response.PAN.isNullOrEmpty()){
+                                Log.d("VALID: ", "Here__Track: ${response.Track2Data.toString()}")
+                                cardValue=response.Track2Data.toString()
+                            }else{
+                                cardValue=response.PAN.toString()
+                                Log.d("VALID: ", "Here__Pan: ${response.PAN.toString()}")
+                            }
+
+                            if (!cardValue.contains('*')){
+                                edtAmount?.setText(cardValue)
+                                startProcessingWithGiftcard()
+                            }else{
+                                AlertUtils.showCustomAlert(requireContext(), getString(R.string.invalid_card))
+                            }
+
+                        }
+                    }
+
+
+                    /*runOnUiThread(Runnable {
                         with(binding) {
                             edtAmount?.text?.clear()
                             edtAmount?.setText(response.PAN.toString())
+
                         }
-                    })
+                    })*/
                 } else {
 
                 }
@@ -316,7 +340,7 @@ class PlasticCardNumber : Fragment() {
                         override fun onTick(millisUntilFinished: Long) {
                         }
                         override fun onFinish() {
-                            binding.btnReadCard?.isClickable=false
+                            binding.btnReadCard?.isClickable=true
                         }
                     }.start()
 
@@ -346,15 +370,19 @@ class PlasticCardNumber : Fragment() {
 
 
         binding.txtNext?.setOnClickListener {
-            if (binding.edtAmount?.text.toString().trim().length < 13) {
-                AlertUtils.showCustomAlert(requireContext(), "Please enter Valid Gift Card number")
-            } else {
-               closePaxRequest()
-                dashboardViewModel.checkCardExistOrNot(binding.edtAmount?.text.toString().trim())
-            }
+            startProcessingWithGiftcard()
         }
 
 
+    }
+
+    private fun startProcessingWithGiftcard() {
+        if (binding.edtAmount?.text.toString().trim().length < 13) {
+            AlertUtils.showCustomAlert(requireContext(), "Please enter Valid Gift Card number")
+        } else {
+            closePaxRequest()
+            dashboardViewModel.checkCardExistOrNot(binding.edtAmount?.text.toString().trim())
+        }
     }
 
     private fun removeLastCharacter(str: String): String {

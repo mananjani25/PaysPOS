@@ -27,8 +27,10 @@ import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.paxUtils.SettingINI
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class BalanceInquiryFragment : Fragment() {
@@ -46,16 +48,16 @@ class BalanceInquiryFragment : Fragment() {
         hideDefaultKeypads()
         onClick()
         showProgressObserver()
-        startPAXTestWithGiftCard()
+//        startPAXTestWithGiftCard()
         return binding.root
     }
 
     private fun closePaxRequest(){
         countDownTimer?.cancel()
         countDownTimer=null
-        try{
-            posLink.CancelTrans()
-        }catch (e:Exception){}
+//        try{
+//            posLink.CancelTrans()
+//        }catch (e:Exception){}
     }
 
     override fun onStop() {
@@ -77,7 +79,7 @@ class BalanceInquiryFragment : Fragment() {
             manageRequest.MagneticSwipeEntryFlag = "1";
             manageRequest.ManualEntryFlag = "1";
             manageRequest.ContactlessEntryFlag = "0";
-            manageRequest.TimeOut = "1000";
+            manageRequest.TimeOut = "200";
             manageRequest.ContinuousScreen = "0";
             manageRequest.ECRRefNum = System.currentTimeMillis().toString(); // Enable swipe entry (adjust based on your use case)
             posLink.ManageRequest = manageRequest
@@ -91,12 +93,18 @@ class BalanceInquiryFragment : Fragment() {
                 val resultCode = response.ResultCode
 
                 if (resultCode == "000000") {
-                    runOnUiThread(kotlinx.coroutines.Runnable {
-                        with(binding) {
-                            edtGiftCardNumber.text?.clear()
-                            edtGiftCardNumber.setText(response.PAN.toString())
+                    withContext(Dispatchers.Main){
+                        binding.apply {
+                            if (response.PAN.isNullOrEmpty()){
+                                edtGiftCardNumber.setText(response.Track2Data.toString())
+                                Log.d("VALID: ", "Here__Track: ${response.Track2Data.toString()}")
+                            }else{
+                                edtGiftCardNumber.setText(response.PAN.toString())
+                                Log.d("VALID: ", "Here__Pan: ${response.PAN.toString()}")
+                            }
+                            checkBalanceEnquiryForGiftcard()
                         }
-                    })
+                    }
                 }else{
 
                 }
@@ -149,6 +157,7 @@ class BalanceInquiryFragment : Fragment() {
                         requireContext(),
                         message = it.message
                     ) { _, _ ->
+                        giftCardViewModel.clearGiftCardObserver()
                     }
                 }
 
@@ -183,7 +192,7 @@ class BalanceInquiryFragment : Fragment() {
                         override fun onTick(millisUntilFinished: Long) {
                         }
                         override fun onFinish() {
-                            binding.btnReadCard?.isClickable=false
+                            binding.btnReadCard?.isClickable=true
                         }
                     }.start()
                     startPAXTestWithGiftCard()
@@ -196,21 +205,28 @@ class BalanceInquiryFragment : Fragment() {
 
         // to check balance of existing gift card
         binding.txtCheckBalance.setOnClickListener {
-            val inputGiftCardNumber = binding.edtGiftCardNumber.text.toString().replace(" ","")
+            Log.d("VALID: ", "txtCheckBalance Called")
+            checkBalanceEnquiryForGiftcard()
+        }
+    }
 
-            if (inputGiftCardNumber.isNotEmpty() && inputGiftCardNumber.length == 8) {
-                giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = inputGiftCardNumber))
-            }
-            else if(inputGiftCardNumber.isNotEmpty() && (inputGiftCardNumber.length == 13 || inputGiftCardNumber.length == 17)){
-                closePaxRequest()
-                giftCardViewModel.physcialGiftCardCheckBalance(GiftCardCheckBalanceRequest(name = inputGiftCardNumber))
+    private fun checkBalanceEnquiryForGiftcard() {
+        val inputGiftCardNumber = binding.edtGiftCardNumber.text.toString().replace(" ","")
+        Log.d("VALID: ", "${inputGiftCardNumber.toString()}")
+        if (inputGiftCardNumber.isNotEmpty() && inputGiftCardNumber.length == 8) {
+            Log.d("VALID: ", "Here_1")
+            giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = inputGiftCardNumber))
+        }
+        else if(inputGiftCardNumber.isNotEmpty() && (inputGiftCardNumber.length == 13 || inputGiftCardNumber.length == 17)){
+//                closePaxRequest()
+            Log.d("VALID: ", "Here_2")
+            giftCardViewModel.physcialGiftCardCheckBalance(GiftCardCheckBalanceRequest(name = inputGiftCardNumber))
 
-            }
-            else {
-                AlertUtils.showCustomAlert(requireContext(), "Please enter 8-digit gift card number.")
-                return@setOnClickListener
-            }
-
+        }
+        else {
+            Log.d("VALID: ", "Here_3")
+            AlertUtils.showCustomAlert(requireContext(), "Please enter 8-digit gift card number.")
+            return
         }
     }
 

@@ -444,6 +444,10 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             selectedListPos = -1
         }
         binding.imgBack.setOnClickListener {
+            if (discountModel == null) {
+                discountModel = TbDiscount("", "", -1, 0, "", 0.0, "")
+                dashBoardViewModel.cartModel?.discountSelectdValue = 0.0
+            }
             findNavController().navigateUp()
 
         }

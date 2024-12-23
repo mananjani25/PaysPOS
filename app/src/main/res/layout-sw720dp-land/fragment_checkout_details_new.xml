@@ -982,11 +982,11 @@
                     android:hint="@string/_xxxx_xxxx"
                     android:importantForAutofill="no"
                     android:inputType="number"
-                    android:maxLength="18"
+                    android:maxLength="20"
                     android:textColor="@color/btnColor"
                     android:textColorHint="@color/hint_color"
                     android:textSize="@dimen/_7mdpi"
-                    app:met_mask="######  ###### ##### ####" />
+                    app:met_mask="######  ###### ##### ######" />
 
                 <ImageView
                     android:id="@+id/btnReadCard"
