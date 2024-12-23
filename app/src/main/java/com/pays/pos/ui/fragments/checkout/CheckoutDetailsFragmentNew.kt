@@ -3614,81 +3614,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val gatewayType = PaymentGatewayType.DEJAVOO
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
-            val paymentCallback = object : PaymentCallback {
-                override fun onSuccess(transactionId: String) {
-                    var transactionJsonResponse = Gson().fromJson<String>(
-                        transactionId,
-                        String::class.java
-                    )
-                    val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
-                    factory.setNamespaceAware(true)
-                    val xpp: XmlPullParser = factory.newPullParser()
-                    xpp.setInput(StringReader(transactionJsonResponse))
-                    var eventType = xpp.eventType
-
-                    val parsedXml = parseXml(transactionJsonResponse)/*.getElementsByTagName("xmp").item(0)?.textContent.toString()*/
-                    var Message=""
-                    var RefId=""
-                    var RegisterId=""
-                    var TPN=""
-                    var AuthCode=""
-                    var PNRef=""
-                    var TransNum=""
-                    var ResultCode=""
-                    var RespMSG=""
-                    var PaymentType=""
-                    var Voided=""
-                    var TransType=""
-                    var SN=""
-                    var ExtData=""
-                    with(parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes) {
-                        for (i in 0 until this.length) {
-
-                            when ((this.item(i) as Element).tagName.toString()) {
-                                "Message" -> Message = this.item(i).childNodes.item(0).nodeValue?:""
-                                "RefId" -> RefId = this.item(i).childNodes.item(0).nodeValue?:""
-                                "RegisterId" -> RegisterId = this.item(i).childNodes.item(0).nodeValue?:""
-                                "TPN" -> TPN = this.item(i).childNodes.item(0).nodeValue?:""
-                                "AuthCode" -> AuthCode = this.item(i).childNodes.item(0).nodeValue?:""
-                                "PNRef" -> PNRef = this.item(i).childNodes.item(0).nodeValue?:""
-                                "TransNum" -> TransNum = this.item(i).childNodes.item(0).nodeValue?:""
-                                "ResultCode" -> ResultCode = this.item(i).childNodes.item(0).nodeValue?:""
-                                "RespMSG" -> RespMSG = this.item(i).childNodes.item(0).nodeValue?:""
-                                "PaymentType" -> PaymentType = this.item(i).childNodes.item(0).nodeValue?:""
-                                "Voided" -> Voided = this.item(i).childNodes.item(0).nodeValue?:""
-                                "TransType" -> TransType = this.item(i).childNodes.item(0).nodeValue?:""
-                                "SN" -> SN = this.item(i).childNodes.item(0).nodeValue?:""
-                                "ExtData" -> ExtData = this.item(i).childNodes.item(0).nodeValue?:""
-                                else -> {
-
-                                }
-                            }
-                        }
-                    }
-//                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
-                    if (Message.equals("Canceled") || Message.equals("Error")){
-                        dismissProgressDialog()
-                        AlertUtils.showCustomAlert(requireContext(),RespMSG.replace("%20", " "))
-                    }else if (Message.contains("Approved")){
-                        makePaymentCreditCardDejavoo(RefId, ExtData)
-                    }
-
-                }
-                override fun onFailure(errorMessage: String) {
-                    EventBus.getDefault()
-                        .post(
-                            MessageEvent(
-                                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
-                                    Gson().toJson(
-                                        errorMessage
-                                    )
-                                } "
-                            )
-                        )
-                    dismissProgressDialog()
-                }
-            }
-
             val amt=String.format("%.2f", (paymentAmount - tipAmount)).toDouble()
             val tip_amt = String.format("%.2f", tipAmount).toDouble()
 
@@ -3722,9 +3647,80 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             context?.let {
                 paymentGateway.processPayment(
-                    it,
+                    it.applicationContext,
                     dejavoo,
-                    paymentCallback
+                    onSuccess = {tResponse->
+                        var transactionJsonResponse = Gson().fromJson<String>(
+                            tResponse,
+                            String::class.java
+                        )
+                        val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
+                        factory.setNamespaceAware(true)
+                        val xpp: XmlPullParser = factory.newPullParser()
+                        xpp.setInput(StringReader(transactionJsonResponse))
+                        var eventType = xpp.eventType
+
+                        val parsedXml = parseXml(transactionJsonResponse)/*.getElementsByTagName("xmp").item(0)?.textContent.toString()*/
+                        var Message=""
+                        var RefId=""
+                        var RegisterId=""
+                        var TPN=""
+                        var AuthCode=""
+                        var PNRef=""
+                        var TransNum=""
+                        var ResultCode=""
+                        var RespMSG=""
+                        var PaymentType=""
+                        var Voided=""
+                        var TransType=""
+                        var SN=""
+                        var ExtData=""
+                        with(parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes) {
+                            for (i in 0 until this.length) {
+
+                                when ((this.item(i) as Element).tagName.toString()) {
+                                    "Message" -> Message = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "RefId" -> RefId = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "RegisterId" -> RegisterId = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "TPN" -> TPN = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "AuthCode" -> AuthCode = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "PNRef" -> PNRef = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "TransNum" -> TransNum = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "ResultCode" -> ResultCode = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "RespMSG" -> RespMSG = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "PaymentType" -> PaymentType = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "Voided" -> Voided = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "TransType" -> TransType = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "SN" -> SN = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "ExtData" -> ExtData = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    else -> {
+
+                                    }
+                                }
+                            }
+                        }
+//                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
+                        if (Message.equals("Canceled") || Message.equals("Error")){
+                            dismissProgressDialog()
+                            AlertUtils.showCustomAlert(requireContext(),RespMSG.replace("%20", " "))
+                        }else if (Message.contains("Approved")){
+                            makePaymentCreditCardDejavoo(RefId, ExtData)
+                        }
+
+                    },
+                    onFailure = { errorMessage->
+                        EventBus.getDefault()
+                            .post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
+                                        Gson().toJson(
+                                            errorMessage
+                                        )
+                                    } "
+                                )
+                            )
+                        dismissProgressDialog()
+                    }
                 )
             }
         }
@@ -3887,125 +3883,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val gatewayType = PaymentGatewayType.VALOR
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
-            val paymentCallback = object : PaymentCallback {
-                override fun onSuccess(transactionId: String) {
-
-                    var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
-                        transactionId,
-                        ValorSuccessResponse::class.java
-                    )
-                    transactionJsonResponse.nameValuePairs?.run {
-                                this.note?.let {
-                                    if (it.contains("Please Send A New Request") || this.msg?.contains("ready", ignoreCase = true)?:false){
-
-                                        Handler(Looper.getMainLooper()).postDelayed({
-                                            ProgressUtils.updateMessage("It is taking longer than usual, Please wait...")
-                                        }, 100)
-                                        makeValorPaymentRequest()
-                                        return
-                                    }
-                                }
-                    }
-
-                    transactionJsonResponse.nameValuePairs?.response?.nameValuePairs?.let {
-                        if (it.ERRORMSG != null) {
-                            dismissProgressDialog()
-                            runOnUiThread(Runnable {
-                                AlertUtils.showCustomAlert(
-                                    requireContext(),
-                                    it.ERRORMSG
-                                )
-                            })
-                        } else {
-                            if (it.AUTHRSPTEXT != null) {
-                                if (it.AUTHRSPTEXT!!.contains(
-                                        "APPROVAL"
-                                    )
-                                ) {
-                                    if (prefProvider.getValue(
-                                            ORDER_TYPE,
-                                            TAKEOUT
-                                        ) == GIFT_CARD
-                                    ) {
-                                        if (prefProvider.getValueboolean(
-                                                Constants.IS_ADD_VALUE_IN_GIFT_CARD,
-                                                false
-                                            )
-                                        ) {
-                                            if (prefProvider.getValue(
-                                                    ORDER_TYPE,
-                                                    TAKEOUT
-                                                ) == GIFT_CARD
-                                            ) {
-                                                if (prefProvider.getValueboolean(
-                                                        Constants.IS_ADD_VALUE_IN_GIFT_CARD,
-                                                        false
-                                                    )
-                                                ) {
-                                                    giftCardViewModel.paxResponse =
-                                                        ""/*response.ExtData*/
-                                                    giftCardViewModel.cardNumberLast4 =
-                                                        ""/*response.BogusAccountNum*/
-                                                    giftCardViewModel.cardNamePax =
-                                                        ""/*response.CardType*/
-                                                    giftCardViewModel.transactionID =
-                                                        it.TXNID.toString()/*response.PaymentTransInfo.Token*/
-                                                    addValueInGiftCardUsingCard()
-                                                } else {
-                                                    giftCardViewModel.paxResponse =
-                                                        ""/*response.ExtData*/
-                                                    giftCardViewModel.cardNumberLast4 =
-                                                        ""/*response.BogusAccountNum*/
-                                                    giftCardViewModel.cardNamePax =
-                                                        ""/*response.CardType*/
-                                                    giftCardViewModel.transactionID =
-                                                        it.TXNID.toString()/*response.PaymentTransInfo.Token*/
-                                                    sellGiftCardUsingCard()
-                                                }
-                                            } else {
-                                                makePaymentCreditCardValor(it.TXNID, it.TRANNO)
-                                            }
-                                        } else {
-                                            makePaymentCreditCardValor(it.TXNID, it.TRANNO)
-                                        }
-                                    } else {
-                                        dismissProgressDialog()
-                                        makePaymentCreditCardValor(it.TXNID, it.TRANNO)
-                                        /* runOnUiThread(Runnable {
-                                             AlertUtils.showCustomAlert(
-                                                 requireContext(),
-                                                 it.AUTHRSPTEXT
-                                             )
-                                         })*/
-                                    }
-                                } else {
-                                    dismissProgressDialog()
-                                    runOnUiThread(Runnable {
-                                        AlertUtils.showCustomAlert(
-                                            requireContext(),
-                                            getString(R.string.error_something_wrong)
-                                        )
-                                    })
-                                }
-                            }
-                        }
-                    }
-                }
-                    override fun onFailure(errorMessage: String) {
-                        EventBus.getDefault()
-                            .post(
-                                MessageEvent(
-                                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
-                                        Gson().toJson(
-                                            errorMessage
-                                        )
-                                    } "
-                                )
-                            )
-                        dismissProgressDialog()
-                    }
-                }
-
             val amt = ((paymentAmount - tipAmount) * 100).roundToInt()
             val tip_amt = (tipAmount * 100).roundToInt()
 
@@ -4043,9 +3920,125 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
             context?.let {
                 paymentGateway.processPayment(
-                    it,
+                    it.applicationContext,
                     valor,
-                    paymentCallback
+                    onSuccess = {tResponse->
+
+                        var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
+                            tResponse,
+                            ValorSuccessResponse::class.java
+                        )
+                        transactionJsonResponse.nameValuePairs?.run {
+                            this.note?.let {
+                                if (it.contains("Please Send A New Request") || this.msg?.contains("ready", ignoreCase = true)?:false){
+
+                                    Handler(Looper.getMainLooper()).postDelayed({
+                                        ProgressUtils.updateMessage("It is taking longer than usual, Please wait...")
+                                    }, 100)
+                                    makeValorPaymentRequest()
+                                    return@processPayment
+                                }
+                            }
+                        }
+
+                        transactionJsonResponse.nameValuePairs?.response?.nameValuePairs?.let {
+                            if (it.ERRORMSG != null) {
+                                dismissProgressDialog()
+                                runOnUiThread(Runnable {
+                                    AlertUtils.showCustomAlert(
+                                        requireContext(),
+                                        it.ERRORMSG
+                                    )
+                                })
+                            } else {
+                                if (it.AUTHRSPTEXT != null) {
+                                    if (it.AUTHRSPTEXT!!.contains(
+                                            "APPROVAL"
+                                        )
+                                    ) {
+                                        if (prefProvider.getValue(
+                                                ORDER_TYPE,
+                                                TAKEOUT
+                                            ) == GIFT_CARD
+                                        ) {
+                                            if (prefProvider.getValueboolean(
+                                                    Constants.IS_ADD_VALUE_IN_GIFT_CARD,
+                                                    false
+                                                )
+                                            ) {
+                                                if (prefProvider.getValue(
+                                                        ORDER_TYPE,
+                                                        TAKEOUT
+                                                    ) == GIFT_CARD
+                                                ) {
+                                                    if (prefProvider.getValueboolean(
+                                                            Constants.IS_ADD_VALUE_IN_GIFT_CARD,
+                                                            false
+                                                        )
+                                                    ) {
+                                                        giftCardViewModel.paxResponse =
+                                                            ""/*response.ExtData*/
+                                                        giftCardViewModel.cardNumberLast4 =
+                                                            ""/*response.BogusAccountNum*/
+                                                        giftCardViewModel.cardNamePax =
+                                                            ""/*response.CardType*/
+                                                        giftCardViewModel.transactionID =
+                                                            it.TXNID.toString()/*response.PaymentTransInfo.Token*/
+                                                        addValueInGiftCardUsingCard()
+                                                    } else {
+                                                        giftCardViewModel.paxResponse =
+                                                            ""/*response.ExtData*/
+                                                        giftCardViewModel.cardNumberLast4 =
+                                                            ""/*response.BogusAccountNum*/
+                                                        giftCardViewModel.cardNamePax =
+                                                            ""/*response.CardType*/
+                                                        giftCardViewModel.transactionID =
+                                                            it.TXNID.toString()/*response.PaymentTransInfo.Token*/
+                                                        sellGiftCardUsingCard()
+                                                    }
+                                                } else {
+                                                    makePaymentCreditCardValor(it.TXNID, it.TRANNO)
+                                                }
+                                            } else {
+                                                makePaymentCreditCardValor(it.TXNID, it.TRANNO)
+                                            }
+                                        } else {
+                                            dismissProgressDialog()
+                                            makePaymentCreditCardValor(it.TXNID, it.TRANNO)
+                                            /* runOnUiThread(Runnable {
+                                                 AlertUtils.showCustomAlert(
+                                                     requireContext(),
+                                                     it.AUTHRSPTEXT
+                                                 )
+                                             })*/
+                                        }
+                                    } else {
+                                        dismissProgressDialog()
+                                        runOnUiThread(Runnable {
+                                            AlertUtils.showCustomAlert(
+                                                requireContext(),
+                                                getString(R.string.error_something_wrong)
+                                            )
+                                        })
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    onFailure = {errorMessage->
+                        EventBus.getDefault()
+                            .post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
+                                        Gson().toJson(
+                                            errorMessage
+                                        )
+                                    } "
+                                )
+                            )
+                        dismissProgressDialog()
+
+                    }
                 )
             }
             }

@@ -484,54 +484,6 @@ class TransactionDetailsFragment : Fragment() {
             val gatewayType = PaymentGatewayType.VALOR
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
-
-            val paymentCallback = object : PaymentCallback {
-                override fun onSuccess(transactionId: String) {
-
-                    var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
-                        transactionId,
-                        ValorSuccessResponse::class.java
-                    )
-                    transactionJsonResponse.nameValuePairs?.let {
-                        if (it.msg != null) {
-                            if (it.msg!!.contains(
-                                    "APPROVED"
-                                )
-                            ) {
-                                tipCall(true)
-                            } else {
-                                ProgressUtils.dismissProgressDialog()
-                                /* runOnUiThread(Runnable {
-                                     AlertUtils.showCustomAlert(
-                                         requireContext(),
-                                         it.msg
-                                     )
-                                 })*/
-                            }
-                        }
-                    }
-                }
-
-                override fun onFailure(errorMessage: String) {
-                    println("Payment Failed: $errorMessage")
-
-                    ProgressUtils.dismissProgressDialog()
-
-                    AlertUtils.showCustomAlertWithListenerWithOK(
-                        requireContext(),
-                        errorMessage,
-                        object :
-                            DialogInterface.OnClickListener {
-                            override fun onClick(p0: DialogInterface?, p1: Int) {
-                                try {
-                                    p0?.dismiss()
-                                } catch (e: Exception) {
-                                }
-                            }
-                        })
-                }
-            }
-
             paymentDetailsResponse.data?.ref_num.let { valorRefTxId ->
                 context?.let {
                     var valor = Valor(
@@ -555,9 +507,42 @@ class TransactionDetailsFragment : Fragment() {
                     )
 
                     paymentGateway.processPayment(
-                        context = it,
+                        context = it.applicationContext,
                         valor,
-                        callback = paymentCallback,
+                        onSuccess = {tResponse->
+                            var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
+                                tResponse,
+                                ValorSuccessResponse::class.java
+                            )
+                            transactionJsonResponse.nameValuePairs?.let {
+                                if (it.msg != null) {
+                                    if (it.msg!!.contains(
+                                            "APPROVED"
+                                        )
+                                    ) {
+                                        tipCall(true)
+                                    } else {
+                                        ProgressUtils.dismissProgressDialog()
+                                    }
+                                }
+                            }
+                        },
+                        onFailure = {errorMessage->
+                            println("Payment Failed: $errorMessage")
+                            ProgressUtils.dismissProgressDialog()
+                            AlertUtils.showCustomAlertWithListenerWithOK(
+                                requireContext(),
+                                errorMessage,
+                                object :
+                                    DialogInterface.OnClickListener {
+                                    override fun onClick(p0: DialogInterface?, p1: Int) {
+                                        try {
+                                            p0?.dismiss()
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                })
+                        },
                     )
                 }
             }
@@ -578,66 +563,6 @@ class TransactionDetailsFragment : Fragment() {
         paymentCoroutineScope.launch {
             val gatewayType = PaymentGatewayType.DEJAVOO
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
-
-            val paymentCallback = object : PaymentCallback {
-                override fun onSuccess(transactionId: String) {
-                    var transactionJsonResponse = Gson().fromJson<String>(
-                        transactionId,
-                        String::class.java
-                    )
-                    val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
-                    factory.setNamespaceAware(true)
-                    val xpp: XmlPullParser = factory.newPullParser()
-                    xpp.setInput(StringReader(transactionJsonResponse))
-                    var eventType = xpp.eventType
-
-                    var Message = ""
-                    var ResultCode = ""
-                    var RespMSG = ""
-                    with(parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes) {
-                        for (i in 0 until this.length) {
-
-                            when ((this.item(i) as Element).tagName.toString()) {
-                                "Message" -> Message =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "ResultCode" -> ResultCode =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "RespMSG" -> RespMSG =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                else -> {
-
-                                }
-                            }
-                        }
-                    }
-//                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
-                    if (Message.equals("Canceled") || Message.equals("Error")) {
-                        ProgressUtils.dismissProgressDialog()
-                        AlertUtils.showCustomAlert(requireContext(), RespMSG.replace("%20", " "))
-                    } else if (Message.contains("approved", ignoreCase = true)) { // Found the transaction, proceed with VOID
-                        CoroutineScope(Dispatchers.Main).launch {
-                            startVoidWithDejavoo()
-                        }
-                    }else if (Message.contains("Not found", ignoreCase = true)){
-                        startRefund()
-                    }
-                }
-
-                override fun onFailure(errorMessage: String) {
-                    EventBus.getDefault()
-                        .post(
-                            MessageEvent(
-                                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
-                                    Gson().toJson(
-                                        errorMessage
-                                    )
-                                } "
-                            )
-                        )
-                    ProgressUtils.dismissProgressDialog()
-                }
-            }
-
 
           /*  context?.let {
                 var dejavoo = Dejavoo(
@@ -662,8 +587,6 @@ class TransactionDetailsFragment : Fragment() {
             }*/
 
 
-
-
 //            ---------------------------------------------- To Fetch Transaction Details--------------
             context?.let {
                 var dejavoo = Dejavoo(
@@ -683,7 +606,62 @@ class TransactionDetailsFragment : Fragment() {
                 paymentGateway.voidPayment(
                     it,
                     dejavoo,
-                    paymentCallback
+                    onSuccess = {tRequest->
+                        var transactionJsonResponse = Gson().fromJson<String>(
+                            tRequest,
+                            String::class.java
+                        )
+                        val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
+                        factory.setNamespaceAware(true)
+                        val xpp: XmlPullParser = factory.newPullParser()
+                        xpp.setInput(StringReader(transactionJsonResponse))
+                        var eventType = xpp.eventType
+
+                        var Message = ""
+                        var ResultCode = ""
+                        var RespMSG = ""
+                        with(parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes) {
+                            for (i in 0 until this.length) {
+
+                                when ((this.item(i) as Element).tagName.toString()) {
+                                    "Message" -> Message =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "ResultCode" -> ResultCode =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "RespMSG" -> RespMSG =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    else -> {
+
+                                    }
+                                }
+                            }
+                        }
+//                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
+                        if (Message.equals("Canceled") || Message.equals("Error")) {
+                            ProgressUtils.dismissProgressDialog()
+                            AlertUtils.showCustomAlert(requireContext(), RespMSG.replace("%20", " "))
+                        } else if (Message.contains("approved", ignoreCase = true)) { // Found the transaction, proceed with VOID
+                            CoroutineScope(Dispatchers.Main).launch {
+                                startVoidWithDejavoo()
+                            }
+                        }else if (Message.contains("Not found", ignoreCase = true)){
+                            startRefund()
+                        }
+                    },
+                    onFailure = {errorMessage->
+                        EventBus.getDefault()
+                            .post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
+                                        Gson().toJson(
+                                            errorMessage
+                                        )
+                                    } "
+                                )
+                            )
+                        ProgressUtils.dismissProgressDialog()
+
+                    }
                 )
             }
 //            }
@@ -695,93 +673,6 @@ class TransactionDetailsFragment : Fragment() {
         paymentCoroutineScope.launch {
             val gatewayType = PaymentGatewayType.DEJAVOO
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
-
-            val paymentCallback = object : PaymentCallback {
-                override fun onSuccess(transactionId: String) {
-                    var transactionJsonResponse = Gson().fromJson<String>(
-                        transactionId,
-                        String::class.java
-                    )
-                    val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
-                    factory.setNamespaceAware(true)
-                    val xpp: XmlPullParser = factory.newPullParser()
-                    xpp.setInput(StringReader(transactionJsonResponse))
-                    var eventType = xpp.eventType
-
-                    var Message = ""
-                    var RefId = ""
-                    var RegisterId = ""
-                    var TPN = ""
-                    var AuthCode = ""
-                    var PNRef = ""
-                    var TransNum = ""
-                    var ResultCode = ""
-                    var RespMSG = ""
-                    var PaymentType = ""
-                    var Voided = ""
-                    var TransType = ""
-                    var SN = ""
-                    var ExtData = ""
-                    with(parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes) {
-                        for (i in 0 until this.length) {
-
-                            when ((this.item(i) as Element).tagName.toString()) {
-                                "Message" -> Message =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "RefId" -> RefId = this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "RegisterId" -> RegisterId =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "TPN" -> TPN = this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "AuthCode" -> AuthCode =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "PNRef" -> PNRef = this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "TransNum" -> TransNum =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "ResultCode" -> ResultCode =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "RespMSG" -> RespMSG =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "PaymentType" -> PaymentType =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "Voided" -> Voided = this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "TransType" -> TransType =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "SN" -> SN = this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "ExtData" -> ExtData =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                else -> {
-
-                                }
-                            }
-                        }
-                    }
-//                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
-                    if (Message.equals("Canceled") || Message.equals("Error")) {
-                        ProgressUtils.dismissProgressDialog()
-                        AlertUtils.showCustomAlert(requireContext(), RespMSG.replace("%20", " "))
-                    } else if (ResultCode.equals("0")) { // Found the transaction, proceed with VOID
-                        CoroutineScope(Dispatchers.Main).launch {
-                            refundCall(paymentDetailsResponse.data.amount)
-                        }
-                    }else if (ResultCode.equals("0")){
-                        startRefund()
-                    }
-                }
-
-                override fun onFailure(errorMessage: String) {
-                    EventBus.getDefault()
-                        .post(
-                            MessageEvent(
-                                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
-                                    Gson().toJson(
-                                        errorMessage
-                                    )
-                                } "
-                            )
-                        )
-                    ProgressUtils.dismissProgressDialog()
-                }
-            }
 
               context?.let {
                   var dejavoo = Dejavoo(
@@ -801,7 +692,89 @@ class TransactionDetailsFragment : Fragment() {
                 paymentGateway.voidPayment(
                     it,
                     dejavoo,
-                    paymentCallback
+                    onSuccess = {tResponse->
+                        var transactionJsonResponse = Gson().fromJson<String>(
+                            tResponse,
+                            String::class.java
+                        )
+                        val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
+                        factory.setNamespaceAware(true)
+                        val xpp: XmlPullParser = factory.newPullParser()
+                        xpp.setInput(StringReader(transactionJsonResponse))
+                        var eventType = xpp.eventType
+
+                        var Message = ""
+                        var RefId = ""
+                        var RegisterId = ""
+                        var TPN = ""
+                        var AuthCode = ""
+                        var PNRef = ""
+                        var TransNum = ""
+                        var ResultCode = ""
+                        var RespMSG = ""
+                        var PaymentType = ""
+                        var Voided = ""
+                        var TransType = ""
+                        var SN = ""
+                        var ExtData = ""
+                        with(parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes) {
+                            for (i in 0 until this.length) {
+
+                                when ((this.item(i) as Element).tagName.toString()) {
+                                    "Message" -> Message =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "RefId" -> RefId = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "RegisterId" -> RegisterId =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "TPN" -> TPN = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "AuthCode" -> AuthCode =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "PNRef" -> PNRef = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "TransNum" -> TransNum =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "ResultCode" -> ResultCode =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "RespMSG" -> RespMSG =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "PaymentType" -> PaymentType =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "Voided" -> Voided = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "TransType" -> TransType =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "SN" -> SN = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "ExtData" -> ExtData =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    else -> {
+
+                                    }
+                                }
+                            }
+                        }
+//                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
+                        if (Message.equals("Canceled") || Message.equals("Error")) {
+                            ProgressUtils.dismissProgressDialog()
+                            AlertUtils.showCustomAlert(requireContext(), RespMSG.replace("%20", " "))
+                        } else if (ResultCode.equals("0")) { // Found the transaction, proceed with VOID
+                            CoroutineScope(Dispatchers.Main).launch {
+                                refundCall(paymentDetailsResponse.data.amount)
+                            }
+                        }else if (ResultCode.equals("0")){
+                            startRefund()
+                        }
+                    },
+                    onFailure = {errorMessage->
+                        EventBus.getDefault()
+                            .post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
+                                        Gson().toJson(
+                                            errorMessage
+                                        )
+                                    } "
+                                )
+                            )
+                        ProgressUtils.dismissProgressDialog()
+                    }
                 )
             }
 //            }
@@ -814,31 +787,6 @@ class TransactionDetailsFragment : Fragment() {
             val gatewayType = PaymentGatewayType.VALOR
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
-            val paymentCallback = object : PaymentCallback {
-                override fun onSuccess(transactionId: String) {
-                    var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
-                        transactionId,
-                        ValorSuccessResponse::class.java
-                    )
-
-                    transactionJsonResponse.nameValuePairs?.let {
-                        if (it.msg != null) {
-                            if (it.msg.equals("APPROVED", ignoreCase = true)) {
-                                CoroutineScope(Dispatchers.Main).launch {
-                                    refundCall(paymentDetailsResponse.data.amount)
-                                }
-                            } else {
-                                startRefund()
-                            }
-                        }
-                    }
-                }
-
-                override fun onFailure(errorMessage: String) {
-                    println("Payment Failed: $errorMessage")
-                    ProgressUtils.dismissProgressDialog()
-                }
-            }
 
             /*      var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
                   var appID = "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
@@ -871,7 +819,28 @@ class TransactionDetailsFragment : Fragment() {
                 paymentGateway.voidPayment(
                     it,
                     valor,
-                    paymentCallback
+                    onSuccess = {tResponse->
+                        var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
+                            tResponse,
+                            ValorSuccessResponse::class.java
+                        )
+
+                        transactionJsonResponse.nameValuePairs?.let {
+                            if (it.msg != null) {
+                                if (it.msg.equals("APPROVED", ignoreCase = true)) {
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        refundCall(paymentDetailsResponse.data.amount)
+                                    }
+                                } else {
+                                    startRefund()
+                                }
+                            }
+                        }
+                    },
+                    onFailure = {errorMessage->
+                        println("Payment Failed: $errorMessage")
+                        ProgressUtils.dismissProgressDialog()
+                    }
                 )
             }
 //            }

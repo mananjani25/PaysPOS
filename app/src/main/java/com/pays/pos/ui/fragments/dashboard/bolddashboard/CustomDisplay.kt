@@ -2889,15 +2889,30 @@ class CustomDisplay(
                 DejavooPaymentGateway()
             ).create(gatewayType)
 
-
-            val paymentCallback = object : PaymentCallback {
-                override fun onSuccess(transactionId: String) {
-
-                    var transactionJsonResponse = Gson().fromJson<String>(
-                        transactionId,
-                        String::class.java
-                    )
-                    mPaymentViewModel.dejavooRefTxnId=null
+            mPaymentViewModel.dejavooRefTxnId?.let {dejavooRefTxnId->
+                var dejavoo=Dejavoo(
+                    registerId=  "4986101",
+                    authKey=  "kwg2GRbykg",
+                    tpn= "659324491704",
+                    paymentType = "Credit",
+                    transType="TipAdjust",
+                    amount= dashBoardCategoryViewModel.totalAmount.toString(),
+                    tip = tippedAmount.toString(),
+                    refId= dejavooRefTxnId,
+                    printReceipt= false,
+                    performedBy=  prefProvider.employeeName(),
+                    isProd= false,
+                    txnType = TransactionType.TIP_ADJUSTMENT
+                )
+                paymentGateway.processPayment(
+                    context.applicationContext,
+                    dejavoo,
+                    onSuccess = { tResponse->
+                        var transactionJsonResponse = Gson().fromJson<String>(
+                            tResponse,
+                            String::class.java
+                        )
+                        mPaymentViewModel.dejavooRefTxnId=null
 //                    transactionJsonResponse.nameValuePairs?.let {
 //                        if (it.msg != null) {
 //                            if (it.msg!!.contains(
@@ -2919,39 +2934,19 @@ class CustomDisplay(
 //                            }
 //                        }
 //                    }
-                }
 
-                override fun onFailure(errorMessage: String) {
-                    ProgressUtils.dismissProgressDialog()
+                    },
+                    onFailure = {
+                        ProgressUtils.dismissProgressDialog()
 
-                    /*runOnUiThread(Runnable {
-                        AlertUtils.showCustomAlert(
-                            requireContext(),
-                            errorMessage
-                        )
-                    })*/
-                }
-            }
+                        /*runOnUiThread(Runnable {
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                errorMessage
+                            )
+                        })*/
 
-            mPaymentViewModel.dejavooRefTxnId?.let {dejavooRefTxnId->
-                var dejavoo=Dejavoo(
-                    registerId=  "4986101",
-                    authKey=  "kwg2GRbykg",
-                    tpn= "659324491704",
-                    paymentType = "Credit",
-                    transType="TipAdjust",
-                    amount= dashBoardCategoryViewModel.totalAmount.toString(),
-                    tip = tippedAmount.toString(),
-                    refId= dejavooRefTxnId,
-                    printReceipt= false,
-                    performedBy=  prefProvider.employeeName(),
-                    isProd= false,
-                    txnType = TransactionType.TIP_ADJUSTMENT
-                )
-                paymentGateway.processPayment(
-                    context,
-                    dejavoo,
-                    paymentCallback
+                    }
                 )
                 /* Process Tip Adjust */
             }
@@ -2984,49 +2979,6 @@ class CustomDisplay(
                 DejavooPaymentGateway()
             ).create(gatewayType)
 
-
-            val paymentCallback = object : PaymentCallback {
-                override fun onSuccess(transactionId: String) {
-
-                    var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
-                        transactionId,
-                        ValorSuccessResponse::class.java
-                    )
-                    transactionJsonResponse.nameValuePairs?.let {
-                        if (it.msg != null) {
-                            if (it.msg!!.contains(
-                                    "APPROVED"
-                                )
-                            ) {
-                                mPaymentViewModel.valorRefTxnId = null
-                                mPaymentViewModel.valorTransactionNumber = null
-                                callUpdateTip()
-//                                dashBoardCategoryViewModel.takenTipUsingValor.postValue(Event(transactionViewModel))
-                            } else {
-                                dismissProgressDialog()
-                                /* runOnUiThread(Runnable {
-                                     AlertUtils.showCustomAlert(
-                                         requireContext(),
-                                         it.msg
-                                     )
-                                 })*/
-                            }
-                        }
-                    }
-                }
-
-                override fun onFailure(errorMessage: String) {
-                    ProgressUtils.dismissProgressDialog()
-
-                    /*runOnUiThread(Runnable {
-                        AlertUtils.showCustomAlert(
-                            requireContext(),
-                            errorMessage
-                        )
-                    })*/
-                }
-            }
-
             mPaymentViewModel.valorRefTxnId?.let { valorRefTxId ->
                 context?.let {
 
@@ -3049,9 +3001,46 @@ class CustomDisplay(
                     )
 
                     paymentGateway.processPayment(
-                        context = it,
+                        context = it.applicationContext,
                         valor,
-                        paymentCallback
+                        onSuccess = {tResponse->
+                            var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
+                                tResponse,
+                                ValorSuccessResponse::class.java
+                            )
+                            transactionJsonResponse.nameValuePairs?.let {
+                                if (it.msg != null) {
+                                    if (it.msg!!.contains(
+                                            "APPROVED"
+                                        )
+                                    ) {
+                                        mPaymentViewModel.valorRefTxnId = null
+                                        mPaymentViewModel.valorTransactionNumber = null
+                                        callUpdateTip()
+//                                dashBoardCategoryViewModel.takenTipUsingValor.postValue(Event(transactionViewModel))
+                                    } else {
+                                        dismissProgressDialog()
+                                        /* runOnUiThread(Runnable {
+                                             AlertUtils.showCustomAlert(
+                                                 requireContext(),
+                                                 it.msg
+                                             )
+                                         })*/
+                                    }
+                                }
+                            }
+
+                        },
+                        onFailure = {
+                            ProgressUtils.dismissProgressDialog()
+
+                            /*runOnUiThread(Runnable {
+                                AlertUtils.showCustomAlert(
+                                    requireContext(),
+                                    errorMessage
+                                )
+                            })*/
+                        }
                     )
                 }
             }

@@ -251,57 +251,6 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             val gatewayType = PaymentGatewayType.DEJAVOO
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
-            val paymentCallback = object : PaymentCallback {
-                override fun onSuccess(transactionId: String) {
-                    var transactionJsonResponse = Gson().fromJson<DejavooResponse>(
-                        transactionId,
-                        DejavooResponse::class.java
-                    )
-
-                    transactionJsonResponse.nameValuePairs?.let {
-                        if (it.iposhpresponse?.nameValuePairs?.responseCode.equals("200") && it.iposhpresponse?.nameValuePairs?.responseMessage.equals("Success")){
-                            CoroutineScope(Dispatchers.Main).launch {
-                                refundCall()
-                            }
-                        }else{
-                            AlertUtils.showCustomAlert(requireContext(), transactionJsonResponse.respMSG?.replace("%20", " "))
-                        }
-                    }
-                }
-
-                override fun onFailure(errorMessage: String) {
-                    try{
-                        var errorResponse = Gson().fromJson<DejavooErrorResponse>(
-                            errorMessage,
-                            DejavooErrorResponse::class.java
-                        )
-                        errorResponse.networkResponse?.let {
-                            var errorData = Gson().fromJson<DejavooErrorResponse>(
-                                MethodUtils.convertAsciiToString(it.data),
-                                DejavooErrorResponse::class.java
-                            )
-
-                            AlertUtils.showCustomAlert(requireContext(),errorData.errors.get(0).message)
-
-                        }
-
-                    }catch (e:Exception){
-
-                    }
-                    EventBus.getDefault()
-                        .post(
-                            MessageEvent(
-                                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
-                                    Gson().toJson(
-                                        errorMessage
-                                    )
-                                } "
-                            )
-                        )
-                    ProgressUtils.dismissProgressDialog()
-                }
-            }
-
             var rrnValue=((paxExtData.substring(paxExtData.indexOf("RRN=")).substring(4, paxExtData.substring(paxExtData.indexOf("RRN=")).indexOf(','))))
 
             var dejavoo = Dejavoo(
@@ -320,15 +269,60 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                 rrn = rrnValue,
                 authToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0cG4iOiI2NTkzMjQ0OTE3MDQiLCJlbWFpbCI6InN1cHBvcnQrMUBwYXlzcG9zLmNvbSIsImlhdCI6MTczMzc0ODk4M30.spR9JiJS6jt0VMB0MGu9HZQYKUrNaWV-U_pzQ4VCvYw")
 
-            (paymentGateway as DejavooPaymentGateway).refundPaymentusingRRN(
-                context!!,
-                dejavoo,
-                paymentCallback
-            )
-            /* Process Void */
-//            }
-        }
+            context?.let {
+                (paymentGateway as DejavooPaymentGateway).refundPaymentusingRRN(
+                    it.applicationContext,
+                    dejavoo,
+                    onSuccess = { tResponse->
+                        var transactionJsonResponse = Gson().fromJson<DejavooResponse>(
+                            tResponse,
+                            DejavooResponse::class.java
+                        )
 
+                        transactionJsonResponse.nameValuePairs?.let {
+                            if (it.iposhpresponse?.nameValuePairs?.responseCode.equals("200") && it.iposhpresponse?.nameValuePairs?.responseMessage.equals("Success")){
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    refundCall()
+                                }
+                            }else{
+                                AlertUtils.showCustomAlert(requireContext(), transactionJsonResponse.respMSG?.replace("%20", " "))
+                            }
+                        }
+                    },
+                    onFailure = { errorMessage->
+                        try{
+                            var errorResponse = Gson().fromJson<DejavooErrorResponse>(
+                                errorMessage,
+                                DejavooErrorResponse::class.java
+                            )
+                            errorResponse.networkResponse?.let {
+                                var errorData = Gson().fromJson<DejavooErrorResponse>(
+                                    MethodUtils.convertAsciiToString(it.data),
+                                    DejavooErrorResponse::class.java
+                                )
+
+                                AlertUtils.showCustomAlert(requireContext(),errorData.errors.get(0).message)
+
+                            }
+
+                        }catch (e:Exception){
+
+                        }
+                        EventBus.getDefault()
+                            .post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
+                                        Gson().toJson(
+                                            errorMessage
+                                        )
+                                    } "
+                                )
+                            )
+                        ProgressUtils.dismissProgressDialog()
+                    }
+                )
+            }
+            }
     }
 
     fun parseXml(xmlContent: String): Document {
@@ -342,96 +336,6 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
         paymentCoroutine.launch {
             val gatewayType = PaymentGatewayType.DEJAVOO
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
-
-            val paymentCallback = object : PaymentCallback {
-                override fun onSuccess(transactionId: String) {
-                    var transactionJsonResponse = Gson().fromJson<String>(
-                        transactionId,
-                        String::class.java
-                    )
-                    val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
-                    factory.setNamespaceAware(true)
-                    val xpp: XmlPullParser = factory.newPullParser()
-                    xpp.setInput(StringReader(transactionJsonResponse))
-                    var eventType = xpp.eventType
-
-                    var Message = ""
-                    var RefId = ""
-                    var RegisterId = ""
-                    var TPN = ""
-                    var AuthCode = ""
-                    var PNRef = ""
-                    var TransNum = ""
-                    var ResultCode = ""
-                    var RespMSG = ""
-                    var PaymentType = ""
-                    var Voided = ""
-                    var TransType = ""
-                    var SN = ""
-                    var ExtData = ""
-                    with(parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes) {
-                        for (i in 0 until this.length) {
-
-                            when ((this.item(i) as Element).tagName.toString()) {
-                                "Message" -> Message =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "RefId" -> RefId = this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "RegisterId" -> RegisterId =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "TPN" -> TPN = this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "AuthCode" -> AuthCode =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "PNRef" -> PNRef = this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "TransNum" -> TransNum =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "ResultCode" -> ResultCode =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "RespMSG" -> RespMSG =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "PaymentType" -> PaymentType =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "Voided" -> Voided = this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "TransType" -> TransType =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "SN" -> SN = this.item(i).childNodes.item(0).nodeValue ?: ""
-                                "ExtData" -> ExtData =
-                                    this.item(i).childNodes.item(0).nodeValue ?: ""
-                                else -> {
-
-                                }
-                            }
-                        }
-                    }
-//                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
-                    if (Message.equals("Canceled") || Message.equals("Error")) {
-                        ProgressUtils.dismissProgressDialog()
-                        AlertUtils.showCustomAlert(requireContext(), RespMSG.replace("%20", " "))
-                    } else if (Message.contains("Approved",ignoreCase = true)) {
-                        CoroutineScope(Dispatchers.Main).launch {
-                            refundCall()
-                        }
-                    } else {
-                        runOnUiThread {
-                            AlertUtils.showCustomAlert(requireContext(), Message.replace("%20", " "))
-                        }
-                    }
-                }
-
-                override fun onFailure(errorMessage: String) {
-                    EventBus.getDefault()
-                        .post(
-                            MessageEvent(
-                                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
-                                    Gson().toJson(
-                                        errorMessage
-                                    )
-                                } "
-                            )
-                        )
-                    ProgressUtils.dismissProgressDialog()
-                }
-            }
-
 
             /*      var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
                   var appID = "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
@@ -463,7 +367,92 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                 paymentGateway.voidPayment(
                     it,
                     dejavoo,
-                    paymentCallback
+                    onSuccess = {tResponse->
+                        var transactionJsonResponse = Gson().fromJson<String>(
+                            tResponse,
+                            String::class.java
+                        )
+                        val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
+                        factory.setNamespaceAware(true)
+                        val xpp: XmlPullParser = factory.newPullParser()
+                        xpp.setInput(StringReader(transactionJsonResponse))
+                        var eventType = xpp.eventType
+
+                        var Message = ""
+                        var RefId = ""
+                        var RegisterId = ""
+                        var TPN = ""
+                        var AuthCode = ""
+                        var PNRef = ""
+                        var TransNum = ""
+                        var ResultCode = ""
+                        var RespMSG = ""
+                        var PaymentType = ""
+                        var Voided = ""
+                        var TransType = ""
+                        var SN = ""
+                        var ExtData = ""
+                        with(parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes) {
+                            for (i in 0 until this.length) {
+
+                                when ((this.item(i) as Element).tagName.toString()) {
+                                    "Message" -> Message =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "RefId" -> RefId = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "RegisterId" -> RegisterId =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "TPN" -> TPN = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "AuthCode" -> AuthCode =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "PNRef" -> PNRef = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "TransNum" -> TransNum =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "ResultCode" -> ResultCode =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "RespMSG" -> RespMSG =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "PaymentType" -> PaymentType =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "Voided" -> Voided = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "TransType" -> TransType =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "SN" -> SN = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "ExtData" -> ExtData =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    else -> {
+
+                                    }
+                                }
+                            }
+                        }
+//                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
+                        if (Message.equals("Canceled") || Message.equals("Error")) {
+                            ProgressUtils.dismissProgressDialog()
+                            AlertUtils.showCustomAlert(requireContext(), RespMSG.replace("%20", " "))
+                        } else if (Message.contains("Approved",ignoreCase = true)) {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                refundCall()
+                            }
+                        } else {
+                            runOnUiThread {
+                                AlertUtils.showCustomAlert(requireContext(), Message.replace("%20", " "))
+                            }
+                        }
+                    },
+                    onFailure = {errorMessage->
+                        EventBus.getDefault()
+                            .post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
+                                        Gson().toJson(
+                                            errorMessage
+                                        )
+                                    } "
+                                )
+                            )
+                        ProgressUtils.dismissProgressDialog()
+
+                    }
                 )
             }
 //            }
@@ -483,34 +472,6 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             val gatewayType = PaymentGatewayType.VALOR
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
-            val paymentCallback = object : PaymentCallback {
-                override fun onSuccess(transactionId: String) {
-                    var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
-                        transactionId,
-                        ValorSuccessResponse::class.java
-                    )
-
-                    transactionJsonResponse.nameValuePairs?.let {
-                        if (it.msg != null) {
-                            if (it.msg.equals("APPROVED", ignoreCase = true)) {
-                                refundCall()
-                            } else {
-                                runOnUiThread {
-                                    ProgressUtils.dismissProgressDialog()
-                                    AlertUtils.showCustomAlert(requireContext(), it.msg)
-                                }
-                            }
-                        }
-                    }
-                }
-
-                override fun onFailure(errorMessage: String) {
-                    runOnUiThread {
-                        AlertUtils.showCustomAlert(requireContext(), errorMessage)
-                    }
-                    ProgressUtils.dismissProgressDialog()
-                }
-            }
             /*Start Refund Process Payment */
             var valor= Valor(
                 apiKey = prefProvider.getValue(Constants.VALOR_APP_KEY, ""),
@@ -533,9 +494,33 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             )
 
             paymentGateway.refundPayment(
-                requireContext(),
+                requireContext().applicationContext,
                 valor,
-                paymentCallback
+                onSuccess = {tResponse->
+                    var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
+                        tResponse,
+                        ValorSuccessResponse::class.java
+                    )
+
+                    transactionJsonResponse.nameValuePairs?.let {
+                        if (it.msg != null) {
+                            if (it.msg.equals("APPROVED", ignoreCase = true)) {
+                                refundCall()
+                            } else {
+                                runOnUiThread {
+                                    ProgressUtils.dismissProgressDialog()
+                                    AlertUtils.showCustomAlert(requireContext(), it.msg)
+                                }
+                            }
+                        }
+                    }
+                },
+                onFailure = {errorMessage->
+                    runOnUiThread {
+                    AlertUtils.showCustomAlert(requireContext(), errorMessage)
+                }
+                    ProgressUtils.dismissProgressDialog()
+                }
             )
         }
     }

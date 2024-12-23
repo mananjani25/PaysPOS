@@ -587,54 +587,6 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             val gatewayType = PaymentGatewayType.VALOR
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
-
-            val paymentCallback = object : PaymentCallback {
-                override fun onSuccess(transactionId: String) {
-
-                    var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
-                        transactionId,
-                        ValorSuccessResponse::class.java
-                    )
-                    transactionJsonResponse.nameValuePairs?.let {
-                        if (it.msg != null) {
-                            if (it.msg!!.contains(
-                                    "APPROVED"
-                                )
-                            ) {
-                                tipCall(true)
-                            } else {
-                                ProgressUtils.dismissProgressDialog()
-                                /* runOnUiThread(Runnable {
-                                     AlertUtils.showCustomAlert(
-                                         requireContext(),
-                                         it.msg
-                                     )
-                                 })*/
-                            }
-                        }
-                    }
-                }
-
-                override fun onFailure(errorMessage: String) {
-                    println("Payment Failed: $errorMessage")
-
-                    ProgressUtils.dismissProgressDialog()
-
-                    AlertUtils.showCustomAlertWithListenerWithOK(
-                        requireContext(),
-                        errorMessage,
-                        object :
-                            DialogInterface.OnClickListener {
-                            override fun onClick(p0: DialogInterface?, p1: Int) {
-                                try {
-                                    p0?.dismiss()
-                                } catch (e: Exception) {
-                                }
-                            }
-                        })
-                }
-            }
-
             singleTransaction?.ref_num.let { valorRefTxId ->
                 context?.let {
                     var valor = Valor(
@@ -658,9 +610,50 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     )
 
                     paymentGateway.processPayment(
-                        context = it,
+                        context = it.applicationContext,
                         valor,
-                        callback = paymentCallback,
+                        onSuccess = {tResponse->
+                            var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
+                                tResponse,
+                                ValorSuccessResponse::class.java
+                            )
+                            transactionJsonResponse.nameValuePairs?.let {
+                                if (it.msg != null) {
+                                    if (it.msg!!.contains(
+                                            "APPROVED"
+                                        )
+                                    ) {
+                                        tipCall(true)
+                                    } else {
+                                        ProgressUtils.dismissProgressDialog()
+                                        /* runOnUiThread(Runnable {
+                                             AlertUtils.showCustomAlert(
+                                                 requireContext(),
+                                                 it.msg
+                                             )
+                                         })*/
+                                    }
+                                }
+                            }
+                        },
+                        onFailure = {errorMessage->
+                            println("Payment Failed: $errorMessage")
+
+                            ProgressUtils.dismissProgressDialog()
+
+                            AlertUtils.showCustomAlertWithListenerWithOK(
+                                requireContext(),
+                                errorMessage,
+                                object :
+                                    DialogInterface.OnClickListener {
+                                    override fun onClick(p0: DialogInterface?, p1: Int) {
+                                        try {
+                                            p0?.dismiss()
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                })
+                        }
                     )
                 }
             }
