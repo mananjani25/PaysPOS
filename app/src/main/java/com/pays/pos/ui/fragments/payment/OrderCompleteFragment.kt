@@ -1268,11 +1268,26 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         setAlignment(1)
 
         setCharacterSize(2,2)
-        appendText("OrderID:${receiptModel?.order?.id}")
+
+        if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+            appendText("OrderID:${receiptModel?.order?.custom_order_id}")
+        } else {
+            appendText(":${receiptModel?.order?.id}")
+        }
+
         lineFeed(2)
+        appendText(""+receiptModel?.order?.orderTypeName)
+        lineFeed(2)
+//        setCharacterSize(1,1)
         setAlignment(0)
-        setCharacterSize(1,1)
-        appendText("Employee Name:${receiptModel?.order?.employee?.name}")
+        appendText("Employee:${receiptModel?.order?.employee?.name}")
+        lineFeed(2)
+        appendText("${ getReceiptFormatDateFromUTCServer(
+            requireContext(),
+            receiptModel?.order?.createdAt.toString()
+        )}")
+        lineFeed(1)
+        appendText("------------------------")
         lineFeed(2)
 
 
@@ -1281,11 +1296,41 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (orderItems.isNotEmpty() && orderItems != null)
         for (i in 0 until orderItems?.size){
             val obj = orderItems.get(i)
-        appendText("${obj.quantity} "+"   "+obj.itemName)
-        lineFeed(1)
+        appendText("${obj.quantity} "+"  "+obj.itemName)
+        lineFeed(2)
         }
 
 
+
+
+        if(receiptModel?.order?.customer != null){
+            lineFeed(3)
+            appendText("Customer Details")
+            lineFeed(1)
+            appendText("------------------------")
+            lineFeed(2)
+
+
+            if (receiptModel?.order?.customer?.firstName != null && receiptModel?.order?.customer?.lastName != null){
+                        appendText(receiptModel?.order?.customer?.firstName+" "+receiptModel?.order?.customer?.lastName)
+                lineFeed(1)
+            }
+
+            if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true){
+                appendText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress.toString())
+                lineFeed(1)
+
+            }
+            if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true){
+                var phoneNo = receiptModel?.order?.customer?.phones?.size?.minus(1)
+                    ?.let { receiptModel?.order?.customer?.phones?.get(it)?.phoneNumber }
+               appendText( MethodUtils.formatPhoneNumber(phoneNo.toString()))
+
+                lineFeed(1)
+
+            }
+
+        }
 
         lineFeed(6)
         cutPaper(true)
