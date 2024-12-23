@@ -369,7 +369,11 @@ class TransactionDetailsFragment : Fragment() {
                 Log.d("RefNum11: ", "RefNum ${paymentDetailsResponse.data?.ref_num}")
                 if (paymentDetailsResponse.data?.ref_num.isNullOrEmpty()) {
                     magtekCall(tipAmount)
-                } else if (!paymentDetailsResponse.data?.ref_num.isNullOrEmpty() && prefProvider.getValueboolean(
+                }
+                else if(paymentDetailsResponse.data.ext_data.contains(Constants.VALOR,ignoreCase = true)){
+                    adjustValorTips(paymentDetailsResponse)
+                }
+                else if (!paymentDetailsResponse.data?.ref_num.isNullOrEmpty() && prefProvider.getValueboolean(
                         Constants.IS_PAX_CONNECTED,
                         false
                     )
@@ -465,6 +469,100 @@ class TransactionDetailsFragment : Fragment() {
                     )
                 )
         }
+
+    private fun adjustValorTips(paymentDetailsResponse: GetPaymentOrderDetailsResponse) {
+
+        GlobalScope.launch {
+            val tip_amt = (tipAmount * 100).toInt()
+
+            withContext(Dispatchers.Main) {
+                ProgressUtils.showProgressDialog(requireActivity())
+            }
+
+            val gatewayType = PaymentGatewayType.VALOR
+            val paymentGateway = paymentGatewayFactory.create(gatewayType)
+
+
+            val paymentCallback = object : PaymentCallback {
+                override fun onSuccess(transactionId: String) {
+
+                    var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
+                        transactionId,
+                        ValorSuccessResponse::class.java
+                    )
+                    transactionJsonResponse.nameValuePairs?.let {
+                        if (it.msg != null) {
+                            if (it.msg!!.contains(
+                                    "APPROVED"
+                                )
+                            ) {
+                                tipCall(true)
+                            } else {
+                                ProgressUtils.dismissProgressDialog()
+                                /* runOnUiThread(Runnable {
+                                     AlertUtils.showCustomAlert(
+                                         requireContext(),
+                                         it.msg
+                                     )
+                                 })*/
+                            }
+                        }
+                    }
+                }
+
+                override fun onFailure(errorMessage: String) {
+                    println("Payment Failed: $errorMessage")
+
+                    ProgressUtils.dismissProgressDialog()
+
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(),
+                        errorMessage,
+                        object :
+                            DialogInterface.OnClickListener {
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                try {
+                                    p0?.dismiss()
+                                } catch (e: Exception) {
+                                }
+                            }
+                        })
+                }
+            }
+
+            paymentDetailsResponse.data?.ref_num.let { valorRefTxId ->
+                context?.let {
+                    var valor = Valor(
+                        apiKey = prefProvider.getValue(Constants.VALOR_APP_KEY, ""),
+                        appID = prefProvider.getValue(Constants.VALOR_APP_ID, ""),
+                        epi = prefProvider.getValue(Constants.VALOR_EPI, ""),
+                        endpoint = Constants.VALOR_TIP_ADJUST,
+                        txnType = TransactionType.TIP_ADJUSTMENT,
+                        channelId = prefProvider.getValue(Constants.VALOR_CHANNEL_ID, ""),
+                        transMode = "",
+                        transCode = "",
+                        reqTxnId = valorRefTxId.toString(),
+                        amount = "",
+                        tipAmount = tipAmount.toString(),
+                        tipEntry = "1",
+                        txn_type = "",
+                        surchargeIndicator = "",
+                        sale_refund = "",
+                        ref_txn_id = "",
+                        transactionId = ""
+                    )
+
+                    paymentGateway.processPayment(
+                        context = it,
+                        valor,
+                        callback = paymentCallback,
+                    )
+                }
+            }
+            /* Process Tip Adjust */
+
+        }
+    }
 
     private fun startVoidWithValor(paymentDetailsResponse: GetPaymentOrderDetailsResponse) {
         paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
