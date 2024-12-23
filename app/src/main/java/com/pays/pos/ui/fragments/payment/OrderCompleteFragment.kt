@@ -405,7 +405,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Log.e(TAG, "checkTotalPrice:  ${totalPayableAmount}")
                 var foundGiftCard=dashboardViewModel.currentCartItems.find { it.orderType.equals("GiftCard", ignoreCase = true) }
 
-                if (foundGiftCard==null) {
+//                if (foundGiftCard==null) {
                     presentation.showWouldYouLikeToAddTipScreen(
                         tipListViewModel,
                         transactionViewModel,
@@ -423,9 +423,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
                         )
                     )
-                }else{
-                    presentation.showThankyouLayout()
-                }
+//                }else{
+//                    presentation.showThankyouLayout()
+//                }
             }
         }
     }
