@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import com.pays.pos.data.model.PrinterListModel
 import com.pays.pos.databinding.DialogPrinterSnumberBinding
+import com.pays.pos.utils.AlertUtils
 
 class DialogSNumber : DialogFragment() {
     private lateinit var binding:DialogPrinterSnumberBinding
@@ -37,12 +38,39 @@ class DialogSNumber : DialogFragment() {
         Log.e(TAG,"layoutPosition:  ${layoutPosition}")
 
         binding.txtContinue.setOnClickListener {
-            var result = Bundle()
-            result.putString("serial_number",binding.edtSplitNo.text.toString())
-            result.putParcelable("printerListModel",printerListModel)
-            result.putInt("layoutPosition",layoutPosition)
-            setFragmentResult("request_cloud_serial_number", result)
-            findNavController().navigateUp()
+            if (binding.edtSplitNo.text?.trim()?.isEmpty() == true) {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    "Please Enter Valid Serial Number.",
+                )
+                { _, _ ->
+
+                }
+            }
+            else if (binding.edtSplitNo.text?.trim()?.length!! < 13){
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    "Please Enter Valid Serial Number.",
+                )
+                { _, _ ->
+
+                }
+
+            }
+            else {
+
+                var result = Bundle()
+                result.putString("serial_number", binding.edtSplitNo.text.toString())
+                result.putParcelable("printerListModel", printerListModel)
+                result.putInt("layoutPosition", layoutPosition)
+                setFragmentResult("request_cloud_serial_number", result)
+                findNavController().navigateUp()
+            }
+        }
+
+
+        binding.imgBack.setOnClickListener {
+            dismiss()
         }
 
     }
