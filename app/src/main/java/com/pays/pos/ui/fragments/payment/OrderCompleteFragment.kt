@@ -1269,10 +1269,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         setCharacterSize(2,2)
         appendText("OrderID:${receiptModel?.order?.id}")
-        lineFeed(1)
+        lineFeed(2)
         setAlignment(0)
         setCharacterSize(1,1)
         appendText("Employee Name:${receiptModel?.order?.employee?.name}")
+        lineFeed(2)
 
 
 
