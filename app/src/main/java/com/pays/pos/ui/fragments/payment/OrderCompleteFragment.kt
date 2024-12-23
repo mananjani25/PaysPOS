@@ -136,16 +136,8 @@ import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import com.sdksuite.omnidriver.OmniConnection
 import com.sdksuite.omnidriver.OmniDriver
-import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
-import com.starmicronics.stario10.starxpandcommand.DocumentBuilder
-import com.starmicronics.stario10.starxpandcommand.MagnificationParameter
-import com.starmicronics.stario10.starxpandcommand.PrinterBuilder
-import com.starmicronics.stario10.starxpandcommand.StarXpandCommandBuilder
-import com.starmicronics.stario10.starxpandcommand.printer.Alignment
-import com.starmicronics.stario10.starxpandcommand.printer.CutType
-import com.starmicronics.stario10.starxpandcommand.printer.InternationalCharacterType
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
@@ -185,6 +177,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var isPrint: Boolean = false
     private var isPrintCustomer: Boolean = false
     private var isFirstKitPrint = false
+    private var shopId1:Int = 2241
+    private var shopId2:Int = 2242
+    var charHSize: Int = 1
+    var asciiCharWidth: Int = 12
+    var cjkCharWidth: Int = 24
     var orderContent: java.lang.StringBuilder = java.lang.StringBuilder()
     private val paymentViewModel by activityViewModels<PaymentViewModel>()
     private lateinit var presentation: CustomDisplay
@@ -804,8 +801,27 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.txtTitleCash.text = it
             }
         }
+        var twoCloudPrinters:HashMap<String,String> = hashMapOf()
+        //@home Printers
 
-        cloudQueuePrinting()
+        twoCloudPrinters.set("N43422AR01072","2241")
+        twoCloudPrinters.set("N434227FT0851","2242")
+        //office Printers
+       // twoCloudPrinters.add("N434227FT0790")
+        //twoCloudPrinters.add("N434227FT0738")
+
+
+
+     //   cloudQueuePrinting("N434227FT0790",2242)
+
+
+
+
+
+
+
+
+
 
         /*Added By Rahul */
         setUpdateEnabledInReceiptModel()
@@ -1234,30 +1250,61 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     }
 
-    private fun cloudQueuePrinting() {
+    private fun cloudQueuePrinting(input: String,shop_id: Int) {
         val date = Date()
         val random = Random()
         val timestamp = java.lang.String.format("%d", date.time / 1000)
 
         val body = java.lang.StringBuilder()
         body.append("{")
-        body.append(java.lang.String.format("\"sn\":\"%s\"", "N43422AR01072"))
+        body.append(java.lang.String.format("\"sn\":\"%s\"", "${input}"))
         body.append(",")
-        body.append(java.lang.String.format("\"shop_id\":%d", 2241))
+        body.append(java.lang.String.format("\"shop_id\":%d", shop_id))
         body.append("}")
 
+        orderContent.clear()
+        orderContent = java.lang.StringBuilder()
         lineFeed(4)
         setAlignment(1)
+
+        setCharacterSize(2,2)
         appendText("OrderID:${receiptModel?.order?.id}")
+        lineFeed(1)
+        setAlignment(0)
+        setCharacterSize(1,1)
+        appendText("Employee Name:${receiptModel?.order?.employee?.name}")
+
+
+
+        var orderItems = receiptModel?.order?.orderItems ?: arrayListOf()
+        if (orderItems.isNotEmpty() && orderItems != null)
+        for (i in 0 until orderItems?.size){
+            val obj = orderItems.get(i)
+        appendText("${obj.quantity} "+"   "+obj.itemName)
+        lineFeed(1)
+        }
+
+
+
         lineFeed(6)
         cutPaper(true)
 
 
 
-        Log.e("checkKey","pushContent:  ${pushContent(
-            String.format("%s_%010d", "N434227FT0790", timestamp.toLong()),
-            "N434227FT0790", 1, 1, "您有新的订单", 1)}")
+        Log.e("checkKey","pushContent: checkSN:${input} ${pushContent(trade_no = 
+            String.format("%s_%010d", "${input}", System.currentTimeMillis()),
+            "${input}", 1, 1, "您有新的订单", 0)}")
 
+    }
+
+    fun setCharacterSize(h: Int, w: Int) {
+        var n = 0
+        if (h >= 1 && h <= 8) n = n or (h - 1)
+        if (w >= 1 && w <= 8) {
+            n = n or ((w - 1) shl 4)
+            charHSize = w
+        }
+        orderContent.append("1d21" + String.format("%02x", n))
     }
 
     private fun observeTipClicked() {
@@ -13726,7 +13773,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.deleteValue(Constants.DO_PRINT)
         Log.d("initKitchenPrinter", "SunmiBlueToothPrinter is ${data.name}")
 
-        GlobalScope.launch(Dispatchers.IO) {
+        data.ipAddress?.let { cloudQueuePrinting(it,2241) }
+
+        /*GlobalScope.launch(Dispatchers.IO) {
             if (data.name.startsWith(SUNMI_PRINTER, true)) {
 
 
@@ -13759,10 +13808,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //                                Log.d("KioskOpenOrderKitchenPrint", "CloudConnected")
                                 generateKitchenReceiptSunmi(data, type)
 
-                                /*       viewLifecycleOwner.lifecycleScope.launch {
+                                *//*       viewLifecycleOwner.lifecycleScope.launch {
                                        delay(200)
 
-                                   }*/
+                                   }*//*
 
 
                             }
@@ -13775,10 +13824,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 } else {
 //                    Log.d("KioskOpenOrderKitchenPrint", "CloudNotConnected")
                     generateKitchenReceiptSunmi(data, type)
-                    /* viewLifecycleOwner.lifecycleScope.launch {
+                    *//* viewLifecycleOwner.lifecycleScope.launch {
                      delay(200)
 
-                 }*/
+                 }*//*
                 }
 
 
@@ -13805,14 +13854,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 printer = StarPrinter(settings, requireContext())
 
                 var isPrint = true
-                /*receiptModel?.order?.let {
+                *//*receiptModel?.order?.let {
                 it.orderItems.forEach {
                     if (it.isItemEdited){
                         isPrint=true
                         return@forEach
                     }
                 }
-            }*/
+            }*//*
 
                 if (isPrint) {
                     GlobalScope.launch {
@@ -13851,7 +13900,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                         )
                                                     }
 
-                                                  /*if (prefProvider.getValueboolean(Constants.STICKY_ORDER_ID,false)){
+                                                  *//*if (prefProvider.getValueboolean(Constants.STICKY_ORDER_ID,false)){
                                                       add(
                                                           PrinterBuilder()
                                                               .styleBold(true)
@@ -13863,7 +13912,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                               )
                                                       )
                                                   }
-*/
+*//*
                                                     actionFeedLine(1)
 
                                                     add(
@@ -14236,11 +14285,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             "($areaCode)$firstPart-$secondPart"
 
 
-                                                            /* MethodUtils.formatPhoneNumber(
+                                                            *//* MethodUtils.formatPhoneNumber(
                                                          receiptModel?.order?.customer?.phones?.get(
                                                              0
                                                          )?.phoneNumber.toString()
-                                                     )*/
+                                                     )*//*
                                                         } else ""
                                                     )
                                             )
@@ -14252,7 +14301,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                 }
 
-                                /* runBlocking {
+                                *//* runBlocking {
                             isOrderUpdated=false
                             receiptModel?.order?.orderItems?.let {item->
                                 item.forEach {
@@ -14262,16 +14311,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     }
                                 }
                             }
-                        }*/
-                                /*Added By Rahul */
+                        }*//*
+                                *//*Added By Rahul *//*
 
 
-                                /*if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
+                                *//*if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
                                     0
                                 ) != null
                             ) {
 
-                            }*/
+                            }*//*
                             }
 
 //                        printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
@@ -14416,10 +14465,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             //  printerDialog.show(requireContext())
 
                             var printer: Print? = Print(requireContext())
-                            /*if (printer != null) {
+                            *//*if (printer != null) {
                        printer.setStatusChangeEventCallback(this)
                        printer.setBatteryStatusChangeEventCallback(this)
-                   }*/
+                   }*//*
 
 
                             val enabled = Print.FALSE
@@ -14462,7 +14511,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             }
-        }
+        }*/
     }
 
     private fun printKitchenFromLandiInner(
@@ -20247,7 +20296,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         return java.util.Base64.getEncoder().encodeToString(signature.sign())
     }
 
-    fun httpPost(path: String, body: String): String? {
+    fun httpPost(path: String, body: String,sn:String?=null): String? {
         var connection: HttpURLConnection? = null
         var `is`: InputStream? = null
         var os: OutputStream? = null
@@ -20277,6 +20326,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             os = connection!!.outputStream
             os.write(body.toByteArray(charset("UTF-8")))
             if (connection!!.responseCode == 200) {
+
+              /*  if (sn.equals("N434227FT0790")) {
+                    orderContent.clear()
+                     orderContent = java.lang.StringBuilder()
+                    cloudQueuePrinting("N434227FT0738", 2241)
+                }*/
+
+               /* if (path.contains("pushContent")){
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        delay(500)
+                        clearPrintJob(sn)
+                    }
+                }*/
+
                 `is` = connection!!.inputStream
                 br = BufferedReader(InputStreamReader(`is`, "UTF-8"))
 
@@ -20363,7 +20427,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         body.append(",")
         body.append(String.format("\"cycle\":%d", cycle))
         body.append("}")
-        return httpPost("/v2/printer/open/open/device/pushContent", body.toString())
+        return httpPost("/v2/printer/open/open/device/pushContent", body.toString(),sn)
     }
 
     fun appendText(text: String) {
@@ -20390,5 +20454,89 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     fun setAlignment(n: Int) {
         if (n >= 0 && n <= 2) orderContent.append("1b61" + String.format("%02x", n))
     }
+
+    fun clearPrintJob(sn: String?): String? {
+        Log.e(TAG,"chekSNCall: ${sn}")
+        val body = java.lang.StringBuilder()
+        body.append("{")
+        body.append(String.format("\"sn\":\"%s\"", sn))
+        body.append("}")
+        return httpPost("/v2/printer/open/open/device/clearPrintJob", body.toString(),sn)
+    }
+
+
+    // Append raw data.
+    fun appendRawData(bytes: ByteArray) {
+        for (i in bytes) orderContent.append(String.format("%02x", i))
+    }
+
+    // Append unicode character.
+    fun appendUnicode(unicode: Int, count: Int) {
+        if (count > 0) {
+            val text = StringBuilder()
+            for (i in 0 until count) text.append(unicode.toChar())
+            appendText(text.toString())
+        }
+
+    }
+
+    // [ESC 3] Set line spacing.
+    fun setLineSpacing(n: Int) {
+        if (n >= 0 && n <= 255) orderContent.append("1b33" + String.format("%02x", n))
+    }
+
+    // [ESC !] Set print modes.
+    fun setPrintModes(bold: Boolean, double_h: Boolean, double_w: Boolean) {
+        var n = 0
+        if (bold) n = n or 8
+        if (double_h) n = n or 16
+        if (double_w) n = n or 32
+        charHSize = if ((double_w)) 2 else 1
+        orderContent.append("1b21" + String.format("%02x", n))
+    }
+
+    // [HT] Jump to next TAB position.
+    fun horizontalTab(n: Int) {
+        for (i in 0 until n) orderContent.append("09")
+    }
+
+    // [ESC $] Set absolute print position.
+    fun setAbsolutePrintPosition(n: Int) {
+        if (n >= 0 && n <= 65535) orderContent.append(
+            "1b24" + String.format(
+                "%02x%02x",
+                (n and 0xff),
+                ((n shr 8) and 0xff)
+            )
+        )
+    }
+
+    // [ESC \] Set relative print position.
+    fun setRelativePrintPosition(n: Int) {
+        if (n >= -32768 && n <= 32767) orderContent.append(
+            "1b5c" + String.format(
+                "%02x%02x",
+                (n and 0xff),
+                ((n shr 8) and 0xff)
+            )
+        )
+    }
+
+
+    // [ESC -] Set underline mode.
+    fun setUnderlineMode(n: Int) {
+        if (n >= 0 && n <= 2) orderContent.append("1b2d" + String.format("%02x", n))
+    }
+
+    // [GS B] Set black-white reverse mode.
+    fun setBlackWhiteReverseMode(enabled: Boolean) {
+        orderContent.append("1d42" + (if ((enabled)) "01" else "00"))
+    }
+
+    // [ESC {] Set upside down mode.
+    fun setUpsideDownMode(enabled: Boolean) {
+        orderContent.append("1b7b" + (if ((enabled)) "01" else "00"))
+    }
+
 
 }
