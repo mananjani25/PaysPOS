@@ -1850,7 +1850,7 @@
         android:layout_height="match_parent"
         android:background="#1D1D1F"
         android:paddingHorizontal="@dimen/_5sdp"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/wouldYouLikeToAddTipLabelBefore"

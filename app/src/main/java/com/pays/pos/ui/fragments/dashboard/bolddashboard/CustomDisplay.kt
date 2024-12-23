@@ -24,12 +24,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
-import com.github.gcacace.signaturepad.views.SignaturePad.OnSignedListener
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.pax.poslink.PaymentRequest
-import com.pax.poslink.PosLink
-import com.pax.poslink.ProcessTransResult
 import com.pays.payments.callbacks.PaymentCallback
 import com.pays.payments.design.*
 import com.pays.payments.gateways.dejavoo.DejavooPaymentGateway
@@ -184,10 +178,14 @@ class CustomDisplay(
         initDiscountLiveData()
 
 
-        if(prefProvider.getValueboolean(Constants.IS_PAYMENT_SCREEN,false))
+        if(prefProvider.getValueboolean(Constants.IS_PAYMENT_SCREEN,false)) {
+            Log.e("TIP BEFORE WORKING","TIP BEFORE ENABLED")
             binding.askForTipBeforeLayout.visible()
-        else
+        }
+        else {
+            Log.e("TIP BEFORE WORKING","TIP BEFORE NOT ENABLED")
             binding.askForTipBeforeLayout.gone()
+        }
 
 
     }
@@ -197,14 +195,20 @@ class CustomDisplay(
 
         tipsListViewModel = _tipListViewModel
 
+         Log.e("TIP BEFORE WORKING","CHECK FOR TIP BEFORE TRANSACTION")
+
 
 
         binding.otherRootLayoutTipBefore.setOnClickListener {
+            Log.e("TIP BEFORE WORKING","NO TIP CLICKED")
             activeTipsListAdapter?.clearSelectedItem()
             showTipKeypad(dashBoardCategoryViewModel.totalPrice)
         }
 
         binding.noTipRootLayoutTipBefore.setOnClickListener {
+
+
+            Log.e("TIP BEFORE WORKING","NO TIP CLICKED")
 
             activeTipsListAdapter?.clearSelectedItem()
             dashBoardCategoryViewModel.apply {
@@ -3032,8 +3036,6 @@ class CustomDisplay(
                     "Please connect to PAX device"
                 )
             }
-        } else if (!mIsCardPayment) {
-            callUpdateTip()
         }
         if (!binding.signaturePad.isEmpty) {
             enableConfirmButton()

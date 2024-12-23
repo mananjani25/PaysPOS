@@ -3108,6 +3108,20 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         }
     }
 
+//    override fun onResume() {
+//        super.onResume()
+//
+//        if(prefProvider.getValueboolean(IS_PAYMENT_SCREEN, false)){
+//            if(this::presentation.isInitialized){
+//                presentation.show()
+//                presentation.onDisplayChanged()
+//
+//                val tipListViewModel by activityViewModels<TipListViewModel>()
+//                presentation.checkForTipBeforeTransaction(tipListViewModel)
+//            }
+//        }
+//    }
+
     // To remove guest from order
     override fun onRemoveGuest(position: Int) {
 
