@@ -62,7 +62,7 @@ class CustomAmountFragment : DialogFragment() {
         binding.txtSend.setOnClickListener {
             if (binding.edtAmount.text.toString().isNotEmpty()) {
                 var custom_amount = binding.edtAmount.text.toString().replace("$", "").toDouble()
-                if (custom_amount > totalprice) {
+                if (custom_amount > totalprice || custom_amount > amountToDisplay) {
                     val result = Bundle().apply {
                         putDouble("amount", custom_amount)
                         putDouble("totalAmount", totalprice)
