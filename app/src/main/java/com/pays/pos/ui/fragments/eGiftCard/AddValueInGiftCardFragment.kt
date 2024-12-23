@@ -2,6 +2,7 @@ package com.pays.pos.ui.fragments.eGiftCard
 
 import android.content.Context
 import android.content.DialogInterface
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Message
@@ -12,6 +13,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -36,6 +38,14 @@ import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.paxUtils.SettingINI
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import java.security.InvalidKeyException
+import java.security.KeyFactory
+import java.security.NoSuchAlgorithmException
+import java.security.Signature
+import java.security.SignatureException
+import java.security.spec.InvalidKeySpecException
+import java.security.spec.PKCS8EncodedKeySpec
+import java.util.Base64
 import javax.inject.Inject
 
 @AndroidEntryPoint
