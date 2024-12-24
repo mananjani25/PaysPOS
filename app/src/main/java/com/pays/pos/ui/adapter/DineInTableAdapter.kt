@@ -238,6 +238,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     binding.btnPay.setBackgroundColor(binding.root.context.getColor(R.color.colorGreen))
                     binding.txtPay.text = "Paid"
+                    binding.btnPay.isEnabled = false
                 }
             } else if (list[position].itemsCount == 0) {
                 Log.e(TAG, "NoItemGuestAmt")
