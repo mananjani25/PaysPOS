@@ -874,6 +874,9 @@ object Constants {
     const val VALOR_VOID = "void"
     /*-------Valor--------*/
 
+    /*-------Dejavoo------*/
+    const val DEJAVOO = "DEJAVOO"
+    /*-------Dejavoo------*/
 
     const val PERMISSION_BLUETOOTH = 1
     const val PERMISSION_BLUETOOTH_ADMIN = 2

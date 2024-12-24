@@ -12,6 +12,7 @@ import android.os.*
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.util.Xml
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,12 +41,10 @@ import com.pax.poslink.broadpos.BroadPOSCommunicator
 import com.pax.poslink.fullIntegration.InputAccount
 import com.pax.poslink.fullIntegration.InputAccount.InputAccountCallback
 import com.pays.payments.callbacks.PaymentCallback
-import com.pays.payments.design.PaymentGatewayFactory
-import com.pays.payments.design.PaymentGatewayType
-import com.pays.payments.design.TransactionType
-import com.pays.payments.design.Valor
+import com.pays.payments.design.*
 import com.pays.pos.R
 import com.pays.pos.data.entities.*
+import com.pays.pos.data.model.dejavoo.DejavooResponse
 import com.pays.pos.data.model.requestModel.*
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
@@ -98,12 +97,19 @@ import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
+import org.simpleframework.xml.core.Persister
+import org.w3c.dom.Document
+import org.w3c.dom.Element
+import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.StringReader
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.math.roundToInt
 
 
@@ -2990,7 +2996,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         ).isNotEmpty()
                     ) {
                         makeValorPaymentRequest()
-                    }else {
+                    } else if (prefProvider.getValue(
+                            Constants.VALOR_APP_ID, ""
+                        ).isNullOrEmpty()){
+                        makeDejavooPaymentRequest()
+                    }
+                    else {
                         runOnUiThread(object : java.lang.Runnable {
                             override fun run() {
                                 binding.llCreditCard.isEnabled = true
@@ -3585,6 +3596,130 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
     }
 
+    fun parseXml(xmlContent: String): Document {
+        val factory = DocumentBuilderFactory.newInstance()
+        val builder = factory.newDocumentBuilder()
+        return builder.parse(xmlContent.byteInputStream())
+    }
+
+    private fun makeDejavooPaymentRequest() {
+        paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutineScope.launch {
+            val gatewayType = PaymentGatewayType.DEJAVOO
+            val paymentGateway = paymentGatewayFactory.create(gatewayType)
+
+            val amt=String.format("%.2f", (paymentAmount - tipAmount)).toDouble()
+            val tip_amt = String.format("%.2f", tipAmount).toDouble()
+
+            /*    Test Credentials
+                  var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
+                  var appID = "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
+                  var channelID = "bd967b4e0ccd6309c5ac16634bd367b6"
+                  var epi = "2319995597"
+                  var endpoint = "status"
+                  var transType = TransactionType.CREDIT_SALE
+                  var TRAN_MODE = "1"
+                  var TRAN_CODE = "1"
+                  var amount =
+                  var reqTxnId = */
+
+            /* Process Payment */
+            var dejavoo=Dejavoo(
+                registerId=  "4986101",
+                authKey=  "kwg2GRbykg",
+                tpn= "659324491704",
+                paymentType = "Credit",
+                transType="Sale",
+                amount= amt.toString(),
+                tip = if (tip_amt > 0) tip_amt.toString() else "",
+                refId= "Ref${System.currentTimeMillis()}",
+                printReceipt= false,
+                performedBy=  prefProvider.employeeName(),
+                isProd= false,
+                txnType = TransactionType.CREDIT_SALE
+            )
+
+            context?.let {
+                paymentGateway.processPayment(
+                    it.applicationContext,
+                    dejavoo,
+                    onSuccess = {tResponse->
+                        var transactionJsonResponse = Gson().fromJson<String>(
+                            tResponse,
+                            String::class.java
+                        )
+                        val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
+                        factory.setNamespaceAware(true)
+                        val xpp: XmlPullParser = factory.newPullParser()
+                        xpp.setInput(StringReader(transactionJsonResponse))
+                        var eventType = xpp.eventType
+
+                        val parsedXml = parseXml(transactionJsonResponse)/*.getElementsByTagName("xmp").item(0)?.textContent.toString()*/
+                        var Message=""
+                        var RefId=""
+                        var RegisterId=""
+                        var TPN=""
+                        var AuthCode=""
+                        var PNRef=""
+                        var TransNum=""
+                        var ResultCode=""
+                        var RespMSG=""
+                        var PaymentType=""
+                        var Voided=""
+                        var TransType=""
+                        var SN=""
+                        var ExtData=""
+                        with(parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes) {
+                            for (i in 0 until this.length) {
+
+                                when ((this.item(i) as Element).tagName.toString()) {
+                                    "Message" -> Message = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "RefId" -> RefId = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "RegisterId" -> RegisterId = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "TPN" -> TPN = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "AuthCode" -> AuthCode = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "PNRef" -> PNRef = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "TransNum" -> TransNum = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "ResultCode" -> ResultCode = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "RespMSG" -> RespMSG = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "PaymentType" -> PaymentType = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "Voided" -> Voided = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "TransType" -> TransType = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "SN" -> SN = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    "ExtData" -> ExtData = this.item(i).childNodes.item(0).nodeValue.intern()?:""
+                                    else -> {
+
+                                    }
+                                }
+                            }
+                        }
+//                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
+                        if (Message.equals("Canceled") || Message.equals("Error")){
+                            dismissProgressDialog()
+                            AlertUtils.showCustomAlert(requireContext(),RespMSG.replace("%20", " "))
+                        }else if (Message.contains("Approved")){
+                            makePaymentCreditCardDejavoo(RefId, ExtData)
+                        }
+
+                    },
+                    onFailure = { errorMessage->
+                        EventBus.getDefault()
+                            .post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
+                                        Gson().toJson(
+                                            errorMessage
+                                        )
+                                    } "
+                                )
+                            )
+                        dismissProgressDialog()
+                    }
+                )
+            }
+        }
+    }
+
     private fun startCashOrGiftCardTransaction(b: Boolean) {
 
     }
@@ -3742,140 +3877,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val gatewayType = PaymentGatewayType.VALOR
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
-            val paymentCallback = object : PaymentCallback {
-                override fun onSuccess(transactionId: String) {
-
-                    var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
-                        transactionId,
-                        ValorSuccessResponse::class.java
-                    )
-                    transactionJsonResponse.nameValuePairs?.run {
-                                this.note?.let {
-                                    if (it.contains("Please Send A New Request") || this.msg?.contains("ready", ignoreCase = true)?:false){
-
-                                        Handler(Looper.getMainLooper()).postDelayed({
-                                            ProgressUtils.updateMessage("It is taking longer than usual, Please wait...")
-                                        }, 100)
-                                        makeValorPaymentRequest()
-                                        return
-                                    }
-                                }
-                        this.response?.nameValuePairs?.let {
-                            if (it.ERRORMSG?.contains("Transaction Inprogress")?:false){
-//                                Make a Cancel transaction call
-                                runOnUiThread(Runnable {
-                                ProgressUtils.dismissProgressDialog()
-                                    AlertUtils.showCustomAlert(
-                                        requireContext(),
-                                        "Initializing, try after sometime..."
-                                    )
-                                })
-
-                                return
-                            }
-                        }
-                    }
-
-                    transactionJsonResponse.nameValuePairs?.response?.nameValuePairs?.let {
-                        if (it.ERRORMSG != null) {
-                            dismissProgressDialog()
-                            runOnUiThread(Runnable {
-                                ProgressUtils.dismissProgressDialog()
-                                AlertUtils.showCustomAlert(
-                                    requireContext(),
-                                    it.ERRORMSG
-                                )
-                            })
-                        } else {
-                            if (it.AUTHRSPTEXT != null) {
-                                if (it.AUTHRSPTEXT!!.contains(
-                                        "APPROVAL"
-                                    )
-                                ) {
-                                    if (prefProvider.getValue(
-                                            ORDER_TYPE,
-                                            TAKEOUT
-                                        ) == GIFT_CARD
-                                    ) {
-                                        if (prefProvider.getValueboolean(
-                                                Constants.IS_ADD_VALUE_IN_GIFT_CARD,
-                                                false
-                                            )
-                                        ) {
-                                            if (prefProvider.getValue(
-                                                    ORDER_TYPE,
-                                                    TAKEOUT
-                                                ) == GIFT_CARD
-                                            ) {
-                                                if (prefProvider.getValueboolean(
-                                                        Constants.IS_ADD_VALUE_IN_GIFT_CARD,
-                                                        false
-                                                    )
-                                                ) {
-                                                    giftCardViewModel.paxResponse =
-                                                        ""/*response.ExtData*/
-                                                    giftCardViewModel.cardNumberLast4 =
-                                                        ""/*response.BogusAccountNum*/
-                                                    giftCardViewModel.cardNamePax =
-                                                        ""/*response.CardType*/
-                                                    giftCardViewModel.transactionID =
-                                                        it.TXNID.toString()/*response.PaymentTransInfo.Token*/
-                                                    addValueInGiftCardUsingCard()
-                                                } else {
-                                                    giftCardViewModel.paxResponse =
-                                                        ""/*response.ExtData*/
-                                                    giftCardViewModel.cardNumberLast4 =
-                                                        ""/*response.BogusAccountNum*/
-                                                    giftCardViewModel.cardNamePax =
-                                                        ""/*response.CardType*/
-                                                    giftCardViewModel.transactionID =
-                                                        it.TXNID.toString()/*response.PaymentTransInfo.Token*/
-                                                    sellGiftCardUsingCard()
-                                                }
-                                            } else {
-                                                makePaymentCreditCardValor(it.TXNID, it.TRANNO)
-                                            }
-                                        } else {
-                                            makePaymentCreditCardValor(it.TXNID, it.TRANNO)
-                                        }
-                                    } else {
-                                        dismissProgressDialog()
-                                        makePaymentCreditCardValor(it.TXNID, it.TRANNO)
-                                       /* runOnUiThread(Runnable {
-                                            AlertUtils.showCustomAlert(
-                                                requireContext(),
-                                                it.AUTHRSPTEXT
-                                            )
-                                        })*/
-                                    }
-                                } else {
-                                    runOnUiThread(Runnable {
-                                        ProgressUtils.dismissProgressDialog()
-                                        AlertUtils.showCustomAlert(
-                                            requireContext(),
-                                            getString(R.string.error_something_wrong)
-                                        )
-                                    })
-                                }
-                            }
-                        }
-                    }
-                }
-                    override fun onFailure(errorMessage: String) {
-                        EventBus.getDefault()
-                            .post(
-                                MessageEvent(
-                                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
-                                        Gson().toJson(
-                                            errorMessage
-                                        )
-                                    } "
-                                )
-                            )
-                        dismissProgressDialog()
-                    }
-                }
-
             val amt = ((paymentAmount - tipAmount) * 100).roundToInt()
             val tip_amt = (tipAmount * 100).roundToInt()
 
@@ -3913,9 +3914,125 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
             context?.let {
                 paymentGateway.processPayment(
-                    it,
+                    it.applicationContext,
                     valor,
-                    paymentCallback
+                    onSuccess = {tResponse->
+
+                        var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
+                            tResponse,
+                            ValorSuccessResponse::class.java
+                        )
+                        transactionJsonResponse.nameValuePairs?.run {
+                            this.note?.let {
+                                if (it.contains("Please Send A New Request") || this.msg?.contains("ready", ignoreCase = true)?:false){
+
+                                    Handler(Looper.getMainLooper()).postDelayed({
+                                        ProgressUtils.updateMessage("It is taking longer than usual, Please wait...")
+                                    }, 100)
+                                    makeValorPaymentRequest()
+                                    return@processPayment
+                                }
+                            }
+                        }
+
+                        transactionJsonResponse.nameValuePairs?.response?.nameValuePairs?.let {
+                            if (it.ERRORMSG != null) {
+                                dismissProgressDialog()
+                                runOnUiThread(Runnable {
+                                    AlertUtils.showCustomAlert(
+                                        requireContext(),
+                                        it.ERRORMSG
+                                    )
+                                })
+                            } else {
+                                if (it.AUTHRSPTEXT != null) {
+                                    if (it.AUTHRSPTEXT!!.contains(
+                                            "APPROVAL"
+                                        )
+                                    ) {
+                                        if (prefProvider.getValue(
+                                                ORDER_TYPE,
+                                                TAKEOUT
+                                            ) == GIFT_CARD
+                                        ) {
+                                            if (prefProvider.getValueboolean(
+                                                    Constants.IS_ADD_VALUE_IN_GIFT_CARD,
+                                                    false
+                                                )
+                                            ) {
+                                                if (prefProvider.getValue(
+                                                        ORDER_TYPE,
+                                                        TAKEOUT
+                                                    ) == GIFT_CARD
+                                                ) {
+                                                    if (prefProvider.getValueboolean(
+                                                            Constants.IS_ADD_VALUE_IN_GIFT_CARD,
+                                                            false
+                                                        )
+                                                    ) {
+                                                        giftCardViewModel.paxResponse =
+                                                            ""/*response.ExtData*/
+                                                        giftCardViewModel.cardNumberLast4 =
+                                                            ""/*response.BogusAccountNum*/
+                                                        giftCardViewModel.cardNamePax =
+                                                            ""/*response.CardType*/
+                                                        giftCardViewModel.transactionID =
+                                                            it.TXNID.toString()/*response.PaymentTransInfo.Token*/
+                                                        addValueInGiftCardUsingCard()
+                                                    } else {
+                                                        giftCardViewModel.paxResponse =
+                                                            ""/*response.ExtData*/
+                                                        giftCardViewModel.cardNumberLast4 =
+                                                            ""/*response.BogusAccountNum*/
+                                                        giftCardViewModel.cardNamePax =
+                                                            ""/*response.CardType*/
+                                                        giftCardViewModel.transactionID =
+                                                            it.TXNID.toString()/*response.PaymentTransInfo.Token*/
+                                                        sellGiftCardUsingCard()
+                                                    }
+                                                } else {
+                                                    makePaymentCreditCardValor(it.TXNID, it.TRANNO)
+                                                }
+                                            } else {
+                                                makePaymentCreditCardValor(it.TXNID, it.TRANNO)
+                                            }
+                                        } else {
+                                            dismissProgressDialog()
+                                            makePaymentCreditCardValor(it.TXNID, it.TRANNO)
+                                            /* runOnUiThread(Runnable {
+                                                 AlertUtils.showCustomAlert(
+                                                     requireContext(),
+                                                     it.AUTHRSPTEXT
+                                                 )
+                                             })*/
+                                        }
+                                    } else {
+                                        dismissProgressDialog()
+                                        runOnUiThread(Runnable {
+                                            AlertUtils.showCustomAlert(
+                                                requireContext(),
+                                                getString(R.string.error_something_wrong)
+                                            )
+                                        })
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    onFailure = {errorMessage->
+                        EventBus.getDefault()
+                            .post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
+                                        Gson().toJson(
+                                            errorMessage
+                                        )
+                                    } "
+                                )
+                            )
+                        dismissProgressDialog()
+
+                    }
                 )
             }
             }
