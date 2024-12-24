@@ -3924,7 +3924,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         )
                         transactionJsonResponse.nameValuePairs?.run {
                             this.note?.let {
-                                if (it.contains("Please Send A New Request") || this.msg?.contains("ready", ignoreCase = true)?:false){
+                                if (it.contains("Please Send A New Request",ignoreCase = true) || this.msg?.contains("ready", ignoreCase = true)?:false){
 
                                     Handler(Looper.getMainLooper()).postDelayed({
                                         ProgressUtils.updateMessage("It is taking longer than usual, Please wait...")
