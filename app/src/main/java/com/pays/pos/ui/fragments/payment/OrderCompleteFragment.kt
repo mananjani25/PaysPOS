@@ -36,10 +36,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics.Param.PAYMENT_TYPE
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.pays.payments.callbacks.PaymentCallback
-import com.pays.payments.design.PaymentGatewayFactory
-import com.pays.payments.design.PaymentGatewayType
-import com.pays.payments.design.TransactionType
 import com.pays.pos.MainApplication
 import com.pays.pos.R
 import com.pays.pos.aidl.ICallback
@@ -55,7 +51,6 @@ import com.pays.pos.data.model.SplitDetailListModel
 import com.pays.pos.data.model.requestModel.giftCard.response.GiftCardAddValueResponse
 import com.pays.pos.data.model.requestModel.giftCard.response.SellGiftCardResponseModel
 import com.pays.pos.data.model.responseModel.*
-import com.pays.pos.data.model.valor.ValorSuccessResponse
 import com.pays.pos.data.remote.*
 import com.pays.pos.data.remote.Constants.BILLING_ADDRESS
 import com.pays.pos.data.remote.Constants.BLUETOOTH
@@ -65,7 +60,6 @@ import com.pays.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.pays.pos.data.remote.Constants.BUSINESS_WEBSITE
 import com.pays.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE
 import com.pays.pos.data.remote.Constants.CUSTOMER
-import com.pays.pos.data.remote.Constants.DINE_IN
 import com.pays.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.pays.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.pays.pos.data.remote.Constants.GIFT_CARD
@@ -1250,7 +1244,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     }
 
-    private fun cloudQueuePrinting(input: String,shop_id: Int) {
+    private fun cloudQueuePrinting(
+        input: String,
+        shop_id: Int,
+        data: PrinterResponse.Data.KitchenReceiptPrinters
+    ) {
         val date = Date()
         val random = Random()
         val timestamp = java.lang.String.format("%d", date.time / 1000)
@@ -1290,14 +1288,48 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         appendText("------------------------")
         lineFeed(2)
 
-
-
         var orderItems = receiptModel?.order?.orderItems ?: arrayListOf()
         if (orderItems.isNotEmpty() && orderItems != null)
-        for (i in 0 until orderItems?.size){
-            val obj = orderItems.get(i)
-        appendText("${obj.quantity} "+"  "+obj.itemName)
-        lineFeed(2)
+
+        for (i in 0 until orderItems.size) {
+
+            data.printerCategories.toCollection(arrayListOf()).forEach {
+                if (it.id == orderItems[i].categoryId && it.categoryActive && it.printerEnable) {
+
+                    val obj = orderItems.get(i)
+
+
+                    if (obj.isItemEdited) {
+                        appendText("(U)" + obj.quantity.toString() + " " + obj.itemName.uppercase())
+                    } else {
+                        appendText(obj.quantity.toString() + " " + obj.itemName.uppercase())
+                    }
+
+                    lineFeed(1)
+                    if (obj.orderItemModifiers.isNotEmpty()) {
+                        for (j in 0 until obj.orderItemModifiers.size) {
+                            val modifierObj = obj.orderItemModifiers.get(j)
+
+                            appendText(
+                                if (modifierObj.modifierQuantity == 1) {
+                                    "      " + modifierObj.name.uppercase()
+                                } else {
+                                    "  " + modifierObj.modifierQuantity + "x  " + modifierObj.name.uppercase()
+                                }
+                            )
+                            lineFeed(1)
+
+
+                        }
+                    }
+                    if (obj.note.isNotEmpty()) {
+                        appendText("  Note:" + obj.note)
+                        lineFeed(1)
+                    }
+
+
+                }
+            }
         }
 
 
@@ -13819,7 +13851,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.deleteValue(Constants.DO_PRINT)
         Log.d("initKitchenPrinter", "SunmiBlueToothPrinter is ${data.name}")
 
-        data.ipAddress?.let { cloudQueuePrinting(it,2241) }
+        data.ipAddress?.let { cloudQueuePrinting(it,2241,data) }
 
         /*GlobalScope.launch(Dispatchers.IO) {
             if (data.name.startsWith(SUNMI_PRINTER, true)) {
