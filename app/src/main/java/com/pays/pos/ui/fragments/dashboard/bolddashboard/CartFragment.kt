@@ -810,13 +810,13 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         return serviceChargeId
     }
 
-    // calculat service charge base on guest count for dine in order type
-    fun getServiceChargeFromGuestCount(guestcount: Int): List<TbServiceCharge> {
+    // calculate service charge base on guest count for dine in order type
+    private fun getServiceChargeFromGuestCount(guestCount: Int): List<TbServiceCharge> {
         var list: List<TbServiceCharge> = listOf()
         var isApplied = false
         viewModel.serviceChargesList.forEach {
-            if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                if (isInRange(it.min_guest_count!!, it.max_guest_count!!, guestcount)) {
+            if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER && it.min_guest_count != null && it.max_guest_count != null && guestCount > 0) {
+                if (isInRange(it.min_guest_count, it.max_guest_count, guestCount)) {
                     isApplied = true
                     list = listOf(it)
                 }
