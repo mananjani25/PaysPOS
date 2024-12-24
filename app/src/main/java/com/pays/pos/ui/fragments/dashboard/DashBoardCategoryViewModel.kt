@@ -7908,24 +7908,24 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 /*------------VALOR---------------*/
 
-                                var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
+                               /* var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
                                 var appID = "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
                                 var channelID = "bd967b4e0ccd6309c5ac16634bd367b6"
-                                var epi = "2319995597"
+                                var epi = "2319995597"*/
 
                                 prefProvider.setValue(
-                                    VALOR_APP_ID, /*it.settingData.data.valor_app_id*/appID ?: ""
+                                    VALOR_APP_ID, it.settingData.data.valor_app_id/*appID*/ ?: ""
                                 )
 
                                 prefProvider.setValue(
-                                    VALOR_APP_KEY, /*it.settingData.data.valor_app_key*/apiKey ?: ""
+                                    VALOR_APP_KEY, it.settingData.data.valor_app_key/*apiKey*/ ?: ""
                                 )
 
                                 prefProvider.setValue(
-                                    VALOR_EPI, /*it.settingData.data.valor_epi*/epi ?: ""
+                                    VALOR_EPI, it.settingData.data.valor_epi/*epi*/ ?: ""
                                 )
                                 prefProvider.setValue(
-                                    VALOR_CHANNEL_ID, /*it.settingData.data.valor_channel_id*/channelID ?: ""
+                                    VALOR_CHANNEL_ID, it.settingData.data.valor_channel_id/*channelID*/ ?: ""
                                 )
                                 /*------------VALOR---------------*/
 
