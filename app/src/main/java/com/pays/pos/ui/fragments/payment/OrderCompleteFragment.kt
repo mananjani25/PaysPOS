@@ -9136,7 +9136,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         SunmiPrintHelper.getInstance().lineWrap(1)
         val str5 = padLine(
             "Total Price",
-            "$" + MethodUtils.roundOffAmountString(totalAmt),
+            "$" + MethodUtils.roundOffAmountString(totalAmt + finalServiceCharges),
             if (customerSettingModel.fonts == LARGE) 23 else 48
         ).toString()
         PrintSunmiUtils.printBoldText(prefProvider.isOldSunmiFrameworkVersion(), str5)
@@ -13978,7 +13978,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                         )
                                                     }
 
-                                                  *//*if (prefProvider.getValueboolean(Constants.STICKY_ORDER_ID,false)){
+                                                  /*if (prefProvider.getValueboolean(Constants.STICKY_ORDER_ID,false)){
                                                       add(
                                                           PrinterBuilder()
                                                               .styleBold(true)
@@ -13990,7 +13990,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                               )
                                                       )
                                                   }
-*//*
+*/
                                                     actionFeedLine(1)
 
                                                     add(
@@ -14363,11 +14363,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             "($areaCode)$firstPart-$secondPart"
 
 
-                                                            *//* MethodUtils.formatPhoneNumber(
+                                                            /* MethodUtils.formatPhoneNumber(
                                                          receiptModel?.order?.customer?.phones?.get(
                                                              0
                                                          )?.phoneNumber.toString()
-                                                     )*//*
+                                                     )*/
                                                         } else ""
                                                     )
                                             )
@@ -14379,7 +14379,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                 }
 
-                                *//* runBlocking {
+                                /* runBlocking {
                             isOrderUpdated=false
                             receiptModel?.order?.orderItems?.let {item->
                                 item.forEach {
@@ -14389,16 +14389,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     }
                                 }
                             }
-                        }*//*
-                                *//*Added By Rahul *//*
+                        }*/
+                                /*Added By Rahul */
 
 
-                                *//*if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
+                                /*if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
                                     0
                                 ) != null
                             ) {
 
-                            }*//*
+                            }*/
                             }
 
 //                        printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
@@ -14543,10 +14543,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             //  printerDialog.show(requireContext())
 
                             var printer: Print? = Print(requireContext())
-                            *//*if (printer != null) {
+                            /*if (printer != null) {
                        printer.setStatusChangeEventCallback(this)
                        printer.setBatteryStatusChangeEventCallback(this)
-                   }*//*
+                   }*/
 
 
                             val enabled = Print.FALSE
@@ -14589,7 +14589,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             }
-        }*/
+        }
     }
 
     private fun printKitchenFromLandiInner(

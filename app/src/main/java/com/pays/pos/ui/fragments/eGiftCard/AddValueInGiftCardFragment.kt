@@ -10,9 +10,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -32,11 +32,24 @@ import com.pays.pos.data.remote.Constants
 import com.pays.pos.databinding.FragmentAddValueInGiftCardBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.pays.pos.utils.*
+import com.pays.pos.utils.AlertUtils
+import com.pays.pos.utils.AmountTextWatcher
+import com.pays.pos.utils.Event
+import com.pays.pos.utils.InternetUtils
+import com.pays.pos.utils.MethodUtils
+import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.paxUtils.SettingINI
 import dagger.hilt.android.AndroidEntryPoint
+import java.security.InvalidKeyException
+import java.security.KeyFactory
+import java.security.NoSuchAlgorithmException
+import java.security.Signature
+import java.security.SignatureException
+import java.security.spec.InvalidKeySpecException
+import java.security.spec.PKCS8EncodedKeySpec
+import java.util.Base64
 import kotlinx.coroutines.*
 import java.security.InvalidKeyException
 import java.security.KeyFactory
@@ -47,6 +60,7 @@ import java.security.spec.InvalidKeySpecException
 import java.security.spec.PKCS8EncodedKeySpec
 import java.util.Base64
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class AddValueInGiftCardFragment : Fragment() {
