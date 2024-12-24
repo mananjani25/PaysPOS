@@ -3760,12 +3760,27 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                         return
                                     }
                                 }
+                        this.response?.nameValuePairs?.let {
+                            if (it.ERRORMSG?.contains("Transaction Inprogress")?:false){
+//                                Make a Cancel transaction call
+                                runOnUiThread(Runnable {
+                                ProgressUtils.dismissProgressDialog()
+                                    AlertUtils.showCustomAlert(
+                                        requireContext(),
+                                        "Initializing, try after sometime..."
+                                    )
+                                })
+
+                                return
+                            }
+                        }
                     }
 
                     transactionJsonResponse.nameValuePairs?.response?.nameValuePairs?.let {
                         if (it.ERRORMSG != null) {
                             dismissProgressDialog()
                             runOnUiThread(Runnable {
+                                ProgressUtils.dismissProgressDialog()
                                 AlertUtils.showCustomAlert(
                                     requireContext(),
                                     it.ERRORMSG
@@ -3834,8 +3849,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                         })*/
                                     }
                                 } else {
-                                    dismissProgressDialog()
                                     runOnUiThread(Runnable {
+                                        ProgressUtils.dismissProgressDialog()
                                         AlertUtils.showCustomAlert(
                                             requireContext(),
                                             getString(R.string.error_something_wrong)
