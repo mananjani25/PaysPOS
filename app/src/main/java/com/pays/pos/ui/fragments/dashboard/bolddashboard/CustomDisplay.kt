@@ -2913,6 +2913,7 @@ class CustomDisplay(
                             String::class.java
                         )
                         mPaymentViewModel.dejavooRefTxnId=null
+                        callUpdateTip()
 //                    transactionJsonResponse.nameValuePairs?.let {
 //                        if (it.msg != null) {
 //                            if (it.msg!!.contains(

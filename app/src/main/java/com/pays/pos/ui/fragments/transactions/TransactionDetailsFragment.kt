@@ -423,6 +423,7 @@ class TransactionDetailsFragment : Fragment() {
                             }
                             checkIfTransactionIsVoided()
                         } else {
+                            ProgressUtils.dismissProgressDialog()
                             activity?.let {
                                 AlertUtils.showCustomAlertWithListenerWithOK(
                                     it,

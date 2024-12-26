@@ -433,67 +433,46 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 DejavooPaymentGateway()
             ).create(gatewayType)
 
-//            mPaymentViewModel.dejavooRefTxnId?.let {dejavooRefTxnId->
-//                var dejavoo= Dejavoo(
-//                    registerId=  "4986101",
-//                    authKey=  "kwg2GRbykg",
-//                    tpn= "659324491704",
-//                    paymentType = "Credit",
-//                    transType="TipAdjust",
-//                    amount= dashBoardCategoryViewModel.totalAmount.toString(),
-//                    tip = tipAmount.toString(),
-//                    refId= dejavooRefTxnId,
-//                    printReceipt= false,
-//                    performedBy=  prefProvider.employeeName(),
-//                    isProd= false,
-//                    txnType = TransactionType.TIP_ADJUSTMENT
-//                )
-//                paymentGateway.processPayment(
-//                    context.applicationContext,
-//                    dejavoo,
-//                    onSuccess = { tResponse->
-//                        var transactionJsonResponse = Gson().fromJson<String>(
-//                            tResponse,
-//                            String::class.java
-//                        )
-//                        mPaymentViewModel.dejavooRefTxnId=null
-////                    transactionJsonResponse.nameValuePairs?.let {
-////                        if (it.msg != null) {
-////                            if (it.msg!!.contains(
-////                                    "APPROVED"
-////                                )
-////                            ) {
-////                                mPaymentViewModel.valorRefTxnId = null
-////                                mPaymentViewModel.valorTransactionNumber = null
-////                                callUpdateTip()
-//////                                dashBoardCategoryViewModel.takenTipUsingValor.postValue(Event(transactionViewModel))
-////                            } else {
-////                                dismissProgressDialog()
-////                                /* runOnUiThread(Runnable {
-////                                     AlertUtils.showCustomAlert(
-////                                         requireContext(),
-////                                         it.msg
-////                                     )
-////                                 })*/
-////                            }
-////                        }
-////                    }
-//
-//                    },
-//                    onFailure = {
-//                        ProgressUtils.dismissProgressDialog()
-//
-//                        /*runOnUiThread(Runnable {
-//                            AlertUtils.showCustomAlert(
-//                                requireContext(),
-//                                errorMessage
-//                            )
-//                        })*/
-//
-//                    }
-//                )
-//                /* Process Tip Adjust */
-//            }
+            singleTransaction?.ref_num?.let { dejavooRefTxnId ->
+                var dejavoo= Dejavoo(
+                    registerId=  "4986101",
+                    authKey=  "kwg2GRbykg",
+                    tpn= "659324491704",
+                    paymentType = "Credit",
+                    transType="TipAdjust",
+                    amount= singleTransaction?.totalAmount.toString(),
+                    tip = tipAmount.toString(),
+                    refId= dejavooRefTxnId,
+                    printReceipt= false,
+                    performedBy=  prefProvider.employeeName(),
+                    isProd= false,
+                    txnType = TransactionType.TIP_ADJUSTMENT
+                )
+                paymentGateway.processPayment(
+                    requireContext().applicationContext,
+                    dejavoo,
+                    onSuccess = { tResponse->
+                        var transactionJsonResponse = Gson().fromJson<String>(
+                            tResponse,
+                            String::class.java
+                        )
+                        tipCall(true)
+
+                    },
+                    onFailure = {
+                        ProgressUtils.dismissProgressDialog()
+
+                        /*runOnUiThread(Runnable {
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                errorMessage
+                            )
+                        })*/
+
+                    }
+                )
+                /* Process Tip Adjust */
+            }
         }
     }
 
