@@ -307,7 +307,15 @@ data class VenueDetailsResponse(
             @SerializedName("enabled_for_receiving_web_order")
             val enabled_for_receiving_web_order: Boolean? = null,
             @SerializedName("is_deleted")
-            var isDeleted: Boolean = false
+            var isDeleted: Boolean = false,
+            @SerializedName("app_id")
+            val app_id: String="",
+            @SerializedName("app_key")
+            val app_key: String="",
+            @SerializedName("epi")
+            val epi: String="",
+            @SerializedName("channel_id")
+            val channel_id: String=""
         )
     }
 }
