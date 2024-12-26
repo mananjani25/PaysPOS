@@ -155,6 +155,7 @@ open class PaymentViewModel @Inject constructor(
     var paxGlobalID: String? = null
     public var magensaResponseDataClass: MagensaResponse? = null
 
+    var dejavooRefTxnId: String? = null
     var valorRefTxnId: String? = null
     var valorTransactionNumber: String? = null
 
@@ -1870,8 +1871,8 @@ open class PaymentViewModel @Inject constructor(
         cashdiscountType: String,
         tipID: Int? = null,
         globalUID: String = "",
-        refNum: String = "", //Valor Transaction ID will be passed into this parameter
-        extData: String = "",
+        refNum: String = "", //Valor and Dejavoo Transaction ID will be passed into this parameter
+        extData: String = "", //Dejavoo EXT_DATA will passed into this parameter
         ECRRefNumber: String = "",
         PAXtoken: String = "",
         cardLastDigits: String = "",
