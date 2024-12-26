@@ -7908,25 +7908,30 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 /*------------VALOR---------------*/
 
-//                                var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
-//                                var appID = "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
-//                                var channelID = "bd967b4e0ccd6309c5ac16634bd367b6"
-//                                var epi = "2319995597"
+                                /* var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
+                                 var appID = "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
+                                 var channelID = "bd967b4e0ccd6309c5ac16634bd367b6"
+                                 var epi = "2319995597"*/
 
-                                prefProvider.setValue(
-                                    VALOR_APP_ID, it.settingData.data.valor_app_id/*appID*/ ?: ""
-                                )
+                                var foundTerminal=it.settingData.data.terminals.filter { term-> term.name.equals(prefProvider.getValue(
+                                    Constants.TERMINAL_NAME, ""
+                                ),ignoreCase = true) }
+                                if (foundTerminal.isNotEmpty()){
+                                    prefProvider.setValue(
+                                        VALOR_APP_ID, foundTerminal.get(0).app_id/*appID*/ ?: ""
+                                    )
 
-                                prefProvider.setValue(
-                                    VALOR_APP_KEY, it.settingData.data.valor_app_key/*apiKey*/ ?: ""
-                                )
+                                    prefProvider.setValue(
+                                        VALOR_APP_KEY, foundTerminal.get(0).app_key/*apiKey*/ ?: ""
+                                    )
 
-                                prefProvider.setValue(
-                                    VALOR_EPI, it.settingData.data.valor_epi/*epi*/ ?: ""
-                                )
-                                prefProvider.setValue(
-                                    VALOR_CHANNEL_ID, it.settingData.data.valor_channel_id/*channelID*/ ?: ""
-                                )
+                                    prefProvider.setValue(
+                                        VALOR_EPI, foundTerminal.get(0).epi/*epi*/ ?: ""
+                                    )
+                                    prefProvider.setValue(
+                                        VALOR_CHANNEL_ID, foundTerminal.get(0).channel_id/*channelID*/ ?: ""
+                                    )
+                                }
                                 /*------------VALOR---------------*/
 
 
