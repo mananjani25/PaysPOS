@@ -2956,6 +2956,7 @@ class CustomDisplay(
     lateinit var paymentCoroutineScope: CoroutineScope
     val paymentCoroutineExceptionHandler =
         CoroutineExceptionHandler { coroutineContext, exception ->
+
             EventBus.getDefault()
                 .post(
                     MessageEvent(

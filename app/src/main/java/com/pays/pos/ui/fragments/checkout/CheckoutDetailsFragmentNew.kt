@@ -4436,14 +4436,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             this.response?.nameValuePairs?.let {
                                 if (it.ERRORMSG?.contains("Transaction Inprogress") ?: false) {
 //                                Make a Cancel transaction call
-                                    runOnUiThread(Runnable {
-                                        ProgressUtils.dismissProgressDialog()
-                                        AlertUtils.showCustomAlert(
-                                            requireContext(),
-                                            "Valor not ready, Please try after sometime..."
-                                        )
-                                    })
-
+                                    dismissProgressDialogWithAlert("Valor not ready, Please try after sometime...")
                                     return@processPayment
                                 }
                             }
@@ -4451,13 +4444,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                         transactionJsonResponse.nameValuePairs?.response?.nameValuePairs?.let {
                             if (it.ERRORMSG != null) {
-                                dismissProgressDialog()
-                                runOnUiThread(Runnable {
-                                    AlertUtils.showCustomAlert(
-                                        requireContext(),
-                                        it.ERRORMSG
-                                    )
-                                })
+                                dismissProgressDialogWithAlert(it.ERRORMSG)
                             } else {
                                 if (it.AUTHRSPTEXT != null) {
                                     if (it.AUTHRSPTEXT!!.contains(
@@ -4511,7 +4498,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                                 makePaymentCreditCardValor(it.TXNID, it.TRANNO)
                                             }
                                         } else {
-                                            dismissProgressDialog()
+                                            dismissProgressDialogWithAlert()
+//                                            dismissProgressDialog()
                                             makePaymentCreditCardValor(it.TXNID, it.TRANNO)
                                             /* runOnUiThread(Runnable {
                                                  AlertUtils.showCustomAlert(
@@ -4521,19 +4509,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                              })*/
                                         }
                                     } else {
-                                        dismissProgressDialog()
-                                        runOnUiThread(Runnable {
-                                            AlertUtils.showCustomAlert(
-                                                requireContext(),
-                                                getString(R.string.error_something_wrong)
-                                            )
-                                        })
+                                        dismissProgressDialogWithAlert(getString(R.string.error_something_wrong))
                                     }
                                 }
                             }
                         }
                     },
                     onFailure = { errorMessage ->
+                        Log.e("Valor: ",errorMessage)
+
+                        dismissProgressDialogWithAlert(errorMessage)
                         EventBus.getDefault()
                             .post(
                                 MessageEvent(
@@ -4544,12 +4529,22 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     } "
                                 )
                             )
-                        ProgressUtils.dismissProgressDialog()
                     }
                 )
             }
         }
     }
+
+    private fun dismissProgressDialogWithAlert(errorMessage: String? = null) {
+        runOnUiThread {
+            ProgressUtils.dismissProgressDialog()
+            dismissProgressDialog()
+            if (errorMessage!=null) {
+                AlertUtils.showCustomAlert(requireContext(), errorMessage)
+            }
+        }
+    }
+
 
     // To make card payment using PAX device
     private fun makePaxPaymentRequest() {

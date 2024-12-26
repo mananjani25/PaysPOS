@@ -192,12 +192,11 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                 ) {
                     ProgressUtils.showProgressDialog(requireActivity())
                     refundViaValor()
-                } else if(paxExtData.contains(Constants.DEJAVOO)){
+                } else if (paxExtData.contains(Constants.DEJAVOO)) {
                     ProgressUtils.showProgressDialog(requireActivity())
 //                    refundViaDejavoo() SPIN Api calling
                     refundViaDejavooUsingTransactApi()
-                }
-                else {
+                } else {
                     if (requiredNABServerPostAPICall && paxData.isNotEmpty()) {
                         runBlocking {
                             proceedWithServerPostApiRefund()
@@ -251,13 +250,14 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             val gatewayType = PaymentGatewayType.DEJAVOO
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
-            var rrnValue=((paxExtData.substring(paxExtData.indexOf("RRN=")).substring(4, paxExtData.substring(paxExtData.indexOf("RRN=")).indexOf(','))))
+            var rrnValue = ((paxExtData.substring(paxExtData.indexOf("RRN="))
+                .substring(4, paxExtData.substring(paxExtData.indexOf("RRN=")).indexOf(','))))
 
             var dejavoo = Dejavoo(
                 authKey = "kwg2GRbykg",
                 registerId = "4986101",
                 tpn = "659324491704",
-                amount = (refundAmount*100).toInt().toString(),
+                amount = (refundAmount * 100).toInt().toString(),
                 isProd = false,
                 paymentType = "Credit",
                 performedBy = "",
@@ -267,30 +267,37 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                 transType = "3",
                 txnType = TransactionType.REFUND,
                 rrn = rrnValue,
-                authToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0cG4iOiI2NTkzMjQ0OTE3MDQiLCJlbWFpbCI6InN1cHBvcnQrMUBwYXlzcG9zLmNvbSIsImlhdCI6MTczMzc0ODk4M30.spR9JiJS6jt0VMB0MGu9HZQYKUrNaWV-U_pzQ4VCvYw")
+                authToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0cG4iOiI2NTkzMjQ0OTE3MDQiLCJlbWFpbCI6InN1cHBvcnQrMUBwYXlzcG9zLmNvbSIsImlhdCI6MTczMzc0ODk4M30.spR9JiJS6jt0VMB0MGu9HZQYKUrNaWV-U_pzQ4VCvYw"
+            )
 
             context?.let {
                 (paymentGateway as DejavooPaymentGateway).refundPaymentusingRRN(
                     it.applicationContext,
                     dejavoo,
-                    onSuccess = { tResponse->
+                    onSuccess = { tResponse ->
                         var transactionJsonResponse = Gson().fromJson<DejavooResponse>(
                             tResponse,
                             DejavooResponse::class.java
                         )
 
                         transactionJsonResponse.nameValuePairs?.let {
-                            if (it.iposhpresponse?.nameValuePairs?.responseCode.equals("200") && it.iposhpresponse?.nameValuePairs?.responseMessage.equals("Success")){
+                            if (it.iposhpresponse?.nameValuePairs?.responseCode.equals("200") && it.iposhpresponse?.nameValuePairs?.responseMessage.equals(
+                                    "Success"
+                                )
+                            ) {
                                 CoroutineScope(Dispatchers.Main).launch {
                                     refundCall()
                                 }
-                            }else{
-                                AlertUtils.showCustomAlert(requireContext(), transactionJsonResponse.respMSG?.replace("%20", " "))
+                            } else {
+                                AlertUtils.showCustomAlert(
+                                    requireContext(),
+                                    transactionJsonResponse.respMSG?.replace("%20", " ")
+                                )
                             }
                         }
                     },
-                    onFailure = { errorMessage->
-                        try{
+                    onFailure = { errorMessage ->
+                        try {
                             var errorResponse = Gson().fromJson<DejavooErrorResponse>(
                                 errorMessage,
                                 DejavooErrorResponse::class.java
@@ -301,11 +308,14 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                                     DejavooErrorResponse::class.java
                                 )
 
-                                AlertUtils.showCustomAlert(requireContext(),errorData.errors.get(0).message)
+                                AlertUtils.showCustomAlert(
+                                    requireContext(),
+                                    errorData.errors.get(0).message
+                                )
 
                             }
 
-                        }catch (e:Exception){
+                        } catch (e: Exception) {
 
                         }
                         EventBus.getDefault()
@@ -322,7 +332,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                     }
                 )
             }
-            }
+        }
     }
 
     fun parseXml(xmlContent: String): Document {
@@ -362,12 +372,13 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                     refId = referenceNo.toString(),
                     tip = "",
                     transType = "Return",
-                    txnType = TransactionType.REFUND)
+                    txnType = TransactionType.REFUND
+                )
 
                 paymentGateway.voidPayment(
                     it,
                     dejavoo,
-                    onSuccess = {tResponse->
+                    onSuccess = { tResponse ->
                         var transactionJsonResponse = Gson().fromJson<String>(
                             tResponse,
                             String::class.java
@@ -398,13 +409,15 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                                 when ((this.item(i) as Element).tagName.toString()) {
                                     "Message" -> Message =
                                         this.item(i).childNodes.item(0).nodeValue ?: ""
-                                    "RefId" -> RefId = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "RefId" -> RefId =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
                                     "RegisterId" -> RegisterId =
                                         this.item(i).childNodes.item(0).nodeValue ?: ""
                                     "TPN" -> TPN = this.item(i).childNodes.item(0).nodeValue ?: ""
                                     "AuthCode" -> AuthCode =
                                         this.item(i).childNodes.item(0).nodeValue ?: ""
-                                    "PNRef" -> PNRef = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "PNRef" -> PNRef =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
                                     "TransNum" -> TransNum =
                                         this.item(i).childNodes.item(0).nodeValue ?: ""
                                     "ResultCode" -> ResultCode =
@@ -413,7 +426,8 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                                         this.item(i).childNodes.item(0).nodeValue ?: ""
                                     "PaymentType" -> PaymentType =
                                         this.item(i).childNodes.item(0).nodeValue ?: ""
-                                    "Voided" -> Voided = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "Voided" -> Voided =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
                                     "TransType" -> TransType =
                                         this.item(i).childNodes.item(0).nodeValue ?: ""
                                     "SN" -> SN = this.item(i).childNodes.item(0).nodeValue ?: ""
@@ -428,18 +442,24 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 //                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
                         if (Message.equals("Canceled") || Message.equals("Error")) {
                             ProgressUtils.dismissProgressDialog()
-                            AlertUtils.showCustomAlert(requireContext(), RespMSG.replace("%20", " "))
-                        } else if (Message.contains("Approved",ignoreCase = true)) {
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                RespMSG.replace("%20", " ")
+                            )
+                        } else if (Message.contains("Approved", ignoreCase = true)) {
                             CoroutineScope(Dispatchers.Main).launch {
                                 refundCall()
                             }
                         } else {
                             runOnUiThread {
-                                AlertUtils.showCustomAlert(requireContext(), Message.replace("%20", " "))
+                                AlertUtils.showCustomAlert(
+                                    requireContext(),
+                                    Message.replace("%20", " ")
+                                )
                             }
                         }
                     },
-                    onFailure = {errorMessage->
+                    onFailure = { errorMessage ->
                         EventBus.getDefault()
                             .post(
                                 MessageEvent(
@@ -461,19 +481,28 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
 
     lateinit var paymentCoroutine: CoroutineScope
     val paymentCoroutineExceptionHandler = CoroutineExceptionHandler { _, exception ->
+        dismissProgressDialogWithAlert()
         EventBus.getDefault()
-            .post(MessageEvent("${Constants.LINE_BREAK_TAB} ReasonForRefundDialog refundViaValor()-> ${Gson().toJson(exception)} "))
+            .post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} ReasonForRefundDialog refundViaValor()-> ${
+                        Gson().toJson(
+                            exception
+                        )
+                    } "
+                )
+            )
     }
 
     private fun refundViaValor() {
-       paymentCoroutine = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutine = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
 
-        paymentCoroutine.launch{
+        paymentCoroutine.launch {
             val gatewayType = PaymentGatewayType.VALOR
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
             /*Start Refund Process Payment */
-            var valor= Valor(
+            var valor = Valor(
                 apiKey = prefProvider.getValue(Constants.VALOR_APP_KEY, ""),
                 appID = prefProvider.getValue(Constants.VALOR_APP_ID, ""),
                 epi = prefProvider.getValue(Constants.VALOR_EPI, ""),
@@ -496,7 +525,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             paymentGateway.refundPayment(
                 requireContext().applicationContext,
                 valor,
-                onSuccess = {tResponse->
+                onSuccess = { tResponse ->
                     var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
                         tResponse,
                         ValorSuccessResponse::class.java
@@ -507,21 +536,25 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                             if (it.msg.equals("APPROVED", ignoreCase = true)) {
                                 refundCall()
                             } else {
-                                runOnUiThread {
-                                    ProgressUtils.dismissProgressDialog()
-                                    AlertUtils.showCustomAlert(requireContext(), it.msg)
-                                }
+                                dismissProgressDialogWithAlert(it.msg)
                             }
                         }
                     }
                 },
-                onFailure = {errorMessage->
-                    runOnUiThread {
-                    AlertUtils.showCustomAlert(requireContext(), errorMessage)
-                }
-                    ProgressUtils.dismissProgressDialog()
+                onFailure = { errorMessage ->
+                    Log.e("Valor: ", errorMessage)
+                    dismissProgressDialogWithAlert(errorMessage)
                 }
             )
+        }
+    }
+
+    private fun dismissProgressDialogWithAlert(errorMessage: String? = null) {
+        runOnUiThread {
+            ProgressUtils.dismissProgressDialog()
+            if (errorMessage!=null) {
+                AlertUtils.showCustomAlert(requireContext(), errorMessage)
+            }
         }
     }
 

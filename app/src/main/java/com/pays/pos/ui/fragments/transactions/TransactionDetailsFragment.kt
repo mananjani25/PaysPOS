@@ -460,6 +460,7 @@ class TransactionDetailsFragment : Fragment() {
     lateinit var paymentCoroutineScope: CoroutineScope
     var paymentCoroutineExceptionHandler =
         CoroutineExceptionHandler { coroutineContext, exception ->
+            dismissProgressDialogWithAlert()
             EventBus.getDefault()
                 .post(
                     MessageEvent(
@@ -522,26 +523,14 @@ class TransactionDetailsFragment : Fragment() {
                                     ) {
                                         tipCall(true)
                                     } else {
-                                        ProgressUtils.dismissProgressDialog()
+                                        dismissProgressDialogWithAlert()
                                     }
                                 }
                             }
                         },
                         onFailure = {errorMessage->
-                            println("Payment Failed: $errorMessage")
-                            ProgressUtils.dismissProgressDialog()
-                            AlertUtils.showCustomAlertWithListenerWithOK(
-                                requireContext(),
-                                errorMessage,
-                                object :
-                                    DialogInterface.OnClickListener {
-                                    override fun onClick(p0: DialogInterface?, p1: Int) {
-                                        try {
-                                            p0?.dismiss()
-                                        } catch (e: Exception) {
-                                        }
-                                    }
-                                })
+                            Log.e("Valor: " ,errorMessage)
+                            dismissProgressDialogWithAlert(errorMessage)
                         },
                     )
                 }
@@ -834,16 +823,27 @@ class TransactionDetailsFragment : Fragment() {
                                 } else {
                                     startRefund()
                                 }
+                            }else{
+                                dismissProgressDialogWithAlert()
                             }
                         }
                     },
                     onFailure = {errorMessage->
-                        println("Payment Failed: $errorMessage")
-                        ProgressUtils.dismissProgressDialog()
+                        Log.e("Valor:",errorMessage)
+                        dismissProgressDialogWithAlert(errorMessage)
                     }
                 )
             }
 //            }
+        }
+    }
+
+    private fun dismissProgressDialogWithAlert(errorMessage:String?=null) {
+        runOnUiThread{
+            ProgressUtils.dismissProgressDialog()
+            if (errorMessage!=null){
+                AlertUtils.showCustomAlert(requireContext(),errorMessage)
+            }
         }
     }
 
