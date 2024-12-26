@@ -60,16 +60,15 @@ import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
 import com.pays.pos.data.model.requestModel.CashLogRequest
 import com.pays.payments.callbacks.PaymentCallback
-import com.pays.payments.design.PaymentGatewayFactory
-import com.pays.payments.design.PaymentGatewayType
-import com.pays.payments.design.TransactionType
-import com.pays.payments.design.Valor
+import com.pays.payments.design.*
 import com.pays.payments.gateways.dejavoo.DejavooPaymentGateway
 import com.pays.payments.gateways.valor.ValorPaymentGateway
 import com.pays.pos.data.model.valor.ValorSuccessResponse
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -293,9 +292,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 } else {
                     adjustPaxTips()
                 }*/
-                if (prefProvider.getValue(Constants.VALOR_APP_KEY, "").isNotEmpty()) {
-                    adjustValorTips()
-                } else if (singleTransaction?.ref_num.isNullOrEmpty()) {
+                if (singleTransaction?.ref_num.isNullOrEmpty()) {
                     magtekCall(tipAmount)
                 } else if (!singleTransaction?.ref_num.isNullOrEmpty() && prefProvider.getValueboolean(
                         Constants.IS_PAX_CONNECTED,
@@ -303,7 +300,12 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     )
                 ) {
                     adjustPaxTips()
-                } else if (!singleTransaction?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(
+                }else if (prefProvider.getValue(Constants.VALOR_APP_KEY, "").isNotEmpty()) {
+                    adjustValorTips()
+                }else if (prefProvider.getValue(Constants.VALOR_APP_KEY, "").isEmpty()){
+                    adjustDejavooTips()
+                }
+                else if (!singleTransaction?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(
                         Constants.IS_PAX_CONNECTED,
                         false
                     )
@@ -403,6 +405,96 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 }
         }
         return binding.root
+    }
+
+    lateinit var paymentCoroutineScope: CoroutineScope
+    val paymentCoroutineExceptionHandler =
+        CoroutineExceptionHandler { coroutineContext, exception ->
+
+            EventBus.getDefault()
+                .post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} CustomDisplay adjustValorTips()-> ${
+                            Gson().toJson(
+                                exception
+                            )
+                        } "
+                    )
+                )
+        }
+
+
+    private fun adjustDejavooTips() {
+        paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutineScope.launch {
+            val gatewayType = PaymentGatewayType.DEJAVOO
+            val paymentGateway = PaymentGatewayFactory(
+                ValorPaymentGateway(),
+                DejavooPaymentGateway()
+            ).create(gatewayType)
+
+//            mPaymentViewModel.dejavooRefTxnId?.let {dejavooRefTxnId->
+//                var dejavoo= Dejavoo(
+//                    registerId=  "4986101",
+//                    authKey=  "kwg2GRbykg",
+//                    tpn= "659324491704",
+//                    paymentType = "Credit",
+//                    transType="TipAdjust",
+//                    amount= dashBoardCategoryViewModel.totalAmount.toString(),
+//                    tip = tipAmount.toString(),
+//                    refId= dejavooRefTxnId,
+//                    printReceipt= false,
+//                    performedBy=  prefProvider.employeeName(),
+//                    isProd= false,
+//                    txnType = TransactionType.TIP_ADJUSTMENT
+//                )
+//                paymentGateway.processPayment(
+//                    context.applicationContext,
+//                    dejavoo,
+//                    onSuccess = { tResponse->
+//                        var transactionJsonResponse = Gson().fromJson<String>(
+//                            tResponse,
+//                            String::class.java
+//                        )
+//                        mPaymentViewModel.dejavooRefTxnId=null
+////                    transactionJsonResponse.nameValuePairs?.let {
+////                        if (it.msg != null) {
+////                            if (it.msg!!.contains(
+////                                    "APPROVED"
+////                                )
+////                            ) {
+////                                mPaymentViewModel.valorRefTxnId = null
+////                                mPaymentViewModel.valorTransactionNumber = null
+////                                callUpdateTip()
+//////                                dashBoardCategoryViewModel.takenTipUsingValor.postValue(Event(transactionViewModel))
+////                            } else {
+////                                dismissProgressDialog()
+////                                /* runOnUiThread(Runnable {
+////                                     AlertUtils.showCustomAlert(
+////                                         requireContext(),
+////                                         it.msg
+////                                     )
+////                                 })*/
+////                            }
+////                        }
+////                    }
+//
+//                    },
+//                    onFailure = {
+//                        ProgressUtils.dismissProgressDialog()
+//
+//                        /*runOnUiThread(Runnable {
+//                            AlertUtils.showCustomAlert(
+//                                requireContext(),
+//                                errorMessage
+//                            )
+//                        })*/
+//
+//                    }
+//                )
+//                /* Process Tip Adjust */
+//            }
+        }
     }
 
     private fun cashLogEventCall(bundle: Bundle) {

@@ -2848,13 +2848,7 @@ class CustomDisplay(
   */
         if (mIsCardPayment /*&& !mIsSignatureRequired*/) {
 //            callUpdateTip()
-            if (prefProvider.getValue(Constants.VALOR_APP_ID, "").isNotEmpty()) {
-                adjustValorTips()
-            }else if (prefProvider.getValue(
-                    Constants.VALOR_APP_ID, ""
-                ).isNullOrEmpty()){
-                adjustDejavooTips()
-            }else if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
+            if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
                 magtekCall(wholeTotalPrice)
             } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
                     Constants.IS_PAX_CONNECTED,
@@ -2862,7 +2856,13 @@ class CustomDisplay(
                 )
             ) {
                 adjustPaxTips()
-            } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+            } else if (prefProvider.getValue(Constants.VALOR_APP_ID, "").isNotEmpty()) {
+                adjustValorTips()
+            }else if (prefProvider.getValue(
+                    Constants.VALOR_APP_ID, ""
+                ).isEmpty()){
+                adjustDejavooTips()
+            }else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
                     Constants.IS_PAX_CONNECTED,
                     false
                 )

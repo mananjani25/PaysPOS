@@ -3760,28 +3760,24 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         }
 //                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
                         if (Message.equals("Canceled") || Message.equals("Error")) {
-                            dismissProgressDialog()
-                            AlertUtils.showCustomAlert(
-                                requireContext(),
-                                RespMSG.replace("%20", " ")
-                            )
+                            dismissProgressDialogWithAlert(RespMSG.replace("%20", " "))
                         } else if (Message.contains("Approved")) {
                             makePaymentCreditCardDejavoo(RefId, ExtData)
                         }
-
                     },
                     onFailure = { errorMessage ->
+                        Log.e("Dejavoo: ",errorMessage)
                         EventBus.getDefault()
                             .post(
                                 MessageEvent(
-                                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
+                                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeDejavooPaymentRequest()-> ${
                                         Gson().toJson(
                                             errorMessage
                                         )
                                     } "
                                 )
                             )
-                        dismissProgressDialog()
+                        dismissProgressDialogWithAlert()
                     }
                 )
             }
