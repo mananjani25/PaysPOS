@@ -72,6 +72,7 @@ import com.pays.payments.callbacks.PaymentCallback
 import com.pays.payments.design.*
 import com.pays.pos.data.model.requestModel.RefundRequestModel
 import com.pays.pos.data.model.valor.ValorSuccessResponse
+import com.pays.pos.data.model.valor.ValorTransactionsList
 import com.pays.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.pays.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
@@ -104,6 +105,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.StringReader
+import java.lang.ref.WeakReference
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -118,6 +120,7 @@ class TransactionDetailsFragment : Fragment() {
     private val dashboardCategoryViewModel by viewModels<DashBoardCategoryViewModel>()
     private var isPrint: Boolean = false
     private val magtekProViewModel by viewModels<MagtekViewModel>()
+    lateinit var weakContext:WeakReference<Context>
 
     private lateinit var orderDetailsItemAdapter: OrderDetailsItemListAdapter
     private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
@@ -188,7 +191,7 @@ class TransactionDetailsFragment : Fragment() {
             false
         )
 
-
+        weakContext= WeakReference<Context>(context)
         lifecycleScope.launch {
             try {
                 runBlocking {
@@ -408,8 +411,16 @@ class TransactionDetailsFragment : Fragment() {
                                 Constants.VALOR_APP_ID, ""
                             ).isNotEmpty()
                         ) {
-                            ProgressUtils.showProgressDialog(requireActivity())
-                            startVoidWithValor(paymentDetailsResponse)
+                            weakContext.get()?.let {
+                                AlertUtils.showCustomAlertWithListenerWithOKCancel(it,"Do you want to refund the transaction?",getString(android.R.string.ok),
+                                    object : DialogInterface.OnClickListener {
+                                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                                            ProgressUtils.showProgressDialog(requireActivity())
+                                            checkIfValorTransactionEligibleForVoid(paymentDetailsResponse)
+                                            p0?.dismiss()
+                                        }
+                                    })
+                            }
 
                         } else if (paymentDetailsResponse.data.ext_data.contains(Constants.DEJAVOO)) {
                             ProgressUtils.showProgressDialog(requireActivity())
@@ -456,6 +467,72 @@ class TransactionDetailsFragment : Fragment() {
 
         }
 
+    }
+
+    private fun checkIfValorTransactionEligibleForVoid(paymentDetailsResponse: GetPaymentOrderDetailsResponse) {
+        paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutineScope.launch {
+            val gatewayType = PaymentGatewayType.VALOR
+            val paymentGateway = paymentGatewayFactory.create(gatewayType)
+
+
+            /*      var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
+                  var appID = "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
+                  var channelID = "bd967b4e0ccd6309c5ac16634bd367b6"
+                  var epi = "2319995597"
+                  var endpoint = "status"
+                  var transType = TransactionType.CREDIT_SALE
+                  var TRAN_MODE = "1"
+                  var TRAN_CODE = "1"
+                  var amount =
+                  var reqTxnId = */
+
+            /* Process Payment */
+            context?.let {
+                var valor = Valor(
+                    apiKey = prefProvider.getValue(Constants.VALOR_APP_KEY, ""),
+                    appID = prefProvider.getValue(Constants.VALOR_APP_ID, ""),
+                    epi = prefProvider.getValue(Constants.VALOR_EPI, ""),
+                    endpoint = Constants.VALOR_OPEN_BATCH,
+                    channelId = prefProvider.getValue(Constants.VALOR_CHANNEL_ID, ""),
+                    limit = 200,
+                    offset = 0,
+                    isProd = false
+                )
+
+                paymentGateway.getTransactionsDetails(
+                    it,
+                    valor,
+                    onSuccess = {tResponse->
+                        var transactionJsonResponse = Gson().fromJson<ValorTransactionsList>(
+                            tResponse,
+                            ValorTransactionsList::class.java
+                        )
+
+                        transactionJsonResponse?.nameValuePairs?.let {
+                            if (it.batchSummaryDetails.values.isNotEmpty()) {
+                                var transaction=it.batchSummaryDetails.values.filter { it.nameValuePairs.txnId.toString().equals(paymentDetailsResponse.data.ref_num) }
+                                if (transaction.isEmpty()){
+                                    //Refund
+                                    startRefund()
+                                }else{
+                                    //Void
+                                    startVoidWithValor(paymentDetailsResponse)
+                                }
+                            }else{
+                                startRefund()
+//                              dismissProgressDialogWithAlert()
+                            }
+                        }
+                    },
+                    onFailure = {errorMessage->
+                        Log.e("Valor:",errorMessage)
+                        dismissProgressDialogWithAlert(errorMessage)
+                    }
+                )
+            }
+//            }
+        }
     }
 
     lateinit var paymentCoroutineScope: CoroutineScope
