@@ -706,12 +706,19 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 }
             }
 
+            //item
             if (model.item?.isPaid == true) {
                 binding.ivWastage.visibility = View.GONE
             } else {
                 binding.ivWastage.visibility = View.VISIBLE
             }
 
+            //item
+            if (model.item?.isPaid == true && model.item?.isFired == true) {
+                binding.checkedForFire?.visibility = View.GONE
+            } else {
+                binding.checkedForFire?.visibility = View.VISIBLE
+            }
             //item
             binding.checkedForFire?.apply {
                 if(model.item?.isFired == false)
