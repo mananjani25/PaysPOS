@@ -3,6 +3,7 @@ package com.pays.pos.data.model.responseModel.report
 import android.util.Log
 import android.view.View
 import com.google.gson.annotations.SerializedName
+import kotlin.math.absoluteValue
 
 data class KeyValue(
     @SerializedName("key")
@@ -83,7 +84,10 @@ data class KeyValue(
     fun showDividerLine() = if(key?.contains("name",true)==true) View.VISIBLE else View.GONE
 
     private fun showFormattedValueMinus() =
-        if (value?.isEmpty() == true || (value=="0.0" || value=="0.00")) "$0.00" else "-$" + String.format(
+        /*if (value?.isEmpty() == true || (value=="0.0" || value=="0.00")) "$0.00" else "-$" + String.format(
             "%.2f", value?.toDouble() ?: 0.0
+        )*/
+        if (value?.isEmpty() == true || (value=="0.0" || value=="0.00")) "$0.00" else "-$" + String.format(
+            "%.2f", value?.toDouble()?.absoluteValue ?: 0.0
         )
 }
