@@ -92,6 +92,7 @@ import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
 import com.pays.pos.ui.fragments.payment.OrderCompleteFragment
+import com.pays.pos.utils.PrintSunmiUtils.Companion.addValue
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.visible
@@ -9875,6 +9876,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.d("###17MAR23", "initKitchenPrinter: Called - Start")
         Log.d("###17MAR23", "ProgressShow: Called - Start")
         if (data.name.contains("Cloud", true)) {
+
+            var isUpdatedLabel = ""
+            if(prefProvider.getValueboolean(Constants.DINE_IN_UPDATE,false)) {
+                isUpdatedLabel = "*** Updated ***"
+            }
             Log.e(TAG,"checkCloudContains")
             val body = java.lang.StringBuilder()
             body.append("{")
@@ -9897,8 +9903,20 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
             lineFeed(2)
+
+            if(isUpdatedLabel.isNotEmpty()) {
+                appendText("*** Updated ***")
+                lineFeed(2)
+            }
+
             appendText(""+getOrderDetailsResponse?.orderTypeName)
             lineFeed(2)
+            appendText(getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")")
+
+            lineFeed(2)
+            appendText("ReceiptID:"+getOrderDetailsResponse?.offlineId)
+            lineFeed(2)
+
 //        setCharacterSize(1,1)
             setAlignment(0)
             appendText("Employee:${getOrderDetailsResponse?.employee?.name}")
@@ -9908,9 +9926,81 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 getOrderDetailsResponse?.createdAt.toString()
             )
             }")
-            lineFeed(1)
-            appendText("------------------------")
-            lineFeed(2)
+
+
+            listItemWithGuest.forEach {
+                lineFeed(1)
+                appendText("------------------------")
+                lineFeed(1)
+
+                appendText(it.key.toString())
+                lineFeed(1)
+                appendText("------------------------")
+                lineFeed(1)
+
+                it.value.forEach {obj->
+                   data.printerCategories?.forEach {
+                       if (it.id == obj.categoryId && it.printerEnable && it.categoryActive){
+                           appendText(obj.itemQuantity.toString() + " " + obj.name.uppercase())
+                           lineFeed(1)
+
+                           if (obj.modifiers.isNotEmpty()){
+
+
+                               for (j in 0 until obj.modifiers.size) {
+                                   val modifierObj = obj.modifiers.get(j)
+                                   appendText(
+                                       "  " + if (modifierObj.modifier_quantity == 1) {
+                                           "   "
+                                       } else {
+                                           "" + modifierObj.modifier_quantity + "x "
+                                       } + modifierObj.name.uppercase()
+                                   )
+                                   lineFeed(1)
+
+                               }
+
+
+
+                           }
+
+                           if (obj.note.isNotEmpty()) {
+
+                               appendText("  Note:" + obj.note)
+                               lineFeed(1)
+                           }
+
+
+
+
+
+                       }
+                   }
+
+                }
+
+            }
+
+            if (getOrderDetailsResponse?.note?.isNotEmpty() == true) {
+                lineFeed(2)
+                setAlignment(1)
+                appendText("Order Note")
+                lineFeed(1)
+                appendText(getOrderDetailsResponse?.note?:"")
+            }
+
+
+            lineFeed(5)
+            cutPaper(true)
+
+            Log.e("checkKey","pushContent: checkSN:${data.ipAddress} ${pushContent(trade_no =
+            String.format("%s_%010d", "${data.ipAddress}", System.currentTimeMillis()),
+                "${data.ipAddress}", 1, 1, "您有新的订单", 0)}")
+            dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(
+                true
+            )
+
+
 
 
 
