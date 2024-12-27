@@ -68,6 +68,9 @@ data class KeyValue(
             key?.trim().equals("Name") -> {
                 showName()
             }
+            key?.trim().equals("Count") -> {
+                showName()
+            }
             else -> {
                 showFormattedValue()
             }
