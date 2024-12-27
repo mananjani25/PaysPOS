@@ -3,6 +3,7 @@ package com.pays.pos.data.model.responseModel.report
 import android.util.Log
 import android.view.View
 import com.google.gson.annotations.SerializedName
+import kotlin.math.absoluteValue
 
 data class KeyValue(
     @SerializedName("key")
@@ -77,9 +78,15 @@ data class KeyValue(
         }
 
 
-    fun showFormattedValue() = if (value?.isEmpty() == true) "$0.00" else "$" + String.format(
+    /*fun showFormattedValue() = if (value?.isEmpty() == true) "$0.00" else "$" + String.format(
         "%.2f", value?.toDouble() ?: 0.0
-    )
+    )*/
+    fun showFormattedValue() =
+        if (value?.isEmpty() == true) "$0.00" else if ((value?.toDouble() ?: 0.0) < 0.0){ "-$${String.format(
+            "%.2f", value?.toDouble()?.absoluteValue ?: 0.0
+        )}" } else "$${String.format(
+            "%.2f", value?.toDouble()?.absoluteValue ?: 0.0
+        )}"
 
     fun showName() =  value.toString()
 
@@ -87,6 +94,6 @@ data class KeyValue(
 
     private fun showFormattedValueMinus() =
         if (value?.isEmpty() == true || (value=="0.0" || value=="0.00")) "$0.00" else "-$" + String.format(
-            "%.2f", value?.toDouble() ?: 0.0
+            "%.2f", value?.toDouble()?.absoluteValue ?: 0.0
         )
 }
