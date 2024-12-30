@@ -455,6 +455,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             tResponse,
                             String::class.java
                         )
+
                         val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
                         factory.setNamespaceAware(true)
                         val xpp: XmlPullParser = factory.newPullParser()
@@ -515,11 +516,36 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                 }
                             }
                         }
-//                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
+
                         if (Message.equals("Canceled") || Message.equals("Error")) {
-//                            dismissProgressDialogWithAlert(RespMSG.replace("%20", " "))
+                            dismissProgressDialogWithAlert(RespMSG.replace("%20", " "))
                         } else if (Message.contains("Approved")) {
-//                            makePaymentCreditCardDejavoo(RefId, ExtData)
+
+                            viewModelPayment.setPAXData(RefId, ExtData)
+
+                            val paymentAttributes = PaymentAttributes()
+
+                            paymentAttributes.apply {
+                                amount = PRE_AUTH_AMOUNT
+                                cardName = "Card"
+                                cardNumber = ""
+                                ecr_ref_num = RefId
+                                employeeId = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                                ext_data = "${Constants.DEJAVOO} : $ExtData?"
+                                global_uniq_id = PNRef
+                                pax_transaction_token =""
+                                payableType = "Order"
+                                paymentType = "Card"
+                                ref_num = TransNum
+                                subTotal = 1.0
+                                terminalId = prefProvider.getTerminalId()
+                            }
+
+                            prefProvider.setValue(PRE_AUTH_DETAILS,Gson().toJson(paymentAttributes))
+                            viewModel.paymentAttributes = paymentAttributes
+
+                            viewModelPayment.preAuthData = PreAuthData(ecrRefNum = paymentAttributes.ecr_ref_num , refNum = paymentAttributes.ref_num)
+
                         }
                     },
                     onFailure = { errorMessage ->
@@ -537,6 +563,17 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 //                        dismissProgressDialogWithAlert()
                     }
                 )
+            }
+        }
+    }
+
+
+    private fun dismissProgressDialogWithAlert(errorMessage: String? = null) {
+        runOnUiThread {
+            ProgressUtils.dismissProgressDialog()
+            dismissProgressDialog()
+            if (errorMessage!=null) {
+                AlertUtils.showCustomAlert(requireContext(), errorMessage)
             }
         }
     }
