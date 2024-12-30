@@ -2496,6 +2496,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         prefProvider.setValue(Constants.TIPS_AMOUNT_ACTUAL, "0.0")
     }
 
+    //Adding this comment for rebase check
     // generate payment attributes request
     private fun paymentAttributesRequest(myRequest: OrderRequestModel) {
         val orderId = prefProvider.getValueInt("ORDER_ID", -1)
