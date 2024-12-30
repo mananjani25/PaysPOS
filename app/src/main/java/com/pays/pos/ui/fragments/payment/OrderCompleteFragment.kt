@@ -246,6 +246,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     var omniDriver: OmniDriver? = null
 
+    private val TAG2 = "Printer_Queue"
+
     /*Star label printer - START*/
     lateinit var settings: StarConnectionSettings
     lateinit var printer: StarPrinter
@@ -1378,6 +1380,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
+        Log.e(TAG2,"PushContent ${input}")
         Log.e("checkKey","pushContent: checkSN:${input} ${pushContent(trade_no = 
             String.format("%s_%010d", "${input}", System.currentTimeMillis()),
             "${input}", 1, 1, "您有新的订单", 0)}")
@@ -9718,6 +9721,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                             false
                                                                                         )
                                                                                     ) {
+                                                                                        Log.e(TAG2,"initKit ")
                                                                                         initKitchenPrinter(
                                                                                             kitchenPrinterList.get(
                                                                                                 i
@@ -13860,11 +13864,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.deleteValue(Constants.DO_PRINT)
         Log.d("initKitchenPrinter", "SunmiBlueToothPrinter is ${data.name}")
         if (data.name.startsWith(SUNMI_PRINTER,true) && data.printer_type == WIFI){
+            Log.e(TAG2,"PrinitngQueue ")
             data.ipAddress?.let { cloudQueuePrinting(it,2241,data) }
 
         }
         else {
 
+            Log.e(TAG2,"NonQueue ")
 
             GlobalScope.launch(Dispatchers.IO) {
                 if (data.name.startsWith(SUNMI_PRINTER, true)) {
@@ -20405,6 +20411,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         val nonce = String.format("%06d", random.nextInt(1000000))
 
         try {
+            Log.e(TAG2,"InitalizeRequestQueue ")
             val url = URL("https://openapi.sunmi.com$path")
             connection = url.openConnection() as HttpURLConnection
             connection!!.requestMethod = "POST"
@@ -20422,6 +20429,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             os = connection!!.outputStream
             os.write(body.toByteArray(charset("UTF-8")))
             if (connection!!.responseCode == 200) {
+                Log.e(TAG2,"QueueREsponseOK ")
 
               /*  if (sn.equals("N434227FT0790")) {
                     orderContent.clear()

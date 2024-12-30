@@ -2299,7 +2299,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         LogUtil.logE(TAG, "printerListModel: ${Gson().toJson(printerListModel)}")
 
 
-        if (printerListModel.printerName?.startsWith("Cloud",true) == true){
+        if (printerListModel.printerName?.startsWith("Cloud",true) == true && printerListModel.connectionType == WIFI){
             var bundle = Bundle()
             bundle.putParcelable("printerListModel",printerListModel)
             bundle.putInt("layoutPosition",layoutPosition)
