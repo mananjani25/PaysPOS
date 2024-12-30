@@ -21,7 +21,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.pax.poslink.*
-import com.pays.payments.callbacks.PaymentCallback
+import com.pax.poslink.log.LogFilter.Const
 import com.pays.payments.design.*
 import com.pays.payments.gateways.dejavoo.DejavooPaymentGateway
 import com.pays.pos.MainApplication
@@ -71,7 +71,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.StringReader
-import java.util.regex.Pattern
 import javax.inject.Inject
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -514,6 +513,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                 reqTxnId = "INV${System.currentTimeMillis()}",
                 amount = refundAmount.toString(),
                 tipAmount = "",
+                isProd = Constants.paymentLive,
                 tipEntry = "1",
                 txn_type = "refund",
                 surchargeIndicator = "1",
@@ -625,10 +625,10 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             CoroutineScope(Dispatchers.IO).async {
                 val queue = Volley.newRequestQueue(requireContext())
                 var url = ""
-                if (Constants.isPaxInDebugMode) {
-                    url = Constants.paxDebug
-                } else {
+                if (Constants.paymentLive) {
                     url = Constants.paxLive
+                } else {
+                    url = Constants.paxDebug
                 }
                 val getRequest: StringRequest = object : StringRequest(
                     Request.Method.POST, url,
@@ -755,10 +755,10 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
     ) {
         val queue = Volley.newRequestQueue(requireContext())
         var url = ""
-        if (Constants.isPaxInDebugMode) {
-            url = Constants.paxDebug
-        } else {
+        if (Constants.paymentLive) {
             url = Constants.paxLive
+        } else {
+            url = Constants.paxDebug
         }
         val getRequest: StringRequest = object : StringRequest(
             Request.Method.POST, url,

@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutionException
 
 object Constants {
 
-    const val isPaxInDebugMode: Boolean = false
+    const val paymentLive: Boolean = false
     const val paxLive="https://secure.epx.com/"
     const val paxDebug="https://secure.epxuap.com/"
 

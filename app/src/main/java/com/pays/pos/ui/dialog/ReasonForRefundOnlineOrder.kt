@@ -1,24 +1,18 @@
 package com.pays.pos.ui.dialog
 
 import android.content.DialogInterface
-import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.os.Message
-import android.provider.Settings.Global
 import android.util.Log
 import android.view.*
-import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.volley.AuthFailureError
 import com.android.volley.Request
@@ -26,7 +20,6 @@ import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.pays.pos.R
-import com.pays.pos.data.model.requestModel.RefundRequestModel
 import com.pays.pos.data.model.requestModel.RefundRequestModelOnlineOrder
 import com.pays.pos.data.model.responseModel.MagtekOnlineOrderRefundResponse
 import com.pays.pos.data.remote.Constants
@@ -37,19 +30,14 @@ import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.pays.pos.ui.fragments.magtek.PaymentResponse
 import com.pays.pos.ui.fragments.onlineorder.OnlineDetailViewModel
-import com.pays.pos.ui.fragments.transactions.TransactionDetailsViewModel
 import com.pays.pos.utils.*
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.pax.poslink.*
-import com.pays.pos.ui.fragments.allorders.AllOrdersViewModel
-import com.pays.pos.utils.extensions.toast
-import com.pays.pos.utils.paxUtils.SettingINI
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
-import org.json.JSONArray
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import retrofit2.Call
@@ -343,10 +331,10 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
         CoroutineScope(Dispatchers.IO).async {
             val queue = Volley.newRequestQueue(requireContext())
             var url = ""
-            if (Constants.isPaxInDebugMode) {
-                url = Constants.paxDebug
-            } else {
+            if (Constants.paymentLive) {
                 url = Constants.paxLive
+            } else {
+                url = Constants.paxDebug
             }
             val getRequest: StringRequest = object : StringRequest(
                 Request.Method.POST, url,
@@ -473,10 +461,10 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
     ) {
         val queue = Volley.newRequestQueue(requireContext())
         var url = ""
-        if (Constants.isPaxInDebugMode) {
-            url = Constants.paxDebug
-        } else {
+        if (Constants.paymentLive) {
             url = Constants.paxLive
+        } else {
+            url = Constants.paxDebug
         }
         val getRequest: StringRequest = object : StringRequest(
             Request.Method.POST, url,

@@ -2999,6 +2999,7 @@ class CustomDisplay(
                         txn_type = "refund",
                         surchargeIndicator = "1",
                         sale_refund = "1",
+                        isProd = Constants.paymentLive,
                         transactionId = ""
                     )
 

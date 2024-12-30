@@ -497,7 +497,7 @@ class TransactionDetailsFragment : Fragment() {
                     channelId = prefProvider.getValue(Constants.VALOR_CHANNEL_ID, ""),
                     limit = 200,
                     offset = 0,
-                    isProd = false
+                    isProd = Constants.paymentLive
                 )
 
                 paymentGateway.getTransactionsDetails(
@@ -582,6 +582,7 @@ class TransactionDetailsFragment : Fragment() {
                         surchargeIndicator = "",
                         sale_refund = "",
                         ref_txn_id = "",
+                        isProd = Constants.paymentLive,
                         transactionId = ""
                     )
 
@@ -880,6 +881,7 @@ class TransactionDetailsFragment : Fragment() {
                     ref_txn_id = paymentDetailsResponse.data.ref_num,
                     surchargeIndicator = "",
                     sale_refund = "",
+                    isProd = Constants.paymentLive,
                     transactionId = ""
                 )
 

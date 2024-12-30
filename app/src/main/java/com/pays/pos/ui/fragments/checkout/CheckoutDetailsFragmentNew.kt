@@ -4401,6 +4401,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 surchargeIndicator = "",
                 sale_refund = "",
                 ref_txn_id = "",
+                isProd = Constants.paymentLive,
                 transactionId = ""
             )
             context?.let {

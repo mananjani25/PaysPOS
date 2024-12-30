@@ -63,7 +63,6 @@ import com.pays.pos.data.remote.Constants.OPEN_ORDER_TAB
 import com.pays.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.pays.pos.data.remote.Constants.PHONE_ORDER
 import com.pays.pos.data.remote.Constants.PHONE_ORDER_TAB
-import com.pays.pos.data.remote.Constants.PRE_AUTH_DETAILS
 import com.pays.pos.data.remote.Constants.SHIPPING_ADDRESS
 import com.pays.pos.data.remote.Constants.SUNMI_PRINTER
 import com.pays.pos.data.remote.Constants.THIRD_PARTY_ORDER_TAB
@@ -81,7 +80,6 @@ import com.pays.pos.ui.fragments.orders.ActiveOrderViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
-import com.pays.pos.ui.fragments.transactions.TransactionDetailsFragment.OnBluetoothPermissionGranted
 import com.pays.pos.utils.*
 import com.pays.pos.utils.callback.OrderCallBack
 import com.pays.pos.utils.extensions.*
@@ -403,10 +401,10 @@ class AllOrdersListingFragment(
                 CoroutineScope(Dispatchers.IO).launch {
                     val queue = Volley.newRequestQueue(requireContext())
                     var url = ""
-                    if (Constants.isPaxInDebugMode) {
-                        url = Constants.paxDebug
-                    } else {
+                    if (Constants.paymentLive) {
                         url = Constants.paxLive
+                    } else {
+                        url = Constants.paxDebug
                     }
                     val getRequest: StringRequest = object : StringRequest(
                         Request.Method.POST, url,
@@ -590,10 +588,10 @@ class AllOrdersListingFragment(
     ) {
         val queue = Volley.newRequestQueue(requireContext())
         var url = ""
-        if (Constants.isPaxInDebugMode) {
-            url = Constants.paxDebug
-        } else {
+        if (Constants.paymentLive) {
             url = Constants.paxLive
+        } else {
+            url = Constants.paxDebug
         }
         val getRequest: StringRequest = object : StringRequest(
             Request.Method.POST, url,

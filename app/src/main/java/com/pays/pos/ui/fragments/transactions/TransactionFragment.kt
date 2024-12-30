@@ -674,6 +674,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                         tipAmount = tipAmount.toString(),
                         tipEntry = "1",
                         txn_type = "",
+                        isProd = Constants.paymentLive,
                         surchargeIndicator = "",
                         sale_refund = "",
                         ref_txn_id = "",
