@@ -2582,8 +2582,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         /* Start from here the object of the cart has come here, now just match the isEdited field and set the Updated parameter*/
         Log.d("DashboardCategoryBoldPOS_model:", Gson().toJson(cartModel))
-        Log.e(TAG,"checkReceiptType:  ${data.receiptPrintType}")
-        Log.e(TAG,"checkReceiptType 2:  ${data.printer_type}")
         if (data.name.startsWith("CloudPrint",true) && data.printer_type == WIFI){
 
             val date = Date()
