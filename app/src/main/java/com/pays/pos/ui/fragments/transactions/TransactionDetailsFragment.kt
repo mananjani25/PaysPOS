@@ -73,7 +73,6 @@ import com.pays.payments.design.*
 import com.pays.payments.gateways.valor.ValorPaymentGateway
 import com.pays.pos.data.model.requestModel.RefundRequestModel
 import com.pays.pos.data.model.valor.ValorSuccessResponse
-import com.pays.pos.data.model.valor.ValorTransactionResponse
 import com.pays.pos.data.model.valor.ValorTransactionsList
 import com.pays.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.pays.pos.data.remote.Constants.BUSINESS_PHONE_NO
