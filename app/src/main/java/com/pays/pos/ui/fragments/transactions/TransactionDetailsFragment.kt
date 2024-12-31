@@ -70,8 +70,10 @@ import com.pax.poslink.ReportRequest
 import com.pays.pos.data.model.requestModel.CashLogRequest
 import com.pays.payments.callbacks.PaymentCallback
 import com.pays.payments.design.*
+import com.pays.payments.gateways.valor.ValorPaymentGateway
 import com.pays.pos.data.model.requestModel.RefundRequestModel
 import com.pays.pos.data.model.valor.ValorSuccessResponse
+import com.pays.pos.data.model.valor.ValorTransactionResponse
 import com.pays.pos.data.model.valor.ValorTransactionsList
 import com.pays.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.pays.pos.data.remote.Constants.BUSINESS_PHONE_NO
@@ -97,6 +99,8 @@ import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
+import org.json.JSONArray
+import org.json.JSONObject
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.xmlpull.v1.XmlPullParser
@@ -120,7 +124,7 @@ class TransactionDetailsFragment : Fragment() {
     private val dashboardCategoryViewModel by viewModels<DashBoardCategoryViewModel>()
     private var isPrint: Boolean = false
     private val magtekProViewModel by viewModels<MagtekViewModel>()
-    lateinit var weakContext:WeakReference<Context>
+    lateinit var weakContext: WeakReference<Context>
 
     private lateinit var orderDetailsItemAdapter: OrderDetailsItemListAdapter
     private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
@@ -191,7 +195,7 @@ class TransactionDetailsFragment : Fragment() {
             false
         )
 
-        weakContext= WeakReference<Context>(context)
+        weakContext = WeakReference<Context>(context)
         lifecycleScope.launch {
             try {
                 runBlocking {
@@ -381,6 +385,8 @@ class TransactionDetailsFragment : Fragment() {
                     )
                 ) {
                     adjustPaxTips()
+                } else if (prefProvider.getValue(Constants.VALOR_APP_KEY, "").isNotEmpty()) {
+                    adjustValorTips(paymentDetailsResponse)
                 } else if (!paymentDetailsResponse.data?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(
                         Constants.IS_PAX_CONNECTED,
                         false
@@ -412,11 +418,15 @@ class TransactionDetailsFragment : Fragment() {
                             ).isNotEmpty()
                         ) {
                             weakContext.get()?.let {
-                                AlertUtils.showCustomAlertWithListenerWithOKCancel(it,"Do you want to refund the transaction?",getString(android.R.string.ok),
+                                AlertUtils.showCustomAlertWithListenerWithOKCancel(it,
+                                    "Do you want to refund the transaction?",
+                                    getString(android.R.string.ok),
                                     object : DialogInterface.OnClickListener {
                                         override fun onClick(p0: DialogInterface?, p1: Int) {
                                             ProgressUtils.showProgressDialog(requireActivity())
-                                            checkIfValorTransactionEligibleForVoid(paymentDetailsResponse)
+                                            checkIfValorTransactionEligibleForVoid(
+                                                paymentDetailsResponse
+                                            )
                                             p0?.dismiss()
                                         }
                                     })
@@ -470,7 +480,6 @@ class TransactionDetailsFragment : Fragment() {
     }
 
     private fun checkIfValorTransactionEligibleForVoid(paymentDetailsResponse: GetPaymentOrderDetailsResponse) {
-        paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
         paymentCoroutineScope.launch {
             val gatewayType = PaymentGatewayType.VALOR
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
@@ -503,7 +512,7 @@ class TransactionDetailsFragment : Fragment() {
                 paymentGateway.getTransactionsDetails(
                     it,
                     valor,
-                    onSuccess = {tResponse->
+                    onSuccess = { tResponse ->
                         var transactionJsonResponse = Gson().fromJson<ValorTransactionsList>(
                             tResponse,
                             ValorTransactionsList::class.java
@@ -511,22 +520,25 @@ class TransactionDetailsFragment : Fragment() {
 
                         transactionJsonResponse?.nameValuePairs?.let {
                             if (it.batchSummaryDetails.values.isNotEmpty()) {
-                                var transaction=it.batchSummaryDetails.values.filter { it.nameValuePairs.txnId.toString().equals(paymentDetailsResponse.data.ref_num) }
-                                if (transaction.isEmpty()){
+                                var transaction = it.batchSummaryDetails.values.filter {
+                                    it.nameValuePairs.txnId.toString()
+                                        .equals(paymentDetailsResponse.data.ref_num)
+                                }
+                                if (transaction.isEmpty()) {
                                     //Refund
                                     startRefund()
-                                }else{
+                                } else {
                                     //Void
                                     startVoidWithValor(paymentDetailsResponse)
                                 }
-                            }else{
+                            } else {
                                 startRefund()
 //                              dismissProgressDialogWithAlert()
                             }
                         }
                     },
-                    onFailure = {errorMessage->
-                        Log.e("Valor:",errorMessage)
+                    onFailure = { errorMessage ->
+                        Log.e("Valor:", errorMessage)
                         dismissProgressDialogWithAlert(errorMessage)
                     }
                 )
@@ -589,7 +601,7 @@ class TransactionDetailsFragment : Fragment() {
                     paymentGateway.processPayment(
                         context = it.applicationContext,
                         valor,
-                        onSuccess = {tResponse->
+                        onSuccess = { tResponse ->
                             var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
                                 tResponse,
                                 ValorSuccessResponse::class.java
@@ -607,8 +619,8 @@ class TransactionDetailsFragment : Fragment() {
                                 }
                             }
                         },
-                        onFailure = {errorMessage->
-                            Log.e("Valor: " ,errorMessage)
+                        onFailure = { errorMessage ->
+                            Log.e("Valor: ", errorMessage)
                             dismissProgressDialogWithAlert(errorMessage)
                         },
                     )
@@ -632,19 +644,19 @@ class TransactionDetailsFragment : Fragment() {
             val gatewayType = PaymentGatewayType.DEJAVOO
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
-          /*  context?.let {
-                var dejavoo = Dejavoo(
-                    authKey = "kwg2GRbykg",
-                    registerId = "4986101",
-                    tpn = "659324491704",
-                    amount = paymentDetailsResponse.data.amount.toString(),
-                    isProd = false,
-                    paymentType = "Credit",
-                    performedBy = "",
-                    printReceipt = false,
-                    refId = paymentDetailsResponse.data.ref_num,
-                    tip = "",
-                    transType = *//*"Return"*//*"Void",
+            /*  context?.let {
+                  var dejavoo = Dejavoo(
+                      authKey = "kwg2GRbykg",
+                      registerId = "4986101",
+                      tpn = "659324491704",
+                      amount = paymentDetailsResponse.data.amount.toString(),
+                      isProd = false,
+                      paymentType = "Credit",
+                      performedBy = "",
+                      printReceipt = false,
+                      refId = paymentDetailsResponse.data.ref_num,
+                      tip = "",
+                      transType = *//*"Return"*//*"Void",
                     txnType = TransactionType.VOID)
 
                 paymentGateway.voidPayment(
@@ -668,13 +680,14 @@ class TransactionDetailsFragment : Fragment() {
                     printReceipt = false,
                     refId = paymentDetailsResponse.data.ref_num,
                     tip = "",
-                    transType ="Status",
-                    txnType = TransactionType.VOID)
+                    transType = "Status",
+                    txnType = TransactionType.VOID
+                )
 
                 paymentGateway.voidPayment(
                     it,
                     dejavoo,
-                    onSuccess = {tRequest->
+                    onSuccess = { tRequest ->
                         var transactionJsonResponse = Gson().fromJson<String>(
                             tRequest,
                             String::class.java
@@ -707,16 +720,23 @@ class TransactionDetailsFragment : Fragment() {
 //                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
                         if (Message.equals("Canceled") || Message.equals("Error")) {
                             ProgressUtils.dismissProgressDialog()
-                            AlertUtils.showCustomAlert(requireContext(), RespMSG.replace("%20", " "))
-                        } else if (Message.contains("approved", ignoreCase = true)) { // Found the transaction, proceed with VOID
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                RespMSG.replace("%20", " ")
+                            )
+                        } else if (Message.contains(
+                                "approved",
+                                ignoreCase = true
+                            )
+                        ) { // Found the transaction, proceed with VOID
                             CoroutineScope(Dispatchers.Main).launch {
                                 startVoidWithDejavoo()
                             }
-                        }else if (Message.contains("Not found", ignoreCase = true)){
+                        } else if (Message.contains("Not found", ignoreCase = true)) {
                             startRefund()
                         }
                     },
-                    onFailure = {errorMessage->
+                    onFailure = { errorMessage ->
                         EventBus.getDefault()
                             .post(
                                 MessageEvent(
@@ -736,31 +756,32 @@ class TransactionDetailsFragment : Fragment() {
         }
     }
 
-    private fun startVoidWithDejavoo(){
+    private fun startVoidWithDejavoo() {
         paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
         paymentCoroutineScope.launch {
             val gatewayType = PaymentGatewayType.DEJAVOO
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
-              context?.let {
-                  var dejavoo = Dejavoo(
-                      authKey = "kwg2GRbykg",
-                      registerId = "4986101",
-                      tpn = "659324491704",
-                      amount = paymentDetailsResponse.data.amount.toString(),
-                      isProd = false,
-                      paymentType = "Credit",
-                      performedBy = "",
-                      printReceipt = false,
-                      refId = paymentDetailsResponse.data.ref_num,
-                      tip = "",
-                      transType = "Void",
-                    txnType = TransactionType.VOID)
+            context?.let {
+                var dejavoo = Dejavoo(
+                    authKey = "kwg2GRbykg",
+                    registerId = "4986101",
+                    tpn = "659324491704",
+                    amount = paymentDetailsResponse.data.amount.toString(),
+                    isProd = false,
+                    paymentType = "Credit",
+                    performedBy = "",
+                    printReceipt = false,
+                    refId = paymentDetailsResponse.data.ref_num,
+                    tip = "",
+                    transType = "Void",
+                    txnType = TransactionType.VOID
+                )
 
                 paymentGateway.voidPayment(
                     it,
                     dejavoo,
-                    onSuccess = {tResponse->
+                    onSuccess = { tResponse ->
                         var transactionJsonResponse = Gson().fromJson<String>(
                             tResponse,
                             String::class.java
@@ -791,13 +812,15 @@ class TransactionDetailsFragment : Fragment() {
                                 when ((this.item(i) as Element).tagName.toString()) {
                                     "Message" -> Message =
                                         this.item(i).childNodes.item(0).nodeValue ?: ""
-                                    "RefId" -> RefId = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "RefId" -> RefId =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
                                     "RegisterId" -> RegisterId =
                                         this.item(i).childNodes.item(0).nodeValue ?: ""
                                     "TPN" -> TPN = this.item(i).childNodes.item(0).nodeValue ?: ""
                                     "AuthCode" -> AuthCode =
                                         this.item(i).childNodes.item(0).nodeValue ?: ""
-                                    "PNRef" -> PNRef = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "PNRef" -> PNRef =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
                                     "TransNum" -> TransNum =
                                         this.item(i).childNodes.item(0).nodeValue ?: ""
                                     "ResultCode" -> ResultCode =
@@ -806,7 +829,8 @@ class TransactionDetailsFragment : Fragment() {
                                         this.item(i).childNodes.item(0).nodeValue ?: ""
                                     "PaymentType" -> PaymentType =
                                         this.item(i).childNodes.item(0).nodeValue ?: ""
-                                    "Voided" -> Voided = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "Voided" -> Voided =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
                                     "TransType" -> TransType =
                                         this.item(i).childNodes.item(0).nodeValue ?: ""
                                     "SN" -> SN = this.item(i).childNodes.item(0).nodeValue ?: ""
@@ -821,16 +845,19 @@ class TransactionDetailsFragment : Fragment() {
 //                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
                         if (Message.equals("Canceled") || Message.equals("Error")) {
                             ProgressUtils.dismissProgressDialog()
-                            AlertUtils.showCustomAlert(requireContext(), RespMSG.replace("%20", " "))
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                RespMSG.replace("%20", " ")
+                            )
                         } else if (ResultCode.equals("0")) { // Found the transaction, proceed with VOID
                             CoroutineScope(Dispatchers.Main).launch {
                                 refundCall(paymentDetailsResponse.data.amount)
                             }
-                        }else if (ResultCode.equals("0")){
+                        } else if (ResultCode.equals("0")) {
                             startRefund()
                         }
                     },
-                    onFailure = {errorMessage->
+                    onFailure = { errorMessage ->
                         EventBus.getDefault()
                             .post(
                                 MessageEvent(
@@ -888,7 +915,7 @@ class TransactionDetailsFragment : Fragment() {
                 paymentGateway.voidPayment(
                     it,
                     valor,
-                    onSuccess = {tResponse->
+                    onSuccess = { tResponse ->
                         var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
                             tResponse,
                             ValorSuccessResponse::class.java
@@ -903,13 +930,13 @@ class TransactionDetailsFragment : Fragment() {
                                 } else {
                                     startRefund()
                                 }
-                            }else{
+                            } else {
                                 dismissProgressDialogWithAlert()
                             }
                         }
                     },
-                    onFailure = {errorMessage->
-                        Log.e("Valor:",errorMessage)
+                    onFailure = { errorMessage ->
+                        Log.e("Valor:", errorMessage)
                         dismissProgressDialogWithAlert(errorMessage)
                     }
                 )
@@ -918,11 +945,11 @@ class TransactionDetailsFragment : Fragment() {
         }
     }
 
-    private fun dismissProgressDialogWithAlert(errorMessage:String?=null) {
-        runOnUiThread{
+    private fun dismissProgressDialogWithAlert(errorMessage: String? = null) {
+        runOnUiThread {
             ProgressUtils.dismissProgressDialog()
-            if (errorMessage!=null){
-                AlertUtils.showCustomAlert(requireContext(),errorMessage)
+            if (errorMessage != null) {
+                AlertUtils.showCustomAlert(requireContext(), errorMessage)
             }
         }
     }
@@ -1153,57 +1180,109 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun enableDisableTipButton() {
         try {
-            if (paymentDetailsResponse.data.ref_num != null) {
-                if (paymentDetailsResponse.data.ref_num.isNotEmpty()) {
-                    GlobalScope.launch {
-                        posLink.SetCommSetting(
-                            SettingINI.getCommSettingFromFile(
-                                context!!,
-                                Constants.FILE_PATH + SettingINI.FILENAME
+            when (paymentDetailsResponse.data.ext_data) {
+                "VALOR" -> {
+                    paymentCoroutineScope =
+                        CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+                    paymentCoroutineScope.launch {
+                        val gatewayType = PaymentGatewayType.VALOR
+                        val paymentGateway = paymentGatewayFactory.create(gatewayType)
+                        /* Process Payment */
+                        context?.let {
+                            var valor = Valor(
+                                apiKey = prefProvider.getValue(Constants.VALOR_APP_KEY, ""),
+                                appID = prefProvider.getValue(Constants.VALOR_APP_ID, ""),
+                                epi = prefProvider.getValue(Constants.VALOR_EPI, ""),
+                                endpoint = Constants.VALOR_TXN_FETCH,
+                                channelId = prefProvider.getValue(Constants.VALOR_CHANNEL_ID, ""),
+                                ref_txn_id = paymentDetailsResponse.data.ref_num,
+                                limit = 200,
+                                offset = 0,
+                                isProd = Constants.paymentLive
                             )
-                        )
 
-                        val report = ReportRequest()
-                        report.TransType = report.ParseTransType("LOCALDETAILREPORT") //recommend
-                        report.EDCType = report.ParseEDCType("CREDIT")
-                        report.RefNum = paymentDetailsResponse.data.ref_num
-                        report.ECRRefNum = paymentDetailsResponse.data.ecr_ref_num
+                            (paymentGateway as ValorPaymentGateway).getTransactionsList(
+                                it,
+                                valor,
+                                onSuccess = { tResponse ->
+                                    Log.d("Resp: ",tResponse)
 
-                        posLink.ReportRequest = report
-                        val result = posLink.ProcessTrans()
-                        Log.d("result batch: ", result.Code.toString() + " " + result.Msg)
-                        try {
-                            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
-                                val msg = Message()
-                                msg.what = Constants.TRANSACTION_SUCCESSED
-                                msg.obj = posLink.ReportResponse
-                                if (posLink.ReportResponse == null) {
-                                    CoroutineScope(Dispatchers.Main).launch {
-                                        binding.tvtipadd.visibility = View.GONE
-                                    }
-                                    Log.d("Data::", "void transaction")
-                                } else {
-                                    val response = msg.obj as com.pax.poslink.ReportResponse
-                                    val resultCode = response.ResultCode
-                                    val resultTxt = response.ResultTxt
-                                    if (resultCode == "000000") {
-                                        CoroutineScope(Dispatchers.Main).launch {
-                                            binding.tvtipadd.visibility = View.VISIBLE
+                                    try{
+                                        var tipAmount= JSONObject(JSONObject(JSONArray(JSONObject(JSONObject(JSONObject(tResponse).get("nameValuePairs").toString()).get("data").toString()).get("values").toString()).get(0).toString()).get("nameValuePairs").toString()).get("TIP_AMOUNT")
+                                        if (!tipAmount.equals("0")) {
+                                            runOnUiThread(Runnable {
+                                                binding.tvtipadd.visibility = View.GONE
+                                            })
                                         }
+                                    }catch (e:Exception){
 
-                                    } else if (resultCode == "100023") {
-                                        CoroutineScope(Dispatchers.Main).launch {
-                                            binding.tvtipadd.visibility = View.GONE
+                                    }
+                                },
+                                onFailure = { errorMessage ->
+                                    Log.e("Valor:", errorMessage)
+                                    dismissProgressDialogWithAlert(errorMessage)
+                                }
+                            )
+                        }
+//            }
+                    }
+                }
+                else -> {
+                    paymentDetailsResponse.data.ref_num?.let {
+                        if (it.isNotEmpty()) {
+                            GlobalScope.launch {
+                                posLink.SetCommSetting(
+                                    SettingINI.getCommSettingFromFile(
+                                        context!!,
+                                        Constants.FILE_PATH + SettingINI.FILENAME
+                                    )
+                                )
+
+                                val report = ReportRequest()
+                                report.TransType =
+                                    report.ParseTransType("LOCALDETAILREPORT") //recommend
+                                report.EDCType = report.ParseEDCType("CREDIT")
+                                report.RefNum = paymentDetailsResponse.data.ref_num
+                                report.ECRRefNum = paymentDetailsResponse.data.ecr_ref_num
+
+                                posLink.ReportRequest = report
+                                val result = posLink.ProcessTrans()
+                                Log.d("result batch: ", result.Code.toString() + " " + result.Msg)
+                                try {
+                                    if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                                        val msg = Message()
+                                        msg.what = Constants.TRANSACTION_SUCCESSED
+                                        msg.obj = posLink.ReportResponse
+                                        if (posLink.ReportResponse == null) {
+                                            CoroutineScope(Dispatchers.Main).launch {
+                                                binding.tvtipadd.visibility = View.GONE
+                                            }
+                                            Log.d("Data::", "void transaction")
+                                        } else {
+                                            val response = msg.obj as com.pax.poslink.ReportResponse
+                                            val resultCode = response.ResultCode
+                                            val resultTxt = response.ResultTxt
+                                            if (resultCode == "000000") {
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    binding.tvtipadd.visibility = View.VISIBLE
+                                                }
+
+                                            } else if (resultCode == "100023") {
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    binding.tvtipadd.visibility = View.GONE
+                                                }
+                                            }
                                         }
                                     }
+                                } catch (e: Exception) {
+                                    //                posLink.s
                                 }
                             }
-                        } catch (e: Exception) {
-//                posLink.s
                         }
                     }
                 }
             }
+
         } catch (e: Exception) {
 
         }

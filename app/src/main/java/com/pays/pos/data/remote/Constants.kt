@@ -878,6 +878,7 @@ object Constants {
     const val VALOR_TIP_ADJUST = "tipAdjust"
     const val VALOR_VOID = "void"
     const val VALOR_OPEN_BATCH = "OpenBatch"
+    const val VALOR_TXN_FETCH = "txnfetch"
     /*-------Valor--------*/
 
     /*-------Dejavoo------*/
