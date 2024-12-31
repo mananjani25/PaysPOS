@@ -11,7 +11,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -42,6 +41,7 @@ import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.paxUtils.SettingINI
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import java.lang.ref.WeakReference
 import java.security.InvalidKeyException
 import java.security.KeyFactory
 import java.security.NoSuchAlgorithmException
@@ -65,23 +65,27 @@ class AddValueInGiftCardFragment : Fragment() {
     private val TAG = "AddValueInGiftCardFragment"
     private var giftCardNumberGlb =""
     private var posLink: PosLink = PosLink()
+    lateinit var weakContext:WeakReference<Context>
+
+    var fromPAXSwipe:Boolean=false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentAddValueInGiftCardBinding.inflate(layoutInflater)
+        weakContext= WeakReference(requireActivity())
         setDefaultAmountsInKeypad()
         setKeyPad()
         onClick()
         setObservables()
         setupSnackbar()
         setupProgress()
-//        startPAXTestWithGiftCard()
+//        startPAXWithGiftCard()
         return binding.root
     }
 
-    private fun startPAXTestWithGiftCard() {
+    private fun startPAXWithGiftCard() {
         GlobalScope.launch {
             posLink.SetCommSetting(
                 SettingINI.getCommSettingFromFile(
@@ -112,6 +116,7 @@ class AddValueInGiftCardFragment : Fragment() {
                 if (resultCode == "000000") {
                     withContext(Dispatchers.Main){
                         binding.apply {
+                            fromPAXSwipe=true
                             if (response.PAN.isNullOrEmpty()){
                                 edtGiftCardNumber.setText(response.Track2Data.toString())
                                 Log.d("VALID: ", "Here__Track: ${response.Track2Data.toString()}")
@@ -328,7 +333,7 @@ class AddValueInGiftCardFragment : Fragment() {
                         }
                     }.start()
 
-                    startPAXTestWithGiftCard()
+                    startPAXWithGiftCard()
                 }
             })
         }
@@ -340,7 +345,17 @@ class AddValueInGiftCardFragment : Fragment() {
         }
 
         binding.txtNext.setOnClickListener {
-            startProcessingForAddValue()
+            if (fromPAXSwipe) {
+                startProcessingForAddValue()
+            }else{
+                weakContext.get()?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(it,getString(R.string.are_you_sure_proceed),object:DialogInterface.OnClickListener{
+                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                            startProcessingForAddValue()
+                        }
+                    })
+                }
+            }
         }
 
         binding.llKeypad.txt10.setOnClickListener {

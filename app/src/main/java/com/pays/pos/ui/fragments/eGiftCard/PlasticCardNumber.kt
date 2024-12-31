@@ -1,5 +1,7 @@
 package com.pays.pos.ui.fragments.eGiftCard
 
+import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Message
@@ -7,7 +9,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -24,13 +25,13 @@ import com.pays.pos.databinding.FragmentPlasticCardNumberBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.utils.AlertUtils
-import com.pays.pos.utils.calculateTipAmt
 import com.pays.pos.utils.extensions.invisible
 import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.paxUtils.SettingINI
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import java.lang.ref.WeakReference
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -43,6 +44,8 @@ class PlasticCardNumber : Fragment() {
     private val TAG = "PlasticCardNumber"
     private var customer: TbCustomer? = null
     private var posLink: PosLink = PosLink()
+    var fromPAXSwipe:Boolean=false
+    lateinit var weakContext:WeakReference<Context>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,6 +54,7 @@ class PlasticCardNumber : Fragment() {
     ): View? {
         binding = FragmentPlasticCardNumberBinding.inflate(inflater, container, false)
         binding.llKeypad?.tvDot?.invisible()
+        weakContext= WeakReference(requireActivity())
         return binding.root
     }
 
@@ -73,7 +77,7 @@ class PlasticCardNumber : Fragment() {
 //            posLink.CancelTrans()
 //        }catch (e:Exception){}
     }
-    private fun startPAXTestWithGiftCard() {
+    private fun startPAXWithGiftCard() {
         GlobalScope.launch {
             posLink.SetCommSetting(
                 SettingINI.getCommSettingFromFile(
@@ -116,12 +120,12 @@ class PlasticCardNumber : Fragment() {
                             }
 
                             if (!cardValue.contains('*')){
+                                fromPAXSwipe=true
                                 edtAmount?.setText(cardValue)
                                 startProcessingWithGiftcard()
                             }else{
                                 AlertUtils.showCustomAlert(requireContext(), getString(R.string.invalid_card))
                             }
-
                         }
                     }
 
@@ -344,7 +348,7 @@ class PlasticCardNumber : Fragment() {
                         }
                     }.start()
 
-                    startPAXTestWithGiftCard()
+                    startPAXWithGiftCard()
                 }
             })
         }
@@ -370,7 +374,17 @@ class PlasticCardNumber : Fragment() {
 
 
         binding.txtNext?.setOnClickListener {
-            startProcessingWithGiftcard()
+            if (fromPAXSwipe) {
+                startProcessingWithGiftcard()
+            }else{
+                weakContext.get()?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(it,getString(R.string.are_you_sure_proceed),object: DialogInterface.OnClickListener{
+                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                            startProcessingWithGiftcard()
+                        }
+                    })
+                }
+            }
         }
 
 
