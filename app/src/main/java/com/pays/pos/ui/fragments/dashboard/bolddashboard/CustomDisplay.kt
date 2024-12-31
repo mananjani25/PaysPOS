@@ -2846,34 +2846,42 @@ class CustomDisplay(
               customerGivenTip.value = true
           }
   */
-        if (mIsCardPayment /*&& !mIsSignatureRequired*/) {
+        try{
+            if (mIsCardPayment /*&& !mIsSignatureRequired*/) {
 //            callUpdateTip()
-            if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
-                magtekCall(wholeTotalPrice)
-            } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
-                    Constants.IS_PAX_CONNECTED,
-                    false
-                )
-            ) {
-                adjustPaxTips()
-            } else if (prefProvider.getValue(Constants.VALOR_APP_ID, "").isNotEmpty()) {
-                adjustValorTips()
-            }else if (prefProvider.getValue(
-                    Constants.VALOR_APP_ID, ""
-                ).isEmpty()){
-                adjustDejavooTips()
-            }else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
-                    Constants.IS_PAX_CONNECTED,
-                    false
-                )
-            ) {
-                AlertUtils.showCustomAlert(
-                    context,
-                    "Please connect to PAX device"
-                )
+                if (prefProvider.getValue(Constants.VALOR_APP_ID, "").isNotEmpty()) {
+                    adjustValorTips()
+                }else if (prefProvider.getValue(
+                        Constants.VALOR_APP_ID, ""
+                    ).isEmpty()){
+                    adjustDejavooTips()
+                }
+                else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
+                        Constants.IS_PAX_CONNECTED,
+                        false
+                    )
+                ) {
+                    adjustPaxTips()
+                }
+                else if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
+                    magtekCall(wholeTotalPrice)
+                }
+                else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                        Constants.IS_PAX_CONNECTED,
+                        false
+                    )
+                ) {
+                    AlertUtils.showCustomAlert(
+                        context,
+                        "Please connect to PAX device"
+                    )
+                }
+            } else if (!mIsCardPayment) {
+                callUpdateTip()
             }
-        } else if (!mIsCardPayment) {
-            callUpdateTip()
+        }
+        catch (e:Exception){
+            e.printStackTrace()
         }
         if (!binding.signaturePad.isEmpty) {
             enableConfirmButton()
