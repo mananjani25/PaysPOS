@@ -3766,7 +3766,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         }
                     },
                     onFailure = { errorMessage ->
-                        Log.e("Dejavoo: ",errorMessage)
+                        Log.e("Dejavoo: ", errorMessage)
                         EventBus.getDefault()
                             .post(
                                 MessageEvent(
@@ -4513,7 +4513,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         }
                     },
                     onFailure = { errorMessage ->
-                        Log.e("Valor: ",errorMessage)
+                        Log.e("Valor: ", errorMessage)
 //                        ProgressUtils.dismissProgressDialog()
 
 //                        dismissProgressDialogWithAlert(errorMessage)
@@ -4537,7 +4537,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         runOnUiThread {
             ProgressUtils.dismissProgressDialog()
             dismissProgressDialog()
-            if (errorMessage!=null) {
+            if (errorMessage != null) {
                 AlertUtils.showCustomAlert(requireContext(), errorMessage)
             }
         }
@@ -4587,104 +4587,105 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 val msg = Message()
                 msg.what = Constants.TRANSACTION_SUCCESSED
                 msg.obj = posLink.PaymentResponse
+                msg.obj?.let {
+                    val response = msg.obj as com.pax.poslink.PaymentResponse
+                    val resultCode = response.ResultCode
+                    val resultTxt = response.ResultTxt
+                    val approvedAmount = response.ApprovedAmount
+                    ExtData = response.ExtData
+                    RefNumber = response.RefNum
 
-                val response = msg.obj as com.pax.poslink.PaymentResponse
-                val resultCode = response.ResultCode
-                val resultTxt = response.ResultTxt
-                val approvedAmount = response.ApprovedAmount
-                ExtData = response.ExtData
-                RefNumber = response.RefNum
-
-                cardLastDigits = response.BogusAccountNum
-                EDCType = response.CardType
-                CARDBIN = response.CardInfo.CardBin
-                var tipAmount = response.ApprovedTipAmount
-                GlobalUID = response.PaymentTransInfo.GlobalUid
-                paymentviewModel.setPAXData(RefNumber, GlobalUID)
+                    cardLastDigits = response.BogusAccountNum
+                    EDCType = response.CardType
+                    CARDBIN = response.CardInfo.CardBin
+                    var tipAmount = response.ApprovedTipAmount
+                    GlobalUID = response.PaymentTransInfo.GlobalUid
+                    paymentviewModel.setPAXData(RefNumber, GlobalUID)
 //                prefProvider.setValue(Constants.GLOBAL_ID, globalUID!!)
 
-                //implementation("org.dom4j:dom4j:2.1.3")
-                PAXtoken = response.PaymentTransInfo.Token
-                Log.d("PAX_CARD:", "pax card info > ${response.CardInfo.ProgramType}")
-                Log.d("token:", "token $PAXtoken")
-                Log.d(
-                    "Payment Details: ",
-                    "$ExtData $resultCode $resultTxt $GlobalUID $RefNumber"
-                )
-                Log.d(
-                    "Payment Details: ",
-                    "$cardLastDigits $approvedAmount $CARDBIN $EDCType $tipAmount ${
-                        Gson().toJson(response)
-                    }"
-                )
-
-                if (resultCode == "000000") {
-                    Log.d("PAX_LOADER:: ", "2984")
-                    Log.v("PAX_LOADER_5:: ", result.Code.toString() + " " + result.Msg)
-                    // Store pax payment data to database
-                    val paxData = PAXData(
-                        response.PaymentTransInfo.GlobalUid,
-                        response.ExtData,
-                        response.RefNum,
-                        ECRRefNumber,
-                        response.PaymentTransInfo.Token,
-                        response.BogusAccountNum,
-                        response.CardType
+                    //implementation("org.dom4j:dom4j:2.1.3")
+                    PAXtoken = response.PaymentTransInfo.Token
+                    Log.d("PAX_CARD:", "pax card info > ${response.CardInfo.ProgramType}")
+                    Log.d("token:", "token $PAXtoken")
+                    Log.d(
+                        "Payment Details: ",
+                        "$ExtData $resultCode $resultTxt $GlobalUID $RefNumber"
                     )
-                    paymentviewModel.savePaxPaymentDataLocally(paxData)
+                    Log.d(
+                        "Payment Details: ",
+                        "$cardLastDigits $approvedAmount $CARDBIN $EDCType $tipAmount ${
+                            Gson().toJson(response)
+                        }"
+                    )
 
-                    CoroutineScope(Dispatchers.Main).launch {
+                    if (resultCode == "000000") {
+                        Log.d("PAX_LOADER:: ", "2984")
+                        Log.v("PAX_LOADER_5:: ", result.Code.toString() + " " + result.Msg)
+                        // Store pax payment data to database
+                        val paxData = PAXData(
+                            response.PaymentTransInfo.GlobalUid,
+                            response.ExtData,
+                            response.RefNum,
+                            ECRRefNumber,
+                            response.PaymentTransInfo.Token,
+                            response.BogusAccountNum,
+                            response.CardType
+                        )
+                        paymentviewModel.savePaxPaymentDataLocally(paxData)
+
+                        CoroutineScope(Dispatchers.Main).launch {
 //                        ProgressUtils.dismissProgressDialog()
-                        coroutineScope {
-                            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
-                                if (prefProvider.getValueboolean(
-                                        Constants.IS_ADD_VALUE_IN_GIFT_CARD,
-                                        false
-                                    )
-                                ) {
-                                    giftCardViewModel.paxResponse = response.ExtData
-                                    giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
-                                    giftCardViewModel.cardNamePax = response.CardType
-                                    giftCardViewModel.transactionID =
-                                        response.PaymentTransInfo.Token
-                                    addValueInGiftCardUsingCard()
-                                } else {
-                                    giftCardViewModel.paxResponse = response.ExtData
-                                    giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
-                                    giftCardViewModel.cardNamePax = response.CardType
-                                    giftCardViewModel.transactionID =
-                                        response.PaymentTransInfo.Token
-                                    sellGiftCardUsingCard()
-                                }
-                            } else {
-                                makePaymentCreditCard()
-                            }
-//                            makePaymentCreditCard()
-                        }
-                    }
-                } else {
-                    initPOSLink()
-                    runOnUiThread(Runnable {
-                        dismissProgressDialog()
-                    })
-                    CoroutineScope(Dispatchers.Main).launch {
-                        Log.d("PAX_LOADER_1:: ", "result.Code.toString() result.Msg")
-
-                        AlertUtils.showCustomAlertWithListenerWithOK(
-                            requireContext(),
-                            resultTxt,
-                            object : DialogInterface.OnClickListener {
-                                override fun onClick(p0: DialogInterface?, p1: Int) {
-                                    try {
-                                        dismissProgressDialog()
-                                        p0?.dismiss()
-                                    } catch (e: Exception) {
+                            coroutineScope {
+                                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+                                    if (prefProvider.getValueboolean(
+                                            Constants.IS_ADD_VALUE_IN_GIFT_CARD,
+                                            false
+                                        )
+                                    ) {
+                                        giftCardViewModel.paxResponse = response.ExtData
+                                        giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
+                                        giftCardViewModel.cardNamePax = response.CardType
+                                        giftCardViewModel.transactionID =
+                                            response.PaymentTransInfo.Token
+                                        addValueInGiftCardUsingCard()
+                                    } else {
+                                        giftCardViewModel.paxResponse = response.ExtData
+                                        giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
+                                        giftCardViewModel.cardNamePax = response.CardType
+                                        giftCardViewModel.transactionID =
+                                            response.PaymentTransInfo.Token
+                                        sellGiftCardUsingCard()
                                     }
+                                } else {
+                                    makePaymentCreditCard()
                                 }
-                            })
+//                            makePaymentCreditCard()
+                            }
+                        }
+                    } else {
+                        initPOSLink()
+                        runOnUiThread(Runnable {
+                            dismissProgressDialog()
+                        })
+                        CoroutineScope(Dispatchers.Main).launch {
+                            Log.d("PAX_LOADER_1:: ", "result.Code.toString() result.Msg")
+
+                            AlertUtils.showCustomAlertWithListenerWithOK(
+                                requireContext(),
+                                resultTxt,
+                                object : DialogInterface.OnClickListener {
+                                    override fun onClick(p0: DialogInterface?, p1: Int) {
+                                        try {
+                                            dismissProgressDialog()
+                                            p0?.dismiss()
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                })
 
 //                        requireContext().showNormalToast("$resultCode $resultTxt")
 //                        connectBP()
+                        }
                     }
                 }
             } else {
