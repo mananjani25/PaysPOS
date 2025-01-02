@@ -11118,13 +11118,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                          * Print change amount
                                          */
 
-                                        val changeAmt = padLine(
-                                            "Change Amount",
-                                            "$" + MethodUtils.roundOffAmountString(((paidAmount + tipAmount) - order!!.totalAmount)),
-                                            if (customerSettingModel.fonts == LARGE) 23 else 48
-                                        ).toString()
+                                        if (order!!.payments.last().paymentType == "Cash") {
+                                            val changeAmt = padLine(
+                                                "Change Amount",
+                                                "$" + MethodUtils.roundOffAmountString(((paidAmount + tipAmount) - order!!.payments.last().amount)),
+                                                if (customerSettingModel.fonts == LARGE) 23 else 48
+                                            ).toString()
 
-                                        printBoldLeft(changeAmt)
+                                            printBoldLeft(changeAmt)
+                                        }
                                         lineBreak()
 
                                         /**
