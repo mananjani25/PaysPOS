@@ -528,7 +528,7 @@ class KioskService : Service(), StatusChangeEventListener {
                             )
 
 
-
+                    lineFeed(1)
 
                     appendText(
 
