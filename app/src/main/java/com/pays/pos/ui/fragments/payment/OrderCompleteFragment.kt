@@ -14262,7 +14262,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             PrinterBuilder()
                                                 .styleBold(true)
                                                 .actionPrintText(
-                                                    "------------------------"
+//                                                    "------------------------"
+                                                    "--------------------------------------------"
                                                 )
                                         )
 
@@ -14272,7 +14273,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             PrinterBuilder()
                                                 .styleAlignment(Alignment.Left)
                                                 .styleMagnification(
-                                                    MagnificationParameter(1, 1)
+                                                    MagnificationParameter(2, 2)
                                                 )
                                                 .actionPrintText(
                                                     content = addOrdersForStarKitchen(

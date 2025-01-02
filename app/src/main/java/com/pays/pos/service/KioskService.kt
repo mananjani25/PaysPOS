@@ -575,7 +575,8 @@ class KioskService : Service(), StatusChangeEventListener {
 
                     appendText(
 
-                                "--------------------------------------------"
+//                                "--------------------------------------------"
+                                "------------------------"
 
                     )
 
@@ -593,7 +594,8 @@ class KioskService : Service(), StatusChangeEventListener {
                     if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
                         appendText(
                           if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                        "--------------------------------------------\nOrder Note "
+//                                        "--------------------------------------------\nOrder Note "
+                                        "------------------------\nOrder Note "
                                     } else ""
                                 )
                         lineFeed(1)
@@ -622,7 +624,8 @@ class KioskService : Service(), StatusChangeEventListener {
                     if (kitchenSettingModel.showCustomerName && (orderData.data?.customer?.firstName != null || orderData.data?.customer?.lastName != null)) {
                         appendText(
                             if (kitchenSettingModel.showCustomerName && (orderData.data?.customer?.firstName != null || orderData.data?.customer?.lastName != null)) {
-                                        "--------------------------------------------"
+//                                        "--------------------------------------------"
+                                        "-----------------------"
                                     } else ""
                                 )
                         lineFeed(1)
@@ -977,7 +980,7 @@ class KioskService : Service(), StatusChangeEventListener {
                             add(
                                 PrinterBuilder()
                                     .styleBold(true)
-                                    .styleMagnification(MagnificationParameter(3, 3))
+                                    .styleMagnification(MagnificationParameter(1, 1))
                                     .actionPrintText(
                                         if (kitchenSettingModel.showOrderType)
                                             orderData.data?.orderType ?: ""
