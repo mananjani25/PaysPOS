@@ -590,7 +590,6 @@ class KioskService : Service(), StatusChangeEventListener {
                     )
 
                     lineFeed(1)
-                    setCharacterSize(2,2)
                     if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
                         appendText(
                           if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
@@ -672,6 +671,8 @@ class KioskService : Service(), StatusChangeEventListener {
                     } catch (e: Exception) {
 
                     }
+                    setCharacterSize(2,2)
+
                     lineFeed(6)
                     cutPaper(true)
 
