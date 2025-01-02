@@ -955,7 +955,7 @@
     <string name="payment_amount_is_zero">Payment Amount is zero.</string>
     <string name="invalid_card">Invalid card</string>
     <string name="pre_auth">Pre Auth</string>
-    <string name="are_you_sure_proceed">Are you sure you want to proceed?</string>
+    <string name="are_you_sure_proceed">Would you like to proceed with the entered gift card number?</string>
     <!-- Customer Loyalty -->
 </resources>
 
