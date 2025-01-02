@@ -54,8 +54,8 @@ import com.pays.pos.data.typeconvert.TypeConvertorPhone
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, PAXData::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class,
-        VenueDetailsResponse.Data.WastageReason::class, TbCartItem::class, CartModelBackup::class, OrderTypeBackup::class, TbLabelPrinterSettings::class, TbDynamicPaymentRecords::class, ValorModel::class],
-    version = 26
+        VenueDetailsResponse.Data.WastageReason::class, TbCartItem::class, CartModelBackup::class, OrderTypeBackup::class, TbLabelPrinterSettings::class, TbDynamicPaymentRecords::class, ValorModel::class, ActivePaymentGateway::class],
+    version = 27
 )
 @TypeConverters(
     TypeConvertersItems::class,
@@ -514,6 +514,20 @@ public abstract class AppDatabase : RoomDatabase() {
 
         }
 
+        val MIGRATION_24_25: Migration = object : Migration(24, 25) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                try {
+                    database.execSQL(
+                        "CREATE TABLE IF NOT EXISTS `active_payment_gateway` " +
+                                "(`id` INTEGER PRIMARY KEY NOT NULL, " +
+                                "`type` TEXT)"
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDatabase::class.java, DATABASE_NAME)
                 .addMigrations(
@@ -539,7 +553,8 @@ public abstract class AppDatabase : RoomDatabase() {
                     MIGRATION_20_21,
                     MIGRATION_21_22,
                     MIGRATION_22_23,
-                    MIGRATION_23_24
+                    MIGRATION_23_24,
+                    MIGRATION_24_25
                 ).fallbackToDestructiveMigration()
                 .build()
     }
