@@ -4068,12 +4068,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             .isNotEmpty()
                                     ) {
 
-                                        PrintSunmiUtils.printLogoInner(
-                                            prefProvider.getValue(
-                                                Constants.VENUE_LOGO,
-                                                ""
-                                            )
-                                        )
+//                                        PrintSunmiUtils.printLogoInner(
+//                                            prefProvider.getValue(
+//                                                Constants.VENUE_LOGO,
+//                                                ""
+//                                            )
+//                                        )
                                     }
 
 
@@ -4460,12 +4460,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     }
 
 
-                                    if (receiptModel?.order?.payments?.isNotEmpty() == true) {
+                                    if (order.payments.isNotEmpty()) {
 
                                         val str10 = padLine(
                                             "Transaction ID",
-                                            "" + receiptModel?.order?.payments?.size?.minus(1)
-                                                ?.let { receiptModel?.order?.payments?.get(it)?.id },
+                                            "" + order.payments.size.minus(1)
+                                                .let { order.payments[it].id },
                                             48
                                         ).toString()
                                         printLeft(str10)
@@ -4473,7 +4473,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                         val str11 = padLine(
                                             "Transaction Type",
-                                            receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType,
+                                            order.payments[order.payments.size - 1].paymentType,
                                             48
                                         ).toString()
                                         printLeft(str11)
