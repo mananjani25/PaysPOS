@@ -2253,8 +2253,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                                         TAG,
                                                         "getdataModSets:  ${Gson().toJson(dataMod)}"
                                                     )
+//                                                    launch {
 
-                                                    itemModifiersAdapter?.add(dataMod)
+
+//                                                    }
+                                                    itemModifiersAdapter?.add(/*dataMod*/dataMod.sortedBy { it.sort })
                                                     binding.txtDone.isEnabled = true
 
                                                 } else {

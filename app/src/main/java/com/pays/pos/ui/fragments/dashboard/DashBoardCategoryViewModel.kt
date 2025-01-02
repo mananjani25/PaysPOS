@@ -7436,6 +7436,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                             }
 
 
+                            /*launch {
+                                modifierSetList.addAll(mData.modifierSets.sortedBy { it.sort })
+                            }*/
                             modifierSetList.addAll(mData.modifierSets)
 
                             delay(1000)
