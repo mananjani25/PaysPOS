@@ -14,7 +14,6 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
 import com.android.volley.AuthFailureError
 import com.android.volley.Request
 import com.android.volley.VolleyError
@@ -581,6 +580,7 @@ class KioskService : Service(), StatusChangeEventListener {
 
                     lineFeed(1)
 
+                    setCharacterSize(1,1)
                     appendText(
                                 addReprintOrdersForStarKitchenKiosk(
                                     orderData.data?.orderItems!!,
@@ -590,6 +590,7 @@ class KioskService : Service(), StatusChangeEventListener {
                     )
 
                     lineFeed(1)
+                    setCharacterSize(2,2)
                     if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
                         appendText(
                           if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
@@ -3778,6 +3779,16 @@ class KioskService : Service(), StatusChangeEventListener {
     // [ESC {] Set upside down mode.
     fun setUpsideDownMode(enabled: Boolean) {
         orderContent.append("1b7b" + (if ((enabled)) "01" else "00"))
+    }
+
+    fun setCharacterSize(h: Int, w: Int) {
+        var n = 0
+        if (h >= 1 && h <= 8) n = n or (h - 1)
+        if (w >= 1 && w <= 8) {
+            n = n or ((w - 1) shl 4)
+            charHSize = w
+        }
+        orderContent.append("1d21" + String.format("%02x", n))
     }
 
 
