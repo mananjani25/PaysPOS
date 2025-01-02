@@ -18727,7 +18727,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                    if (customerSettingModel.showRefundAmount) {
+                    if (customerSettingModel.showRefundAmount && receiptModel!!.order.payments.last().paymentType == "Cash") {
 
                         val str7 = padLine(
                             "Change Amount",
