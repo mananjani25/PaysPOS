@@ -1,8 +1,12 @@
 package com.pays.pos.ui.fragments.eGiftCard
 
+import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Message
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,13 +21,11 @@ import com.pays.pos.R
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.databinding.FragmentBalanceInquiryBinding
-import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
 import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.extensions.gone
-import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.paxUtils.SettingINI
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,6 +33,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.ref.WeakReference
 
 @AndroidEntryPoint
 class BalanceInquiryFragment : Fragment() {
@@ -38,17 +41,21 @@ class BalanceInquiryFragment : Fragment() {
     private lateinit var binding: FragmentBalanceInquiryBinding
     private val giftCardViewModel by activityViewModels<GiftCardViewModel>()
 
+    var fromPAXSwipe:Boolean=false
     private var posLink: PosLink = PosLink()
+    lateinit var weakContext: WeakReference<Context>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentBalanceInquiryBinding.inflate(layoutInflater)
+        weakContext= WeakReference(requireActivity())
         hideDefaultKeypads()
         onClick()
         showProgressObserver()
 //        startPAXTestWithGiftCard()
+
         return binding.root
     }
 
@@ -64,7 +71,7 @@ class BalanceInquiryFragment : Fragment() {
         closePaxRequest()
         super.onStop()
     }
-    private fun startPAXTestWithGiftCard() {
+    private fun startPAXWithGiftCard() {
         GlobalScope.launch {
             posLink.SetCommSetting(
                 SettingINI.getCommSettingFromFile(
@@ -95,6 +102,7 @@ class BalanceInquiryFragment : Fragment() {
                 if (resultCode == "000000") {
                     withContext(Dispatchers.Main){
                         binding.apply {
+                            fromPAXSwipe=true
                             if (response.PAN.isNullOrEmpty()){
                                 edtGiftCardNumber.setText(response.Track2Data.toString())
                                 Log.d("VALID: ", "Here__Track: ${response.Track2Data.toString()}")
@@ -195,7 +203,7 @@ class BalanceInquiryFragment : Fragment() {
                             binding.btnReadCard?.isClickable=true
                         }
                     }.start()
-                    startPAXTestWithGiftCard()
+                    startPAXWithGiftCard()
                 }
             })
         }
@@ -206,7 +214,17 @@ class BalanceInquiryFragment : Fragment() {
         // to check balance of existing gift card
         binding.txtCheckBalance.setOnClickListener {
             Log.d("VALID: ", "txtCheckBalance Called")
-            checkBalanceEnquiryForGiftcard()
+            if (fromPAXSwipe){
+                checkBalanceEnquiryForGiftcard()
+            }else{
+                weakContext.get()?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(it,getString(R.string.are_you_sure_proceed),object:DialogInterface.OnClickListener{
+                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                            checkBalanceEnquiryForGiftcard()
+                        }
+                    })
+                }
+            }
         }
     }
 
