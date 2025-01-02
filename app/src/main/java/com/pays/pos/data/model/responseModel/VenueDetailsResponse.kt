@@ -309,13 +309,13 @@ data class VenueDetailsResponse(
             @SerializedName("is_deleted")
             var isDeleted: Boolean = false,
             @SerializedName("app_id")
-            val app_id: String="",
+            val app_id: String?="",
             @SerializedName("app_key")
-            val app_key: String="",
+            val app_key: String?="",
             @SerializedName("epi")
-            val epi: String="",
+            val epi: String?="",
             @SerializedName("channel_id")
-            val channel_id: String=""
+            val channel_id: String?=""
         )
     }
 }

@@ -14262,7 +14262,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             PrinterBuilder()
                                                 .styleBold(true)
                                                 .actionPrintText(
-                                                    "------------------------"
+//                                                    "------------------------"
+                                                    "--------------------------------------------"
                                                 )
                                         )
 
@@ -14272,7 +14273,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             PrinterBuilder()
                                                 .styleAlignment(Alignment.Left)
                                                 .styleMagnification(
-                                                    MagnificationParameter(1, 1)
+                                                    MagnificationParameter(2, 2)
                                                 )
                                                 .actionPrintText(
                                                     content = addOrdersForStarKitchen(
@@ -18727,7 +18728,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-                    if (customerSettingModel.showRefundAmount) {
+                    if (customerSettingModel.showRefundAmount && receiptModel!!.order.payments.last().paymentType == "Cash") {
 
                         val str7 = padLine(
                             "Change Amount",
