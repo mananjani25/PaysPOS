@@ -1612,6 +1612,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         dynamicPaymentId: Int = -1
     ) {
 
+        var dynamicPaymentTypeId = ""
+
         guestRequestModel?.paymentAttributes!!.amount =
             paymentAmount
         guestRequestModel?.paymentAttributes!!.serviceChargeAmount =
@@ -1629,8 +1631,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         dynamicPaymentType?.let { payment ->
             if (payment.isNotEmpty() && dynamicPaymentId != -1) {
                 guestRequestModel?.paymentAttributes?.let {
+                    dynamicPaymentTypeId = dynamicPaymentId.toString()
                     it.paymentType = getString(R.string.external)
-                    it.dynamicPaymentId = dynamicPaymentId.toString()
+                    it.dynamicPaymentId = dynamicPaymentTypeId
                 }
             }
         }
@@ -1761,6 +1764,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge
         guestPaymentAttributes.cash_discount_type =
             guestRequestModel?.paymentAttributes!!.cash_discount_type
+        guestPaymentAttributes.dynamicPaymentId = dynamicPaymentTypeId
+
 
 
 
@@ -1808,6 +1813,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 guestPaymentAttributes?.cash_discount_or_surcharge = 0.0
                 guestRequestModel?.paymentAttributes?.cash_discount_or_surcharge = 0.0
             }
+        } else if (paymentType == "External") {
+            guestPaymentAttributes.dynamicPaymentId = dynamicPaymentTypeId
+            guestRequestModel?.paymentAttributes?.dynamicPaymentId = dynamicPaymentTypeId
         }
 
         guestRequestModel?.paymentAttributes!!.paymentAttributes =
@@ -2939,6 +2947,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 myRequest.order.paymentAttributes?.let {
                     it.paymentType = getString(R.string.external)
                     it.dynamicPaymentId = dynamicPaymentId.toString()
+                    guestRequestModel?.paymentAttributes?.dynamicPaymentId = dynamicPaymentId.toString()
                 }
             }
         }
