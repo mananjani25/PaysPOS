@@ -110,6 +110,7 @@ class PlasticCardNumber : Fragment() {
 
                     withContext(Dispatchers.Main){
                         binding.apply {
+                            btnReadCard?.isClickable = true
                             var cardValue=""
                             if (response.PAN.isNullOrEmpty()){
                                 Log.d("VALID: ", "Here__Track: ${response.Track2Data.toString()}")
@@ -129,7 +130,6 @@ class PlasticCardNumber : Fragment() {
                         }
                     }
 
-
                     /*runOnUiThread(Runnable {
                         with(binding) {
                             edtAmount?.text?.clear()
@@ -138,11 +138,11 @@ class PlasticCardNumber : Fragment() {
                         }
                     })*/
                 } else {
-
+                    binding.btnReadCard?.isClickable = true
                 }
-
+            }else{
+                binding.btnReadCard?.isClickable = true
             }
-
         }
     }
 

@@ -102,6 +102,7 @@ class BalanceInquiryFragment : Fragment() {
                 if (resultCode == "000000") {
                     withContext(Dispatchers.Main){
                         binding.apply {
+                            btnReadCard?.isClickable = true
                             fromPAXSwipe=true
                             if (response.PAN.isNullOrEmpty()){
                                 edtGiftCardNumber.setText(response.Track2Data.toString())
@@ -114,9 +115,11 @@ class BalanceInquiryFragment : Fragment() {
                         }
                     }
                 }else{
-
+                    binding.btnReadCard?.isClickable = true
                 }
 
+            }else{
+                binding.btnReadCard?.isClickable = true
             }
 
         }
