@@ -59,6 +59,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import kotlinx.coroutines.*
+import java.util.Collections
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -2257,7 +2258,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
 
 //                                                    }
-                                                    itemModifiersAdapter?.add(/*dataMod*/dataMod.sortedBy { it.sort })
+
+                                                    dataMod.forEach {
+                                                       Collections.sort(it.modifiers)
+                                                    }
+                                                    itemModifiersAdapter?.add(dataMod)
                                                     binding.txtDone.isEnabled = true
 
                                                 } else {

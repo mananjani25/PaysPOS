@@ -13,6 +13,8 @@ import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.callback.ModifierLongClickCallback
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.visible
+import java.util.*
+import kotlin.collections.ArrayList
 
 class ItemModifierAdapter(
     private val maxAllowed: Int,
@@ -155,6 +157,7 @@ class ItemModifierAdapter(
     }
 
     fun addAll(modifiers: List<Modifier>) {
+        Collections.sort(modifiers)
         list.addAll(modifiers)
         notifyDataSetChanged()
     }
