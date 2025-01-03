@@ -2851,18 +2851,18 @@ class CustomDisplay(
 //            callUpdateTip()
                 if (prefProvider.getValue(Constants.VALOR_APP_ID, "").isNotEmpty()) {
                     adjustValorTips()
-                }else if (prefProvider.getValue(
-                        Constants.VALOR_APP_ID, ""
-                    ).isEmpty()){
-                    adjustDejavooTips()
-                }
-                else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
+                }else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
                         Constants.IS_PAX_CONNECTED,
                         false
                     )
                 ) {
                     adjustPaxTips()
+                }else if (prefProvider.getValue(
+                        Constants.VALOR_APP_ID, ""
+                    ).isEmpty()){
+                    adjustDejavooTips()
                 }
+
                 else if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
                     magtekCall(wholeTotalPrice)
                 }
