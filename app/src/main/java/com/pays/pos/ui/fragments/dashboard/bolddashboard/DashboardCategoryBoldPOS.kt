@@ -1274,9 +1274,22 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     private fun loadCategoryFragment(fragment: Fragment) {
-        val fm: FragmentManager = requireActivity().supportFragmentManager
-        fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
-        Log.e("Dashboard Tracking ", "Track Dashboard - 855 Category Fragment")
+//        val fm: FragmentManager = requireActivity().supportFragmentManager
+//        fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
+
+        try {
+            val frameLayoutId = binding.frameLayout.id
+            if (frameLayoutId == View.NO_ID) {
+                Log.e("Fragment Debug", "FrameLayout has no valid ID.")
+                return
+            }
+
+            val fm: FragmentManager = requireActivity().supportFragmentManager
+            fm.beginTransaction().replace(frameLayoutId, fragment).commit()
+            Log.e("Dashboard Tracking", "Track Dashboard - 855 Category Fragment")
+        } catch (e: Exception) {
+            Log.e("Fragment Debug", "Error replacing fragment: ${fragment::class.java.simpleName}", e)
+        }
     }
 
 
