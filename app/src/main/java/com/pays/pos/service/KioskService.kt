@@ -529,6 +529,8 @@ class KioskService : Service(), StatusChangeEventListener {
 
                     lineFeed(1)
 
+                    setCharacterSize(1,1)
+
                     appendText(
 
                                 if (kitchenSettingModel.showOrderType)
@@ -571,6 +573,7 @@ class KioskService : Service(), StatusChangeEventListener {
                     )
 
                     lineFeed(1)
+                    setCharacterSize(2,2)
 
                     appendText(
 
@@ -581,7 +584,8 @@ class KioskService : Service(), StatusChangeEventListener {
 
                     lineFeed(1)
 
-                    setCharacterSize(1,1)
+                    setCharacterSize(2,2)
+                    setAlignment(0)
                     appendText(
                                 addReprintOrdersForStarKitchenKiosk(
                                     orderData.data?.orderItems!!,
@@ -590,7 +594,10 @@ class KioskService : Service(), StatusChangeEventListener {
 
                     )
 
+                    setCharacterSize(2,2)
+
                     lineFeed(1)
+                    setAlignment(1)
                     if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
                         appendText(
                           if (orderData.data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
@@ -611,6 +618,10 @@ class KioskService : Service(), StatusChangeEventListener {
 
                     }
                     lineFeed(1)
+
+                    setCharacterSize(1,1)
+
+                    setAlignment(0)
                     if (kitchenSettingModel.showCustomerName && (orderData.data?.customer?.firstName != null || orderData.data?.customer?.lastName != null)) {
                         appendText(
                          if (kitchenSettingModel.showCustomerName && (orderData.data?.customer?.firstName != null || orderData.data?.customer?.lastName != null)) {
@@ -618,14 +629,13 @@ class KioskService : Service(), StatusChangeEventListener {
                                     } else ""
 
                         )
-                        lineFeed(1)
                     }
 
                     if (kitchenSettingModel.showCustomerName && (orderData.data?.customer?.firstName != null || orderData.data?.customer?.lastName != null)) {
                         appendText(
                             if (kitchenSettingModel.showCustomerName && (orderData.data?.customer?.firstName != null || orderData.data?.customer?.lastName != null)) {
-//                                        "--------------------------------------------"
-                                        "-----------------------"
+                                        "--------------------------------------------"
+//                                        "-----------------------"
                                     } else ""
                                 )
                         lineFeed(1)
