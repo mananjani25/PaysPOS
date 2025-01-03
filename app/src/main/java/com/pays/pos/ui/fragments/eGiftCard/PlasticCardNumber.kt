@@ -141,7 +141,11 @@ class PlasticCardNumber : Fragment() {
                     binding.btnReadCard?.isClickable = true
                 }
             }else{
-                binding.btnReadCard?.isClickable = true
+                runOnUiThread(object : Runnable {
+                    override fun run() {
+                        binding.btnReadCard?.isClickable = true
+                    }
+                })
             }
         }
     }

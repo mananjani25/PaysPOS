@@ -26,6 +26,7 @@ import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
 import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.extensions.gone
+import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.paxUtils.SettingINI
 import dagger.hilt.android.AndroidEntryPoint
@@ -119,7 +120,11 @@ class BalanceInquiryFragment : Fragment() {
                 }
 
             }else{
-                binding.btnReadCard?.isClickable = true
+                runOnUiThread(object : Runnable {
+                    override fun run() {
+                        binding.btnReadCard?.isClickable = true
+                    }
+                })
             }
 
         }
