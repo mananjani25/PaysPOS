@@ -2849,14 +2849,15 @@ class CustomDisplay(
         try{
             if (mIsCardPayment /*&& !mIsSignatureRequired*/) {
 //            callUpdateTip()
-                if (prefProvider.getValue(Constants.VALOR_APP_ID, "").isNotEmpty()) {
-                    adjustValorTips()
-                }else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
+
+                if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
                         Constants.IS_PAX_CONNECTED,
                         false
                     )
                 ) {
                     adjustPaxTips()
+                }else if (prefProvider.getValue(Constants.VALOR_APP_ID, "").isNotEmpty()) {
+                    adjustValorTips()
                 }else if (prefProvider.getValue(
                         Constants.VALOR_APP_ID, ""
                     ).isEmpty()){
