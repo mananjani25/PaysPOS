@@ -7795,6 +7795,21 @@ class DashBoardCategoryViewModel @Inject constructor(
                     resource.data.let { venueDetailsResponse ->
                         if (venueDetailsResponse?.status == 200) {
 
+
+                            /*--------------------Set the payment type------------------*/
+                            CoroutineScope(Dispatchers.IO).launch {
+                                var activePaymentType=posRepository.getActivePaymentGateway()
+                                if (activePaymentType.isEmpty()){
+//                                    Insert to DB
+                                    posRepository.insertActivePaymentGateway(ActivePaymentGateway(type = venueDetailsResponse.settingData.data.activatedPaymentGateway))
+                                }else{
+//                                    Update to DB
+                                    activePaymentType.first().type = venueDetailsResponse.settingData.data.activatedPaymentGateway
+                                    posRepository.updateActivePayment(activePaymentType.first())
+                                }
+                            }
+                            /*--------------------Set the payment type------------------*/
+
                             posRepository.deleteKitchenPrinters()
                             resource.data?.let { it ->
                                 if (it.settingData.data.teamRoles.isNotEmpty()) {

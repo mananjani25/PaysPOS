@@ -12,11 +12,8 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 @Keep
 @Entity(tableName = "active_payment_gateway")
-class ActivePaymentGateway : Parcelable {
-
+data class ActivePaymentGateway(
     @PrimaryKey(autoGenerate = true)
-    var id: Int = 0
+    var id: Int = 0,
 
-    var type: String? = ""
-
-}
+    var type: String? = "") : Parcelable

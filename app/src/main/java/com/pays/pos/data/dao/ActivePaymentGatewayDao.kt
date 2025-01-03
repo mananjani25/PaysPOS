@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.pays.pos.data.entities.ActivePaymentGateway
 import com.pays.pos.data.entities.TbDiscount
 
@@ -13,7 +14,7 @@ import com.pays.pos.data.entities.TbDiscount
 interface ActivePaymentGatewayDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addPaymentGateway(activePaymentGateway: ActivePaymentGateway): Long
+    suspend fun insertActivePaymentGateway(activePaymentGateway: ActivePaymentGateway): Long
 
     @Query("select * from active_payment_gateway")
     fun getActivePaymentGateway(): List<ActivePaymentGateway>
@@ -21,6 +22,7 @@ interface ActivePaymentGatewayDao {
     @Query("DELETE FROM active_payment_gateway")
     suspend fun delete()
 
-    @Query("UPDATE active_payment_gateway SET type = :type WHERE id = :id")
-    suspend fun updateActivePayment(id: Int, type: String?): Int
+//    @Query("UPDATE active_payment_gateway SET type = :type WHERE id = :id")
+    @Update
+    suspend fun updateActivePayment(activePaymentGateway: ActivePaymentGateway): Int
 }

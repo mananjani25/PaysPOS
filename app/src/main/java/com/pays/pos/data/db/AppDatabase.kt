@@ -125,6 +125,7 @@ public abstract class AppDatabase : RoomDatabase() {
     abstract fun labelPrinterSettings(): LabelPrinterSettingsDao
     abstract fun dynamicPaymentDao(): DynamicPaymentDao
     abstract fun valorDao(): ValorDao
+    abstract fun activePaymentGatewayDao(): ActivePaymentGatewayDao
 
     companion object {
 
