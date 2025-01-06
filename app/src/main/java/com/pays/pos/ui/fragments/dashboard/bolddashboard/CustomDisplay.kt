@@ -30,6 +30,7 @@ import com.google.gson.JsonArray
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
+import com.pax.poslink.log.LogFilter.Const
 import com.pays.payments.callbacks.PaymentCallback
 import com.pays.payments.design.*
 import com.pays.payments.gateways.dejavoo.DejavooPaymentGateway
@@ -2849,7 +2850,42 @@ class CustomDisplay(
         try{
             if (mIsCardPayment /*&& !mIsSignatureRequired*/) {
 //            callUpdateTip()
-                if (prefProvider.getValue(Constants.VALOR_APP_ID, "").isNotEmpty()) {
+                when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
+                    Constants.PAX->{
+                        if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
+                            adjustPaxTips()
+                        }
+                    }
+
+                    Constants.VALOR, Constants.VELOR->{
+                        adjustValorTips()
+                    }
+
+                    Constants.DEJAVOO->{
+                        adjustDejavooTips()
+                    }
+
+                    else->{
+                        if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
+                            magtekCall(wholeTotalPrice)
+                        }else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
+                            AlertUtils.showCustomAlert(
+                                context,
+                                "Please connect to PAX device"
+                            )
+                        }
+                    }
+                }
+
+               /* if (prefProvider.getValue(Constants.VALOR_APP_ID, "").isNotEmpty()) {
                     adjustValorTips()
                 }else if (prefProvider.getValue(
                         Constants.VALOR_APP_ID, ""
@@ -2875,7 +2911,7 @@ class CustomDisplay(
                         context,
                         "Please connect to PAX device"
                     )
-                }
+                }*/
             } else if (!mIsCardPayment) {
                 callUpdateTip()
             }

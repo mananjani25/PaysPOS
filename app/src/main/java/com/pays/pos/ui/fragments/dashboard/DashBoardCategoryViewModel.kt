@@ -7799,6 +7799,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                             /*--------------------Set the payment type------------------*/
                             CoroutineScope(Dispatchers.IO).launch {
                                 var activePaymentType=posRepository.getActivePaymentGateway()
+                                prefProvider.setValue(Constants.PAYMENT_GATEWAY_TYPE,venueDetailsResponse.settingData.data.activatedPaymentGateway?:"")
+                                if (!venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.PAX,ignoreCase = true)){
+                                    prefProvider.getValueboolean(
+                                        Constants.IS_PAX_CONNECTED,
+                                        false
+                                    )
+                                }
                                 if (activePaymentType.isEmpty()){
 //                                    Insert to DB
                                     posRepository.insertActivePaymentGateway(ActivePaymentGateway(type = venueDetailsResponse.settingData.data.activatedPaymentGateway))

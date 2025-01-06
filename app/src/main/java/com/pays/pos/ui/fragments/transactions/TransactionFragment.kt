@@ -58,6 +58,7 @@ import com.google.gson.JsonArray
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
+import com.pax.poslink.log.LogFilter.Const
 import com.pays.pos.data.model.requestModel.CashLogRequest
 import com.pays.payments.callbacks.PaymentCallback
 import com.pays.payments.design.*
@@ -292,28 +293,50 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 } else {
                     adjustPaxTips()
                 }*/
-                if (singleTransaction?.ref_num.isNullOrEmpty()) {
-                    magtekCall(tipAmount)
-                } else if (!singleTransaction?.ref_num.isNullOrEmpty() && prefProvider.getValueboolean(
-                        Constants.IS_PAX_CONNECTED,
-                        false
-                    )
-                ) {
-                    adjustPaxTips()
-                }else if (prefProvider.getValue(Constants.VALOR_APP_KEY, "").isNotEmpty()) {
-                    adjustValorTips()
-                }else if (prefProvider.getValue(Constants.VALOR_APP_KEY, "").isEmpty()){
-                    adjustDejavooTips()
-                }
-                else if (!singleTransaction?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(
-                        Constants.IS_PAX_CONNECTED,
-                        false
-                    )
-                ) {
-                    AlertUtils.showCustomAlert(
-                        requireContext(),
-                        "Please connect to PAX device"
-                    )
+                when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
+                    Constants.PAX->{
+                        if (!singleTransaction?.ref_num.isNullOrEmpty() && prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
+                            adjustPaxTips()
+                        }else{
+                            if (!singleTransaction?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                    Constants.IS_PAX_CONNECTED,
+                                    false
+                                )
+                            ) {
+                                AlertUtils.showCustomAlert(
+                                    requireContext(),
+                                    "Please connect to PAX device"
+                                )
+                            }
+                        }
+                    }
+                    Constants.VALOR->{
+                        adjustValorTips()
+                    }
+                    Constants.DEJAVOO->{
+                        adjustDejavooTips()
+                    }
+
+                    else->{
+                        if (singleTransaction?.ref_num.isNullOrEmpty()) {
+                            magtekCall(tipAmount)
+                        }else{
+                            if (!singleTransaction?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                    Constants.IS_PAX_CONNECTED,
+                                    false
+                                )
+                            ) {
+                                AlertUtils.showCustomAlert(
+                                    requireContext(),
+                                    "Please connect to PAX device"
+                                )
+                            }
+                        }
+                    }
                 }
             } else {
                 tipCall(false)

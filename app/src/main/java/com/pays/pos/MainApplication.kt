@@ -32,7 +32,6 @@ import java.io.File
 
 @HiltAndroidApp
 class MainApplication : Application() {
-
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
@@ -147,6 +146,7 @@ class MainApplication : Application() {
     companion object {
         private var instance: MainApplication? = null
         var mainActivity: MainActivity? = null
+//        public var paymentGatewayType:String?=null
         fun getInstance(): MainApplication? {
             if (instance == null) {
                 synchronized(MainApplication::class.java) {

@@ -5,10 +5,7 @@ import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
-import android.os.Bundle
-import android.os.Environment
-import android.os.Message
+import android.os.*
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -47,6 +44,8 @@ import com.pays.pos.utils.paxUtils.SettingINI
 import com.magtek.mobile.android.mtusdk.*
 import com.pax.poslink.*
 import com.pax.poslink.broadpos.BroadPOSCommunicator
+import com.pax.poslink.log.LogFilter.Const
+import com.pays.pos.MainApplication
 import com.pays.pos.data.entities.ActivePaymentGateway
 import com.pays.pos.utils.Event
 import com.pays.pos.utils.extensions.gone
@@ -143,35 +142,53 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         with(binding){
             runOnUiThread(Runnable {
                 tvPax.visible()
+                tvDisconnectPax.gone()
             })
         }
     }
     var paymentTypeCoroutine= CoroutineScope(Dispatchers.IO + coroutineExceptionHandler)
 
     private fun initPaymentGateway() {
-        paymentTypeCoroutine.launch {
-            paymentGatewayTypeViewModel.getActivePaymentGatewayType()
-        }
-
-        paymentGatewayTypeViewModel.activePaymentGatewayObservable.observe(viewLifecycleOwner, object:Observer<List<ActivePaymentGateway>>{
+        val activePaymentTypeObserver=object:Observer<List<ActivePaymentGateway>>{
             override fun onChanged(t: List<ActivePaymentGateway>?) {
                 t?.let {
-                    if (activePaymentType.isNotEmpty()){
-                        with(binding) {
-                            if (activePaymentType.get(0).type.equals("PAX")) {
-                                initPaxButtonsVisibility()
-                            } else {
-                                tvPax.gone()
-                                tvDisconnectPax.gone()
-                            }
-                        }
+                    if (it.isNotEmpty()){
+                        prefProvider.setValue(Constants.PAYMENT_GATEWAY_TYPE,it.get(0).type.toString())
+                        setPaxButtonVisibility(it.get(0).type)
                     }
                 }
             }
+        }
+        if (!prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"").isEmpty()){
+            setPaxButtonVisibility(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,""))
+        }else{
+            paymentGatewayTypeViewModel.activePaymentGatewayObservable.removeObserver(activePaymentTypeObserver)
 
-        })
+            paymentTypeCoroutine.launch {
+                paymentGatewayTypeViewModel.activePaymentGatewayObservable.observe(viewLifecycleOwner, activePaymentTypeObserver)
+
+                paymentGatewayTypeViewModel.getActivePaymentGatewayType()
+            }
+        }
+
+
     }
 
+    private fun setPaxButtonVisibility(type: String?) {
+        if (type.equals(Constants.PAX)) {
+            initPaxButtonsVisibility()
+        } else {
+//            runOnUiThread(Runnable {
+            Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                with(binding) {
+                 tvPax.visibility = View.GONE
+                 tvDisconnectPax.visibility = View.GONE
+                }
+            },500)
+
+//            })
+        }
+    }
     private fun initPaxButtonsVisibility() {
         if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
             binding.tvDisconnectPax.visibility = View.VISIBLE

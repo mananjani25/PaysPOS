@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutionException
 
 object Constants {
 
-    const val paymentLive: Boolean = true
+    const val paymentLive: Boolean = false
     const val paxLive="https://secure.epx.com/"
     const val paxDebug="https://secure.epxuap.com/"
 
@@ -869,8 +869,13 @@ object Constants {
     const val INVENTORY_SYNC = "INVENTORY_SYNC"
     const val UPDATED_CARTMODEL_ID = "updated_cartmodel_id"
 
+    const val PAX = "PAX"
+    const val PAYMENT_GATEWAY_TYPE = "PAYMENT_GATEWAY_TYPE"
+    const val MAGTEK = "MAGTEK"
+
     /*-------Valor--------*/
     const val VALOR = "VALOR"
+    const val VELOR = "VELOR"
     const val VALOR_APP_ID = "VALOR_APP_ID"
     const val VALOR_APP_KEY = "VALOR_APP_KEY"
     const val VALOR_EPI = "VALOR_EPI"

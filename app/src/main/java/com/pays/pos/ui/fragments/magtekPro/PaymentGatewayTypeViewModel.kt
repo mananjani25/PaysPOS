@@ -9,7 +9,9 @@ import com.pays.pos.data.entities.ActivePaymentGateway
 import com.pays.pos.data.repositories.PosRepository
 import com.pays.pos.di.PrefProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,8 +24,8 @@ class PaymentGatewayTypeViewModel @Inject constructor(
     private var _activePaymentGatewayObservable = MutableLiveData<List<ActivePaymentGateway>>()
     public var activePaymentGatewayObservable:LiveData<List<ActivePaymentGateway>> = _activePaymentGatewayObservable
 
-   suspend fun getActivePaymentGatewayType() {
-       viewModelScope.launch {
+   fun getActivePaymentGatewayType() {
+       viewModelScope.launch(Dispatchers.IO) {
            _activePaymentGatewayObservable.postValue(posRepository.getActivePaymentGateway())
        }
     }
