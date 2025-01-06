@@ -2,6 +2,7 @@ package com.pays.pos.ui.fragments.checkout
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
+import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Handler
@@ -15,10 +16,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.pays.pos.R
 import com.pays.pos.data.entities.CartModel
@@ -68,7 +73,10 @@ import com.pax.poslink.ProcessTransResult
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.pays.pos.data.remote.Constants.DINE_IN
+import com.pays.pos.data.remote.Constants.GIFT_CARD
 import com.pays.pos.data.remote.Constants.IS_GIFT_CARD_REDEEM
+import com.pays.pos.data.remote.Constants.ORDER_TYPE
+import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
 import com.pays.pos.ui.fragments.dineInNew.DineInOrderTableViewModelPays
@@ -90,7 +98,7 @@ import kotlin.math.roundToInt
 class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : Fragment(),
     magtekCallback,
     DeleteOptionCallback, IDeviceListCallback {
-
+    private var textToPay: Boolean = false
     private lateinit var presentation: CustomDisplayDineIn
     private val dashboardViewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val passcodeViewModel by activityViewModels<PasscodeViewModel>()
@@ -240,6 +248,16 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
             binding.llManualCardEntry.visibility = View.GONE
         }
+
+        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) != GIFT_CARD) {
+            /* For now the gift card button is hidden, when required the below code will be uncommented*/
+            binding.tvOther.visible()
+//            binding.lnrGiftCard.visible()
+        } else {
+            binding.tvOther.gone()
+            binding.lnrGiftCard.gone()
+        }
+
         initPOSLink()
         getMerchantDataObserver()
 
@@ -331,8 +349,395 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             callback()
             setUpManualCardFocusChanged()
             observeQueueCreate()
+            initDynamicPayment()
+
         }
 
+    }
+
+    @SuppressLint("InflateParams")
+    private fun initDynamicPayment() {
+        dashboardViewModel.getDynamicPaymentRecords(true, prefProvider.getLocationId()).asLiveData()
+            .observe(
+                viewLifecycleOwner
+            ) { list ->
+                Log.d("DynamicLiveData: ", "Called")
+                list?.let { dynamicList ->
+                    if (dynamicList.isNotEmpty()) {
+                        binding.tvOther.visible()
+                        var layoutInflater = requireContext().getSystemService(
+                            Context.LAYOUT_INFLATER_SERVICE
+                        ) as LayoutInflater
+                        layoutInflater = LayoutInflater.from(requireContext())
+                        binding.llDynamicLink.removeAllViews()
+                        /* Render the dynamic button here with the help of loop */
+                        dynamicList.forEach {
+                            val itemDynamicButton =
+                                layoutInflater.inflate(R.layout.item_button, null, false)
+                            itemDynamicButton.findViewById<LinearLayout>(R.id.llDynamicPayment)
+                                .setPadding(
+                                    resources.getDimensionPixelSize(R.dimen._20sdp),
+                                    resources.getDimensionPixelSize(R.dimen._10sdp),
+                                    resources.getDimensionPixelSize(R.dimen._20sdp),
+                                    resources.getDimensionPixelSize(R.dimen._10sdp)
+                                )
+                            itemDynamicButton.id = it.id
+                            itemDynamicButton.findViewById<AppCompatTextView>(R.id.tvDynamicPaymentName).text =
+                                it.name
+
+                            itemDynamicButton.setOnSingleClickListener { view ->
+                                view.isEnabled = false
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    view.isEnabled = true
+                                }, 5000)
+                                    startDynamicPayment(it.name, it.id)
+                            }
+
+                            binding.llDynamicLink.addView(itemDynamicButton)
+                        }
+                    } else {
+                        binding.llDynamicLink.children.forEach {
+                            it.isActivated = false
+                            it.isClickable = false
+                            it.isEnabled = false
+                            it.alpha = 0f
+                        }
+
+                        //                                binding.tvOther.invisible()
+                    }
+                }
+            }
+    }
+
+    private fun startDynamicPayment(name: String?, id: Int) {
+        val cardAmount = binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
+            .replace(")", "").trim().toDouble()
+        val cashAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+        if (cardAmount != 0.00 && cashAmount != 0.00) {
+            if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
+
+                restrictTvCashClicks()
+
+                custom_paymentAmount = 0.0
+
+                if (cashDiscountType.equals("CashDiscount", ignoreCase = true)) {
+                    paymentviewModel.totalPayAmount(
+                        binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
+                            .replace(")", "").trim().toDouble()
+                    )
+                    paymentAmount =
+                        binding.tvCard.text.toString().replace("$", "").replace("Card (", "")
+                            .replace(")", "").trim().toDouble()
+                } else {
+                    paymentviewModel.totalPayAmount(
+                        binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                    )
+                    paymentAmount =
+                        binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                }
+
+                dynamicCashPaymentWithVariation(
+                    dynamicPaymentName = name ?: "", dynamicPaymentId = id
+                )
+            } else {
+                errorDisplay("Please check your Network Connectivity.")
+            }
+        } else {
+            errorDisplay(getString(R.string.payment_amount_is_zero))
+        }
+
+    }
+
+    private fun dynamicCashPaymentWithVariation(
+        dynamicPaymentName: String = "",
+        dynamicPaymentId: Int = -1
+    ) {
+        paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_cashPaymentWithVariation() paymentAmount-> ${
+                    Gson().toJson(paymentAmount)
+                }, WholetotalPrice -> ${Gson().toJson(WholetotalPrice)}, isSelectedCount -> ${
+                    Gson().toJson(
+                        isSelectedCount
+                    )
+                }", true
+            )
+        )
+
+//        paymentviewModel.tipOnAmount = paymentAmount
+        //        Above code is commented, because the split amount was not changing, below code is the solution
+        try {
+            paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 3).toDouble()
+        } catch (e: Exception) {
+            try {
+                paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                    .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 2).toDouble()
+            } catch (e: Exception) {
+                try {
+                    paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                        .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".") + 1).toDouble()
+                } catch (e: Exception) {
+                    try {
+                        paymentviewModel.tipOnAmount = dashboardViewModel.totalPrice.toString()
+                            .substring(0, dashboardViewModel.totalPrice.toString().indexOf(".")).toDouble()
+                    } catch (e: Exception) {
+                    }
+                }
+            }
+        }
+        subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
+
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_cashPaymentWithVariation() dashboardViewModel.subTotalPrice-> ${
+                    Gson().toJson(dashboardViewModel.subTotalPrice)
+                } , isSelectedCount-> ${isSelectedCount}", true
+            )
+        )
+
+        totalServiceCharge =
+            String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
+        totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
+        totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
+        cashDiscountSurcharge = if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+            0.0
+        } else {
+            MethodUtils.getLatestCashDiscountOrSurCharge(
+                WholetotalPrice,
+                prefProvider,
+                requireContext()
+            ) / isSelectedCount
+        }
+        if (cashDiscountType.equals("CashDiscount") && dynamicPaymentName.isEmpty()) {
+            paymentAmount -= cashDiscountSurcharge
+        }
+        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+            if (prefProvider.getValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)) {
+                if (dynamicPaymentName.isNotEmpty()) {
+                    addValueInGiftCardUsingCash(dynamicPaymentName)
+                }else{
+                    addValueInGiftCardUsingCash()
+                }
+            } else {
+                if (prefProvider.getValue(Constants.GIFT_CARD_TYPE, "").equals("Physical") || (prefProvider.getValue(Constants.GIFT_CARD_TYPE, "").equals("Digital")) ){
+                    sellGiftCardUsingCash(
+                        dynamicPaymentType = dynamicPaymentName,
+                        dynamicPaymentId = dynamicPaymentId)
+                }else {
+                    sellGiftCardUsingCash()
+                }
+            }
+        } else {
+            if (isGuestPay) {
+                if (custom_paymentAmount != 0.0) {
+                    dineinOrderVieweModel.totalPayAmount(custom_paymentAmount)
+                }
+                paymentType = if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
+                    "External"
+                } else {
+                    "Cash"
+                }
+                guestAttributeCalculation(-1, "", dynamicPaymentId = dynamicPaymentId, dynamicPaymentType = dynamicPaymentName)
+
+                dashboardViewModel.apply {
+                    totalAmount = paymentAmount
+                    paymentTypeForTip = "cash"
+                }
+
+                guestRequestModel?.paymentAttributes?.let { logPrintGuest(it) }
+                if (dineInDataModel.isLastPayment) {
+                    dineinOrderVieweModel.payByGuest(
+                        dineInDataModel.guestId ?: 0,
+                        dineInDataModel.guestPaymentReq!!,
+                        dineInDataModel.isLastPayment == isSelectedCount <= 1,
+                        dineInDataModel.splitModel!!
+                    )
+                } else {
+                    dineinOrderVieweModel.payByGuest(
+                        dineInDataModel.guestId ?: 0, dineInDataModel.guestPaymentReq!!,
+                        false, dineInDataModel.splitModel!!
+                    )
+                }
+
+            } else {
+                Log.d(TAG, "paymentClick: click 3")
+                makeDynamicCashPayment(
+                    dynamicPaymentType = dynamicPaymentName,
+                    dynamicPaymentId = dynamicPaymentId
+                )
+            }
+        }
+    }
+
+    private fun makeDynamicCashPayment(
+        dynamicPaymentType: String? = "",
+        dynamicPaymentId: Int = -1
+    ) {
+
+        /**
+         * Added to check tip details
+         * **/
+
+        dashboardViewModel.apply {
+            totalAmount = paymentAmount
+            paymentTypeForTip = "cash"
+        }
+
+        paymentType = if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
+            "External"
+        } else {
+            "Cash"
+        }
+
+        if (orderId != -1 && orderId != 0) {
+            paymentviewModel.updateOrder(
+                true,
+                orderId,
+                paymentId,
+                paymentOfflineId,
+                orderOfflineId
+            )
+        } else {
+            paymentviewModel.updateOrder(false, null, null, "", "")
+        }
+
+
+        paymentviewModel.saveOrder(false)
+        paymentviewModel.textPay(textToPay)
+
+        /* Added by Rahul to solve the cartModel crash issue, i.e. cartModel is getting null - END*/
+
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_1 ->  paymentAmount -> ${
+                    Gson().toJson(subTotalPrice) + " paymentAmount -> " + Gson().toJson(
+                        paymentAmount
+                    )
+                }", true
+            )
+        )
+        val myRequest = cartList?.let {
+            paymentviewModel.createOrderRequest(
+                it,
+                subTotalPrice,
+                paymentAmount,
+                totalServiceCharge,
+                totalTax,
+                Constants.DINE_IN,
+                future_delivery_date,
+                future_delivery_time,
+                true,
+                totalDiscount,
+                tipAmount,
+                splitValue,
+                redeemLoyaltyInfo,
+                cashDiscountSurcharge,
+                true,
+                paymentType, cashDiscountType,
+                tipID, offlineId = orderOfflineId
+            )
+        }
+        LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
+        LogUtil.logE("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, ""))
+        if (myRequest != null) {
+            EventBus.getDefault()
+                .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (myRequest != null)_1"))
+            EventBus.getDefault().post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (myRequest != null) -> ${
+                        Gson().toJson(myRequest)
+                    }"
+                )
+            )
+
+            prefProvider.setValue("CART_MODEL1", "")
+            prefProvider.setValue("CART_MODEL2", "")
+
+            if (custom_paymentAmount != 0.0) {
+                paymentviewModel.totalPayAmount(custom_paymentAmount)
+                EventBus.getDefault().post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew, if (custom_paymentAmount != 0.0) -> ${
+                            Gson().toJson(custom_paymentAmount)
+                        }"
+                    )
+                )
+            }
+
+            EventBus.getDefault().post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_makeCashPayment()_if (myRequest != null) , myRequest -> ${
+                        Gson().toJson(myRequest)
+                    } _2"
+                )
+            )
+            dashboardViewModel.cartModel?.let {
+                if (it.orderTypeId == 9) {
+                    myRequest.order.orderTypeId = it.orderTypeId
+                }
+            }
+            paymentAttributesRequest(myRequest, dynamicPaymentType, dynamicPaymentId)
+        }
+    }
+
+    private fun sellGiftCardUsingCash(dynamicPaymentType:String="", dynamicPaymentId: Int =0) {
+//        paymentType = "Cash"
+
+        paymentType = if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
+            Constants.EXTERNAL_PAYMENT
+        } else if (dynamicPaymentType.isNotEmpty()){
+            Constants.EXTERNAL_PAYMENT
+        } else {
+            "Cash"
+        }
+
+        if (cartList==null){
+            runBlocking {
+                lifecycleScope.async(Dispatchers.IO){
+                    cartList=dashboardViewModel.getAllCartModels().last()
+                }.await()
+            }
+        }
+        val myRequest = cartList?.let {
+            giftCardViewModel.createSellGiftCardRequestUsingCash(paymentType=paymentType)
+        }
+
+
+        if (prefProvider.getValue(Constants.GIFT_CARD_TYPE, "").equals("Physical", true)) {
+            Log.e(TAG, "checkPlastiCard  ${myRequest?.gift_card?.amount}")
+
+            myRequest?.let { giftCardViewModel.sellGiftCard(it) }
+
+        } else {
+            if (myRequest != null) {
+                giftCardViewModel.sellGiftCard(myRequest)
+            }
+        }
+    }
+
+    private fun addValueInGiftCardUsingCash(dynamicPaymentName: String = "") {
+        paymentType = "Cash"
+        if (cartList==null){
+            runBlocking {
+                lifecycleScope.async(Dispatchers.IO){
+                    cartList=dashboardViewModel.getAllCartModels().last()
+                }.await()
+            }
+        }
+        val myRequest = cartList?.let {
+            giftCardViewModel.createAddValueInGiftCardRequestUsingCash(dynamicPaymentName)
+        }
+        if (myRequest != null) {
+            if (prefProvider.getValue(Constants.GIFT_CARD_TYPE, "").equals("Physical", true)) {
+                myRequest.gift_card.gift_card_type = "Physical"
+                giftCardViewModel.addValueInPhysicalGiftCard(true, myRequest)
+            } else {
+
+                giftCardViewModel.addValueInGiftCard(true, myRequest)
+            }
+        }
     }
 
     private fun setUpManualCardFocusChanged() {
@@ -1202,7 +1607,13 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     }
 
 
-    private fun guestAttributeCalculation(i: Int, toJson: String) {
+    private fun guestAttributeCalculation(
+        i: Int, toJson: String, dynamicPaymentType: String? = "",
+        dynamicPaymentId: Int = -1
+    ) {
+
+        var dynamicPaymentTypeId = ""
+
         guestRequestModel?.paymentAttributes!!.amount =
             paymentAmount
         guestRequestModel?.paymentAttributes!!.serviceChargeAmount =
@@ -1216,6 +1627,17 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         guestRequestModel?.paymentAttributes!!.totalDiscount =
             totalDiscount
         guestRequestModel?.paymentAttributes!!.paymentType = paymentType
+
+        dynamicPaymentType?.let { payment ->
+            if (payment.isNotEmpty() && dynamicPaymentId != -1) {
+                guestRequestModel?.paymentAttributes?.let {
+                    dynamicPaymentTypeId = dynamicPaymentId.toString()
+                    it.paymentType = getString(R.string.external)
+                    it.dynamicPaymentId = dynamicPaymentTypeId
+                }
+            }
+        }
+
         if (paymentType == "Cash") {
             if (cashDiscountType == "CashDiscount") {
                 guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge =
@@ -1342,6 +1764,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge
         guestPaymentAttributes.cash_discount_type =
             guestRequestModel?.paymentAttributes!!.cash_discount_type
+        guestPaymentAttributes.dynamicPaymentId = dynamicPaymentTypeId
+
 
 
 
@@ -1389,6 +1813,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 guestPaymentAttributes?.cash_discount_or_surcharge = 0.0
                 guestRequestModel?.paymentAttributes?.cash_discount_or_surcharge = 0.0
             }
+        } else if (paymentType == "External") {
+            guestPaymentAttributes.dynamicPaymentId = dynamicPaymentTypeId
+            guestRequestModel?.paymentAttributes?.dynamicPaymentId = dynamicPaymentTypeId
         }
 
         guestRequestModel?.paymentAttributes!!.paymentAttributes =
@@ -1564,7 +1991,21 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         }
         binding.tvPaymentLink.setOnSingleClickListener {
+            textToPay = true
 
+            custom_paymentAmount = 0.0
+            prefProvider.setValue(Constants.OPEN_ORDER_ITEMS_BASE, "")
+            if (isGuestPay) {
+                dineinOrderVieweModel.totalPayAmount(
+                    binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                )
+            } else {
+                paymentviewModel.totalPayAmount(
+                    binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                )
+            }
+            paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+            cashPaymentWithVariation()
         }
 
 
@@ -2498,7 +2939,20 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     //Adding this comment for rebase check
     // generate payment attributes request
-    private fun paymentAttributesRequest(myRequest: OrderRequestModel) {
+    private fun paymentAttributesRequest(
+        myRequest: OrderRequestModel, dynamicPaymentType: String? = "",
+        dynamicPaymentId: Int = -1
+    ) {
+        dynamicPaymentType?.let { payment ->
+            if (payment.isNotEmpty() && dynamicPaymentId != -1) {
+                myRequest.order.paymentAttributes?.let {
+                    it.paymentType = getString(R.string.external)
+                    it.dynamicPaymentId = dynamicPaymentId.toString()
+                    guestRequestModel?.paymentAttributes?.dynamicPaymentId = dynamicPaymentId.toString()
+                }
+            }
+        }
+
         val orderId = prefProvider.getValueInt("ORDER_ID", -1)
         if (orderId == -1) {
             if (myRequest.order.totalAmount!=0.0){

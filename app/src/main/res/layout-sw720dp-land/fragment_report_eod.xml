@@ -736,7 +736,7 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtExternalPayments"
                     style="@style/ReportTitleStyle"
-                    android:text="TOTAL EXTERNAL PAYMENTS" />
+                    android:text="@string/total_external_payments" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvExternalPayments"

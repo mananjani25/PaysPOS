@@ -55,6 +55,9 @@ class GuestPaymentAttributes : Parcelable {
     @SerializedName("payment_type")
     var paymentType: String = ""
 
+    @SerializedName("dynamic_payment_id")
+    var dynamicPaymentId: String? = ""
+
     @SerializedName("service_charge_amount")
     var serviceChargeAmount: Double = 0.0
 
