@@ -172,6 +172,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private val TAG = "DashboardCategoryBold"
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
+    private var innerPrinterCreated:Boolean = false
 
     /*-------------Customer Loyalty-------------*/
     private val customerListViewModel by activityViewModels<CustomerListViewModel>()
@@ -7230,7 +7231,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 )
                 CoroutineScope(Dispatchers.IO).launch {
 
-                    if (ordertypelist.isNotEmpty()) {
+                    if (ordertypelist.isNotEmpty() && innerPrinterCreated ==false) {
+                        innerPrinterCreated = true
                         setupInnerPrinterAttributes(innerPrinterModel)
                     }
                 }
