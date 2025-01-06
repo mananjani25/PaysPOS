@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
+import com.pays.pos.data.entities.ActivePaymentGateway
 import com.pays.pos.data.model.responseModel.CashLogResponse
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.repositories.PosRepository
@@ -126,7 +127,6 @@ class MainViewModel @Inject constructor(
                     Log.e("PrinterRefreshWorker", "call syncVenueDetails success")
                     resource.data.let { venueDetailsResponse ->
                         if (venueDetailsResponse?.status == 200) {
-
                             resource.data?.let {
                                 posRepository.deleteCustomerPrinters()
                                 posRepository.deleteKitchenPrinters()

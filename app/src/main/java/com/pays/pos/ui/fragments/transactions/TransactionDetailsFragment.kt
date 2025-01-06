@@ -70,6 +70,7 @@ import com.pax.poslink.ReportRequest
 import com.pays.pos.data.model.requestModel.CashLogRequest
 import com.pays.payments.callbacks.PaymentCallback
 import com.pays.payments.design.*
+import com.pays.payments.gateways.dejavoo.DejavooPaymentGateway
 import com.pays.payments.gateways.valor.ValorPaymentGateway
 import com.pays.pos.data.model.requestModel.RefundRequestModel
 import com.pays.pos.data.model.valor.ValorSuccessResponse
@@ -376,7 +377,46 @@ class TransactionDetailsFragment : Fragment() {
 
             if (paymentDetailsResponse.data?.payment_type == "Card") {
                 Log.d("RefNum11: ", "RefNum ${paymentDetailsResponse.data?.ref_num}")
-                if (paymentDetailsResponse.data?.ref_num.isNullOrEmpty()) {
+                when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
+                    Constants.PAX->{
+                        if (!paymentDetailsResponse.data?.ref_num.isNullOrEmpty() && prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
+                            adjustPaxTips()
+                        }else{
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                "Please connect to PAX device"
+                            )
+                        }
+                    }
+                    Constants.VALOR, Constants.VELOR->{
+                        adjustValorTips(paymentDetailsResponse)
+                    }
+                    Constants.DEJAVOO->{
+                        adjustDejavooTips()
+                    }else->{
+                    if (paymentDetailsResponse.data?.ref_num.isNullOrEmpty()) {
+                        magtekCall(tipAmount)
+                    }else{
+                        if (!paymentDetailsResponse.data?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                "Please connect to PAX device"
+                            )
+                        }
+                    }
+
+                }
+
+                }
+               /* if (paymentDetailsResponse.data?.ref_num.isNullOrEmpty()) {
                     magtekCall(tipAmount)
                 } else if (!paymentDetailsResponse.data?.ref_num.isNullOrEmpty() && prefProvider.getValueboolean(
                         Constants.IS_PAX_CONNECTED,
@@ -395,7 +435,7 @@ class TransactionDetailsFragment : Fragment() {
                         requireContext(),
                         "Please connect to PAX device"
                     )
-                }
+                }*/
             } else {
                 tipCall(false)
             }
@@ -476,6 +516,59 @@ class TransactionDetailsFragment : Fragment() {
 
         }
 
+    }
+
+
+    private fun adjustDejavooTips() {
+        paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutineScope.launch {
+            val gatewayType = PaymentGatewayType.DEJAVOO
+            val paymentGateway = PaymentGatewayFactory(
+                ValorPaymentGateway(),
+                DejavooPaymentGateway()
+            ).create(gatewayType)
+
+            paymentDetailsResponse?.data.ref_num.let { dejavooRefTxnId ->
+                var dejavoo= Dejavoo(
+                    registerId=  "4986101",
+                    authKey=  "kwg2GRbykg",
+                    tpn= "659324491704",
+                    paymentType = "Credit",
+                    transType="TipAdjust",
+                    amount= paymentDetailsResponse?.data.amount.toString(),
+                    tip = tipAmount.toString(),
+                    refId= dejavooRefTxnId,
+                    printReceipt= false,
+                    performedBy=  prefProvider.employeeName(),
+                    isProd= false,
+                    txnType = TransactionType.TIP_ADJUSTMENT
+                )
+                paymentGateway.processPayment(
+                    requireContext().applicationContext,
+                    dejavoo,
+                    onSuccess = { tResponse->
+                        var transactionJsonResponse = Gson().fromJson<String>(
+                            tResponse,
+                            String::class.java
+                        )
+                        tipCall(true)
+
+                    },
+                    onFailure = {
+                        ProgressUtils.dismissProgressDialog()
+
+                        /*runOnUiThread(Runnable {
+                                    AlertUtils.showCustomAlert(
+                                        requireContext(),
+                                        errorMessage
+                                    )
+                                })*/
+
+                    }
+                )
+                /* Process Tip Adjust */
+            }
+        }
     }
 
     private fun checkIfValorTransactionEligibleForVoid(paymentDetailsResponse: GetPaymentOrderDetailsResponse) {

@@ -39,6 +39,7 @@ import com.pax.poslink.broadpos.BroadPOSCommunicator
 import com.pax.poslink.fullIntegration.InputAccount
 import com.pax.poslink.fullIntegration.InputAccount.InputAccountCallback
 import com.pays.payments.design.*
+import com.pays.pos.MainApplication
 import com.pays.pos.R
 import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.requestModel.*
@@ -2959,7 +2960,82 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 )
 
                 if (paymentAmount != 0.0) {
-                    if (mSessionManager.isConnected) {
+                    if (prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"").equals(Constants.PAX, ignoreCase = true)){
+                        if (prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            ) && !mSessionManager.isConnected
+                        ) {
+                            runOnUiThread(object : java.lang.Runnable {
+                                override fun run() {
+                                    showProgressDialog()
+                                }
+                            })
+                            CoroutineScope(Dispatchers.Main).launch {
+                                var paxData: PAXData? = paymentviewModel.getPaxPaymentData()
+                                if (paxData != null) {
+                                    prefProvider.setValueboolean(IS_PAX_PAYMENT_FAILED, true)
+                                    // Retry api call if we have unsuccessful pending payment stored
+                                    GlobalUID = paxData.globalUid
+                                    ExtData = paxData.extData
+                                    RefNumber = paxData.refNumber
+                                    ECRRefNumber = paxData.eCRRefNumber
+                                    PAXtoken = paxData.paxToken
+                                    EDCType = paxData.EDCType
+                                    cardLastDigits = paxData.cardLastDigits
+                                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
+                                        if (prefProvider.getValueboolean(
+                                                Constants.IS_ADD_VALUE_IN_GIFT_CARD,
+                                                false
+                                            )
+                                        ) {
+                                            giftCardViewModel.paxResponse = ExtData
+                                            giftCardViewModel.cardNumberLast4 = cardLastDigits
+                                            giftCardViewModel.cardNamePax = EDCType
+                                            giftCardViewModel.transactionID = PAXtoken
+                                            addValueInGiftCardUsingCard()
+                                        } else {
+                                            giftCardViewModel.paxResponse = ExtData
+                                            giftCardViewModel.cardNumberLast4 = cardLastDigits
+                                            giftCardViewModel.cardNamePax = EDCType
+                                            giftCardViewModel.transactionID = PAXtoken
+                                            sellGiftCardUsingCard()
+                                        }
+                                    } else {
+                                        makePaymentCreditCard()
+                                    }
+//                                makePaymentCreditCard()
+                                } else {
+                                    makePaxPaymentRequest()
+                                }
+                            }
+                        }else{
+                            showPaymentNotConnectedMessage()
+                        }
+                    }else if (prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"").equals(Constants.VELOR,ignoreCase = true) || prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"").equals(Constants.VALOR,ignoreCase = true)){
+                        makeValorPaymentRequest()
+                    }else if(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"").equals(Constants.DEJAVOO,ignoreCase = true)){
+                        makeDejavooPaymentRequest()
+                    }else if(mSessionManager.isConnected){
+//                        Magtek
+                            runOnUiThread(object : java.lang.Runnable {
+                                override fun run() {
+                                    showProgressDialog()
+                                }
+                            })
+                            magtekModule.stopListner(false)
+                            if (device == 0) {
+                                magtekPaymentCall()
+                            } else {
+                                magtekProPaymentCall()
+                            }
+                            prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, false)
+
+                    }else{
+                        showPaymentNotConnectedMessage()
+                    }
+
+                  /*  if (mSessionManager.isConnected) {
                         runOnUiThread(object : java.lang.Runnable {
                             override fun run() {
                                 showProgressDialog()
@@ -3038,7 +3114,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             }
                         })
                         errorDisplay("Please connect a payment device.")
-                    }
+                    }*/
                 } else {
                     runOnUiThread(object : java.lang.Runnable {
                         override fun run() {
@@ -3557,6 +3633,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         binding.txtChargeGC.setOnSingleClickListener {
             startTransactionWithGiftCardPayment()
         }
+    }
+
+    private fun showPaymentNotConnectedMessage() {
+        runOnUiThread(object : java.lang.Runnable {
+            override fun run() {
+                binding.llCreditCard.isEnabled = true
+                dismissProgressDialog()
+            }
+        })
+        errorDisplay("Please connect a payment device.")
     }
 
     private fun startTransactionWithGiftCardPayment() {
