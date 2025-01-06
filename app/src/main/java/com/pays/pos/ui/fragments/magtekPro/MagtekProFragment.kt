@@ -1,7 +1,6 @@
 package com.pays.pos.ui.fragments.magtekPro
 
 import android.Manifest
-import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
@@ -21,6 +20,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -47,7 +47,9 @@ import com.pays.pos.utils.paxUtils.SettingINI
 import com.magtek.mobile.android.mtusdk.*
 import com.pax.poslink.*
 import com.pax.poslink.broadpos.BroadPOSCommunicator
+import com.pays.pos.data.entities.ActivePaymentGateway
 import com.pays.pos.utils.Event
+import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.visible
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -66,6 +68,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
     private lateinit var binding: FragmentTagtekBinding
     private val viewModel by viewModels<MagtekViewModel>()
     private var builder: Dialog? = null
+    private val paymentGatewayTypeViewModel by activityViewModels<PaymentGatewayTypeViewModel>()
 
     lateinit var commSetting: CommSetting
     private lateinit var mPaymentRequest: PaymentRequest
@@ -101,6 +104,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
         setProgressObservers()
+        initPaymentGateway()
         binding.tvPax.setOnClickListener {
 //            initPOSLink()
 //            connectBP()
@@ -116,13 +120,14 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
             binding.tvPax.visibility = View.VISIBLE
         }
 
-        if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
+        /*if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
             binding.tvDisconnectPax.visibility = View.VISIBLE
             binding.tvPax.visibility = View.GONE
         } else {
             binding.tvDisconnectPax.visibility = View.GONE
             binding.tvPax.visibility = View.VISIBLE
-        }
+        }*/
+        initPaxButtonsVisibility()
 
         mSessionManager.setDevicesFragment(this)
 
@@ -132,6 +137,49 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         getMerchantDataObserver()
 
         return binding.root
+    }
+
+    var coroutineExceptionHandler= CoroutineExceptionHandler{_,exception->
+        with(binding){
+            runOnUiThread(Runnable {
+                tvPax.visible()
+            })
+        }
+    }
+    var paymentTypeCoroutine= CoroutineScope(Dispatchers.IO + coroutineExceptionHandler)
+
+    private fun initPaymentGateway() {
+        paymentTypeCoroutine.launch {
+            paymentGatewayTypeViewModel.getActivePaymentGatewayType()
+        }
+
+        paymentGatewayTypeViewModel.activePaymentGatewayObservable.observe(viewLifecycleOwner, object:Observer<List<ActivePaymentGateway>>{
+            override fun onChanged(t: List<ActivePaymentGateway>?) {
+                t?.let {
+                    if (activePaymentType.isNotEmpty()){
+                        with(binding) {
+                            if (activePaymentType.get(0).type.equals("PAX")) {
+                                initPaxButtonsVisibility()
+                            } else {
+                                tvPax.gone()
+                                tvDisconnectPax.gone()
+                            }
+                        }
+                    }
+                }
+            }
+
+        })
+    }
+
+    private fun initPaxButtonsVisibility() {
+        if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
+            binding.tvDisconnectPax.visibility = View.VISIBLE
+            binding.tvPax.visibility = View.GONE
+        } else {
+            binding.tvDisconnectPax.visibility = View.GONE
+            binding.tvPax.visibility = View.VISIBLE
+        }
     }
 
     private fun setProgressObservers() {
@@ -623,6 +671,11 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
             Log.d("pos", "dismissProgressDialog: " + e.message)
         }
 
+    }
+
+    override fun onStop() {
+        paymentTypeCoroutine.cancel()
+        super.onStop()
     }
 
 }
