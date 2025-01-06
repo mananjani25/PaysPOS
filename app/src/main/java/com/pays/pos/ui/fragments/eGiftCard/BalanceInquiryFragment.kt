@@ -116,7 +116,11 @@ class BalanceInquiryFragment : Fragment() {
                         }
                     }
                 }else{
-                    binding.btnReadCard?.isClickable = true
+                    runOnUiThread(object : Runnable {
+                        override fun run() {
+                            binding.btnReadCard?.isClickable = true
+                        }
+                    })
                 }
 
             }else{

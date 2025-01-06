@@ -3641,7 +3641,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             }
                         })
                     }
-
                 }
             }else{
                 runOnUiThread(object : Runnable {
