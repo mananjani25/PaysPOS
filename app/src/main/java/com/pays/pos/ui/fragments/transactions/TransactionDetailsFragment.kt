@@ -452,7 +452,7 @@ class TransactionDetailsFragment : Fragment() {
                 try {
 
                     if (!paymentDetailsResponse.data.ext_data.isNullOrEmpty()) {
-                        if (paymentDetailsResponse.data.ext_data.equals(Constants.VALOR) && prefProvider.getValue(
+                        if (((paymentDetailsResponse.data.ext_data.equals(Constants.VALOR)) || (paymentDetailsResponse.data.ext_data.equals(Constants.VELOR))) && prefProvider.getValue(
                                 Constants.VALOR_APP_ID, ""
                             ).isNotEmpty()
                         ) {

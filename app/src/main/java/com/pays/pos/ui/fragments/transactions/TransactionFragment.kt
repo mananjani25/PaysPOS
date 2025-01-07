@@ -314,7 +314,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             }
                         }
                     }
-                    Constants.VALOR->{
+                    Constants.VALOR, Constants.VELOR->{
                         adjustValorTips()
                     }
                     Constants.DEJAVOO->{
@@ -332,7 +332,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             ) {
                                 AlertUtils.showCustomAlert(
                                     requireContext(),
-                                    "Please connect to PAX device"
+                                    "Please connect a payment device"
                                 )
                             }
                         }

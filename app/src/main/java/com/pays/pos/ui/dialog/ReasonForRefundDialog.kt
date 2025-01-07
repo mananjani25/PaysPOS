@@ -38,6 +38,7 @@ import com.pays.pos.data.remote.Constants.EXTERNAL_PAYMENT
 import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.REFUND1
 import com.pays.pos.data.remote.Constants.SUNMI_INNER_PRINTER
+import com.pays.pos.data.remote.Constants.VALOR
 import com.pays.pos.databinding.DialogRefundReasonBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.PrefProvider
@@ -185,7 +186,50 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                     doneClick()
                 }*/
 
-                if (prefProvider.getValue(
+                when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
+                    Constants.PAX->{
+                        if (referenceNo.isNullOrEmpty()) {
+                            doneClick()
+                        } else if (!referenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
+//                refundViaPAX()
+                            getBatchLocalReport()
+                        } else if (!referenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                "Please connect to PAX device"
+                            )
+                        }
+                    }
+
+                    Constants.VALOR, Constants.VELOR->{
+                        ProgressUtils.showProgressDialog(requireActivity())
+                        refundViaValor()
+                    }
+
+                    Constants.DEJAVOO->{
+                        ProgressUtils.showProgressDialog(requireActivity())
+//                    refundViaDejavoo() SPIN Api calling
+                        refundViaDejavooUsingTransactApi()
+                    }
+
+                    else->{
+                        AlertUtils.showCustomAlert(
+                            requireContext(),
+                            "Please connect a payment device"
+                        )
+                    }
+
+
+                }
+              /*  if (prefProvider.getValue(
                         Constants.VALOR_APP_ID, ""
                     ).isNotEmpty() && paxExtData.equals(Constants.VALOR)
                 ) {
@@ -221,7 +265,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                             )
                         }
                     }
-                }
+                }*/
             }
         })
 
