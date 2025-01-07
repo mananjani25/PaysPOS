@@ -996,6 +996,43 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             event.getContentIfNotHandled()?.let {
                 viewModel.redeemLoyaltyInfo = RedeemLoyaltyInfo()
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
+
+
+                val list = mutableListOf<GetOrderDetailsResponse.Data.Payment>()
+                it.data.order.payments.forEach { paymentDetails ->
+
+                    val payment = GetOrderDetailsResponse.Data.Payment(
+                        amount = paymentDetails.amount,
+                        cardName = paymentDetails.cardName,
+                        cardNumber = paymentDetails.cardNumber,
+                        cardType = paymentDetails.cardType,  // Nullable field in first Payment class
+                        createdAt = paymentDetails.createdAt,
+                        cash_discount_or_surcharge = paymentDetails.totalcashdiscount,
+                        employeeId = paymentDetails.employeeId,
+                        id = paymentDetails.id,
+                        offlineId = paymentDetails.offlineId,
+                        orderId = paymentDetails.orderId,
+                        payableId = paymentDetails.payableId,
+                        payableType = paymentDetails.payableType,
+                        paymentType = paymentDetails.paymentType,
+                        serviceChargeAmount = paymentDetails.serviceChargeAmount,
+                        subTotal = paymentDetails.subTotal,
+                        taxAmount = paymentDetails.taxAmount,
+                        terminalId = paymentDetails.terminalId,
+                        tips = paymentDetails.tips,
+                        tipsAdjusted = paymentDetails.tipsAdjusted,
+                        totalDiscount = paymentDetails.totalDiscount,
+                        transactionId = paymentDetails.transactionId,
+                        updatedAt = paymentDetails.updatedAt,
+                        dynamicPaymentId = null
+                    )
+
+
+                    list.add(payment)
+                }
+
+                dineInDataModel.dineInOrderDetails?.payments = list
+
                 when {
 
                     paymentType == "Cash" -> {

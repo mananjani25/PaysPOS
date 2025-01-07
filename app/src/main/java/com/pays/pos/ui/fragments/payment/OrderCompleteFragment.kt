@@ -7588,7 +7588,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         LPrint.printLeft(
                                             padLine(
                                                 "Transaction ID",
-                                                getOrderDetailsResponse?.payments.get(0).transactionId,
+                                                getOrderDetailsResponse?.payments.last().id.toString(),
                                                 48
                                             ).toString()
                                         )
