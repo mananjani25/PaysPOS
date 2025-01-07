@@ -2858,6 +2858,15 @@ class CustomDisplay(
                             )
                         ) {
                             adjustPaxTips()
+                        }else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
+                            AlertUtils.showCustomAlert(
+                                context,
+                                "Please connect to PAX device"
+                            )
                         }
                     }
 
@@ -2879,7 +2888,7 @@ class CustomDisplay(
                         ) {
                             AlertUtils.showCustomAlert(
                                 context,
-                                "Please connect to PAX device"
+                                "Please connect a payment device"
                             )
                         }
                     }
