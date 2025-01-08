@@ -285,12 +285,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 } else {
                     ProgressUtils.dismissProgressDialog()
-
                 }
-
-
             }
         }
+    }
+    private fun showAlertDialog(message:String){
+        runOnUiThread(kotlinx.coroutines.Runnable {
+            AlertUtils.showCustomAlert(requireContext(), message)
+        })
     }
 
     private var countDownTimer: CountDownTimer? = null
@@ -298,19 +300,37 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         binding.btnReadCard.setOnSingleClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
 
-                countDownTimer?.cancel()
-                binding.btnReadCard?.isClickable = false
+                when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
+                    Constants.PAX->{
+                        if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED,false)) {
+                            countDownTimer?.cancel()
+                            binding.btnReadCard?.isClickable = false
 
-                countDownTimer = object : CountDownTimer(5000, 1000) {
-                    override fun onTick(millisUntilFinished: Long) {
+                            countDownTimer = object : CountDownTimer(5000, 1000) {
+                                override fun onTick(millisUntilFinished: Long) {
+                                }
+
+                                override fun onFinish() {
+                                    binding.btnReadCard?.isClickable = true
+                                }
+                            }.start()
+
+                            startPAXWithGiftCard()
+                        }else{
+                            showAlertDialog(getString(R.string.please_connect_pax))
+                        }
                     }
-
-                    override fun onFinish() {
-                        binding.btnReadCard?.isClickable = true
+                    Constants.DEJAVOO->{
+                        showAlertDialog(getString(R.string._not_supported,Constants.DEJAVOO))
                     }
-                }.start()
+                    Constants.VALOR->{
+                        showAlertDialog(getString(R.string._not_supported,Constants.VALOR))
+                    }
+                    else->{
+                        showAlertDialog(getString(R.string.please_connect_payment_device))
+                    }
+                }
 
-                startPAXWithGiftCard()
             }
         })
     }
@@ -336,6 +356,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 override fun onFinish(result: PosLink?) {
                     posLink = result!!
                     Log.d("initPOSLink: ", "onFinish")
+                    magtekProViewModel.paxNetworkCall(requireContext(), false)
                 }
             })
     }
@@ -3674,66 +3695,69 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     /* This function will call the pax for gift card reading */
     private fun startPAXWithGiftCard() {
-        GlobalScope.launch {
-            posLink.SetCommSetting(
-                SettingINI.getCommSettingFromFile(
-                    requireContext(),
-                    "/storage/emulated/0/Download/" + SettingINI.FILENAME
+        runBlocking {
+            initPOSLink()
+            GlobalScope.launch {
+                posLink.SetCommSetting(
+                    SettingINI.getCommSettingFromFile(
+                        requireContext(),
+                        "/storage/emulated/0/Download/" + SettingINI.FILENAME
+                    )
                 )
-            )
 
-            val manageRequest = ManageRequest()
-            manageRequest.TransType = manageRequest.ParseTransType("INPUTACCOUNT")
-            manageRequest.EDCType = manageRequest.ParseEDCType("GIFT")
-            manageRequest.MagneticSwipeEntryFlag = "1";
-            manageRequest.ManualEntryFlag = "1";
-            manageRequest.ContactlessEntryFlag = "0";
-            manageRequest.TimeOut = "200";
-            manageRequest.ContinuousScreen = "0";
-            manageRequest.ECRRefNum = System.currentTimeMillis()
-                .toString(); // Enable swipe entry (adjust based on your use case)
-            posLink.ManageRequest = manageRequest
-            val result = posLink.ProcessTrans()
+                val manageRequest = ManageRequest()
+                manageRequest.TransType = manageRequest.ParseTransType("INPUTACCOUNT")
+                manageRequest.EDCType = manageRequest.ParseEDCType("GIFT")
+                manageRequest.MagneticSwipeEntryFlag = "1";
+                manageRequest.ManualEntryFlag = "1";
+                manageRequest.ContactlessEntryFlag = "0";
+                manageRequest.TimeOut = "200";
+                manageRequest.ContinuousScreen = "0";
+                manageRequest.ECRRefNum = System.currentTimeMillis()
+                    .toString(); // Enable swipe entry (adjust based on your use case)
+                posLink.ManageRequest = manageRequest
+                val result = posLink.ProcessTrans()
 
-            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
-                val msg = Message()
-                msg.what = Constants.TRANSACTION_SUCCESSED
-                msg.obj = posLink.ManageResponse
-                if (msg.obj != null) {
-                    val response = msg.obj as com.pax.poslink.ManageResponse
+                if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                    val msg = Message()
+                    msg.what = Constants.TRANSACTION_SUCCESSED
+                    msg.obj = posLink.ManageResponse
+                    if (msg.obj != null) {
+                        val response = msg.obj as com.pax.poslink.ManageResponse
 
-                    val resultCode = response.ResultCode
-                    if (resultCode == "000000") {
-                        withContext(Dispatchers.Main) {
-                            binding.apply {
-                                btnReadCard?.isClickable = true
-                                if (response.PAN.isNullOrEmpty()) {
-                                    edtGiftCardNumber.setText(response.Track2Data.toString())
-                                    Log.d(
-                                        "VALID: ",
-                                        "Here__Track: ${response.Track2Data.toString()}"
-                                    )
-                                } else {
-                                    edtGiftCardNumber.setText(response.PAN.toString())
-                                    Log.d("VALID: ", "Here__Pan: ${response.PAN.toString()}")
+                        val resultCode = response.ResultCode
+                        if (resultCode == "000000") {
+                            withContext(Dispatchers.Main) {
+                                binding.apply {
+                                    btnReadCard?.isClickable = true
+                                    if (response.PAN.isNullOrEmpty()) {
+                                        edtGiftCardNumber.setText(response.Track2Data.toString())
+                                        Log.d(
+                                            "VALID: ",
+                                            "Here__Track: ${response.Track2Data.toString()}"
+                                        )
+                                    } else {
+                                        edtGiftCardNumber.setText(response.PAN.toString())
+                                        Log.d("VALID: ", "Here__Pan: ${response.PAN.toString()}")
+                                    }
+                                    startTransactionWithGiftCardPayment()
                                 }
-                                startTransactionWithGiftCardPayment()
                             }
+                        } else {
+                            runOnUiThread(object : Runnable {
+                                override fun run() {
+                                    binding.btnReadCard?.isClickable = true
+                                }
+                            })
                         }
-                    } else {
-                        runOnUiThread(object : Runnable {
-                            override fun run() {
-                                binding.btnReadCard?.isClickable = true
-                            }
-                        })
                     }
+                } else {
+                    runOnUiThread(object : Runnable {
+                        override fun run() {
+                            binding.btnReadCard?.isClickable = true
+                        }
+                    })
                 }
-            }else{
-                runOnUiThread(object : Runnable {
-                    override fun run() {
-                        binding.btnReadCard?.isClickable = true
-                    }
-                })
             }
         }
     }
@@ -4639,7 +4663,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     // To make card payment using PAX device
     private fun makePaxPaymentRequest() {
         runBlocking {
-            initPOSLink()
+//            initPOSLink()
             GlobalScope.launch {
                 posLink.SetCommSetting(
                     SettingINI.getCommSettingFromFile(

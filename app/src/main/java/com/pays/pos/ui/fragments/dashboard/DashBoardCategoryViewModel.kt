@@ -7801,7 +7801,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 var activePaymentType=posRepository.getActivePaymentGateway()
                                 prefProvider.setValue(Constants.PAYMENT_GATEWAY_TYPE,venueDetailsResponse.settingData.data.activatedPaymentGateway?:"")
                                 if (!venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.PAX,ignoreCase = true)){
-                                    prefProvider.getValueboolean(
+                                    prefProvider.setValueboolean(
                                         Constants.IS_PAX_CONNECTED,
                                         false
                                     )
