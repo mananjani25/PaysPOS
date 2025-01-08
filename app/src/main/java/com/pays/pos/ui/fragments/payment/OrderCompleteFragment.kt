@@ -10862,13 +10862,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                          * Print Tips
                                          */
 
-                                        if (order?.totalTips != 0.0) {
+                                        if (order?.payments?.last()?.tips != 0.0) {
 
 
                                             val tipsToPrint =
                                                 padLine(
                                                     "Tips",
-                                                    "$" + order?.totalTips?.let {
+                                                    "$" + order?.payments?.last()?.tips?.let {
                                                         MethodUtils.roundOffAmountString(
                                                             it
                                                         )
@@ -11196,8 +11196,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                             val str10 = padLine(
                                                 "Transaction ID",
-                                                "" + receiptModel?.order?.payments?.size?.minus(1)
-                                                    ?.let { receiptModel?.order?.payments?.get(it)?.id },
+                                                "" + receiptModel?.order?.payments?.last()?.id ,
                                                 48
                                             ).toString()
                                             printLeft(str10)
@@ -11205,14 +11204,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                             val str11 = padLine(
                                                 "Transaction Type",
-                                                receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType,
+                                                receiptModel?.order?.payments?.last()?.paymentType,
                                                 48
                                             ).toString()
                                             printLeft(str11)
                                             lineBreak()
                                         }
 
-                                        if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType?.lowercase() == "Card".lowercase()) {
+//                                        get(receiptModel?.order?.payments?.size!! - 1)
+                                        if (receiptModel?.order?.payments?.last()?.paymentType?.lowercase() == "Card".lowercase()) {
 
                                             /*PrintSunmiUtils.normalText(
                             padLine(
@@ -11223,7 +11223,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         )*/
 
                                             var strCardType =
-                                                receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType
+                                                receiptModel?.order?.payments?.last()?.cardType
 
                                             if (paymentViewModel.extData != null && !paymentViewModel.extData.isNullOrEmpty()) {
 
@@ -11250,7 +11250,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             printLeft(
                                                 padLine(
                                                     "",
-                                                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber,
+                                                    receiptModel?.order?.payments?.last()?.cardNumber,
                                                     48
                                                 ).toString()
                                             )
