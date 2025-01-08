@@ -4608,7 +4608,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         Log.e("Valor: ", errorMessage)
 //                        ProgressUtils.dismissProgressDialog()
 
-//                        dismissProgressDialogWithAlert(errorMessage)
+                        dismissProgressDialogWithAlert(errorMessage)
                         EventBus.getDefault()
                             .post(
                                 MessageEvent(
