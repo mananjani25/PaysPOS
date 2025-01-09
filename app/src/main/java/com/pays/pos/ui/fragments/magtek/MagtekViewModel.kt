@@ -169,7 +169,7 @@ class MagtekViewModel @Inject constructor(
                         "onResponse",
                         response.body().toString() + response.body()!!.ipAddress
                     )
-                    clearOtherPaymentCreds()
+//                    clearOtherPaymentCreds()
                     var ipAddress = response.body()!!.ipAddress
                     var port = response.body()!!.port
                     prefProvider.setValue(
