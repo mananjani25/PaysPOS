@@ -210,14 +210,23 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                     }
 
                     Constants.VALOR, Constants.VELOR->{
-                        ProgressUtils.showProgressDialog(requireActivity())
-                        refundViaValor()
+                        if (paymentType == "Cash") {
+                            refundCall()
+                        } else {
+                            ProgressUtils.showProgressDialog(requireActivity())
+                            refundViaValor()
+                        }
                     }
 
                     Constants.DEJAVOO->{
-                        ProgressUtils.showProgressDialog(requireActivity())
-//                    refundViaDejavoo() SPIN Api calling
-                        refundViaDejavooUsingTransactApi()
+                        if (paymentType == "Cash") {
+                            refundCall()
+                        } else {
+                            ProgressUtils.showProgressDialog(requireActivity())
+//                            refundViaDejavoo() SPIN Api calling
+                            refundViaDejavooUsingTransactApi()
+                        }
+
                     }
 
                     else->{
