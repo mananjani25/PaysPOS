@@ -1467,15 +1467,25 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             )
         ) {
 
+            singleTransaction?.let {
+                val refundedAmount = String.format("%.2f", singleTransaction?.refundedAmount).toDouble()
+                val totalAmount = String.format("%.2f", singleTransaction?.totalAmount).toDouble()
 
-            val bundle = Bundle()
-            bundle.putDouble("totalTip", singleTransaction!!.tips)
-            bundle.putBoolean("isFromTransaction", true)
-            singleTransaction?.amount?.let { bundle.putDouble("totalPrice", it) }
-            findNavController().navigate(
-                R.id.action_transactionFragment_to_addTipsDialog,
-                bundle
-            )
+                if (refundedAmount == totalAmount) {
+
+                    AlertUtils.showCustomAlert(requireContext(), "Tips cannot be added to transactions that have been refunded.")
+
+                } else {
+                    val bundle = Bundle()
+                    bundle.putDouble("totalTip", singleTransaction!!.tips)
+                    bundle.putBoolean("isFromTransaction", true)
+                    singleTransaction?.amount?.let { bundle.putDouble("totalPrice", it) }
+                    findNavController().navigate(
+                        R.id.action_transactionFragment_to_addTipsDialog,
+                        bundle
+                    )
+                }
+            }
         }
 
 
