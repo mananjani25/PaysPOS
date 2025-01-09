@@ -7822,7 +7822,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                                 if (foundTerminal.isNotEmpty()){
                                     if (!venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.PAX,ignoreCase = true)){
-                                       
                                         if (venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.VALOR,ignoreCase = true) || venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.VELOR,ignoreCase = true)){
 
                                             prefProvider.setValue(

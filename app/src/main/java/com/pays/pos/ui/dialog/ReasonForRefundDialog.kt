@@ -297,9 +297,15 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                 .substring(4, paxExtData.substring(paxExtData.indexOf("RRN=")).indexOf(','))))
 
             var dejavoo = Dejavoo(
-                authKey = "kwg2GRbykg",
-                registerId = "4986101",
-                tpn = "659324491704",
+                registerId =  prefProvider.getValue(
+                    Constants.DEJAVOO_REGISTER_ID,""
+                ),
+                authKey = prefProvider.getValue(
+                    Constants.DEJAVOO_AUTH_KEY,""
+                ),
+                tpn = prefProvider.getValue(
+                    Constants.DEJAVOO_TPN,""
+                ),
                 amount = (refundAmount * 100).toInt().toString(),
                 isProd = false,
                 paymentType = "Credit",
@@ -310,7 +316,9 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                 transType = "3",
                 txnType = TransactionType.REFUND,
                 rrn = rrnValue,
-                authToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0cG4iOiI2NTkzMjQ0OTE3MDQiLCJlbWFpbCI6InN1cHBvcnQrMUBwYXlzcG9zLmNvbSIsImlhdCI6MTczMzc0ODk4M30.spR9JiJS6jt0VMB0MGu9HZQYKUrNaWV-U_pzQ4VCvYw"
+                authToken = prefProvider.getValue(
+                    Constants.DEJAVOO_AUTH_TOKEN,""
+                )
             )
 
             context?.let {
@@ -404,9 +412,15 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             /* Process Void */
             context?.let {
                 var dejavoo = Dejavoo(
-                    authKey = "kwg2GRbykg",
-                    registerId = "4986101",
-                    tpn = "659324491704",
+                    registerId =  prefProvider.getValue(
+                        Constants.DEJAVOO_REGISTER_ID,""
+                    ),
+                    authKey = prefProvider.getValue(
+                        Constants.DEJAVOO_AUTH_KEY,""
+                    ),
+                    tpn = prefProvider.getValue(
+                        Constants.DEJAVOO_TPN,""
+                    ),
                     amount = refundAmount.toString(),
                     isProd = false,
                     paymentType = "Credit",

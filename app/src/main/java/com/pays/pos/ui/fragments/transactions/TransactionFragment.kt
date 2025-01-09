@@ -458,9 +458,15 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
             singleTransaction?.ref_num?.let { dejavooRefTxnId ->
                 var dejavoo= Dejavoo(
-                    registerId=  "4986101",
-                    authKey=  "kwg2GRbykg",
-                    tpn= "659324491704",
+                    registerId =  prefProvider.getValue(
+                        Constants.DEJAVOO_REGISTER_ID,""
+                    ),
+                    authKey = prefProvider.getValue(
+                        Constants.DEJAVOO_AUTH_KEY,""
+                    ),
+                    tpn = prefProvider.getValue(
+                        Constants.DEJAVOO_TPN,""
+                    ),
                     paymentType = "Credit",
                     transType="TipAdjust",
                     amount= singleTransaction?.totalAmount.toString(),

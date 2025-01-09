@@ -3754,22 +3754,22 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val tip_amt = String.format("%.2f", tipAmount).toDouble()
 
             /*    Test Credentials
-                  var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
-                  var appID = "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
-                  var channelID = "bd967b4e0ccd6309c5ac16634bd367b6"
-                  var epi = "2319995597"
-                  var endpoint = "status"
-                  var transType = TransactionType.CREDIT_SALE
-                  var TRAN_MODE = "1"
-                  var TRAN_CODE = "1"
-                  var amount =
-                  var reqTxnId = */
+                  registerId = "4986101",
+                authKey = "kwg2GRbykg",
+                tpn = "659324491704"
+                authToken= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0cG4iOiI2NTkzMjQ0OTE3MDQiLCJlbWFpbCI6InN1cHBvcnQrMUBwYXlzcG9zLmNvbSIsImlhdCI6MTczMzc0ODk4M30.spR9JiJS6jt0VMB0MGu9HZQYKUrNaWV-U_pzQ4VCvYw"*/
 
             /* Process Payment */
             var dejavoo = Dejavoo(
-                registerId = "4986101",
-                authKey = "kwg2GRbykg",
-                tpn = "659324491704",
+                registerId =  prefProvider.getValue(
+                    Constants.DEJAVOO_REGISTER_ID,""
+                ),
+                authKey = prefProvider.getValue(
+                    Constants.DEJAVOO_AUTH_KEY,""
+                ),
+                tpn = prefProvider.getValue(
+                    Constants.DEJAVOO_TPN,""
+                ),
                 paymentType = "Credit",
                 transType = "Sale",
                 amount = amt.toString(),
