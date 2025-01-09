@@ -530,9 +530,15 @@ class TransactionDetailsFragment : Fragment() {
 
             paymentDetailsResponse?.data.ref_num.let { dejavooRefTxnId ->
                 var dejavoo= Dejavoo(
-                    registerId=  "4986101",
-                    authKey=  "kwg2GRbykg",
-                    tpn= "659324491704",
+                    registerId =  prefProvider.getValue(
+                        Constants.DEJAVOO_REGISTER_ID,""
+                    ),
+                    authKey = prefProvider.getValue(
+                        Constants.DEJAVOO_AUTH_KEY,""
+                    ),
+                    tpn = prefProvider.getValue(
+                        Constants.DEJAVOO_TPN,""
+                    ),
                     paymentType = "Credit",
                     transType="TipAdjust",
                     amount= paymentDetailsResponse?.data.amount.toString(),
@@ -762,9 +768,15 @@ class TransactionDetailsFragment : Fragment() {
 //            ---------------------------------------------- To Fetch Transaction Details--------------
             context?.let {
                 var dejavoo = Dejavoo(
-                    authKey = "kwg2GRbykg",
-                    registerId = "4986101",
-                    tpn = "659324491704",
+                    registerId =  prefProvider.getValue(
+                        Constants.DEJAVOO_REGISTER_ID,""
+                    ),
+                    authKey = prefProvider.getValue(
+                        Constants.DEJAVOO_AUTH_KEY,""
+                    ),
+                    tpn = prefProvider.getValue(
+                        Constants.DEJAVOO_TPN,""
+                    ),
                     amount = "",
                     isProd = false,
                     paymentType = "Credit",
@@ -856,9 +868,15 @@ class TransactionDetailsFragment : Fragment() {
 
             context?.let {
                 var dejavoo = Dejavoo(
-                    authKey = "kwg2GRbykg",
-                    registerId = "4986101",
-                    tpn = "659324491704",
+                    registerId =  prefProvider.getValue(
+                        Constants.DEJAVOO_REGISTER_ID,""
+                    ),
+                    authKey = prefProvider.getValue(
+                        Constants.DEJAVOO_AUTH_KEY,""
+                    ),
+                    tpn = prefProvider.getValue(
+                        Constants.DEJAVOO_TPN,""
+                    ),
                     amount = paymentDetailsResponse.data.amount.toString(),
                     isProd = false,
                     paymentType = "Credit",

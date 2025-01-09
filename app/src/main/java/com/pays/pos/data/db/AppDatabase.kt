@@ -55,7 +55,7 @@ import com.pays.pos.data.typeconvert.TypeConvertorPhone
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, PAXData::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class,
         VenueDetailsResponse.Data.WastageReason::class, TbCartItem::class, CartModelBackup::class, OrderTypeBackup::class, TbLabelPrinterSettings::class, TbDynamicPaymentRecords::class, ValorModel::class, ActivePaymentGateway::class],
-    version = 27
+    version = 28
 )
 @TypeConverters(
     TypeConvertersItems::class,

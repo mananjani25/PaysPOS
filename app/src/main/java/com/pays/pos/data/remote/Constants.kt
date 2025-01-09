@@ -888,6 +888,10 @@ object Constants {
 
     /*-------Dejavoo------*/
     const val DEJAVOO = "DEJAVOO"
+    const val DEJAVOO_AUTH_KEY = "DEJAVOO_AUTH_KEY"
+    const val DEJAVOO_REGISTER_ID = "DEJAVOO_REGISTER_ID"
+    const val DEJAVOO_TPN = "DEJAVOO_TPN"
+    const val DEJAVOO_AUTH_TOKEN = "DEJAVOO_AUTH_TOKEN"
     /*-------Dejavoo------*/
 
     const val PERMISSION_BLUETOOTH = 1
