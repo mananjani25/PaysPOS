@@ -21,10 +21,12 @@ import com.pays.pos.R
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.databinding.FragmentBalanceInquiryBinding
+import com.pays.pos.di.PrefProvider
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
 import com.pays.pos.utils.ProgressUtils
+import com.pays.pos.utils.TimeFormatUtils.prefProvider
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.setOnSingleClickListener
@@ -35,12 +37,16 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.lang.ref.WeakReference
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class BalanceInquiryFragment : Fragment() {
 
     private lateinit var binding: FragmentBalanceInquiryBinding
     private val giftCardViewModel by activityViewModels<GiftCardViewModel>()
+
+    @Inject
+    lateinit var prefProvider:PrefProvider
 
     var fromPAXSwipe:Boolean=false
     private var posLink: PosLink = PosLink()
@@ -204,18 +210,39 @@ class BalanceInquiryFragment : Fragment() {
         binding.btnReadCard?.let {
             it.setOnSingleClickListener(object:View.OnClickListener{
                 override fun onClick(p0: View?) {
+                    when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
+                        Constants.PAX->{
+                            if (prefProvider.getValueboolean(
+                                    Constants.IS_PAX_CONNECTED,
+                                    false
+                                )) {
+                                countDownTimer?.cancel()
+                                binding.btnReadCard?.isClickable = false
 
-                    countDownTimer?.cancel()
-                    binding.btnReadCard?.isClickable=false
+                                countDownTimer = object : CountDownTimer(5000, 1000) {
+                                    override fun onTick(millisUntilFinished: Long) {
+                                    }
 
-                    countDownTimer = object : CountDownTimer(5000, 1000) {
-                        override fun onTick(millisUntilFinished: Long) {
+                                    override fun onFinish() {
+                                        binding.btnReadCard?.isClickable = true
+                                    }
+                                }.start()
+                                startPAXWithGiftCard()
+                            }else{
+                                showAlertDialog(getString(R.string.please_connect_pax))
+                            }
                         }
-                        override fun onFinish() {
-                            binding.btnReadCard?.isClickable=true
+                        Constants.DEJAVOO->{
+                            showAlertDialog(getString(R.string._not_supported,Constants.DEJAVOO))
                         }
-                    }.start()
-                    startPAXWithGiftCard()
+                        Constants.VALOR->{
+                            showAlertDialog(getString(R.string._not_supported,Constants.VALOR))
+                        }
+                        else->{
+                            showAlertDialog(getString(R.string.please_connect_payment_device))
+                        }
+                    }
+
                 }
             })
         }
@@ -238,6 +265,12 @@ class BalanceInquiryFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun showAlertDialog(message:String){
+        runOnUiThread(kotlinx.coroutines.Runnable {
+            AlertUtils.showCustomAlert(requireContext(), message)
+        })
     }
 
     private fun checkBalanceEnquiryForGiftcard() {

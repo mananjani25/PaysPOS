@@ -142,7 +142,7 @@ class MagtekViewModel @Inject constructor(
             })
     }
 
-    private fun paxNetworkCall(context: Context, makeMerchantDetailsCall: Boolean = true) {
+    public fun paxNetworkCall(context: Context, makeMerchantDetailsCall: Boolean = true) {
 //        ProgressUtils.showProgressDialog("Connecting to PAX", context, View.GONE)
         _progressDialog.postValue(Event(true))
         val srNo = prefProvider.getValue(
