@@ -2,6 +2,7 @@ package com.pays.pos.ui.fragments.eGiftCard
 
 import android.content.Context
 import android.content.DialogInterface
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Message
@@ -9,9 +10,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -30,13 +30,28 @@ import com.pays.pos.data.remote.Constants
 import com.pays.pos.databinding.FragmentAddValueInGiftCardBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.pays.pos.utils.*
+import com.pays.pos.utils.AlertUtils
+import com.pays.pos.utils.AmountTextWatcher
+import com.pays.pos.utils.Event
+import com.pays.pos.utils.InternetUtils
+import com.pays.pos.utils.MethodUtils
+import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.paxUtils.SettingINI
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import java.lang.ref.WeakReference
+import java.security.InvalidKeyException
+import java.security.KeyFactory
+import java.security.NoSuchAlgorithmException
+import java.security.Signature
+import java.security.SignatureException
+import java.security.spec.InvalidKeySpecException
+import java.security.spec.PKCS8EncodedKeySpec
+import java.util.Base64
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class AddValueInGiftCardFragment : Fragment() {
@@ -50,23 +65,27 @@ class AddValueInGiftCardFragment : Fragment() {
     private val TAG = "AddValueInGiftCardFragment"
     private var giftCardNumberGlb =""
     private var posLink: PosLink = PosLink()
+    lateinit var weakContext:WeakReference<Context>
+
+    var fromPAXSwipe:Boolean=false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentAddValueInGiftCardBinding.inflate(layoutInflater)
+        weakContext= WeakReference(requireActivity())
         setDefaultAmountsInKeypad()
         setKeyPad()
         onClick()
         setObservables()
         setupSnackbar()
         setupProgress()
-//        startPAXTestWithGiftCard()
+//        startPAXWithGiftCard()
         return binding.root
     }
 
-    private fun startPAXTestWithGiftCard() {
+    private fun startPAXWithGiftCard() {
         GlobalScope.launch {
             posLink.SetCommSetting(
                 SettingINI.getCommSettingFromFile(
@@ -96,7 +115,10 @@ class AddValueInGiftCardFragment : Fragment() {
 
                 if (resultCode == "000000") {
                     withContext(Dispatchers.Main){
+
                         binding.apply {
+                            btnReadCard?.isClickable = true
+                            fromPAXSwipe=true
                             if (response.PAN.isNullOrEmpty()){
                                 edtGiftCardNumber.setText(response.Track2Data.toString())
                                 Log.d("VALID: ", "Here__Track: ${response.Track2Data.toString()}")
@@ -108,9 +130,19 @@ class AddValueInGiftCardFragment : Fragment() {
                         }
                     }
                 }else{
-
+                    runOnUiThread(object : Runnable {
+                        override fun run() {
+                            binding.btnReadCard?.isClickable = true
+                        }
+                    })
                 }
 
+            }else{
+                runOnUiThread(object : Runnable {
+                    override fun run() {
+                        binding.btnReadCard?.isClickable = true
+                    }
+                })
             }
 
         }
@@ -313,7 +345,7 @@ class AddValueInGiftCardFragment : Fragment() {
                         }
                     }.start()
 
-                    startPAXTestWithGiftCard()
+                    startPAXWithGiftCard()
                 }
             })
         }
@@ -325,7 +357,17 @@ class AddValueInGiftCardFragment : Fragment() {
         }
 
         binding.txtNext.setOnClickListener {
-            startProcessingForAddValue()
+            if (fromPAXSwipe) {
+                startProcessingForAddValue()
+            }else{
+                weakContext.get()?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(it,getString(R.string.are_you_sure_proceed),object:DialogInterface.OnClickListener{
+                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                            startProcessingForAddValue()
+                        }
+                    })
+                }
+            }
         }
 
         binding.llKeypad.txt10.setOnClickListener {
@@ -487,6 +529,34 @@ class AddValueInGiftCardFragment : Fragment() {
             R.id.action_addValueInGiftCard_to_paymentBoldPosFragment,
             bundle
         )
+    }
+
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Throws(
+        NoSuchAlgorithmException::class,
+        InvalidKeySpecException::class,
+        InvalidKeyException::class,
+        SignatureException::class
+    )
+    fun sign2(
+        body: String,
+        appId: String,
+        timestamp: String,
+        nonce: String,
+        rsaPrivateKey: String
+    ): String {
+        val content = body + appId + timestamp + nonce
+        val keyBytes =
+            Base64.getDecoder().decode(rsaPrivateKey.replace("(\\s)|(--.*--)".toRegex(), ""))
+        val pkcs8KeySpec = PKCS8EncodedKeySpec(keyBytes)
+        val keyFactory = KeyFactory.getInstance("RSA")
+        val priKey = keyFactory.generatePrivate(pkcs8KeySpec)
+        val signature = Signature.getInstance("SHA256withRSA")
+        signature.initSign(priKey)
+        signature.update(content.toByteArray())
+        return Base64.getEncoder().encodeToString(signature.sign())
     }
 
 }

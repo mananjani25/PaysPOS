@@ -16,8 +16,8 @@ android {
         applicationId "com.pays.pos"
         minSdkVersion 24
         targetSdkVersion 33
-        versionCode 26
-        versionName "1.26"
+        versionCode 27
+        versionName "1.27"
 
 
         sourceSets { main { jniLibs.srcDirs = ['src/main/jniLibs/'] } }
@@ -51,7 +51,7 @@ android {
                     output->
 
                         def formattedDate = new Date().format('dd_MMM_yyyy_HH_mm')
-                        def name = "Pays_${formattedDate}_v${variant.versionName}_PAX_.apk"
+                        def name = "Pays_${formattedDate}_v${variant.versionName}_PAYMENT_.apk"
                         // on below line we are setting the
                         // outputFile Name to our apk file.
                         output.outputFileName = name

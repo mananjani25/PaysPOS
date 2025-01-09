@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:ignore="MissingDefaultResource"
+    android:orientation="vertical">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:padding="@dimen/_6sdp"
+            app:srcCompat="@drawable/ic_cancel_black" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtAmount"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:text="Enter Serial Number"
+            android:gravity="center"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_7mdpi" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txtContinue"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="center"
+            android:background="@color/btnColor"
+            android:gravity="center"
+            android:paddingStart="@dimen/_15sdp"
+            android:paddingTop="@dimen/_7sdp"
+            android:paddingEnd="@dimen/_15sdp"
+            android:paddingBottom="@dimen/_7sdp"
+            android:text="Continue"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_6mdpi" />
+
+    </RelativeLayout>
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/edtSplitNo"
+        style="@style/CustomFontSemiBold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_20sdp"
+        android:layout_gravity="center"
+        android:background="@drawable/custom_edittext"
+        android:gravity="center"
+        android:hint="Enter SNumber of Cloud Printer"
+        android:maxLength="13"
+        android:imeOptions="actionDone"
+        android:padding="@dimen/_5sdp"
+        android:textColor="@color/txtColor"
+        android:textColorHint="@color/hintColor"
+        android:textSize="@dimen/_5mdpi"
+        />
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>

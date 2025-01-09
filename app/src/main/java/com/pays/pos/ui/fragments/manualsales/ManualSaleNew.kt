@@ -55,6 +55,7 @@ import com.pays.pos.utils.extensions.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
+import java.lang.ref.WeakReference
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -372,6 +373,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
         binding.layoutHeader.txtHome.setOnClickListener {
             try {
+                var activityWeakReference=WeakReference(requireActivity())
+                activityWeakReference.get()?.let {
+                    MethodUtils.hideSoftKeyboard(it)
+                }
                 prefProvider.setValue(Constants.REDIRECT_FROM, "")
                 viewModel.cartModel = null
                 viewModel.manualCartOrderNote=""

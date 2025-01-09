@@ -142,7 +142,9 @@ data class VenueDetailsResponse(
         @SerializedName("show_cash_credit_price_on_customer_display")
         val show_cash_credit_price_on_customer_display: Boolean,
         @SerializedName("show_tip_screen_before_payment")
-        val show_tip_screen_before_payment: Boolean
+        val show_tip_screen_before_payment: Boolean,
+        @SerializedName("activated_payment_gateway")
+        val activatedPaymentGateway: String?
     ) {
         data class Printer(
             @SerializedName("customer_receipt_printers")
@@ -307,7 +309,15 @@ data class VenueDetailsResponse(
             @SerializedName("enabled_for_receiving_web_order")
             val enabled_for_receiving_web_order: Boolean? = null,
             @SerializedName("is_deleted")
-            var isDeleted: Boolean = false
+            var isDeleted: Boolean = false,
+            @SerializedName("app_id")
+            val app_id: String?="",
+            @SerializedName("app_key")
+            val app_key: String?="",
+            @SerializedName("epi")
+            val epi: String?="",
+            @SerializedName("channel_id")
+            val channel_id: String?=""
         )
     }
 }

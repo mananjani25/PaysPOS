@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutionException
 
 object Constants {
 
-    const val isPaxInDebugMode: Boolean = false
+    const val paymentLive: Boolean = false
     const val paxLive="https://secure.epx.com/"
     const val paxDebug="https://secure.epxuap.com/"
 
@@ -33,6 +33,8 @@ object Constants {
     const val DO_PRINT_CUSTOM: String = "DO_PRINT_CUSTOM"
     const val OLD_ITEM: String = "OLD_ITEM"
     const val OLD_ITEM_BASE: String = "OLD_ITEM_BASE"
+
+
 
     /*This variable will track if the order id should be printed in Sticky Receipt*/
 //    const val STICKY_ORDER_ID: String = "STICKY_ORDER_ID"
@@ -154,6 +156,9 @@ object Constants {
     const val BUNDLE_PAYMENT_OFFLINE_ID = "BUNDLE_PAYMENT_OFFLINE_ID"
     const val BUNDLE_ORDER_OFFLINE_ID = "BUNDLE_ORDER_OFFLINE_ID"
     const val BUNDLE_ISLOYALTYAPPLIED = "BUNDLE_ISLOYALTYAPPLIED"
+
+    const val SUNMI_APP_ID = "889a389072224d10b641e90b9cc26856"
+    const val RANDOM_NUMBER_FOR_SUNMI = "A2B5C9"
 
     const val TAKEOUT = "TakeOut"
     const val DINE_IN = "DineIn"
@@ -864,16 +869,26 @@ object Constants {
     const val INVENTORY_SYNC = "INVENTORY_SYNC"
     const val UPDATED_CARTMODEL_ID = "updated_cartmodel_id"
 
+    const val PAX = "PAX"
+    const val PAYMENT_GATEWAY_TYPE = "PAYMENT_GATEWAY_TYPE"
+    const val MAGTEK = "MAGTEK"
+
     /*-------Valor--------*/
     const val VALOR = "VALOR"
+    const val VELOR = "VELOR"
     const val VALOR_APP_ID = "VALOR_APP_ID"
     const val VALOR_APP_KEY = "VALOR_APP_KEY"
     const val VALOR_EPI = "VALOR_EPI"
     const val VALOR_CHANNEL_ID = "VALOR_CHANNEL_ID"
     const val VALOR_TIP_ADJUST = "tipAdjust"
     const val VALOR_VOID = "void"
+    const val VALOR_OPEN_BATCH = "OpenBatch"
+    const val VALOR_TXN_FETCH = "txnfetch"
     /*-------Valor--------*/
 
+    /*-------Dejavoo------*/
+    const val DEJAVOO = "DEJAVOO"
+    /*-------Dejavoo------*/
 
     const val PERMISSION_BLUETOOTH = 1
     const val PERMISSION_BLUETOOTH_ADMIN = 2

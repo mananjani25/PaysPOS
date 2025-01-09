@@ -15,12 +15,12 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
-import android.provider.Settings.Global
 import android.text.Html
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -107,17 +107,32 @@ import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
 import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
+import java.io.InputStreamReader
 import java.io.OutputStream
+import java.io.UnsupportedEncodingException
 import java.lang.Runnable
+import java.net.HttpURLConnection
+import java.net.MalformedURLException
+import java.net.URL
 import java.net.URLDecoder
+import java.security.InvalidKeyException
+import java.security.KeyFactory
+import java.security.NoSuchAlgorithmException
+import java.security.Signature
+import java.security.SignatureException
+import java.security.spec.InvalidKeySpecException
+import java.security.spec.PKCS8EncodedKeySpec
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 
 
@@ -137,6 +152,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     var orderTypeList: ArrayList<TbOrderType> = arrayListOf()
 
     var isOneClick: Boolean = false
+    var orderContent: java.lang.StringBuilder = java.lang.StringBuilder()
 
     //private var mFilterOption: FilterOption? = null
     private lateinit var customerAdapter: PrinterListAdapter
@@ -164,6 +180,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     var addedCustomerPrinters = false
     var addedKitchenPrinters = false
+
+    var charHSize: Int = 1
+    var asciiCharWidth: Int = 12
+    var cjkCharWidth: Int = 24
 
 
     lateinit var readBuffer: ByteArray
@@ -209,10 +229,28 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         onDeleteQueueObserve()
 
         checkMasterTerminal()
+        dialogCallback()
 
         viewModelObject = viewModel
 
         return binding.root
+    }
+
+    private fun dialogCallback() {
+        setFragmentResultListener("request_cloud_serial_number"){resultKey: String, bundle: Bundle ->
+            var serialNumber = bundle.getString("serial_number")
+            Log.e(TAG,"checkSerialNumber  ${serialNumber}")
+            var list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> =
+                arrayListOf()
+            var printerListModel = bundle.getParcelable<PrinterListModel>("printerListModel")
+            var layoutPosition = bundle?.getInt("layoutPosition")
+
+            printerListModel?.let {
+                ifKitchenPrinterSelected(list, it, layoutPosition,serialNumber) }
+
+
+
+        }
     }
 
     private fun deleteAllPrinters() {
@@ -883,7 +921,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                         false
                                     ) && prefProvider.getValueboolean(IS_MASTER_TERMINAL, false)
                                 ) {
-                                    if (kitchenData[i].printer_type == Constants.BLUETOOTH) {
+                                    if (kitchenData[i].printer_type == Constants.BLUETOOTH || kitchenData[i].printer_type == Constants.WIFI) {
                                         viewModel.deleteKitchenPrinter(kitchenData[i].id)
                                     } else {
                                         addPrinters(kitchenPrintersList, kitchenData, i)
@@ -898,6 +936,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                                 ignoreCase = true
                                             ) || kitchenData[i].name.contains(
                                                 "SP",
+                                                ignoreCase = true
+                                            )||kitchenData[i].name.contains(
+                                                "Cloud",
                                                 ignoreCase = true
                                             )
                                         ) {
@@ -1653,155 +1694,200 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     override fun onPrinterSelected(printerListModel: PrinterListModel) {
 
+        Log.e(TAG,"checkConnType:  ${printerListModel?.connectionType}")
         printerListModel.printerName?.let {
             with(it) {
-                if (it?.startsWith("CloudPrint", true) == true) {
-                    if (prefProvider?.getValueboolean(
-                            IS_MASTER_TERMINAL,
-                            false
-                        ) && printerListModel.currentPrinterType == KITCHEN && printerListModel.connectionType == WIFI
-                    ) {
-
-
-                        var orderTypeID: Int = 0
-                        orderTypeList.forEach {
-                            if (it.orderType == TAKEOUT) {
-                                orderTypeID = it.id
-                            }
-                        }
-
-                        var listItems: ArrayList<OrderItemsAttribute> = arrayListOf()
-                        var orderItem = OrderItemsAttribute()
-                        orderItem.itemId = prefProvider.getValueInt(MANUAL_SALE_ITEM_ID, 1)
-                        orderItem.category_id = prefProvider.getValueInt(MANUAL_SALE_CATEGORY_ID, 1)
-                        orderItem.itemName = "Test Print"
-                        listItems.add(orderItem)
-                        var orderAttr = OrderAttributeRequestModel()
-                        orderAttr.orderTypeId = orderTypeID
-                        orderAttr.employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
-                        orderAttr.locationId = prefProvider.getValueInt(LOCATION_ID, 0)
-                        orderAttr.offlineId = randomOfflineId()
-                        orderAttr.paymentStatus = 1
-                        orderAttr.orderItemsAttributes = listItems
-                        orderAttr.macAddress = printerListModel.deviceModel?.macAddress.toString()
-
-
-                        var order =
-                            OrderRequestModel(order = orderAttr, completed_all_payments = true)
-
-
-                        viewModel.createPrinterQueueTestOrder(order)
-
-                    } else {
-
-                        printerListModel.deviceModel?.let {
-                        GlobalScope.launch(Dispatchers.IO) {
-                            sunmiPrinterInit(it.ipAddress)
-                        }
-                        }
-                    }
-
-                } else if (it?.startsWith("Printer", true) == true) {
-                    if (prefProvider?.getValueboolean(
-                            IS_MASTER_TERMINAL,
-                            false
-                        ) && printerListModel.currentPrinterType == KITCHEN
-                    ) {
-
-
-                        var orderTypeID: Int = 0
-                        orderTypeList.forEach {
-                            if (it.orderType == TAKEOUT) {
-                                orderTypeID = it.id
-                            }
-                        }
-
-                        var listItems: ArrayList<OrderItemsAttribute> = arrayListOf()
-                        var orderItem = OrderItemsAttribute()
-                        orderItem.itemId = prefProvider.getValueInt(MANUAL_SALE_ITEM_ID, 1)
-                        orderItem.category_id = prefProvider.getValueInt(MANUAL_SALE_CATEGORY_ID, 1)
-                        orderItem.itemName = "Test Print"
-                        listItems.add(orderItem)
-                        var orderAttr = OrderAttributeRequestModel()
-                        orderAttr.orderTypeId = orderTypeID
-                        orderAttr.employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
-                        orderAttr.locationId = prefProvider.getValueInt(LOCATION_ID, 0)
-                        orderAttr.offlineId = randomOfflineId()
-                        orderAttr.paymentStatus = 1
-                        orderAttr.orderItemsAttributes = listItems
-                        orderAttr.macAddress = printerListModel.deviceModel?.macAddress.toString()
-
-
-                        var order =
-                            OrderRequestModel(order = orderAttr, completed_all_payments = true)
-
-
-                        viewModel.createPrinterQueueTestOrder(order)
-
-                    } else {
-                        sunmiLANPrinter(printerListModel)
-
-                    }
-
-                } else if (it?.startsWith("InnerPrinter", true) == true) {
-                    sunmiInnerPrinter(printerListModel.deviceModel?.ipAddress)
-                } else if (it?.equals("Inner Printer", ignoreCase = true)) {
-                    landiTestPrint(printerListModel)
-                } else if (it?.equals(
-                        "TM-L100",
-                        ignoreCase = true
-                    ) == true
+                if (it?.startsWith(
+                        "CloudPrint",
+                        true
+                    ) == true && printerListModel?.connectionType == WIFI
                 ) {
-                    initLabelPrinter(printerListModel)
-                } else if (it?.contains("TSP", ignoreCase = true) == true || it?.contains(
-                        "SP",
-                        ignoreCase = true
-                    ) == true
-                ) {
-                    initStarPrinter(printerListModel)
+
+                    val date = Date()
+                    val random = Random()
+                    val timestamp = java.lang.String.format("%d", date.time / 1000)
+
+                    val body = java.lang.StringBuilder()
+                    body.append("{")
+                    body.append(java.lang.String.format("\"sn\":\"%s\"", "${printerListModel.deviceModel?.ipAddress}"))
+                    body.append(",")
+                    body.append(java.lang.String.format("\"shop_id\":%d", 2241))
+                    body.append("}")
+
+                    orderContent.clear()
+                    orderContent = java.lang.StringBuilder()
+                    lineFeed(4)
+                    setAlignment(1)
+
+                    setCharacterSize(2,2)
+
+                    appendText("Test Print")
+                    lineFeed(6)
+                    cutPaper(true)
+
+                    Log.e("checkKey","pushContent: checkSN:${printerListModel.deviceModel?.ipAddress} ${pushContent(trade_no =
+                    String.format("%s_%010d", "${printerListModel.deviceModel?.ipAddress}", System.currentTimeMillis()),
+                        "${printerListModel.deviceModel?.ipAddress}", 1, 1, "您有新的订单", 0)}")
+
+
                 } else {
-                    Log.e(TAG, "printerListModel  ${Gson().toJson(printerListModel)}")
-                    if (prefProvider?.getValueboolean(
-                            IS_MASTER_TERMINAL,
-                            false
-                        ) && printerListModel.currentPrinterType == KITCHEN
-                    ) {
 
 
-                        var orderTypeID: Int = 0
-                        orderTypeList.forEach {
-                            if (it.orderType == TAKEOUT) {
-                                orderTypeID = it.id
+                    if (it?.startsWith("CloudPrint", true) == true) {
+                        if (prefProvider?.getValueboolean(
+                                IS_MASTER_TERMINAL,
+                                false
+                            ) && printerListModel.currentPrinterType == KITCHEN && printerListModel.connectionType == WIFI
+                        ) {
+
+
+                            var orderTypeID: Int = 0
+                            orderTypeList.forEach {
+                                if (it.orderType == TAKEOUT) {
+                                    orderTypeID = it.id
+                                }
+                            }
+
+                            var listItems: ArrayList<OrderItemsAttribute> = arrayListOf()
+                            var orderItem = OrderItemsAttribute()
+                            orderItem.itemId = prefProvider.getValueInt(MANUAL_SALE_ITEM_ID, 1)
+                            orderItem.category_id =
+                                prefProvider.getValueInt(MANUAL_SALE_CATEGORY_ID, 1)
+                            orderItem.itemName = "Test Print"
+                            listItems.add(orderItem)
+                            var orderAttr = OrderAttributeRequestModel()
+                            orderAttr.orderTypeId = orderTypeID
+                            orderAttr.employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
+                            orderAttr.locationId = prefProvider.getValueInt(LOCATION_ID, 0)
+                            orderAttr.offlineId = randomOfflineId()
+                            orderAttr.paymentStatus = 1
+                            orderAttr.orderItemsAttributes = listItems
+                            orderAttr.macAddress =
+                                printerListModel.deviceModel?.macAddress.toString()
+
+
+                            var order =
+                                OrderRequestModel(order = orderAttr, completed_all_payments = true)
+
+
+                            viewModel.createPrinterQueueTestOrder(order)
+
+                        } else {
+
+                            printerListModel.deviceModel?.let {
+                                GlobalScope.launch(Dispatchers.IO) {
+                                    sunmiPrinterInit(it.ipAddress)
+                                }
                             }
                         }
 
-                        var listItems: ArrayList<OrderItemsAttribute> = arrayListOf()
-                        var orderItem = OrderItemsAttribute()
-                        orderItem.itemId = prefProvider.getValueInt(MANUAL_SALE_ITEM_ID, 1)
-                        orderItem.category_id = prefProvider.getValueInt(MANUAL_SALE_CATEGORY_ID, 1)
-                        orderItem.itemName = "Test Print"
-                        listItems.add(orderItem)
-                        var orderAttr = OrderAttributeRequestModel()
-                        orderAttr.orderTypeId = orderTypeID
-                        orderAttr.employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
-                        orderAttr.locationId = prefProvider.getValueInt(LOCATION_ID, 0)
-                        orderAttr.offlineId = randomOfflineId()
-                        orderAttr.paymentStatus = 1
-                        orderAttr.orderItemsAttributes = listItems
-                        orderAttr.macAddress = printerListModel.deviceModel?.macAddress.toString()
+                    } else if (it?.startsWith("Printer", true) == true) {
+                        if (prefProvider?.getValueboolean(
+                                IS_MASTER_TERMINAL,
+                                false
+                            ) && printerListModel.currentPrinterType == KITCHEN
+                        ) {
 
 
-                        var order =
-                            OrderRequestModel(order = orderAttr, completed_all_payments = true)
+                            var orderTypeID: Int = 0
+                            orderTypeList.forEach {
+                                if (it.orderType == TAKEOUT) {
+                                    orderTypeID = it.id
+                                }
+                            }
+
+                            var listItems: ArrayList<OrderItemsAttribute> = arrayListOf()
+                            var orderItem = OrderItemsAttribute()
+                            orderItem.itemId = prefProvider.getValueInt(MANUAL_SALE_ITEM_ID, 1)
+                            orderItem.category_id =
+                                prefProvider.getValueInt(MANUAL_SALE_CATEGORY_ID, 1)
+                            orderItem.itemName = "Test Print"
+                            listItems.add(orderItem)
+                            var orderAttr = OrderAttributeRequestModel()
+                            orderAttr.orderTypeId = orderTypeID
+                            orderAttr.employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
+                            orderAttr.locationId = prefProvider.getValueInt(LOCATION_ID, 0)
+                            orderAttr.offlineId = randomOfflineId()
+                            orderAttr.paymentStatus = 1
+                            orderAttr.orderItemsAttributes = listItems
+                            orderAttr.macAddress =
+                                printerListModel.deviceModel?.macAddress.toString()
 
 
-                        viewModel.createPrinterQueueTestOrder(order)
+                            var order =
+                                OrderRequestModel(order = orderAttr, completed_all_payments = true)
 
+
+                            viewModel.createPrinterQueueTestOrder(order)
+
+                        } else {
+                            sunmiLANPrinter(printerListModel)
+
+                        }
+
+                    } else if (it?.startsWith("InnerPrinter", true) == true) {
+                        sunmiInnerPrinter(printerListModel.deviceModel?.ipAddress)
+                    } else if (it?.equals("Inner Printer", ignoreCase = true)) {
+                        landiTestPrint(printerListModel)
+                    } else if (it?.equals(
+                            "TM-L100",
+                            ignoreCase = true
+                        ) == true
+                    ) {
+                        initLabelPrinter(printerListModel)
+                    } else if (it?.contains("TSP", ignoreCase = true) == true || it?.contains(
+                            "SP",
+                            ignoreCase = true
+                        ) == true
+                    ) {
+                        initStarPrinter(printerListModel)
                     } else {
+                        Log.e(TAG, "printerListModel  ${Gson().toJson(printerListModel)}")
+                        if (prefProvider?.getValueboolean(
+                                IS_MASTER_TERMINAL,
+                                false
+                            ) && printerListModel.currentPrinterType == KITCHEN
+                        ) {
 
-                        onInitPrinter(printerListModel)
+
+                            var orderTypeID: Int = 0
+                            orderTypeList.forEach {
+                                if (it.orderType == TAKEOUT) {
+                                    orderTypeID = it.id
+                                }
+                            }
+
+                            var listItems: ArrayList<OrderItemsAttribute> = arrayListOf()
+                            var orderItem = OrderItemsAttribute()
+                            orderItem.itemId = prefProvider.getValueInt(MANUAL_SALE_ITEM_ID, 1)
+                            orderItem.category_id =
+                                prefProvider.getValueInt(MANUAL_SALE_CATEGORY_ID, 1)
+                            orderItem.itemName = "Test Print"
+                            listItems.add(orderItem)
+                            var orderAttr = OrderAttributeRequestModel()
+                            orderAttr.orderTypeId = orderTypeID
+                            orderAttr.employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
+                            orderAttr.locationId = prefProvider.getValueInt(LOCATION_ID, 0)
+                            orderAttr.offlineId = randomOfflineId()
+                            orderAttr.paymentStatus = 1
+                            orderAttr.orderItemsAttributes = listItems
+                            orderAttr.macAddress =
+                                printerListModel.deviceModel?.macAddress.toString()
+
+
+                            var order =
+                                OrderRequestModel(order = orderAttr, completed_all_payments = true)
+
+
+                            viewModel.createPrinterQueueTestOrder(order)
+
+                        } else {
+
+                            onInitPrinter(printerListModel)
+                        }
                     }
                 }
+
             }
         }
 
@@ -2213,115 +2299,139 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         LogUtil.logE(TAG, "printerListModel: ${Gson().toJson(printerListModel)}")
 
 
-        if (prefProvider.getValueboolean(
-                IS_PRINTER_QUEUE_ENABLE,
-                false
-            ) && prefProvider.getValueboolean(IS_MASTER_TERMINAL, false)
-        ) {
+        if (printerListModel.printerName?.startsWith("Cloud",true) == true && printerListModel.connectionType == WIFI){
+            var bundle = Bundle()
+            bundle.putParcelable("printerListModel",printerListModel)
+            bundle.putInt("layoutPosition",layoutPosition)
 
-            Log.e(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
+            findNavController().navigate(R.id.action_printer_to_dialogSNumber,bundle)
 
-            var list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> =
-                arrayListOf()
+        }
+        else {
 
-            if (printerListModel.printerName?.startsWith(
-                    "Cloud",
-                    true
-                ) == true && prefProvider.getValueboolean(
-                    IS_MASTER_TERMINAL, false
-                ) && printerListModel.connectionType.equals(WIFI, true)
+            if (prefProvider.getValueboolean(
+                    IS_PRINTER_QUEUE_ENABLE,
+                    false
+                ) && prefProvider.getValueboolean(IS_MASTER_TERMINAL, false)
             ) {
-                ifKitchenPrinterSelected(list, printerListModel, layoutPosition)
 
-            } else {
+                Log.e(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
 
-                ifCustomerPrinterSelected(list, printerListModel, layoutPosition)
-
-            }
-
-        } else {
-            setFragmentResultListener("request_printer_type") { requestKey: String, bundle: Bundle ->
-                val data = bundle.getString("type")
                 var list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> =
                     arrayListOf()
-                LogUtil.logE(TAG, "getOrderTypeList: ${Gson().toJson(orderTypeList)}")
-                printerListModel.printerName?.let {
-                    if (((it.contains("TSP", ignoreCase = true)) || (it.contains(
-                            "SP",
-                            ignoreCase = true
-                        ))) && (data?.contains(CUSTOMER, ignoreCase = true) ?: true)
-                    ) {
-                        AlertUtils.showCustomAlertWithListenerWithOK(
-                            requireContext(),
-                            getString(R.string.incompatible_printer),
-                            object : DialogInterface.OnClickListener {
-                                override fun onClick(p0: DialogInterface?, p1: Int) {
-                                    p0?.dismiss()
+
+                if (printerListModel.printerName?.startsWith(
+                        "Cloud",
+                        true
+                    ) == true && prefProvider.getValueboolean(
+                        IS_MASTER_TERMINAL, false
+                    ) && printerListModel.connectionType.equals(WIFI, true)
+                ) {
+                    ifKitchenPrinterSelected(list, printerListModel, layoutPosition)
+
+                } else {
+
+                    ifCustomerPrinterSelected(list, printerListModel, layoutPosition)
+
+                }
+
+            } else {
+                setFragmentResultListener("request_printer_type") { requestKey: String, bundle: Bundle ->
+                    val data = bundle.getString("type")
+                    var list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> =
+                        arrayListOf()
+                    LogUtil.logE(TAG, "getOrderTypeList: ${Gson().toJson(orderTypeList)}")
+                    printerListModel.printerName?.let {
+                        if (((it.contains("TSP", ignoreCase = true)) || (it.contains(
+                                "SP",
+                                ignoreCase = true
+                            ))) && (data?.contains(CUSTOMER, ignoreCase = true) ?: true)
+                        ) {
+                            AlertUtils.showCustomAlertWithListenerWithOK(
+                                requireContext(),
+                                getString(R.string.incompatible_printer),
+                                object : DialogInterface.OnClickListener {
+                                    override fun onClick(p0: DialogInterface?, p1: Int) {
+                                        p0?.dismiss()
+                                    }
+
+                                })
+                        } else {
+                            when (data) {
+                                KITCHEN -> {
+                                    ifKitchenPrinterSelected(
+                                        list,
+                                        printerListModel,
+                                        layoutPosition
+                                    )
                                 }
 
-                            })
-                    } else {
-                        when (data) {
-                            KITCHEN -> {
-                                ifKitchenPrinterSelected(list, printerListModel, layoutPosition)
-                            }
-
-                            CUSTOMER -> {
-                                ifCustomerPrinterSelected(list, printerListModel, layoutPosition)
-
-                            }
-
-                            KITCHENANDCUSTOMER -> {
-                                for (i in 0 until orderTypeList.size) {
-                                    list.add(
-                                        CreatePrinterRequestModel.PrinterSettingsAttributes(
-                                            printType = CUSTOMER,
-                                            orderTypeId = orderTypeList.get(i).id
-                                        )
+                                CUSTOMER -> {
+                                    ifCustomerPrinterSelected(
+                                        list,
+                                        printerListModel,
+                                        layoutPosition
                                     )
-                                    list.add(
-                                        CreatePrinterRequestModel.PrinterSettingsAttributes(
-                                            printType = KITCHEN,
-                                            orderTypeId = orderTypeList.get(i).id
-                                        )
-                                    )
+
                                 }
 
-                                //ip address for bg printer
-                                //if (printerListModel.connectionType == WIFI) "TCP:" + printerListModel.deviceModel?.ipAddress else "BT:" + printerListModel.deviceModel?.ipAddress,
+                                KITCHENANDCUSTOMER -> {
+                                    for (i in 0 until orderTypeList.size) {
+                                        list.add(
+                                            CreatePrinterRequestModel.PrinterSettingsAttributes(
+                                                printType = CUSTOMER,
+                                                orderTypeId = orderTypeList.get(i).id
+                                            )
+                                        )
+                                        list.add(
+                                            CreatePrinterRequestModel.PrinterSettingsAttributes(
+                                                printType = KITCHEN,
+                                                orderTypeId = orderTypeList.get(i).id
+                                            )
+                                        )
+                                    }
 
-                                val createBothPrinter = CreatePrinterRequestModel(
-                                    name = printerListModel.printerName,
-                                    terminalId = prefProvider.getValueInt(TERMINAL_ID, 0),
-                                    macAddress = printerListModel.deviceModel?.macAddress,
-                                    modalName = printerListModel.printerName,
-                                    terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
-                                    status = true,
-                                    locationId = prefProvider.getValueInt(LOCATION_ID, 1),
-                                    receiptPrintType = KITCHENANDCUSTOMER,
-                                    printer_type = printerListModel.connectionType,
-                                    ip_address = printerListModel.deviceModel?.ipAddress,
-                                    printerSettingsAttributes = list
-                                )
+                                    //ip address for bg printer
+                                    //if (printerListModel.connectionType == WIFI) "TCP:" + printerListModel.deviceModel?.ipAddress else "BT:" + printerListModel.deviceModel?.ipAddress,
 
-                                viewModel.createPrinter(createBothPrinter, showLoader = false)
-                                availableNetworkAdapter.removeItemAt(layoutPosition)
+                                    val createBothPrinter = CreatePrinterRequestModel(
+                                        name = printerListModel.printerName,
+                                        terminalId = prefProvider.getValueInt(TERMINAL_ID, 0),
+                                        macAddress = printerListModel.deviceModel?.macAddress,
+                                        modalName = printerListModel.printerName,
+                                        terminalIds = listOf(
+                                            prefProvider.getValueInt(
+                                                TERMINAL_ID,
+                                                1
+                                            )
+                                        ),
+                                        status = true,
+                                        locationId = prefProvider.getValueInt(LOCATION_ID, 1),
+                                        receiptPrintType = KITCHENANDCUSTOMER,
+                                        printer_type = printerListModel.connectionType,
+                                        ip_address = printerListModel.deviceModel?.ipAddress,
+                                        printerSettingsAttributes = list
+                                    )
 
-                                /* Handler(Looper.getMainLooper()).postDelayed({
+                                    viewModel.createPrinter(createBothPrinter, showLoader = false)
+                                    availableNetworkAdapter.removeItemAt(layoutPosition)
+
+                                    /* Handler(Looper.getMainLooper()).postDelayed({
                                  syncPrinterList()
                              },1000)*/
 
 
-                            }
+                                }
 
+                            }
                         }
                     }
-                }
 
+
+                }
+                findNavController().navigate(R.id.action_printer_to_printerTypeSelection)
 
             }
-            findNavController().navigate(R.id.action_printer_to_printerTypeSelection)
-
         }
 
 
@@ -2338,7 +2448,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     private fun ifKitchenPrinterSelected(
         list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes>,
         printerListModel: PrinterListModel,
-        layoutPosition: Int
+        layoutPosition: Int,
+        serialNumber: String?=null
     ) {
         for (i in 0 until orderTypeList.size) {
             list.add(
@@ -2362,7 +2473,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             locationId = prefProvider.getValueInt(LOCATION_ID, 1),
             receiptPrintType = KITCHEN,
             printer_type = printerListModel.connectionType,
-            ip_address = printerListModel.deviceModel?.ipAddress,
+            ip_address = serialNumber,
             printerSettingsAttributes = list,
             printerBrand = if (printerListModel.printerName?.startsWith("Cloud", true) == true) {
                 Constants.SUNMIBRAND
@@ -3448,6 +3559,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     override fun onFound(p0: CloudPrinter?) {
+        Log.e("onFoundSunmiPrint","onFound:  ${Gson().toJson(p0)}")
         Log.e(
             TAG,
             "onFound:  ${Gson().toJson(p0)}  checkPrinterqueue  ${
@@ -3457,7 +3569,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 )
             }"
         )
-        if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false) == true) {
+        if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false) == true || prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false) == false) {
             lifecycleScope.launch {
 
 
@@ -3470,10 +3582,13 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         )
                     }"
                 )
-                if (prefProvider.getValueboolean(
+                if ((prefProvider.getValueboolean(
                         IS_MASTER_TERMINAL,
                         false
-                    ) == true && checkIsU220() == false
+                    ) == true || prefProvider.getValueboolean(
+                        IS_MASTER_TERMINAL,
+                        false
+                    ) == false) && checkIsU220() == false
                 ) {
                     var tmpInd = -1
 
@@ -3518,6 +3633,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                     if (contains == false && inAvail == false) {
                         // checkBluetoothPrinter(p0, availableNetworkAdapter.getList())
+                        Log.e("checkAvailSusnf","fskhnklsf")
                         availableNetworkAdapter.addItem(
                             PrinterListModel(
                                 printerName = p0?.cloudPrinterInfo?.name,
@@ -3630,5 +3746,302 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Throws(
+        NoSuchAlgorithmException::class,
+        InvalidKeySpecException::class,
+        InvalidKeyException::class,
+        SignatureException::class
+    )
+    fun sign(
+        body: String,
+        appId: String,
+        timestamp: String,
+        nonce: String,
+        rsaPrivateKey: String
+    ): String {
+        val content = body + appId + timestamp + nonce
+        val keyBytes: ByteArray =
+            java.util.Base64.getDecoder().decode(rsaPrivateKey.replace("(\\s)|(--.*--)".toRegex(), ""))
+        val pkcs8KeySpec = PKCS8EncodedKeySpec(keyBytes)
+        val keyFactory = KeyFactory.getInstance("RSA")
+        val priKey = keyFactory.generatePrivate(pkcs8KeySpec)
+        val signature: Signature = Signature.getInstance("SHA256withRSA")
+        signature.initSign(priKey)
+        signature.update(content.toByteArray())
+        return java.util.Base64.getEncoder().encodeToString(signature.sign())
+    }
+
+    fun httpPost(path: String, body: String,sn:String?=null): String? {
+        var connection: HttpURLConnection? = null
+        var `is`: InputStream? = null
+        var os: OutputStream? = null
+        var br: BufferedReader? = null
+        var result: String? = null
+
+        val date = Date()
+        val random = Random()
+        val timestamp = String.format("%d", date.time / 1000)
+        val nonce = String.format("%06d", random.nextInt(1000000))
+
+        try {
+            val url = URL("https://openapi.sunmi.com$path")
+            connection = url.openConnection() as HttpURLConnection
+            connection!!.requestMethod = "POST"
+            connection!!.connectTimeout = 15000
+            connection!!.readTimeout = 60000
+
+            connection!!.doOutput = true
+            connection!!.doInput = true
+            connection!!.setRequestProperty("Sunmi-Appid", Constants.SUNMI_APP_ID)
+            connection!!.setRequestProperty("Sunmi-Timestamp", timestamp)
+            connection!!.setRequestProperty("Sunmi-Nonce", nonce)
+            connection!!.setRequestProperty("Sunmi-Sign", generateSign(body, timestamp, nonce))
+            connection!!.setRequestProperty("Source", "openapi")
+            connection!!.setRequestProperty("Content-Type", "application/json")
+            os = connection!!.outputStream
+            os.write(body.toByteArray(charset("UTF-8")))
+            if (connection!!.responseCode == 200) {
+
+                /*  if (sn.equals("N434227FT0790")) {
+                      orderContent.clear()
+                       orderContent = java.lang.StringBuilder()
+                      cloudQueuePrinting("N434227FT0738", 2241)
+                  }*/
+
+                /* if (path.contains("pushContent")){
+
+                     CoroutineScope(Dispatchers.IO).launch {
+                         delay(500)
+                         clearPrintJob(sn)
+                     }
+                 }*/
+
+                `is` = connection!!.inputStream
+                br = BufferedReader(InputStreamReader(`is`, "UTF-8"))
+
+                val sbf = StringBuffer()
+                var temp: String? = null
+                while ((br.readLine().also { temp = it }) != null) {
+                    sbf.append(temp)
+                    sbf.append("\n")
+                }
+                result = sbf.toString()
+            }
+        } catch (e: MalformedURLException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        } finally {
+            if (br != null) {
+                try {
+                    br.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            if (os != null) {
+                try {
+                    os.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            if (`is` != null) {
+                try {
+                    `is`.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            connection!!.disconnect()
+        }
+        return result
+    }
+
+    fun bindShop(sn: String?, shop_id: Int): String? {
+        val body = java.lang.StringBuilder()
+        body.append("{")
+        body.append(String.format("\"sn\":\"%s\"", sn))
+        body.append(",")
+        body.append(String.format("\"shop_id\":%d", shop_id))
+        body.append("}")
+        return httpPost("/v2/printer/open/open/device/bindShop", body.toString())
+    }
+
+    fun onlineStatus(sn: String?): String? {
+        val body = java.lang.StringBuilder()
+        body.append("{")
+        body.append(String.format("\"sn\":\"%s\"", sn))
+        body.append("}")
+        return httpPost("/v2/printer/open/open/device/onlineStatus", body.toString())
+    }
+
+    fun pushContent(
+        trade_no: String?,
+        sn: String?,
+        count: Int,
+        order_type: Int,
+        media_text: String?,
+        cycle: Int
+    ): String? {
+        val body = java.lang.StringBuilder()
+        body.append("{")
+        body.append(String.format("\"trade_no\":\"%s\"", "${System.currentTimeMillis()}"))
+        body.append(",")
+        body.append(String.format("\"sn\":\"%s\"", sn))
+        body.append(",")
+        body.append(String.format("\"order_type\":%d", order_type))
+        body.append(",")
+        body.append(java.lang.String.format("\"content\":\"%s\"", orderContent.toString()))
+        body.append(",")
+        body.append(String.format("\"count\":%d", count))
+        body.append(",")
+        body.append(String.format("\"media_text\":\"%s\"", media_text))
+        body.append(",")
+        body.append(String.format("\"cycle\":%d", cycle))
+        body.append("}")
+        return httpPost("/v2/printer/open/open/device/pushContent", body.toString(),sn)
+    }
+
+    fun appendText(text: String) {
+        try {
+            val bytes = text.toByteArray(charset("UTF-8"))
+            for (i in bytes) orderContent.append(String.format("%02x", i))
+        } catch (e: UnsupportedEncodingException) {
+        }
+    }
+
+    fun printAndExitPageMode() {
+        orderContent.append("0c")
+    }
+
+
+    fun cutPaper(full_cut: Boolean) {
+        orderContent.append("1d56" + (if ((full_cut)) "30" else "31"))
+    }
+    fun lineFeed(n: Int) {
+        for (i in 0 until n) orderContent.append("0a")
+    }
+
+
+    fun setAlignment(n: Int) {
+        if (n >= 0 && n <= 2) orderContent.append("1b61" + String.format("%02x", n))
+    }
+
+    fun clearPrintJob(sn: String?): String? {
+        Log.e(TAG,"chekSNCall: ${sn}")
+        val body = java.lang.StringBuilder()
+        body.append("{")
+        body.append(String.format("\"sn\":\"%s\"", sn))
+        body.append("}")
+        return httpPost("/v2/printer/open/open/device/clearPrintJob", body.toString(),sn)
+    }
+
+
+    // Append raw data.
+    fun appendRawData(bytes: ByteArray) {
+        for (i in bytes) orderContent.append(String.format("%02x", i))
+    }
+
+    // Append unicode character.
+    fun appendUnicode(unicode: Int, count: Int) {
+        if (count > 0) {
+            val text = StringBuilder()
+            for (i in 0 until count) text.append(unicode.toChar())
+            appendText(text.toString())
+        }
+
+    }
+
+    // [ESC 3] Set line spacing.
+    fun setLineSpacing(n: Int) {
+        if (n >= 0 && n <= 255) orderContent.append("1b33" + String.format("%02x", n))
+    }
+
+    // [ESC !] Set print modes.
+    fun setPrintModes(bold: Boolean, double_h: Boolean, double_w: Boolean) {
+        var n = 0
+        if (bold) n = n or 8
+        if (double_h) n = n or 16
+        if (double_w) n = n or 32
+        charHSize = if ((double_w)) 2 else 1
+        orderContent.append("1b21" + String.format("%02x", n))
+    }
+
+    // [HT] Jump to next TAB position.
+    fun horizontalTab(n: Int) {
+        for (i in 0 until n) orderContent.append("09")
+    }
+
+    // [ESC $] Set absolute print position.
+    fun setAbsolutePrintPosition(n: Int) {
+        if (n >= 0 && n <= 65535) orderContent.append(
+            "1b24" + String.format(
+                "%02x%02x",
+                (n and 0xff),
+                ((n shr 8) and 0xff)
+            )
+        )
+    }
+
+    // [ESC \] Set relative print position.
+    fun setRelativePrintPosition(n: Int) {
+        if (n >= -32768 && n <= 32767) orderContent.append(
+            "1b5c" + String.format(
+                "%02x%02x",
+                (n and 0xff),
+                ((n shr 8) and 0xff)
+            )
+        )
+    }
+
+
+    // [ESC -] Set underline mode.
+    fun setUnderlineMode(n: Int) {
+        if (n >= 0 && n <= 2) orderContent.append("1b2d" + String.format("%02x", n))
+    }
+
+    // [GS B] Set black-white reverse mode.
+    fun setBlackWhiteReverseMode(enabled: Boolean) {
+        orderContent.append("1d42" + (if ((enabled)) "01" else "00"))
+    }
+
+    // [ESC {] Set upside down mode.
+    fun setUpsideDownMode(enabled: Boolean) {
+        orderContent.append("1b7b" + (if ((enabled)) "01" else "00"))
+    }
+
+    @Throws(java.lang.Exception::class)
+    fun generateSign(body: String, timestamp: String, nonce: String): String {
+
+        val msg = body + "889a389072224d10b641e90b9cc26856" + timestamp + nonce
+        val hmacSha256 = Mac.getInstance("HmacSHA256")
+        val secretKey = SecretKeySpec("1f486ca8d9a341408c8132b23f82f571".encodeToByteArray(), "HmacSHA256")
+        hmacSha256.init(secretKey)
+        val result = hmacSha256.doFinal(msg.toByteArray(charset("UTF-8")))
+        return bytesToHexString(result)
+    }
+
+    fun bytesToHexString(bytes: ByteArray): String {
+        val hexstr = java.lang.StringBuilder()
+        for (i in bytes) hexstr.append(String.format("%02x", i))
+        return hexstr.toString()
+    }
+
+
+    fun setCharacterSize(h: Int, w: Int) {
+        var n = 0
+        if (h >= 1 && h <= 8) n = n or (h - 1)
+        if (w >= 1 && w <= 8) {
+            n = n or ((w - 1) shl 4)
+            charHSize = w
+        }
+        orderContent.append("1d21" + String.format("%02x", n))
+    }
+
 
 }

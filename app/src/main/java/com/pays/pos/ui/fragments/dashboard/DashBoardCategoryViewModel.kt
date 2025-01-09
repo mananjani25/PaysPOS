@@ -4977,6 +4977,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 CoroutineScope(Dispatchers.IO).async {
                     cartModel = getManualSaleFromCart(prefProvider.getValueInt(EMPLOYEE_ID, -1))
+                    if (cartModel==null && getAllCartModels() != null){
+                        cartModel = getAllCartModels().get(0)
+                    }
                 }.await()
             }
 
@@ -7433,6 +7436,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                             }
 
 
+                            /*launch {
+                                modifierSetList.addAll(mData.modifierSets.sortedBy { it.sort })
+                            }*/
                             modifierSetList.addAll(mData.modifierSets)
 
                             delay(1000)
@@ -7789,6 +7795,28 @@ class DashBoardCategoryViewModel @Inject constructor(
                     resource.data.let { venueDetailsResponse ->
                         if (venueDetailsResponse?.status == 200) {
 
+
+                            /*--------------------Set the payment type------------------*/
+                            CoroutineScope(Dispatchers.IO).launch {
+                                var activePaymentType=posRepository.getActivePaymentGateway()
+                                prefProvider.setValue(Constants.PAYMENT_GATEWAY_TYPE,venueDetailsResponse.settingData.data.activatedPaymentGateway?:"")
+                                if (!venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.PAX,ignoreCase = true)){
+                                    prefProvider.getValueboolean(
+                                        Constants.IS_PAX_CONNECTED,
+                                        false
+                                    )
+                                }
+                                if (activePaymentType.isEmpty()){
+//                                    Insert to DB
+                                    posRepository.insertActivePaymentGateway(ActivePaymentGateway(type = venueDetailsResponse.settingData.data.activatedPaymentGateway))
+                                }else{
+//                                    Update to DB
+                                    activePaymentType.first().type = venueDetailsResponse.settingData.data.activatedPaymentGateway
+                                    posRepository.updateActivePayment(activePaymentType.first())
+                                }
+                            }
+                            /*--------------------Set the payment type------------------*/
+
                             posRepository.deleteKitchenPrinters()
                             resource.data?.let { it ->
                                 if (it.settingData.data.teamRoles.isNotEmpty()) {
@@ -7908,25 +7936,30 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 /*------------VALOR---------------*/
 
-                                var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
-                                var appID = "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
-                                var channelID = "bd967b4e0ccd6309c5ac16634bd367b6"
-                                var epi = "2319995597"
+                                /* var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
+                                 var appID = "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
+                                 var channelID = "bd967b4e0ccd6309c5ac16634bd367b6"
+                                 var epi = "2319995597"*/
 
-                                prefProvider.setValue(
-                                    VALOR_APP_ID, /*it.settingData.data.valor_app_id*/appID ?: ""
-                                )
+                                var foundTerminal=it.settingData.data.terminals.filter { term-> term.name.equals(prefProvider.getValue(
+                                    Constants.TERMINAL_NAME, ""
+                                ),ignoreCase = true) }
+                                if (foundTerminal.isNotEmpty()){
+                                    prefProvider.setValue(
+                                        VALOR_APP_ID, foundTerminal.get(0).app_id/*appID*/ ?: ""
+                                    )
 
-                                prefProvider.setValue(
-                                    VALOR_APP_KEY, /*it.settingData.data.valor_app_key*/apiKey ?: ""
-                                )
+                                    prefProvider.setValue(
+                                        VALOR_APP_KEY, foundTerminal.get(0).app_key/*apiKey*/ ?: ""
+                                    )
 
-                                prefProvider.setValue(
-                                    VALOR_EPI, /*it.settingData.data.valor_epi*/epi ?: ""
-                                )
-                                prefProvider.setValue(
-                                    VALOR_CHANNEL_ID, /*it.settingData.data.valor_channel_id*/channelID ?: ""
-                                )
+                                    prefProvider.setValue(
+                                        VALOR_EPI, foundTerminal.get(0).epi/*epi*/ ?: ""
+                                    )
+                                    prefProvider.setValue(
+                                        VALOR_CHANNEL_ID, foundTerminal.get(0).channel_id/*channelID*/ ?: ""
+                                    )
+                                }
                                 /*------------VALOR---------------*/
 
 

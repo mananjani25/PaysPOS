@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-class Modifier : Parcelable {
+class Modifier : Parcelable,Comparable<Modifier> {
 
 
     @SerializedName("id")
@@ -44,4 +44,8 @@ class Modifier : Parcelable {
 
     var orderItemTaxes: List<GetOrderDetailsResponse.Data.OrderItem.OrderItemModifier.OrderItemTaxe?> =
         emptyList()
+
+    override fun compareTo(other: Modifier): Int {
+        return this.sort-other.sort
+    }
 }

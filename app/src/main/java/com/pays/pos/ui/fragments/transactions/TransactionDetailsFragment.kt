@@ -69,12 +69,12 @@ import com.google.gson.reflect.TypeToken
 import com.pax.poslink.ReportRequest
 import com.pays.pos.data.model.requestModel.CashLogRequest
 import com.pays.payments.callbacks.PaymentCallback
-import com.pays.payments.design.PaymentGatewayFactory
-import com.pays.payments.design.PaymentGatewayType
-import com.pays.payments.design.TransactionType
-import com.pays.payments.design.Valor
+import com.pays.payments.design.*
+import com.pays.payments.gateways.dejavoo.DejavooPaymentGateway
+import com.pays.payments.gateways.valor.ValorPaymentGateway
 import com.pays.pos.data.model.requestModel.RefundRequestModel
 import com.pays.pos.data.model.valor.ValorSuccessResponse
+import com.pays.pos.data.model.valor.ValorTransactionsList
 import com.pays.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.pays.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
@@ -99,12 +99,21 @@ import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
+import org.json.JSONArray
+import org.json.JSONObject
+import org.w3c.dom.Document
+import org.w3c.dom.Element
+import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.StringReader
+import java.lang.ref.WeakReference
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
+import javax.xml.parsers.DocumentBuilderFactory
 
 @AndroidEntryPoint
 class TransactionDetailsFragment : Fragment() {
@@ -115,6 +124,7 @@ class TransactionDetailsFragment : Fragment() {
     private val dashboardCategoryViewModel by viewModels<DashBoardCategoryViewModel>()
     private var isPrint: Boolean = false
     private val magtekProViewModel by viewModels<MagtekViewModel>()
+    lateinit var weakContext: WeakReference<Context>
 
     private lateinit var orderDetailsItemAdapter: OrderDetailsItemListAdapter
     private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
@@ -185,7 +195,7 @@ class TransactionDetailsFragment : Fragment() {
             false
         )
 
-
+        weakContext = WeakReference<Context>(context)
         lifecycleScope.launch {
             try {
                 runBlocking {
@@ -367,18 +377,55 @@ class TransactionDetailsFragment : Fragment() {
 
             if (paymentDetailsResponse.data?.payment_type == "Card") {
                 Log.d("RefNum11: ", "RefNum ${paymentDetailsResponse.data?.ref_num}")
-                if (paymentDetailsResponse.data?.ref_num.isNullOrEmpty()) {
+                when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
+                    Constants.PAX->{
+                        if (!paymentDetailsResponse.data?.ref_num.isNullOrEmpty() && prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
+                            adjustPaxTips()
+                        }else{
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                "Please connect to PAX device"
+                            )
+                        }
+                    }
+                    Constants.VALOR, Constants.VELOR->{
+                        adjustValorTips(paymentDetailsResponse)
+                    }
+                    Constants.DEJAVOO->{
+                        adjustDejavooTips()
+                    }else->{
+                    if (paymentDetailsResponse.data?.ref_num.isNullOrEmpty()) {
+                        magtekCall(tipAmount)
+                    }else{
+                        if (!paymentDetailsResponse.data?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                "Please connect to PAX device"
+                            )
+                        }
+                    }
+
+                }
+
+                }
+               /* if (paymentDetailsResponse.data?.ref_num.isNullOrEmpty()) {
                     magtekCall(tipAmount)
-                }
-                else if(paymentDetailsResponse.data.ext_data.contains(Constants.VALOR,ignoreCase = true)){
-                    adjustValorTips(paymentDetailsResponse)
-                }
-                else if (!paymentDetailsResponse.data?.ref_num.isNullOrEmpty() && prefProvider.getValueboolean(
+                } else if (!paymentDetailsResponse.data?.ref_num.isNullOrEmpty() && prefProvider.getValueboolean(
                         Constants.IS_PAX_CONNECTED,
                         false
                     )
                 ) {
                     adjustPaxTips()
+                } else if (prefProvider.getValue(Constants.VALOR_APP_KEY, "").isNotEmpty()) {
+                    adjustValorTips(paymentDetailsResponse)
                 } else if (!paymentDetailsResponse.data?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(
                         Constants.IS_PAX_CONNECTED,
                         false
@@ -388,10 +435,9 @@ class TransactionDetailsFragment : Fragment() {
                         requireContext(),
                         "Please connect to PAX device"
                     )
-                }
+                }*/
             } else {
                 tipCall(false)
-                cashLogEventCall(bundle)
             }
 
 
@@ -404,14 +450,30 @@ class TransactionDetailsFragment : Fragment() {
                 }
                 mLastClickTime = SystemClock.elapsedRealtime()
                 try {
+
                     if (!paymentDetailsResponse.data.ext_data.isNullOrEmpty()) {
-                        if (paymentDetailsResponse.data.ext_data.equals(Constants.VALOR) && prefProvider.getValue(
+                        if (((paymentDetailsResponse.data.ext_data.equals(Constants.VALOR)) || (paymentDetailsResponse.data.ext_data.equals(Constants.VELOR))) && prefProvider.getValue(
                                 Constants.VALOR_APP_ID, ""
                             ).isNotEmpty()
                         ) {
-                            ProgressUtils.showProgressDialog(requireActivity())
-                            startVoidWithValor(paymentDetailsResponse)
+                            weakContext.get()?.let {
+                                AlertUtils.showCustomAlertWithListenerWithOKCancel(it,
+                                    "Do you want to refund the transaction?",
+                                    getString(android.R.string.ok),
+                                    object : DialogInterface.OnClickListener {
+                                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                                            ProgressUtils.showProgressDialog(requireActivity())
+                                            checkIfValorTransactionEligibleForVoid(
+                                                paymentDetailsResponse
+                                            )
+                                            p0?.dismiss()
+                                        }
+                                    })
+                            }
 
+                        } else if (paymentDetailsResponse.data.ext_data.contains(Constants.DEJAVOO)) {
+                            ProgressUtils.showProgressDialog(requireActivity())
+                            checkIfDejavooTransactionEligibleForVoid(paymentDetailsResponse)
                         }
 //                    Check if the the PAX is connected or not then perform the void checking
                         else if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
@@ -421,6 +483,7 @@ class TransactionDetailsFragment : Fragment() {
                             }
                             checkIfTransactionIsVoided()
                         } else {
+                            ProgressUtils.dismissProgressDialog()
                             activity?.let {
                                 AlertUtils.showCustomAlertWithListenerWithOK(
                                     it,
@@ -455,9 +518,131 @@ class TransactionDetailsFragment : Fragment() {
 
     }
 
+
+    private fun adjustDejavooTips() {
+        paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutineScope.launch {
+            val gatewayType = PaymentGatewayType.DEJAVOO
+            val paymentGateway = PaymentGatewayFactory(
+                ValorPaymentGateway(),
+                DejavooPaymentGateway()
+            ).create(gatewayType)
+
+            paymentDetailsResponse?.data.ref_num.let { dejavooRefTxnId ->
+                var dejavoo= Dejavoo(
+                    registerId=  "4986101",
+                    authKey=  "kwg2GRbykg",
+                    tpn= "659324491704",
+                    paymentType = "Credit",
+                    transType="TipAdjust",
+                    amount= paymentDetailsResponse?.data.amount.toString(),
+                    tip = tipAmount.toString(),
+                    refId= dejavooRefTxnId,
+                    printReceipt= false,
+                    performedBy=  prefProvider.employeeName(),
+                    isProd= false,
+                    txnType = TransactionType.TIP_ADJUSTMENT
+                )
+                paymentGateway.processPayment(
+                    requireContext().applicationContext,
+                    dejavoo,
+                    onSuccess = { tResponse->
+                        var transactionJsonResponse = Gson().fromJson<String>(
+                            tResponse,
+                            String::class.java
+                        )
+                        tipCall(true)
+
+                    },
+                    onFailure = {
+                        ProgressUtils.dismissProgressDialog()
+
+                        /*runOnUiThread(Runnable {
+                                    AlertUtils.showCustomAlert(
+                                        requireContext(),
+                                        errorMessage
+                                    )
+                                })*/
+
+                    }
+                )
+                /* Process Tip Adjust */
+            }
+        }
+    }
+
+    private fun checkIfValorTransactionEligibleForVoid(paymentDetailsResponse: GetPaymentOrderDetailsResponse) {
+        paymentCoroutineScope.launch {
+            val gatewayType = PaymentGatewayType.VALOR
+            val paymentGateway = paymentGatewayFactory.create(gatewayType)
+
+
+            /*      var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
+                  var appID = "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
+                  var channelID = "bd967b4e0ccd6309c5ac16634bd367b6"
+                  var epi = "2319995597"
+                  var endpoint = "status"
+                  var transType = TransactionType.CREDIT_SALE
+                  var TRAN_MODE = "1"
+                  var TRAN_CODE = "1"
+                  var amount =
+                  var reqTxnId = */
+
+            /* Process Payment */
+            context?.let {
+                var valor = Valor(
+                    apiKey = prefProvider.getValue(Constants.VALOR_APP_KEY, ""),
+                    appID = prefProvider.getValue(Constants.VALOR_APP_ID, ""),
+                    epi = prefProvider.getValue(Constants.VALOR_EPI, ""),
+                    endpoint = Constants.VALOR_OPEN_BATCH,
+                    channelId = prefProvider.getValue(Constants.VALOR_CHANNEL_ID, ""),
+                    limit = 200,
+                    offset = 0,
+                    isProd = Constants.paymentLive
+                )
+
+                paymentGateway.getTransactionsDetails(
+                    it,
+                    valor,
+                    onSuccess = { tResponse ->
+                        var transactionJsonResponse = Gson().fromJson<ValorTransactionsList>(
+                            tResponse,
+                            ValorTransactionsList::class.java
+                        )
+
+                        transactionJsonResponse?.nameValuePairs?.let {
+                            if (it.batchSummaryDetails.values.isNotEmpty()) {
+                                var transaction = it.batchSummaryDetails.values.filter {
+                                    it.nameValuePairs.txnId.toString()
+                                        .equals(paymentDetailsResponse.data.ref_num)
+                                }
+                                if (transaction.isEmpty()) {
+                                    //Refund
+                                    startRefund()
+                                } else {
+                                    //Void
+                                    startVoidWithValor(paymentDetailsResponse)
+                                }
+                            } else {
+                                startRefund()
+//                              dismissProgressDialogWithAlert()
+                            }
+                        }
+                    },
+                    onFailure = { errorMessage ->
+                        Log.e("Valor:", errorMessage)
+                        dismissProgressDialogWithAlert(errorMessage)
+                    }
+                )
+            }
+//            }
+        }
+    }
+
     lateinit var paymentCoroutineScope: CoroutineScope
     var paymentCoroutineExceptionHandler =
         CoroutineExceptionHandler { coroutineContext, exception ->
+            dismissProgressDialogWithAlert()
             EventBus.getDefault()
                 .post(
                     MessageEvent(
@@ -482,54 +667,6 @@ class TransactionDetailsFragment : Fragment() {
             val gatewayType = PaymentGatewayType.VALOR
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
-
-            val paymentCallback = object : PaymentCallback {
-                override fun onSuccess(transactionId: String) {
-
-                    var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
-                        transactionId,
-                        ValorSuccessResponse::class.java
-                    )
-                    transactionJsonResponse.nameValuePairs?.let {
-                        if (it.msg != null) {
-                            if (it.msg!!.contains(
-                                    "APPROVED"
-                                )
-                            ) {
-                                tipCall(true)
-                            } else {
-                                ProgressUtils.dismissProgressDialog()
-                                /* runOnUiThread(Runnable {
-                                     AlertUtils.showCustomAlert(
-                                         requireContext(),
-                                         it.msg
-                                     )
-                                 })*/
-                            }
-                        }
-                    }
-                }
-
-                override fun onFailure(errorMessage: String) {
-                    println("Payment Failed: $errorMessage")
-
-                    ProgressUtils.dismissProgressDialog()
-
-                    AlertUtils.showCustomAlertWithListenerWithOK(
-                        requireContext(),
-                        errorMessage,
-                        object :
-                            DialogInterface.OnClickListener {
-                            override fun onClick(p0: DialogInterface?, p1: Int) {
-                                try {
-                                    p0?.dismiss()
-                                } catch (e: Exception) {
-                                }
-                            }
-                        })
-                }
-            }
-
             paymentDetailsResponse.data?.ref_num.let { valorRefTxId ->
                 context?.let {
                     var valor = Valor(
@@ -549,18 +686,285 @@ class TransactionDetailsFragment : Fragment() {
                         surchargeIndicator = "",
                         sale_refund = "",
                         ref_txn_id = "",
+                        isProd = Constants.paymentLive,
                         transactionId = ""
                     )
 
                     paymentGateway.processPayment(
-                        context = it,
+                        context = it.applicationContext,
                         valor,
-                        callback = paymentCallback,
+                        onSuccess = { tResponse ->
+                            var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
+                                tResponse,
+                                ValorSuccessResponse::class.java
+                            )
+                            transactionJsonResponse.nameValuePairs?.let {
+                                if (it.msg != null) {
+                                    if (it.msg!!.contains(
+                                            "APPROVED"
+                                        )
+                                    ) {
+                                        tipCall(true)
+                                    } else {
+                                        dismissProgressDialogWithAlert()
+                                    }
+                                }
+                            }
+                        },
+                        onFailure = { errorMessage ->
+                            Log.e("Valor: ", errorMessage)
+                            dismissProgressDialogWithAlert(errorMessage)
+                        },
                     )
                 }
             }
             /* Process Tip Adjust */
 
+        }
+    }
+
+    fun parseXml(xmlContent: String): Document {
+        val factory = DocumentBuilderFactory.newInstance()
+        val builder = factory.newDocumentBuilder()
+        return builder.parse(xmlContent.byteInputStream())
+    }
+
+
+    private fun checkIfDejavooTransactionEligibleForVoid(paymentDetailsResponse: GetPaymentOrderDetailsResponse) {
+        paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutineScope.launch {
+            val gatewayType = PaymentGatewayType.DEJAVOO
+            val paymentGateway = paymentGatewayFactory.create(gatewayType)
+
+            /*  context?.let {
+                  var dejavoo = Dejavoo(
+                      authKey = "kwg2GRbykg",
+                      registerId = "4986101",
+                      tpn = "659324491704",
+                      amount = paymentDetailsResponse.data.amount.toString(),
+                      isProd = false,
+                      paymentType = "Credit",
+                      performedBy = "",
+                      printReceipt = false,
+                      refId = paymentDetailsResponse.data.ref_num,
+                      tip = "",
+                      transType = *//*"Return"*//*"Void",
+                    txnType = TransactionType.VOID)
+
+                paymentGateway.voidPayment(
+                    it,
+                    dejavoo,
+                    paymentCallback
+                )
+            }*/
+
+
+//            ---------------------------------------------- To Fetch Transaction Details--------------
+            context?.let {
+                var dejavoo = Dejavoo(
+                    authKey = "kwg2GRbykg",
+                    registerId = "4986101",
+                    tpn = "659324491704",
+                    amount = "",
+                    isProd = false,
+                    paymentType = "Credit",
+                    performedBy = "",
+                    printReceipt = false,
+                    refId = paymentDetailsResponse.data.ref_num,
+                    tip = "",
+                    transType = "Status",
+                    txnType = TransactionType.VOID
+                )
+
+                paymentGateway.voidPayment(
+                    it,
+                    dejavoo,
+                    onSuccess = { tRequest ->
+                        var transactionJsonResponse = Gson().fromJson<String>(
+                            tRequest,
+                            String::class.java
+                        )
+                        val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
+                        factory.setNamespaceAware(true)
+                        val xpp: XmlPullParser = factory.newPullParser()
+                        xpp.setInput(StringReader(transactionJsonResponse))
+                        var eventType = xpp.eventType
+
+                        var Message = ""
+                        var ResultCode = ""
+                        var RespMSG = ""
+                        with(parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes) {
+                            for (i in 0 until this.length) {
+
+                                when ((this.item(i) as Element).tagName.toString()) {
+                                    "Message" -> Message =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "ResultCode" -> ResultCode =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "RespMSG" -> RespMSG =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    else -> {
+
+                                    }
+                                }
+                            }
+                        }
+//                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
+                        if (Message.equals("Canceled") || Message.equals("Error")) {
+                            ProgressUtils.dismissProgressDialog()
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                RespMSG.replace("%20", " ")
+                            )
+                        } else if (Message.contains(
+                                "approved",
+                                ignoreCase = true
+                            )
+                        ) { // Found the transaction, proceed with VOID
+                            CoroutineScope(Dispatchers.Main).launch {
+                                startVoidWithDejavoo()
+                            }
+                        } else if (Message.contains("Not found", ignoreCase = true)) {
+                            startRefund()
+                        }
+                    },
+                    onFailure = { errorMessage ->
+                        EventBus.getDefault()
+                            .post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
+                                        Gson().toJson(
+                                            errorMessage
+                                        )
+                                    } "
+                                )
+                            )
+                        ProgressUtils.dismissProgressDialog()
+
+                    }
+                )
+            }
+//            }
+        }
+    }
+
+    private fun startVoidWithDejavoo() {
+        paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutineScope.launch {
+            val gatewayType = PaymentGatewayType.DEJAVOO
+            val paymentGateway = paymentGatewayFactory.create(gatewayType)
+
+            context?.let {
+                var dejavoo = Dejavoo(
+                    authKey = "kwg2GRbykg",
+                    registerId = "4986101",
+                    tpn = "659324491704",
+                    amount = paymentDetailsResponse.data.amount.toString(),
+                    isProd = false,
+                    paymentType = "Credit",
+                    performedBy = "",
+                    printReceipt = false,
+                    refId = paymentDetailsResponse.data.ref_num,
+                    tip = "",
+                    transType = "Void",
+                    txnType = TransactionType.VOID
+                )
+
+                paymentGateway.voidPayment(
+                    it,
+                    dejavoo,
+                    onSuccess = { tResponse ->
+                        var transactionJsonResponse = Gson().fromJson<String>(
+                            tResponse,
+                            String::class.java
+                        )
+                        val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
+                        factory.setNamespaceAware(true)
+                        val xpp: XmlPullParser = factory.newPullParser()
+                        xpp.setInput(StringReader(transactionJsonResponse))
+                        var eventType = xpp.eventType
+
+                        var Message = ""
+                        var RefId = ""
+                        var RegisterId = ""
+                        var TPN = ""
+                        var AuthCode = ""
+                        var PNRef = ""
+                        var TransNum = ""
+                        var ResultCode = ""
+                        var RespMSG = ""
+                        var PaymentType = ""
+                        var Voided = ""
+                        var TransType = ""
+                        var SN = ""
+                        var ExtData = ""
+                        with(parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes) {
+                            for (i in 0 until this.length) {
+
+                                when ((this.item(i) as Element).tagName.toString()) {
+                                    "Message" -> Message =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "RefId" -> RefId =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "RegisterId" -> RegisterId =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "TPN" -> TPN = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "AuthCode" -> AuthCode =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "PNRef" -> PNRef =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "TransNum" -> TransNum =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "ResultCode" -> ResultCode =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "RespMSG" -> RespMSG =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "PaymentType" -> PaymentType =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "Voided" -> Voided =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "TransType" -> TransType =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "SN" -> SN = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "ExtData" -> ExtData =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    else -> {
+
+                                    }
+                                }
+                            }
+                        }
+//                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
+                        if (Message.equals("Canceled") || Message.equals("Error")) {
+                            ProgressUtils.dismissProgressDialog()
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                RespMSG.replace("%20", " ")
+                            )
+                        } else if (ResultCode.equals("0")) { // Found the transaction, proceed with VOID
+                            CoroutineScope(Dispatchers.Main).launch {
+                                refundCall(paymentDetailsResponse.data.amount)
+                            }
+                        } else if (ResultCode.equals("0")) {
+                            startRefund()
+                        }
+                    },
+                    onFailure = { errorMessage ->
+                        EventBus.getDefault()
+                            .post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
+                                        Gson().toJson(
+                                            errorMessage
+                                        )
+                                    } "
+                                )
+                            )
+                        ProgressUtils.dismissProgressDialog()
+                    }
+                )
+            }
+//            }
         }
     }
 
@@ -570,31 +974,6 @@ class TransactionDetailsFragment : Fragment() {
             val gatewayType = PaymentGatewayType.VALOR
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
-            val paymentCallback = object : PaymentCallback {
-                override fun onSuccess(transactionId: String) {
-                    var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
-                        transactionId,
-                        ValorSuccessResponse::class.java
-                    )
-
-                    transactionJsonResponse.nameValuePairs?.let {
-                        if (it.msg != null) {
-                            if (it.msg.equals("APPROVED", ignoreCase = true)) {
-                                CoroutineScope(Dispatchers.Main).launch {
-                                    refundCall(paymentDetailsResponse.data.amount)
-                                }
-                            } else {
-                                startRefund()
-                            }
-                        }
-                    }
-                }
-
-                override fun onFailure(errorMessage: String) {
-                    println("Payment Failed: $errorMessage")
-                    ProgressUtils.dismissProgressDialog()
-                }
-            }
 
             /*      var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
                   var appID = "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
@@ -619,45 +998,54 @@ class TransactionDetailsFragment : Fragment() {
                     amount = paymentDetailsResponse.data.amount.toString(),
                     txn_type = Constants.VALOR_VOID,
                     ref_txn_id = paymentDetailsResponse.data.ref_num,
-                    surchargeIndicator="",
+                    surchargeIndicator = "",
                     sale_refund = "",
+                    isProd = Constants.paymentLive,
                     transactionId = ""
                 )
 
                 paymentGateway.voidPayment(
                     it,
                     valor,
-                    paymentCallback
+                    onSuccess = { tResponse ->
+                        var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
+                            tResponse,
+                            ValorSuccessResponse::class.java
+                        )
+
+                        transactionJsonResponse.nameValuePairs?.let {
+                            if (it.msg != null) {
+                                if (it.msg.equals("APPROVED", ignoreCase = true)) {
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        refundCall(paymentDetailsResponse.data.amount)
+                                    }
+                                } else {
+                                    startRefund()
+                                }
+                            } else {
+                                dismissProgressDialogWithAlert()
+                            }
+                        }
+                    },
+                    onFailure = { errorMessage ->
+                        Log.e("Valor:", errorMessage)
+                        dismissProgressDialogWithAlert(errorMessage)
+                    }
                 )
             }
 //            }
         }
     }
 
-
-    private fun cashLogEventCall(bundle: Bundle) {
-        if(bundle.containsKey("tipAmount")){
-            if (bundle.getDouble("tipAmount")>0.0){
-                makeCashEventCallToUpdateTip(bundle.getDouble("tipAmount"))
+    private fun dismissProgressDialogWithAlert(errorMessage: String? = null) {
+        runOnUiThread {
+            ProgressUtils.dismissProgressDialog()
+            if (errorMessage != null) {
+                AlertUtils.showCustomAlert(requireContext(), errorMessage)
             }
         }
     }
 
-    private fun makeCashEventCallToUpdateTip(tippedAmount: Double) {
-        val cashLogRequest = CashLogRequest(
-            tippedAmount,
-            prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
-            "in",
-            orderId,
-            paymentId,
-            "Tip added to the order",
-            prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
-            null,
-            null
-        )
-        dashboardCategoryViewModel.makeCashInOutCallFromCustomerDisplay(cashLogRequest)
-
-    }
 
     private fun startRefund() {
         CoroutineScope(Dispatchers.Main).launch {
@@ -748,7 +1136,6 @@ class TransactionDetailsFragment : Fragment() {
                 var isItemRefund = false
                 var isAmountRefund = false
 
-
                 paymentDetailsResponse.data.order.order_items.forEach {
                     if (it.refundedAmount != 0.0)
                         isItemRefund = true
@@ -779,7 +1166,10 @@ class TransactionDetailsFragment : Fragment() {
 
                     putBoolean("isItemRefund", isItemRefund)
                     putBoolean("isAmountRefund", isAmountRefund)
-                    putString("screenTotalAmount",(paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips).toString())
+                    putString(
+                        "screenTotalAmount",
+                        (paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips).toString()
+                    )
                 }
                 bundle.putString("isFrom", "refund")
 
@@ -803,7 +1193,12 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun checkIfTransactionIsVoided() {
         GlobalScope.launch {
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
+            posLink.SetCommSetting(
+                SettingINI.getCommSettingFromFile(
+                    context!!,
+                    Constants.FILE_PATH + SettingINI.FILENAME
+                )
+            )
 
             val report = ReportRequest()
             report.TransType = report.ParseTransType("LOCALDETAILREPORT") //recommend
@@ -877,52 +1272,109 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun enableDisableTipButton() {
         try {
-            if (paymentDetailsResponse.data.ref_num != null) {
-                if (paymentDetailsResponse.data.ref_num.isNotEmpty()) {
-                    GlobalScope.launch {
-                        posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
+            when (paymentDetailsResponse.data.ext_data) {
+                "VALOR" -> {
+                    paymentCoroutineScope =
+                        CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+                    paymentCoroutineScope.launch {
+                        val gatewayType = PaymentGatewayType.VALOR
+                        val paymentGateway = paymentGatewayFactory.create(gatewayType)
+                        /* Process Payment */
+                        context?.let {
+                            var valor = Valor(
+                                apiKey = prefProvider.getValue(Constants.VALOR_APP_KEY, ""),
+                                appID = prefProvider.getValue(Constants.VALOR_APP_ID, ""),
+                                epi = prefProvider.getValue(Constants.VALOR_EPI, ""),
+                                endpoint = Constants.VALOR_TXN_FETCH,
+                                channelId = prefProvider.getValue(Constants.VALOR_CHANNEL_ID, ""),
+                                ref_txn_id = paymentDetailsResponse.data.ref_num,
+                                limit = 200,
+                                offset = 0,
+                                isProd = Constants.paymentLive
+                            )
 
-                        val report = ReportRequest()
-                        report.TransType = report.ParseTransType("LOCALDETAILREPORT") //recommend
-                        report.EDCType = report.ParseEDCType("CREDIT")
-                        report.RefNum = paymentDetailsResponse.data.ref_num
-                        report.ECRRefNum = paymentDetailsResponse.data.ecr_ref_num
+                            (paymentGateway as ValorPaymentGateway).getTransactionsList(
+                                it,
+                                valor,
+                                onSuccess = { tResponse ->
+                                    Log.d("Resp: ",tResponse)
 
-                        posLink.ReportRequest = report
-                        val result = posLink.ProcessTrans()
-                        Log.d("result batch: ", result.Code.toString() + " " + result.Msg)
-                        try {
-                            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
-                                val msg = Message()
-                                msg.what = Constants.TRANSACTION_SUCCESSED
-                                msg.obj = posLink.ReportResponse
-                                if (posLink.ReportResponse == null) {
-                                    CoroutineScope(Dispatchers.Main).launch {
-                                        binding.tvtipadd.visibility = View.GONE
-                                    }
-                                    Log.d("Data::", "void transaction")
-                                } else {
-                                    val response = msg.obj as com.pax.poslink.ReportResponse
-                                    val resultCode = response.ResultCode
-                                    val resultTxt = response.ResultTxt
-                                    if (resultCode == "000000") {
-                                        CoroutineScope(Dispatchers.Main).launch {
-                                            binding.tvtipadd.visibility = View.VISIBLE
+                                    try{
+                                        var tipAmount= JSONObject(JSONObject(JSONArray(JSONObject(JSONObject(JSONObject(tResponse).get("nameValuePairs").toString()).get("data").toString()).get("values").toString()).get(0).toString()).get("nameValuePairs").toString()).get("TIP_AMOUNT")
+                                        if (!tipAmount.equals("0")) {
+                                            runOnUiThread(Runnable {
+                                                binding.tvtipadd.visibility = View.GONE
+                                            })
                                         }
+                                    }catch (e:Exception){
 
-                                    } else if (resultCode == "100023") {
-                                        CoroutineScope(Dispatchers.Main).launch {
-                                            binding.tvtipadd.visibility = View.GONE
+                                    }
+                                },
+                                onFailure = { errorMessage ->
+                                    Log.e("Valor:", errorMessage)
+                                    dismissProgressDialogWithAlert(errorMessage)
+                                }
+                            )
+                        }
+//            }
+                    }
+                }
+                else -> {
+                    paymentDetailsResponse.data.ref_num?.let {
+                        if (it.isNotEmpty()) {
+                            GlobalScope.launch {
+                                posLink.SetCommSetting(
+                                    SettingINI.getCommSettingFromFile(
+                                        context!!,
+                                        Constants.FILE_PATH + SettingINI.FILENAME
+                                    )
+                                )
+
+                                val report = ReportRequest()
+                                report.TransType =
+                                    report.ParseTransType("LOCALDETAILREPORT") //recommend
+                                report.EDCType = report.ParseEDCType("CREDIT")
+                                report.RefNum = paymentDetailsResponse.data.ref_num
+                                report.ECRRefNum = paymentDetailsResponse.data.ecr_ref_num
+
+                                posLink.ReportRequest = report
+                                val result = posLink.ProcessTrans()
+                                Log.d("result batch: ", result.Code.toString() + " " + result.Msg)
+                                try {
+                                    if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                                        val msg = Message()
+                                        msg.what = Constants.TRANSACTION_SUCCESSED
+                                        msg.obj = posLink.ReportResponse
+                                        if (posLink.ReportResponse == null) {
+                                            CoroutineScope(Dispatchers.Main).launch {
+                                                binding.tvtipadd.visibility = View.GONE
+                                            }
+                                            Log.d("Data::", "void transaction")
+                                        } else {
+                                            val response = msg.obj as com.pax.poslink.ReportResponse
+                                            val resultCode = response.ResultCode
+                                            val resultTxt = response.ResultTxt
+                                            if (resultCode == "000000") {
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    binding.tvtipadd.visibility = View.VISIBLE
+                                                }
+
+                                            } else if (resultCode == "100023") {
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    binding.tvtipadd.visibility = View.GONE
+                                                }
+                                            }
                                         }
                                     }
+                                } catch (e: Exception) {
+                                    //                posLink.s
                                 }
                             }
-                        } catch (e: Exception) {
-//                posLink.s
                         }
                     }
                 }
             }
+
         } catch (e: Exception) {
 
         }
@@ -949,7 +1401,12 @@ class TransactionDetailsFragment : Fragment() {
         if (refundAmount != 0.0) {
             if (paymentDetailsResponse.data.payment_type.equals("Card", ignoreCase = true)) {
                 GlobalScope.launch {
-                    posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
+                    posLink.SetCommSetting(
+                        SettingINI.getCommSettingFromFile(
+                            context!!,
+                            Constants.FILE_PATH + SettingINI.FILENAME
+                        )
+                    )
 
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.showProgressDialog(requireActivity())
@@ -1128,7 +1585,12 @@ class TransactionDetailsFragment : Fragment() {
     // Adjust tip on transactions done via PAX
     private fun adjustPaxTips() {
         GlobalScope.launch {
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,Constants.FILE_PATH + SettingINI.FILENAME))
+            posLink.SetCommSetting(
+                SettingINI.getCommSettingFromFile(
+                    context!!,
+                    Constants.FILE_PATH + SettingINI.FILENAME
+                )
+            )
             val tip_amt = (tipAmount * 100).toInt()
             Log.d("Amt: ", "tip $tip_amt RefNo ${paymentDetailsResponse.data?.ref_num}")
 
@@ -1616,7 +2078,7 @@ class TransactionDetailsFragment : Fragment() {
                 val jsonString = Gson().toJson(paymentDetailsResponse)
                 Log.e("paymentDetailsResponse", "paymentDetailsResponse result = $jsonString")
 
-                if (paymentDetailsResponse.data.order.order_split_type == "OrderAmountTab" /*|| paymentDetailsResponse.data.order.order_split_type == "OrderGuestTab"*/) {
+                if (paymentDetailsResponse.data.order.order_split_type == "OrderAmountTab" || paymentDetailsResponse.data.order.order_split_type == "OrderGuestTab") {
                     isSplitPayment = true
                 }
 
@@ -1716,39 +2178,7 @@ class TransactionDetailsFragment : Fragment() {
                     binding.tvCustomerName.text = ""
                 }
                 binding.orderDetails = it
-
-                /**
-                 * Applied this logic for DineIn - Item wise refund for Guest Payment
-                 */
-
-                if(it.data.order.order_type == DINE_IN) {
-                        var orderItems = mutableListOf<GetOrderDetailsResponse.Data.OrderItem>()
-
-                        if (it.data.payable_type == "Guest") {
-
-                            it.data.order.order_items.forEach { item ->
-                                if (item.guestIndexForDineIn == it.data.guest_index_for_dine_in || item.guestIndexForDineIn == 0) {
-
-                                    if (item.guestIndexForDineIn == 0) {
-
-                                        val _item = item
-                                        _item.price /= it.data.guestCount ?: 0
-
-                                        orderItems.add(_item)
-                                    } else orderItems.add(item)
-                                }
-                            }
-                    } else {
-                        orderItems = it.data.order.order_items.toMutableList()
-                    }
-
-                    orderDetailsItemAdapter.addOrderDetailsItems(orderItems)
-                }else {
-
-                    orderDetailsItemAdapter.addOrderDetailsItems(it.data.order.order_items)
-
-                }
-
+                orderDetailsItemAdapter.addOrderDetailsItems(it.data.order.order_items)
                 Log.e("OrderTypeId", it.data.order.order_type_id.toString())
                 if (it.data.order.order_type_id.equals(5) || it.data.order.order_type_id.equals(2) || it.data.order.order_type_id.equals(
                         6
@@ -1884,7 +2314,11 @@ class TransactionDetailsFragment : Fragment() {
                 }
 
 
-                if (paymentDetailsResponse.data.payment_type.equals("Card", true) || paymentDetailsResponse.data.payment_type.equals("Cash", true)) {
+                if (paymentDetailsResponse.data.payment_type.equals(
+                        "Card",
+                        true
+                    ) || paymentDetailsResponse.data.payment_type.equals("Cash", true)
+                ) {
                     val total = String.format("%.2f", paymentDetailsResponse.data.amount)
                     val refundedAmount = String.format(
                         "%.2f",
@@ -1988,7 +2422,11 @@ class TransactionDetailsFragment : Fragment() {
     }
 
     private fun enableDisableRefundButton() {
-        if (paymentDetailsResponse.data.payment_type.contains(getString(R.string.external),ignoreCase = true)){
+        if (paymentDetailsResponse.data.payment_type.contains(
+                getString(R.string.external),
+                ignoreCase = true
+            )
+        ) {
             binding.tvIssueRefund.gone()
         }
     }
@@ -2217,24 +2655,26 @@ class TransactionDetailsFragment : Fragment() {
                                                                         .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
                                                                 ) {
 
-                                                                   try{
-                                                                       if (checkItemsforTransactionPrinter(
-                                                                               (paymentDetailsResponse.data.order.order_items
-                                                                                   ?: arrayListOf()) as List<GetOrderDetailsResponse.Data.OrderItem>,
-                                                                               kitchenPrinterList[i].printerCategories.toCollection(
-                                                                                   arrayListOf()
-                                                                               )
-                                                                           )
-                                                                       ) {
+                                                                    try {
+                                                                        if (checkItemsforTransactionPrinter(
+                                                                                (paymentDetailsResponse.data.order.order_items
+                                                                                    ?: arrayListOf()) as List<GetOrderDetailsResponse.Data.OrderItem>,
+                                                                                kitchenPrinterList[i].printerCategories.toCollection(
+                                                                                    arrayListOf()
+                                                                                )
+                                                                            )
+                                                                        ) {
 
-                                                                           initKitchenPrinter(
-                                                                               kitchenPrinterList.get(i),
-                                                                               Constants.KITCHEN
-                                                                           )
-                                                                       }
-                                                                   }catch (e:Exception){
+                                                                            initKitchenPrinter(
+                                                                                kitchenPrinterList.get(
+                                                                                    i
+                                                                                ),
+                                                                                Constants.KITCHEN
+                                                                            )
+                                                                        }
+                                                                    } catch (e: Exception) {
 
-                                                                   }
+                                                                    }
 
                                                                 }
                                                             }
@@ -2312,7 +2752,7 @@ class TransactionDetailsFragment : Fragment() {
             }
 
 
-        }else if (customerReceiptPrinters.name.startsWith(LANDI_INNER_PRINTER, true)) {
+        } else if (customerReceiptPrinters.name.startsWith(LANDI_INNER_PRINTER, true)) {
             printFromLandiInnerPrinter(customerReceiptPrinters)
         } else {
 
@@ -2406,8 +2846,7 @@ class TransactionDetailsFragment : Fragment() {
                     generateKitchenReceiptSunmi(data, type)
                 }
             }
-        }
-        else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains(
+        } else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains(
                 "SP",
                 ignoreCase = true
             )))
@@ -2460,7 +2899,14 @@ class TransactionDetailsFragment : Fragment() {
 
                                                 actionFeedLine(1)
 
-                                                if (paymentDetailsResponse.data.order.order_type_name.contains("Phone", true) || (paymentDetailsResponse.data.order.order_type_name.equals("OnlineWebOrder",ignoreCase = true))) {
+                                                if (paymentDetailsResponse.data.order.order_type_name.contains(
+                                                        "Phone",
+                                                        true
+                                                    ) || (paymentDetailsResponse.data.order.order_type_name.equals(
+                                                        "OnlineWebOrder",
+                                                        ignoreCase = true
+                                                    ))
+                                                ) {
                                                     add(
                                                         PrinterBuilder()
                                                             .styleBold(true)
@@ -2628,7 +3074,11 @@ class TransactionDetailsFragment : Fragment() {
 
                             actionFeedLine(1)
 
-                            if ((paymentDetailsResponse.data.order.order_type.equals(Constants.PHONE_ORDER_)) || (paymentDetailsResponse.data.order.order_type.equals("OnlineWebOrder",ignoreCase = true))) {
+                            if ((paymentDetailsResponse.data.order.order_type.equals(Constants.PHONE_ORDER_)) || (paymentDetailsResponse.data.order.order_type.equals(
+                                    "OnlineWebOrder",
+                                    ignoreCase = true
+                                ))
+                            ) {
                                 add(
                                     PrinterBuilder()
                                         .styleBold(true)
@@ -2844,8 +3294,7 @@ class TransactionDetailsFragment : Fragment() {
 
             }
 
-        }
-        else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
+        } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(200)
@@ -3754,7 +4203,9 @@ class TransactionDetailsFragment : Fragment() {
             if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                 if (paymentDetailsResponse.data.order.customer != null) {
                     PrintSunmiUtils.customerDetails()
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.normalText("\n")
@@ -4278,7 +4729,7 @@ class TransactionDetailsFragment : Fragment() {
                     ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
             ) {
                 PrintSunmiUtils.addHorizontalInnerNew()
-            }else{
+            } else {
                 PrintSunmiUtils.addHorizontalInner()
             }
 
@@ -4306,16 +4757,20 @@ class TransactionDetailsFragment : Fragment() {
             SunmiPrintHelper.getInstance().lineWrap(1)
             if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName != false) {
                 if (paymentDetailsResponse.data.order.customer != null) {
-                    PrintSunmiUtils.customerDetailsInner(true,sunmiFrameworkVersion)
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    PrintSunmiUtils.customerDetailsInner(true, sunmiFrameworkVersion)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.addHorizontalInnerNew()
-                    }else{
+                    } else {
                         PrintSunmiUtils.addHorizontalInner()
                     }
 
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.normalText("\n")
@@ -5775,7 +6230,9 @@ class TransactionDetailsFragment : Fragment() {
                         )
                     )
 
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.normalText("\n")
@@ -5795,7 +6252,9 @@ class TransactionDetailsFragment : Fragment() {
                             )
                         )
                     }
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.normalText("\n")
@@ -6130,7 +6589,9 @@ class TransactionDetailsFragment : Fragment() {
                 if (paymentDetailsResponse?.data.order?.customer != null) {
 
                     PrintSunmiUtils.customerDetails()
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.normalText("\n")
@@ -6385,7 +6846,7 @@ class TransactionDetailsFragment : Fragment() {
             ) {
                 PrintSunmiUtils.addHorizontalInnerNew()
                 PrintSunmiUtils.normalText("\n")
-            }else{
+            } else {
                 PrintSunmiUtils.addHorizontalInner()
             }
 
@@ -6400,7 +6861,7 @@ class TransactionDetailsFragment : Fragment() {
                         customerSettingModel.showModifiers
                     )
                 }
-            }else{
+            } else {
                 paymentDetailsResponse.data.order.order_items.let {
                     addOrderItemsTransactionInner(
                         it,
@@ -6430,7 +6891,7 @@ class TransactionDetailsFragment : Fragment() {
                         ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                 ) {
                     PrintSunmiUtils.normalTextNew(str1)
-                }else{
+                } else {
                     PrintSunmiUtils.normalText(str1)
                 }
             }
@@ -6445,7 +6906,7 @@ class TransactionDetailsFragment : Fragment() {
                     ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
             ) {
                 PrintSunmiUtils.normalTextNew(sub)
-            }else{
+            } else {
                 PrintSunmiUtils.normalText(sub)
             }
 
@@ -6463,7 +6924,7 @@ class TransactionDetailsFragment : Fragment() {
                             PrintSunmiUtils.lineChar()
                         ).toString()
                     )
-                }else{
+                } else {
                     PrintSunmiUtils.normalText(
                         padLine(
                             "Tax",
@@ -6489,7 +6950,7 @@ class TransactionDetailsFragment : Fragment() {
                             PrintSunmiUtils.lineChar()
                         ).toString()
                     )
-                }else{
+                } else {
 
                     PrintSunmiUtils.normalText(
                         padLine(
@@ -6518,7 +6979,7 @@ class TransactionDetailsFragment : Fragment() {
                             }, PrintSunmiUtils.lineChar()
                         ).toString()
                     )
-                }else{
+                } else {
                     PrintSunmiUtils.normalText(
                         padLine(
                             "Tips",
@@ -6549,11 +7010,13 @@ class TransactionDetailsFragment : Fragment() {
                         ).toString()
 
 
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.normalTextNew(surCharge)
-                    }else {
+                    } else {
                         PrintSunmiUtils.normalText(surCharge)
                     }
                 } else if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Cash".lowercase() && paymentDetailsResponse?.data?.cash_discount_type.lowercase() == "CashDiscount".lowercase()) {
@@ -6568,11 +7031,13 @@ class TransactionDetailsFragment : Fragment() {
                         }, PrintSunmiUtils.lineChar()
                     ).toString()
 
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.normalTextNew(cashDisc)
-                    }else{
+                    } else {
                         PrintSunmiUtils.normalText(cashDisc)
                     }
                 }
@@ -6591,11 +7056,13 @@ class TransactionDetailsFragment : Fragment() {
                             )
                         }, PrintSunmiUtils.lineChar()
                     ).toString()
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.normalTextNew(loyaltyAmount)
-                    }else{
+                    } else {
                         PrintSunmiUtils.normalText(loyaltyAmount)
                     }
 
@@ -6609,11 +7076,13 @@ class TransactionDetailsFragment : Fragment() {
                         PrintSunmiUtils.lineChar()
                     ).toString()
 
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.normalTextNew(loyaltyPoint)
-                    }else{
+                    } else {
                         PrintSunmiUtils.normalText(loyaltyPoint)
                     }
                 }
@@ -6633,7 +7102,7 @@ class TransactionDetailsFragment : Fragment() {
                         PrintSunmiUtils.lineChar()
                     ).toString()
                 )
-            }else{
+            } else {
                 PrintSunmiUtils.boldText(
                     padLine(
                         "Total Price",
@@ -6661,7 +7130,9 @@ class TransactionDetailsFragment : Fragment() {
                 if (customerSettingModel.showTipLineForCash) {
 
 
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         if (customerSettingModel.fonts == Constants.LARGE) {
@@ -6670,7 +7141,7 @@ class TransactionDetailsFragment : Fragment() {
                         } else {
                             PrintSunmiUtils.boldTextNew("Tips                              _____________")
                         }
-                    }else{
+                    } else {
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             PrintSunmiUtils.boldText("Tips      _____________")
                             SunmiPrintHelper.getInstance().lineWrap(1)
@@ -6689,7 +7160,7 @@ class TransactionDetailsFragment : Fragment() {
                 ) {
                     PrintSunmiUtils.addHorizontalInnerNew()
                     PrintSunmiUtils.normalText("\n")
-                }else{
+                } else {
                     PrintSunmiUtils.addHorizontalInner()
                 }
 
@@ -6703,7 +7174,7 @@ class TransactionDetailsFragment : Fragment() {
                             customerSettingModel.fonts
                         )
                     }
-                }else{
+                } else {
                     if (tipsList.isNotEmpty()) {
                         PrintSunmiUtils.addTipListInner(
                             tipsList,
@@ -6727,7 +7198,7 @@ class TransactionDetailsFragment : Fragment() {
                     ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
             ) {
                 PrintSunmiUtils.normalTextNew(tranId)
-            }else{
+            } else {
                 PrintSunmiUtils.normalText(tranId)
             }
 
@@ -6742,12 +7213,14 @@ class TransactionDetailsFragment : Fragment() {
                         ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                 ) {
                     PrintSunmiUtils.normalTextNew(tranType)
-                }else{
+                } else {
                     PrintSunmiUtils.normalText(tranType)
                 }
 
                 try {
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.cardDetailsInnerNew(
@@ -6757,7 +7230,7 @@ class TransactionDetailsFragment : Fragment() {
                             paymentDetailsResponse.data.card_number,
                             customerSettingModel.fonts
                         )
-                    }else{
+                    } else {
                         PrintSunmiUtils.cardDetailsInner(
                             paymentDetailsResponse.data.card_name,
                             /*paymentDetailsResponse.data.card_type ?: ""*/
@@ -6785,7 +7258,7 @@ class TransactionDetailsFragment : Fragment() {
                         ).toString()
                     )
 
-                }else{
+                } else {
                     PrintSunmiUtils.normalText(
                         padLine(
                             "Transaction Type",
@@ -6805,9 +7278,11 @@ class TransactionDetailsFragment : Fragment() {
 
                 if (paymentDetailsResponse?.data.order?.customer != null) {
 
-                    PrintSunmiUtils.customerDetailsInner(false,sunmiFrameworkVersion)
+                    PrintSunmiUtils.customerDetailsInner(false, sunmiFrameworkVersion)
 
-                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                    if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(
+                            1
+                        )
                             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
                     ) {
                         PrintSunmiUtils.normalText("\n")
@@ -6896,7 +7371,7 @@ class TransactionDetailsFragment : Fragment() {
 
         val order = receiptModel?.order
 
-        this.checkBluetoothPermissions(object: OnBluetoothPermissionGranted {
+        this.checkBluetoothPermissions(object : OnBluetoothPermissionGranted {
             override fun onPermissionsGranted() {
                 val order = paymentDetailsResponse.data
                 GlobalScope.launch {
@@ -6922,7 +7397,7 @@ class TransactionDetailsFragment : Fragment() {
                             LPrint.apply {
                                 setOutputStream(outputStream)
 
-                                try  {
+                                try {
 
                                     if (customerSettingModel.showOrderIdTop) {
 
@@ -6974,10 +7449,12 @@ class TransactionDetailsFragment : Fragment() {
                                         prefProvider.getValue(BUSINESS_ADDRESS, "")
                                     } else ""
 
-                                    var businessPhoneNumber = MethodUtils.getUSFormatNumber(prefProvider.getValue(
-                                        BUSINESS_PHONE_NO,
-                                        ""
-                                    ))
+                                    var businessPhoneNumber = MethodUtils.getUSFormatNumber(
+                                        prefProvider.getValue(
+                                            BUSINESS_PHONE_NO,
+                                            ""
+                                        )
+                                    )
 
                                     printCenter(venueAddress, fontSize = SMALL_SIZE)
                                     lineBreak()
@@ -7017,9 +7494,14 @@ class TransactionDetailsFragment : Fragment() {
                                             .equals("Online Order", true) ||
                                         paymentDetailsResponse.data.order.order_type.trim()
                                             .equals("OnlineWebOrder", true) ||
-                                        paymentDetailsResponse.data.order.order_type.trim().equals(PHONE_ORDER, true)
+                                        paymentDetailsResponse.data.order.order_type.trim()
+                                            .equals(PHONE_ORDER, true)
                                     ) {
-                                        printCenter(paymentDetailsResponse.data.order.delivery_type, isBold = true, fontSize = FONT_SIZE_4X)
+                                        printCenter(
+                                            paymentDetailsResponse.data.order.delivery_type,
+                                            isBold = true,
+                                            fontSize = FONT_SIZE_4X
+                                        )
                                         lineBreak()
                                         lineBreak()
                                     }
@@ -7118,13 +7600,15 @@ class TransactionDetailsFragment : Fragment() {
                                      * Print Tax Amount
                                      */
                                     if (paymentDetailsResponse.data?.tax_amount != null) {
-                                            printLeft(
-                                                padLine(
-                                                    "Tax",
-                                                    "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.tax_amount),
-                                                    PrintSunmiUtils.lineChar()
-                                                ).toString()
-                                            )
+                                        printLeft(
+                                            padLine(
+                                                "Tax",
+                                                "$" + MethodUtils.roundOffAmountString(
+                                                    paymentDetailsResponse.data.tax_amount
+                                                ),
+                                                PrintSunmiUtils.lineChar()
+                                            ).toString()
+                                        )
                                         lineBreak()
                                     }
 
@@ -7134,28 +7618,30 @@ class TransactionDetailsFragment : Fragment() {
 
                                     if (paymentDetailsResponse.data?.service_charge_amount != null && paymentDetailsResponse.data.order.service_charge_enabled) {
 
-                                            printLeft(
-                                                padLine(
-                                                    "Service Charge",
-                                                    "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.service_charge_amount),
-                                                    PrintSunmiUtils.lineChar()
-                                                ).toString()
-                                            )
+                                        printLeft(
+                                            padLine(
+                                                "Service Charge",
+                                                "$" + MethodUtils.roundOffAmountString(
+                                                    paymentDetailsResponse.data.service_charge_amount
+                                                ),
+                                                PrintSunmiUtils.lineChar()
+                                            ).toString()
+                                        )
                                         lineBreak()
                                     }
 
                                     if (paymentDetailsResponse.data?.tips != 0.0) {
 
-                                            printLeft(
-                                                padLine(
-                                                    "Tips",
-                                                    "$" + paymentDetailsResponse.data.tips?.let {
-                                                        MethodUtils.roundOffAmountString(
-                                                            it
-                                                        )
-                                                    }, PrintSunmiUtils.lineChar()
-                                                ).toString()
-                                            )
+                                        printLeft(
+                                            padLine(
+                                                "Tips",
+                                                "$" + paymentDetailsResponse.data.tips?.let {
+                                                    MethodUtils.roundOffAmountString(
+                                                        it
+                                                    )
+                                                }, PrintSunmiUtils.lineChar()
+                                            ).toString()
+                                        )
                                         lineBreak()
                                     }
 
@@ -7169,9 +7655,13 @@ class TransactionDetailsFragment : Fragment() {
                                                 padLine(
                                                     Constants.SURCHARGE_TEXT,
                                                     if (paymentDetailsResponse.data.cash_discount_or_surcharge != 0.0) {
-                                                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data?.cash_discount_or_surcharge)
+                                                        "$" + MethodUtils.roundOffAmountString(
+                                                            paymentDetailsResponse.data?.cash_discount_or_surcharge
+                                                        )
                                                     } else {
-                                                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.cash_discount_or_surcharge)
+                                                        "$" + MethodUtils.roundOffAmountString(
+                                                            paymentDetailsResponse.data.order?.cash_discount_or_surcharge
+                                                        )
                                                     }, PrintSunmiUtils.lineChar()
                                                 ).toString()
                                             printLeft(surCharge)
@@ -7182,9 +7672,13 @@ class TransactionDetailsFragment : Fragment() {
                                             val cashDisc = padLine(
                                                 "Cash Discount",
                                                 if (paymentDetailsResponse.data.cash_discount_or_surcharge != 0.0) {
-                                                    "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data?.cash_discount_or_surcharge)
+                                                    "-$" + MethodUtils.roundOffAmountString(
+                                                        paymentDetailsResponse.data?.cash_discount_or_surcharge
+                                                    )
                                                 } else {
-                                                    "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.cash_discount_or_surcharge)
+                                                    "$" + MethodUtils.roundOffAmountString(
+                                                        paymentDetailsResponse.data.order?.cash_discount_or_surcharge
+                                                    )
                                                 }, PrintSunmiUtils.lineChar()
                                             ).toString()
 
@@ -7228,13 +7722,13 @@ class TransactionDetailsFragment : Fragment() {
                                     val totalAmt =
                                         MethodUtils.roundOffAmountDouble(paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips)
 
-                                        printBoldLeft(
-                                            padLine(
-                                                "Total Price",
-                                                "$" + MethodUtils.roundOffAmountString(totalAmt),
-                                                PrintSunmiUtils.lineChar()
-                                            ).toString()
-                                        )
+                                    printBoldLeft(
+                                        padLine(
+                                            "Total Price",
+                                            "$" + MethodUtils.roundOffAmountString(totalAmt),
+                                            PrintSunmiUtils.lineChar()
+                                        ).toString()
+                                    )
                                     lineBreak()
 
                                     if (paymentDetailsResponse?.data?.order.refund_detail != null && paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount != 0.0 && customerSettingModel.showRefundAmount) {
@@ -7242,7 +7736,9 @@ class TransactionDetailsFragment : Fragment() {
                                         printBoldLeft(
                                             padLine(
                                                 "Refund Amount",
-                                                "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount),
+                                                "-$" + MethodUtils.roundOffAmountString(
+                                                    paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount
+                                                ),
                                                 PrintSunmiUtils.lineChar()
                                             ).toString()
                                         )
@@ -7254,12 +7750,12 @@ class TransactionDetailsFragment : Fragment() {
                                     if (paymentDetailsResponse.data.order?.total_tips == 0.0) {
                                         if (customerSettingModel.showTipLineForCash) {
 
-                                                if (customerSettingModel.fonts == Constants.LARGE) {
-                                                    printBoldLeft("Tips      _____________")
-                                                    lineBreak()
-                                                } else {
-                                                    printBoldLeft("Tips                              _____________")
-                                                }
+                                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                                printBoldLeft("Tips      _____________")
+                                                lineBreak()
+                                            } else {
+                                                printBoldLeft("Tips                              _____________")
+                                            }
 
                                         }
                                     }
@@ -7309,26 +7805,26 @@ class TransactionDetailsFragment : Fragment() {
                                         lineBreak()
 
                                         try {
-                                                PrintSunmiUtils.cardDetailsInnerLandi(
-                                                    paymentDetailsResponse.data.card_name,
-                                                    /*paymentDetailsResponse.data.card_type ?: ""*/
-                                                    MethodUtils.getCardType(paymentDetailsResponse.data.ext_data),
-                                                    paymentDetailsResponse.data.card_number,
-                                                    customerSettingModel.fonts,
-                                                    LPrint
-                                                )
+                                            PrintSunmiUtils.cardDetailsInnerLandi(
+                                                paymentDetailsResponse.data.card_name,
+                                                /*paymentDetailsResponse.data.card_type ?: ""*/
+                                                MethodUtils.getCardType(paymentDetailsResponse.data.ext_data),
+                                                paymentDetailsResponse.data.card_number,
+                                                customerSettingModel.fonts,
+                                                LPrint
+                                            )
                                         } catch (e: Exception) {
 
                                         }
 
                                     } else {
-                                            printLeft(
-                                                padLine(
-                                                    "Transaction Type",
-                                                    paymentDetailsResponse.data.payment_type ?: "Cash",
-                                                    PrintSunmiUtils.lineChar()
-                                                ).toString()
-                                            )
+                                        printLeft(
+                                            padLine(
+                                                "Transaction Type",
+                                                paymentDetailsResponse.data.payment_type ?: "Cash",
+                                                PrintSunmiUtils.lineChar()
+                                            ).toString()
+                                        )
                                         lineBreak()
                                     }
 
@@ -7343,7 +7839,7 @@ class TransactionDetailsFragment : Fragment() {
 
                                         if (paymentDetailsResponse?.data.order?.customer != null) {
 
-                                            PrintSunmiUtils.customerDetailsInnerLandi(false,LPrint)
+                                            PrintSunmiUtils.customerDetailsInnerLandi(false, LPrint)
 
                                             if (customerSettingModel.showCustomerName) {
 
@@ -7354,11 +7850,12 @@ class TransactionDetailsFragment : Fragment() {
                                             if (customerSettingModel.showCustomerPhone) {
                                                 if (paymentDetailsResponse?.data?.order?.customer?.phones?.isNotEmpty()) {
 
-                                                    val phoneNoFormatted = MethodUtils.getUSFormatNumber(
-                                                        paymentDetailsResponse.data.order.customer.phones.get(
-                                                            paymentDetailsResponse.data.order.customer.phones.size - 1
-                                                        ).phoneNumber
-                                                    )
+                                                    val phoneNoFormatted =
+                                                        MethodUtils.getUSFormatNumber(
+                                                            paymentDetailsResponse.data.order.customer.phones.get(
+                                                                paymentDetailsResponse.data.order.customer.phones.size - 1
+                                                            ).phoneNumber
+                                                        )
                                                     printLeft(phoneNoFormatted)
                                                     lineBreak()
 
@@ -7530,5 +8027,13 @@ class TransactionDetailsFragment : Fragment() {
 
         PrintSunmiUtils.printLogo(newBitmap)
 
+    }
+
+    override fun onStop() {
+        if (this@TransactionDetailsFragment::paymentCoroutineScope.isInitialized) {
+            paymentCoroutineScope.cancel()
+        }
+
+        super.onStop()
     }
 }

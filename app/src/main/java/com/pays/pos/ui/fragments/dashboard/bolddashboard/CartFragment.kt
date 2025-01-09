@@ -341,8 +341,11 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                         if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
                             if (prefProvider.isManager() || prefProvider.isAdmin()) {
-                                if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false))
+                                if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
                                     makePaxPreAuthRequest()
+                                }else if (!prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+                                    makeDejavooPreAuthPaymentRequest()
+                                }
                                 else {
                                     isChecked = false
                                     activity?.let {
@@ -383,10 +386,14 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             binding.preAuthOption?.gone()
     }
 
+    private fun makeDejavooPreAuthPaymentRequest() {
+
+    }
+
     // To check selected order type
     private fun checkOrderType() {
 
-        setUpPreAuthData()
+//        setUpPreAuthData()
 
 //        saveVisibility()
         if (prefProvider.getValue(ORDER_TYPE, "").isEmpty()) {
