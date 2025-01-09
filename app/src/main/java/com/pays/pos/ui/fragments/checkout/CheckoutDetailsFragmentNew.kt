@@ -3854,6 +3854,27 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 }
                             }
                         }
+
+                        // Split the data into key-value pairs
+                        val keyValuePairs = ExtData.split(",")
+
+                        // Create a map to store the parsed data
+                        val dataMap = mutableMapOf<String, String>()
+
+                        // Process each key-value pair
+                        for (pair in keyValuePairs) {
+                            val keyValue = pair.split("=")
+                            if (keyValue.size == 2) {
+                                val key = keyValue[0]
+                                val value = keyValue[1]
+                                dataMap[key] = value
+                            }
+                        }
+
+                        // Access the specific values
+                        cardLastDigits = dataMap["AcntLast4"] ?: "Not Found"
+                        EDCType = dataMap["CardType"] ?: "Not Found"
+
 //                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
                         if (Message.equals("Canceled") || Message.equals("Error")) {
                             dismissProgressDialogWithAlert(RespMSG.replace("%20", " "))
