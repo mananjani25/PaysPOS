@@ -808,9 +808,11 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         var serviceChargeId = 0
         viewModel.serviceChargesList.forEach { serviceCharge ->
             if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                if (serviceCharge.max_guest_count!! >= maxValue) {
-                    maxValue = serviceCharge.max_guest_count
-                    serviceChargeId = serviceCharge.id
+                serviceCharge.max_guest_count?.let { maxGuestCount ->
+                    if (maxGuestCount >= maxValue) {
+                        maxValue = maxGuestCount
+                        serviceChargeId = serviceCharge.id
+                    }
                 }
             }
         }

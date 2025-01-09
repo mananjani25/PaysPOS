@@ -231,12 +231,14 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     binding.btnPay.setBackgroundColor(binding.root.context.getColor(R.color.colorGreen))
                     binding.txtPay.text = "Paid"
+                    binding.btnPay.isEnabled = false
                 }
 
             } else if (list.get(position).isPaid) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     binding.btnPay.setBackgroundColor(binding.root.context.getColor(R.color.colorGreen))
                     binding.txtPay.text = "Paid"
+                    binding.btnPay.isEnabled = false
                 }
             } else if (list[position].itemsCount == 0) {
                 Log.e(TAG, "NoItemGuestAmt")
@@ -704,6 +706,19 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 }
             }
 
+            //item
+            if (model.item?.isPaid == true) {
+                binding.ivWastage.visibility = View.GONE
+            } else {
+                binding.ivWastage.visibility = View.VISIBLE
+            }
+
+            //item
+            if (model.item?.isPaid == true && model.item?.isFired == true) {
+                binding.checkedForFire?.visibility = View.GONE
+            } else {
+                binding.checkedForFire?.visibility = View.VISIBLE
+            }
             //item
             binding.checkedForFire?.apply {
                 if(model.item?.isFired == false)
