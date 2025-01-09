@@ -1451,7 +1451,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 KioskService::class.java
             ) && !android.os.Build.MODEL.contains("MINI")
         ) {
-            startForegroundService(Intent(this, KioskService::class.java))
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
+                startForegroundService(Intent(this, KioskService::class.java))
+            } else {
+                startService(Intent(this, KioskService::class.java))
+            }
         }
         Log.e(TAG, "checkConsumerNullorNot  ${consumer}")
         if (consumer != null) {
