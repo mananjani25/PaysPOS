@@ -610,6 +610,24 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.btnPayNew.setOnClickListener {
             try {
 
+                //new Calculation for total Discount
+                var listWT: ArrayList<TbCartItem> = arrayListOf()
+                var list = dineInTableAdapter.getList()
+
+
+                var allItemsFired = false
+
+                list.forEach {
+                    if (it.isHeader == 1) {
+                        allItemsFired = it.item?.isFired ?: false
+                    }
+                }
+
+
+                if(allItemsFired) {
+
+
+
                 binding.btnPayNew.isEnabled = false
                 binding.btnPayNew.visibility = View.INVISIBLE
 
@@ -626,9 +644,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-                //new Calculation for total Discount
-                var listWT: ArrayList<TbCartItem> = arrayListOf()
-                var list = dineInTableAdapter.getList()
+
 
                 if(dineInTableAdapter.getList().count { it.isHeader == 1 } == 0) {
                     AlertUtils.showCustomAlert(requireContext(),"Please Add at least one item to table.")
@@ -1142,6 +1158,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     1500)
 
 
+                }
+                } else {
+                    AlertUtils.showCustomAlert(requireContext(),"Please fire all items to continue")
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -1815,6 +1834,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         guestIndexForDineIn: Int
     ) {
 
+        var wholeItemCount = listItemWT.filter { it.isFired }
+        var guestItemCount = listItemGuestSelected.filter { it.isFired }
+
+        if(wholeItemCount == listItemWT && guestItemCount == listItemGuestSelected) {
+
+
+
         dashboardViewModel.setTipAmount(0.0)
         dashboardViewModel.customerGivenTip.value=false
 
@@ -2452,7 +2478,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                 },
                 1500)
-
+        } else {
+            AlertUtils.showCustomAlert(requireContext(),"Please fire all Items of selected guest and whole table ")
+        }
     }
 
     fun checkMaxGuestCountId(serviceChargeList: ArrayList<TbServiceCharge>): Int {
