@@ -3745,6 +3745,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun makeDejavooPaymentRequest() {
+        CoroutineScope(Dispatchers.Main).launch {
+            ProgressUtils.showProgressDialog("Please wait...", requireActivity(), 0)
+        }
         paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
         paymentCoroutineScope.launch {
             val gatewayType = PaymentGatewayType.DEJAVOO
@@ -3786,6 +3789,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     it.applicationContext,
                     dejavoo,
                     onSuccess = { tResponse ->
+                        dismissProgressDialog()
                         var transactionJsonResponse = Gson().fromJson<String>(
                             tResponse,
                             String::class.java
