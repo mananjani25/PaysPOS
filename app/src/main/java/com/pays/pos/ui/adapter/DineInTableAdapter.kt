@@ -707,7 +707,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
             //item
-            if (model.item?.isPaid == true || model.item?.isFired == false) {
+            if (model.item?.isPaid == true) {
                 binding.ivWastage.visibility = View.GONE
             } else {
                 binding.ivWastage.visibility = View.VISIBLE
