@@ -4613,6 +4613,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                             }
                                         } else {
                                             dismissProgressDialogWithAlert()
+
+                                            //Card last four digits and card type
+
+                                            val maskedCard = it.MASKEDPAN.toString()
+                                            val cardType = it.ISSUER.toString()
+                                            cardLastDigits = maskedCard.substring(maskedCard.length - 5, maskedCard.length) ?: ""
+                                            EDCType = cardType
+
+
 //                                            dismissProgressDialog()
                                             makePaymentCreditCardValor(it.TXNID, it.TRANNO)
                                             /* runOnUiThread(Runnable {
