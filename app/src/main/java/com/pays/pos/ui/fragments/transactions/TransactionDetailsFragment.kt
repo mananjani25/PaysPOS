@@ -943,7 +943,11 @@ class TransactionDetailsFragment : Fragment() {
                             )
                         } else if (ResultCode.equals("0")) { // Found the transaction, proceed with VOID
                             CoroutineScope(Dispatchers.Main).launch {
-                                refundCall(paymentDetailsResponse.data.amount)
+                                var refundAmount:Double = paymentDetailsResponse.data.amount
+                                if (paymentDetailsResponse.data.tips>0.0){
+                                    refundAmount+=paymentDetailsResponse.data.tips
+                                }
+                                refundCall(refundAmount)
                             }
                         } else if (ResultCode.equals("0")) {
                             startRefund()
