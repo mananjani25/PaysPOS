@@ -3750,7 +3750,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val gatewayType = PaymentGatewayType.DEJAVOO
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
-            val amt = String.format("%.2f", (paymentAmount - tipAmount)).toDouble()
+            val amt = String.format("%.2f", (paymentAmount)).toDouble()
             val tip_amt = String.format("%.2f", tipAmount).toDouble()
 
             /*    Test Credentials
