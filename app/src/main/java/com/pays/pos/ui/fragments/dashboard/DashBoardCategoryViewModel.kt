@@ -7814,11 +7814,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 var foundTerminal=venueDetailsResponse.settingData.data.terminals.filter { term-> term.name.equals(prefProvider.getValue(
                                     Constants.TERMINAL_NAME, ""
                                 ),ignoreCase = true) }
-                                if (!venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.PAX,ignoreCase = true)) {
-                                    prefProvider.getValueboolean(
-                                        Constants.IS_PAX_CONNECTED,
-                                        false
-                                    )
+                                if (venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.PAX,ignoreCase = true)) {
+                                  prefProvider.clearValorPaymentDetails()
+                                    prefProvider.clearDejavooPaymentDetails()
+                                }else if(venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.VALOR,ignoreCase = true)){
+                                   prefProvider.clearDejavooPaymentDetails()
+                                    prefProvider.clearPaxPaymentDetails()
+                                }else if(venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.DEJAVOO,ignoreCase = true)){
+                                    prefProvider.clearValorPaymentDetails()
+                                    prefProvider.clearPaxPaymentDetails()
                                 }
                                 if (foundTerminal.isNotEmpty()){
                                     if (!venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.PAX,ignoreCase = true)){
