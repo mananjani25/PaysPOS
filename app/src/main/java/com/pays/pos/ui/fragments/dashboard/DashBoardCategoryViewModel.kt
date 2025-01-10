@@ -7925,7 +7925,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                     DEJAVOO_TPN, foundTerminal.get(0).dejavoo_tpn/*epi*/ ?: ""
                                                 )
                                                 prefProvider.setValue(
-                                                    AUTH_TOKEN, foundTerminal.get(0).dejavoo_auth_token/*channelID*/ ?: ""
+                                                    DEJAVOO_AUTH_KEY, foundTerminal.get(0).dejavoo_auth_token/*channelID*/ ?: ""
                                                 )
 
                                             }
