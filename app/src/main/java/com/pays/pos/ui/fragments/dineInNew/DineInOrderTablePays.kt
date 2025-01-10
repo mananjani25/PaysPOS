@@ -3573,16 +3573,18 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                     if (oldList[k].isHeader == 1) {
                         if (oldList[dragTo].item?.itemId == oldList[k].item?.itemId) {
-                            if (checkVariation(oldList[dragTo].item!!, oldList[dragTo].item!!) &&
-                                checkModifierNewLogic(oldList[k].item!!, oldList[dragTo].item!!)
-                            ) {
-                                var updatedQuantity: Int =
-                                    oldList[dragTo].item?.itemQuantity!! + oldList[k].item?.itemQuantity!!
-                                oldList[dragTo].item = oldList[k].item
-                                oldList[dragTo].item?.itemQuantity = updatedQuantity
-                                oldList[dragTo].item?.sort = dragTo
-                                oldList.remove(oldList[k])
-                                break
+                            if (oldList[dragFrom].item?.isFired == oldList[k].item?.isFired) {
+                                if (checkVariation(oldList[dragTo].item!!, oldList[dragTo].item!!) &&
+                                    checkModifierNewLogic(oldList[k].item!!, oldList[dragTo].item!!)
+                                ) {
+                                    var updatedQuantity: Int =
+                                        oldList[dragTo].item?.itemQuantity!! + oldList[k].item?.itemQuantity!!
+                                    oldList[dragTo].item = oldList[k].item
+                                    oldList[dragTo].item?.itemQuantity = updatedQuantity
+                                    oldList[dragTo].item?.sort = dragTo
+                                    oldList.remove(oldList[k])
+                                    break
+                                }
                             }
                         }
                     }
@@ -3595,16 +3597,18 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                     if (oldList[l].isHeader == 1) {
                         if (oldList[dragTo].item?.itemId == oldList[l].item?.itemId) {
-                            if (checkVariation(oldList[l].item!!, oldList[dragTo].item!!) &&
-                                checkModifierNewLogic(oldList[l].item!!, oldList[dragTo].item!!)
-                            ) {
-                                var updatedQuantity: Int =
-                                    oldList[dragTo].item?.itemQuantity!! + oldList[l].item?.itemQuantity!!
-                                oldList[dragTo].item = oldList[l].item
-                                oldList[dragTo].item?.itemQuantity = updatedQuantity
-                                oldList[dragTo].item?.sort = dragTo
-                                oldList.remove(oldList[l])
-                                break
+                            if (oldList[dragFrom].item?.isFired == oldList[l].item?.isFired) {
+                                if (checkVariation(oldList[l].item!!, oldList[dragTo].item!!) &&
+                                    checkModifierNewLogic(oldList[l].item!!, oldList[dragTo].item!!)
+                                ) {
+                                    var updatedQuantity: Int =
+                                        oldList[dragTo].item?.itemQuantity!! + oldList[l].item?.itemQuantity!!
+                                    oldList[dragTo].item = oldList[l].item
+                                    oldList[dragTo].item?.itemQuantity = updatedQuantity
+                                    oldList[dragTo].item?.sort = dragTo
+                                    oldList.remove(oldList[l])
+                                    break
+                                }
                             }
                         }
                     }
