@@ -1246,6 +1246,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         it.orderType = "DineIn"
 
                        // if(!it.isPaid)
+                        it.isOldDineInItem = true
                         dashboardViewModel.currentCartItems.add(it)
                         dashboardViewModel.currentDineCartItems.add(it)
                         dashboardViewModel.dineInItemsBeforeUpdate.add(it)
@@ -1298,7 +1299,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             )
             bundle.putParcelableArrayList("dine_in_cart_items", dashboardViewModel.currentCartItems)
 
-           // dashboardViewModel.oldDineInItems = dashboardViewModel.currentCartItems
+            dashboardViewModel.oldDineInItems = dashboardViewModel.currentCartItems
+
 
             LogUtil.logE(
                 "OrderFre",

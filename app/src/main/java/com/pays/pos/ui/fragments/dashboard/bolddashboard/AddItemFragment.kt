@@ -116,6 +116,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        viewModel.oldDineInItems = arrayListOf()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -240,27 +246,43 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
     private fun imgMinusClick() {
         binding.imgMinus.setOnClickListener {
-            MethodUtils.hideSoftKeyboard(requireActivity())
-            if (qty == 1) {
-                qty = 1
-            } else {
-                qty -= 1
+
+            if (item.isFired) {
+
+                if(item.itemQuantity < qty) {
+                    MethodUtils.hideSoftKeyboard(requireActivity())
+                    if (qty == 1) {
+                        qty = 1
+                    } else {
+                        qty -= 1
+                    }
+                    binding.edttxtQuantity.setText("" + qty)
+                } else
+                    AlertUtils.showCustomAlert(
+                        requireContext(),
+                        resources.getString(R.string.cant_decrease_item_quantity_dinein)
+                    )
+
+            }else  {
+                MethodUtils.hideSoftKeyboard(requireActivity())
+                if (qty == 1) {
+                    qty = 1
+                } else {
+                    qty -= 1
+                }
+                binding.edttxtQuantity.setText("" + qty)
             }
-            binding.edttxtQuantity.setText("" + qty)
+
+
+
+
         }
     }
 
     private fun onClick() {
 
         if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
-            if (item.isFired) {
-                binding.imgMinus.setOnClickListener {
-                    AlertUtils.showCustomAlert(
-                        requireContext(),
-                        resources.getString(R.string.cant_decrease_item_quantity_dinein)
-                    )
-                }
-            } else
+
                 imgMinusClick()
         } else {
             imgMinusClick()
@@ -1922,7 +1944,14 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                     }
 
-                    viewModel.updateDineInCart(viewModel.currentCartItems, item, DELETE, false, it1)
+                     viewModel.updateDineInCart(viewModel.currentCartItems, item, DELETE, false, it1)
+
+                    if(!prefProvider.getValueboolean(DINE_IN_UPDATE,false) || !item.isOldDineInItem) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                               viewModel.deleteCartItem(item.cartItemId)
+                        }
+                    }
+
                     viewModel.isItemEditInProgress = false
                 }
             } else {

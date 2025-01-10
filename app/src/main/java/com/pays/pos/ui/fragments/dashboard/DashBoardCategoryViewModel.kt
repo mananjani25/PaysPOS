@@ -216,6 +216,7 @@ class DashBoardCategoryViewModel @Inject constructor(
      */
     var dineInItemsBeforeUpdate = arrayListOf<TbCartItem>()
     var oldDineInItems: ArrayList<TbCartItem> = arrayListOf()
+    var oldItemListIds: ArrayList<Int> = arrayListOf()
     var isDineInUpdate = false
     var dineInResult = MutableLiveData<Boolean>(false)
     var dineInResultCreateOrder = MutableLiveData<Boolean>(false)

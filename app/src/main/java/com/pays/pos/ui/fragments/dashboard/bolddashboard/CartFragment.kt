@@ -969,6 +969,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             dineInCartAdapter.setList(dineInList, viewModel.currentCartItems)
 
 
+
             if (cartModelsList.isEmpty()) {
                 val cartModel = CartModel().apply {
                     terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
@@ -1000,6 +1001,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             viewModel.newCartLogicModifier(
                 cartModelsList, null, Constants.ADD, false, dineInList = dineInList
             )
+
         }
 
 
