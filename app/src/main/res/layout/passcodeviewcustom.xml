@@ -130,8 +130,8 @@
                 <TextView
                     android:id="@+id/clear"
                     style="@style/passcodeviewStyle"
-                    android:text="Clear"
-                    android:textSize="@dimen/_7sdp" />
+                    android:text="C"
+                    />
 
                 <TextView
                     android:id="@+id/zero"
@@ -139,7 +139,15 @@
                     android:text="0"
                     tools:ignore="HardcodedText" />
 
-                <ImageView
+                <ImageButton
+                    android:id="@+id/backspace"
+                    style="@style/passcodeviewStyle"
+                    android:src="@drawable/ic_backspace"
+                    app:tint="@color/white"
+                    tools:ignore="HardcodedText"
+                    android:contentDescription="Delete button" />
+
+              <!--  <ImageView
                     android:id="@+id/backspace"
                     android:layout_width="@dimen/_50sdp"
 
@@ -149,7 +157,7 @@
                     android:background="@drawable/passcode_view_unselected_new"
                     android:gravity="center"
                     android:padding="@dimen/_10sdp"
-                    android:src="@drawable/backspase" />
+                    android:src="@drawable/backspase" />-->
             </TableRow>
         </TableLayout>
     </androidx.appcompat.widget.LinearLayoutCompat>
