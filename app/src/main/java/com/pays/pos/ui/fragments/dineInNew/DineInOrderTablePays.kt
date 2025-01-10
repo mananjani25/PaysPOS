@@ -3573,7 +3573,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                     if (oldList[k].isHeader == 1) {
                         if (oldList[dragTo].item?.itemId == oldList[k].item?.itemId) {
-                            if (oldList[dragFrom].item?.isFired == oldList[k].item?.isFired) {
+                            if (oldList[dragTo].item?.isFired == oldList[k].item?.isFired) {
                                 if (checkVariation(oldList[dragTo].item!!, oldList[dragTo].item!!) &&
                                     checkModifierNewLogic(oldList[k].item!!, oldList[dragTo].item!!)
                                 ) {
@@ -3597,7 +3597,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                     if (oldList[l].isHeader == 1) {
                         if (oldList[dragTo].item?.itemId == oldList[l].item?.itemId) {
-                            if (oldList[dragFrom].item?.isFired == oldList[l].item?.isFired) {
+                            if (oldList[dragTo].item?.isFired == oldList[l].item?.isFired) {
                                 if (checkVariation(oldList[l].item!!, oldList[dragTo].item!!) &&
                                     checkModifierNewLogic(oldList[l].item!!, oldList[dragTo].item!!)
                                 ) {
