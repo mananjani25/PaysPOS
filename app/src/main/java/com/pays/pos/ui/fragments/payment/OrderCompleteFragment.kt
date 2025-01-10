@@ -4601,7 +4601,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                     //ADDCHANGE
 
-                                    if (payTypeGlb == "Cash") {
+                                    if (guestPayment.paymentType == "Cash") {
 
                                         val str7 = padLine(
                                             "Change Amount",
@@ -7635,9 +7635,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                      * Print total price
                                      */
 
+//                                    MethodUtils.roundOffAmountString(totalAmt)
                                     val str5 = padLine(
                                         "Total Price",
-                                        "$" + MethodUtils.roundOffAmountString(totalAmt),
+                                        "$" + order?.payments?.last()?.let {
+                                            MethodUtils.roundOffAmountString(
+                                                it.amount + it.tips
+                                            )
+                                        },
                                         48
                                     ).toString().toByteArray()
                                     write(str5)
@@ -7664,7 +7669,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     val _order = receiptModel?.order
 
 
-                                    if (payTypeGlb == "Cash") {
+                                    if (_order?.payments?.last()?.paymentType == "Cash") {
                                         val str7 = padLine(
                                             "Change Amount",
                                             "$" + MethodUtils.roundOffAmountString(
@@ -7845,7 +7850,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     write(LPrint.LINE_FEED)
                                     write(LPrint.LINE_FEED)
 
-                                    write("__________________________".toByteArray())
+                                    write("________________________________________________".toByteArray())
                                     write(LPrint.LINE_FEED)
 
                                     write(LPrint.LINE_FEED)
