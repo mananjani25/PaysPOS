@@ -1376,6 +1376,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         }
 
+        if (receiptModel?.order?.note?.isNotEmpty() == true){
+
+            lineFeed(2)
+            setAlignment(1)
+            appendText("Order Note")
+            lineFeed(1)
+            appendText(receiptModel?.order?.note ?: "")
+
+        }
+
+
         lineFeed(6)
         cutPaper(true)
 

@@ -2691,6 +2691,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             val obj = orderItems.get(i)
 
 
+                            Log.e(TAG,"checkCloudEdited:  ${obj.isItemEdited}")
                             if (obj.isItemEdited) {
                                 appendText("(U)" + obj.quantity.toString() + " " + obj.itemName.uppercase())
                             } else {
