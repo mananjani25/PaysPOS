@@ -45,6 +45,7 @@ import com.pays.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_RATE
 import com.pays.pos.data.remote.Constants.CUSTOMER_SIGN_REQUIRED_ON_CD
 import com.pays.pos.data.remote.Constants.DEFAULT_ORDER
 import com.pays.pos.data.remote.Constants.DEJAVOO_AUTH_KEY
+import com.pays.pos.data.remote.Constants.DEJAVOO_AUTH_TOKEN
 import com.pays.pos.data.remote.Constants.DEJAVOO_REGISTER_ID
 import com.pays.pos.data.remote.Constants.DEJAVOO_TPN
 import com.pays.pos.data.remote.Constants.DELETE
@@ -7929,7 +7930,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                     DEJAVOO_TPN, foundTerminal.get(0).dejavoo_tpn/*epi*/ ?: ""
                                                 )
                                                 prefProvider.setValue(
-                                                    DEJAVOO_AUTH_KEY, foundTerminal.get(0).dejavoo_auth_token/*channelID*/ ?: ""
+                                                    DEJAVOO_AUTH_TOKEN, foundTerminal.get(0).dejavoo_auth_token/*channelID*/ ?: ""
                                                 )
 
                                             }
