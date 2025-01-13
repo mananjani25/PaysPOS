@@ -1354,7 +1354,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
 
                     for (it in viewModel.currentCartItems) {
-                        if (it.guestIndexForDineIn == viewModel.dineInHeaderPosition && it.itemId == item.itemId) {
+                        if (it.guestIndexForDineIn == viewModel.dineInHeaderPosition && it.itemId == item.itemId && !it.isFired) {
                             if (viewModel.checkModifierNew(it, item)) {
                                 Log.e(
                                     "Tracking Cart",

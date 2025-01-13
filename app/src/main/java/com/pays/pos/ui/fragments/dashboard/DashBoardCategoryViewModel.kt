@@ -3345,7 +3345,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         if (list[i].itemId == item.itemId && list[i].guestIndexForDineIn == dineInHeaderPosition) {
                                             if (list[i].itemId == item.itemId && checkVariationNew(
                                                     list[i], item
-                                                ) && checkModifierNew(list[i], item)
+                                                ) && checkModifierNew(list[i], item) && !list[i].isFired
                                             ) {
 
 //                                            if (list[i].guestIndexForDineIn == item.guestIndexForDineIn) {

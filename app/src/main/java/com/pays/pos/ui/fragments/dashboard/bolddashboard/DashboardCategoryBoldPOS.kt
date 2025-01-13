@@ -1904,17 +1904,49 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         )
                                         Log.d(TAG, "dineintest item: " + Gson().toJson(item))
 
-                                        val finalList =
-                                            viewModel.currentCartItems + viewModel.oldDineInItems
+                                        var foundItem :TbCartItem? = null
 
-                                        //insert dine in
-                                        viewModel.updateDineInCart(
-                                            finalList,
-                                            item,
-                                            Constants.ADD,
-                                            false,
-                                            dineInList
-                                        )
+                                        viewModel.currentCartItems.filter { it.guestIndexForDineIn == viewModel.currentSelectedHeaderDineIn }.forEach {
+                                            if(it.itemId == item.itemId && !it.isFired)
+                                                    foundItem = it
+                                        }
+
+                                        if(foundItem == null) {
+                                            CoroutineScope(Dispatchers.IO).launch {
+                                                viewModel.addItemToCartItems(item)
+                                            }
+                                        }else {
+                                            //insert dine in
+//                                            viewModel.updateDineInCart(
+//                                                finalList,
+//                                                item,
+//                                                Constants.ADD,
+//                                                false,
+//                                                dineInList
+//                                            )
+
+                                            CoroutineScope(Dispatchers.IO).launch {
+                                                viewModel.updateDineInCartItemsByIdGuestIndex(
+                                                    foundItem!!.itemQuantity+1,
+                                                    foundItem!!.cartItemId,
+                                                    Gson().toJson(foundItem!!.modifiers),
+                                                    foundItem!!.guestIndexForDineIn ?: -1
+                                                )
+
+                                                viewModel.cartModel.let {
+                                                    if (it != null) {
+                                                        viewModel.taxBifurcationCalculationNew(
+                                                            foundItem!!,
+                                                            it, "ADD", false
+                                                        )
+                                                    }
+                                                }
+                                                try {
+                                                    viewModel.updateCartModel(viewModel.cartModel!!)
+                                                } catch (e: Exception) {
+                                                }
+                                            }
+                                        }
 
                                         try {
                                             if (viewModel.currentCartItems.size == 1) {

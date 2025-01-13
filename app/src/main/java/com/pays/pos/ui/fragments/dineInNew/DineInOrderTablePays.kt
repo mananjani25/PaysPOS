@@ -12945,83 +12945,85 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 if (it.isHeader == 1) {
                     it.item?.let {
 
-                        /**
-                         * First condition works for manual printing and second will work for auto printing
-                         */
-                        if ((!it.isFired && it.isChecked) || (!it.isFired && isCheckAndFire)) {
-                            fireItemsList.add(it)
-                            listItem.add(it)
-                            //it.isFired = true
-                            firedItemsList.add(itemIndex)
-
-                            //add items ids for api call
-                            it.orderItemId?.let {
-                                builder.add(it.toString())
-                            }
-                        } else {
-                            /***
-                             * If Item is already fired and then it gets updated then this logic will check for updated item to print
+                            if(!it.isFired) {
+                            /**
+                             * First condition works for manual printing and second will work for auto printing
                              */
-                            if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
-                                val foundItemList =
-                                    dashboardViewModel.dineInItemsBeforeUpdate.filter { item ->
-                                        item.cartItemId == it.cartItemId &&
-                                                item.itemId == it.itemId &&
-                                                item.guestIndexForDineIn == it.guestIndexForDineIn &&
-                                                it.isFired && it.modifier_set_ids == item.modifier_set_ids
-                                    }
+                            if ((!it.isFired && it.isChecked) || (!it.isFired && isCheckAndFire)) {
+                                fireItemsList.add(it)
+                                listItem.add(it)
+                                //it.isFired = true
+                                firedItemsList.add(itemIndex)
 
-                                if (foundItemList.isNotEmpty()) {
-                                    val foundItem = foundItemList.first()
-
-                                    /***
-                                     * Check what changes are done in item
-                                     */
-
-                                    if (it.itemQuantity != foundItem.itemQuantity ||
-                                        it.note != foundItem.note ||
-                                        !dashboardViewModel.checkModifierNew(it, foundItem)
-                                    ) {
-
-
-                                        if (it.itemQuantity < foundItem.itemQuantity) {
-                                            val itemToAddInWastageModule = foundItem
-                                            foundItem.itemQuantity =
-                                                foundItem.itemQuantity - it.itemQuantity
-                                        }
-
-                                        updatedItemIdsList.add(it.cartItemId)
-
-                                        fireItemsList.add(it)
-                                        listItem.add(it)
-                                        //it.isFired = true
-                                        firedItemsList.add(itemIndex)
-
-                                        //add items ids for api call
-                                        it.orderItemId?.let {
-                                            builder.add(it.toString())
-                                        }
-                                    } else {
-
-                                    }
-                                } else {
-                                    /***
-                                     * This will print checked and selected items which are not printed already
-                                     */
-                                    if (fireAll && it.isChecked && !it.isFired) {
-                                        fireItemsList.add(it)
-                                        listItem.add(it)
-                                        //it.isFired = true
-                                        firedItemsList.add(itemIndex)
-
-                                        //add items ids for api call
-                                        it.orderItemId?.let {
-                                            builder.add(it.toString())
-                                        }
-                                    } else {
-                                    }
+                                //add items ids for api call
+                                it.orderItemId?.let {
+                                    builder.add(it.toString())
                                 }
                             } else {
+                                /***
+                                 * If Item is already fired and then it gets updated then this logic will check for updated item to print
+                                 */
+                                if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
+                                    val foundItemList =
+                                        dashboardViewModel.dineInItemsBeforeUpdate.filter { item ->
+                                            item.cartItemId == it.cartItemId &&
+                                                    item.itemId == it.itemId &&
+                                                    item.guestIndexForDineIn == it.guestIndexForDineIn &&
+                                                    it.isFired && it.modifier_set_ids == item.modifier_set_ids
+                                        }
+
+                                    if (foundItemList.isNotEmpty()) {
+                                        val foundItem = foundItemList.first()
+
+                                        /***
+                                         * Check what changes are done in item
+                                         */
+
+                                        if (it.itemQuantity != foundItem.itemQuantity ||
+                                            it.note != foundItem.note ||
+                                            !dashboardViewModel.checkModifierNew(it, foundItem)
+                                        ) {
+
+
+                                            if (it.itemQuantity < foundItem.itemQuantity) {
+                                                val itemToAddInWastageModule = foundItem
+                                                foundItem.itemQuantity =
+                                                    foundItem.itemQuantity - it.itemQuantity
+                                            }
+
+                                            updatedItemIdsList.add(it.cartItemId)
+
+                                            fireItemsList.add(it)
+                                            listItem.add(it)
+                                            //it.isFired = true
+                                            firedItemsList.add(itemIndex)
+
+                                            //add items ids for api call
+                                            it.orderItemId?.let {
+                                                builder.add(it.toString())
+                                            }
+                                        } else {
+
+                                        }
+                                    } else {
+                                        /***
+                                         * This will print checked and selected items which are not printed already
+                                         */
+                                        if (fireAll && it.isChecked && !it.isFired) {
+                                            fireItemsList.add(it)
+                                            listItem.add(it)
+                                            //it.isFired = true
+                                            firedItemsList.add(itemIndex)
+
+                                            //add items ids for api call
+                                            it.orderItemId?.let {
+                                                builder.add(it.toString())
+                                            }
+                                        } else {
+                                        }
+                                    }
+                                } else {
+                                }
                             }
                         }
                     }
