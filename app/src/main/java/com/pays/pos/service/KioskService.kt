@@ -386,14 +386,16 @@ class KioskService : Service(), StatusChangeEventListener {
                                 for (singularity in 1..item.quantity!!) {
 
                                     if (printOrderIDInStickyPrinter) {
-                                        appendText(
+                                        setAlignment(1)
+                                        lineFeed(2)
 
-                                                    "OrderId:${orderData.data?.customOrderId}"
-
-                                        )
+                                        appendText("OrderId:${orderData.data?.customOrderId}")
                                     }
 
-                                    lineFeed(2)
+                                    lineFeed(1)
+
+                                    setCharacterSize(1,1)
+                                    setAlignment(1)
 
                                     appendText(
 
@@ -401,16 +403,15 @@ class KioskService : Service(), StatusChangeEventListener {
 
                                     )
 
-                                    lineFeed(2)
+                                    lineFeed(1)
 
                                     if (orderData.data?.orderType?.contains(
                                             "Phone",
                                             true
                                         ) == true
                                     ) {
-                                        appendText(
-
-                                                    "${orderData.data?.deliveryType}"
+                                        lineFeed(1)
+                                        appendText("${orderData.data?.deliveryType}"
 
                                         )
 
@@ -521,23 +522,16 @@ class KioskService : Service(), StatusChangeEventListener {
                     setAlignment(1)
                     lineFeed(2)
 
-                    appendText(
-
-                                "OrderId:${orderData.data?.customOrderId}"
-                            )
+                    appendText("OrderId:${orderData.data?.customOrderId}")
 
 
                     lineFeed(1)
 
                     setCharacterSize(1,1)
 
-                    appendText(
-
-                                if (kitchenSettingModel.showOrderType)
+                    appendText(if (kitchenSettingModel.showOrderType)
                                     orderData.data?.orderType ?: ""
-                                else ""
-
-                    )
+                                else "")
 
                     lineFeed(1)
 
