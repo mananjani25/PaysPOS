@@ -65,6 +65,7 @@
                                 android:layout_marginStart="@dimen/_5sdp"
                                 android:text="@string/setup"
                                 android:textAllCaps="true"
+                                android:textColor="@color/white"
                                 android:textSize="@dimen/_6mdpi" />
 
 
@@ -94,6 +95,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/_5sdp"
                                 android:text="@string/hardware"
+                                android:textColor="@color/white"
                                 android:textAllCaps="true"
                                 android:textSize="@dimen/_6mdpi" />
 
@@ -123,6 +125,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/_5sdp"
+                                android:textColor="@color/white"
                                 android:text="@string/inventory_title"
                                 android:textAllCaps="true"
                                 android:textSize="@dimen/_6mdpi" />
@@ -153,6 +156,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/_5sdp"
                                 android:text="@string/tv_team"
+                                android:textColor="@color/white"
                                 android:textAllCaps="true"
                                 android:textSize="@dimen/_6mdpi" />
 
@@ -184,6 +188,7 @@
                                 android:layout_marginStart="@dimen/_5sdp"
                                 android:text="@string/customers"
                                 android:textAllCaps="true"
+                                android:textColor="@color/white"
                                 android:textSize="@dimen/_6mdpi" />
 
 
@@ -220,6 +225,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/_5sdp"
+                                android:textColor="@color/white"
                                 android:text="@string/all_orders"
                                 android:textAllCaps="true"
                                 android:textSize="@dimen/_6mdpi" />
@@ -250,6 +256,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/_5sdp"
                                 android:text="@string/transactions"
+                                android:textColor="@color/white"
                                 android:textAllCaps="true"
                                 android:textSize="@dimen/_6mdpi" />
 
@@ -280,6 +287,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/_5sdp"
                                 android:text="@string/cash_log"
+                                android:textColor="@color/white"
                                 android:textAllCaps="true"
                                 android:textSize="@dimen/_6mdpi" />
 
@@ -346,6 +354,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/_5sdp"
                                 android:text="@string/reports"
+                                android:textColor="@color/white"
                                 android:textAllCaps="true"
                                 android:textSize="@dimen/_6mdpi" />
 
@@ -372,6 +381,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/_5sdp"
+                                android:textColor="@color/white"
                                 android:text="@string/printer_queue"
                                 android:textAllCaps="true"
                                 android:textSize="@dimen/_6mdpi" />
@@ -385,36 +395,36 @@
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
 
-              <!--  <LinearLayout
-                    android:id="@+id/llClockOut"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_20sdp"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:layout_marginEnd="@dimen/_20sdp"
-                    android:background="@drawable/button_action_hover"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/_5sdp"
-                    android:visibility="visible">
+                <!--  <LinearLayout
+                      android:id="@+id/llClockOut"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:layout_marginStart="@dimen/_20sdp"
+                      android:layout_marginTop="@dimen/_10sdp"
+                      android:layout_marginEnd="@dimen/_20sdp"
+                      android:background="@drawable/button_action_hover"
+                      android:gravity="center"
+                      android:orientation="horizontal"
+                      android:padding="@dimen/_5sdp"
+                      android:visibility="visible">
 
-                    <ImageView
-                        android:layout_width="@dimen/_14sdp"
-                        android:layout_height="@dimen/_12sdp"
-                        android:src="@drawable/ic_clock_out"
-                        app:tint="@color/txtColor" />
+                      <ImageView
+                          android:layout_width="@dimen/_14sdp"
+                          android:layout_height="@dimen/_12sdp"
+                          android:src="@drawable/ic_clock_out"
+                          app:tint="@color/txtColor" />
 
-                    <TextView
-                        style="@style/CustomFontBold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_5sdp"
-                        android:text="@string/tv_clock_out"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/_8mdpi" />
+                      <TextView
+                          style="@style/CustomFontBold"
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:layout_marginStart="@dimen/_5sdp"
+                          android:text="@string/tv_clock_out"
+                          android:textColor="@color/white"
+                          android:textSize="@dimen/_8mdpi" />
 
 
-                </LinearLayout>-->
+                  </LinearLayout>-->
 
                 <LinearLayout
                     android:id="@+id/linearLogout"
@@ -450,15 +460,15 @@
                 <LinearLayout
                     android:id="@+id/llLogout"
                     android:layout_width="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end">
 
                     <TextView
                         style="@style/CustomFontLight"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/logout"
                         android:padding="20dp"
+                        android:text="@string/logout"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_8mdpi" />
 
