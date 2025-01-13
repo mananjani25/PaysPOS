@@ -3022,9 +3022,9 @@ class CustomDisplay(
         tippedAmount = MethodUtils.percentageCalculation(wholeTotalPrice, model.rate)
         Log.d("selectedItem: ", "tip params $tipRate $tippedAmount")
 
-        Log.e("TOTAL TIP Check","TIP RATE")
+        Log.e("TOTAL TIP Check", "TIP RATE")
 
-        if(prefProvider.getValueboolean(Constants.IS_PAYMENT_SCREEN,false)) {
+        if (prefProvider.getValueboolean(Constants.IS_PAYMENT_SCREEN, false)) {
             /**
              * Used to show Given TIPS on OrderCompleted Fragment
              */
@@ -3033,65 +3033,64 @@ class CustomDisplay(
                 customerGivenTipBefore.value = true
                 Log.d("selectedItem: ", "updating tip params $tipRate $tippedAmount")
             }
-        }
-        else {
+        } else {
             if (mIsCardPayment /*&& !mIsSignatureRequired*/) {
-        /**
-         * Used to show Given TIPS on OrderCompleted Fragment
-         */
-        /*  dashBoardCategoryViewModel.apply {
+                /**
+                 * Used to show Given TIPS on OrderCompleted Fragment
+                 */
+                /*  dashBoardCategoryViewModel.apply {
               totalTipAmount = tippedAmount
               customerGivenTip.value = true
           }
   */
-        try{
-            if (mIsCardPayment /*&& !mIsSignatureRequired*/) {
+                try {
+                    if (mIsCardPayment /*&& !mIsSignatureRequired*/) {
 //            callUpdateTip()
-                when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
-                    Constants.PAX->{
-                        if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
-                                Constants.IS_PAX_CONNECTED,
-                                false
-                            )
-                        ) {
-                            adjustPaxTips()
-                        }else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
-                                Constants.IS_PAX_CONNECTED,
-                                false
-                            )
-                        ) {
-                            AlertUtils.showCustomAlert(
-                                context,
-                                "Please connect to PAX device"
-                            )
+                        when (prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE, "")) {
+                            Constants.PAX -> {
+                                if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
+                                        Constants.IS_PAX_CONNECTED,
+                                        false
+                                    )
+                                ) {
+                                    adjustPaxTips()
+                                } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                        Constants.IS_PAX_CONNECTED,
+                                        false
+                                    )
+                                ) {
+                                    AlertUtils.showCustomAlert(
+                                        context,
+                                        "Please connect to PAX device"
+                                    )
+                                }
+                            }
+
+                            Constants.VALOR, Constants.VELOR -> {
+                                adjustValorTips()
+                            }
+
+                            Constants.DEJAVOO -> {
+                                adjustDejavooTips()
+                            }
+
+                            else -> {
+                                if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
+                                    magtekCall(wholeTotalPrice)
+                                } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                        Constants.IS_PAX_CONNECTED,
+                                        false
+                                    )
+                                ) {
+                                    AlertUtils.showCustomAlert(
+                                        context,
+                                        "Please connect a payment device"
+                                    )
+                                }
+                            }
                         }
-                    }
 
-                    Constants.VALOR, Constants.VELOR->{
-                        adjustValorTips()
-                    }
-
-                    Constants.DEJAVOO->{
-                        adjustDejavooTips()
-                    }
-
-                    else->{
-                        if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
-                            magtekCall(wholeTotalPrice)
-                        }else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
-                                Constants.IS_PAX_CONNECTED,
-                                false
-                            )
-                        ) {
-                            AlertUtils.showCustomAlert(
-                                context,
-                                "Please connect a payment device"
-                            )
-                        }
-                    }
-                }
-
-               /* if (prefProvider.getValue(Constants.VALOR_APP_ID, "").isNotEmpty()) {
+                        /* if (prefProvider.getValue(Constants.VALOR_APP_ID, "").isNotEmpty()) {
                     adjustValorTips()
                 }else if (prefProvider.getValue(
                         Constants.VALOR_APP_ID, ""
@@ -3118,15 +3117,16 @@ class CustomDisplay(
                         "Please connect to PAX device"
                     )
                 }*/
-            } else if (!mIsCardPayment) {
-                callUpdateTip()
+                    } else if (!mIsCardPayment) {
+                        callUpdateTip()
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                if (!binding.signaturePad.isEmpty) {
+                    enableConfirmButton()
+                }
             }
-        }
-        catch (e:Exception){
-            e.printStackTrace()
-        }
-        if (!binding.signaturePad.isEmpty) {
-            enableConfirmButton()
         }
     }
 
