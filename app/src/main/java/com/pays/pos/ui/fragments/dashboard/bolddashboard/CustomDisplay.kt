@@ -83,6 +83,7 @@ import com.pays.pos.utils.paxUtils.AppThreadPool
 import com.pays.pos.utils.paxUtils.POSLinkCreatorWrapper
 import com.pays.pos.utils.paxUtils.SettingINI
 import com.pays.pos.utils.statusUtils.Status
+import com.pays.pos.data.remote.Constants.IS_PAYMENT_SCREEN
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
@@ -98,9 +99,9 @@ class CustomDisplay(
     private val dashBoardCategoryViewModel: DashBoardCategoryViewModel,
     val passcodeViewModel: PasscodeViewModel,
     val dineInViewModel: DineInOrderTableViewModel,
+    val isTipBeforeScreen:Boolean = false
     /* val makeOneTimeReload:Boolean=false*/
-) : Presentation(ContextThemeWrapper(context, R.style.CustomPresentationTheme), display),
-    MyCallback, DineInAdapter.DineInCallback,
+) : Presentation(ContextThemeWrapper(context, R.style.CustomPresentationTheme), display), MyCallback, DineInAdapter.DineInCallback,
     ActiveTipsListAdapter.DiscountInterface {
 
     private var mWholeTotalPrice: Double = 0.0
@@ -175,7 +176,81 @@ class CustomDisplay(
         getLoyaltyPointListObserver()
         initDiscountLiveData()
 
+
+        if(prefProvider.getValueboolean(Constants.IS_PAYMENT_SCREEN,false)) {
+            Log.e("TIP BEFORE WORKING","TIP BEFORE ENABLED")
+            binding.askForTipBeforeLayout.visible()
+        }
+        else {
+            Log.e("TIP BEFORE WORKING","TIP BEFORE NOT ENABLED")
+            binding.askForTipBeforeLayout.gone()
+        }
+
+
     }
+
+
+    fun checkForTipBeforeTransaction(_tipListViewModel: TipListViewModel){
+
+        tipsListViewModel = _tipListViewModel
+
+         Log.e("TIP BEFORE WORKING","CHECK FOR TIP BEFORE TRANSACTION")
+
+
+
+        binding.otherRootLayoutTipBefore.setOnClickListener {
+            Log.e("TIP BEFORE WORKING","NO TIP CLICKED")
+            activeTipsListAdapter?.clearSelectedItem()
+            showTipKeypad(dashBoardCategoryViewModel.totalPrice)
+        }
+
+        binding.noTipRootLayoutTipBefore.setOnClickListener {
+
+
+            Log.e("TIP BEFORE WORKING","NO TIP CLICKED")
+
+            activeTipsListAdapter?.clearSelectedItem()
+            dashBoardCategoryViewModel.apply {
+                totalTipAmount = 0.0
+                customerGivenTipBefore.value = true
+            }
+
+            showThankYou(mWholeTotalPrice)
+        }
+
+        setupActiveTipsList(_tipListViewModel)
+
+
+
+        dashBoardCategoryViewModel.splitChanged.observe(lifecycleOwner) {
+
+            var wholeAmount = 0.0
+
+            wholeAmount = try {
+                prefProvider.getValue(
+                    Constants.WHOLE_AMOUNT,
+                    "0.0"
+                ).toDouble()
+
+        //                val finalAmount = MethodUtils.calculateCashDiscount(wholeAmount,prefProvider,context)
+        //
+        //                Log.e("FINAL AMOUNT","FINAL AMOUNT $finalAmount")
+        //
+        //                wholeAmount += finalAmount
+            }catch (e:Exception) {
+                dashBoardCategoryViewModel.totalPrice
+            }
+
+            Log.e("Total Tip Check ","SPLIT COUNT $it AND WHOLE AMOUNT = $wholeAmount")
+
+
+
+            observeActiveTipsList(/*dashBoardCategoryViewModel.totalPrice*/ wholeAmount / it)
+        }
+
+
+    }
+
 
 
     public fun closeSecondaryDisplay() {
@@ -776,7 +851,8 @@ class CustomDisplay(
             Log.d(TAG, "updateCustomerDisplay: cartList = ${Gson().toJson(cartList)}")
             if (cartList.isNotEmpty()) {
 
-                binding.mainCartLayout.visibility = View.VISIBLE
+                if(!isTipBeforeScreen)
+                    binding.mainCartLayout.visibility = View.VISIBLE
                 binding.splashLayout.visibility = View.GONE
 
                 val isDineIn = prefProvider.getValue(
@@ -1448,7 +1524,8 @@ class CustomDisplay(
         totalDis: Double? = 0.0
     ) {
         if (baseResponse != null) {
-            binding.mainCartLayout.visibility = View.VISIBLE
+            if(!isTipBeforeScreen)
+                binding.mainCartLayout.visibility = View.VISIBLE
             binding.splashLayout.visibility = View.GONE
 
             //table name,chair for mergedOccupied,single table details in Header
@@ -2159,6 +2236,14 @@ class CustomDisplay(
                 adapter = activeTipsListAdapter
             }
         }
+
+
+        binding.apply {
+            rvActiveTipsListTipBefore.apply {
+                layoutManager = GridLayoutManager(context, 4)
+                adapter = activeTipsListAdapter
+            }
+        }
         tipsListViewModel = tipListViewModel
     }
 
@@ -2177,6 +2262,10 @@ class CustomDisplay(
                     }
                     binding.rvActiveTipsList.layoutManager =
                         GridLayoutManager(context, it.data.size)
+
+                    binding.rvActiveTipsListTipBefore.layoutManager =
+                        GridLayoutManager(context, it.data.size)
+
 //                activeTipsListAdapter?.setList(it.data, wholeTotalPrice)
                     activeTipsListAdapter?.setList(it.data, wholeTotalPrice)
                     activeTipsListAdapter?.setListner(this)
@@ -2184,6 +2273,7 @@ class CustomDisplay(
                         //delay(5000)
                         //binding.rvActiveTipsList.smoothScrollToPosition(tipsList.size - 1)
                     }
+
                     Log.d("Payment_TYPE:: ", dashBoardCategoryViewModel.paymentTypeForTip)
                     if (dashBoardCategoryViewModel.paymentTypeForTip.equals(
                             "cash",
@@ -2192,7 +2282,7 @@ class CustomDisplay(
                     ) {
                         activeTipsListAdapter?.setList(
                             it.data,
-                            binding.txtTotalCash.text.toString().trim().replace('$', ' ').trim()
+                            wholeTotalPrice
                                 .toDouble()
                         )
                     } else if (dashBoardCategoryViewModel.paymentTypeForTip.equals(
@@ -2202,7 +2292,7 @@ class CustomDisplay(
                     ) {
                         activeTipsListAdapter?.setList(
                             it.data,
-                            binding.txtTotalCard.text.toString().trim().replace('$', ' ').trim()
+                            wholeTotalPrice
                                 .toDouble()
                         )
                     } else {
@@ -2212,6 +2302,35 @@ class CustomDisplay(
                     lifecycleOwner.lifecycleScope.launch {
                         //delay(5000)
                         //binding.rvActiveTipsList.smoothScrollToPosition(tipsList.size - 1)
+                        Log.d("Payment_TYPE:: ", dashBoardCategoryViewModel.paymentTypeForTip)
+                        if (dashBoardCategoryViewModel.paymentTypeForTip.equals(
+                                "cash",
+                                ignoreCase = true
+                            )
+                        ) {
+                            activeTipsListAdapter?.setList(
+                                it.data,
+                                wholeTotalPrice
+                                    .toDouble()
+                            )
+                        } else if (dashBoardCategoryViewModel.paymentTypeForTip.equals(
+                                "card",
+                                ignoreCase = true
+                            )
+                        ) {
+                            activeTipsListAdapter?.setList(
+                                it.data,
+                                wholeTotalPrice
+                                    .toDouble()
+                            )
+                        } else {
+                            activeTipsListAdapter?.setList(it.data, wholeTotalPrice)
+                        }
+                        //activeTipsListAdapter?.setListner(this)
+                        lifecycleOwner.lifecycleScope.launch {
+                            //delay(5000)
+                            //binding.rvActiveTipsList.smoothScrollToPosition(tipsList.size - 1)
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -2237,6 +2356,7 @@ class CustomDisplay(
         binding.apply {
 
             askForTipLayout.gone()
+            askForTipBeforeLayout.gone()
             splashLayout.gone()
             mainCartLayout.gone()
             thankYouLayout.gone()
@@ -2257,18 +2377,24 @@ class CustomDisplay(
                 //dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=true
 
                 txtContinue.isEnabled = false
-                txtContinue.setBackgroundColor(Color.GRAY)
+
 
                 tippedAmount =
                     edtAmount.text.toString().replace("$", "").trim().toDouble()
 
-                /*   dashBoardCategoryViewModel.apply {
-                       totalTipAmount = tippedAmount
-                       customerGivenTip.value = true
-                   }*/
+                if(prefProvider.getValueboolean(IS_PAYMENT_SCREEN,false)) {
+                    dashBoardCategoryViewModel.apply {
+                        totalTipAmount = tippedAmount
+                        customerGivenTipBefore.value = true
+                    }
 
-                if (mIsCardPayment) {
-                    if (/*!mIsSignatureRequired*/ true) {
+                    addTipKeypadLayout.gone()
+                    askForTipBeforeLayout.visible()
+
+                } else {
+
+                    if (mIsCardPayment) {
+                        if (/*!mIsSignatureRequired*/ true) {
 //                       /* showWouldYouLikeToAddTipScreen(
 //                            tipsListViewModel,
 //                            mTransactionViewModel,
@@ -2357,6 +2483,9 @@ class CustomDisplay(
                 } else {
                     callUpdateTip()
                 }
+            }
+
+                txtContinue.isEnabled = true
             }
 
         }
@@ -2584,7 +2713,8 @@ class CustomDisplay(
         model: GuestPaymentCalculationModel
     ) {
         isGuestPay = value
-        binding.mainCartLayout.visibility = View.VISIBLE
+        if(!isTipBeforeScreen)
+            binding.mainCartLayout.visibility = View.VISIBLE
         binding.splashLayout.visibility = View.GONE
         dineInPaymentDetails = model
 
@@ -2600,7 +2730,7 @@ class CustomDisplay(
 
     fun showWouldYouLikeToAddTipScreen(
         tipListViewModel: TipListViewModel,
-        transactionViewModel: TransactionViewModel,
+        transactionViewModel: TransactionViewModel? = null,
         wholeTotalPrice: Double,
         orderId: Int, //This is payment id but the variable name is order id
         isCardPayment: Boolean,
@@ -2620,10 +2750,16 @@ class CustomDisplay(
         mIsCardPayment = isCardPayment
         mIsSignatureRequired =
             prefProvider.getValueboolean(CUSTOMER_SIGN_REQUIRED_ON_CD, false)
-        mTransactionViewModel = transactionViewModel
-        mPaymentViewModel = paymentViewModel
-        magensaResponse = mPaymentViewModel.magensaResponse ?: ""
-        magtekRequestUtils = magRequestUtils
+
+        if(!isTipBeforeScreen) {
+            mTransactionViewModel = transactionViewModel!!
+            mPaymentViewModel = paymentViewModel!!
+            magtekRequestUtils = magRequestUtils!!
+            magensaResponse = mPaymentViewModel.magensaResponse ?: ""
+        }
+
+
+
         this.apiModule1 = apiModule1
         mWholeTotalPrice = wholeTotalPrice
 
@@ -2635,7 +2771,8 @@ class CustomDisplay(
             if (dashBoardCategoryViewModel.getSplitCount() == 1) {
                 observeActiveTipsList(/*mPaymentViewModel.tipOnAmount*/totalPrice / dashBoardCategoryViewModel.getSplitCount())
             } else {
-                observeActiveTipsList(mPaymentViewModel.tipOnAmount / dashBoardCategoryViewModel.getSplitCount())
+            //    observeActiveTipsList(mPaymentViewModel.tipOnAmount / dashBoardCategoryViewModel.getSplitCount())
+                observeActiveTipsList(/*mPaymentViewModel.tipOnAmount*/totalPrice / dashBoardCategoryViewModel.getSplitCount())
             }
 
             mainCartLayout.gone()
@@ -2885,62 +3022,75 @@ class CustomDisplay(
         tippedAmount = MethodUtils.percentageCalculation(wholeTotalPrice, model.rate)
         Log.d("selectedItem: ", "tip params $tipRate $tippedAmount")
 
-        /**
-         * Used to show Given TIPS on OrderCompleted Fragment
-         */
-        /*  dashBoardCategoryViewModel.apply {
+        Log.e("TOTAL TIP Check", "TIP RATE")
+
+        if (prefProvider.getValueboolean(Constants.IS_PAYMENT_SCREEN, false)) {
+            /**
+             * Used to show Given TIPS on OrderCompleted Fragment
+             */
+            dashBoardCategoryViewModel.apply {
+                totalTipAmount = tippedAmount
+                customerGivenTipBefore.value = true
+                Log.d("selectedItem: ", "updating tip params $tipRate $tippedAmount")
+            }
+        } else {
+            if (mIsCardPayment /*&& !mIsSignatureRequired*/) {
+                /**
+                 * Used to show Given TIPS on OrderCompleted Fragment
+                 */
+                /*  dashBoardCategoryViewModel.apply {
               totalTipAmount = tippedAmount
               customerGivenTip.value = true
           }
   */
-        try{
-            if (mIsCardPayment /*&& !mIsSignatureRequired*/) {
+                try {
+                    if (mIsCardPayment /*&& !mIsSignatureRequired*/) {
 //            callUpdateTip()
-                when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
-                    Constants.PAX->{
-                        if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
-                                Constants.IS_PAX_CONNECTED,
-                                false
-                            )
-                        ) {
-                            adjustPaxTips()
-                        }else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
-                                Constants.IS_PAX_CONNECTED,
-                                false
-                            )
-                        ) {
-                            AlertUtils.showCustomAlert(
-                                context,
-                                "Please connect to PAX device"
-                            )
+                        when (prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE, "")) {
+                            Constants.PAX -> {
+                                if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
+                                        Constants.IS_PAX_CONNECTED,
+                                        false
+                                    )
+                                ) {
+                                    adjustPaxTips()
+                                } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                        Constants.IS_PAX_CONNECTED,
+                                        false
+                                    )
+                                ) {
+                                    AlertUtils.showCustomAlert(
+                                        context,
+                                        "Please connect to PAX device"
+                                    )
+                                }
+                            }
+
+                            Constants.VALOR, Constants.VELOR -> {
+                                adjustValorTips()
+                            }
+
+                            Constants.DEJAVOO -> {
+                                adjustDejavooTips()
+                            }
+
+                            else -> {
+                                if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
+                                    magtekCall(wholeTotalPrice)
+                                } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                        Constants.IS_PAX_CONNECTED,
+                                        false
+                                    )
+                                ) {
+                                    AlertUtils.showCustomAlert(
+                                        context,
+                                        "Please connect a payment device"
+                                    )
+                                }
+                            }
                         }
-                    }
 
-                    Constants.VALOR, Constants.VELOR->{
-                        adjustValorTips()
-                    }
-
-                    Constants.DEJAVOO->{
-                        adjustDejavooTips()
-                    }
-
-                    else->{
-                        if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
-                            magtekCall(wholeTotalPrice)
-                        }else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
-                                Constants.IS_PAX_CONNECTED,
-                                false
-                            )
-                        ) {
-                            AlertUtils.showCustomAlert(
-                                context,
-                                "Please connect a payment device"
-                            )
-                        }
-                    }
-                }
-
-               /* if (prefProvider.getValue(Constants.VALOR_APP_ID, "").isNotEmpty()) {
+                        /* if (prefProvider.getValue(Constants.VALOR_APP_ID, "").isNotEmpty()) {
                     adjustValorTips()
                 }else if (prefProvider.getValue(
                         Constants.VALOR_APP_ID, ""
@@ -2967,15 +3117,16 @@ class CustomDisplay(
                         "Please connect to PAX device"
                     )
                 }*/
-            } else if (!mIsCardPayment) {
-                callUpdateTip()
+                    } else if (!mIsCardPayment) {
+                        callUpdateTip()
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                if (!binding.signaturePad.isEmpty) {
+                    enableConfirmButton()
+                }
             }
-        }
-        catch (e:Exception){
-            e.printStackTrace()
-        }
-        if (!binding.signaturePad.isEmpty) {
-            enableConfirmButton()
         }
     }
 

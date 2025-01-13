@@ -56,6 +56,7 @@ import com.pays.pos.data.remote.Constants.GIFT_CARD
 import com.pays.pos.data.remote.Constants.IS_FROM_ALL_ORDER
 import com.pays.pos.data.remote.Constants.IS_LAST_ITEM_DELETE
 import com.pays.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
+import com.pays.pos.data.remote.Constants.IS_PAYMENT_SCREEN
 import com.pays.pos.data.remote.Constants.IS_UPDATE_ORDER
 import com.pays.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.pays.pos.data.remote.Constants.IS_UPDATE_ORDER_ID
@@ -94,6 +95,7 @@ import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
+import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
 import com.pays.pos.utils.*
 import com.pays.pos.utils.callback.*
 import com.pays.pos.utils.extensions.*
@@ -3111,6 +3113,20 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             }
             negativeButton(R.string.tv_cancel) {
                 // Do negative stuff heref
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if(prefProvider.getValueboolean(IS_PAYMENT_SCREEN, false)){
+            if(this::presentation.isInitialized){
+                presentation.show()
+                presentation.onDisplayChanged()
+
+                val tipListViewModel by activityViewModels<TipListViewModel>()
+                presentation.checkForTipBeforeTransaction(tipListViewModel)
             }
         }
     }

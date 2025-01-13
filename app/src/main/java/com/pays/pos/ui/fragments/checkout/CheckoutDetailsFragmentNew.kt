@@ -55,6 +55,7 @@ import com.pays.pos.data.remote.Constants.GIFT_CARD_PIN
 import com.pays.pos.data.remote.Constants.IS_GIFT_CARD_REDEEM
 import com.pays.pos.data.remote.Constants.IS_ORDER_REDEEMABLE_WITH_GIFT_CARD
 import com.pays.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
+import com.pays.pos.data.remote.Constants.OPTION_TYPE
 import com.pays.pos.data.remote.Constants.ORDER_TYPE
 import com.pays.pos.data.remote.Constants.PRE_AUTH_DETAILS
 import com.pays.pos.data.remote.Constants.TAKEOUT
@@ -375,7 +376,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 presentation.showSurcharge(true)
             }
             //presentation.showWouldYouLikeToAddTipScreen(tipListViewModel,WholetotalPrice)
+
+            val tipListViewModel by activityViewModels<TipListViewModel>()
+
+            presentation.checkForTipBeforeTransaction(tipListViewModel)
         }
+
+
     }
 
     @Inject
@@ -430,6 +437,44 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 Log.e(TAG, "checkCartDealy:  ${Gson().toJson(cartList)}")
             }
 
+        }
+
+        observeForTipBeforeTransaction()
+    }
+
+    private fun observeForTipBeforeTransaction() {
+        dashboardViewModel.customerGivenTipBefore.observe(viewLifecycleOwner){
+            if(it) {
+
+                tipAmount = dashboardViewModel.totalTipAmount
+
+                Log.d("TIP GIVEN: ", "TIP OBSERVER")
+
+                dashboardViewModel.customerGivenTipBefore.value = false
+
+                var cashTip = tipAmount
+                var cardTip = tipAmount + MethodUtils.calculateCashDiscount(
+                    tipAmount ,
+                    prefProvider,
+                    requireContext()
+                )
+
+
+                dashboardViewModel.apply {
+                    employeeGivenTip = true
+                    tipAmount = totalTipAmount
+                    customerGivenTip.value = true
+                }
+
+                dashboardViewModel.setTipAmount(tipAmount)
+
+                prefProvider.setValueboolean(Constants.TIP_ADDED, true)
+                prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, tipAmount.toString())
+                prefProvider.setValueInt(Constants.TIP_ADDED_ID, tipID)
+
+                tipAmountCalculation(cashTip,cardTip)
+                loadPaymentLayout(cashTip,cardTip)
+            }
         }
     }
 
@@ -664,6 +709,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             /**
              * Used to show Given TIPS on OrderCompleted Fragment
              */
+
+            var cashTip = tipAmount
+            var cardTip = tipAmount + MethodUtils.calculateCashDiscount(
+                tipAmount ,
+                prefProvider,
+                requireContext()
+            )
+
             dashboardViewModel.apply {
                 totalTipAmount = tipAmount
                 employeeGivenTip = true
@@ -677,8 +730,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, tipAmount.toString())
             prefProvider.setValueInt(Constants.TIP_ADDED_ID, tipID)
 
-            tipAmountCalculation()
-            loadPaymentLayout()
+            tipAmountCalculation(cashTip,cardTip)
+            loadPaymentLayout(cashTip,cardTip)
         }
         requireActivity().supportFragmentManager.setFragmentResultListener(
             "request_key_split",
@@ -727,6 +780,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         binding.linearNextSplit.setOnSingleClickListener {
             PaymentBoldPosFragment.newInstance().addTipHideShow(false)
+            dashboardViewModel.splitChanged.value = isSelectedCount
             dashboardViewModel.setSplitCount(isSelectedCount)
             loadPaymentLayout()
             tipAmountCalculation()
@@ -2893,6 +2947,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         prefProvider,
                         requireContext()
                     ) / isSelectedCount
+
 //                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
 //                        0.0
 //                    } else {
@@ -2971,6 +3026,22 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 dashboardViewModel.apply {
                     totalAmount = paymentAmount
                     paymentTypeForTip = "card"
+                }
+
+                if (prefProvider.getValue(
+                        OPTION_TYPE, "CashDiscount"
+                    ) == "CashDiscount"
+                ) {
+
+                    //Add Cash discount  related changes
+
+                } else {
+                    tipAmount +=  MethodUtils.calculateCashDiscount(
+                        tipAmount ,
+                        prefProvider,
+                        requireContext()
+                    )
+
                 }
 
                 paymentAmount += tipAmount
@@ -5232,10 +5303,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     // To set different cash payment options and total amount values
-    private fun setupPaymentScreen(isSelectCount: Int) {
+    private fun setupPaymentScreen(isSelectCount: Int,cashTip:Double = 0.0,cardTip:Double=0.0) {
         MethodUtils.getCashPaymentOptionList(
 //   Commented to solve BIS-4196         getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount,
-            (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount) + tipAmount,
+            (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount) + cashTip,
             binding.tvCash1,
             binding.tvCash2,
             binding.tvCash3
@@ -5243,18 +5314,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         MethodUtils.setPriceTextView(
             binding.tvCash,
-            (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount) + tipAmount
+            (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount) + cashTip
 //     Commented to solve BIS-4196       getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
         )
         MethodUtils.setPriceTextView(
             binding.tvCash0,
-            (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount) + tipAmount
+            (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount) + cashTip
             //     Commented to solve BIS-4196  getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
         )
         Log.e(TAG, "WholetotalPrice:   ${WholetotalPrice}")
         MethodUtils.setPriceTextView(
             binding.tvCard,
-            (getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectCount) + tipAmount
+            (getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectCount) + cardTip
             //     Commented to solve BIS-4196  getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectCount
         )
         if (this::presentation.isInitialized) {
@@ -5283,7 +5354,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     // To calculate tip added by user
-    private fun tipAmountCalculation() {
+    private fun tipAmountCalculation(cashTip:Double = 0.0,cardTip:Double=0.0) {
         if (tipAmount == 0.00) {
             binding.tvsplittip?.gone()
             binding.tvtipcard?.gone()
@@ -5330,15 +5401,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             MethodUtils.setPriceTextView(
                 binding.tvCash,
-                (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount
+                (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + cashTip
             )
             MethodUtils.setPriceTextView(
                 binding.tvCash0,
-                (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount
+                (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + cashTip
             )
             MethodUtils.setPriceTextView(
                 binding.tvCard,
-                (getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount) + tipAmount
+                (getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount) + cardTip
             )
 
             if (this::presentation.isInitialized) {
@@ -5354,14 +5425,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 "Cash (" + binding.tvCash.text + ")"
             binding.tvtipcash?.visible()
             binding.tvtipcash?.text =
-                "(" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
+                "(" + MethodUtils.roundOffAmount(cashTip) + " Tip Added)"
             binding.tvCard.text =
                 "Card (" + binding.tvCard.text + ")"
             binding.tvtipcard?.visible()
             binding.tvtipcard?.text =
-                "(" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
+                "(" + MethodUtils.roundOffAmount(cardTip) + " Tip Added)"
             MethodUtils.getCashPaymentOptionList(
-                (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount,
+                (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + cashTip,
                 binding.tvCash1,
                 binding.tvCash2,
                 binding.tvCash3
@@ -5370,7 +5441,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 binding.tvAmount,
                 (getCalCashDiscWithAmount(
                     prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(), true
-                ) / isSelectedCount).toDouble() + tipAmount
+                ) / isSelectedCount).toDouble() + cardTip
             )
             binding.tvAmount.text =
                 binding.tvAmount.text.toString()
@@ -5864,8 +5935,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         binding.splitLinearLayout.visibility = View.VISIBLE
     }
 
-    private fun loadPaymentLayout() {
-        setupPaymentScreen(isSelectedCount)
+    private fun loadPaymentLayout(cashTip:Double = 0.0,cardTip:Double=0.0) {
+        setupPaymentScreen(isSelectedCount,cashTip,cardTip)
         binding.tab1.setTextColor(resources.getColor(R.color.txt_color_blue))
         binding.view1.setBackgroundColor(resources.getColor(R.color.txt_color_blue))
         binding.tab2.setTextColor(resources.getColor(R.color.white))
@@ -5884,6 +5955,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
 
         }
+
 
         EventBus.getDefault().post(
             MessageEvent(

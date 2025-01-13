@@ -45,10 +45,16 @@ class ActiveTipsListAdapter() :
 //                txtTipTitle.text = "${String.format("%.0f", model.rate)}%"
                 Log.d("C_Disp_1::", wholeTotalPrice.toString())
                 txtTipTitle.text = model.rate.toString().plus("%")
+
+
+                Log.e("TOTAL TIP Check","IN TIP LIST ADAPTER = WHOLE AMOUNT = $wholeTotalPrice AND Rate = ${model.rate}")
+
                 val tippedAmount = MethodUtils.percentageCalculation(
                     wholeTotalPrice,
                     model.rate
                 )
+
+                Log.e("TOTAL TIP Check","TIPPED AMOUNT $tippedAmount")
 
                 binding.txtTipValue.text = MethodUtils.roundOffAmount(tippedAmount)
 
