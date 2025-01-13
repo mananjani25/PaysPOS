@@ -39,7 +39,6 @@ import com.pax.poslink.broadpos.BroadPOSCommunicator
 import com.pax.poslink.fullIntegration.InputAccount
 import com.pax.poslink.fullIntegration.InputAccount.InputAccountCallback
 import com.pays.payments.design.*
-import com.pays.pos.MainApplication
 import com.pays.pos.R
 import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.requestModel.*
@@ -285,12 +284,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 } else {
                     ProgressUtils.dismissProgressDialog()
-
                 }
-
-
             }
         }
+    }
+    private fun showAlertDialog(message:String){
+        runOnUiThread(kotlinx.coroutines.Runnable {
+            AlertUtils.showCustomAlert(requireContext(), message)
+        })
     }
 
     private var countDownTimer: CountDownTimer? = null
@@ -298,19 +299,37 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         binding.btnReadCard.setOnSingleClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
 
-                countDownTimer?.cancel()
-                binding.btnReadCard?.isClickable = false
+                when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
+                    Constants.PAX->{
+                        if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED,false)) {
+                            countDownTimer?.cancel()
+                            binding.btnReadCard?.isClickable = false
 
-                countDownTimer = object : CountDownTimer(5000, 1000) {
-                    override fun onTick(millisUntilFinished: Long) {
+                            countDownTimer = object : CountDownTimer(5000, 1000) {
+                                override fun onTick(millisUntilFinished: Long) {
+                                }
+
+                                override fun onFinish() {
+                                    binding.btnReadCard?.isClickable = true
+                                }
+                            }.start()
+
+                            startPAXWithGiftCard()
+                        }else{
+                            showAlertDialog(getString(R.string.please_connect_pax))
+                        }
                     }
-
-                    override fun onFinish() {
-                        binding.btnReadCard?.isClickable = true
+                    Constants.DEJAVOO->{
+                        showAlertDialog(getString(R.string._not_supported,Constants.DEJAVOO))
                     }
-                }.start()
+                    Constants.VALOR->{
+                        showAlertDialog(getString(R.string._not_supported,Constants.VALOR))
+                    }
+                    else->{
+                        showAlertDialog(getString(R.string.please_connect_payment_device))
+                    }
+                }
 
-                startPAXWithGiftCard()
             }
         })
     }
@@ -336,6 +355,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 override fun onFinish(result: PosLink?) {
                     posLink = result!!
                     Log.d("initPOSLink: ", "onFinish")
+                    magtekProViewModel.paxNetworkCall(requireContext(), false)
                 }
             })
     }
@@ -3674,66 +3694,69 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     /* This function will call the pax for gift card reading */
     private fun startPAXWithGiftCard() {
-        GlobalScope.launch {
-            posLink.SetCommSetting(
-                SettingINI.getCommSettingFromFile(
-                    requireContext(),
-                    "/storage/emulated/0/Download/" + SettingINI.FILENAME
+        runBlocking {
+            initPOSLink()
+            GlobalScope.launch {
+                posLink.SetCommSetting(
+                    SettingINI.getCommSettingFromFile(
+                        requireContext(),
+                        "/storage/emulated/0/Download/" + SettingINI.FILENAME
+                    )
                 )
-            )
 
-            val manageRequest = ManageRequest()
-            manageRequest.TransType = manageRequest.ParseTransType("INPUTACCOUNT")
-            manageRequest.EDCType = manageRequest.ParseEDCType("GIFT")
-            manageRequest.MagneticSwipeEntryFlag = "1";
-            manageRequest.ManualEntryFlag = "1";
-            manageRequest.ContactlessEntryFlag = "0";
-            manageRequest.TimeOut = "200";
-            manageRequest.ContinuousScreen = "0";
-            manageRequest.ECRRefNum = System.currentTimeMillis()
-                .toString(); // Enable swipe entry (adjust based on your use case)
-            posLink.ManageRequest = manageRequest
-            val result = posLink.ProcessTrans()
+                val manageRequest = ManageRequest()
+                manageRequest.TransType = manageRequest.ParseTransType("INPUTACCOUNT")
+                manageRequest.EDCType = manageRequest.ParseEDCType("GIFT")
+                manageRequest.MagneticSwipeEntryFlag = "1";
+                manageRequest.ManualEntryFlag = "1";
+                manageRequest.ContactlessEntryFlag = "0";
+                manageRequest.TimeOut = "200";
+                manageRequest.ContinuousScreen = "0";
+                manageRequest.ECRRefNum = System.currentTimeMillis()
+                    .toString(); // Enable swipe entry (adjust based on your use case)
+                posLink.ManageRequest = manageRequest
+                val result = posLink.ProcessTrans()
 
-            if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
-                val msg = Message()
-                msg.what = Constants.TRANSACTION_SUCCESSED
-                msg.obj = posLink.ManageResponse
-                if (msg.obj != null) {
-                    val response = msg.obj as com.pax.poslink.ManageResponse
+                if (result.Code === ProcessTransResult.ProcessTransResultCode.OK) {
+                    val msg = Message()
+                    msg.what = Constants.TRANSACTION_SUCCESSED
+                    msg.obj = posLink.ManageResponse
+                    if (msg.obj != null) {
+                        val response = msg.obj as com.pax.poslink.ManageResponse
 
-                    val resultCode = response.ResultCode
-                    if (resultCode == "000000") {
-                        withContext(Dispatchers.Main) {
-                            binding.apply {
-                                btnReadCard?.isClickable = true
-                                if (response.PAN.isNullOrEmpty()) {
-                                    edtGiftCardNumber.setText(response.Track2Data.toString())
-                                    Log.d(
-                                        "VALID: ",
-                                        "Here__Track: ${response.Track2Data.toString()}"
-                                    )
-                                } else {
-                                    edtGiftCardNumber.setText(response.PAN.toString())
-                                    Log.d("VALID: ", "Here__Pan: ${response.PAN.toString()}")
+                        val resultCode = response.ResultCode
+                        if (resultCode == "000000") {
+                            withContext(Dispatchers.Main) {
+                                binding.apply {
+                                    btnReadCard?.isClickable = true
+                                    if (response.PAN.isNullOrEmpty()) {
+                                        edtGiftCardNumber.setText(response.Track2Data.toString())
+                                        Log.d(
+                                            "VALID: ",
+                                            "Here__Track: ${response.Track2Data.toString()}"
+                                        )
+                                    } else {
+                                        edtGiftCardNumber.setText(response.PAN.toString())
+                                        Log.d("VALID: ", "Here__Pan: ${response.PAN.toString()}")
+                                    }
+                                    startTransactionWithGiftCardPayment()
                                 }
-                                startTransactionWithGiftCardPayment()
                             }
+                        } else {
+                            runOnUiThread(object : Runnable {
+                                override fun run() {
+                                    binding.btnReadCard?.isClickable = true
+                                }
+                            })
                         }
-                    } else {
-                        runOnUiThread(object : Runnable {
-                            override fun run() {
-                                binding.btnReadCard?.isClickable = true
-                            }
-                        })
                     }
+                } else {
+                    runOnUiThread(object : Runnable {
+                        override fun run() {
+                            binding.btnReadCard?.isClickable = true
+                        }
+                    })
                 }
-            }else{
-                runOnUiThread(object : Runnable {
-                    override fun run() {
-                        binding.btnReadCard?.isClickable = true
-                    }
-                })
             }
         }
     }
@@ -3745,31 +3768,34 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun makeDejavooPaymentRequest() {
+        CoroutineScope(Dispatchers.Main).launch {
+            ProgressUtils.showProgressDialog("Please wait...", requireActivity(), 0)
+        }
         paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
         paymentCoroutineScope.launch {
             val gatewayType = PaymentGatewayType.DEJAVOO
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
-            val amt = String.format("%.2f", (paymentAmount - tipAmount)).toDouble()
+            val amt = String.format("%.2f", (paymentAmount)).toDouble()
             val tip_amt = String.format("%.2f", tipAmount).toDouble()
 
             /*    Test Credentials
-                  var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
-                  var appID = "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
-                  var channelID = "bd967b4e0ccd6309c5ac16634bd367b6"
-                  var epi = "2319995597"
-                  var endpoint = "status"
-                  var transType = TransactionType.CREDIT_SALE
-                  var TRAN_MODE = "1"
-                  var TRAN_CODE = "1"
-                  var amount =
-                  var reqTxnId = */
+                  registerId = "4986101",
+                authKey = "kwg2GRbykg",
+                tpn = "659324491704"
+                authToken= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0cG4iOiI2NTkzMjQ0OTE3MDQiLCJlbWFpbCI6InN1cHBvcnQrMUBwYXlzcG9zLmNvbSIsImlhdCI6MTczMzc0ODk4M30.spR9JiJS6jt0VMB0MGu9HZQYKUrNaWV-U_pzQ4VCvYw"*/
 
             /* Process Payment */
             var dejavoo = Dejavoo(
-                registerId = "4986101",
-                authKey = "kwg2GRbykg",
-                tpn = "659324491704",
+                registerId =  prefProvider.getValue(
+                    Constants.DEJAVOO_REGISTER_ID,""
+                ),
+                authKey = prefProvider.getValue(
+                    Constants.DEJAVOO_AUTH_KEY,""
+                ),
+                tpn = prefProvider.getValue(
+                    Constants.DEJAVOO_TPN,""
+                ),
                 paymentType = "Credit",
                 transType = "Sale",
                 amount = amt.toString(),
@@ -3786,6 +3812,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     it.applicationContext,
                     dejavoo,
                     onSuccess = { tResponse ->
+                        dismissProgressDialog()
                         var transactionJsonResponse = Gson().fromJson<String>(
                             tResponse,
                             String::class.java
@@ -3850,11 +3877,62 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 }
                             }
                         }
+
+                        // Split the data into key-value pairs
+                        val keyValuePairs = ExtData.split(",")
+/*
+
+                        // Create a map to store the parsed data
+                        val dataMap = mutableMapOf<String, String>()
+
+                        // Process each key-value pair
+                        for (pair in keyValuePairs) {
+                            val keyValue = pair.split("=")
+                            if (keyValue.size == 2) {
+                                val key = keyValue[0]
+                                val value = keyValue[1]
+                                dataMap[key] = value
+                            }
+                        }
+*/
+
+
+                        // Access the specific values
+                        cardLastDigits = getPaymentDetails(keyValuePairs,"AcntLast4")?:"Not Found"
+                        EDCType = getPaymentDetails(keyValuePairs,"CardType")?:"Not Found"
+//                        EDCType = dataMap["CardType"] ?: "Not Found"
+
 //                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
                         if (Message.equals("Canceled") || Message.equals("Error")) {
                             dismissProgressDialogWithAlert(RespMSG.replace("%20", " "))
                         } else if (Message.contains("Approved")) {
-                            makePaymentCreditCardDejavoo(RefId, ExtData)
+//                            Check for Order Types
+                            if (prefProvider.getValue(
+                                    ORDER_TYPE,
+                                    TAKEOUT
+                                ).equals(GIFT_CARD)
+                            ) {
+                                if (prefProvider.getValueboolean(
+                                        Constants.IS_ADD_VALUE_IN_GIFT_CARD,
+                                        false
+                                    )
+                                ) {
+                                    giftCardViewModel.paxResponse = Constants.DEJAVOO
+                                    giftCardViewModel.cardNumberLast4 = cardLastDigits
+                                    giftCardViewModel.cardNamePax = EDCType
+                                    giftCardViewModel.transactionID = RefId
+                                    addValueInGiftCardUsingCard()
+                                }else{
+                                    giftCardViewModel.paxResponse = Constants.DEJAVOO
+                                    giftCardViewModel.cardNumberLast4 = cardLastDigits
+                                    giftCardViewModel.cardNamePax = EDCType
+                                    giftCardViewModel.transactionID = RefId
+                                    sellGiftCardUsingCard()
+                                }
+
+                            }else{
+                                makePaymentCreditCardDejavoo(RefId, ExtData)
+                            }
                         }
                     },
                     onFailure = { errorMessage ->
@@ -3873,6 +3951,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     }
                 )
             }
+        }
+    }
+
+    private fun getPaymentDetails(keyValuePairs: List<String>, toFind: String): String? {
+        try {
+            var key = keyValuePairs.filter { it.contains(toFind) }.first()
+            return key.substring(key.lastIndexOf('=')+1)
+        }catch (e:Exception){
+            return ""
         }
     }
 
@@ -4540,54 +4627,42 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                             "APPROVAL"
                                         )
                                     ) {
+                                        it.MASKEDPAN?.let {
+                                            cardLastDigits=it.substring(it.length-4)
+                                        }
                                         if (prefProvider.getValue(
                                                 ORDER_TYPE,
                                                 TAKEOUT
-                                            ) == GIFT_CARD
+                                            ).equals(GIFT_CARD)
                                         ) {
                                             if (prefProvider.getValueboolean(
                                                     Constants.IS_ADD_VALUE_IN_GIFT_CARD,
                                                     false
                                                 )
                                             ) {
-                                                if (prefProvider.getValue(
-                                                        ORDER_TYPE,
-                                                        TAKEOUT
-                                                    ) == GIFT_CARD
-                                                ) {
-                                                    if (prefProvider.getValueboolean(
-                                                            Constants.IS_ADD_VALUE_IN_GIFT_CARD,
-                                                            false
-                                                        )
-                                                    ) {
-                                                        giftCardViewModel.paxResponse =
-                                                            ""/*response.ExtData*/
-                                                        giftCardViewModel.cardNumberLast4 =
-                                                            ""/*response.BogusAccountNum*/
-                                                        giftCardViewModel.cardNamePax =
-                                                            ""/*response.CardType*/
-                                                        giftCardViewModel.transactionID =
-                                                            it.TXNID.toString()/*response.PaymentTransInfo.Token*/
-                                                        addValueInGiftCardUsingCard()
-                                                    } else {
-                                                        giftCardViewModel.paxResponse =
-                                                            ""/*response.ExtData*/
-                                                        giftCardViewModel.cardNumberLast4 =
-                                                            ""/*response.BogusAccountNum*/
-                                                        giftCardViewModel.cardNamePax =
-                                                            ""/*response.CardType*/
-                                                        giftCardViewModel.transactionID =
-                                                            it.TXNID.toString()/*response.PaymentTransInfo.Token*/
-                                                        sellGiftCardUsingCard()
-                                                    }
-                                                } else {
-                                                    makePaymentCreditCardValor(it.TXNID, it.TRANNO)
-                                                }
+                                                giftCardViewModel.paxResponse = Constants.VALOR
+                                                giftCardViewModel.cardNumberLast4 = cardLastDigits
+                                                giftCardViewModel.cardNamePax = it.ISSUER.toString()
+                                                giftCardViewModel.transactionID = it.TXNID.toString()
+                                                addValueInGiftCardUsingCard()
                                             } else {
-                                                makePaymentCreditCardValor(it.TXNID, it.TRANNO)
+                                                giftCardViewModel.paxResponse = Constants.VALOR
+                                                giftCardViewModel.cardNumberLast4 = cardLastDigits
+                                                giftCardViewModel.cardNamePax = it.ISSUER.toString()
+                                                giftCardViewModel.transactionID = it.TXNID.toString()
+                                                sellGiftCardUsingCard()
                                             }
                                         } else {
                                             dismissProgressDialogWithAlert()
+
+                                            //Card last four digits and card type
+
+                                            val maskedCard = it.MASKEDPAN.toString()
+                                            val cardType = it.ISSUER.toString()
+                                            cardLastDigits = maskedCard.substring(maskedCard.length - 5, maskedCard.length) ?: ""
+                                            EDCType = cardType
+
+
 //                                            dismissProgressDialog()
                                             makePaymentCreditCardValor(it.TXNID, it.TRANNO)
                                             /* runOnUiThread(Runnable {
@@ -4608,7 +4683,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         Log.e("Valor: ", errorMessage)
 //                        ProgressUtils.dismissProgressDialog()
 
-//                        dismissProgressDialogWithAlert(errorMessage)
+                        dismissProgressDialogWithAlert(errorMessage)
                         EventBus.getDefault()
                             .post(
                                 MessageEvent(
@@ -4639,7 +4714,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     // To make card payment using PAX device
     private fun makePaxPaymentRequest() {
         runBlocking {
-            initPOSLink()
+//            initPOSLink()
             GlobalScope.launch {
                 posLink.SetCommSetting(
                     SettingINI.getCommSettingFromFile(

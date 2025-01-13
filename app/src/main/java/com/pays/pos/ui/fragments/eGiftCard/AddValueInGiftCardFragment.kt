@@ -334,18 +334,37 @@ class AddValueInGiftCardFragment : Fragment() {
         binding.btnReadCard?.let {
             it.setOnSingleClickListener(object:View.OnClickListener{
                 override fun onClick(p0: View?) {
-                    countDownTimer?.cancel()
-                    binding.btnReadCard?.isClickable=false
+                    when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
+                        Constants.PAX->{
+                            if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED,false)){
+                                countDownTimer?.cancel()
+                                binding.btnReadCard?.isClickable=false
 
-                    countDownTimer = object : CountDownTimer(5000, 1000) {
-                        override fun onTick(millisUntilFinished: Long) {
-                        }
-                        override fun onFinish() {
-                            binding.btnReadCard?.isClickable=true
-                        }
-                    }.start()
+                                countDownTimer = object : CountDownTimer(5000, 1000) {
+                                    override fun onTick(millisUntilFinished: Long) {
+                                    }
+                                    override fun onFinish() {
+                                        binding.btnReadCard?.isClickable=true
+                                    }
+                                }.start()
 
-                    startPAXWithGiftCard()
+                                startPAXWithGiftCard()
+                            }else{
+                                showAlertDialog(getString(R.string.please_connect_pax))
+                            }
+                        }
+                        Constants.DEJAVOO->{
+                            showAlertDialog(getString(R.string._not_supported, Constants.DEJAVOO))
+                        }
+                        Constants.VALOR->{
+                            showAlertDialog(getString(R.string._not_supported, Constants.VALOR))
+                        }
+                        else->{
+                            showAlertDialog(getString(R.string.please_connect_payment_device))
+                        }
+
+                    }
+
                 }
             })
         }
@@ -383,6 +402,11 @@ class AddValueInGiftCardFragment : Fragment() {
         }
     }
 
+    private fun showAlertDialog(message:String){
+        runOnUiThread(Runnable {
+            AlertUtils.showCustomAlert(requireContext(),message)
+        })
+    }
     private fun startProcessingForAddValue() {
 
 //            closePaxRequest()

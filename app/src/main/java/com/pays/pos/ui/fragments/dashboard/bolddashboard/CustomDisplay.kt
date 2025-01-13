@@ -2289,6 +2289,52 @@ class CustomDisplay(
                             adjustPaxTips()
                         }*/
 
+                        when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
+                            Constants.PAX->{
+                                if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
+                                        Constants.IS_PAX_CONNECTED,
+                                        false
+                                    )
+                                ) {
+                                    adjustPaxTips()
+                                }else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                        Constants.IS_PAX_CONNECTED,
+                                        false
+                                    )
+                                ) {
+                                    AlertUtils.showCustomAlert(
+                                        context,
+                                        "Please connect to PAX device"
+                                    )
+                                }
+                            }
+
+                            Constants.VALOR, Constants.VELOR->{
+                                adjustValorTips()
+                            }
+
+                            Constants.DEJAVOO->{
+                                adjustDejavooTips()
+                            }
+
+                            else->{
+                                if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
+                                    magtekCall(wholeTotalPrice)
+                                }else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                        Constants.IS_PAX_CONNECTED,
+                                        false
+                                    )
+                                ) {
+                                    AlertUtils.showCustomAlert(
+                                        context,
+                                        "Please connect a payment device"
+                                    )
+                                }
+                            }
+                        }
+
+
+                       /*
                         if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
                             magtekCall(wholeTotalPrice)
                         } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
@@ -2306,7 +2352,7 @@ class CustomDisplay(
                                 context,
                                 "Please connect to PAX device"
                             )
-                        }
+                        }*/
                     }
                 } else {
                     callUpdateTip()
@@ -2944,9 +2990,15 @@ class CustomDisplay(
 
             mPaymentViewModel.dejavooRefTxnId?.let {dejavooRefTxnId->
                 var dejavoo=Dejavoo(
-                    registerId=  "4986101",
-                    authKey=  "kwg2GRbykg",
-                    tpn= "659324491704",
+                    registerId =  prefProvider.getValue(
+                        Constants.DEJAVOO_REGISTER_ID,""
+                    ),
+                    authKey = prefProvider.getValue(
+                        Constants.DEJAVOO_AUTH_KEY,""
+                    ),
+                    tpn = prefProvider.getValue(
+                        Constants.DEJAVOO_TPN,""
+                    ),
                     paymentType = "Credit",
                     transType="TipAdjust",
                     amount= dashBoardCategoryViewModel.totalAmount.toString(),

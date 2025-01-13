@@ -16,6 +16,7 @@ import com.google.gson.Gson
 import com.pax.poslink.ManageRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
+import com.pax.poslink.log.LogFilter.Const
 import com.pays.pos.R
 import com.pays.pos.data.entities.CartModel
 import com.pays.pos.data.entities.TbCartItem
@@ -339,24 +340,48 @@ class PlasticCardNumber : Fragment() {
 
     }
 
+    private fun showAlertDialog(message:String){
+        runOnUiThread(kotlinx.coroutines.Runnable {
+            AlertUtils.showCustomAlert(requireContext(), message)
+        })
+    }
+
     private fun onClick() {
 
         binding.btnReadCard?.let {
             it.setOnSingleClickListener(object:View.OnClickListener{
                 override fun onClick(p0: View?) {
+                    when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
+                        Constants.PAX->{
+                            if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED,false)){
+                                countDownTimer?.cancel()
+                                binding.btnReadCard?.isClickable=false
 
-                    countDownTimer?.cancel()
-                    binding.btnReadCard?.isClickable=false
+                                countDownTimer = object : CountDownTimer(5000, 1000) {
+                                    override fun onTick(millisUntilFinished: Long) {
+                                    }
+                                    override fun onFinish() {
+                                        binding.btnReadCard?.isClickable=true
+                                    }
+                                }.start()
 
-                    countDownTimer = object : CountDownTimer(5000, 1000) {
-                        override fun onTick(millisUntilFinished: Long) {
+                                startPAXWithGiftCard()
+                            }else{
+                                showAlertDialog(getString(R.string.please_connect_pax))
+                            }
                         }
-                        override fun onFinish() {
-                            binding.btnReadCard?.isClickable=true
+                        Constants.DEJAVOO->{
+                            showAlertDialog(getString(R.string._not_supported,Constants.DEJAVOO))
                         }
-                    }.start()
+                        Constants.VALOR->{
+                            showAlertDialog(getString(R.string._not_supported,Constants.VALOR))
+                        }
+                        else->{
+                            showAlertDialog(getString(R.string.please_connect_payment_device))
+                        }
 
-                    startPAXWithGiftCard()
+                    }
+
                 }
             })
         }

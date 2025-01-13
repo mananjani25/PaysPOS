@@ -34,6 +34,7 @@ import com.pays.pos.data.model.responseModel.PrinterResponse
 import com.pays.pos.data.model.responseModel.allOrders.AllOrdersCountResponse
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.ADD
+import com.pays.pos.data.remote.Constants.AUTH_TOKEN
 import com.pays.pos.data.remote.Constants.BASE_URL_NEW
 import com.pays.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.pays.pos.data.remote.Constants.BUSINESS_NAME
@@ -43,6 +44,9 @@ import com.pays.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE
 import com.pays.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_RATE
 import com.pays.pos.data.remote.Constants.CUSTOMER_SIGN_REQUIRED_ON_CD
 import com.pays.pos.data.remote.Constants.DEFAULT_ORDER
+import com.pays.pos.data.remote.Constants.DEJAVOO_AUTH_KEY
+import com.pays.pos.data.remote.Constants.DEJAVOO_REGISTER_ID
+import com.pays.pos.data.remote.Constants.DEJAVOO_TPN
 import com.pays.pos.data.remote.Constants.DELETE
 import com.pays.pos.data.remote.Constants.DINEIN_FLOORPLAN_SHOW_TABLENAME
 import com.pays.pos.data.remote.Constants.DINE_IN
@@ -7796,28 +7800,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                     resource.data.let { venueDetailsResponse ->
                         if (venueDetailsResponse?.status == 200) {
 
-
-                            /*--------------------Set the payment type------------------*/
-                            CoroutineScope(Dispatchers.IO).launch {
-                                var activePaymentType=posRepository.getActivePaymentGateway()
-                                prefProvider.setValue(Constants.PAYMENT_GATEWAY_TYPE,venueDetailsResponse.settingData.data.activatedPaymentGateway?:"")
-                                if (!venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.PAX,ignoreCase = true)){
-                                    prefProvider.getValueboolean(
-                                        Constants.IS_PAX_CONNECTED,
-                                        false
-                                    )
-                                }
-                                if (activePaymentType.isEmpty()){
-//                                    Insert to DB
-                                    posRepository.insertActivePaymentGateway(ActivePaymentGateway(type = venueDetailsResponse.settingData.data.activatedPaymentGateway))
-                                }else{
-//                                    Update to DB
-                                    activePaymentType.first().type = venueDetailsResponse.settingData.data.activatedPaymentGateway
-                                    posRepository.updateActivePayment(activePaymentType.first())
-                                }
-                            }
-                            /*--------------------Set the payment type------------------*/
-
                             posRepository.deleteKitchenPrinters()
                             resource.data?.let { it ->
                                 if (it.settingData.data.teamRoles.isNotEmpty()) {
@@ -7832,10 +7814,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             appDatabase.teamRoleDao().allRoleList()
                                         )
                                     }
-
-
                                 }
-
 
                                 if (prefProvider.getValue(SYNC_SETTING_TIME_STAMP, "").isEmpty()) {
                                     prefProvider.setValueboolean(
@@ -7888,12 +7867,82 @@ class DashBoardCategoryViewModel @Inject constructor(
                                   )
 */
 
+                                /*--------------------Set the payment type------------------*/
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    var activePaymentType=posRepository.getActivePaymentGateway()
+                                    prefProvider.setValue(Constants.PAYMENT_GATEWAY_TYPE,venueDetailsResponse.settingData.data.activatedPaymentGateway?:"")
 
 
+                                    /* var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
+                                     var appID = "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
+                                     var channelID = "bd967b4e0ccd6309c5ac16634bd367b6"
+                                     var epi = "2319995597"*/
 
+                                    var foundTerminal=venueDetailsResponse.settingData.data.terminals.filter { term-> term.name.equals(prefProvider.getValue(
+                                        Constants.TERMINAL_NAME, ""
+                                    ),ignoreCase = true) }
+                                    if (venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.PAX,ignoreCase = true)) {
+                                        prefProvider.clearValorPaymentDetails()
+                                        prefProvider.clearDejavooPaymentDetails()
+                                    }else if(venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.VALOR,ignoreCase = true)){
+                                        prefProvider.clearDejavooPaymentDetails()
+                                        prefProvider.clearPaxPaymentDetails()
+                                    }else if(venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.DEJAVOO,ignoreCase = true)){
+                                        prefProvider.clearValorPaymentDetails()
+                                        prefProvider.clearPaxPaymentDetails()
+                                    }
+                                    if (foundTerminal.isNotEmpty()){
+                                        if (!venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.PAX,ignoreCase = true)){
+                                            if (venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.VALOR,ignoreCase = true) || venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.VELOR,ignoreCase = true)){
 
+                                                withContext(Dispatchers.Main){
+                                                    prefProvider.setValue(
+                                                        VALOR_APP_ID, foundTerminal.get(0).app_id/*appID*/ ?: ""
+                                                    )
 
+                                                    prefProvider.setValue(
+                                                        VALOR_APP_KEY, foundTerminal.get(0).app_key/*apiKey*/ ?: ""
+                                                    )
 
+                                                    prefProvider.setValue(
+                                                        VALOR_EPI, foundTerminal.get(0).epi/*epi*/ ?: ""
+                                                    )
+                                                    prefProvider.setValue(
+                                                        VALOR_CHANNEL_ID, foundTerminal.get(0).channel_id/*channelID*/ ?: ""
+                                                    )
+                                                }
+
+                                            }
+                                            else if(venueDetailsResponse.settingData.data.activatedPaymentGateway.equals(Constants.DEJAVOO)){
+                                                prefProvider.setValue(
+                                                    DEJAVOO_AUTH_KEY, foundTerminal.get(0).dejavoo_auth_key/*appID*/ ?: ""
+                                                )
+
+                                                prefProvider.setValue(
+                                                    DEJAVOO_REGISTER_ID, foundTerminal.get(0).dejavoo_register_id/*apiKey*/ ?: ""
+                                                )
+
+                                                prefProvider.setValue(
+                                                    DEJAVOO_TPN, foundTerminal.get(0).dejavoo_tpn/*epi*/ ?: ""
+                                                )
+                                                prefProvider.setValue(
+                                                    DEJAVOO_AUTH_KEY, foundTerminal.get(0).dejavoo_auth_token/*channelID*/ ?: ""
+                                                )
+
+                                            }
+                                        }
+
+                                    }
+                                    if (activePaymentType.isEmpty()){
+//                                    Insert to DB
+                                        posRepository.insertActivePaymentGateway(ActivePaymentGateway(type = venueDetailsResponse.settingData.data.activatedPaymentGateway))
+                                    }else{
+//                                    Update to DB
+                                        activePaymentType.first().type = venueDetailsResponse.settingData.data.activatedPaymentGateway
+                                        posRepository.updateActivePayment(activePaymentType.first())
+                                    }
+                                }
+                                /*--------------------Set the payment type------------------*/
 
                                 try {
 
