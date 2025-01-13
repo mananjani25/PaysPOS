@@ -11130,7 +11130,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     }
 
                                     lineBreak()*/
-
                                         /**
                                          * Print change amount
                                          */

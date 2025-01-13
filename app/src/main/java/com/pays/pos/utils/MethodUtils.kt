@@ -453,7 +453,7 @@ class MethodUtils {
         fun calculateCashDiscount(
             finalAmount: Double,
             prefProvider: PrefProvider,
-            context: Context
+            context: Context? = null
         ): Double {
             var amountType = prefProvider.getValue(Constants.AMOUNT_TYPE, "")
             var rateorAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
@@ -483,11 +483,25 @@ class MethodUtils {
             return 0.00
         }
 
+        fun getCashDiscountOrSurchargePercentage(prefProvider: PrefProvider):Double {
+            var amountType = prefProvider.getValue(Constants.AMOUNT_TYPE, "")
+            var rateorAmount = prefProvider.getValue(Constants.RATE_OR_AMOUNT, "0")
+            if (amountType == "Dollar") {
+
+            } else if (amountType == "Percentage") {
+                return rateorAmount.toDouble()
+            }
+            return 0.00
+        }
+
         fun errorLog(tag: String, message: String) {
             LogUtil.logE(tag, message)
         }
 
         fun percentageCalculation(price: Double, rate: Double): Double {
+
+            Log.e("TOTAL TIP Check","Price $price")
+
             return (price * rate) / 100
         }
 

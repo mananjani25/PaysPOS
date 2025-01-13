@@ -48,6 +48,7 @@ import com.pays.pos.ui.fragments.dashboard.bolddashboard.CartFragment
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplay
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
+import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.TAG
@@ -128,7 +129,8 @@ class PaymentBoldPosFragment : Fragment() {
                 viewLifecycleOwner,
                 viewModel,
                 passcodeViewModel,
-                paymentViewModel
+                paymentViewModel,
+                isTipBeforeScreen = true
             )
         }
         if (orderId != null) {
@@ -140,6 +142,23 @@ class PaymentBoldPosFragment : Fragment() {
         return binding.root
     }
 
+
+    override fun onResume() {
+        super.onResume()
+
+
+        if (this::presentation.isInitialized) {
+            presentation.show()
+            presentation.onDisplayChanged()
+
+
+            val tipListViewModel by activityViewModels<TipListViewModel>()
+
+            presentation.checkForTipBeforeTransaction(tipListViewModel)
+
+            //presentation.showWouldYouLikeToAddTipScreen(tipListViewModel,WholetotalPrice)
+        }
+    }
 
     public fun addTipHideShow(isBoolean: Boolean) {
         if (isBoolean) {
@@ -418,6 +437,9 @@ class PaymentBoldPosFragment : Fragment() {
                 )
             } else {
                 if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
+
+                    Log.e("TOTAL TIP CHECK","Total TIP = ${viewModel.tipTransactionAmount}  AND SplitCount = ${viewModel.isSelectCount}")
+
                     findNavController().navigate(
                         R.id.action_paymentBoldPosFragment_to_addTipDialog,
                         bundleOf(

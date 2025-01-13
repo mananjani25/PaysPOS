@@ -3035,10 +3035,21 @@ open class PaymentViewModel @Inject constructor(
             subTotal = subTotalPrice
             taxAmount = totalTax
             terminalId = cartModel.terminalId
+
+
+
+
             tips = MethodUtils.roundOffAmountDouble(tipAmount)
+
+            // Tip Before Transaction conditions for surcharge calculation for both ( CASH DISCOUNT / SURCHARGE -> on / off)
+            val finalTipWithSurcharge = tipAmount + MethodUtils.calculateCashDiscount(tipAmount,prefProvider)
+            tipWithSurchargePercentage = finalTipWithSurcharge
+            cash_discount_or_surcharge += finalTipWithSurcharge - tipAmount
+            //END Tip Before
 
             tipsAdjusted = false
             totalDiscount = totalDis
+
 
 
             if (isUpdateOrder && orderId != null) {
