@@ -16,6 +16,7 @@ import com.pays.pos.data.remote.Constants.ROLE_OWNER
 import com.pays.pos.data.remote.Constants.UNIQUE_ID
 import com.pays.pos.di.ApiModule.BASE_URL
 import com.google.gson.Gson
+import com.pax.poslink.log.LogFilter.Const
 import com.pays.pos.logger.MessageEvent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.greenrobot.eventbus.EventBus
@@ -285,6 +286,35 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
 
        return sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
             ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+    }
+
+    public fun clearValorPaymentDetails() {
+
+        /*-----------Valor-------------*/
+        setValue(Constants.VALOR_APP_ID,"")
+        setValue(Constants.VALOR_APP_KEY,"")
+        setValue(Constants.VALOR_EPI,"")
+        setValue(Constants.VALOR_CHANNEL_ID,"")
+        /*-----------Valor-------------*/
+
+    }
+
+    public fun clearDejavooPaymentDetails() {
+
+        /*----------Dejavoo------------*/
+        setValue(Constants.DEJAVOO_AUTH_KEY,"")
+        setValue(Constants.DEJAVOO_REGISTER_ID,"")
+        setValue(Constants.DEJAVOO_TPN,"")
+        setValue(Constants.DEJAVOO_AUTH_TOKEN,"")
+        /*----------Dejavoo------------*/
+
+    }
+
+    public fun clearPaxPaymentDetails() {
+        setValueboolean(
+            Constants.IS_PAX_CONNECTED,
+            false
+        )
     }
 
     /* fun setCustomObject(

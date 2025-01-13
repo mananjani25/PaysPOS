@@ -59,6 +59,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import kotlinx.coroutines.*
+import java.util.Collections
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -2253,7 +2254,14 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                                                         TAG,
                                                         "getdataModSets:  ${Gson().toJson(dataMod)}"
                                                     )
+//                                                    launch {
 
+
+//                                                    }
+
+                                                    dataMod.forEach {
+                                                       Collections.sort(it.modifiers)
+                                                    }
                                                     itemModifiersAdapter?.add(dataMod)
                                                     binding.txtDone.isEnabled = true
 

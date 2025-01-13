@@ -20,6 +20,7 @@ import android.text.TextWatcher
 import android.util.Base64
 import android.util.Log
 import android.view.*
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -63,11 +64,11 @@ import com.pays.pos.data.remote.Constants.OPEN_ORDER_TAB
 import com.pays.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
 import com.pays.pos.data.remote.Constants.PHONE_ORDER
 import com.pays.pos.data.remote.Constants.PHONE_ORDER_TAB
-import com.pays.pos.data.remote.Constants.PRE_AUTH_DETAILS
 import com.pays.pos.data.remote.Constants.SHIPPING_ADDRESS
 import com.pays.pos.data.remote.Constants.SUNMI_PRINTER
 import com.pays.pos.data.remote.Constants.THIRD_PARTY_ORDER_TAB
 import com.pays.pos.data.remote.Constants.VENUE_LOGO
+import com.pays.pos.data.remote.Constants.WIFI
 import com.pays.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.pays.pos.databinding.AllOrdersListingFragmentBinding
@@ -81,7 +82,6 @@ import com.pays.pos.ui.fragments.orders.ActiveOrderViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
-import com.pays.pos.ui.fragments.transactions.TransactionDetailsFragment.OnBluetoothPermissionGranted
 import com.pays.pos.utils.*
 import com.pays.pos.utils.callback.OrderCallBack
 import com.pays.pos.utils.extensions.*
@@ -106,11 +106,29 @@ import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.io.OutputStream
 import java.io.StringReader
+import java.io.UnsupportedEncodingException
+import java.net.HttpURLConnection
+import java.net.MalformedURLException
+import java.net.URL
+import java.security.InvalidKeyException
+import java.security.KeyFactory
+import java.security.NoSuchAlgorithmException
+import java.security.Signature
+import java.security.SignatureException
+import java.security.spec.InvalidKeySpecException
+import java.security.spec.PKCS8EncodedKeySpec
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -167,6 +185,11 @@ class AllOrdersListingFragment(
     var removedPos = 0
 
     private var sunmiFrameworkVersion :Array<String>? = null
+
+    var charHSize: Int = 1
+    var asciiCharWidth: Int = 12
+    var cjkCharWidth: Int = 24
+    var orderContent: java.lang.StringBuilder = java.lang.StringBuilder()
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -403,10 +426,10 @@ class AllOrdersListingFragment(
                 CoroutineScope(Dispatchers.IO).launch {
                     val queue = Volley.newRequestQueue(requireContext())
                     var url = ""
-                    if (Constants.isPaxInDebugMode) {
-                        url = Constants.paxDebug
-                    } else {
+                    if (Constants.paymentLive) {
                         url = Constants.paxLive
+                    } else {
+                        url = Constants.paxDebug
                     }
                     val getRequest: StringRequest = object : StringRequest(
                         Request.Method.POST, url,
@@ -590,10 +613,10 @@ class AllOrdersListingFragment(
     ) {
         val queue = Volley.newRequestQueue(requireContext())
         var url = ""
-        if (Constants.isPaxInDebugMode) {
-            url = Constants.paxDebug
-        } else {
+        if (Constants.paymentLive) {
             url = Constants.paxLive
+        } else {
+            url = Constants.paxDebug
         }
         val getRequest: StringRequest = object : StringRequest(
             Request.Method.POST, url,
@@ -5538,109 +5561,309 @@ class AllOrdersListingFragment(
         type: String,
         orderData: OnlineOrderResponseModel.Data
     ) {
-        if (data.name.startsWith(SUNMI_PRINTER, true)) {
+        if (data.name.startsWith(SUNMI_PRINTER,true) && data.printer_type == WIFI){
 
-            try {
-                SunmiPrinterApi.getInstance()
-                    .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
-            } catch (e: Exception) {
-                SunmiPrinterApi.getInstance()
-                    .setPrinter(SunmiPrinter.SunmiNetPrinter, data.ipAddress)
+            val date = Date()
+            val random = Random()
+            val timestamp = java.lang.String.format("%d", date.time / 1000)
+
+            val body = java.lang.StringBuilder()
+            body.append("{")
+            body.append(java.lang.String.format("\"sn\":\"%s\"", "${data.ipAddress}"))
+            body.append(",")
+            body.append(java.lang.String.format("\"shop_id\":%d", 2241))
+            body.append("}")
+
+            orderContent.clear()
+            orderContent = java.lang.StringBuilder()
+            lineFeed(4)
+            setAlignment(1)
+
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+
+                appendText("OrderID:"+orderData?.custom_order_id)
+                lineFeed(2)
+            }
+            else{
+
+                appendText("OrderID:"+orderData?.id)
+                lineFeed(2)
+
             }
 
-            if (!SunmiPrinterApi.getInstance().isConnected) {
-                SunmiPrinterApi.getInstance()
-                    .connectPrinter(requireContext(), object : ConnectCallback {
 
-                        override fun onFound() {
-                            println("onFound")
+            if (kitchenSettingModel.showOrderType) {
+            appendText(orderData?.orderTypeName)
+                lineFeed(2)
+
+                if ((orderData.orderType.equals(Constants.PHONE_ORDER, true) ||
+                            orderData.orderType.equals("OnlineWebOrder", true) ||
+                            orderData.orderType.equals("Online Order", true) ||
+                            orderData.orderType.equals("OnlineOrder", true)) &&
+                    orderData.deliveryType != null
+                ) {
+
+                    appendText(orderData?.deliveryType.toString())
+                    lineFeed(2)
+                }
+
+            }
+
+            if (kitchenSettingModel.showTeamMember) {
+                appendText("Employee:" + orderData?.employee?.name)
+                lineFeed(2)
+            }
+
+
+            appendText(Constants.getReceiptFormatDateFromUTCServer(
+                requireContext(),
+                orderData?.createdAt.toString()
+            ))
+            lineFeed(1)
+            appendText("------------------------")
+
+            lineFeed(2)
+            setAlignment(0)
+
+            for (i in 0 until orderData?.orderItems.size){
+                val obj = orderData?.orderItems.get(i)
+                if (obj.itemName.isNotEmpty()){
+                    appendText(obj.quantity.toString() + " " + obj.itemName.uppercase())
+                    lineFeed(1)
+
+                    if (obj.orderItemModifiers.isNotEmpty()){
+                        for (j in 0 until obj.orderItemModifiers.size){
+
+                            val objMod = obj.orderItemModifiers.get(j)
+                            appendText("  " + if (objMod.modifier_quantity == 1) {
+                                "   "
+                            } else {
+                                "" + objMod.modifier_quantity + "x "
+                            } )
+
+                            lineFeed(1)
                         }
 
-                        override fun onUnfound() {
-                            println("onUnfound")
+                    }
+
+
+                    if (obj.note.isNotEmpty()){
+
+                        appendText("  Note:" + obj.note)
+                        lineFeed(1)
+                    }
+
+
+
+                }
+
+
+            }
+
+             if (orderData?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+                 lineFeed(2)
+                setAlignment(1)
+                 appendText("Order Note")
+                 lineFeed(1)
+                 appendText(orderData.note)
+                 lineFeed(2)
+
+
+             }
+
+
+
+            if (kitchenSettingModel.showCustomerAddress != false || kitchenSettingModel.showCustomerPhone != false || kitchenSettingModel.showCustomerName) {
+
+                try{
+
+                    if (orderData?.customer != null){
+
+                        setAlignment(0)
+                        appendText("Customer Details")
+                        lineFeed(1)
+                        appendText("------------------------")
+                        lineFeed(1)
+                        if (kitchenSettingModel.showCustomerName) {
+
+
+                            appendText(orderData?.customer?.firstName + " " + orderData?.customer?.lastName)
+                            lineFeed(1)
                         }
+                        try{
+                            if (kitchenSettingModel.showCustomerPhone) {
 
-                        override fun onConnect() {
-                            println("onConnect")
+                                if (orderData?.customer?.phones?.isNotEmpty()) {
 
-                            Log.d("tracking printers", "In IF")
-                            CoroutineScope(Dispatchers.Main).launch {
-
-                                initKitchenPrinter(data, type, orderData)
+                                    orderData?.customer?.phones?.get(0)?.phoneNumber?.let {
+                                        appendText(
+                                            MethodUtils.formatPhoneNumber(it)
+                                        )
+                                        lineFeed(1)
+                                    }
+                                }
                             }
+                        }catch (e:Exception){
+
                         }
 
-                        override fun onDisconnect() {
-                            println("onDisconnect")
-                        }
+                        try{
+                            if (kitchenSettingModel.showCustomerAddress) {
 
-                    })
-            } else {
-                Log.d("tracking printers", "In Else")
-                generateKitchenReceiptSunmi(data, type, orderData)
-            }
+                                if (orderData?.orderType.trim()
+                                        .lowercase() == "Open Order".trim()
+                                        .lowercase() && orderData?.deliveryType.trim()
+                                        .lowercase() == "Pickup".trim()
+                                        .lowercase()
+                                ) {
 
-        } else if (data.name.startsWith(Constants.SUNMI_INNER_PRINTER, true)) {
+                                } else if (orderData?.customer?.addresses?.isNotEmpty()) {
 
-            SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-            CoroutineScope(Dispatchers.IO).launch {
-                delay(100)
-                setServiceForKitchen(data, type, orderData)
-            }
-        } else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains(
-                "SP",
-                ignoreCase = true
-            )))
-        ) {
-            settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
-            printer = StarPrinter(settings, requireContext())
 
-            CoroutineScope(Dispatchers.Main).launch {
-                try {
-                    val builder = StarXpandCommandBuilder()
+//                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+//                                PrintSunmiUtils.normalTextLarge(
+//                                    it
+//                                )
+//                            }
 
-                    var printerBuilder = PrinterBuilder()
+                                    orderData?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                        ?.forEach {
 
-                    with(printerBuilder) {
-                        styleInternationalCharacter(InternationalCharacterType.Usa)
-                        styleCharacterSpace(0.0)
-                        styleAlignment(Alignment.Center)
-
-                        if (!oneItemPerReceipt) {
-                            orderData.orderItems.forEach { item ->
-                                data.printerCategories.toCollection(arrayListOf())?.forEach {
-                                    if (it?.id == item.categoryId) {
-                                        if (it.categoryActive && it.printerEnable) {
-                                            for (singularity in 1..item.quantity) {
-                                                if (printOrderIDInStickyPrinter){
-                                                add(
-                                                    PrinterBuilder()
-                                                        .styleBold(true)
-                                                        .styleMagnification(
-                                                            MagnificationParameter(3, 3)
-                                                        )
-                                                        .actionPrintText(
-                                                            "OrderId: ${orderData.custom_order_id}"
-                                                        )
+                                            if (it.typeOfAddress.equals(
+                                                    Constants.BILLING_ADDRESS,
+                                                    ignoreCase = true
                                                 )
+                                            ) {
+                                                appendText(
+                                                    it.fullAddress
+                                                )
+                                                lineFeed(1)
                                             }
+                                        }
 
-                                                actionFeedLine(1)
 
-                                                add(
-                                                    PrinterBuilder()
-                                                        .styleBold(true)
-                                                        .styleMagnification(
-                                                            MagnificationParameter(2, 2)
+                                }
+                            }
+                        }catch (e:Exception){
+
+                        }
+
+                    }
+
+                }
+                catch (e:Exception){
+                    e.printStackTrace()
+                }
+            }
+
+
+
+
+            lineFeed(6)
+            cutPaper(true)
+
+
+
+            Log.e(TAG,"PushContent ${data.ipAddress}")
+            Log.e("checkKey","pushContent: checkSN:${data.ipAddress} ${pushContent(trade_no =
+            String.format("%s_%010d", "${data.ipAddress}", System.currentTimeMillis()),
+                "${data.ipAddress}", 1, 1, "您有新的订单", 0)}")
+
+
+
+        }
+        else {
+
+
+            if (data.name.startsWith(SUNMI_PRINTER, true)) {
+
+                try {
+                    SunmiPrinterApi.getInstance()
+                        .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
+                } catch (e: Exception) {
+                    SunmiPrinterApi.getInstance()
+                        .setPrinter(SunmiPrinter.SunmiNetPrinter, data.ipAddress)
+                }
+
+                if (!SunmiPrinterApi.getInstance().isConnected) {
+                    SunmiPrinterApi.getInstance()
+                        .connectPrinter(requireContext(), object : ConnectCallback {
+
+                            override fun onFound() {
+                                println("onFound")
+                            }
+
+                            override fun onUnfound() {
+                                println("onUnfound")
+                            }
+
+                            override fun onConnect() {
+                                println("onConnect")
+
+                                Log.d("tracking printers", "In IF")
+                                CoroutineScope(Dispatchers.Main).launch {
+
+                                    initKitchenPrinter(data, type, orderData)
+                                }
+                            }
+
+                            override fun onDisconnect() {
+                                println("onDisconnect")
+                            }
+
+                        })
+                } else {
+                    Log.d("tracking printers", "In Else")
+                    generateKitchenReceiptSunmi(data, type, orderData)
+                }
+
+            } else if (data.name.startsWith(Constants.SUNMI_INNER_PRINTER, true)) {
+
+                SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+                CoroutineScope(Dispatchers.IO).launch {
+                    delay(100)
+                    setServiceForKitchen(data, type, orderData)
+                }
+            } else if (((data.name.contains("TSP", ignoreCase = true))) || ((data.name.contains(
+                    "SP",
+                    ignoreCase = true
+                )))
+            ) {
+                settings = StarConnectionSettings(InterfaceType.Lan, data.macAddress)
+                printer = StarPrinter(settings, requireContext())
+
+                CoroutineScope(Dispatchers.Main).launch {
+                    try {
+                        val builder = StarXpandCommandBuilder()
+
+                        var printerBuilder = PrinterBuilder()
+
+                        with(printerBuilder) {
+                            styleInternationalCharacter(InternationalCharacterType.Usa)
+                            styleCharacterSpace(0.0)
+                            styleAlignment(Alignment.Center)
+
+                            if (!oneItemPerReceipt) {
+                                orderData.orderItems.forEach { item ->
+                                    data.printerCategories.toCollection(arrayListOf())?.forEach {
+                                        if (it?.id == item.categoryId) {
+                                            if (it.categoryActive && it.printerEnable) {
+                                                for (singularity in 1..item.quantity) {
+                                                    if (printOrderIDInStickyPrinter) {
+                                                        add(
+                                                            PrinterBuilder()
+                                                                .styleBold(true)
+                                                                .styleMagnification(
+                                                                    MagnificationParameter(3, 3)
+                                                                )
+                                                                .actionPrintText(
+                                                                    "OrderId: ${orderData.custom_order_id}"
+                                                                )
                                                         )
-                                                        .actionPrintText(
-                                                            "${orderData.orderTypeName}"
-                                                        )
-                                                )
+                                                    }
 
-                                                actionFeedLine(1)
+                                                    actionFeedLine(1)
 
-                                                if (orderData.orderType.contains("Phone", true) || (orderData.orderType.equals("OnlineWebOrder",ignoreCase = true))) {
                                                     add(
                                                         PrinterBuilder()
                                                             .styleBold(true)
@@ -5648,167 +5871,178 @@ class AllOrdersListingFragment(
                                                                 MagnificationParameter(2, 2)
                                                             )
                                                             .actionPrintText(
-                                                                "${orderData.deliveryType}"
+                                                                "${orderData.orderTypeName}"
                                                             )
                                                     )
 
                                                     actionFeedLine(1)
-                                                }
 
-                                                add(
-                                                    PrinterBuilder()
-                                                        .styleAlignment(Alignment.Left)
-                                                        .styleMagnification(
-                                                            MagnificationParameter(2, 2)
+                                                    if (orderData.orderType.contains(
+                                                            "Phone",
+                                                            true
+                                                        ) || (orderData.orderType.equals(
+                                                            "OnlineWebOrder",
+                                                            ignoreCase = true
+                                                        ))
+                                                    ) {
+                                                        add(
+                                                            PrinterBuilder()
+                                                                .styleBold(true)
+                                                                .styleMagnification(
+                                                                    MagnificationParameter(2, 2)
+                                                                )
+                                                                .actionPrintText(
+                                                                    "${orderData.deliveryType}"
+                                                                )
                                                         )
-                                                        .actionPrintText(
-                                                            content = addSingleReprintOrdersForStarKitchen(
-                                                                1,
-                                                                item,
-                                                                data.printerCategories.toCollection(
-                                                                    arrayListOf()
+
+                                                        actionFeedLine(1)
+                                                    }
+
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleAlignment(Alignment.Left)
+                                                            .styleMagnification(
+                                                                MagnificationParameter(2, 2)
+                                                            )
+                                                            .actionPrintText(
+                                                                content = addSingleReprintOrdersForStarKitchen(
+                                                                    1,
+                                                                    item,
+                                                                    data.printerCategories.toCollection(
+                                                                        arrayListOf()
+                                                                    )
                                                                 )
                                                             )
+                                                    )
+
+                                                    actionFeedLine(1)
+                                                    if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                        add(
+                                                            PrinterBuilder()
+                                                                .styleAlignment(Alignment.Center)
+                                                                .styleBold(true)
+                                                                .actionPrintText(
+                                                                    content = if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                        "--------------------------------------------\nOrder Note"
+                                                                    } else ""
+                                                                )
                                                         )
-                                                )
+                                                    }
+                                                    if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                        add(
+                                                            PrinterBuilder()
+                                                                .styleAlignment(Alignment.Center)
+                                                                .actionPrintText(
+                                                                    content = if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                        orderData.note.toString()
+                                                                    } else ""
+                                                                )
+                                                        )
+                                                    }
 
-                                                actionFeedLine(1)
-                                                if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                    add(
-                                                        PrinterBuilder()
-                                                            .styleAlignment(Alignment.Center)
-                                                            .styleBold(true)
-                                                            .actionPrintText(
-                                                                content = if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                                    "--------------------------------------------\nOrder Note"
-                                                                } else ""
-                                                            )
-                                                    )
-                                                }
-                                                if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                    add(
-                                                        PrinterBuilder()
-                                                            .styleAlignment(Alignment.Center)
-                                                            .actionPrintText(
-                                                                content = if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                                    orderData.note.toString()
-                                                                } else ""
-                                                            )
-                                                    )
-                                                }
+                                                    actionFeedLine(1)
+                                                    actionFeedLine(1)
 
-                                                actionFeedLine(1)
-                                                actionFeedLine(1)
-
-                                                var printedName = StringBuilder("")
-                                                orderData.customer?.firstName?.let { firstName ->
-                                                    orderData.customer?.lastName?.let { lastName ->
-                                                        if (kitchenSettingModel.showCustomerName || orderData.orderType.equals(
-                                                                "KioskOpenorder", true
-                                                            ) || orderData.orderType.equals(
-                                                                "OnlineWebOrder",
-                                                                true
-                                                            ) || orderData.orderType.equals(
-                                                                "OnlineOrder",
-                                                                true
-                                                            )
-                                                        ) {
-                                                            if (!firstName.contains(
-                                                                    "customer",
-                                                                    ignoreCase = true
+                                                    var printedName = StringBuilder("")
+                                                    orderData.customer?.firstName?.let { firstName ->
+                                                        orderData.customer?.lastName?.let { lastName ->
+                                                            if (kitchenSettingModel.showCustomerName || orderData.orderType.equals(
+                                                                    "KioskOpenorder", true
+                                                                ) || orderData.orderType.equals(
+                                                                    "OnlineWebOrder",
+                                                                    true
+                                                                ) || orderData.orderType.equals(
+                                                                    "OnlineOrder",
+                                                                    true
                                                                 )
                                                             ) {
-                                                                printedName.append(firstName)
-                                                                printedName.append(" ")
+                                                                if (!firstName.contains(
+                                                                        "customer",
+                                                                        ignoreCase = true
+                                                                    )
+                                                                ) {
+                                                                    printedName.append(firstName)
+                                                                    printedName.append(" ")
+                                                                }
+
+                                                                if (!lastName.isBlank()) {
+                                                                    printedName.append(lastName)
+                                                                }
+
+                                                                if (printedName.isNotEmpty()) {
+                                                                    add(
+                                                                        PrinterBuilder()
+                                                                            .styleAlignment(
+                                                                                Alignment.Left
+                                                                            )
+                                                                            .styleBold(true)
+                                                                            .actionPrintText(
+                                                                                content = "Customer Details\n"
+                                                                            )
+                                                                    )
+
+                                                                    add(
+                                                                        PrinterBuilder()
+                                                                            .styleAlignment(
+                                                                                Alignment.Center
+                                                                            )
+                                                                            .actionPrintText(
+                                                                                content =
+                                                                                "--------------------------------------------"
+                                                                            )
+                                                                    )
+
+                                                                    add(
+                                                                        PrinterBuilder()
+                                                                            .styleAlignment(
+                                                                                Alignment.Left
+                                                                            )
+                                                                            .actionPrintText(
+                                                                                content = printedName.toString()
+                                                                            )
+                                                                    )
+
+                                                                }
                                                             }
 
-                                                            if (!lastName.isBlank()) {
-                                                                printedName.append(lastName)
-                                                            }
-
-                                                            if (printedName.isNotEmpty()) {
-                                                                add(
-                                                                    PrinterBuilder()
-                                                                        .styleAlignment(Alignment.Left)
-                                                                        .styleBold(true)
-                                                                        .actionPrintText(
-                                                                            content = "Customer Details\n"
-                                                                        )
-                                                                )
-
-                                                                add(
-                                                                    PrinterBuilder()
-                                                                        .styleAlignment(Alignment.Center)
-                                                                        .actionPrintText(
-                                                                            content =
-                                                                            "--------------------------------------------"
-                                                                        )
-                                                                )
-
-                                                                add(
-                                                                    PrinterBuilder()
-                                                                        .styleAlignment(Alignment.Left)
-                                                                        .actionPrintText(
-                                                                            content = printedName.toString()
-                                                                        )
-                                                                )
-
-                                                            }
                                                         }
-
                                                     }
-                                                }
 
-                                                actionFeedLine(1)
+                                                    actionFeedLine(1)
 
-                                                add(
-                                                    PrinterBuilder()
-                                                        .actionPrintText(
-                                                            Constants.getReceiptFormatDateFromUTCServer(
-                                                                requireContext(),
-                                                                orderData?.createdAt.toString()
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .actionPrintText(
+                                                                Constants.getReceiptFormatDateFromUTCServer(
+                                                                    requireContext(),
+                                                                    orderData?.createdAt.toString()
+                                                                )
                                                             )
-                                                        )
-                                                )
+                                                    )
 
-                                                printerBuilder.actionFeedLine(1)
-                                                actionCut(CutType.Partial)
+                                                    printerBuilder.actionFeedLine(1)
+                                                    actionCut(CutType.Partial)
 
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
-                        } else {
-                            add(
-                                PrinterBuilder()
-                                    .styleBold(true)
-                                    .styleMagnification(
-                                        MagnificationParameter(3, 3)
-                                    )
-                                    .actionPrintText(
-                                        "OrderId: ${orderData.custom_order_id}"
-                                    )
-                            )
+                            } else {
+                                add(
+                                    PrinterBuilder()
+                                        .styleBold(true)
+                                        .styleMagnification(
+                                            MagnificationParameter(3, 3)
+                                        )
+                                        .actionPrintText(
+                                            "OrderId: ${orderData.custom_order_id}"
+                                        )
+                                )
 
-                            styleAlignment(Alignment.Center)
+                                styleAlignment(Alignment.Center)
 
-                            add(
-                                PrinterBuilder()
-                                    .styleBold(true)
-                                    .styleMagnification(
-                                        MagnificationParameter(2, 2)
-                                    )
-                                    .actionPrintText(
-                                        if (kitchenSettingModel.showOrderType)
-                                            orderData.orderType
-                                        else ""
-                                    )
-                            )
-
-                            actionFeedLine(1)
-
-                            if ((orderData.orderType.equals(Constants.PHONE_ORDER_)) || (orderData.orderType.equals("OnlineWebOrder",ignoreCase = true))) {
                                 add(
                                     PrinterBuilder()
                                         .styleBold(true)
@@ -5816,143 +6050,145 @@ class AllOrdersListingFragment(
                                             MagnificationParameter(2, 2)
                                         )
                                         .actionPrintText(
-                                            orderData.deliveryType
+                                            if (kitchenSettingModel.showOrderType)
+                                                orderData.orderType
+                                            else ""
                                         )
                                 )
 
                                 actionFeedLine(1)
-                            }
 
-                            add(
-                                PrinterBuilder()
-                                    .styleMagnification(
-                                        MagnificationParameter(2, 2)
-                                    )
-                                    .actionPrintText(
-                                        "Employee:${
-                                            prefProvider.getValue(
-                                                Constants.EMPLOYEE_NAME,
-                                                ""
-                                            )
-                                        }"
-                                    )
-                            )
-                            actionFeedLine(1)
-
-                            add(
-                                PrinterBuilder()
-                                    .styleMagnification(
-                                        MagnificationParameter(2, 2)
-                                    )
-                                    .actionPrintText(
-                                        Constants.getReceiptFormatDateFromUTCServer(
-                                            requireContext(),
-                                            orderData.createdAt.toString()
-                                        )
-                                    )
-                            )
-
-                            actionFeedLine(1)
-
-                            add(
-                                PrinterBuilder()
-                                    .styleBold(true)
-                                    .actionPrintText(
-                                        "--------------------------------------------"
-                                    )
-                            )
-
-                            actionFeedLine(1)
-
-                            add(
-                                PrinterBuilder().styleMagnification(
-                                    MagnificationParameter(2, 2)
-                                ).styleAlignment(Alignment.Left)
-                                    .actionPrintText(
-                                        content = addReprintOrdersForStarKitchen(
-                                            orderData.orderItems!!,
-                                            data.printerCategories.toCollection(arrayListOf())
-                                        )
-                                    )
-                            )
-
-                            actionFeedLine(1)
-                            if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                add(
-                                    PrinterBuilder()
-                                        .styleMagnification(
-                                            MagnificationParameter(2, 2)
-                                        )
-                                        .styleAlignment(Alignment.Center)
-                                        .styleBold(true)
-                                        .actionPrintText(
-                                            content = if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                "--------------------------------------------\nOrder Note\n "
-                                            } else ""
-                                        )
-                                )
-                            }
-                            if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                add(
-                                    PrinterBuilder()
-                                        .styleAlignment(Alignment.Center)
-                                        .styleMagnification(
-                                            MagnificationParameter(2, 2)
-                                        )
-                                        .actionPrintText(
-                                            content = if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                orderData.note.toString()
-                                            } else ""
-                                        )
-                                )
-                            }
-                            actionFeedLine(1)
-                            if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
-                                add(
-                                    PrinterBuilder()
-                                        .styleAlignment(Alignment.Left)
-                                        .styleBold(true)
-                                        .styleMagnification(
-                                            MagnificationParameter(2, 2)
-                                        )
-                                        .actionPrintText(
-                                            content = if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
-                                                "Customer Details\n"
-                                            } else ""
-                                        )
-                                )
-                            }
-
-                            if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
-                                add(
-                                    PrinterBuilder()
-                                        .styleAlignment(Alignment.Center)
-                                        .actionPrintText(
-                                            content = if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
-                                                "--------------------------------------------"
-                                            } else ""
-                                        )
-                                )
-                            }
-                            if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
-                                add(
-                                    PrinterBuilder()
-                                        .styleAlignment(Alignment.Left)
-                                        .styleMagnification(
-                                            MagnificationParameter(2, 2)
-                                        )
-                                        .actionPrintText(
-                                            content = if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
-                                                orderData.customer?.firstName + " " + orderData.customer?.lastName
-                                            } else ""
-                                        )
-                                )
-                            }
-                            try {
-                                if (kitchenSettingModel.showCustomerPhone && orderData.customer?.phones?.get(
-                                        0
-                                    ) != null
+                                if ((orderData.orderType.equals(Constants.PHONE_ORDER_)) || (orderData.orderType.equals(
+                                        "OnlineWebOrder",
+                                        ignoreCase = true
+                                    ))
                                 ) {
+                                    add(
+                                        PrinterBuilder()
+                                            .styleBold(true)
+                                            .styleMagnification(
+                                                MagnificationParameter(2, 2)
+                                            )
+                                            .actionPrintText(
+                                                orderData.deliveryType
+                                            )
+                                    )
+
+                                    actionFeedLine(1)
+                                }
+
+                                add(
+                                    PrinterBuilder()
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
+                                        )
+                                        .actionPrintText(
+                                            "Employee:${
+                                                prefProvider.getValue(
+                                                    Constants.EMPLOYEE_NAME,
+                                                    ""
+                                                )
+                                            }"
+                                        )
+                                )
+                                actionFeedLine(1)
+
+                                add(
+                                    PrinterBuilder()
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
+                                        )
+                                        .actionPrintText(
+                                            Constants.getReceiptFormatDateFromUTCServer(
+                                                requireContext(),
+                                                orderData.createdAt.toString()
+                                            )
+                                        )
+                                )
+
+                                actionFeedLine(1)
+
+                                add(
+                                    PrinterBuilder()
+                                        .styleBold(true)
+                                        .actionPrintText(
+                                            "--------------------------------------------"
+                                        )
+                                )
+
+                                actionFeedLine(1)
+
+                                add(
+                                    PrinterBuilder().styleMagnification(
+                                        MagnificationParameter(2, 2)
+                                    ).styleAlignment(Alignment.Left)
+                                        .actionPrintText(
+                                            content = addReprintOrdersForStarKitchen(
+                                                orderData.orderItems!!,
+                                                data.printerCategories.toCollection(arrayListOf())
+                                            )
+                                        )
+                                )
+
+                                actionFeedLine(1)
+                                if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                    add(
+                                        PrinterBuilder()
+                                            .styleMagnification(
+                                                MagnificationParameter(2, 2)
+                                            )
+                                            .styleAlignment(Alignment.Center)
+                                            .styleBold(true)
+                                            .actionPrintText(
+                                                content = if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                    "--------------------------------------------\nOrder Note\n "
+                                                } else ""
+                                            )
+                                    )
+                                }
+                                if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                    add(
+                                        PrinterBuilder()
+                                            .styleAlignment(Alignment.Center)
+                                            .styleMagnification(
+                                                MagnificationParameter(2, 2)
+                                            )
+                                            .actionPrintText(
+                                                content = if (orderData.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                    orderData.note.toString()
+                                                } else ""
+                                            )
+                                    )
+                                }
+                                actionFeedLine(1)
+                                if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
+                                    add(
+                                        PrinterBuilder()
+                                            .styleAlignment(Alignment.Left)
+                                            .styleBold(true)
+                                            .styleMagnification(
+                                                MagnificationParameter(2, 2)
+                                            )
+                                            .actionPrintText(
+                                                content = if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
+                                                    "Customer Details\n"
+                                                } else ""
+                                            )
+                                    )
+                                }
+
+                                if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
+                                    add(
+                                        PrinterBuilder()
+                                            .styleAlignment(Alignment.Center)
+                                            .actionPrintText(
+                                                content = if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
+                                                    "--------------------------------------------"
+                                                } else ""
+                                            )
+                                    )
+                                }
+                                if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
                                     add(
                                         PrinterBuilder()
                                             .styleAlignment(Alignment.Left)
@@ -5960,173 +6196,193 @@ class AllOrdersListingFragment(
                                                 MagnificationParameter(2, 2)
                                             )
                                             .actionPrintText(
-                                                content = if (kitchenSettingModel.showCustomerPhone && orderData.customer?.phones?.get(
-                                                        0
-                                                    ) != null
-                                                ) {
-
-                                                    var phoneNumber =
-                                                        orderData.customer?.phones?.get(
-                                                            0
-                                                        )?.phoneNumber.toString()
-                                                    if (phoneNumber.length != 10) {
-                                                        // Handle invalid input (must be 10 digits)
-                                                        "Invalid phone number"
-                                                    }
-
-                                                    val areaCode = phoneNumber.substring(0, 3)
-                                                    val firstPart = phoneNumber.substring(3, 6)
-                                                    val secondPart = phoneNumber.substring(6)
-
-                                                    "($areaCode)$firstPart-$secondPart"
-
+                                                content = if (kitchenSettingModel.showCustomerName && (orderData.customer?.firstName != null || orderData.customer?.lastName != null)) {
+                                                    orderData.customer?.firstName + " " + orderData.customer?.lastName
                                                 } else ""
                                             )
                                     )
                                 }
-                            } catch (e: Exception) {
+                                try {
+                                    if (kitchenSettingModel.showCustomerPhone && orderData.customer?.phones?.get(
+                                            0
+                                        ) != null
+                                    ) {
+                                        add(
+                                            PrinterBuilder()
+                                                .styleAlignment(Alignment.Left)
+                                                .styleMagnification(
+                                                    MagnificationParameter(2, 2)
+                                                )
+                                                .actionPrintText(
+                                                    content = if (kitchenSettingModel.showCustomerPhone && orderData.customer?.phones?.get(
+                                                            0
+                                                        ) != null
+                                                    ) {
 
+                                                        var phoneNumber =
+                                                            orderData.customer?.phones?.get(
+                                                                0
+                                                            )?.phoneNumber.toString()
+                                                        if (phoneNumber.length != 10) {
+                                                            // Handle invalid input (must be 10 digits)
+                                                            "Invalid phone number"
+                                                        }
+
+                                                        val areaCode = phoneNumber.substring(0, 3)
+                                                        val firstPart = phoneNumber.substring(3, 6)
+                                                        val secondPart = phoneNumber.substring(6)
+
+                                                        "($areaCode)$firstPart-$secondPart"
+
+                                                    } else ""
+                                                )
+                                        )
+                                    }
+                                } catch (e: Exception) {
+
+                                }
+                                printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
                             }
-                            printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
-                        }
 
-                    }
+                        }
 
 
 //                    printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
 
-                    var document = DocumentBuilder()
-                        .addPrinter(printerBuilder)
-                    builder.addDocument(
-                        document
-                    )
+                        var document = DocumentBuilder()
+                            .addPrinter(printerBuilder)
+                        builder.addDocument(
+                            document
+                        )
 
-                    val commands = builder.getCommands()
+                        val commands = builder.getCommands()
 
-                    printer.openAsync().await()
+                        printer.openAsync().await()
 
 //                    val jobSettings = StarSpoolJobSettings(true, 30, "Print from Android")
 
-                    printer.printAsync(commands).await()
+                        printer.printAsync(commands).await()
 
-                    /*try {
+                        /*try {
                         SunmiPrintHelper.getInstance().openCashBox()
                     } catch (e: java.lang.Exception) {
                         e.printStackTrace()
                     }*/
 
-                    Log.d("Printing", "Success")
-                } catch (e: Exception) {
-                    Log.d("Printing", "Error: ${e}")
-                } finally {
-                    printer.closeAsync().await()
+                        Log.d("Printing", "Success")
+                    } catch (e: Exception) {
+                        Log.d("Printing", "Error: ${e}")
+                    } finally {
+                        printer.closeAsync().await()
+                    }
+
+                    adapter.enableReprintKitchenReceiptButton()
                 }
 
-                adapter.enableReprintKitchenReceiptButton()
-            }
+            } else if (data.name.contains(LANDI_INNER_PRINTER, true)) {
+                printKitchenFromLandiInner(data, orderData)
+            } else {
 
-        }  else if (data.name.contains(LANDI_INNER_PRINTER, true)){
-            printKitchenFromLandiInner(data,orderData)
-        } else {
-
-            if (!data.name.substring(0, 6).toString().lowercase()
-                    .contains("TM-m".lowercase())
-            ) {
-                var mPrinter = if (data.name.substring(0, 6).toString().lowercase()
+                if (!data.name.substring(0, 6).toString().lowercase()
                         .contains("TM-m".lowercase())
                 ) {
-                    Log.e(TAG, "YesContains")
-                    Printer(
-                        Printer.TM_M30,
-                        Printer.MODEL_ANK, requireContext()
-                    )
-                } else {
-                    Printer(
-                        Printer.TM_U220,
-                        Printer.MODEL_ANK, requireContext()
-                    )
+                    var mPrinter = if (data.name.substring(0, 6).toString().lowercase()
+                            .contains("TM-m".lowercase())
+                    ) {
+                        Log.e(TAG, "YesContains")
+                        Printer(
+                            Printer.TM_M30,
+                            Printer.MODEL_ANK, requireContext()
+                        )
+                    } else {
+                        Printer(
+                            Printer.TM_U220,
+                            Printer.MODEL_ANK, requireContext()
+                        )
 
 
-                }
+                    }
 
-                mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
+                    mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
 
-                    Log.e(
-                        TAG,
-                        "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
-                    )
-                    if (printerStatusInfo.online == 1) {
-                        try {
-                            printer.disconnect()
+                        Log.e(
+                            TAG,
+                            "PrinterEvent  ${Gson().toJson(printerStatusInfo)} other1 ${s}  other2 ${i}"
+                        )
+                        if (printerStatusInfo.online == 1) {
+                            try {
+                                printer.disconnect()
 
-                        } catch (e: java.lang.Exception) {
-                            e.printStackTrace()
+                            } catch (e: java.lang.Exception) {
+                                e.printStackTrace()
+                            }
                         }
                     }
-                }
-                try {
-                    Log.e(TAG, "printerDataType:  ${data.printer_type}")
+                    try {
+                        Log.e(TAG, "printerDataType:  ${data.printer_type}")
 
-                    var printerAdd =
-                        if (data.printer_type == Constants.BLUETOOTH) "BT:" + data.macAddress else "TCP:" + data.ipAddress
-                    mPrinter.connect(
-                        printerAdd,
-                        Printer.PARAM_DEFAULT
-                    )
-                    mPrinter.startMonitor()
+                        var printerAdd =
+                            if (data.printer_type == Constants.BLUETOOTH) "BT:" + data.macAddress else "TCP:" + data.ipAddress
+                        mPrinter.connect(
+                            printerAdd,
+                            Printer.PARAM_DEFAULT
+                        )
+                        mPrinter.startMonitor()
 
-                    generateKitchenReceiptU220(data, type, orderData, mPrinter)
+                        generateKitchenReceiptU220(data, type, orderData, mPrinter)
 
-                    // generateReceiptForU220(mPrinter, data, type)
+                        // generateReceiptForU220(mPrinter, data, type)
 
-                } catch (e: java.lang.Exception) {
-                    e.printStackTrace()
-                }
-            } else {
-                PrinterClass.closePrinter()
-                if (PrinterClass.getPrinter() == null) {
-                    //  printerDialog.show(requireContext())
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
+                    }
+                } else {
+                    PrinterClass.closePrinter()
+                    if (PrinterClass.getPrinter() == null) {
+                        //  printerDialog.show(requireContext())
 
-                    var printer: Print? = Print(requireContext())
-                    /*if (printer != null) {
+                        var printer: Print? = Print(requireContext())
+                        /*if (printer != null) {
                    printer.setStatusChangeEventCallback(this)
                    printer.setBatteryStatusChangeEventCallback(this)
                }*/
 
 
-                    val enabled = Print.FALSE
+                        val enabled = Print.FALSE
 
-                    try {
+                        try {
 
-                        printer?.openPrinter(
-                            if (data.printer_type == Constants.BLUETOOTH) {
-                                Print.DEVTYPE_BLUETOOTH
-                            } else {
-                                Print.DEVTYPE_TCP
-                            },
-                            data.ipAddress,
-                            enabled,
-                            1000
-                        )
-                        printer?.setStatusChangeEventCallback(this)
+                            printer?.openPrinter(
+                                if (data.printer_type == Constants.BLUETOOTH) {
+                                    Print.DEVTYPE_BLUETOOTH
+                                } else {
+                                    Print.DEVTYPE_TCP
+                                },
+                                data.ipAddress,
+                                enabled,
+                                1000
+                            )
+                            printer?.setStatusChangeEventCallback(this)
 
-                    } catch (e: Exception) {
-                        //  printerDialog.dismiss()
-                        LogUtil.logE(TAG, "PrinterException: " + e.message)
-                        printer = null
-                        return
+                        } catch (e: Exception) {
+                            //  printerDialog.dismiss()
+                            LogUtil.logE(TAG, "PrinterException: " + e.message)
+                            printer = null
+                            return
+                        }
+
+                        if (printer != null) {
+                            PrinterClass.setPrinter(printer)
+
+
+                            generateKitchenReceipt(data, type, orderData)
+
+                        }
+
+                    } else {
+                        LogUtil.logE(TAG, "PrinterIsNotNull:")
                     }
 
-                    if (printer != null) {
-                        PrinterClass.setPrinter(printer)
-
-
-                        generateKitchenReceipt(data, type, orderData)
-
-                    }
-
-                } else {
-                    LogUtil.logE(TAG, "PrinterIsNotNull:")
                 }
 
             }
@@ -8858,5 +9114,294 @@ class AllOrdersListingFragment(
     private fun refreshCurrentFragment() {
         getAllOrders()
     }
+
+
+    fun bytesToHexString(bytes: ByteArray): String {
+        val hexstr = java.lang.StringBuilder()
+        for (i in bytes) hexstr.append(String.format("%02x", i))
+        return hexstr.toString()
+    }
+    @Throws(java.lang.Exception::class)
+    fun generateSign(body: String, timestamp: String, nonce: String): String {
+
+        val msg = body + "889a389072224d10b641e90b9cc26856" + timestamp + nonce
+        val hmacSha256 = Mac.getInstance("HmacSHA256")
+        val secretKey = SecretKeySpec("1f486ca8d9a341408c8132b23f82f571".encodeToByteArray(), "HmacSHA256")
+        hmacSha256.init(secretKey)
+        val result = hmacSha256.doFinal(msg.toByteArray(charset("UTF-8")))
+        return bytesToHexString(result)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Throws(
+        NoSuchAlgorithmException::class,
+        InvalidKeySpecException::class,
+        InvalidKeyException::class,
+        SignatureException::class
+    )
+    fun sign(
+        body: String,
+        appId: String,
+        timestamp: String,
+        nonce: String,
+        rsaPrivateKey: String
+    ): String {
+        val content = body + appId + timestamp + nonce
+        val keyBytes: ByteArray =
+            java.util.Base64.getDecoder().decode(rsaPrivateKey.replace("(\\s)|(--.*--)".toRegex(), ""))
+        val pkcs8KeySpec = PKCS8EncodedKeySpec(keyBytes)
+        val keyFactory = KeyFactory.getInstance("RSA")
+        val priKey = keyFactory.generatePrivate(pkcs8KeySpec)
+        val signature: Signature = Signature.getInstance("SHA256withRSA")
+        signature.initSign(priKey)
+        signature.update(content.toByteArray())
+        return java.util.Base64.getEncoder().encodeToString(signature.sign())
+    }
+
+    fun httpPost(path: String, body: String,sn:String?=null): String? {
+        var connection: HttpURLConnection? = null
+        var `is`: InputStream? = null
+        var os: OutputStream? = null
+        var br: BufferedReader? = null
+        var result: String? = null
+
+        val date = Date()
+        val random = Random()
+        val timestamp = String.format("%d", date.time / 1000)
+        val nonce = String.format("%06d", random.nextInt(1000000))
+
+        try {
+            Log.e(TAG,"InitalizeRequestQueue ")
+            val url = URL("https://openapi.sunmi.com$path")
+            connection = url.openConnection() as HttpURLConnection
+            connection!!.requestMethod = "POST"
+            connection!!.connectTimeout = 15000
+            connection!!.readTimeout = 60000
+
+            connection!!.doOutput = true
+            connection!!.doInput = true
+            connection!!.setRequestProperty("Sunmi-Appid", Constants.SUNMI_APP_ID)
+            connection!!.setRequestProperty("Sunmi-Timestamp", timestamp)
+            connection!!.setRequestProperty("Sunmi-Nonce", nonce)
+            connection!!.setRequestProperty("Sunmi-Sign", generateSign(body, timestamp, nonce))
+            connection!!.setRequestProperty("Source", "openapi")
+            connection!!.setRequestProperty("Content-Type", "application/json")
+            os = connection!!.outputStream
+            os.write(body.toByteArray(charset("UTF-8")))
+            if (connection!!.responseCode == 200) {
+                Log.e(TAG,"QueueREsponseOK ")
+
+                /*  if (sn.equals("N434227FT0790")) {
+                      orderContent.clear()
+                       orderContent = java.lang.StringBuilder()
+                      cloudQueuePrinting("N434227FT0738", 2241)
+                  }*/
+
+                /* if (path.contains("pushContent")){
+
+                     CoroutineScope(Dispatchers.IO).launch {
+                         delay(500)
+                         clearPrintJob(sn)
+                     }
+                 }*/
+
+                `is` = connection!!.inputStream
+                br = BufferedReader(InputStreamReader(`is`, "UTF-8"))
+
+                val sbf = StringBuffer()
+                var temp: String? = null
+                while ((br.readLine().also { temp = it }) != null) {
+                    sbf.append(temp)
+                    sbf.append("\n")
+                }
+                result = sbf.toString()
+            }
+        } catch (e: MalformedURLException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        } finally {
+            if (br != null) {
+                try {
+                    br.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            if (os != null) {
+                try {
+                    os.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            if (`is` != null) {
+                try {
+                    `is`.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            connection!!.disconnect()
+        }
+        return result
+    }
+
+    fun bindShop(sn: String?, shop_id: Int): String? {
+        val body = java.lang.StringBuilder()
+        body.append("{")
+        body.append(String.format("\"sn\":\"%s\"", sn))
+        body.append(",")
+        body.append(String.format("\"shop_id\":%d", shop_id))
+        body.append("}")
+        return httpPost("/v2/printer/open/open/device/bindShop", body.toString())
+    }
+
+    fun onlineStatus(sn: String?): String? {
+        val body = java.lang.StringBuilder()
+        body.append("{")
+        body.append(String.format("\"sn\":\"%s\"", sn))
+        body.append("}")
+        return httpPost("/v2/printer/open/open/device/onlineStatus", body.toString())
+    }
+
+    fun pushContent(
+        trade_no: String?,
+        sn: String?,
+        count: Int,
+        order_type: Int,
+        media_text: String?,
+        cycle: Int
+    ): String? {
+        val body = java.lang.StringBuilder()
+        body.append("{")
+        body.append(String.format("\"trade_no\":\"%s\"", "${System.currentTimeMillis()}"))
+        body.append(",")
+        body.append(String.format("\"sn\":\"%s\"", sn))
+        body.append(",")
+        body.append(String.format("\"order_type\":%d", order_type))
+        body.append(",")
+        body.append(java.lang.String.format("\"content\":\"%s\"", orderContent.toString()))
+        body.append(",")
+        body.append(String.format("\"count\":%d", count))
+        body.append(",")
+        body.append(String.format("\"media_text\":\"%s\"", media_text))
+        body.append(",")
+        body.append(String.format("\"cycle\":%d", cycle))
+        body.append("}")
+        return httpPost("/v2/printer/open/open/device/pushContent", body.toString(),sn)
+    }
+
+    fun appendText(text: String) {
+        try {
+            val bytes = text.toByteArray(charset("UTF-8"))
+            for (i in bytes) orderContent.append(String.format("%02x", i))
+        } catch (e: UnsupportedEncodingException) {
+        }
+    }
+
+    fun printAndExitPageMode() {
+        orderContent.append("0c")
+    }
+
+
+    fun cutPaper(full_cut: Boolean) {
+        orderContent.append("1d56" + (if ((full_cut)) "30" else "31"))
+    }
+    fun lineFeed(n: Int) {
+        for (i in 0 until n) orderContent.append("0a")
+    }
+
+
+    fun setAlignment(n: Int) {
+        if (n >= 0 && n <= 2) orderContent.append("1b61" + String.format("%02x", n))
+    }
+
+    fun clearPrintJob(sn: String?): String? {
+        Log.e(TAG,"chekSNCall: ${sn}")
+        val body = java.lang.StringBuilder()
+        body.append("{")
+        body.append(String.format("\"sn\":\"%s\"", sn))
+        body.append("}")
+        return httpPost("/v2/printer/open/open/device/clearPrintJob", body.toString(),sn)
+    }
+
+
+    // Append raw data.
+    fun appendRawData(bytes: ByteArray) {
+        for (i in bytes) orderContent.append(String.format("%02x", i))
+    }
+
+    // Append unicode character.
+    fun appendUnicode(unicode: Int, count: Int) {
+        if (count > 0) {
+            val text = StringBuilder()
+            for (i in 0 until count) text.append(unicode.toChar())
+            appendText(text.toString())
+        }
+
+    }
+
+    // [ESC 3] Set line spacing.
+    fun setLineSpacing(n: Int) {
+        if (n >= 0 && n <= 255) orderContent.append("1b33" + String.format("%02x", n))
+    }
+
+    // [ESC !] Set print modes.
+    fun setPrintModes(bold: Boolean, double_h: Boolean, double_w: Boolean) {
+        var n = 0
+        if (bold) n = n or 8
+        if (double_h) n = n or 16
+        if (double_w) n = n or 32
+        charHSize = if ((double_w)) 2 else 1
+        orderContent.append("1b21" + String.format("%02x", n))
+    }
+
+    // [HT] Jump to next TAB position.
+    fun horizontalTab(n: Int) {
+        for (i in 0 until n) orderContent.append("09")
+    }
+
+    // [ESC $] Set absolute print position.
+    fun setAbsolutePrintPosition(n: Int) {
+        if (n >= 0 && n <= 65535) orderContent.append(
+            "1b24" + String.format(
+                "%02x%02x",
+                (n and 0xff),
+                ((n shr 8) and 0xff)
+            )
+        )
+    }
+
+    // [ESC \] Set relative print position.
+    fun setRelativePrintPosition(n: Int) {
+        if (n >= -32768 && n <= 32767) orderContent.append(
+            "1b5c" + String.format(
+                "%02x%02x",
+                (n and 0xff),
+                ((n shr 8) and 0xff)
+            )
+        )
+    }
+
+
+    // [ESC -] Set underline mode.
+    fun setUnderlineMode(n: Int) {
+        if (n >= 0 && n <= 2) orderContent.append("1b2d" + String.format("%02x", n))
+    }
+
+    // [GS B] Set black-white reverse mode.
+    fun setBlackWhiteReverseMode(enabled: Boolean) {
+        orderContent.append("1d42" + (if ((enabled)) "01" else "00"))
+    }
+
+    // [ESC {] Set upside down mode.
+    fun setUpsideDownMode(enabled: Boolean) {
+        orderContent.append("1b7b" + (if ((enabled)) "01" else "00"))
+    }
+
+
 
 }

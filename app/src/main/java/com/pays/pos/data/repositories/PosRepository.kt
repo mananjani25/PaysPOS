@@ -173,7 +173,9 @@ class PosRepository @Inject constructor(
         ),
         /* prefProvider.getValue(SYNC_SETTING_TIME_STAMP, "")*/""
     )
-    suspend fun checkPhysicalCardExistsOrNot(cardNumber:String) = apiHelperNew.checkPhysicalCardExistsOrNot(cardNumber)
+
+    suspend fun checkPhysicalCardExistsOrNot(cardNumber: String) =
+        apiHelperNew.checkPhysicalCardExistsOrNot(cardNumber)
 
     suspend fun getOnlineOrderNotificationCount() = apiHelperNew.getOnlineOrderCountNoti()
 
@@ -593,8 +595,8 @@ class PosRepository @Inject constructor(
     suspend fun fetchCustomerFromFirstName(firstName: String) =
         appDatabase.customerDao().fetchCustomerFromFirstName(firstName)
 
-    suspend fun fetchCustomerFromFirstNameAndLastName(firstName: String,lastName: String) =
-        appDatabase.customerDao().fetchCustomerFromFirstNameAndLastName(firstName,lastName)
+    suspend fun fetchCustomerFromFirstNameAndLastName(firstName: String, lastName: String) =
+        appDatabase.customerDao().fetchCustomerFromFirstNameAndLastName(firstName, lastName)
 
     suspend fun fetchCustomerFromEmail(email: String) =
         appDatabase.customerDao().fetchCustomerFromEmail(email)
@@ -640,14 +642,43 @@ class PosRepository @Inject constructor(
     suspend fun updateFinalRewards(finalrewards: Int, customerId: Int, firstName: String) =
         appDatabase.customerDao().updateLoyaltyRewards(finalrewards, customerId, firstName)
 
-   suspend fun updateFinalRewardsSync(finalrewards: Int, customerId: Int, firstName: String, lastName: String, phoneNumber: String, email: String) =
-        appDatabase.customerDao().updateLoyaltyRewardsSync(finalrewards, firstName,lastName,phoneNumber)
+    suspend fun updateFinalRewardsSync(
+        finalrewards: Int,
+        customerId: Int,
+        firstName: String,
+        lastName: String,
+        phoneNumber: String,
+        email: String
+    ) =
+        appDatabase.customerDao()
+            .updateLoyaltyRewardsSync(finalrewards, firstName, lastName, phoneNumber)
 
-   suspend fun updateFinalRewardsSyncEmail(finalrewards: Int, customerId: Int, firstName: String, lastName: String, phoneNumber: String, email: String) =
-        appDatabase.customerDao().updateLoyaltyRewardsSyncEmailPhone(finalrewards, firstName,lastName,phoneNumber,email)
+    suspend fun updateFinalRewardsSyncEmail(
+        finalrewards: Int,
+        customerId: Int,
+        firstName: String,
+        lastName: String,
+        phoneNumber: String,
+        email: String
+    ) =
+        appDatabase.customerDao().updateLoyaltyRewardsSyncEmailPhone(
+            finalrewards,
+            firstName,
+            lastName,
+            phoneNumber,
+            email
+        )
 
-suspend fun updateFinalRewardsSyncEmailPhone(finalrewards: Int, customerId: Int, firstName: String, lastName: String, phoneNumber: String, email: String) =
-        appDatabase.customerDao().updateLoyaltyRewardsSyncEmail(finalrewards, firstName,lastName,email)
+    suspend fun updateFinalRewardsSyncEmailPhone(
+        finalrewards: Int,
+        customerId: Int,
+        firstName: String,
+        lastName: String,
+        phoneNumber: String,
+        email: String
+    ) =
+        appDatabase.customerDao()
+            .updateLoyaltyRewardsSyncEmail(finalrewards, firstName, lastName, email)
 
     fun getCustomerDetailsByID(id: Int?): LiveData<TbCustomer> {
 
@@ -832,6 +863,18 @@ suspend fun updateFinalRewardsSyncEmailPhone(finalrewards: Int, customerId: Int,
     suspend fun getManualSaleCartItemsList(orderType: String, employee_Id: Int): List<TbCartItem> {
         var data = appDatabase.cartDao().getManualSaleCartItemsList(orderType, employee_Id)
         return data
+    }
+
+    suspend fun getActivePaymentGateway(): List<ActivePaymentGateway> {
+        return appDatabase.activePaymentGatewayDao().getActivePaymentGateway()
+    }
+
+    suspend fun insertActivePaymentGateway(activePaymentGateway: ActivePaymentGateway) {
+        appDatabase.activePaymentGatewayDao().insertActivePaymentGateway(activePaymentGateway)
+    }
+
+    suspend fun updateActivePayment(activePaymentGateway: ActivePaymentGateway) {
+        appDatabase.activePaymentGatewayDao().updateActivePayment(activePaymentGateway)
     }
 
     fun getManualCategoryId(): LiveData<TbCategory> {
@@ -1614,7 +1657,7 @@ suspend fun updateFinalRewardsSyncEmailPhone(finalrewards: Int, customerId: Int,
 
     /*This method is used to maintain the single of multiple receipt for label printer*/
     fun insertOrUpdateLabelPrinter(data: Boolean, printOrderId: Boolean) {
-        val tbLabelPrinterSettings = TbLabelPrinterSettings(1, data,printOrderId)
+        val tbLabelPrinterSettings = TbLabelPrinterSettings(1, data, printOrderId)
         var aaaaa = appDatabase.labelPrinterSettings().insertOrUpdate(tbLabelPrinterSettings)
     }
 
@@ -1623,7 +1666,7 @@ suspend fun updateFinalRewardsSyncEmailPhone(finalrewards: Int, customerId: Int,
         return appDatabase.labelPrinterSettings().getLabelPrinterSettingsData()
     }
 
-    suspend fun updateOrderId(printOrderId:Boolean): Int {
+    suspend fun updateOrderId(printOrderId: Boolean): Int {
         return appDatabase.labelPrinterSettings().updateOrderId(printOrderId)
     }
 

@@ -16,18 +16,33 @@ import com.android.volley.Request
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.epson.epos2.printer.Printer
+import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.pax.poslink.*
+import com.pax.poslink.log.LogFilter.Const
+import com.pays.payments.design.*
+import com.pays.payments.gateways.dejavoo.DejavooPaymentGateway
 import com.pays.pos.MainApplication
 import com.pays.pos.R
 import com.pays.pos.aidl.ICallback
 import com.pays.pos.aidl.IWoyouService
+import com.pays.pos.data.model.dejavoo.DejavooErrorResponse
+import com.pays.pos.data.model.dejavoo.DejavooResponse
 import com.pays.pos.data.model.requestModel.RefundRequestModel
 import com.pays.pos.data.model.responseModel.PrinterResponse
+import com.pays.pos.data.model.valor.ValorSuccessResponse
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.EXTERNAL_PAYMENT
+import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.REFUND1
+import com.pays.pos.data.remote.Constants.SUNMI_INNER_PRINTER
+import com.pays.pos.data.remote.Constants.VALOR
 import com.pays.pos.databinding.DialogRefundReasonBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.pays.pos.ui.fragments.magtek.MagtekViewModel
@@ -39,38 +54,26 @@ import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.extensions.liveSnackBar
+import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.toast
 import com.pays.pos.utils.paxUtils.AppThreadPool
 import com.pays.pos.utils.paxUtils.POSLinkCreatorWrapper
 import com.pays.pos.utils.paxUtils.SettingINI
 import com.pays.pos.utils.statusUtils.Status
-import com.epson.epos2.printer.Printer
-import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.pax.poslink.*
-import com.pays.payments.callbacks.PaymentCallback
-import com.pays.payments.design.PaymentGatewayFactory
-import com.pays.payments.design.PaymentGatewayType
-import com.pays.payments.design.TransactionType
-import com.pays.payments.design.Valor
-import com.pays.pos.data.model.valor.ValorSuccessResponse
-import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
-import com.pays.pos.data.remote.Constants.SUNMI_INNER_PRINTER
-import com.pays.pos.logger.MessageEvent
-import com.pays.pos.utils.extensions.runOnUiThread
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
+import org.w3c.dom.Document
+import org.w3c.dom.Element
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.StringReader
-import java.util.HashMap
 import javax.inject.Inject
+import javax.xml.parsers.DocumentBuilderFactory
 
 
 @AndroidEntryPoint
@@ -183,12 +186,68 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                     doneClick()
                 }*/
 
-                if (prefProvider.getValue(
+                when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
+                    Constants.PAX->{
+                        if (referenceNo.isNullOrEmpty()) {
+                            doneClick()
+                        } else if (!referenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
+//                refundViaPAX()
+                            getBatchLocalReport()
+                        } else if (!referenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                "Please connect to PAX device"
+                            )
+                        }
+                    }
+
+                    Constants.VALOR, Constants.VELOR->{
+                        if (paymentType == "Cash") {
+                            refundCall()
+                        } else {
+                            ProgressUtils.showProgressDialog(requireActivity())
+                            refundViaValor()
+                        }
+                    }
+
+                    Constants.DEJAVOO->{
+                        if (paymentType == "Cash") {
+                            refundCall()
+                        } else {
+                            ProgressUtils.showProgressDialog(requireActivity())
+//                            refundViaDejavoo() SPIN Api calling
+                            refundViaDejavooUsingTransactApi()
+                        }
+
+                    }
+
+                    else->{
+                        AlertUtils.showCustomAlert(
+                            requireContext(),
+                            "Please connect a payment device"
+                        )
+                    }
+
+
+                }
+              /*  if (prefProvider.getValue(
                         Constants.VALOR_APP_ID, ""
                     ).isNotEmpty() && paxExtData.equals(Constants.VALOR)
                 ) {
                     ProgressUtils.showProgressDialog(requireActivity())
                     refundViaValor()
+                } else if (paxExtData.contains(Constants.DEJAVOO)) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+//                    refundViaDejavoo() SPIN Api calling
+                    refundViaDejavooUsingTransactApi()
                 } else {
                     if (requiredNABServerPostAPICall && paxData.isNotEmpty()) {
                         runBlocking {
@@ -215,7 +274,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                             )
                         }
                     }
-                }
+                }*/
             }
         })
 
@@ -236,49 +295,280 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
         return binding.root
     }
 
-    lateinit var paymentCoroutine: CoroutineScope
-    val paymentCoroutineExceptionHandler = CoroutineExceptionHandler { _, exception ->
-        EventBus.getDefault()
-            .post(MessageEvent("${Constants.LINE_BREAK_TAB} ReasonForRefundDialog refundViaValor()-> ${Gson().toJson(exception)} "))
-    }
+    private fun refundViaDejavooUsingTransactApi() {
 
-    private fun refundViaValor() {
-       paymentCoroutine = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
-
-        paymentCoroutine.launch{
-            val gatewayType = PaymentGatewayType.VALOR
+        paymentCoroutine = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutine.launch {
+            val gatewayType = PaymentGatewayType.DEJAVOO
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
-            val paymentCallback = object : PaymentCallback {
-                override fun onSuccess(transactionId: String) {
-                    var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
-                        transactionId,
-                        ValorSuccessResponse::class.java
-                    )
+            var rrnValue = ((paxExtData.substring(paxExtData.indexOf("RRN="))
+                .substring(4, paxExtData.substring(paxExtData.indexOf("RRN=")).indexOf(','))))
 
-                    transactionJsonResponse.nameValuePairs?.let {
-                        if (it.msg != null) {
-                            if (it.msg.equals("APPROVED", ignoreCase = true)) {
-                                refundCall()
+            var dejavoo = Dejavoo(
+                registerId =  prefProvider.getValue(
+                    Constants.DEJAVOO_REGISTER_ID,""
+                ),
+                authKey = prefProvider.getValue(
+                    Constants.DEJAVOO_AUTH_KEY,""
+                ),
+                tpn = prefProvider.getValue(
+                    Constants.DEJAVOO_TPN,""
+                ),
+                amount = (refundAmount * 100).toInt().toString(),
+                isProd = false,
+                paymentType = "Credit",
+                performedBy = "",
+                printReceipt = false,
+                refId = "REFUND${System.currentTimeMillis()}",
+                tip = "",
+                transType = "3",
+                txnType = TransactionType.REFUND,
+                rrn = rrnValue,
+                authToken = prefProvider.getValue(
+                    Constants.DEJAVOO_AUTH_TOKEN,""
+                )
+            )
+
+            context?.let {
+                (paymentGateway as DejavooPaymentGateway).refundPaymentusingRRN(
+                    it.applicationContext,
+                    dejavoo,
+                    onSuccess = { tResponse ->
+                        var transactionJsonResponse = Gson().fromJson<DejavooResponse>(
+                            tResponse,
+                            DejavooResponse::class.java
+                        )
+
+                        transactionJsonResponse.nameValuePairs?.let {
+                            if (it.iposhpresponse?.nameValuePairs?.responseCode.equals("200") && it.iposhpresponse?.nameValuePairs?.responseMessage.equals(
+                                    "Success"
+                                )
+                            ) {
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    refundCall()
+                                }
                             } else {
-                                runOnUiThread {
-                                    ProgressUtils.dismissProgressDialog()
-                                    AlertUtils.showCustomAlert(requireContext(), it.msg)
+                                AlertUtils.showCustomAlert(
+                                    requireContext(),
+                                    transactionJsonResponse.respMSG?.replace("%20", " ")
+                                )
+                            }
+                        }
+                    },
+                    onFailure = { errorMessage ->
+                        try {
+                            var errorResponse = Gson().fromJson<DejavooErrorResponse>(
+                                errorMessage,
+                                DejavooErrorResponse::class.java
+                            )
+                            errorResponse.networkResponse?.let {
+                                var errorData = Gson().fromJson<DejavooErrorResponse>(
+                                    MethodUtils.convertAsciiToString(it.data),
+                                    DejavooErrorResponse::class.java
+                                )
+
+                                AlertUtils.showCustomAlert(
+                                    requireContext(),
+                                    errorData.errors.get(0).message
+                                )
+
+                            }
+
+                        } catch (e: Exception) {
+
+                        }
+                        EventBus.getDefault()
+                            .post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
+                                        Gson().toJson(
+                                            errorMessage
+                                        )
+                                    } "
+                                )
+                            )
+                        ProgressUtils.dismissProgressDialog()
+                    }
+                )
+            }
+        }
+    }
+
+    fun parseXml(xmlContent: String): Document {
+        val factory = DocumentBuilderFactory.newInstance()
+        val builder = factory.newDocumentBuilder()
+        return builder.parse(xmlContent.byteInputStream())
+    }
+
+    private fun refundViaDejavoo() {
+        paymentCoroutine = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutine.launch {
+            val gatewayType = PaymentGatewayType.DEJAVOO
+            val paymentGateway = paymentGatewayFactory.create(gatewayType)
+
+            /*      var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
+                  var appID = "GmehAw69S9TEHKm3Bmz2yvxQybYJLgIp"
+                  var channelID = "bd967b4e0ccd6309c5ac16634bd367b6"
+                  var epi = "2319995597"
+                  var endpoint = "status"
+                  var transType = TransactionType.CREDIT_SALE
+                  var TRAN_MODE = "1"
+                  var TRAN_CODE = "1"
+                  var amount =
+                  var reqTxnId = */
+
+            /* Process Void */
+            context?.let {
+                var dejavoo = Dejavoo(
+                    registerId =  prefProvider.getValue(
+                        Constants.DEJAVOO_REGISTER_ID,""
+                    ),
+                    authKey = prefProvider.getValue(
+                        Constants.DEJAVOO_AUTH_KEY,""
+                    ),
+                    tpn = prefProvider.getValue(
+                        Constants.DEJAVOO_TPN,""
+                    ),
+                    amount = refundAmount.toString(),
+                    isProd = false,
+                    paymentType = "Credit",
+                    performedBy = "",
+                    printReceipt = false,
+                    refId = referenceNo.toString(),
+                    tip = "",
+                    transType = "Return",
+                    txnType = TransactionType.REFUND
+                )
+
+                paymentGateway.voidPayment(
+                    it,
+                    dejavoo,
+                    onSuccess = { tResponse ->
+                        var transactionJsonResponse = Gson().fromJson<String>(
+                            tResponse,
+                            String::class.java
+                        )
+                        val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
+                        factory.setNamespaceAware(true)
+                        val xpp: XmlPullParser = factory.newPullParser()
+                        xpp.setInput(StringReader(transactionJsonResponse))
+                        var eventType = xpp.eventType
+
+                        var Message = ""
+                        var RefId = ""
+                        var RegisterId = ""
+                        var TPN = ""
+                        var AuthCode = ""
+                        var PNRef = ""
+                        var TransNum = ""
+                        var ResultCode = ""
+                        var RespMSG = ""
+                        var PaymentType = ""
+                        var Voided = ""
+                        var TransType = ""
+                        var SN = ""
+                        var ExtData = ""
+                        with(parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes) {
+                            for (i in 0 until this.length) {
+
+                                when ((this.item(i) as Element).tagName.toString()) {
+                                    "Message" -> Message =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "RefId" -> RefId =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "RegisterId" -> RegisterId =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "TPN" -> TPN = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "AuthCode" -> AuthCode =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "PNRef" -> PNRef =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "TransNum" -> TransNum =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "ResultCode" -> ResultCode =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "RespMSG" -> RespMSG =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "PaymentType" -> PaymentType =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "Voided" -> Voided =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "TransType" -> TransType =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "SN" -> SN = this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    "ExtData" -> ExtData =
+                                        this.item(i).childNodes.item(0).nodeValue ?: ""
+                                    else -> {
+
+                                    }
                                 }
                             }
                         }
-                    }
-                }
+//                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
+                        if (Message.equals("Canceled") || Message.equals("Error")) {
+                            ProgressUtils.dismissProgressDialog()
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                RespMSG.replace("%20", " ")
+                            )
+                        } else if (Message.contains("Approved", ignoreCase = true)) {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                refundCall()
+                            }
+                        } else {
+                            runOnUiThread {
+                                AlertUtils.showCustomAlert(
+                                    requireContext(),
+                                    Message.replace("%20", " ")
+                                )
+                            }
+                        }
+                    },
+                    onFailure = { errorMessage ->
+                        EventBus.getDefault()
+                            .post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
+                                        Gson().toJson(
+                                            errorMessage
+                                        )
+                                    } "
+                                )
+                            )
+                        ProgressUtils.dismissProgressDialog()
 
-                override fun onFailure(errorMessage: String) {
-                    runOnUiThread {
-                        AlertUtils.showCustomAlert(requireContext(), errorMessage)
                     }
-                    ProgressUtils.dismissProgressDialog()
-                }
+                )
             }
+//            }
+        }
+    }
+
+    lateinit var paymentCoroutine: CoroutineScope
+    val paymentCoroutineExceptionHandler = CoroutineExceptionHandler { _, exception ->
+        dismissProgressDialogWithAlert()
+        EventBus.getDefault()
+            .post(
+                MessageEvent(
+                    "${Constants.LINE_BREAK_TAB} ReasonForRefundDialog refundViaValor()-> ${
+                        Gson().toJson(
+                            exception
+                        )
+                    } "
+                )
+            )
+    }
+
+    private fun refundViaValor() {
+        paymentCoroutine = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+
+        paymentCoroutine.launch {
+            val gatewayType = PaymentGatewayType.VALOR
+            val paymentGateway = paymentGatewayFactory.create(gatewayType)
+
             /*Start Refund Process Payment */
-            var valor= Valor(
+            var valor = Valor(
                 apiKey = prefProvider.getValue(Constants.VALOR_APP_KEY, ""),
                 appID = prefProvider.getValue(Constants.VALOR_APP_ID, ""),
                 epi = prefProvider.getValue(Constants.VALOR_EPI, ""),
@@ -290,6 +580,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                 reqTxnId = "INV${System.currentTimeMillis()}",
                 amount = refundAmount.toString(),
                 tipAmount = "",
+                isProd = Constants.paymentLive,
                 tipEntry = "1",
                 txn_type = "refund",
                 surchargeIndicator = "1",
@@ -299,10 +590,38 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             )
 
             paymentGateway.refundPayment(
-                requireContext(),
+                requireContext().applicationContext,
                 valor,
-                paymentCallback
+                onSuccess = { tResponse ->
+                    var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
+                        tResponse,
+                        ValorSuccessResponse::class.java
+                    )
+
+                    transactionJsonResponse.nameValuePairs?.let {
+                        if (it.msg != null) {
+                            if (it.msg.equals("APPROVED", ignoreCase = true)) {
+                                refundCall()
+                            } else {
+                                dismissProgressDialogWithAlert(it.msg)
+                            }
+                        }
+                    }
+                },
+                onFailure = { errorMessage ->
+                    Log.e("Valor: ", errorMessage)
+                    dismissProgressDialogWithAlert(errorMessage)
+                }
             )
+        }
+    }
+
+    private fun dismissProgressDialogWithAlert(errorMessage: String? = null) {
+        runOnUiThread {
+            ProgressUtils.dismissProgressDialog()
+            if (errorMessage!=null) {
+                AlertUtils.showCustomAlert(requireContext(), errorMessage)
+            }
         }
     }
 
@@ -373,10 +692,10 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
             CoroutineScope(Dispatchers.IO).async {
                 val queue = Volley.newRequestQueue(requireContext())
                 var url = ""
-                if (Constants.isPaxInDebugMode) {
-                    url = Constants.paxDebug
-                } else {
+                if (Constants.paymentLive) {
                     url = Constants.paxLive
+                } else {
+                    url = Constants.paxDebug
                 }
                 val getRequest: StringRequest = object : StringRequest(
                     Request.Method.POST, url,
@@ -503,10 +822,10 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
     ) {
         val queue = Volley.newRequestQueue(requireContext())
         var url = ""
-        if (Constants.isPaxInDebugMode) {
-            url = Constants.paxDebug
-        } else {
+        if (Constants.paymentLive) {
             url = Constants.paxLive
+        } else {
+            url = Constants.paxDebug
         }
         val getRequest: StringRequest = object : StringRequest(
             Request.Method.POST, url,

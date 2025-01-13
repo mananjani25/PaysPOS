@@ -24,6 +24,13 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.github.gcacace.signaturepad.views.SignaturePad.OnSignedListener
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.pax.poslink.PaymentRequest
+import com.pax.poslink.PosLink
+import com.pax.poslink.ProcessTransResult
+import com.pax.poslink.log.LogFilter.Const
 import com.pays.payments.callbacks.PaymentCallback
 import com.pays.payments.design.*
 import com.pays.payments.gateways.dejavoo.DejavooPaymentGateway
@@ -76,12 +83,6 @@ import com.pays.pos.utils.paxUtils.AppThreadPool
 import com.pays.pos.utils.paxUtils.POSLinkCreatorWrapper
 import com.pays.pos.utils.paxUtils.SettingINI
 import com.pays.pos.utils.statusUtils.Status
-import com.github.gcacace.signaturepad.views.SignaturePad.OnSignedListener
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.pax.poslink.PaymentRequest
-import com.pax.poslink.PosLink
-import com.pax.poslink.ProcessTransResult
 import com.pays.pos.data.remote.Constants.IS_PAYMENT_SCREEN
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
@@ -89,8 +90,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayOutputStream
-import javax.inject.Inject
-import kotlin.math.roundToInt
 
 
 class CustomDisplay(
@@ -2410,35 +2409,81 @@ class CustomDisplay(
 //                    } else {*/
 //                        magtekCall(wholeTotalPrice)
 
-                            /*if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
+                        /*if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
                             magtekCall(wholeTotalPrice)
                         } else {
                             adjustPaxTips()
                         }*/
 
-                            if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
-                                magtekCall(wholeTotalPrice)
-                            } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
-                                    Constants.IS_PAX_CONNECTED,
-                                    false
-                                )
-                            ) {
-                                adjustPaxTips()
-                            } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
-                                    Constants.IS_PAX_CONNECTED,
-                                    false
-                                )
-                            ) {
-                                AlertUtils.showCustomAlert(
-                                    context,
-                                    "Please connect to PAX device"
-                                )
+                        when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
+                            Constants.PAX->{
+                                if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
+                                        Constants.IS_PAX_CONNECTED,
+                                        false
+                                    )
+                                ) {
+                                    adjustPaxTips()
+                                }else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                        Constants.IS_PAX_CONNECTED,
+                                        false
+                                    )
+                                ) {
+                                    AlertUtils.showCustomAlert(
+                                        context,
+                                        "Please connect to PAX device"
+                                    )
+                                }
+                            }
+
+                            Constants.VALOR, Constants.VELOR->{
+                                adjustValorTips()
+                            }
+
+                            Constants.DEJAVOO->{
+                                adjustDejavooTips()
+                            }
+
+                            else->{
+                                if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
+                                    magtekCall(wholeTotalPrice)
+                                }else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                        Constants.IS_PAX_CONNECTED,
+                                        false
+                                    )
+                                ) {
+                                    AlertUtils.showCustomAlert(
+                                        context,
+                                        "Please connect a payment device"
+                                    )
+                                }
                             }
                         }
-                    } else {
-                        callUpdateTip()
+
+
+                       /*
+                        if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
+                            magtekCall(wholeTotalPrice)
+                        } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
+                            adjustPaxTips()
+                        } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
+                            AlertUtils.showCustomAlert(
+                                context,
+                                "Please connect to PAX device"
+                            )
+                        }*/
                     }
+                } else {
+                    callUpdateTip()
                 }
+            }
 
                 txtContinue.isEnabled = true
             }
@@ -2991,16 +3036,79 @@ class CustomDisplay(
         }
         else {
             if (mIsCardPayment /*&& !mIsSignatureRequired*/) {
+        /**
+         * Used to show Given TIPS on OrderCompleted Fragment
+         */
+        /*  dashBoardCategoryViewModel.apply {
+              totalTipAmount = tippedAmount
+              customerGivenTip.value = true
+          }
+  */
+        try{
+            if (mIsCardPayment /*&& !mIsSignatureRequired*/) {
 //            callUpdateTip()
-                if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
-                    magtekCall(wholeTotalPrice)
-                } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
+                when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
+                    Constants.PAX->{
+                        if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
+                            adjustPaxTips()
+                        }else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
+                            AlertUtils.showCustomAlert(
+                                context,
+                                "Please connect to PAX device"
+                            )
+                        }
+                    }
+
+                    Constants.VALOR, Constants.VELOR->{
+                        adjustValorTips()
+                    }
+
+                    Constants.DEJAVOO->{
+                        adjustDejavooTips()
+                    }
+
+                    else->{
+                        if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
+                            magtekCall(wholeTotalPrice)
+                        }else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
+                            AlertUtils.showCustomAlert(
+                                context,
+                                "Please connect a payment device"
+                            )
+                        }
+                    }
+                }
+
+               /* if (prefProvider.getValue(Constants.VALOR_APP_ID, "").isNotEmpty()) {
+                    adjustValorTips()
+                }else if (prefProvider.getValue(
+                        Constants.VALOR_APP_ID, ""
+                    ).isEmpty()){
+                    adjustDejavooTips()
+                }
+                else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
                         Constants.IS_PAX_CONNECTED,
                         false
                     )
                 ) {
                     adjustPaxTips()
-                } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
+                }
+                else if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
+                    magtekCall(wholeTotalPrice)
+                }
+                else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
                         Constants.IS_PAX_CONNECTED,
                         false
                     )
@@ -3009,42 +3117,103 @@ class CustomDisplay(
                         context,
                         "Please connect to PAX device"
                     )
-                }
+                }*/
             } else if (!mIsCardPayment) {
                 callUpdateTip()
             }
-            if (!binding.signaturePad.isEmpty) {
-                enableConfirmButton()
-            }
-            if (prefProvider.getValue(Constants.VALOR_APP_ID, "").isNotEmpty()) {
-                adjustValorTips()
-            } else if (mPaymentViewModel.paxReferenceNo.isNullOrEmpty()) {
-                magtekCall(wholeTotalPrice)
-            } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && prefProvider.getValueboolean(
-                    Constants.IS_PAX_CONNECTED,
-                    false
-                )
-            ) {
-                adjustPaxTips()
-            } else if (!mPaymentViewModel.paxReferenceNo.isNullOrEmpty() && !prefProvider.getValueboolean(
-                    Constants.IS_PAX_CONNECTED,
-                    false
-                )
-            ) {
-                AlertUtils.showCustomAlert(
-                    context,
-                    "Please connect to PAX device"
-                )
-            }
+        }
+        catch (e:Exception){
+            e.printStackTrace()
         }
         if (!binding.signaturePad.isEmpty) {
             enableConfirmButton()
         }
     }
 
+    private fun adjustDejavooTips() {
+        paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutineScope.launch {
+            val gatewayType = PaymentGatewayType.DEJAVOO
+            val paymentGateway = PaymentGatewayFactory(
+                ValorPaymentGateway(),
+                DejavooPaymentGateway()
+            ).create(gatewayType)
+
+            mPaymentViewModel.dejavooRefTxnId?.let {dejavooRefTxnId->
+                var dejavoo=Dejavoo(
+                    registerId =  prefProvider.getValue(
+                        Constants.DEJAVOO_REGISTER_ID,""
+                    ),
+                    authKey = prefProvider.getValue(
+                        Constants.DEJAVOO_AUTH_KEY,""
+                    ),
+                    tpn = prefProvider.getValue(
+                        Constants.DEJAVOO_TPN,""
+                    ),
+                    paymentType = "Credit",
+                    transType="TipAdjust",
+                    amount= dashBoardCategoryViewModel.totalAmount.toString(),
+                    tip = tippedAmount.toString(),
+                    refId= dejavooRefTxnId,
+                    printReceipt= false,
+                    performedBy=  prefProvider.employeeName(),
+                    isProd= false,
+                    txnType = TransactionType.TIP_ADJUSTMENT
+                )
+                paymentGateway.processPayment(
+                    context.applicationContext,
+                    dejavoo,
+                    onSuccess = { tResponse->
+                        var transactionJsonResponse = Gson().fromJson<String>(
+                            tResponse,
+                            String::class.java
+                        )
+                        mPaymentViewModel.dejavooRefTxnId=null
+                        callUpdateTip()
+//                    transactionJsonResponse.nameValuePairs?.let {
+//                        if (it.msg != null) {
+//                            if (it.msg!!.contains(
+//                                    "APPROVED"
+//                                )
+//                            ) {
+//                                mPaymentViewModel.valorRefTxnId = null
+//                                mPaymentViewModel.valorTransactionNumber = null
+//                                callUpdateTip()
+////                                dashBoardCategoryViewModel.takenTipUsingValor.postValue(Event(transactionViewModel))
+//                            } else {
+//                                dismissProgressDialog()
+//                                /* runOnUiThread(Runnable {
+//                                     AlertUtils.showCustomAlert(
+//                                         requireContext(),
+//                                         it.msg
+//                                     )
+//                                 })*/
+//                            }
+//                        }
+//                    }
+
+                    },
+                    onFailure = {
+                        ProgressUtils.dismissProgressDialog()
+
+                        /*runOnUiThread(Runnable {
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                errorMessage
+                            )
+                        })*/
+
+                    }
+                )
+                /* Process Tip Adjust */
+            }
+        }
+    }
+
     lateinit var paymentCoroutineScope: CoroutineScope
     val paymentCoroutineExceptionHandler =
         CoroutineExceptionHandler { coroutineContext, exception ->
+
             EventBus.getDefault()
                 .post(
                     MessageEvent(
@@ -3068,49 +3237,6 @@ class CustomDisplay(
                 DejavooPaymentGateway()
             ).create(gatewayType)
 
-
-            val paymentCallback = object : PaymentCallback {
-                override fun onSuccess(transactionId: String) {
-
-                    var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
-                        transactionId,
-                        ValorSuccessResponse::class.java
-                    )
-                    transactionJsonResponse.nameValuePairs?.let {
-                        if (it.msg != null) {
-                            if (it.msg!!.contains(
-                                    "APPROVED"
-                                )
-                            ) {
-                                mPaymentViewModel.valorRefTxnId = null
-                                mPaymentViewModel.valorTransactionNumber = null
-                                callUpdateTip()
-//                                dashBoardCategoryViewModel.takenTipUsingValor.postValue(Event(transactionViewModel))
-                            } else {
-                                dismissProgressDialog()
-                                /* runOnUiThread(Runnable {
-                                     AlertUtils.showCustomAlert(
-                                         requireContext(),
-                                         it.msg
-                                     )
-                                 })*/
-                            }
-                        }
-                    }
-                }
-
-                override fun onFailure(errorMessage: String) {
-                    ProgressUtils.dismissProgressDialog()
-
-                    /*runOnUiThread(Runnable {
-                        AlertUtils.showCustomAlert(
-                            requireContext(),
-                            errorMessage
-                        )
-                    })*/
-                }
-            }
-
             mPaymentViewModel.valorRefTxnId?.let { valorRefTxId ->
                 context?.let {
 
@@ -3129,13 +3255,51 @@ class CustomDisplay(
                         txn_type = "refund",
                         surchargeIndicator = "1",
                         sale_refund = "1",
+                        isProd = Constants.paymentLive,
                         transactionId = ""
                     )
 
                     paymentGateway.processPayment(
-                        context = it,
+                        context = it.applicationContext,
                         valor,
-                        paymentCallback
+                        onSuccess = {tResponse->
+                            var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
+                                tResponse,
+                                ValorSuccessResponse::class.java
+                            )
+                            transactionJsonResponse.nameValuePairs?.let {
+                                if (it.msg != null) {
+                                    if (it.msg!!.contains(
+                                            "APPROVED"
+                                        )
+                                    ) {
+                                        mPaymentViewModel.valorRefTxnId = null
+                                        mPaymentViewModel.valorTransactionNumber = null
+                                        callUpdateTip()
+//                                dashBoardCategoryViewModel.takenTipUsingValor.postValue(Event(transactionViewModel))
+                                    } else {
+                                        dismissProgressDialog()
+                                        /* runOnUiThread(Runnable {
+                                             AlertUtils.showCustomAlert(
+                                                 requireContext(),
+                                                 it.msg
+                                             )
+                                         })*/
+                                    }
+                                }
+                            }
+
+                        },
+                        onFailure = {
+                            ProgressUtils.dismissProgressDialog()
+
+                            /*runOnUiThread(Runnable {
+                                AlertUtils.showCustomAlert(
+                                    requireContext(),
+                                    errorMessage
+                                )
+                            })*/
+                        }
                     )
                 }
             }

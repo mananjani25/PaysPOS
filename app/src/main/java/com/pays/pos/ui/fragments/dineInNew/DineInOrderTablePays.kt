@@ -21,6 +21,7 @@ import android.view.*
 import android.widget.CheckBox
 import android.widget.PopupWindow
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.Group
@@ -91,6 +92,7 @@ import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
 import com.pays.pos.ui.fragments.payment.OrderCompleteFragment
+import com.pays.pos.utils.PrintSunmiUtils.Companion.addValue
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.visible
@@ -114,10 +116,28 @@ import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.io.OutputStream
+import java.io.UnsupportedEncodingException
 import java.lang.Runnable
+import java.net.HttpURLConnection
+import java.net.MalformedURLException
+import java.net.URL
+import java.security.InvalidKeyException
+import java.security.KeyFactory
+import java.security.NoSuchAlgorithmException
+import java.security.Signature
+import java.security.SignatureException
+import java.security.spec.InvalidKeySpecException
+import java.security.spec.PKCS8EncodedKeySpec
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
@@ -188,6 +208,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
     private lateinit var pd: Dialog
     private var totalDiscountWO = 0.0
     private var clickedPosition: Int = -1
+
+    var charHSize: Int = 1
+    var asciiCharWidth: Int = 12
+    var cjkCharWidth: Int = 24
+    var orderContent: java.lang.StringBuilder = java.lang.StringBuilder()
 
     var dineInCartItemMoved = false
 
@@ -9850,6 +9875,137 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
         Log.d("###17MAR23", "initKitchenPrinter: Called - Start")
         Log.d("###17MAR23", "ProgressShow: Called - Start")
+        if (data.name.contains("Cloud", true)) {
+
+            var isUpdatedLabel = ""
+            if(prefProvider.getValueboolean(Constants.DINE_IN_UPDATE,false)) {
+                isUpdatedLabel = "*** Updated ***"
+            }
+            Log.e(TAG,"checkCloudContains")
+            val body = java.lang.StringBuilder()
+            body.append("{")
+            body.append(java.lang.String.format("\"sn\":\"%s\"", "${data.ipAddress}"))
+            body.append(",")
+            body.append(java.lang.String.format("\"shop_id\":%d", 2241))
+            body.append("}")
+
+            orderContent.clear()
+            orderContent = java.lang.StringBuilder()
+            lineFeed(4)
+            setAlignment(1)
+
+            setCharacterSize(2,2)
+
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                appendText("OrderID:${getOrderDetailsResponse?.orderTypeId}")
+            } else {
+                appendText(":${getOrderDetailsResponse?.id}")
+            }
+
+            lineFeed(2)
+
+            if(isUpdatedLabel.isNotEmpty()) {
+                appendText("*** Updated ***")
+                lineFeed(2)
+            }
+
+            appendText(""+getOrderDetailsResponse?.orderTypeName)
+            lineFeed(2)
+            appendText(getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")")
+
+            lineFeed(2)
+            appendText("ReceiptID:"+getOrderDetailsResponse?.offlineId)
+            lineFeed(2)
+
+//        setCharacterSize(1,1)
+            setAlignment(0)
+            appendText("Employee:${getOrderDetailsResponse?.employee?.name}")
+            lineFeed(2)
+            appendText("${ getReceiptFormatDateFromUTCServer(
+                requireContext(),
+                getOrderDetailsResponse?.createdAt.toString()
+            )
+            }")
+
+
+            listItemWithGuest.forEach {
+                lineFeed(1)
+                appendText("------------------------")
+                lineFeed(1)
+
+                appendText(it.key.toString())
+                lineFeed(1)
+                appendText("------------------------")
+                lineFeed(1)
+
+                it.value.forEach {obj->
+                   data.printerCategories?.forEach {
+                       if (it.id == obj.categoryId && it.printerEnable && it.categoryActive){
+                           appendText(obj.itemQuantity.toString() + " " + obj.name.uppercase())
+                           lineFeed(1)
+
+                           if (obj.modifiers.isNotEmpty()){
+
+
+                               for (j in 0 until obj.modifiers.size) {
+                                   val modifierObj = obj.modifiers.get(j)
+                                   appendText(
+                                       "  " + if (modifierObj.modifier_quantity == 1) {
+                                           "   "
+                                       } else {
+                                           "" + modifierObj.modifier_quantity + "x "
+                                       } + modifierObj.name.uppercase()
+                                   )
+                                   lineFeed(1)
+
+                               }
+
+
+
+                           }
+
+                           if (obj.note.isNotEmpty()) {
+
+                               appendText("  Note:" + obj.note)
+                               lineFeed(1)
+                           }
+
+
+
+
+
+                       }
+                   }
+
+                }
+
+            }
+
+            if (getOrderDetailsResponse?.note?.isNotEmpty() == true) {
+                lineFeed(2)
+                setAlignment(1)
+                appendText("Order Note")
+                lineFeed(1)
+                appendText(getOrderDetailsResponse?.note?:"")
+            }
+
+
+            lineFeed(5)
+            cutPaper(true)
+
+            Log.e("checkKey","pushContent: checkSN:${data.ipAddress} ${pushContent(trade_no =
+            String.format("%s_%010d", "${data.ipAddress}", System.currentTimeMillis()),
+                "${data.ipAddress}", 1, 1, "您有新的订单", 0)}")
+            dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(
+                true
+            )
+
+
+
+
+
+
+        }else {
 
             if (data.name.startsWith(SUNMI_PRINTER, true)) {
 
@@ -10107,6 +10263,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                 }
             }
+        }
     }
 
     private fun generateKitchenReceiptForU220(
@@ -11772,7 +11929,6 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             var orderNote = ""
             if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
-
                 orderNote = getOrderDetailsResponse?.note.toString()
             }
 
@@ -11919,17 +12075,32 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 CommonPrinterTypes.TspStarPrinter -> {
 
-                        val builder = StarXpandCommandBuilder()
+                    val builder = StarXpandCommandBuilder()
 
-                        var printerBuilder = PrinterBuilder()
+                    var printerBuilder = PrinterBuilder()
 
-                        CoroutineScope(Dispatchers.Main).launch {
-                            try {
-                                with(printerBuilder) {
-                                    styleInternationalCharacter(InternationalCharacterType.Usa)
-                                    styleCharacterSpace(0.0)
+                    CoroutineScope(Dispatchers.Main).launch {
+                        try {
+                            with(printerBuilder) {
+                                styleInternationalCharacter(InternationalCharacterType.Usa)
+                                styleCharacterSpace(0.0)
 
-                                    styleAlignment(Alignment.Center)
+                                styleAlignment(Alignment.Center)
+
+                                add(
+                                    PrinterBuilder()
+                                        .styleBold(true)
+                                        .styleMagnification(
+                                            MagnificationParameter(3, 3)
+                                        )
+                                        .actionPrintText(
+                                            orderIdToPrint
+                                        )
+                                )
+
+                                actionFeedLine(1)
+
+                                if (kitchenSettingModel.showOrderType) {
 
                                     add(
                                         PrinterBuilder()
@@ -11938,39 +12109,12 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 MagnificationParameter(3, 3)
                                             )
                                             .actionPrintText(
-                                                orderIdToPrint
+                                                orderTypeToPrint
                                             )
                                     )
+                                }
 
-                                    actionFeedLine(1)
-
-                                    if (kitchenSettingModel.showOrderType) {
-
-                                        add(
-                                            PrinterBuilder()
-                                                .styleBold(true)
-                                                .styleMagnification(
-                                                    MagnificationParameter(3, 3)
-                                                )
-                                                .actionPrintText(
-                                                    orderTypeToPrint
-                                                )
-                                        )
-                                    }
-
-                                    if (isUpdatedLabel.isNotEmpty())
-                                        add(
-                                            PrinterBuilder()
-                                                .styleAlignment(Alignment.Center)
-                                                .styleMagnification(
-                                                    MagnificationParameter(2, 2)
-                                                )
-                                                .actionPrintText(
-                                                    isUpdatedLabel
-                                                )
-                                        )
-
-
+                                if (isUpdatedLabel.isNotEmpty())
                                     add(
                                         PrinterBuilder()
                                             .styleAlignment(Alignment.Center)
@@ -11978,205 +12122,218 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 MagnificationParameter(2, 2)
                                             )
                                             .actionPrintText(
-                                                tableNameToPrint
+                                                isUpdatedLabel
                                             )
                                     )
 
-                                    actionFeedLine(1)
 
-
-                                    if (kitchenSettingModel.showTeamMember) {
-
-
-                                        add(
-                                            PrinterBuilder()
-                                                .styleAlignment(Alignment.Left)
-                                                .actionPrintText(employee)
+                                add(
+                                    PrinterBuilder()
+                                        .styleAlignment(Alignment.Center)
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
                                         )
-                                        actionFeedLine(1)
-                                    }
+                                        .actionPrintText(
+                                            tableNameToPrint
+                                        )
+                                )
 
-                                    add(
-                                        PrinterBuilder()
-                                            .styleAlignment(Alignment.Left)
-                                            .actionPrintText(
-                                                orderTime
-                                            )
-                                    )
+                                actionFeedLine(1)
 
-                                    actionFeedLine(1)
+
+                                if (kitchenSettingModel.showTeamMember) {
 
 
                                     add(
                                         PrinterBuilder()
                                             .styleAlignment(Alignment.Left)
-                                            .styleBold(true)
-                                            .actionPrintText(
-                                                "------------------------------------------------"
-                                            )
+                                            .actionPrintText(employee)
                                     )
-
-
                                     actionFeedLine(1)
+                                }
+
+                                add(
+                                    PrinterBuilder()
+                                        .styleAlignment(Alignment.Left)
+                                        .actionPrintText(
+                                            orderTime
+                                        )
+                                )
+
+                                actionFeedLine(1)
 
 
-                                            listItemWithGuest.forEach {
+                                add(
+                                    PrinterBuilder()
+                                        .styleAlignment(Alignment.Left)
+                                        .styleBold(true)
+                                        .actionPrintText(
+                                            "------------------------------------------------"
+                                        )
+                                )
 
-                                                var isGuestNamePrinted = false
 
-                                                it.value.forEach { obj ->
-                                                    customerReceiptPrinters.printerCategories.forEach { printer ->
-                                                        if (printer.id == obj.categoryId && printer.printerEnable && printer.categoryActive) {
+                                actionFeedLine(1)
 
-                                                            if (!isGuestNamePrinted) {
-                                                                add(
-                                                                    PrinterBuilder()
-                                                                        .styleAlignment(Alignment.Left)
-                                                                        .styleBold(true)
-                                                                        .actionPrintText(
-                                                                            "------------------------------------------------"
-                                                                        )
-                                                                )
 
-                                                                add(
-                                                                    PrinterBuilder()
-                                                                        .styleAlignment(Alignment.Center)
-                                                                        .styleMagnification(
-                                                                            MagnificationParameter(
-                                                                                2,
-                                                                                2
-                                                                            )
-                                                                        )
-                                                                        .actionPrintText(
-                                                                            it.key
-                                                                        )
-                                                                )
+                                listItemWithGuest.forEach {
 
-                                                                add(
-                                                                    PrinterBuilder()
-                                                                        .styleAlignment(Alignment.Left)
-                                                                        .styleBold(true)
-                                                                        .actionPrintText(
-                                                                            "------------------------------------------------"
-                                                                        )
-                                                                )
-                                                                isGuestNamePrinted = true
-                                                            }
+                                    var isGuestNamePrinted = false
 
-                                                            add(
+                                    it.value.forEach { obj ->
+                                        customerReceiptPrinters.printerCategories.forEach { printer ->
+                                            if (printer.id == obj.categoryId && printer.printerEnable && printer.categoryActive) {
 
-                                                                PrinterBuilder()
-                                                                    .styleAlignment(Alignment.Left)
-                                                                    .styleMagnification(
-                                                                        MagnificationParameter(2, 2)
-                                                                    )
-                                                                    .actionPrintText(
-                                                                        obj.itemQuantity.toString() + " " + obj.name.uppercase()
-                                                                    )
+                                                if (!isGuestNamePrinted) {
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleAlignment(Alignment.Left)
+                                                            .styleBold(true)
+                                                            .actionPrintText(
+                                                                "------------------------------------------------"
                                                             )
+                                                    )
 
-                                                            if (obj.modifiers.isNotEmpty()) {
-                                                                for (j in 0 until obj.modifiers.size) {
-                                                                    val modifierObj =
-                                                                        obj.modifiers.get(j)
-
-
-                                                                    add(
-                                                                        PrinterBuilder()
-                                                                            .styleAlignment(
-                                                                                Alignment.Left
-                                                                            )
-                                                                            .styleBold(true)
-                                                                            .styleMagnification(
-                                                                                MagnificationParameter(
-                                                                                    1,
-                                                                                    1
-                                                                                )
-                                                                            )
-                                                                            .actionPrintText(
-                                                                                "  " + if (modifierObj.modifier_quantity == 1) {
-                                                                                    "   "
-                                                                                } else {
-                                                                                    "" + modifierObj.modifier_quantity + "x "
-                                                                                } + modifierObj.name.uppercase()
-                                                                            )
-                                                                    )
-
-                                                                }
-                                                            }
-                                                            if (obj.note.isNotEmpty()) {
-
-                                                                add(
-                                                                    PrinterBuilder()
-                                                                        .styleAlignment(Alignment.Left)
-                                                                        .styleBold(true)
-                                                                        .styleMagnification(
-                                                                            MagnificationParameter(
-                                                                                1,
-                                                                                1
-                                                                            )
-                                                                        )
-                                                                        .actionPrintText(
-                                                                            "  Note:" + obj.note
-                                                                        )
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleAlignment(Alignment.Center)
+                                                            .styleMagnification(
+                                                                MagnificationParameter(
+                                                                    2,
+                                                                    2
                                                                 )
+                                                            )
+                                                            .actionPrintText(
+                                                                it.key
+                                                            )
+                                                    )
 
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleAlignment(Alignment.Left)
+                                                            .styleBold(true)
+                                                            .actionPrintText(
+                                                                "------------------------------------------------"
+                                                            )
+                                                    )
+                                                    isGuestNamePrinted = true
+                                                }
 
-                                                            }
+                                                add(
 
-
-
-                                                        actionFeedLine(1)
-
-                                                        if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
-                                                            if (orderNote.isNotEmpty())
-                                                                add(
-                                                                    PrinterBuilder()
-                                                                        .styleAlignment(Alignment.Center)
-                                                                        .styleBold(true)
-                                                                        .styleMagnification(
-                                                                            MagnificationParameter(
-                                                                                2,
-                                                                                2
-                                                                            )
-                                                                        )
-                                                                        .actionPrintText(
-                                                                            "Order Note \n" + orderNote
-                                                                        )
-                                                                )
-                                                            actionFeedLine(1)
-                                                        }
-
-
-                                                        dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(
-                                                            true
+                                                    PrinterBuilder()
+                                                        .styleAlignment(Alignment.Left)
+                                                        .styleMagnification(
+                                                            MagnificationParameter(2, 2)
                                                         )
-                                                    }
+                                                        .actionPrintText(
+                                                            obj.itemQuantity.toString() + " " + obj.name.uppercase()
+                                                        )
+                                                )
+
+                                                if (obj.modifiers.isNotEmpty()) {
+                                                    for (j in 0 until obj.modifiers.size) {
+                                                        val modifierObj =
+                                                            obj.modifiers.get(j)
+
+
+                                                        add(
+                                                            PrinterBuilder()
+                                                                .styleAlignment(
+                                                                    Alignment.Left
+                                                                )
+                                                                .styleBold(true)
+                                                                .styleMagnification(
+                                                                    MagnificationParameter(
+                                                                        1,
+                                                                        1
+                                                                    )
+                                                                )
+                                                                .actionPrintText(
+                                                                    "  " + if (modifierObj.modifier_quantity == 1) {
+                                                                        "   "
+                                                                    } else {
+                                                                        "" + modifierObj.modifier_quantity + "x "
+                                                                    } + modifierObj.name.uppercase()
+                                                                )
+                                                        )
+
                                                     }
                                                 }
+                                                if (obj.note.isNotEmpty()) {
+
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleAlignment(Alignment.Left)
+                                                            .styleBold(true)
+                                                            .styleMagnification(
+                                                                MagnificationParameter(
+                                                                    1,
+                                                                    1
+                                                                )
+                                                            )
+                                                            .actionPrintText(
+                                                                "  Note:" + obj.note
+                                                            )
+                                                    )
+
+
+                                                }
+
+
+
+                                                actionFeedLine(1)
+
+
+                                                dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(
+                                                    true
+                                                )
                                             }
-                                            actionCut(CutType.Partial)
-
-                                            var document = DocumentBuilder()
-                                                .addPrinter(printerBuilder)
-                                            builder.addDocument(
-                                                document
-                                            )
-
-                                            val commands = builder.getCommands()
-
-                                            printer.openAsync().await()
-
-
-                                            printer.printAsync(commands).await()
-                                            printer.closeAsync().await()
-
-
+                                        }
+                                    }
                                 }
-                            } catch (e: Exception) {
-                                Log.e("START DINE IN KITCHEN RECEIPT ", "" + e.printStackTrace())
+
+                                if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+                                    if (orderNote.isNotEmpty())
+                                        add(
+                                            PrinterBuilder()
+                                                .styleAlignment(Alignment.Center)
+                                                .styleBold(true)
+                                                .styleMagnification(
+                                                    MagnificationParameter(
+                                                        2,
+                                                        2
+                                                    )
+                                                )
+                                                .actionPrintText(
+                                                    "Order Note \n" + orderNote
+                                                )
+                                        )
+                                    actionFeedLine(1)
+                                }
+
+                                actionCut(CutType.Partial)
+
+                                var document = DocumentBuilder()
+                                    .addPrinter(printerBuilder)
+                                builder.addDocument(
+                                    document
+                                )
+
+                                val commands = builder.getCommands()
+
+                                printer.openAsync().await()
+
+
+                                printer.printAsync(commands).await()
+                                printer.closeAsync().await()
+
+
                             }
+                        } catch (e: Exception) {
+                            Log.e("START DINE IN KITCHEN RECEIPT ", "" + e.printStackTrace())
                         }
+                    }
                 }
             }
 
@@ -13184,6 +13341,305 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
         PrintSunmiUtils.printLogo(newBitmap)
 
+    }
+
+
+
+
+    fun setCharacterSize(h: Int, w: Int) {
+        var n = 0
+        if (h >= 1 && h <= 8) n = n or (h - 1)
+        if (w >= 1 && w <= 8) {
+            n = n or ((w - 1) shl 4)
+            charHSize = w
+        }
+        orderContent.append("1d21" + String.format("%02x", n))
+    }
+
+
+
+    fun bytesToHexString(bytes: ByteArray): String {
+        val hexstr = java.lang.StringBuilder()
+        for (i in bytes) hexstr.append(String.format("%02x", i))
+        return hexstr.toString()
+    }
+    @Throws(java.lang.Exception::class)
+    fun generateSign(body: String, timestamp: String, nonce: String): String {
+
+        val msg = body + "889a389072224d10b641e90b9cc26856" + timestamp + nonce
+        val hmacSha256 = Mac.getInstance("HmacSHA256")
+        val secretKey = SecretKeySpec("1f486ca8d9a341408c8132b23f82f571".encodeToByteArray(), "HmacSHA256")
+        hmacSha256.init(secretKey)
+        val result = hmacSha256.doFinal(msg.toByteArray(charset("UTF-8")))
+        return bytesToHexString(result)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Throws(
+        NoSuchAlgorithmException::class,
+        InvalidKeySpecException::class,
+        InvalidKeyException::class,
+        SignatureException::class
+    )
+    fun sign(
+        body: String,
+        appId: String,
+        timestamp: String,
+        nonce: String,
+        rsaPrivateKey: String
+    ): String {
+        val content = body + appId + timestamp + nonce
+        val keyBytes: ByteArray =
+            java.util.Base64.getDecoder().decode(rsaPrivateKey.replace("(\\s)|(--.*--)".toRegex(), ""))
+        val pkcs8KeySpec = PKCS8EncodedKeySpec(keyBytes)
+        val keyFactory = KeyFactory.getInstance("RSA")
+        val priKey = keyFactory.generatePrivate(pkcs8KeySpec)
+        val signature: Signature = Signature.getInstance("SHA256withRSA")
+        signature.initSign(priKey)
+        signature.update(content.toByteArray())
+        return java.util.Base64.getEncoder().encodeToString(signature.sign())
+    }
+
+    fun httpPost(path: String, body: String,sn:String?=null): String? {
+        var connection: HttpURLConnection? = null
+        var `is`: InputStream? = null
+        var os: OutputStream? = null
+        var br: BufferedReader? = null
+        var result: String? = null
+
+        val date = Date()
+        val random = Random()
+        val timestamp = String.format("%d", date.time / 1000)
+        val nonce = String.format("%06d", random.nextInt(1000000))
+
+        try {
+            val url = URL("https://openapi.sunmi.com$path")
+            connection = url.openConnection() as HttpURLConnection
+            connection!!.requestMethod = "POST"
+            connection!!.connectTimeout = 15000
+            connection!!.readTimeout = 60000
+
+            connection!!.doOutput = true
+            connection!!.doInput = true
+            connection!!.setRequestProperty("Sunmi-Appid", Constants.SUNMI_APP_ID)
+            connection!!.setRequestProperty("Sunmi-Timestamp", timestamp)
+            connection!!.setRequestProperty("Sunmi-Nonce", nonce)
+            connection!!.setRequestProperty("Sunmi-Sign", generateSign(body, timestamp, nonce))
+            connection!!.setRequestProperty("Source", "openapi")
+            connection!!.setRequestProperty("Content-Type", "application/json")
+            os = connection!!.outputStream
+            os.write(body.toByteArray(charset("UTF-8")))
+            if (connection!!.responseCode == 200) {
+
+                /*  if (sn.equals("N434227FT0790")) {
+                      orderContent.clear()
+                       orderContent = java.lang.StringBuilder()
+                      cloudQueuePrinting("N434227FT0738", 2241)
+                  }*/
+
+                /* if (path.contains("pushContent")){
+
+                     CoroutineScope(Dispatchers.IO).launch {
+                         delay(500)
+                         clearPrintJob(sn)
+                     }
+                 }*/
+
+                `is` = connection!!.inputStream
+                br = BufferedReader(InputStreamReader(`is`, "UTF-8"))
+
+                val sbf = StringBuffer()
+                var temp: String? = null
+                while ((br.readLine().also { temp = it }) != null) {
+                    sbf.append(temp)
+                    sbf.append("\n")
+                }
+                result = sbf.toString()
+            }
+        } catch (e: MalformedURLException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        } finally {
+            if (br != null) {
+                try {
+                    br.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            if (os != null) {
+                try {
+                    os.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            if (`is` != null) {
+                try {
+                    `is`.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            connection!!.disconnect()
+        }
+        return result
+    }
+
+    fun bindShop(sn: String?, shop_id: Int): String? {
+        val body = java.lang.StringBuilder()
+        body.append("{")
+        body.append(String.format("\"sn\":\"%s\"", sn))
+        body.append(",")
+        body.append(String.format("\"shop_id\":%d", shop_id))
+        body.append("}")
+        return httpPost("/v2/printer/open/open/device/bindShop", body.toString())
+    }
+
+    fun onlineStatus(sn: String?): String? {
+        val body = java.lang.StringBuilder()
+        body.append("{")
+        body.append(String.format("\"sn\":\"%s\"", sn))
+        body.append("}")
+        return httpPost("/v2/printer/open/open/device/onlineStatus", body.toString())
+    }
+
+    fun pushContent(
+        trade_no: String?,
+        sn: String?,
+        count: Int,
+        order_type: Int,
+        media_text: String?,
+        cycle: Int
+    ): String? {
+        val body = java.lang.StringBuilder()
+        body.append("{")
+        body.append(String.format("\"trade_no\":\"%s\"", "${System.currentTimeMillis()}"))
+        body.append(",")
+        body.append(String.format("\"sn\":\"%s\"", sn))
+        body.append(",")
+        body.append(String.format("\"order_type\":%d", order_type))
+        body.append(",")
+        body.append(java.lang.String.format("\"content\":\"%s\"", orderContent.toString()))
+        body.append(",")
+        body.append(String.format("\"count\":%d", count))
+        body.append(",")
+        body.append(String.format("\"media_text\":\"%s\"", media_text))
+        body.append(",")
+        body.append(String.format("\"cycle\":%d", cycle))
+        body.append("}")
+        return httpPost("/v2/printer/open/open/device/pushContent", body.toString(),sn)
+    }
+
+    fun appendText(text: String) {
+        try {
+            val bytes = text.toByteArray(charset("UTF-8"))
+            for (i in bytes) orderContent.append(String.format("%02x", i))
+        } catch (e: UnsupportedEncodingException) {
+        }
+    }
+
+    fun printAndExitPageMode() {
+        orderContent.append("0c")
+    }
+
+
+    fun cutPaper(full_cut: Boolean) {
+        orderContent.append("1d56" + (if ((full_cut)) "30" else "31"))
+    }
+    fun lineFeed(n: Int) {
+        for (i in 0 until n) orderContent.append("0a")
+    }
+
+
+    fun setAlignment(n: Int) {
+        if (n >= 0 && n <= 2) orderContent.append("1b61" + String.format("%02x", n))
+    }
+
+    fun clearPrintJob(sn: String?): String? {
+        Log.e(TAG,"chekSNCall: ${sn}")
+        val body = java.lang.StringBuilder()
+        body.append("{")
+        body.append(String.format("\"sn\":\"%s\"", sn))
+        body.append("}")
+        return httpPost("/v2/printer/open/open/device/clearPrintJob", body.toString(),sn)
+    }
+
+
+    // Append raw data.
+    fun appendRawData(bytes: ByteArray) {
+        for (i in bytes) orderContent.append(String.format("%02x", i))
+    }
+
+    // Append unicode character.
+    fun appendUnicode(unicode: Int, count: Int) {
+        if (count > 0) {
+            val text = StringBuilder()
+            for (i in 0 until count) text.append(unicode.toChar())
+            appendText(text.toString())
+        }
+
+    }
+
+    // [ESC 3] Set line spacing.
+    fun setLineSpacing(n: Int) {
+        if (n >= 0 && n <= 255) orderContent.append("1b33" + String.format("%02x", n))
+    }
+
+    // [ESC !] Set print modes.
+    fun setPrintModes(bold: Boolean, double_h: Boolean, double_w: Boolean) {
+        var n = 0
+        if (bold) n = n or 8
+        if (double_h) n = n or 16
+        if (double_w) n = n or 32
+        charHSize = if ((double_w)) 2 else 1
+        orderContent.append("1b21" + String.format("%02x", n))
+    }
+
+    // [HT] Jump to next TAB position.
+    fun horizontalTab(n: Int) {
+        for (i in 0 until n) orderContent.append("09")
+    }
+
+    // [ESC $] Set absolute print position.
+    fun setAbsolutePrintPosition(n: Int) {
+        if (n >= 0 && n <= 65535) orderContent.append(
+            "1b24" + String.format(
+                "%02x%02x",
+                (n and 0xff),
+                ((n shr 8) and 0xff)
+            )
+        )
+    }
+
+    // [ESC \] Set relative print position.
+    fun setRelativePrintPosition(n: Int) {
+        if (n >= -32768 && n <= 32767) orderContent.append(
+            "1b5c" + String.format(
+                "%02x%02x",
+                (n and 0xff),
+                ((n shr 8) and 0xff)
+            )
+        )
+    }
+
+
+    // [ESC -] Set underline mode.
+    fun setUnderlineMode(n: Int) {
+        if (n >= 0 && n <= 2) orderContent.append("1b2d" + String.format("%02x", n))
+    }
+
+    // [GS B] Set black-white reverse mode.
+    fun setBlackWhiteReverseMode(enabled: Boolean) {
+        orderContent.append("1d42" + (if ((enabled)) "01" else "00"))
+    }
+
+    // [ESC {] Set upside down mode.
+    fun setUpsideDownMode(enabled: Boolean) {
+        orderContent.append("1b7b" + (if ((enabled)) "01" else "00"))
     }
 
 }

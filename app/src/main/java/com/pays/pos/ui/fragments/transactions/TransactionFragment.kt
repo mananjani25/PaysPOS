@@ -58,18 +58,18 @@ import com.google.gson.JsonArray
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
+import com.pax.poslink.log.LogFilter.Const
 import com.pays.pos.data.model.requestModel.CashLogRequest
 import com.pays.payments.callbacks.PaymentCallback
-import com.pays.payments.design.PaymentGatewayFactory
-import com.pays.payments.design.PaymentGatewayType
-import com.pays.payments.design.TransactionType
-import com.pays.payments.design.Valor
+import com.pays.payments.design.*
 import com.pays.payments.gateways.dejavoo.DejavooPaymentGateway
 import com.pays.payments.gateways.valor.ValorPaymentGateway
 import com.pays.pos.data.model.valor.ValorSuccessResponse
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -293,25 +293,50 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 } else {
                     adjustPaxTips()
                 }*/
-                if (prefProvider.getValue(Constants.VALOR_APP_KEY, "").isNotEmpty()) {
-                    adjustValorTips()
-                } else if (singleTransaction?.ref_num.isNullOrEmpty()) {
-                    magtekCall(tipAmount)
-                } else if (!singleTransaction?.ref_num.isNullOrEmpty() && prefProvider.getValueboolean(
-                        Constants.IS_PAX_CONNECTED,
-                        false
-                    )
-                ) {
-                    adjustPaxTips()
-                } else if (!singleTransaction?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(
-                        Constants.IS_PAX_CONNECTED,
-                        false
-                    )
-                ) {
-                    AlertUtils.showCustomAlert(
-                        requireContext(),
-                        "Please connect to PAX device"
-                    )
+                when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
+                    Constants.PAX->{
+                        if (!singleTransaction?.ref_num.isNullOrEmpty() && prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            )
+                        ) {
+                            adjustPaxTips()
+                        }else{
+                            if (!singleTransaction?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                    Constants.IS_PAX_CONNECTED,
+                                    false
+                                )
+                            ) {
+                                AlertUtils.showCustomAlert(
+                                    requireContext(),
+                                    "Please connect to PAX device"
+                                )
+                            }
+                        }
+                    }
+                    Constants.VALOR, Constants.VELOR->{
+                        adjustValorTips()
+                    }
+                    Constants.DEJAVOO->{
+                        adjustDejavooTips()
+                    }
+
+                    else->{
+                        if (singleTransaction?.ref_num.isNullOrEmpty()) {
+                            magtekCall(tipAmount)
+                        }else{
+                            if (!singleTransaction?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(
+                                    Constants.IS_PAX_CONNECTED,
+                                    false
+                                )
+                            ) {
+                                AlertUtils.showCustomAlert(
+                                    requireContext(),
+                                    "Please connect a payment device"
+                                )
+                            }
+                        }
+                    }
                 }
             } else {
                 tipCall(false)
@@ -403,6 +428,81 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 }
         }
         return binding.root
+    }
+
+    lateinit var paymentCoroutineScope: CoroutineScope
+    val paymentCoroutineExceptionHandler =
+        CoroutineExceptionHandler { coroutineContext, exception ->
+
+            EventBus.getDefault()
+                .post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} CustomDisplay adjustValorTips()-> ${
+                            Gson().toJson(
+                                exception
+                            )
+                        } "
+                    )
+                )
+        }
+
+
+    private fun adjustDejavooTips() {
+        paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutineScope.launch {
+            val gatewayType = PaymentGatewayType.DEJAVOO
+            val paymentGateway = PaymentGatewayFactory(
+                ValorPaymentGateway(),
+                DejavooPaymentGateway()
+            ).create(gatewayType)
+
+            singleTransaction?.ref_num?.let { dejavooRefTxnId ->
+                var dejavoo= Dejavoo(
+                    registerId =  prefProvider.getValue(
+                        Constants.DEJAVOO_REGISTER_ID,""
+                    ),
+                    authKey = prefProvider.getValue(
+                        Constants.DEJAVOO_AUTH_KEY,""
+                    ),
+                    tpn = prefProvider.getValue(
+                        Constants.DEJAVOO_TPN,""
+                    ),
+                    paymentType = "Credit",
+                    transType="TipAdjust",
+                    amount= singleTransaction?.totalAmount.toString(),
+                    tip = tipAmount.toString(),
+                    refId= dejavooRefTxnId,
+                    printReceipt= false,
+                    performedBy=  prefProvider.employeeName(),
+                    isProd= false,
+                    txnType = TransactionType.TIP_ADJUSTMENT
+                )
+                paymentGateway.processPayment(
+                    requireContext().applicationContext,
+                    dejavoo,
+                    onSuccess = { tResponse->
+                        var transactionJsonResponse = Gson().fromJson<String>(
+                            tResponse,
+                            String::class.java
+                        )
+                        tipCall(true)
+
+                    },
+                    onFailure = {
+                        ProgressUtils.dismissProgressDialog()
+
+                        /*runOnUiThread(Runnable {
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                errorMessage
+                            )
+                        })*/
+
+                    }
+                )
+                /* Process Tip Adjust */
+            }
+        }
     }
 
     private fun cashLogEventCall(bundle: Bundle) {
@@ -587,54 +687,6 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             val gatewayType = PaymentGatewayType.VALOR
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
-
-            val paymentCallback = object : PaymentCallback {
-                override fun onSuccess(transactionId: String) {
-
-                    var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
-                        transactionId,
-                        ValorSuccessResponse::class.java
-                    )
-                    transactionJsonResponse.nameValuePairs?.let {
-                        if (it.msg != null) {
-                            if (it.msg!!.contains(
-                                    "APPROVED"
-                                )
-                            ) {
-                                tipCall(true)
-                            } else {
-                                ProgressUtils.dismissProgressDialog()
-                                /* runOnUiThread(Runnable {
-                                     AlertUtils.showCustomAlert(
-                                         requireContext(),
-                                         it.msg
-                                     )
-                                 })*/
-                            }
-                        }
-                    }
-                }
-
-                override fun onFailure(errorMessage: String) {
-                    println("Payment Failed: $errorMessage")
-
-                    ProgressUtils.dismissProgressDialog()
-
-                    AlertUtils.showCustomAlertWithListenerWithOK(
-                        requireContext(),
-                        errorMessage,
-                        object :
-                            DialogInterface.OnClickListener {
-                            override fun onClick(p0: DialogInterface?, p1: Int) {
-                                try {
-                                    p0?.dismiss()
-                                } catch (e: Exception) {
-                                }
-                            }
-                        })
-                }
-            }
-
             singleTransaction?.ref_num.let { valorRefTxId ->
                 context?.let {
                     var valor = Valor(
@@ -651,6 +703,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                         tipAmount = tipAmount.toString(),
                         tipEntry = "1",
                         txn_type = "",
+                        isProd = Constants.paymentLive,
                         surchargeIndicator = "",
                         sale_refund = "",
                         ref_txn_id = "",
@@ -658,9 +711,50 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     )
 
                     paymentGateway.processPayment(
-                        context = it,
+                        context = it.applicationContext,
                         valor,
-                        callback = paymentCallback,
+                        onSuccess = {tResponse->
+                            var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
+                                tResponse,
+                                ValorSuccessResponse::class.java
+                            )
+                            transactionJsonResponse.nameValuePairs?.let {
+                                if (it.msg != null) {
+                                    if (it.msg!!.contains(
+                                            "APPROVED"
+                                        )
+                                    ) {
+                                        tipCall(true)
+                                    } else {
+                                        ProgressUtils.dismissProgressDialog()
+                                        /* runOnUiThread(Runnable {
+                                             AlertUtils.showCustomAlert(
+                                                 requireContext(),
+                                                 it.msg
+                                             )
+                                         })*/
+                                    }
+                                }
+                            }
+                        },
+                        onFailure = {errorMessage->
+                            println("Payment Failed: $errorMessage")
+
+                            ProgressUtils.dismissProgressDialog()
+
+                            AlertUtils.showCustomAlertWithListenerWithOK(
+                                requireContext(),
+                                errorMessage,
+                                object :
+                                    DialogInterface.OnClickListener {
+                                    override fun onClick(p0: DialogInterface?, p1: Int) {
+                                        try {
+                                            p0?.dismiss()
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                })
+                        }
                     )
                 }
             }
@@ -1373,15 +1467,25 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             )
         ) {
 
+            singleTransaction?.let {
+                val refundedAmount = String.format("%.2f", singleTransaction?.refundedAmount).toDouble()
+                val totalAmount = String.format("%.2f", singleTransaction?.totalAmount).toDouble()
 
-            val bundle = Bundle()
-            bundle.putDouble("totalTip", singleTransaction!!.tips)
-            bundle.putBoolean("isFromTransaction", true)
-            singleTransaction?.amount?.let { bundle.putDouble("totalPrice", it) }
-            findNavController().navigate(
-                R.id.action_transactionFragment_to_addTipsDialog,
-                bundle
-            )
+                if (refundedAmount == totalAmount) {
+
+                    AlertUtils.showCustomAlert(requireContext(), "Tips cannot be added to transactions that have been refunded.")
+
+                } else {
+                    val bundle = Bundle()
+                    bundle.putDouble("totalTip", singleTransaction!!.tips)
+                    bundle.putBoolean("isFromTransaction", true)
+                    singleTransaction?.amount?.let { bundle.putDouble("totalPrice", it) }
+                    findNavController().navigate(
+                        R.id.action_transactionFragment_to_addTipsDialog,
+                        bundle
+                    )
+                }
+            }
         }
 
 

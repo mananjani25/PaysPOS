@@ -343,8 +343,11 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                         if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
                             if (prefProvider.isManager() || prefProvider.isAdmin()) {
-                                if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false))
+                                if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
                                     makePaxPreAuthRequest()
+                                }else if (!prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+                                    makeDejavooPreAuthPaymentRequest()
+                                }
                                 else {
                                     isChecked = false
                                     activity?.let {
@@ -385,10 +388,14 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             binding.preAuthOption?.gone()
     }
 
+    private fun makeDejavooPreAuthPaymentRequest() {
+
+    }
+
     // To check selected order type
     private fun checkOrderType() {
 
-        setUpPreAuthData()
+//        setUpPreAuthData()
 
 //        saveVisibility()
         if (prefProvider.getValue(ORDER_TYPE, "").isEmpty()) {
@@ -803,22 +810,24 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
         var serviceChargeId = 0
         viewModel.serviceChargesList.forEach { serviceCharge ->
             if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                if (serviceCharge.max_guest_count!! >= maxValue) {
-                    maxValue = serviceCharge.max_guest_count
-                    serviceChargeId = serviceCharge.id
+                serviceCharge.max_guest_count?.let { maxGuestCount ->
+                    if (maxGuestCount >= maxValue) {
+                        maxValue = maxGuestCount
+                        serviceChargeId = serviceCharge.id
+                    }
                 }
             }
         }
         return serviceChargeId
     }
 
-    // calculat service charge base on guest count for dine in order type
-    fun getServiceChargeFromGuestCount(guestcount: Int): List<TbServiceCharge> {
+    // calculate service charge base on guest count for dine in order type
+    private fun getServiceChargeFromGuestCount(guestCount: Int): List<TbServiceCharge> {
         var list: List<TbServiceCharge> = listOf()
         var isApplied = false
         viewModel.serviceChargesList.forEach {
-            if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                if (isInRange(it.min_guest_count!!, it.max_guest_count!!, guestcount)) {
+            if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER && it.min_guest_count != null && it.max_guest_count != null && guestCount > 0) {
+                if (isInRange(it.min_guest_count, it.max_guest_count, guestCount)) {
                     isApplied = true
                     list = listOf(it)
                 }

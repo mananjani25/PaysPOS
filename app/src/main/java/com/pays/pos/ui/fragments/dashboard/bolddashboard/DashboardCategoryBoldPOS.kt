@@ -16,13 +16,11 @@ import android.view.*
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.*
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
@@ -75,6 +73,8 @@ import com.pays.pos.data.remote.Constants.SPLIT_ENABLE
 import com.pays.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.remote.Constants.UPDATE
+import com.pays.pos.data.remote.Constants.WIFI
+import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.pays.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
@@ -99,6 +99,8 @@ import com.pays.pos.utils.callback.ItemListner
 import com.pays.pos.utils.callback.SyncDataCallback
 import com.pays.pos.utils.extensions.*
 import com.pays.pos.utils.landi.LPrint
+import com.pays.pos.utils.landi.LPrint.FONT_SIZE_5X
+import com.pays.pos.utils.landi.LPrint.printCenter
 import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.scanner.helpers.ScannerAppEngine
 import com.pays.pos.utils.statusUtils.Resource
@@ -120,9 +122,26 @@ import com.zebra.scannercontrol.FirmwareUpdateEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
+import java.io.BufferedReader
 import java.io.IOException
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.io.OutputStream
+import java.io.UnsupportedEncodingException
 import java.lang.Runnable
+import java.net.HttpURLConnection
+import java.net.MalformedURLException
+import java.net.URL
+import java.security.InvalidKeyException
+import java.security.KeyFactory
+import java.security.NoSuchAlgorithmException
+import java.security.Signature
+import java.security.SignatureException
+import java.security.spec.InvalidKeySpecException
+import java.security.spec.PKCS8EncodedKeySpec
 import java.util.*
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
@@ -153,6 +172,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private val TAG = "DashboardCategoryBold"
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
+    private var innerPrinterCreated:Boolean = false
 
     /*-------------Customer Loyalty-------------*/
     private val customerListViewModel by activityViewModels<CustomerListViewModel>()
@@ -174,6 +194,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private var orderFloorDetails: GetOrderDetailsResponse.Data.FloorPlanTable =
         GetOrderDetailsResponse.Data.FloorPlanTable()
     var handler = Handler()
+
+    var charHSize: Int = 1
+    var asciiCharWidth: Int = 12
+    var cjkCharWidth: Int = 24
+    var orderContent: java.lang.StringBuilder = java.lang.StringBuilder()
 
     @Inject
     lateinit var rolePermission: RolePermission
@@ -276,10 +301,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.clearCartModelBackup()
         Log.e("ThisISInit", "InitStarted")
+
+
+
+       // Log.e("onLineStatus","onLineStatis:  ${onlineStatus("N43422AR01072")}")
+
+       // sign("", Constants.SUNMI_APP_ID, timestamp, Constants.RANDOM_NUMBER_FOR_SUNMI)
 
         lifecycleScope.launch {
             try {
@@ -1274,9 +1306,22 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     private fun loadCategoryFragment(fragment: Fragment) {
-        val fm: FragmentManager = requireActivity().supportFragmentManager
-        fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
-        Log.e("Dashboard Tracking ", "Track Dashboard - 855 Category Fragment")
+//        val fm: FragmentManager = requireActivity().supportFragmentManager
+//        fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
+
+        try {
+            val frameLayoutId = binding.frameLayout.id
+            if (frameLayoutId == View.NO_ID) {
+                Log.e("Fragment Debug", "FrameLayout has no valid ID.")
+                return
+            }
+
+            val fm: FragmentManager = requireActivity().supportFragmentManager
+            fm.beginTransaction().replace(frameLayoutId, fragment).commit()
+            Log.e("Dashboard Tracking", "Track Dashboard - 855 Category Fragment")
+        } catch (e: Exception) {
+            Log.e("Fragment Debug", "Error replacing fragment: ${fragment::class.java.simpleName}", e)
+        }
     }
 
 
@@ -2551,6 +2596,155 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         /* Start from here the object of the cart has come here, now just match the isEdited field and set the Updated parameter*/
         Log.d("DashboardCategoryBoldPOS_model:", Gson().toJson(cartModel))
+        if (data.name.startsWith("CloudPrint",true) && data.printer_type == WIFI){
+
+            val date = Date()
+            val random = Random()
+            val timestamp = java.lang.String.format("%d", date.time / 1000)
+
+            val body = java.lang.StringBuilder()
+            body.append("{")
+            body.append(java.lang.String.format("\"sn\":\"%s\"", "${data.ipAddress}"))
+            body.append(",")
+            body.append(java.lang.String.format("\"shop_id\":%d", 2241))
+            body.append("}")
+
+            orderContent.clear()
+            orderContent = java.lang.StringBuilder()
+            lineFeed(4)
+            setAlignment(1)
+
+            setCharacterSize(2,2)
+
+            cartModel?.let {
+                if (it.isEdited || isOrderUpdate) {
+                    appendText(
+                        "***** UPDATED *****"
+                    )
+                    lineFeed(2)
+
+                }
+            }
+
+            if (prefProvider.getValueboolean(ORDER_NUMBER_STARTING_FROM_ONE, false)) {
+                appendText("OrderID:${createOrderResponse.data?.order?.custom_order_id}")
+            } else {
+                appendText(":${createOrderResponse.data?.order?.id}")
+            }
+
+            lineFeed(2)
+            appendText(""+createOrderResponse.data?.order?.orderTypeName)
+            lineFeed(2)
+//        setCharacterSize(1,1)
+            setAlignment(0)
+            appendText("Employee:${createOrderResponse.data?.order?.employee.name}")
+            lineFeed(2)
+            appendText("${ getReceiptFormatDateFromUTCServer(
+                requireContext(),
+                createOrderResponse.data?.order?.createdAt.toString()
+            )
+            }")
+            lineFeed(1)
+            appendText("------------------------")
+            lineFeed(2)
+
+            var orderItems = createOrderResponse.data?.order?.orderItems ?: arrayListOf()
+            if (orderItems.isNotEmpty() && orderItems != null)
+
+                for (i in 0 until orderItems.size) {
+
+                    data.printerCategories.toCollection(arrayListOf()).forEach {
+                        if (it.id == orderItems[i].categoryId && it.categoryActive && it.printerEnable) {
+
+                            val obj = orderItems.get(i)
+
+
+                            if (obj.isItemEdited) {
+                                appendText("(U)" + obj.quantity.toString() + " " + obj.itemName.uppercase())
+                            } else {
+                                appendText(obj.quantity.toString() + " " + obj.itemName.uppercase())
+                            }
+
+                            lineFeed(1)
+                            if (obj.orderItemModifiers.isNotEmpty()) {
+                                for (j in 0 until obj.orderItemModifiers.size) {
+                                    val modifierObj = obj.orderItemModifiers.get(j)
+
+                                    appendText(
+                                        if (modifierObj.modifierQuantity == 1) {
+                                            "      " + modifierObj.name.uppercase()
+                                        } else {
+                                            "  " + modifierObj.modifierQuantity + "x  " + modifierObj.name.uppercase()
+                                        }
+                                    )
+                                    lineFeed(1)
+
+
+                                }
+                            }
+                            if (obj.note.isNotEmpty()) {
+                                appendText("  Note:" + obj.note)
+                                lineFeed(1)
+                            }
+
+
+                        }
+                    }
+                }
+
+
+
+
+            if(createOrderResponse.data?.order?.customer != null){
+                lineFeed(3)
+                appendText("Customer Details")
+                lineFeed(1)
+                appendText("------------------------")
+                lineFeed(2)
+
+
+                if (createOrderResponse.data?.order?.customer?.firstName != null && createOrderResponse.data?.order?.customer?.lastName != null){
+                    appendText(createOrderResponse.data?.order?.customer?.firstName+" "+createOrderResponse.data?.order?.customer?.lastName)
+                    lineFeed(1)
+                }
+
+                if (createOrderResponse.data?.order?.customer?.addresses?.isNotEmpty() == true){
+                    appendText(createOrderResponse.data?.order?.customer?.addresses?.get(0)?.fullAddress.toString())
+                    lineFeed(1)
+
+                }
+                if (createOrderResponse.data?.order?.customer?.phones?.isNotEmpty() == true){
+                    var phoneNo = createOrderResponse.data?.order?.customer?.phones?.size?.minus(1)
+                        ?.let { createOrderResponse.data?.order?.customer?.phones?.get(it)?.phoneNumber }
+                    appendText( MethodUtils.formatPhoneNumber(phoneNo.toString()))
+
+                    lineFeed(1)
+
+                }
+
+            }
+
+            if (createOrderResponse.data.order.note.isNotEmpty()){
+
+                setAlignment(1)
+                appendText("Order Note")
+                lineFeed(1)
+                appendText(createOrderResponse.data.order.note)
+            }
+
+            lineFeed(6)
+            cutPaper(true)
+
+
+
+            Log.e("checkKey","pushContent: checkSN:${data.ipAddress} ${pushContent(trade_no =
+            String.format("%s_%010d", "${data.ipAddress}", System.currentTimeMillis()),
+                "${data.ipAddress}", 1, 1, "您有新的订单", 0)}")
+
+
+
+        }
+        else{
 
         if (data.name.startsWith("CloudPrint", true)) {
 
@@ -3718,6 +3912,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 }
             }
+
+        }
         }
 
         /* } else {
@@ -7048,7 +7244,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 )
                 CoroutineScope(Dispatchers.IO).launch {
 
-                    if (ordertypelist.isNotEmpty()) {
+                    if (ordertypelist.isNotEmpty() && innerPrinterCreated ==false) {
+                        innerPrinterCreated = true
                         setupInnerPrinterAttributes(innerPrinterModel)
                     }
                 }
@@ -7192,4 +7389,311 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         }
     }
+
+
+    fun bytesToHexString(bytes: ByteArray): String {
+        val hexstr = java.lang.StringBuilder()
+        for (i in bytes) hexstr.append(String.format("%02x", i))
+        return hexstr.toString()
+    }
+    @Throws(java.lang.Exception::class)
+    fun generateSign(body: String, timestamp: String, nonce: String): String {
+
+        val msg = body + "889a389072224d10b641e90b9cc26856" + timestamp + nonce
+        val hmacSha256 = Mac.getInstance("HmacSHA256")
+        val secretKey = SecretKeySpec("1f486ca8d9a341408c8132b23f82f571".encodeToByteArray(), "HmacSHA256")
+        hmacSha256.init(secretKey)
+        val result = hmacSha256.doFinal(msg.toByteArray(charset("UTF-8")))
+        return bytesToHexString(result)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Throws(
+        NoSuchAlgorithmException::class,
+        InvalidKeySpecException::class,
+        InvalidKeyException::class,
+        SignatureException::class
+    )
+    fun sign(
+        body: String,
+        appId: String,
+        timestamp: String,
+        nonce: String,
+        rsaPrivateKey: String
+    ): String {
+        val content = body + appId + timestamp + nonce
+        val keyBytes: ByteArray =
+            java.util.Base64.getDecoder().decode(rsaPrivateKey.replace("(\\s)|(--.*--)".toRegex(), ""))
+        val pkcs8KeySpec = PKCS8EncodedKeySpec(keyBytes)
+        val keyFactory = KeyFactory.getInstance("RSA")
+        val priKey = keyFactory.generatePrivate(pkcs8KeySpec)
+        val signature: Signature = Signature.getInstance("SHA256withRSA")
+        signature.initSign(priKey)
+        signature.update(content.toByteArray())
+        return java.util.Base64.getEncoder().encodeToString(signature.sign())
+    }
+
+    fun httpPost(path: String, body: String,sn:String?=null): String? {
+        var connection: HttpURLConnection? = null
+        var `is`: InputStream? = null
+        var os: OutputStream? = null
+        var br: BufferedReader? = null
+        var result: String? = null
+
+        val date = Date()
+        val random = Random()
+        val timestamp = String.format("%d", date.time / 1000)
+        val nonce = String.format("%06d", random.nextInt(1000000))
+
+        try {
+            val url = URL("https://openapi.sunmi.com$path")
+            connection = url.openConnection() as HttpURLConnection
+            connection!!.requestMethod = "POST"
+            connection!!.connectTimeout = 15000
+            connection!!.readTimeout = 60000
+
+            connection!!.doOutput = true
+            connection!!.doInput = true
+            connection!!.setRequestProperty("Sunmi-Appid", Constants.SUNMI_APP_ID)
+            connection!!.setRequestProperty("Sunmi-Timestamp", timestamp)
+            connection!!.setRequestProperty("Sunmi-Nonce", nonce)
+            connection!!.setRequestProperty("Sunmi-Sign", generateSign(body, timestamp, nonce))
+            connection!!.setRequestProperty("Source", "openapi")
+            connection!!.setRequestProperty("Content-Type", "application/json")
+            os = connection!!.outputStream
+            os.write(body.toByteArray(charset("UTF-8")))
+            if (connection!!.responseCode == 200) {
+                viewModel.downloadFinished(false)
+                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
+                }
+
+                /*  if (sn.equals("N434227FT0790")) {
+                      orderContent.clear()
+                       orderContent = java.lang.StringBuilder()
+                      cloudQueuePrinting("N434227FT0738", 2241)
+                  }*/
+
+                /* if (path.contains("pushContent")){
+
+                     CoroutineScope(Dispatchers.IO).launch {
+                         delay(500)
+                         clearPrintJob(sn)
+                     }
+                 }*/
+
+                `is` = connection!!.inputStream
+                br = BufferedReader(InputStreamReader(`is`, "UTF-8"))
+
+                val sbf = StringBuffer()
+                var temp: String? = null
+                while ((br.readLine().also { temp = it }) != null) {
+                    sbf.append(temp)
+                    sbf.append("\n")
+                }
+                result = sbf.toString()
+            }
+            else{
+                viewModel.downloadFinished(false)
+                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_allOrdersFragment)
+                }
+            }
+        } catch (e: MalformedURLException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        } finally {
+            if (br != null) {
+                try {
+                    br.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            if (os != null) {
+                try {
+                    os.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            if (`is` != null) {
+                try {
+                    `is`.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            connection!!.disconnect()
+        }
+        return result
+    }
+
+    fun bindShop(sn: String?, shop_id: Int): String? {
+        val body = java.lang.StringBuilder()
+        body.append("{")
+        body.append(String.format("\"sn\":\"%s\"", sn))
+        body.append(",")
+        body.append(String.format("\"shop_id\":%d", shop_id))
+        body.append("}")
+        return httpPost("/v2/printer/open/open/device/bindShop", body.toString())
+    }
+
+    fun onlineStatus(sn: String?): String? {
+        val body = java.lang.StringBuilder()
+        body.append("{")
+        body.append(String.format("\"sn\":\"%s\"", sn))
+        body.append("}")
+        return httpPost("/v2/printer/open/open/device/onlineStatus", body.toString())
+    }
+
+    fun pushContent(
+        trade_no: String?,
+        sn: String?,
+        count: Int,
+        order_type: Int,
+        media_text: String?,
+        cycle: Int
+    ): String? {
+        val body = java.lang.StringBuilder()
+        body.append("{")
+        body.append(String.format("\"trade_no\":\"%s\"", "${System.currentTimeMillis()}"))
+        body.append(",")
+        body.append(String.format("\"sn\":\"%s\"", sn))
+        body.append(",")
+        body.append(String.format("\"order_type\":%d", order_type))
+        body.append(",")
+        body.append(java.lang.String.format("\"content\":\"%s\"", orderContent.toString()))
+        body.append(",")
+        body.append(String.format("\"count\":%d", count))
+        body.append(",")
+        body.append(String.format("\"media_text\":\"%s\"", media_text))
+        body.append(",")
+        body.append(String.format("\"cycle\":%d", cycle))
+        body.append("}")
+        return httpPost("/v2/printer/open/open/device/pushContent", body.toString(),sn)
+    }
+
+    fun appendText(text: String) {
+        try {
+            val bytes = text.toByteArray(charset("UTF-8"))
+            for (i in bytes) orderContent.append(String.format("%02x", i))
+        } catch (e: UnsupportedEncodingException) {
+        }
+    }
+
+    fun printAndExitPageMode() {
+        orderContent.append("0c")
+    }
+
+
+    fun cutPaper(full_cut: Boolean) {
+        orderContent.append("1d56" + (if ((full_cut)) "30" else "31"))
+    }
+    fun lineFeed(n: Int) {
+        for (i in 0 until n) orderContent.append("0a")
+    }
+
+
+    fun setAlignment(n: Int) {
+        if (n >= 0 && n <= 2) orderContent.append("1b61" + String.format("%02x", n))
+    }
+
+    fun clearPrintJob(sn: String?): String? {
+        Log.e(TAG,"chekSNCall: ${sn}")
+        val body = java.lang.StringBuilder()
+        body.append("{")
+        body.append(String.format("\"sn\":\"%s\"", sn))
+        body.append("}")
+        return httpPost("/v2/printer/open/open/device/clearPrintJob", body.toString(),sn)
+    }
+
+
+    // Append raw data.
+    fun appendRawData(bytes: ByteArray) {
+        for (i in bytes) orderContent.append(String.format("%02x", i))
+    }
+
+    // Append unicode character.
+    fun appendUnicode(unicode: Int, count: Int) {
+        if (count > 0) {
+            val text = StringBuilder()
+            for (i in 0 until count) text.append(unicode.toChar())
+            appendText(text.toString())
+        }
+
+    }
+
+    // [ESC 3] Set line spacing.
+    fun setLineSpacing(n: Int) {
+        if (n >= 0 && n <= 255) orderContent.append("1b33" + String.format("%02x", n))
+    }
+
+    // [ESC !] Set print modes.
+    fun setPrintModes(bold: Boolean, double_h: Boolean, double_w: Boolean) {
+        var n = 0
+        if (bold) n = n or 8
+        if (double_h) n = n or 16
+        if (double_w) n = n or 32
+        charHSize = if ((double_w)) 2 else 1
+        orderContent.append("1b21" + String.format("%02x", n))
+    }
+
+    // [HT] Jump to next TAB position.
+    fun horizontalTab(n: Int) {
+        for (i in 0 until n) orderContent.append("09")
+    }
+
+    // [ESC $] Set absolute print position.
+    fun setAbsolutePrintPosition(n: Int) {
+        if (n >= 0 && n <= 65535) orderContent.append(
+            "1b24" + String.format(
+                "%02x%02x",
+                (n and 0xff),
+                ((n shr 8) and 0xff)
+            )
+        )
+    }
+
+    // [ESC \] Set relative print position.
+    fun setRelativePrintPosition(n: Int) {
+        if (n >= -32768 && n <= 32767) orderContent.append(
+            "1b5c" + String.format(
+                "%02x%02x",
+                (n and 0xff),
+                ((n shr 8) and 0xff)
+            )
+        )
+    }
+
+
+    // [ESC -] Set underline mode.
+    fun setUnderlineMode(n: Int) {
+        if (n >= 0 && n <= 2) orderContent.append("1b2d" + String.format("%02x", n))
+    }
+
+    // [GS B] Set black-white reverse mode.
+    fun setBlackWhiteReverseMode(enabled: Boolean) {
+        orderContent.append("1d42" + (if ((enabled)) "01" else "00"))
+    }
+
+    // [ESC {] Set upside down mode.
+    fun setUpsideDownMode(enabled: Boolean) {
+        orderContent.append("1b7b" + (if ((enabled)) "01" else "00"))
+    }
+
+    fun setCharacterSize(h: Int, w: Int) {
+        var n = 0
+        if (h >= 1 && h <= 8) n = n or (h - 1)
+        if (w >= 1 && w <= 8) {
+            n = n or ((w - 1) shl 4)
+            charHSize = w
+        }
+        orderContent.append("1d21" + String.format("%02x", n))
+    }
+
+
 }

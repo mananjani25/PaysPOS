@@ -305,7 +305,7 @@ class PaymentBoldPosFragment : Fragment() {
                     LogUtil.logE(TAG, "dineInModel:  ${Gson().toJson(dineInModel)}")
                     prefProvider.setValue(SPLIT_DINEIN_CHECKOUT, Gson().toJson(dineInModel))
                     loadCategoryFragment(CheckoutDineInFragmentNew(dineInModel))
-                }, 100)
+                }, 200)
             } else {
                 if (prefProvider.getValue(SPLIT_DINEIN_CHECKOUT, "") != null) {
                     var string_gson = prefProvider.getValue(SPLIT_DINEIN_CHECKOUT, "")
@@ -331,7 +331,7 @@ class PaymentBoldPosFragment : Fragment() {
                         )
                         LogUtil.logE(TAG, "dineInModel:  ${Gson().toJson(dineInModel)}")
                         loadCategoryFragment(CheckoutDineInFragmentNew(dineInModel))
-                    }, 100)
+                    }, 200)
                 }
             }
 
@@ -342,7 +342,7 @@ class PaymentBoldPosFragment : Fragment() {
                         arguments?.getBoolean("isFromActiveOrder") == true
                     )
                 )
-            }, 250)
+            }, 350)
 
         }
         binding.layoutHeaderCheckout.imgDrawer.setOnSingleClickListener {

@@ -954,6 +954,11 @@
     <string name="change_mobile_number">Change mobile number</string>
     <string name="payment_amount_is_zero">Payment Amount is zero.</string>
     <string name="invalid_card">Invalid card</string>
+    <string name="pre_auth">Pre Auth</string>
+    <string name="are_you_sure_proceed">Would you like to proceed with the entered gift card number?</string>
+    <string name="please_connect_pax">Please connect the PAX device</string>
+    <string name="please_connect_payment_device">Please connect a payment device</string>
+    <string name="_not_supported">%1$s! not supported</string>
     <!-- Customer Loyalty -->
 </resources>
 

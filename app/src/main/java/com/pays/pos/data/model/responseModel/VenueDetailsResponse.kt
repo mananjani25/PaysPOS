@@ -125,14 +125,6 @@ data class VenueDetailsResponse(
         val report_start_time: String,
         @SerializedName("report_end_time")
         val report_end_time: String,
-        @SerializedName("app_id")
-        val valor_app_id: String?,
-        @SerializedName("app_key")
-        val valor_app_key: String?,
-        @SerializedName("epi")
-        val valor_epi: String?,
-        @SerializedName("channel_id")
-        val valor_channel_id: String?,
         @SerializedName("shift_report_configuration")
         val shift_report_configuration: ShiftRportConfiguration?,
         @SerializedName("time_zone_options")
@@ -142,7 +134,9 @@ data class VenueDetailsResponse(
         @SerializedName("show_cash_credit_price_on_customer_display")
         val show_cash_credit_price_on_customer_display: Boolean,
         @SerializedName("show_tip_screen_before_payment")
-        val show_tip_screen_before_payment: Boolean
+        val show_tip_screen_before_payment: Boolean,
+        @SerializedName("activated_payment_gateway")
+        val activatedPaymentGateway: String?
     ) {
         data class Printer(
             @SerializedName("customer_receipt_printers")
@@ -307,7 +301,23 @@ data class VenueDetailsResponse(
             @SerializedName("enabled_for_receiving_web_order")
             val enabled_for_receiving_web_order: Boolean? = null,
             @SerializedName("is_deleted")
-            var isDeleted: Boolean = false
+            var isDeleted: Boolean = false,
+            @SerializedName("app_id")
+            val app_id: String?="",
+            @SerializedName("app_key")
+            val app_key: String?="",
+            @SerializedName("epi")
+            val epi: String?="",
+            @SerializedName("channel_id")
+            val channel_id: String?="",
+            @SerializedName("auth_key")
+            val dejavoo_auth_key: String?="",
+            @SerializedName("register_id")
+            val dejavoo_register_id: String?="",
+            @SerializedName("tpn")
+            val dejavoo_tpn: String?="",
+            @SerializedName("auth_token")
+            val dejavoo_auth_token: String?="",
         )
     }
 }

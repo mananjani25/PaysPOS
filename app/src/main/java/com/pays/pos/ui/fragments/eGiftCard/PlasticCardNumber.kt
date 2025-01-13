@@ -1,5 +1,7 @@
 package com.pays.pos.ui.fragments.eGiftCard
 
+import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Message
@@ -7,7 +9,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -15,6 +16,7 @@ import com.google.gson.Gson
 import com.pax.poslink.ManageRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
+import com.pax.poslink.log.LogFilter.Const
 import com.pays.pos.R
 import com.pays.pos.data.entities.CartModel
 import com.pays.pos.data.entities.TbCartItem
@@ -24,13 +26,13 @@ import com.pays.pos.databinding.FragmentPlasticCardNumberBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.utils.AlertUtils
-import com.pays.pos.utils.calculateTipAmt
 import com.pays.pos.utils.extensions.invisible
 import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.paxUtils.SettingINI
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import java.lang.ref.WeakReference
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -43,6 +45,8 @@ class PlasticCardNumber : Fragment() {
     private val TAG = "PlasticCardNumber"
     private var customer: TbCustomer? = null
     private var posLink: PosLink = PosLink()
+    var fromPAXSwipe:Boolean=false
+    lateinit var weakContext:WeakReference<Context>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,6 +55,7 @@ class PlasticCardNumber : Fragment() {
     ): View? {
         binding = FragmentPlasticCardNumberBinding.inflate(inflater, container, false)
         binding.llKeypad?.tvDot?.invisible()
+        weakContext= WeakReference(requireActivity())
         return binding.root
     }
 
@@ -73,7 +78,7 @@ class PlasticCardNumber : Fragment() {
 //            posLink.CancelTrans()
 //        }catch (e:Exception){}
     }
-    private fun startPAXTestWithGiftCard() {
+    private fun startPAXWithGiftCard() {
         GlobalScope.launch {
             posLink.SetCommSetting(
                 SettingINI.getCommSettingFromFile(
@@ -106,6 +111,7 @@ class PlasticCardNumber : Fragment() {
 
                     withContext(Dispatchers.Main){
                         binding.apply {
+                            btnReadCard?.isClickable = true
                             var cardValue=""
                             if (response.PAN.isNullOrEmpty()){
                                 Log.d("VALID: ", "Here__Track: ${response.Track2Data.toString()}")
@@ -116,15 +122,14 @@ class PlasticCardNumber : Fragment() {
                             }
 
                             if (!cardValue.contains('*')){
+                                fromPAXSwipe=true
                                 edtAmount?.setText(cardValue)
                                 startProcessingWithGiftcard()
                             }else{
                                 AlertUtils.showCustomAlert(requireContext(), getString(R.string.invalid_card))
                             }
-
                         }
                     }
-
 
                     /*runOnUiThread(Runnable {
                         with(binding) {
@@ -134,11 +139,19 @@ class PlasticCardNumber : Fragment() {
                         }
                     })*/
                 } else {
-
+                    runOnUiThread(object : Runnable {
+                        override fun run() {
+                            binding.btnReadCard?.isClickable = true
+                        }
+                    })
                 }
-
+            }else{
+                runOnUiThread(object : Runnable {
+                    override fun run() {
+                        binding.btnReadCard?.isClickable = true
+                    }
+                })
             }
-
         }
     }
 
@@ -327,24 +340,48 @@ class PlasticCardNumber : Fragment() {
 
     }
 
+    private fun showAlertDialog(message:String){
+        runOnUiThread(kotlinx.coroutines.Runnable {
+            AlertUtils.showCustomAlert(requireContext(), message)
+        })
+    }
+
     private fun onClick() {
 
         binding.btnReadCard?.let {
             it.setOnSingleClickListener(object:View.OnClickListener{
                 override fun onClick(p0: View?) {
+                    when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
+                        Constants.PAX->{
+                            if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED,false)){
+                                countDownTimer?.cancel()
+                                binding.btnReadCard?.isClickable=false
 
-                    countDownTimer?.cancel()
-                    binding.btnReadCard?.isClickable=false
+                                countDownTimer = object : CountDownTimer(5000, 1000) {
+                                    override fun onTick(millisUntilFinished: Long) {
+                                    }
+                                    override fun onFinish() {
+                                        binding.btnReadCard?.isClickable=true
+                                    }
+                                }.start()
 
-                    countDownTimer = object : CountDownTimer(5000, 1000) {
-                        override fun onTick(millisUntilFinished: Long) {
+                                startPAXWithGiftCard()
+                            }else{
+                                showAlertDialog(getString(R.string.please_connect_pax))
+                            }
                         }
-                        override fun onFinish() {
-                            binding.btnReadCard?.isClickable=true
+                        Constants.DEJAVOO->{
+                            showAlertDialog(getString(R.string._not_supported,Constants.DEJAVOO))
                         }
-                    }.start()
+                        Constants.VALOR->{
+                            showAlertDialog(getString(R.string._not_supported,Constants.VALOR))
+                        }
+                        else->{
+                            showAlertDialog(getString(R.string.please_connect_payment_device))
+                        }
 
-                    startPAXTestWithGiftCard()
+                    }
+
                 }
             })
         }
@@ -370,7 +407,17 @@ class PlasticCardNumber : Fragment() {
 
 
         binding.txtNext?.setOnClickListener {
-            startProcessingWithGiftcard()
+            if (fromPAXSwipe) {
+                startProcessingWithGiftcard()
+            }else{
+                weakContext.get()?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(it,getString(R.string.are_you_sure_proceed),object: DialogInterface.OnClickListener{
+                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                            startProcessingWithGiftcard()
+                        }
+                    })
+                }
+            }
         }
 
 

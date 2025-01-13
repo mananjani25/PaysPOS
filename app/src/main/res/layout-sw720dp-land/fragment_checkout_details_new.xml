@@ -994,6 +994,8 @@
                     android:layout_height="wrap_content"
                     app:tint="@color/white"
                     android:src="@drawable/ic_round_qr_code_scanner_24"
+                    android:paddingEnd="@dimen/_5sdp"
+                    android:paddingStart="@dimen/_5sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/edtGiftCardNumber"
                     app:layout_constraintTop_toTopOf="parent" />

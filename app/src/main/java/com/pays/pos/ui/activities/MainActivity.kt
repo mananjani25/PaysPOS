@@ -69,6 +69,7 @@ import com.hosopy.actioncable.Subscription
 import com.pays.payments.design.TransactionType
 import com.pays.pos.MainApplication
 import com.pays.pos.R
+import com.pays.pos.data.entities.ActivePaymentGateway
 import com.pays.pos.data.entities.TbCustomer
 import com.pays.pos.data.model.GuestAttrQueue
 import com.pays.pos.data.model.PrinterJSONElementData
@@ -101,6 +102,7 @@ import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPO
 import com.pays.pos.ui.fragments.dineInNew.model.SyncDineInEvent
 import com.pays.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
+import com.pays.pos.ui.fragments.magtekPro.PaymentGatewayTypeViewModel
 import com.pays.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.Hardware
@@ -216,6 +218,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     private val dashBoardCategoryViewModel by viewModels<DashBoardCategoryViewModel>()
 
+    private val paymentGatewayTypeViewModel by viewModels<PaymentGatewayTypeViewModel>()
 
     @set:Inject
     internal var prefProvider: PrefProvider? = null
@@ -1433,6 +1436,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         super.onCreate(savedInstanceState)
         MainApplication.mainActivity = this
         permissionCheck()
+
 //        sdkHandler = SDKHandler(this, true)
         CoroutineScope(Dispatchers.IO).launch {
             attachFileLogger()

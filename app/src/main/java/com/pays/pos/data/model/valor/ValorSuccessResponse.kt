@@ -4,9 +4,64 @@ import com.google.gson.annotations.SerializedName
 
 data class ValorSuccessResponse(
 
-    @SerializedName("nameValuePairs") var nameValuePairs: NameValuePairs? = NameValuePairs()
+    @SerializedName("nameValuePairs") var nameValuePairs: NameValuePairs? = NameValuePairs(),
 
 ) {
+
+
+    data class Data (
+
+        @SerializedName("CARD_TYPE"               ) var CARDTYPE             : String? = null,
+        @SerializedName("EPI"                     ) var EPI                  : String? = null,
+        @SerializedName("LABEL"                   ) var LABEL                : String? = null,
+        @SerializedName("DATE"                    ) var DATE                 : String? = null,
+        @SerializedName("REF_TXN_ID"              ) var REFTXNID             : String? = null,
+        @SerializedName("TIME"                    ) var TIME                 : String? = null,
+        @SerializedName("TIMEZONE"                ) var TIMEZONE             : String? = null,
+        @SerializedName("AUTH_CODE"               ) var AUTHCODE             : String? = null,
+        @SerializedName("APPROVAL_CODE"           ) var APPROVALCODE         : String? = null,
+        @SerializedName("TOKEN"                   ) var TOKEN                : String? = null,
+        @SerializedName("RRN"                     ) var RRN                  : String? = null,
+        @SerializedName("TXN_TYPE"                ) var TXNTYPE              : String? = null,
+        @SerializedName("CARD_SCHEME"             ) var CARDSCHEME           : String? = null,
+        @SerializedName("PAN"                     ) var PAN                  : String? = null,
+        @SerializedName("RESPONSE_CODE"           ) var RESPONSECODE         : String? = null,
+        @SerializedName("CARDHOLDER_NAME"         ) var CARDHOLDERNAME       : String? = null,
+        @SerializedName("DBA_NAME"                ) var DBANAME              : String? = null,
+        @SerializedName("INVOICE_NO"              ) var INVOICENO            : String? = null,
+        @SerializedName("POS_ENTRY_MODE"          ) var POSENTRYMODE         : String? = null,
+        @SerializedName("BASE_AMOUNT"             ) var BASEAMOUNT           : String? = null,
+        @SerializedName("CUSTOM_FEE_AMOUNT"       ) var CUSTOMFEEAMOUNT      : String? = null,
+        @SerializedName("NET_AMOUNT"              ) var NETAMOUNT            : String? = null,
+        @SerializedName("TIP_AMOUNT"              ) var TIPAMOUNT            : String? = null,
+        @SerializedName("TAX_AMOUNT"              ) var TAXAMOUNT            : String? = null,
+        @SerializedName("DEVICE_MODEL"            ) var DEVICEMODEL          : String? = null,
+        @SerializedName("BATCH_NO"                ) var BATCHNO              : String? = null,
+        @SerializedName("STAN_NO"                 ) var STANNO               : String? = null,
+        @SerializedName("TRAN_NO"                 ) var TRANNO               : String? = null,
+        @SerializedName("POS_CONDITION_CODE"      ) var POSCONDITIONCODE     : String? = null,
+        @SerializedName("ORDER_DESCRIPTION"       ) var ORDERDESCRIPTION     : String? = null,
+        @SerializedName("PHONE"                   ) var PHONE                : String? = null,
+        @SerializedName("EMAIL"                   ) var EMAIL                : String? = null,
+        @SerializedName("VT_USERNAME"             ) var VTUSERNAME           : String? = null,
+        @SerializedName("LINE_ITEMS"              ) var LINEITEMS            : String? = null,
+        @SerializedName("DISCOUNT_LIST"           ) var DISCOUNTLIST         : String? = null,
+        @SerializedName("DISPLAY_MESSAGE"         ) var DISPLAYMESSAGE       : String? = null,
+        @SerializedName("IS_SETTLED"              ) var ISSETTLED            : String? = null,
+        @SerializedName("REFUND_AMOUNT"           ) var REFUNDAMOUNT         : String? = null,
+        @SerializedName("REFUND_COUNT"            ) var REFUNDCOUNT          : String? = null,
+        @SerializedName("IS_AUTH_COMPLETED"       ) var ISAUTHCOMPLETED      : String? = null,
+        @SerializedName("IS_REVERSAL"             ) var ISREVERSAL           : String? = null,
+        @SerializedName("IS_VOID"                 ) var ISVOID               : String? = null,
+        @SerializedName("TXN_ORIG_DATE"           ) var TXNORIGDATE          : String? = null,
+        @SerializedName("ADDITIONAL_DATA_LABEL_1" ) var ADDITIONALDATALABEL1 : String? = null,
+        @SerializedName("ADDITIONAL_DATA_VALUE_1" ) var ADDITIONALDATAVALUE1 : String? = null,
+        @SerializedName("ADDITIONAL_DATA_LABEL_2" ) var ADDITIONALDATALABEL2 : String? = null,
+        @SerializedName("ADDITIONAL_DATA_VALUE_2" ) var ADDITIONALDATAVALUE2 : String? = null,
+        @SerializedName("SUBSCRIPTION_ID"         ) var SUBSCRIPTIONID       : String? = null,
+        @SerializedName("ECOMM_CHANNEL"           ) var ECOMMCHANNEL         : String? = null
+
+    )
     data class NameValuePairs(
 
         @SerializedName("note") var note: String? = null,
