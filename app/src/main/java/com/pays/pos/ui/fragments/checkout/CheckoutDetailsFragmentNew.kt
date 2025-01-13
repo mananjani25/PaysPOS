@@ -39,7 +39,6 @@ import com.pax.poslink.broadpos.BroadPOSCommunicator
 import com.pax.poslink.fullIntegration.InputAccount
 import com.pax.poslink.fullIntegration.InputAccount.InputAccountCallback
 import com.pays.payments.design.*
-import com.pays.pos.MainApplication
 import com.pays.pos.R
 import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.requestModel.*
@@ -3881,6 +3880,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                         // Split the data into key-value pairs
                         val keyValuePairs = ExtData.split(",")
+/*
 
                         // Create a map to store the parsed data
                         val dataMap = mutableMapOf<String, String>()
@@ -3894,16 +3894,45 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 dataMap[key] = value
                             }
                         }
+*/
+
 
                         // Access the specific values
-                        cardLastDigits = dataMap["AcntLast4"] ?: "Not Found"
-                        EDCType = dataMap["CardType"] ?: "Not Found"
+                        cardLastDigits = getPaymentDetails(keyValuePairs,"AcntLast4")?:"Not Found"
+                        EDCType = getPaymentDetails(keyValuePairs,"CardType")?:"Not Found"
+//                        EDCType = dataMap["CardType"] ?: "Not Found"
 
 //                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
                         if (Message.equals("Canceled") || Message.equals("Error")) {
                             dismissProgressDialogWithAlert(RespMSG.replace("%20", " "))
                         } else if (Message.contains("Approved")) {
-                            makePaymentCreditCardDejavoo(RefId, ExtData)
+//                            Check for Order Types
+                            if (prefProvider.getValue(
+                                    ORDER_TYPE,
+                                    TAKEOUT
+                                ).equals(GIFT_CARD)
+                            ) {
+                                if (prefProvider.getValueboolean(
+                                        Constants.IS_ADD_VALUE_IN_GIFT_CARD,
+                                        false
+                                    )
+                                ) {
+                                    giftCardViewModel.paxResponse = Constants.DEJAVOO
+                                    giftCardViewModel.cardNumberLast4 = cardLastDigits
+                                    giftCardViewModel.cardNamePax = EDCType
+                                    giftCardViewModel.transactionID = RefId
+                                    addValueInGiftCardUsingCard()
+                                }else{
+                                    giftCardViewModel.paxResponse = Constants.DEJAVOO
+                                    giftCardViewModel.cardNumberLast4 = cardLastDigits
+                                    giftCardViewModel.cardNamePax = EDCType
+                                    giftCardViewModel.transactionID = RefId
+                                    sellGiftCardUsingCard()
+                                }
+
+                            }else{
+                                makePaymentCreditCardDejavoo(RefId, ExtData)
+                            }
                         }
                     },
                     onFailure = { errorMessage ->
@@ -3922,6 +3951,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     }
                 )
             }
+        }
+    }
+
+    private fun getPaymentDetails(keyValuePairs: List<String>, toFind: String): String? {
+        try {
+            var key = keyValuePairs.filter { it.contains(toFind) }.first()
+            return key.substring(key.lastIndexOf('=')+1)
+        }catch (e:Exception){
+            return ""
         }
     }
 
@@ -4589,51 +4627,30 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                             "APPROVAL"
                                         )
                                     ) {
+                                        it.MASKEDPAN?.let {
+                                            cardLastDigits=it.substring(it.length-4)
+                                        }
                                         if (prefProvider.getValue(
                                                 ORDER_TYPE,
                                                 TAKEOUT
-                                            ) == GIFT_CARD
+                                            ).equals(GIFT_CARD)
                                         ) {
                                             if (prefProvider.getValueboolean(
                                                     Constants.IS_ADD_VALUE_IN_GIFT_CARD,
                                                     false
                                                 )
                                             ) {
-                                                if (prefProvider.getValue(
-                                                        ORDER_TYPE,
-                                                        TAKEOUT
-                                                    ) == GIFT_CARD
-                                                ) {
-                                                    if (prefProvider.getValueboolean(
-                                                            Constants.IS_ADD_VALUE_IN_GIFT_CARD,
-                                                            false
-                                                        )
-                                                    ) {
-                                                        giftCardViewModel.paxResponse =
-                                                            ""/*response.ExtData*/
-                                                        giftCardViewModel.cardNumberLast4 =
-                                                            ""/*response.BogusAccountNum*/
-                                                        giftCardViewModel.cardNamePax =
-                                                            ""/*response.CardType*/
-                                                        giftCardViewModel.transactionID =
-                                                            it.TXNID.toString()/*response.PaymentTransInfo.Token*/
-                                                        addValueInGiftCardUsingCard()
-                                                    } else {
-                                                        giftCardViewModel.paxResponse =
-                                                            ""/*response.ExtData*/
-                                                        giftCardViewModel.cardNumberLast4 =
-                                                            ""/*response.BogusAccountNum*/
-                                                        giftCardViewModel.cardNamePax =
-                                                            ""/*response.CardType*/
-                                                        giftCardViewModel.transactionID =
-                                                            it.TXNID.toString()/*response.PaymentTransInfo.Token*/
-                                                        sellGiftCardUsingCard()
-                                                    }
-                                                } else {
-                                                    makePaymentCreditCardValor(it.TXNID, it.TRANNO)
-                                                }
+                                                giftCardViewModel.paxResponse = Constants.VALOR
+                                                giftCardViewModel.cardNumberLast4 = cardLastDigits
+                                                giftCardViewModel.cardNamePax = it.ISSUER.toString()
+                                                giftCardViewModel.transactionID = it.TXNID.toString()
+                                                addValueInGiftCardUsingCard()
                                             } else {
-                                                makePaymentCreditCardValor(it.TXNID, it.TRANNO)
+                                                giftCardViewModel.paxResponse = Constants.VALOR
+                                                giftCardViewModel.cardNumberLast4 = cardLastDigits
+                                                giftCardViewModel.cardNamePax = it.ISSUER.toString()
+                                                giftCardViewModel.transactionID = it.TXNID.toString()
+                                                sellGiftCardUsingCard()
                                             }
                                         } else {
                                             dismissProgressDialogWithAlert()
