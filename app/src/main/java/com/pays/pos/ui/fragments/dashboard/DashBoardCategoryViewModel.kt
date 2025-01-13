@@ -216,6 +216,7 @@ class DashBoardCategoryViewModel @Inject constructor(
      */
     var dineInItemsBeforeUpdate = arrayListOf<TbCartItem>()
     var oldDineInItems: ArrayList<TbCartItem> = arrayListOf()
+    var oldItemListIds: ArrayList<Int> = arrayListOf()
     var isDineInUpdate = false
     var dineInResult = MutableLiveData<Boolean>(false)
     var dineInResultCreateOrder = MutableLiveData<Boolean>(false)
@@ -3344,7 +3345,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         if (list[i].itemId == item.itemId && list[i].guestIndexForDineIn == dineInHeaderPosition) {
                                             if (list[i].itemId == item.itemId && checkVariationNew(
                                                     list[i], item
-                                                ) && checkModifierNew(list[i], item)
+                                                ) && checkModifierNew(list[i], item) && !list[i].isFired
                                             ) {
 
 //                                            if (list[i].guestIndexForDineIn == item.guestIndexForDineIn) {

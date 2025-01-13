@@ -80,6 +80,7 @@ class TbCartItem : Parcelable {
     var orderType: String = ""
     var orderTypeName: String = ""
     var orderTypeId: Int = 0
+    var isOldDineInItem: Boolean = false
 
     fun convertToCartItem(item: TbItem, model: TbItem): TbCartItem {
         Log.e("GetItemForCheck", "item1  ${Gson().toJson(item)}")
