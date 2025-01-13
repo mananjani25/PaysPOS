@@ -1256,7 +1256,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                 binding.liinearInfoLayout.layoutParams.height =
                                     resources.getDimension(R.dimen._70sdp).toInt()
 
-                                binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                                if(prefProvider.getValue(ORDER_TYPE,"") != DINE_IN)
+                                    binding.relativeLoylatyPoints.visibility = View.VISIBLE
                                 binding.lblLoyaltyPoints.visibility = View.VISIBLE
                                 binding.lblLoyaltyBalance.visibility = View.VISIBLE
                                 LogUtil.logE(TAG, "InsideLoyalty")
@@ -1322,7 +1323,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         if (viewModel.loyaltyPointCondition(data)) {
                             binding.liinearInfoLayout.layoutParams.height =
                                 resources.getDimension(R.dimen._70sdp).toInt()
-                            binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                            if(prefProvider.getValue(ORDER_TYPE,"") != DINE_IN)
+                                binding.relativeLoylatyPoints.visibility = View.VISIBLE
                             binding.lblLoyaltyPoints.visibility = View.VISIBLE
                             binding.lblLoyaltyBalance.visibility = View.VISIBLE
 
@@ -2688,7 +2690,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
                             binding.liinearInfoLayout.layoutParams.height =
                                 resources.getDimension(R.dimen._70sdp).toInt()
-                            binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                            if(prefProvider.getValue(ORDER_TYPE,"") != DINE_IN)
+                                binding.relativeLoylatyPoints.visibility = View.VISIBLE
                             binding.lblLoyaltyPoints.visibility = View.VISIBLE
                             binding.lblLoyaltyBalance.visibility = View.VISIBLE
                             binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
@@ -2732,7 +2735,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     } else {
                         binding.liinearInfoLayout.layoutParams.height =
                             resources.getDimension(R.dimen._70sdp).toInt()
-                        binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                        if(prefProvider.getValue(ORDER_TYPE,"") != DINE_IN)
+                            binding.relativeLoylatyPoints.visibility = View.VISIBLE
                         binding.lblLoyaltyPoints.visibility = View.VISIBLE
                         binding.lblLoyaltyBalance.visibility = View.VISIBLE
 
@@ -2833,7 +2837,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 if (viewModel.loyaltyPointCondition(data)) {
                     binding.liinearInfoLayout.layoutParams.height =
                         resources.getDimension(R.dimen._70sdp).toInt()
-                    binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                    if(prefProvider.getValue(ORDER_TYPE,"") != DINE_IN)
+                        binding.relativeLoylatyPoints.visibility = View.VISIBLE
                     binding.lblLoyaltyPoints.visibility = View.VISIBLE
                     binding.lblLoyaltyBalance.visibility = View.VISIBLE
 
