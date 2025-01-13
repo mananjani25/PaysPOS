@@ -3839,9 +3839,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun makeDejavooPaymentRequest() {
-        CoroutineScope(Dispatchers.Main).launch {
+        /*CoroutineScope(Dispatchers.Main).launch {
             ProgressUtils.showProgressDialog("Please wait...", requireActivity(), 0)
-        }
+        }*/
+        runOnUiThread(object : java.lang.Runnable {
+            override fun run() {
+                showProgressDialog()
+            }
+        })
         paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
         paymentCoroutineScope.launch {
             val gatewayType = PaymentGatewayType.DEJAVOO
@@ -4597,9 +4602,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
     private fun makeValorPaymentRequest() {
-        CoroutineScope(Dispatchers.Main).launch {
+       /* CoroutineScope(Dispatchers.Main).launch {
             ProgressUtils.showProgressDialog("Please wait...", requireActivity(), 0)
-        }
+        }*/
+
+        runOnUiThread(object : java.lang.Runnable {
+            override fun run() {
+                showProgressDialog()
+            }
+        })
 
         if (this@CheckoutDetailsFragmentNew::paymentCoroutineScope.isInitialized) {
             if (!paymentCoroutineScope.isActive) {
@@ -4671,10 +4682,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                         ignoreCase = true
                                     ) || this.msg?.contains("ready", ignoreCase = true) ?: false
                                 ) {
-
+/*
                                     Handler(Looper.getMainLooper()).postDelayed({
                                         ProgressUtils.updateMessage("It is taking longer than usual, Please wait...")
-                                    }, 100)
+                                    }, 100)*/
                                     makeValorPaymentRequest()
                                     return@processPayment
                                 }
