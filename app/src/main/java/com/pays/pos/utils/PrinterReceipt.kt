@@ -5851,7 +5851,7 @@ fun addWholeTbItemToGuestInnerLandi(
                     } else {
                         "   " + it.modifier_quantity + "x " + it.name
                     },
-                    "" + MethodUtils.roundOffAmount(it.price * it.itemQuantity),
+                    "" + MethodUtils.roundOffAmount(it.price * it.itemQuantity * it.modifier_quantity),
                     48
                 ).toString()
             )
