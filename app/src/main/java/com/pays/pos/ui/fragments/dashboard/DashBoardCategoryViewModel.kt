@@ -4982,7 +4982,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 CoroutineScope(Dispatchers.IO).async {
                     cartModel = getManualSaleFromCart(prefProvider.getValueInt(EMPLOYEE_ID, -1))
-                    if (cartModel==null && getAllCartModels() != null){
+                    if (cartModel==null && getAllCartModels() != null && !getAllCartModels().isEmpty()){
                         cartModel = getAllCartModels().get(0)
                     }
                 }.await()
