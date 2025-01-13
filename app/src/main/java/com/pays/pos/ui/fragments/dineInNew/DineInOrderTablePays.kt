@@ -78,7 +78,6 @@ import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.utils.*
-import com.pays.pos.utils.extensions.liveSnackBar
 import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.statusUtils.Status
 import com.epson.epos2.printer.Printer
@@ -93,9 +92,7 @@ import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
 import com.pays.pos.ui.fragments.payment.OrderCompleteFragment
 import com.pays.pos.utils.PrintSunmiUtils.Companion.addValue
-import com.pays.pos.utils.extensions.gone
-import com.pays.pos.utils.extensions.runOnUiThread
-import com.pays.pos.utils.extensions.visible
+import com.pays.pos.utils.extensions.*
 import com.pays.pos.utils.landi.LPrint
 import com.pays.pos.utils.landi.LPrint.FONT_B
 import com.pays.pos.utils.landi.LPrint.printCenter
@@ -3423,10 +3420,12 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                 }
 
 
-                            if(kitchenDineInPrinters.isNotEmpty() /*&& prefProvider.employeeId() == baseResponse.employeeId*/)
+                            if(kitchenDineInPrinters.isNotEmpty() /*&& prefProvider.employeeId() == baseResponse.employeeId*/) {
                                 checkForAutoFire(true)
-//                            else
-//                                checkForAutoFire(false)
+                                binding.txtFireAll.invisible()
+                            } else
+                                binding.txtFireAll.visible()
+
                         }
 
                         //  binding.txtTotalAmountNew.setText("${MethodUtils.roundOffAmount(totalAmtnew)}")
