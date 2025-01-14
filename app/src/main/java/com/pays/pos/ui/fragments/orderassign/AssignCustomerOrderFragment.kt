@@ -369,49 +369,54 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
     }
 
     private fun onSelectingCustomer(pos: Int) {
-        val customer = adapter.getItem(pos)
-        prefProvider.setValue(
-            Constants.CUSTOMER_NAME,
-            customer.first_name + " " + customer.last_name
-        )
+        try {
+            val customer = adapter.getItem(pos)
+            prefProvider.setValue(
+                Constants.CUSTOMER_NAME,
+                customer.first_name + " " + customer.last_name
+            )
 
-        prefProvider.setValue(
-            Constants.RECEIPT_CUSTOMER_NAME,
-            customer.first_name + " " + customer.last_name
-        )
-        prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
-        prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
-        customer.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
-        prefProvider.saveCustomerData(customer)
-        val result = Bundle().apply {
-            putParcelable("data", customer)
-            putBoolean("OPEN_ORDER", false)
-            putString("SELECTED_DATE", selectedDate)
-            putBoolean("isEdit", true)
-            putBundle("updateBundle", arguments)
-            putParcelableArrayList("cartList", cartList)
-            putString(Constants.KEY, "FROM_CUSTOMER")
+            prefProvider.setValue(
+                Constants.RECEIPT_CUSTOMER_NAME,
+                customer.first_name + " " + customer.last_name
+            )
+            prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+            prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+            customer.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
+            prefProvider.saveCustomerData(customer)
+            val result = Bundle().apply {
+                putParcelable("data", customer)
+                putBoolean("OPEN_ORDER", false)
+                putString("SELECTED_DATE", selectedDate)
+                putBoolean("isEdit", true)
+                putBundle("updateBundle", arguments)
+                putParcelableArrayList("cartList", cartList)
+                putString(Constants.KEY, "FROM_CUSTOMER")
 
-            isFromDineIn?.let { putBoolean("DINE_IN", it) }
-            dineInPosition?.let {
-                LogUtil.logE(TAG, "position:  $it")
-                putInt("position", it)
+                isFromDineIn?.let { putBoolean("DINE_IN", it) }
+                dineInPosition?.let {
+                    LogUtil.logE(TAG, "position:  $it")
+                    putInt("position", it)
+                }
             }
-        }
 
-        if (isFromDineIn == true) {
-            LogUtil.logE(TAG, "isFromDineIn:  ${isFromDineIn}")
-            setFragmentResult("request_key_customer_dine_in", result)
-        } else {
-            if (isPhoneOrder == true) {
-                setFragmentResult("request_key_customer_phone_order", result)
-            } else
-                setFragmentResult("request_key_customer", result)
-        }
+            if (isFromDineIn == true) {
+                LogUtil.logE(TAG, "isFromDineIn:  ${isFromDineIn}")
+                setFragmentResult("request_key_customer_dine_in", result)
+            } else {
+                if (isPhoneOrder == true) {
+                    setFragmentResult("request_key_customer_phone_order", result)
+                } else
+                    setFragmentResult("request_key_customer", result)
+            }
 
 //        val navController =
 //        navController.previousBackStackEntry?.savedStateHandle?.set("data",result)
+        }catch (e:Exception) {
+            Log.e("PAYS ERROR",e.message.toString())
+        }
         findNavController().popBackStack()
+
     }
 
     private fun navigateToEditCustomer(message: String, customer: TbCustomer) {
