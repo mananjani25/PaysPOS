@@ -2330,7 +2330,6 @@ class TransactionDetailsFragment : Fragment() {
                 }
 
                 Log.d("Data_paymentDetailsResponse: ",Gson().toJson(paymentDetailsResponse.data.order.refund_detail.refunded_amount))
-                Log.d("Data_paymentDetailsResponse: ",Gson().toJson(paymentDetailsResponse.data.order.payment_status))
                 if (!paymentDetailsResponse.data.order.refund_detail.refunded_amount.equals(0.0) && paymentDetailsResponse.data.order.payment_status != "Cancelled") {
                     binding.llRefundAmount.visibility = View.VISIBLE
                     binding.tvtipadd.visibility = View.GONE
@@ -2393,9 +2392,6 @@ class TransactionDetailsFragment : Fragment() {
                 }
 
 
-
-
-
                 if (MethodUtils.isEnableCashDiscount(requireContext())) {
                     if (paymentDetailsResponse.data.payment_type == "Card") {
                         if (paymentDetailsResponse.data.cash_discount_type == "SurCharge") {
@@ -2435,7 +2431,6 @@ class TransactionDetailsFragment : Fragment() {
                 } else {
                     binding.linearCashDiscount.visibility = View.GONE
                 }
-
 
                 ProgressUtils.dismissProgressDialog()
             }
