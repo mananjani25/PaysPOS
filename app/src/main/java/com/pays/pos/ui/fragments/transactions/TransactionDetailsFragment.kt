@@ -2329,6 +2329,8 @@ class TransactionDetailsFragment : Fragment() {
                     binding.llLoyaltyPoints.visibility = View.VISIBLE
                 }
 
+                Log.d("Data_paymentDetailsResponse: ",Gson().toJson(paymentDetailsResponse.data.order.refund_detail.refunded_amount))
+                Log.d("Data_paymentDetailsResponse: ",Gson().toJson(paymentDetailsResponse.data.order.payment_status))
                 if (!paymentDetailsResponse.data.order.refund_detail.refunded_amount.equals(0.0) && paymentDetailsResponse.data.order.payment_status != "Cancelled") {
                     binding.llRefundAmount.visibility = View.VISIBLE
                     binding.tvtipadd.visibility = View.GONE
@@ -2352,7 +2354,7 @@ class TransactionDetailsFragment : Fragment() {
                      */
 
                     if (total.toDouble() <= refundedAmount.toDouble() /*refundedAmount.toDouble() > 0.0*/
-                        || paymentDetailsResponse.data.order.payment_status == "Cancelled"
+                        || (total.toDouble()-0.10) <= refundedAmount.toDouble()   || paymentDetailsResponse.data.order.payment_status == "Cancelled"
                     ) {
                         binding.tvIssueRefund.visibility = View.GONE
                         binding.tvtipadd.visibility = View.GONE
@@ -2433,8 +2435,6 @@ class TransactionDetailsFragment : Fragment() {
                 } else {
                     binding.linearCashDiscount.visibility = View.GONE
                 }
-
-
 
 
                 ProgressUtils.dismissProgressDialog()

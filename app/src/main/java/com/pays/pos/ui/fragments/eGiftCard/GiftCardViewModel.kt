@@ -715,7 +715,7 @@ class GiftCardViewModel @Inject constructor(
 
         if (magensaResponse != null) {
             try {
-                if (!magensaResponse!!.contains('<') && !magensaResponse!!.contains('>')) {
+                if (!magensaResponse!!.contains('<') && !magensaResponse!!.contains('>') && !magensaResponse.equals(Constants.DEJAVOO,ignoreCase = true)) {
 
                     val model = Gson().fromJson(
                         magensaResponse,
