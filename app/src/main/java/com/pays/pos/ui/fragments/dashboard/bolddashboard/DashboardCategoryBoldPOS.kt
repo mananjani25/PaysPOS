@@ -1914,6 +1914,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         if(foundItem == null) {
                                             CoroutineScope(Dispatchers.IO).launch {
                                                 viewModel.addItemToCartItems(item)
+
+                                                viewModel.cartModel.let {
+                                                    if (it != null) {
+                                                        viewModel.taxBifurcationCalculationNew(
+                                                            item,
+                                                            it, "ADD", false
+                                                        )
+                                                    }
+                                                }
+                                                try {
+                                                    viewModel.updateCartModel(viewModel.cartModel!!)
+                                                } catch (e: Exception) {
+                                                }
                                             }
                                         }else {
                                             //insert dine in
@@ -1945,8 +1958,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                     viewModel.updateCartModel(viewModel.cartModel!!)
                                                 } catch (e: Exception) {
                                                 }
+
                                             }
+
                                         }
+
+
 
                                         try {
                                             if (viewModel.currentCartItems.size == 1) {
