@@ -13274,52 +13274,63 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         CoroutineScope(Dispatchers.Main).launch {
 
-                            /**
-                             * This will notify items already printed to kitchen
-                             */
+                            try {
+                                /**
+                                 * This will notify items already printed to kitchen
+                                 */
 
-                            dashboardViewModel.itemsFiredToTheKitchenSuccesfully.observe(
-                                viewLifecycleOwner
-                            ) { it ->
+                                dashboardViewModel.itemsFiredToTheKitchenSuccesfully.observe(
+                                    viewLifecycleOwner
+                                ) { it ->
 
-                                if (firedItemsList.isNotEmpty()) {
-                                    if (it) {
-                                        dashboardViewModel.itemsFiredToTheKitchenSuccesfully.value =
-                                            false
+                                    if (firedItemsList.isNotEmpty()) {
+                                        if (it) {
+                                            dashboardViewModel.itemsFiredToTheKitchenSuccesfully.value =
+                                                false
 
-                                        val list = dineInTableAdapter.getList()
+                                            val list = dineInTableAdapter.getList()
 
-                                        firedItemsList.forEach { index ->
-                                            list[index].item?.isFired = true
-                                            Log.e("DATA ", Gson().toJson(list[index]))
-                                        }
+                                            firedItemsList.forEach { index ->
+                                                list[index].item?.isFired = true
+                                                Log.e("DATA ", Gson().toJson(list[index]))
+                                            }
 
 
-                                        dineInTableAdapter.setList(ArrayList(list),notPayAnyAmount)
-                                        firedItemsList = mutableListOf()
-
-                                        if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
-                                            var fireAllIds =
-                                                android.text.TextUtils.join(",", builder)
-                                            viewModel.fireItemToKitchen(
-                                                orderId ?: 0,
-                                                true,
-                                                fireAllIds,
-                                                true
+                                            dineInTableAdapter.setList(
+                                                ArrayList(list),
+                                                notPayAnyAmount
                                             )
+                                            firedItemsList = mutableListOf()
+
+                                            if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
+                                                var fireAllIds =
+                                                    android.text.TextUtils.join(",", builder)
+                                                viewModel.fireItemToKitchen(
+                                                    orderId ?: 0,
+                                                    true,
+                                                    fireAllIds,
+                                                    true
+                                                )
+                                            }
                                         }
                                     }
                                 }
+                            }catch (e:Exception) {
+                                e.printStackTrace()
                             }
                         }
 
 
                     } else {
-                        runOnUiThread {
-                            AlertUtils.showCustomAlert(
-                                requireContext(),
-                                "Please connect kitchen printer!"
-                            )
+                        try {
+                            runOnUiThread {
+                                AlertUtils.showCustomAlert(
+                                    requireContext(),
+                                    "Please connect kitchen printer!"
+                                )
+                            }
+                        }catch (e:Exception) {
+                            e.printStackTrace()
                         }
                     }
                 }
