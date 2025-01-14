@@ -677,7 +677,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.txtNote.visibility = View.VISIBLE
             }
 
-            if (model.item?.isFired == true) {
+            if (model.item?.isFired == true || model.item?.isPaid == true) {
                 binding.chkIsFired.isChecked = true
                 binding.chkIsFired.isPressed = true
                 binding.chkIsFired.isEnabled = false
@@ -714,7 +714,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
             //item
-            if (model.item?.isPaid == true && model.item?.isFired == true) {
+            if (model.item?.isPaid == true || model.item?.isFired == true) {
                 binding.checkedForFire?.visibility = View.GONE
             } else {
                 binding.checkedForFire?.visibility = View.VISIBLE
