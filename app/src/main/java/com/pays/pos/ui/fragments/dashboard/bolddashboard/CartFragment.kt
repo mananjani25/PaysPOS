@@ -3154,14 +3154,26 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 .isNotEmpty() && dineInCartAdapter.getList().size > 2 && cartModelsList.isNotEmpty()
         ) {
             if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
+
+                val dineIn = cartModelsList[0].dineInList as ArrayList<DineInModel>
+
                 cartModelsList.get(0).dineInList?.forEach {
                     if (it.title == dineInCartAdapter.getList()[position].title) {
+
+                        viewModel.destroyedDineGuestsList.add(it)
+
                         it.apply {
                             this.isDestroy = true
+
                             viewModel.updateDineInCartItemGuestDineInPositions(position)
                         }
+
                     }
                 }
+
+                dineIn.removeAll(viewModel.destroyedDineGuestsList)
+                cartModelsList[0].dineInList = dineIn
+
             } else {
                 val dineIn = cartModelsList[0].dineInList as ArrayList<DineInModel>
                 val destroyedGuestsList: ArrayList<DineInModel> = ArrayList()
@@ -3484,6 +3496,14 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             }
 
                             val valuess = cartModelsList[0]
+
+
+
+                            val dineIn = cartModelsList[0].dineInList as ArrayList<DineInModel>
+
+                            cartModelsList[0].dineInList = dineIn + viewModel.destroyedDineGuestsList
+
+                            viewModel.destroyedDineGuestsList.clear()
 
 
                             val request = viewModel.updateOrder(cartModelsList[0])

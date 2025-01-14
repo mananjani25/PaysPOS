@@ -228,6 +228,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     var orderAttributeRequestModel = OrderAttributeRequestModel()
     var dineInItemClickedFromCart = false
     var dineInAdapterBackup: DineInTableAdapter? = null
+    //destroyed guests for dine in
+    val destroyedDineGuestsList: ArrayList<DineInModel> = ArrayList()
 
     /**
      *  currentDineInItems keeps track of all dine in Items even if they are destroyed
