@@ -3301,6 +3301,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                     }
                                     //}
 
+
                                     clearCustomer()
                                     viewModel.deleteCart()
                                     EventBus.getDefault().post(
