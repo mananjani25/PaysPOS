@@ -3160,11 +3160,10 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 cartModelsList.get(0).dineInList?.forEach {
                     if (it.title == dineInCartAdapter.getList()[position].title) {
 
-                        viewModel.destroyedDineGuestsList.add(it)
 
                         it.apply {
                             this.isDestroy = true
-
+                            viewModel.destroyedDineGuestsList.add(it)
                             viewModel.updateDineInCartItemGuestDineInPositions(position)
                         }
 
