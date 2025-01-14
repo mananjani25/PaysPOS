@@ -35,6 +35,11 @@ object Constants {
     const val OLD_ITEM_BASE: String = "OLD_ITEM_BASE"
 
 
+    /**
+     * Enable loyalty status
+     */
+    const val DINE_IN_LOYALTY_ON_OFF = false
+
 
     /*This variable will track if the order id should be printed in Sticky Receipt*/
 //    const val STICKY_ORDER_ID: String = "STICKY_ORDER_ID"
