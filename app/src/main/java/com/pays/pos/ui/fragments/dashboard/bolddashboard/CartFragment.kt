@@ -808,12 +808,14 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
     fun checkMaxGuestCountId(): Int {
         var maxValue = 0
         var serviceChargeId = 0
-        viewModel.serviceChargesList.forEach { serviceCharge ->
-            if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                serviceCharge.max_guest_count?.let { maxGuestCount ->
-                    if (maxGuestCount >= maxValue) {
-                        maxValue = maxGuestCount
-                        serviceChargeId = serviceCharge.id
+        viewModel.serviceChargesList.let { serviceChargeList ->
+            serviceChargeList.forEach { serviceCharge ->
+                if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                    serviceCharge.max_guest_count?.let { maxGuestCount ->
+                        if (maxGuestCount >= maxValue) {
+                            maxValue = maxGuestCount
+                            serviceChargeId = serviceCharge.id
+                        }
                     }
                 }
             }
