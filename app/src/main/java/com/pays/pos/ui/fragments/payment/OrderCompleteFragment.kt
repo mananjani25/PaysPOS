@@ -643,7 +643,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         MethodUtils.roundOffAmountString(paidAmountToShow - finalAmountToShow)
                             .toDouble()
 
-
                     if (paymentTypeForTip.equals("cash", true)) {
 
                         if (!employeeGivenTip && changeAmount < 0.0 || changeAmount > 0.0) {
@@ -676,6 +675,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             employeeGivenTip = false
                             binding.txtChangeAmount.gone()
                         }
+                    } else if(paymentTypeForTip.toLowerCase().equals("card", true)) {
+
+                        finalAmountToShow -= tipToShow
+
+                        tipToShow += MethodUtils.calculateCashDiscount(
+                            tipToShow ,
+                            prefProvider,
+                            requireContext()
+                        )
+
+                        finalAmountToShow += tipToShow
                     }
 
 
