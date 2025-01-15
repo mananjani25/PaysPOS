@@ -151,6 +151,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     var totalPrice = 0.0
     private var splitValue: Int = -1
     var tipAmount = 0.0
+    var tipAmountToPaymentDevice = 0.0
     private var cartItems: List<TbItem>? = null
     var subTotalPrice = 0.0
     var totalTax = 0.0
@@ -3030,7 +3031,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
 
 
-                tipAmount +=  MethodUtils.calculateCashDiscount(
+
+
+                tipAmountToPaymentDevice = tipAmount + MethodUtils.calculateCashDiscount(
                     tipAmount ,
                     prefProvider,
                     requireContext()
@@ -3038,7 +3041,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
 
-                paymentAmount += tipAmount
+                paymentAmount += tipAmountToPaymentDevice
                 Log.d(
                     "LOADER::",
                     "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
@@ -3847,7 +3850,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
             val amt = String.format("%.2f", (paymentAmount)).toDouble()
-            val tip_amt = String.format("%.2f", tipAmount).toDouble()
+            val tip_amt = String.format("%.2f", tipAmountToPaymentDevice).toDouble()
 
             /*    Test Credentials
                   registerId = "4986101",
@@ -4623,8 +4626,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val gatewayType = PaymentGatewayType.VALOR
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
-            val amt = ((paymentAmount - tipAmount) * 100).roundToInt()
-            val tip_amt = (tipAmount * 100).roundToInt()
+            val amt = ((paymentAmount - tipAmountToPaymentDevice) * 100).roundToInt()
+            val tip_amt = (tipAmountToPaymentDevice * 100).roundToInt()
 
             /*    Test Credentials
                   var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
@@ -4799,8 +4802,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     )
                 )
 
-                val amt = ((paymentAmount - tipAmount) * 100).roundToInt()
-                val tip_amt = (tipAmount * 100).roundToInt()
+                val amt = ((paymentAmount - tipAmountToPaymentDevice) * 100).roundToInt()
+                val tip_amt = (tipAmountToPaymentDevice * 100).roundToInt()
                 ECRRefNumber = System.currentTimeMillis().toString()
                 Log.d("Amt: ", "amt $amt tip $tip_amt")
                 var broadPOS_version = prefProvider.getValue(
