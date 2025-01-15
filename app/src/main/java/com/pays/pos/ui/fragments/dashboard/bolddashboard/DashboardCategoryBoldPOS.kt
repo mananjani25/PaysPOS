@@ -308,7 +308,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         Log.e("ThisISInit", "InitStarted")
 
 
-
        // Log.e("onLineStatus","onLineStatis:  ${onlineStatus("N43422AR01072")}")
 
        // sign("", Constants.SUNMI_APP_ID, timestamp, Constants.RANDOM_NUMBER_FOR_SUNMI)
@@ -373,6 +372,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         prefProvider.setValueInt(
             Constants.SERVER_ORDER_ID, -1
         )
+
+
+        viewModel.tipBeforeEnabled = false
 
         changeCustomerDisplayState()
         reloadCustomerDisplay()

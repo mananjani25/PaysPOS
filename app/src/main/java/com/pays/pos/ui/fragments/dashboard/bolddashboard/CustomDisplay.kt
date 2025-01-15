@@ -187,12 +187,15 @@ class CustomDisplay(
         }
 
 
+
         //payment is in progress disable tip before clicks
         dashBoardCategoryViewModel.paymentInProgress.observe(lifecycleOwner) {
             if(it) {
                 binding.askForTipBeforeLayout.gone()
-            } else
+            } else {
+                if(dashBoardCategoryViewModel.tipBeforeEnabled)
                 binding.askForTipBeforeLayout.visible()
+            }
         }
 
 

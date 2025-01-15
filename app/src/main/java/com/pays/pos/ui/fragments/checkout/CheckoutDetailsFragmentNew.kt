@@ -224,6 +224,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         dashboardViewModel.paymentInProgress.value = false
+        dashboardViewModel.tipBeforeEnabled = true
 
         val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
 
@@ -4027,6 +4028,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             )
                         dismissProgressDialogWithAlert()
                         dashboardViewModel.paymentInProgress.value = false
+                        dashboardViewModel.tipBeforeEnabled = true
                     }
                 )
             }
@@ -4788,6 +4790,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun dismissProgressDialogWithAlert(errorMessage: String? = null) {
         runOnUiThread {
             dashboardViewModel.paymentInProgress.value = false
+            dashboardViewModel.tipBeforeEnabled = true
             ProgressUtils.dismissProgressDialog()
             dismissProgressDialog()
             if (errorMessage != null) {
@@ -4948,6 +4951,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 } else {
                     CoroutineScope(Dispatchers.Main).launch {
                         dashboardViewModel.paymentInProgress.value = false
+                        dashboardViewModel.tipBeforeEnabled = true
                         ProgressUtils.dismissProgressDialog()
                         /*                    if (retryCount <= 1) {
                                                 retryCount++
