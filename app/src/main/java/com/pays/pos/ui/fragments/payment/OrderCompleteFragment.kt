@@ -14262,6 +14262,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                     if (isOrderUpdated == true) {
                                                         add(
                                                             PrinterBuilder()
+                                                                .styleMagnification(
+                                                                    MagnificationParameter(2, 2)
+                                                                )
                                                                 .styleBold(true)
                                                                 .actionPrintText(
                                                                     "***** UPDATED *****"
@@ -14286,6 +14289,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                                     add(
                                                         PrinterBuilder()
+                                                            .styleMagnification(
+                                                                MagnificationParameter(2, 2)
+                                                            )
                                                             .styleBold(true)
                                                             .actionPrintText(
                                                                 if (kitchenSettingModel.showOrderType)
@@ -14299,6 +14305,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                     if (receiptModel!!.order.orderTypeName == Constants.PHONE_ORDER_) {
                                                         add(
                                                             PrinterBuilder()
+                                                                .styleMagnification(
+                                                                    MagnificationParameter(2, 2)
+                                                                )
                                                                 .styleBold(true)
                                                                 .actionPrintText(
                                                                     receiptModel!!.order.deliveryType
@@ -14309,6 +14318,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                                     add(
                                                         PrinterBuilder()
+                                                            .styleMagnification(
+                                                                MagnificationParameter(2, 2)
+                                                            )
                                                             .actionPrintText(
                                                                 "Employee:${receiptModel?.order?.employee?.name}"
                                                             )
@@ -14317,6 +14329,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                                     add(
                                                         PrinterBuilder()
+                                                            .styleMagnification(
+                                                                MagnificationParameter(2, 2)
+                                                            )
                                                             .actionPrintText(
                                                                 getReceiptFormatDateFromUTCServer(
                                                                     requireContext(),
@@ -14362,7 +14377,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                 .styleBold(true)
                                                                 .actionPrintText(
                                                                     content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                                        "--------------------------------------------\nOrder Note"
+                                                                        "--------------------------------------------"
+                                                                    } else ""
+                                                                )
+                                                        )
+
+                                                        add(
+                                                            PrinterBuilder()
+                                                                .styleMagnification(
+                                                                    MagnificationParameter(2, 2)
+                                                                )
+                                                                .styleAlignment(Alignment.Center)
+                                                                .styleBold(true)
+                                                                .actionPrintText(
+                                                                    content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                        "\nOrder Note"
                                                                     } else ""
                                                                 )
                                                         )
@@ -14371,6 +14400,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                     if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
                                                         add(
                                                             PrinterBuilder()
+                                                                .styleMagnification(
+                                                                    MagnificationParameter(2, 2)
+                                                                )
                                                                 .styleAlignment(Alignment.Center)
                                                                 .actionPrintText(
                                                                     content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
@@ -14385,6 +14417,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             add(
                                                                 PrinterBuilder()
                                                                     .styleAlignment(Alignment.Left)
+                                                                    .styleMagnification(
+                                                                        MagnificationParameter(2, 2)
+                                                                    )
                                                                     .styleBold(true)
                                                                     .actionPrintText(
                                                                         content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
@@ -14412,6 +14447,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                         if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
                                                             add(
                                                                 PrinterBuilder()
+                                                                    .styleMagnification(
+                                                                        MagnificationParameter(2, 2)
+                                                                    )
                                                                     .styleAlignment(Alignment.Left)
                                                                     .actionPrintText(
                                                                         content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
@@ -14430,6 +14468,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                         ) {
                                                             add(
                                                                 PrinterBuilder()
+                                                                    .styleMagnification(
+                                                                        MagnificationParameter(2, 2)
+                                                                    )
                                                                     .styleAlignment(Alignment.Left)
                                                                     .actionPrintText(
                                                                         content = if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
