@@ -129,18 +129,53 @@
                     tools:listitem="@layout/view_dialog_discount_list" />
 
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtSave"
-                    style="@style/CustomFontBold"
+<!--                <androidx.appcompat.widget.AppCompatTextView-->
+<!--                    android:id="@+id/txtSave"-->
+<!--                    style="@style/CustomFontBold"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="@dimen/_20sdp"-->
+<!--                    android:layout_alignParentEnd="true"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:background="@color/btnColor"-->
+<!--                    android:gravity="center"-->
+<!--                    android:text="Continue"-->
+<!--                    android:textColor="@color/white"-->
+<!--                    android:textSize="@dimen/_7mdpi" />-->
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_20sdp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_gravity="center"
-                    android:background="@color/btnColor"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
                     android:gravity="center"
-                    android:text="Continue"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_7mdpi" />
+                    android:layout_marginTop="@dimen/_10sdp">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtSave"
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:layout_weight="1"
+                        android:background="@color/btnColor"
+                        android:gravity="center"
+                        android:text="Continue"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi"
+                        android:layout_marginEnd="@dimen/_5sdp" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtRemove"
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:layout_weight="1"
+                        android:background="@color/btnColor"
+                        android:gravity="center"
+                        android:text="Remove"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi"
+                        android:layout_marginStart="@dimen/_5sdp" />
+                </LinearLayout>
+
 
 
             </androidx.appcompat.widget.LinearLayoutCompat>
