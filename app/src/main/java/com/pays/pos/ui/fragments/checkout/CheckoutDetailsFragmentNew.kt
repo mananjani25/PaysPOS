@@ -223,6 +223,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
         }
 
+        dashboardViewModel.paymentInProgress.value = false
+
         val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
 
         dashboardViewModel.cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
@@ -2921,6 +2923,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             if (InternetUtils.isInternetAvailable(applicationContext = requireActivity().applicationContext)) {
 
+                dashboardViewModel.paymentInProgress.value = true
+
                 restrictTvCashClicks()
 
                 val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
@@ -3978,6 +3982,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
                         if (Message.equals("Canceled") || Message.equals("Error")) {
                             dismissProgressDialogWithAlert(RespMSG.replace("%20", " "))
+
                         } else if (Message.contains("Approved")) {
 //                            Check for Order Types
                             if (prefProvider.getValue(
@@ -4021,6 +4026,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 )
                             )
                         dismissProgressDialogWithAlert()
+                        dashboardViewModel.paymentInProgress.value = false
                     }
                 )
             }
@@ -4781,6 +4787,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun dismissProgressDialogWithAlert(errorMessage: String? = null) {
         runOnUiThread {
+            dashboardViewModel.paymentInProgress.value = false
             ProgressUtils.dismissProgressDialog()
             dismissProgressDialog()
             if (errorMessage != null) {
@@ -4914,6 +4921,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         } else {
                             initPOSLink()
                             runOnUiThread(Runnable {
+                                dashboardViewModel.paymentInProgress.value = false
                                 dismissProgressDialog()
                             })
                             CoroutineScope(Dispatchers.Main).launch {
@@ -4939,6 +4947,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     }
                 } else {
                     CoroutineScope(Dispatchers.Main).launch {
+                        dashboardViewModel.paymentInProgress.value = false
                         ProgressUtils.dismissProgressDialog()
                         /*                    if (retryCount <= 1) {
                                                 retryCount++

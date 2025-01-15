@@ -187,6 +187,15 @@ class CustomDisplay(
         }
 
 
+        //payment is in progress disable tip before clicks
+        dashBoardCategoryViewModel.paymentInProgress.observe(lifecycleOwner) {
+            if(it) {
+                binding.askForTipBeforeLayout.gone()
+            } else
+                binding.askForTipBeforeLayout.visible()
+        }
+
+
     }
 
 
@@ -200,6 +209,7 @@ class CustomDisplay(
 
         binding.otherRootLayoutTipBefore.setOnClickListener {
             Log.e("TIP BEFORE WORKING","NO TIP CLICKED")
+
             activeTipsListAdapter?.clearSelectedItem()
             showTipKeypad(dashBoardCategoryViewModel.totalPrice)
         }

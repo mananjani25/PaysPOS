@@ -326,6 +326,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     val customerGivenTip = MutableLiveData<Boolean>(false)
     val customerGivenTipBefore = MutableLiveData<Boolean>(false)
     val splitChanged = MutableLiveData<Int>(1)
+    var paymentInProgress = MutableLiveData(false)
 
     var employeeGivenTip = false
     var totalTipAmount = 0.0
