@@ -10913,7 +10913,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                     "Tips",
                                                     "$" + order?.payments?.last()?.tips?.let {
                                                         MethodUtils.roundOffAmountString(
-                                                            it
+                                                            it + if(order.cash_discount_type.lowercase() == "cashdiscount" && order.payments.last().paymentType.toLowerCase() == "card")  order.payments.last().cash_discount_or_surcharge else 0.0
                                                         )
                                                     },
                                                     48
@@ -12088,10 +12088,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     Builder.COLOR_1
                 )
 
+                val order = receiptModel?.order
+
                 builder.addText(
                     padLine(
                         "Tips",
-                        "$" + MethodUtils.roundOffAmountString(tipAmount.toDouble()),
+                        "$" + MethodUtils.roundOffAmountString(tipAmount.toDouble() + if(order?.cash_discount_type?.lowercase() == "cashdiscount" && order?.payments.last().paymentType.toLowerCase() == "card")  order.payments.last().cash_discount_or_surcharge else 0.0),
                         if (customerSettingModel.fonts == LARGE) {
                             24
                         } else {
@@ -17628,9 +17630,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 if (tipAmount > 0) {
 
+                    val order = receiptModel?.order
+
                     val str8 = padLine(
                         "Tips",
-                        "$" + MethodUtils.roundOffAmountString(tipAmount.toDouble()),
+                        "$" + MethodUtils.roundOffAmountString(tipAmount.toDouble() + if(order?.cash_discount_type?.lowercase() == "cashdiscount" && order?.payments.last().paymentType.toLowerCase() == "card")  order.payments.last().cash_discount_or_surcharge else 0.0),
                         if (customerSettingModel.fonts == LARGE) 23 else 48
                     ).toString()
                     PrintSunmiUtils.tips(str8)
@@ -18447,11 +18451,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
 
 
+                    val order = receiptModel?.order
+
                     if (tipAmount > 0) {
 
                         val str8 = padLine(
                             "Tips",
-                            "$" + MethodUtils.roundOffAmountString(tipAmount.toDouble()),
+                            "$" + MethodUtils.roundOffAmountString(tipAmount.toDouble() + if(order?.cash_discount_type?.lowercase() == "cashdiscount" && order?.payments.last().paymentType.toLowerCase() == "card")  order.payments.last().cash_discount_or_surcharge else 0.0),
                             if (customerSettingModel.fonts == LARGE) 23 else 48
                         ).toString()
 
