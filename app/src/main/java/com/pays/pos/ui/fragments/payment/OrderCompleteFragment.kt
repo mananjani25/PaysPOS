@@ -811,6 +811,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             paymentType.let {
                 binding.txtTitleCash.text = it
             }
+
+            receiptModel?.order?.orderItems=receiptModel?.order?.orderItems?.sortedBy { it.itemName.lowercase() }!!
         }
         var twoCloudPrinters: HashMap<String, String> = hashMapOf()
         //@home Printers

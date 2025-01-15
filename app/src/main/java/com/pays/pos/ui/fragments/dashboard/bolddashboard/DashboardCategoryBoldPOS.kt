@@ -2626,6 +2626,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         cartModel: CartModel?
     ) {
 
+        createOrderResponse.data.order.orderItems=createOrderResponse.data.order.orderItems.sortedBy { it.itemName.lowercase() }
+
         /* Start from here the object of the cart has come here, now just match the isEdited field and set the Updated parameter*/
         Log.d("DashboardCategoryBoldPOS_model:", Gson().toJson(cartModel))
         if (data.name.startsWith("CloudPrint",true) && data.printer_type == WIFI){
