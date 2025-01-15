@@ -2959,6 +2959,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //                    }
                 paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
 
+
                 lifecycleScope.launch(Dispatchers.IO) {
                     EventBus.getDefault().post(
                         MessageEvent(
@@ -3028,21 +3029,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     paymentTypeForTip = "card"
                 }
 
-                if (prefProvider.getValue(
-                        OPTION_TYPE, "CashDiscount"
-                    ) == "CashDiscount"
-                ) {
 
-                    //Add Cash discount  related changes
+                tipAmount +=  MethodUtils.calculateCashDiscount(
+                    tipAmount ,
+                    prefProvider,
+                    requireContext()
+                )
 
-                } else {
-                    tipAmount +=  MethodUtils.calculateCashDiscount(
-                        tipAmount ,
-                        prefProvider,
-                        requireContext()
-                    )
 
-                }
 
                 paymentAmount += tipAmount
                 Log.d(
@@ -4804,6 +4798,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         "/storage/emulated/0/Download/" + SettingINI.FILENAME
                     )
                 )
+
                 val amt = ((paymentAmount - tipAmount) * 100).roundToInt()
                 val tip_amt = (tipAmount * 100).roundToInt()
                 ECRRefNumber = System.currentTimeMillis().toString()
