@@ -151,6 +151,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     var totalPrice = 0.0
     private var splitValue: Int = -1
     var tipAmount = 0.0
+    var tipAmountToPaymentDevice = 0.0
     private var cartItems: List<TbItem>? = null
     var subTotalPrice = 0.0
     var totalTax = 0.0
@@ -221,6 +222,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 dineInViewModel
             )
         }
+
+        dashboardViewModel.paymentInProgress.value = false
+        dashboardViewModel.tipBeforeEnabled = true
 
         val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
 
@@ -2920,6 +2924,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             if (InternetUtils.isInternetAvailable(applicationContext = requireActivity().applicationContext)) {
 
+                dashboardViewModel.paymentInProgress.value = true
+
                 restrictTvCashClicks()
 
                 val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
@@ -2958,6 +2964,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //                        ) / isSelectedCount
 //                    }
                 paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+
 
                 lifecycleScope.launch(Dispatchers.IO) {
                     EventBus.getDefault().post(
@@ -3028,23 +3035,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     paymentTypeForTip = "card"
                 }
 
-                if (prefProvider.getValue(
-                        OPTION_TYPE, "CashDiscount"
-                    ) == "CashDiscount"
-                ) {
 
-                    //Add Cash discount  related changes
 
-                } else {
-                    tipAmount +=  MethodUtils.calculateCashDiscount(
-                        tipAmount ,
-                        prefProvider,
-                        requireContext()
-                    )
 
-                }
+                tipAmountToPaymentDevice = tipAmount + MethodUtils.calculateCashDiscount(
+                    tipAmount ,
+                    prefProvider,
+                    requireContext()
+                )
 
-                paymentAmount += tipAmount
+
+
+                paymentAmount += tipAmountToPaymentDevice
                 Log.d(
                     "LOADER::",
                     "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
@@ -3853,7 +3855,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
             val amt = String.format("%.2f", (paymentAmount)).toDouble()
-            val tip_amt = String.format("%.2f", tipAmount).toDouble()
+            val tip_amt = String.format("%.2f", tipAmountToPaymentDevice).toDouble()
 
             /*    Test Credentials
                   registerId = "4986101",
@@ -3981,6 +3983,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
                         if (Message.equals("Canceled") || Message.equals("Error")) {
                             dismissProgressDialogWithAlert(RespMSG.replace("%20", " "))
+
                         } else if (Message.contains("Approved")) {
 //                            Check for Order Types
                             if (prefProvider.getValue(
@@ -4024,6 +4027,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 )
                             )
                         dismissProgressDialogWithAlert()
+                        dashboardViewModel.paymentInProgress.value = false
+                        dashboardViewModel.tipBeforeEnabled = true
                     }
                 )
             }
@@ -4629,8 +4634,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val gatewayType = PaymentGatewayType.VALOR
             val paymentGateway = paymentGatewayFactory.create(gatewayType)
 
-            val amt = ((paymentAmount - tipAmount) * 100).roundToInt()
-            val tip_amt = (tipAmount * 100).roundToInt()
+            val amt = ((paymentAmount - tipAmountToPaymentDevice) * 100).roundToInt()
+            val tip_amt = (tipAmountToPaymentDevice * 100).roundToInt()
 
             /*    Test Credentials
                   var apiKey = "k3FhfL$$8vu#NEDlfuJwP62MzIeA7Csz"
@@ -4784,6 +4789,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun dismissProgressDialogWithAlert(errorMessage: String? = null) {
         runOnUiThread {
+            dashboardViewModel.paymentInProgress.value = false
+            dashboardViewModel.tipBeforeEnabled = true
             ProgressUtils.dismissProgressDialog()
             dismissProgressDialog()
             if (errorMessage != null) {
@@ -4804,8 +4811,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         "/storage/emulated/0/Download/" + SettingINI.FILENAME
                     )
                 )
-                val amt = ((paymentAmount - tipAmount) * 100).roundToInt()
-                val tip_amt = (tipAmount * 100).roundToInt()
+
+                val amt = ((paymentAmount - tipAmountToPaymentDevice) * 100).roundToInt()
+                val tip_amt = (tipAmountToPaymentDevice * 100).roundToInt()
                 ECRRefNumber = System.currentTimeMillis().toString()
                 Log.d("Amt: ", "amt $amt tip $tip_amt")
                 var broadPOS_version = prefProvider.getValue(
@@ -4916,6 +4924,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         } else {
                             initPOSLink()
                             runOnUiThread(Runnable {
+                                dashboardViewModel.paymentInProgress.value = false
                                 dismissProgressDialog()
                             })
                             CoroutineScope(Dispatchers.Main).launch {
@@ -4941,6 +4950,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     }
                 } else {
                     CoroutineScope(Dispatchers.Main).launch {
+                        dashboardViewModel.paymentInProgress.value = false
+                        dashboardViewModel.tipBeforeEnabled = true
                         ProgressUtils.dismissProgressDialog()
                         /*                    if (retryCount <= 1) {
                                                 retryCount++
