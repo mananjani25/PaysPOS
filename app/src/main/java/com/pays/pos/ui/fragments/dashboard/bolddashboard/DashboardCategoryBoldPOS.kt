@@ -2760,6 +2760,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
 
             if (createOrderResponse.data.order.note.isNotEmpty()){
+                lineFeed(1)
 
                 setAlignment(1)
                 appendText("Order Note")
