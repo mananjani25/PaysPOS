@@ -960,5 +960,10 @@
     <string name="please_connect_payment_device">Please connect a payment device</string>
     <string name="_not_supported">%1$s! not supported</string>
     <!-- Customer Loyalty -->
+
+
+<!--    TIP BEFORE -->
+    <string name="surcharge_included">Tip will include surcharge.</string>
+
 </resources>
 

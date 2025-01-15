@@ -1941,6 +1941,8 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+
+
             </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatButton
@@ -1958,8 +1960,22 @@
                 android:text="CONFIRM"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintTop_toBottomOf="@id/signRootLayout" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtsurchargeAdded"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:gravity="center"
+                android:padding="@dimen/_1sdp"
+                android:text="@string/surcharge_included"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_8ssp"
+                android:textStyle="normal"
+                app:layout_constraintTop_toTopOf="parent" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
