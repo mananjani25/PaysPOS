@@ -203,6 +203,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private var orderTypeToCheckKioskOrder: String = ""
 
+
+    //Tip Before
+    private var surchargeOnTip = 0.0
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -459,11 +463,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //                dashboardViewModel.customerGivenTipBefore.value = false
 
                 var cashTip = tipAmount
-                var cardTip = tipAmount + MethodUtils.calculateCashDiscount(
+
+                surchargeOnTip = MethodUtils.calculateCashDiscount(
                     tipAmount ,
                     prefProvider,
                     requireContext()
                 )
+
+                var cardTip = tipAmount + surchargeOnTip
 
 
                 dashboardViewModel.apply {
@@ -717,12 +724,21 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
              */
 
             if (tipAmount > 0.0) {
+
                 var cashTip = tipAmount
-                var cardTip = tipAmount + MethodUtils.calculateCashDiscount(
-                    tipAmount,
+
+                surchargeOnTip = MethodUtils.calculateCashDiscount(
+                    tipAmount ,
                     prefProvider,
                     requireContext()
                 )
+                var cardTip = tipAmount + surchargeOnTip
+
+//            var cardTip = tipAmount + MethodUtils.calculateCashDiscount(
+//                tipAmount ,
+//                prefProvider,
+//                requireContext()
+//            )
 
                 dashboardViewModel.apply {
                     totalTipAmount = tipAmount
@@ -1084,6 +1100,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         }
 
 
+                         //to resolve tip before transaction issue
+                        remainingValue += surchargeOnTip
+
                         prefProvider.setValue(
                             Constants.WHOLE_AMOUNT,
                             String.format("%.2f", remainingValue)
@@ -1096,6 +1115,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 }", true
                             )
                         )
+
+
+
 
                         bundle.putDouble(
                             "remainingAmount",

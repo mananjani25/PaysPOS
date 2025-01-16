@@ -376,6 +376,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         viewModel.tipBeforeEnabled = false
 
+        //Added to resolve tip before related issue where tip list on custom display gets half of actual tip amount
+        viewModel.splitChanged.value = 1
+
         changeCustomerDisplayState()
         reloadCustomerDisplay()
 
