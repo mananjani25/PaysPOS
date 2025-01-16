@@ -30,6 +30,10 @@ import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
 import com.google.gson.Gson
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.pays.pos.ui.fragments.transactions.TransactionDetailsFragment
+import com.pays.pos.ui.fragments.transactions.TransactionFragment
+import com.pays.pos.utils.extensions.gone
+import com.pays.pos.utils.extensions.visible
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
@@ -98,6 +102,20 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
         setupData()
         setKeyPad()
         onClick()
+
+        val currentFragment = parentFragmentManager.fragments.find { it.isVisible }
+
+        currentFragment?.let {
+            when (it) {
+                is TransactionDetailsFragment, is TransactionFragment -> {
+                    binding.txtRemove?.gone()
+                }
+
+                else -> {
+                    binding.txtRemove?.visible()
+                }
+            }
+        }
     }
 
     private fun onClick() {
