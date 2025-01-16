@@ -14049,7 +14049,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     styleAlignment(Alignment.Center)
                                     if (!oneItemPerReceipt) {
                                         receiptModel?.order?.orderItems?.forEach { item ->
-                                            if (!item.isPrinted) { // In case of Single item per receipt, isPrinted variable is maintained
+                                            if (!item.isPrinted || item.isItemEdited) { // In case of Single item per receipt, isPrinted variable is maintained
                                                 data.printerCategories.forEach { category ->
                                                     if (category.id == item.categoryId && category.printerEnable) {
                                                         for (singularity in 1..item.quantity) {
@@ -14269,264 +14269,524 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             }
                                         }
                                     } else {
-                                        receiptModel?.order?.orderItems?.filterNot { it.isPaid } // In case of Single item per receipt, isPaid variable is maintained
-                                            ?.let {
-                                                if (it.isNotEmpty()) {
-
-                                                    if (isOrderUpdated == true) {
-                                                        add(
-                                                            PrinterBuilder()
-                                                                .styleMagnification(
-                                                                    MagnificationParameter(2, 2)
-                                                                )
-                                                                .styleBold(true)
-                                                                .actionPrintText(
-                                                                    "***** UPDATED *****"
-                                                                )
+                                        var paidList=receiptModel?.order?.orderItems?.filterNot { it.isPaid } // In case of Single item per receipt, isPaid variable is maintained
+                                        if (paidList?.isNotEmpty()?:false)
+                                        {
+                                            if (isOrderUpdated == true) {
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleMagnification(
+                                                            MagnificationParameter(2, 2)
                                                         )
-                                                    }
-
-                                                    styleAlignment(Alignment.Center)
-
-                                                    add(
-                                                        PrinterBuilder()
-                                                            .styleBold(true)
-                                                            .styleMagnification(
-                                                                MagnificationParameter(3, 3)
-                                                            )
-                                                            .actionPrintText(
-                                                                "OrderId:${receiptModel?.order?.custom_order_id}"
-                                                            )
-                                                    )
-
-                                                    styleAlignment(Alignment.Center)
-
-                                                    add(
-                                                        PrinterBuilder()
-                                                            .styleMagnification(
-                                                                MagnificationParameter(2, 2)
-                                                            )
-                                                            .styleBold(true)
-                                                            .actionPrintText(
-                                                                if (kitchenSettingModel.showOrderType)
-                                                                    receiptModel!!.order.orderTypeName
-                                                                else ""
-                                                            )
-                                                    )
-
-                                                    actionFeedLine(1)
-
-                                                    if (receiptModel!!.order.orderTypeName == Constants.PHONE_ORDER_) {
-                                                        add(
-                                                            PrinterBuilder()
-                                                                .styleMagnification(
-                                                                    MagnificationParameter(2, 2)
-                                                                )
-                                                                .styleBold(true)
-                                                                .actionPrintText(
-                                                                    receiptModel!!.order.deliveryType
-                                                                )
+                                                        .styleBold(true)
+                                                        .actionPrintText(
+                                                            "***** UPDATED *****"
                                                         )
-                                                        actionFeedLine(1)
-                                                    }
+                                                )
+                                            }
 
-                                                    add(
-                                                        PrinterBuilder()
-                                                            .styleMagnification(
-                                                                MagnificationParameter(2, 2)
-                                                            )
-                                                            .actionPrintText(
-                                                                "Employee:${receiptModel?.order?.employee?.name}"
-                                                            )
+                                            styleAlignment(Alignment.Center)
+
+                                            add(
+                                                PrinterBuilder()
+                                                    .styleBold(true)
+                                                    .styleMagnification(
+                                                        MagnificationParameter(3, 3)
                                                     )
-                                                    actionFeedLine(1)
-
-                                                    add(
-                                                        PrinterBuilder()
-                                                            .styleMagnification(
-                                                                MagnificationParameter(2, 2)
-                                                            )
-                                                            .actionPrintText(
-                                                                getReceiptFormatDateFromUTCServer(
-                                                                    requireContext(),
-                                                                    receiptModel?.order?.createdAt.toString()
-                                                                )
-                                                            )
+                                                    .actionPrintText(
+                                                        "OrderId:${receiptModel?.order?.custom_order_id}"
                                                     )
+                                            )
 
-                                                    actionFeedLine(1)
+                                            styleAlignment(Alignment.Center)
 
-                                                    add(
-                                                        PrinterBuilder()
-                                                            .styleBold(true)
-                                                            .actionPrintText(
+                                            add(
+                                                PrinterBuilder()
+                                                    .styleMagnification(
+                                                        MagnificationParameter(2, 2)
+                                                    )
+                                                    .styleBold(true)
+                                                    .actionPrintText(
+                                                        if (kitchenSettingModel.showOrderType)
+                                                            receiptModel!!.order.orderTypeName
+                                                        else ""
+                                                    )
+                                            )
+
+                                            actionFeedLine(1)
+
+                                            if (receiptModel!!.order.orderTypeName == Constants.PHONE_ORDER_) {
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleMagnification(
+                                                            MagnificationParameter(2, 2)
+                                                        )
+                                                        .styleBold(true)
+                                                        .actionPrintText(
+                                                            receiptModel!!.order.deliveryType
+                                                        )
+                                                )
+                                                actionFeedLine(1)
+                                            }
+
+                                            add(
+                                                PrinterBuilder()
+                                                    .styleMagnification(
+                                                        MagnificationParameter(2, 2)
+                                                    )
+                                                    .actionPrintText(
+                                                        "Employee:${receiptModel?.order?.employee?.name}"
+                                                    )
+                                            )
+                                            actionFeedLine(1)
+
+                                            add(
+                                                PrinterBuilder()
+                                                    .styleMagnification(
+                                                        MagnificationParameter(2, 2)
+                                                    )
+                                                    .actionPrintText(
+                                                        getReceiptFormatDateFromUTCServer(
+                                                            requireContext(),
+                                                            receiptModel?.order?.createdAt.toString()
+                                                        )
+                                                    )
+                                            )
+
+                                            actionFeedLine(1)
+
+                                            add(
+                                                PrinterBuilder()
+                                                    .styleBold(true)
+                                                    .actionPrintText(
 //                                                    "------------------------"
-                                                                "--------------------------------------------"
-                                                            )
+                                                        "--------------------------------------------"
                                                     )
+                                            )
 
-                                                    actionFeedLine(1)
+                                            actionFeedLine(1)
 
+                                            add(
+                                                PrinterBuilder()
+                                                    .styleAlignment(Alignment.Left)
+                                                    .styleMagnification(
+                                                        MagnificationParameter(2, 2)
+                                                    )
+                                                    .actionPrintText(
+                                                        content = addOrdersForStarKitchen(
+                                                            paidList!!,
+                                                            data.printerCategories.toCollection(
+                                                                arrayListOf()
+                                                            )
+                                                        )
+                                                    )
+                                            )
+
+                                            actionFeedLine(1)
+                                            if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleAlignment(Alignment.Center)
+                                                        .styleBold(true)
+                                                        .actionPrintText(
+                                                            content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                "--------------------------------------------"
+                                                            } else ""
+                                                        )
+                                                )
+
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleMagnification(
+                                                            MagnificationParameter(2, 2)
+                                                        )
+                                                        .styleAlignment(Alignment.Center)
+                                                        .styleBold(true)
+                                                        .actionPrintText(
+                                                            content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                "\nOrder Note"
+                                                            } else ""
+                                                        )
+                                                )
+                                            }
+
+                                            if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleMagnification(
+                                                            MagnificationParameter(2, 2)
+                                                        )
+                                                        .styleAlignment(Alignment.Center)
+                                                        .actionPrintText(
+                                                            content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                receiptModel?.order?.note.toString()
+                                                            } else ""
+                                                        )
+                                                )
+                                            }
+                                            actionFeedLine(1)
+                                            try {
+                                                if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
                                                     add(
                                                         PrinterBuilder()
                                                             .styleAlignment(Alignment.Left)
                                                             .styleMagnification(
                                                                 MagnificationParameter(2, 2)
                                                             )
+                                                            .styleBold(true)
                                                             .actionPrintText(
-                                                                content = addOrdersForStarKitchen(
-                                                                    it,
-                                                                    data.printerCategories.toCollection(
-                                                                        arrayListOf()
-                                                                    )
+                                                                content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                                                    "\nCustomer Details\n"
+                                                                } else ""
+                                                            )
+                                                    )
+                                                }
+
+                                                if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleAlignment(Alignment.Center)
+                                                            .actionPrintText(
+                                                                content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                                                    "--------------------------------------------"
+                                                                } else ""
+                                                            )
+                                                    )
+                                                }
+                                            } catch (e: Exception) {
+                                            }
+
+                                            try {
+                                                if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleMagnification(
+                                                                MagnificationParameter(2, 2)
+                                                            )
+                                                            .styleAlignment(Alignment.Left)
+                                                            .actionPrintText(
+                                                                content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                                                    receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName
+                                                                } else ""
+                                                            )
+                                                    )
+                                                }
+                                            } catch (e: Exception) {
+
+                                            }
+                                            try {
+                                                if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
+                                                        0
+                                                    ) != null
+                                                ) {
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleMagnification(
+                                                                MagnificationParameter(2, 2)
+                                                            )
+                                                            .styleAlignment(Alignment.Left)
+                                                            .actionPrintText(
+                                                                content = if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
+                                                                        0
+                                                                    ) != null
+                                                                ) {
+
+                                                                    var phoneNumber =
+                                                                        receiptModel?.order?.customer?.phones?.get(
+                                                                            0
+                                                                        )?.phoneNumber.toString()
+                                                                    if (phoneNumber.length != 10) {
+                                                                        // Handle invalid input (must be 10 digits)
+                                                                        "Invalid phone number"
+                                                                    }
+
+                                                                    val areaCode =
+                                                                        phoneNumber.substring(0, 3)
+                                                                    val firstPart =
+                                                                        phoneNumber.substring(3, 6)
+                                                                    val secondPart =
+                                                                        phoneNumber.substring(6)
+
+                                                                    "($areaCode)$firstPart-$secondPart"
+
+
+                                                                    /* MethodUtils.formatPhoneNumber(
+                                                             receiptModel?.order?.customer?.phones?.get(
+                                                                 0
+                                                             )?.phoneNumber.toString()
+                                                         )*/
+                                                                } else ""
+                                                            )
+                                                    )
+                                                }
+                                            } catch (e: Exception) {
+
+                                            }
+                                            printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
+
+
+                                        }
+                                        else {
+                                            var printedList=receiptModel?.order?.orderItems?.filterNot { it.isPrinted }
+                                            if (printedList?.isNotEmpty()?:false)
+                                            {
+                                                if (isOrderUpdated == true) {
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleMagnification(
+                                                                MagnificationParameter(2, 2)
+                                                            )
+                                                            .styleBold(true)
+                                                            .actionPrintText(
+                                                                "***** UPDATED *****"
+                                                            )
+                                                    )
+                                                }
+
+                                                styleAlignment(Alignment.Center)
+
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleBold(true)
+                                                        .styleMagnification(
+                                                            MagnificationParameter(3, 3)
+                                                        )
+                                                        .actionPrintText(
+                                                            "OrderId:${receiptModel?.order?.custom_order_id}"
+                                                        )
+                                                )
+
+                                                styleAlignment(Alignment.Center)
+
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleMagnification(
+                                                            MagnificationParameter(2, 2)
+                                                        )
+                                                        .styleBold(true)
+                                                        .actionPrintText(
+                                                            if (kitchenSettingModel.showOrderType)
+                                                                receiptModel!!.order.orderTypeName
+                                                            else ""
+                                                        )
+                                                )
+
+                                                actionFeedLine(1)
+
+                                                if (receiptModel!!.order.orderTypeName == Constants.PHONE_ORDER_) {
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleMagnification(
+                                                                MagnificationParameter(2, 2)
+                                                            )
+                                                            .styleBold(true)
+                                                            .actionPrintText(
+                                                                receiptModel!!.order.deliveryType
+                                                            )
+                                                    )
+                                                    actionFeedLine(1)
+                                                }
+
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleMagnification(
+                                                            MagnificationParameter(2, 2)
+                                                        )
+                                                        .actionPrintText(
+                                                            "Employee:${receiptModel?.order?.employee?.name}"
+                                                        )
+                                                )
+                                                actionFeedLine(1)
+
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleMagnification(
+                                                            MagnificationParameter(2, 2)
+                                                        )
+                                                        .actionPrintText(
+                                                            getReceiptFormatDateFromUTCServer(
+                                                                requireContext(),
+                                                                receiptModel?.order?.createdAt.toString()
+                                                            )
+                                                        )
+                                                )
+
+                                                actionFeedLine(1)
+
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleBold(true)
+                                                        .actionPrintText(
+//                                                    "------------------------"
+                                                            "--------------------------------------------"
+                                                        )
+                                                )
+
+                                                actionFeedLine(1)
+
+                                                add(
+                                                    PrinterBuilder()
+                                                        .styleAlignment(Alignment.Left)
+                                                        .styleMagnification(
+                                                            MagnificationParameter(2, 2)
+                                                        )
+                                                        .actionPrintText(
+                                                            content = addOrdersForStarKitchen(
+                                                                printedList!!,
+                                                                data.printerCategories.toCollection(
+                                                                    arrayListOf()
                                                                 )
+                                                            )
+                                                        )
+                                                )
+
+                                                actionFeedLine(1)
+                                                if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleAlignment(Alignment.Center)
+                                                            .styleBold(true)
+                                                            .actionPrintText(
+                                                                content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                    "--------------------------------------------"
+                                                                } else ""
                                                             )
                                                     )
 
-                                                    actionFeedLine(1)
-                                                    if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleMagnification(
+                                                                MagnificationParameter(2, 2)
+                                                            )
+                                                            .styleAlignment(Alignment.Center)
+                                                            .styleBold(true)
+                                                            .actionPrintText(
+                                                                content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                    "\nOrder Note"
+                                                                } else ""
+                                                            )
+                                                    )
+                                                }
+
+                                                if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleMagnification(
+                                                                MagnificationParameter(2, 2)
+                                                            )
+                                                            .styleAlignment(Alignment.Center)
+                                                            .actionPrintText(
+                                                                content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                    receiptModel?.order?.note.toString()
+                                                                } else ""
+                                                            )
+                                                    )
+                                                }
+                                                actionFeedLine(1)
+                                                try {
+                                                    if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                                        add(
+                                                            PrinterBuilder()
+                                                                .styleAlignment(Alignment.Left)
+                                                                .styleMagnification(
+                                                                    MagnificationParameter(2, 2)
+                                                                )
+                                                                .styleBold(true)
+                                                                .actionPrintText(
+                                                                    content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                                                        "\nCustomer Details\n"
+                                                                    } else ""
+                                                                )
+                                                        )
+                                                    }
+
+                                                    if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
                                                         add(
                                                             PrinterBuilder()
                                                                 .styleAlignment(Alignment.Center)
-                                                                .styleBold(true)
                                                                 .actionPrintText(
-                                                                    content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                                    content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
                                                                         "--------------------------------------------"
                                                                     } else ""
                                                                 )
                                                         )
+                                                    }
+                                                } catch (e: Exception) {
+                                                }
 
+                                                try {
+                                                    if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
                                                         add(
                                                             PrinterBuilder()
                                                                 .styleMagnification(
                                                                     MagnificationParameter(2, 2)
                                                                 )
-                                                                .styleAlignment(Alignment.Center)
-                                                                .styleBold(true)
+                                                                .styleAlignment(Alignment.Left)
                                                                 .actionPrintText(
-                                                                    content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                                        "\nOrder Note"
+                                                                    content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
+                                                                        receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName
                                                                     } else ""
                                                                 )
                                                         )
                                                     }
-
-                                                    if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                        add(
-                                                            PrinterBuilder()
-                                                                .styleMagnification(
-                                                                    MagnificationParameter(2, 2)
-                                                                )
-                                                                .styleAlignment(Alignment.Center)
-                                                                .actionPrintText(
-                                                                    content = if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                                        receiptModel?.order?.note.toString()
-                                                                    } else ""
-                                                                )
-                                                        )
-                                                    }
-                                                    actionFeedLine(1)
-                                                    try {
-                                                        if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
-                                                            add(
-                                                                PrinterBuilder()
-                                                                    .styleAlignment(Alignment.Left)
-                                                                    .styleMagnification(
-                                                                        MagnificationParameter(2, 2)
-                                                                    )
-                                                                    .styleBold(true)
-                                                                    .actionPrintText(
-                                                                        content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
-                                                                            "\nCustomer Details\n"
-                                                                        } else ""
-                                                                    )
-                                                            )
-                                                        }
-
-                                                        if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
-                                                            add(
-                                                                PrinterBuilder()
-                                                                    .styleAlignment(Alignment.Center)
-                                                                    .actionPrintText(
-                                                                        content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
-                                                                            "--------------------------------------------"
-                                                                        } else ""
-                                                                    )
-                                                            )
-                                                        }
-                                                    } catch (e: Exception) {
-                                                    }
-
-                                                    try {
-                                                        if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
-                                                            add(
-                                                                PrinterBuilder()
-                                                                    .styleMagnification(
-                                                                        MagnificationParameter(2, 2)
-                                                                    )
-                                                                    .styleAlignment(Alignment.Left)
-                                                                    .actionPrintText(
-                                                                        content = if (kitchenSettingModel.showCustomerName && (receiptModel?.order?.customer?.firstName != null || receiptModel?.order?.customer?.lastName != null)) {
-                                                                            receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName
-                                                                        } else ""
-                                                                    )
-                                                            )
-                                                        }
-                                                    } catch (e: Exception) {
-
-                                                    }
-                                                    try {
-                                                        if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
-                                                                0
-                                                            ) != null
-                                                        ) {
-                                                            add(
-                                                                PrinterBuilder()
-                                                                    .styleMagnification(
-                                                                        MagnificationParameter(2, 2)
-                                                                    )
-                                                                    .styleAlignment(Alignment.Left)
-                                                                    .actionPrintText(
-                                                                        content = if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
-                                                                                0
-                                                                            ) != null
-                                                                        ) {
-
-                                                                            var phoneNumber =
-                                                                                receiptModel?.order?.customer?.phones?.get(
-                                                                                    0
-                                                                                )?.phoneNumber.toString()
-                                                                            if (phoneNumber.length != 10) {
-                                                                                // Handle invalid input (must be 10 digits)
-                                                                                "Invalid phone number"
-                                                                            }
-
-                                                                            val areaCode =
-                                                                                phoneNumber.substring(0, 3)
-                                                                            val firstPart =
-                                                                                phoneNumber.substring(3, 6)
-                                                                            val secondPart =
-                                                                                phoneNumber.substring(6)
-
-                                                                            "($areaCode)$firstPart-$secondPart"
-
-
-                                                                            /* MethodUtils.formatPhoneNumber(
-                                                                     receiptModel?.order?.customer?.phones?.get(
-                                                                         0
-                                                                     )?.phoneNumber.toString()
-                                                                 )*/
-                                                                        } else ""
-                                                                    )
-                                                            )
-                                                        }
-                                                    } catch (e: Exception) {
-
-                                                    }
-                                                    printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
+                                                } catch (e: Exception) {
 
                                                 }
+                                                try {
+                                                    if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
+                                                            0
+                                                        ) != null
+                                                    ) {
+                                                        add(
+                                                            PrinterBuilder()
+                                                                .styleMagnification(
+                                                                    MagnificationParameter(2, 2)
+                                                                )
+                                                                .styleAlignment(Alignment.Left)
+                                                                .actionPrintText(
+                                                                    content = if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
+                                                                            0
+                                                                        ) != null
+                                                                    ) {
+
+                                                                        var phoneNumber =
+                                                                            receiptModel?.order?.customer?.phones?.get(
+                                                                                0
+                                                                            )?.phoneNumber.toString()
+                                                                        if (phoneNumber.length != 10) {
+                                                                            // Handle invalid input (must be 10 digits)
+                                                                            "Invalid phone number"
+                                                                        }
+
+                                                                        val areaCode =
+                                                                            phoneNumber.substring(0, 3)
+                                                                        val firstPart =
+                                                                            phoneNumber.substring(3, 6)
+                                                                        val secondPart =
+                                                                            phoneNumber.substring(6)
+
+                                                                        "($areaCode)$firstPart-$secondPart"
+
+
+                                                                        /* MethodUtils.formatPhoneNumber(
+                                                                 receiptModel?.order?.customer?.phones?.get(
+                                                                     0
+                                                                 )?.phoneNumber.toString()
+                                                             )*/
+                                                                    } else ""
+                                                                )
+                                                        )
+                                                    }
+                                                } catch (e: Exception) {
+
+                                                }
+                                                printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
+
+
+                                            }else{
+                                                Log.d("StarPrinter: ","Not Printed")
                                             }
+                                        }
                                     }
 
                                     /* runBlocking {
@@ -14744,6 +15004,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
     }
+
 
     private fun printKitchenFromLandiInner(
         kitchenReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters
