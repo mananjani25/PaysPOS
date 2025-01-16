@@ -716,28 +716,54 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
              * Used to show Given TIPS on OrderCompleted Fragment
              */
 
-            var cashTip = tipAmount
-            var cardTip = tipAmount + MethodUtils.calculateCashDiscount(
-                tipAmount ,
-                prefProvider,
-                requireContext()
-            )
+            if (tipAmount > 0.0) {
+                var cashTip = tipAmount
+                var cardTip = tipAmount + MethodUtils.calculateCashDiscount(
+                    tipAmount,
+                    prefProvider,
+                    requireContext()
+                )
 
-            dashboardViewModel.apply {
-                totalTipAmount = tipAmount
-                employeeGivenTip = true
-                customerGivenTip.value = true
+                dashboardViewModel.apply {
+                    totalTipAmount = tipAmount
+                    employeeGivenTip = true
+                    customerGivenTip.value = true
+                }
+
+                dashboardViewModel.setTipAmount(tipAmount)
+                tipID = bundle.getInt("tipId")
+
+                prefProvider.setValueboolean(Constants.TIP_ADDED, true)
+                prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, tipAmount.toString())
+                prefProvider.setValueInt(Constants.TIP_ADDED_ID, tipID)
+
+                tipAmountCalculation(cashTip, cardTip)
+                loadPaymentLayout(cashTip, cardTip)
+            } else {
+
+                var cashTip = tipAmount
+                var cardTip = tipAmount + MethodUtils.calculateCashDiscount(
+                    tipAmount,
+                    prefProvider,
+                    requireContext()
+                )
+
+                dashboardViewModel.apply {
+                    totalTipAmount = tipAmount
+                    employeeGivenTip = false
+                    customerGivenTip.value = false
+                }
+
+                dashboardViewModel.setTipAmount(tipAmount)
+                tipID = 0
+
+                prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+                prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, tipAmount.toString())
+                prefProvider.setValueInt(Constants.TIP_ADDED_ID, tipID)
+
+                tipAmountCalculation(cashTip, cardTip)
+                loadPaymentLayout(cashTip, cardTip)
             }
-
-            dashboardViewModel.setTipAmount(tipAmount)
-            tipID = bundle.getInt("tipId")
-
-            prefProvider.setValueboolean(Constants.TIP_ADDED, true)
-            prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, tipAmount.toString())
-            prefProvider.setValueInt(Constants.TIP_ADDED_ID, tipID)
-
-            tipAmountCalculation(cashTip,cardTip)
-            loadPaymentLayout(cashTip,cardTip)
         }
         requireActivity().supportFragmentManager.setFragmentResultListener(
             "request_key_split",
