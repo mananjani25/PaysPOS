@@ -447,6 +447,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun observeForTipBeforeTransaction() {
+        dashboardViewModel.customerGivenTipBefore.value = false
+
         dashboardViewModel.customerGivenTipBefore.observe(viewLifecycleOwner){
             if(it) {
 
@@ -454,7 +456,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 Log.d("TIP GIVEN: ", "TIP OBSERVER")
 
-                dashboardViewModel.customerGivenTipBefore.value = false
+//                dashboardViewModel.customerGivenTipBefore.value = false
 
                 var cashTip = tipAmount
                 var cardTip = tipAmount + MethodUtils.calculateCashDiscount(

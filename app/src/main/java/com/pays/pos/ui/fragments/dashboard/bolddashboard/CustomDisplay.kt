@@ -3139,6 +3139,8 @@ class CustomDisplay(
                 if (!binding.signaturePad.isEmpty) {
                     enableConfirmButton()
                 }
+            }else {
+                callUpdateTip()
             }
         }
     }
