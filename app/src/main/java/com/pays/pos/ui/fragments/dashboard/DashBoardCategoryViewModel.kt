@@ -328,6 +328,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     val applySurchargeOnTip = false
     val splitChanged = MutableLiveData<Int>(1)
     var paymentInProgress = MutableLiveData(false)
+    var removeMainCart = MutableLiveData<Boolean>(false)
     var tipBeforeEnabled = false
 
     var employeeGivenTip = false
