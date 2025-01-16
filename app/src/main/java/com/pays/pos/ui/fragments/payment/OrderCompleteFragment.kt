@@ -521,7 +521,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 EventBus.getDefault()
                     .post(
                         MessageEvent(
-                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getKitchenReceiptSettings()  it -> ${
+                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getKitchenReceiptSettings()_2  it -> ${
                                 Gson().toJson(
                                     it
                                 )
@@ -14050,8 +14050,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                     styleAlignment(Alignment.Center)
                                     if (!oneItemPerReceipt) {
+                                        EventBus.getDefault().post(
+                                            MessageEvent(
+                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_oneItemPerReceipt -> ${oneItemPerReceipt}"
+                                            )
+                                        )
                                         receiptModel?.order?.orderItems?.forEach { item ->
                                             if (!item.isPrinted || item.isItemEdited) { // In case of Single item per receipt, isPrinted variable is maintained
+                                                EventBus.getDefault().post(
+                                                    MessageEvent(
+                                                        "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_condition-> ${item}"
+                                                    )
+                                                )
                                                 data.printerCategories.forEach { category ->
                                                     if (category.id == item.categoryId && category.printerEnable) {
                                                         for (singularity in 1..item.quantity) {
@@ -14272,8 +14282,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         }
                                     } else {
                                         var paidList=receiptModel?.order?.orderItems?.filterNot { it.isPaid } // In case of Single item per receipt, isPaid variable is maintained
+                                        EventBus.getDefault().post(
+                                            MessageEvent(
+                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_2 -> ${Gson().toJson(paidList)}"
+                                            )
+                                        )
                                         if (paidList?.isNotEmpty()?:false)
                                         {
+                                            EventBus.getDefault().post(
+                                                MessageEvent(
+                                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_3"
+                                                )
+                                            )
                                             if (isOrderUpdated == true) {
                                                 add(
                                                     PrinterBuilder()
@@ -14456,6 +14476,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                     )
                                                 }
                                             } catch (e: Exception) {
+                                                EventBus.getDefault().post(
+                                                    MessageEvent(
+                                                        "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing exception_1 -> ${e}"
+                                                    )
+                                                )
                                             }
 
                                             try {
@@ -14474,7 +14499,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                     )
                                                 }
                                             } catch (e: Exception) {
-
+                                                EventBus.getDefault().post(
+                                                    MessageEvent(
+                                                        "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing exception_2 -> ${e}"
+                                                    )
+                                                )
                                             }
                                             try {
                                                 if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
@@ -14522,7 +14551,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                     )
                                                 }
                                             } catch (e: Exception) {
-
+                                                EventBus.getDefault().post(
+                                                    MessageEvent(
+                                                        "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing exception_3 -> ${e}"
+                                                    )
+                                                )
                                             }
                                             printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
 
@@ -14530,8 +14563,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         }
                                         else {
                                             var printedList=receiptModel?.order?.orderItems?.filterNot { it.isPrinted }
+
+                                            EventBus.getDefault().post(
+                                                MessageEvent(
+                                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_else-14569 -> ${Gson().toJson(printedList)}"
+                                                )
+                                            )
+
                                             if (printedList?.isNotEmpty()?:false)
                                             {
+                                                EventBus.getDefault().post(
+                                                    MessageEvent(
+                                                        "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_if (printedList?.isNotEmpty()?:false)"
+                                                    )
+                                                )
                                                 if (isOrderUpdated == true) {
                                                     add(
                                                         PrinterBuilder()
@@ -14714,6 +14759,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                         )
                                                     }
                                                 } catch (e: Exception) {
+                                                    EventBus.getDefault().post(
+                                                        MessageEvent(
+                                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing exception_6 -> ${Gson().toJson(e)}"
+                                                        )
+                                                    )
                                                 }
 
                                                 try {
@@ -14732,7 +14782,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                         )
                                                     }
                                                 } catch (e: Exception) {
-
+                                                    EventBus.getDefault().post(
+                                                        MessageEvent(
+                                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing exception_7 -> ${Gson().toJson(e)}"
+                                                        )
+                                                    )
                                                 }
                                                 try {
                                                     if (kitchenSettingModel.showCustomerPhone && receiptModel?.order?.customer?.phones?.get(
@@ -14780,7 +14834,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                         )
                                                     }
                                                 } catch (e: Exception) {
-
+                                                    EventBus.getDefault().post(
+                                                        MessageEvent(
+                                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing exception_8 -> ${Gson().toJson(e)}"
+                                                        )
+                                                    )
                                                 }
                                                 printerBuilder.actionFeedLine(1).actionCut(CutType.Partial)
 
