@@ -192,13 +192,23 @@ class CustomDisplay(
         dashBoardCategoryViewModel.paymentInProgress.observe(lifecycleOwner) {
             if(it) {
                 binding.askForTipBeforeLayout.gone()
+                binding.mainCartLayout.visible()
             } else {
                 if(dashBoardCategoryViewModel.tipBeforeEnabled)
                 binding.askForTipBeforeLayout.visible()
             }
         }
-
-
+        dashBoardCategoryViewModel.removeMainCart.observe(lifecycleOwner,object :Observer<Boolean>{
+            override fun onChanged(t: Boolean?) {
+                t?.let {
+                    if (it){
+                        binding.mainCartLayout.gone()
+                    }else{
+                        binding.mainCartLayout.visible()
+                    }
+                }
+            }
+        })
     }
 
 

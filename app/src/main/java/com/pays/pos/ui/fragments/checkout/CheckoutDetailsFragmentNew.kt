@@ -4841,6 +4841,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         runOnUiThread {
             dashboardViewModel.paymentInProgress.value = false
             dashboardViewModel.tipBeforeEnabled = true
+            dashboardViewModel.removeMainCart.value = true
             ProgressUtils.dismissProgressDialog()
             dismissProgressDialog()
             if (errorMessage != null) {
