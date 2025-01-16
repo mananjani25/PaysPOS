@@ -943,7 +943,7 @@ class PrintSunmiUtils {
                         if (!cardNumber.isNullOrBlank()) {
                             val strCardNumber = padLine(
                                 "",
-                                cardNumber + "  ",
+                                cardNumber,
                                 if (font == Constants.LARGE) 23 else 48
                             ).toString()
                             PrintSunmiUtils.normalText(strCardNumber)
