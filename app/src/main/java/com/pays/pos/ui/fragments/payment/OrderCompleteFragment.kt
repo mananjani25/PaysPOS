@@ -11246,7 +11246,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         if (order!!.payments.last().paymentType == "Cash") {
                                             val changeAmt = padLine(
                                                 "Change Amount",
-                                                "$" + MethodUtils.roundOffAmountString(((paidAmount + tipAmount) - (order.payments.last().amount + tipAmount))),
+                                                "$" + MethodUtils.roundOffAmountString(((paidAmount + order.payments.last().tips) - (order.payments.last().let { it.amount + it.tips }))),
                                                 if (customerSettingModel.fonts == LARGE) 23 else 48
                                             ).toString()
 
