@@ -1321,46 +1321,107 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         var orderItems = receiptModel?.order?.orderItems ?: arrayListOf()
         if (orderItems.isNotEmpty() && orderItems != null)
+            if (prefProvider.getValueboolean(OPEN_ORDER_UPDATE_FOR_PRINT, false) == true){
 
-            for (i in 0 until orderItems.size) {
-
-                data.printerCategories.toCollection(arrayListOf()).forEach {
-                    if (it.id == orderItems[i].categoryId && it.categoryActive && it.printerEnable) {
-
-                        val obj = orderItems.get(i)
+                val printOrderItems = checkOrderItemsForOpenORderUpdate()
 
 
-                        if (obj.isItemEdited) {
-                            appendText("(U)" + obj.quantity.toString() + " " + obj.itemName.uppercase())
-                        } else {
-                            appendText(obj.quantity.toString() + " " + obj.itemName.uppercase())
-                        }
+                for (i in 0 until printOrderItems.size) {
+                    kitchenReceiptPrinters.printerCategories?.toCollection(arrayListOf()).forEach {
+                        Log.e("PrinterReceipt", "checkPrinterItemN:   ${printOrderItems.get(i).itemName}")
+                        if (it?.id == printOrderItems[i].categoryId) {
+                            if (it.categoryActive && it.printerEnable) {
 
-                        lineFeed(1)
-                        if (obj.orderItemModifiers.isNotEmpty()) {
-                            for (j in 0 until obj.orderItemModifiers.size) {
-                                val modifierObj = obj.orderItemModifiers.get(j)
-
-                                appendText(
-                                    if (modifierObj.modifierQuantity == 1) {
-                                        "      " + modifierObj.name.uppercase()
-                                    } else {
-                                        "  " + modifierObj.modifierQuantity + "x  " + modifierObj.name.uppercase()
-                                    }
-                                )
+                                val obj = printOrderItems.get(i)
                                 lineFeed(1)
+
+                                if (obj.isEdited) {
+                                    appendText("(U) " + obj.quantity.toString() + " " + obj.itemName.uppercase())
+                                } else {
+                                    appendText(obj.quantity.toString() + " " + obj.itemName.uppercase())
+                                }
+
+                                lineFeed(1)
+                                if (obj.orderItemModifiers.isNotEmpty()) {
+                                    for (j in 0 until obj.orderItemModifiers.size) {
+                                        val modifierObj = obj.orderItemModifiers.get(j)
+
+                                        //builder.addTextPosition(1)
+
+
+                                        appendText(
+                                            "  " + if (modifierObj.modifierQuantity == 1) {
+                                                "   "
+                                            } else {
+                                                "" + modifierObj.modifierQuantity + "x "
+                                            } + modifierObj.name.uppercase()
+                                        )
+
+                                        lineFeed(1)
+                                    }
+                                    lineFeed(1)
+                                }
+
+                                if (obj.note.isNotEmpty()) {
+
+                                    appendText("  Note:" + obj.note)
+
+                                    lineFeed(1)
+                                }
 
 
                             }
                         }
-                        if (obj.note.isNotEmpty()) {
-                            appendText("  Note:" + obj.note)
+                    }
+
+
+                }
+
+            }
+        else {
+
+
+                for (i in 0 until orderItems.size) {
+
+                    data.printerCategories.toCollection(arrayListOf()).forEach {
+                        if (it.id == orderItems[i].categoryId && it.categoryActive && it.printerEnable) {
+
+                            val obj = orderItems.get(i)
+
+
+                            if (obj.isItemEdited) {
+                                appendText("(U)" + obj.quantity.toString() + " " + obj.itemName.uppercase())
+                            } else {
+                                appendText(obj.quantity.toString() + " " + obj.itemName.uppercase())
+                            }
+
                             lineFeed(1)
+                            if (obj.orderItemModifiers.isNotEmpty()) {
+                                for (j in 0 until obj.orderItemModifiers.size) {
+                                    val modifierObj = obj.orderItemModifiers.get(j)
+
+                                    appendText(
+                                        if (modifierObj.modifierQuantity == 1) {
+                                            "      " + modifierObj.name.uppercase()
+                                        } else {
+                                            "  " + modifierObj.modifierQuantity + "x  " + modifierObj.name.uppercase()
+                                        }
+                                    )
+                                    lineFeed(1)
+
+
+                                }
+                            }
+                            if (obj.note.isNotEmpty()) {
+                                appendText("  Note:" + obj.note)
+                                lineFeed(1)
+                            }
+
+
                         }
-
-
                     }
                 }
+
             }
 
 
