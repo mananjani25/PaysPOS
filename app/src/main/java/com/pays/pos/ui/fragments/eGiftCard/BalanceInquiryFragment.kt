@@ -257,11 +257,54 @@ class BalanceInquiryFragment : Fragment() {
                 checkBalanceEnquiryForGiftcard()
             }else{
                 weakContext.get()?.let {
-                    AlertUtils.showCustomAlertWithListenerWithOK(it,getString(R.string.are_you_sure_proceed),object:DialogInterface.OnClickListener{
-                        override fun onClick(p0: DialogInterface?, p1: Int) {
-                            checkBalanceEnquiryForGiftcard()
+//                    AlertUtils.showCustomAlertWithListenerWithOK(it,getString(R.string.are_you_sure_proceed),object:DialogInterface.OnClickListener{
+//                        override fun onClick(p0: DialogInterface?, p1: Int) {
+//                            checkBalanceEnquiryForGiftcard()
+//                        }
+//                    })
+
+                    val inputGiftCardNumber = binding.edtGiftCardNumber.text.toString().replace(" ","")
+                    if (inputGiftCardNumber.isNotEmpty() && inputGiftCardNumber.length == 8) {
+                        Log.d("VALID: ", "Here_1")
+                        AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
+                            requireContext(),
+                            getString(R.string.are_you_sure_proceed),
+                            "Ok"
+                        ) { dialogInterface, clickedButton ->
+                            if (clickedButton == 0) {
+                                // Perform the OK action: call `checkBalanceEnquiryForGiftcard()`
+                                checkBalanceEnquiryForGiftcard()
+                            } else {
+                                // Perform the Cancel action: dismiss the dialog
+                                dialogInterface?.dismiss()
+                            }
                         }
-                    })
+                    }
+                    else if(inputGiftCardNumber.isNotEmpty() && (inputGiftCardNumber.length == 13 || inputGiftCardNumber.length == 17)){
+//                closePaxRequest()
+                        Log.d("VALID: ", "Here_2")
+                        AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
+                            requireContext(),
+                            getString(R.string.are_you_sure_proceed),
+                            "Ok"
+                        ) { dialogInterface, clickedButton ->
+                            if (clickedButton == 0) {
+                                // Perform the OK action: call `checkBalanceEnquiryForGiftcard()`
+                                checkBalanceEnquiryForGiftcard()
+                            } else {
+                                // Perform the Cancel action: dismiss the dialog
+                                dialogInterface?.dismiss()
+                            }
+                        }
+
+                    }
+                    else {
+                        Log.d("VALID: ", "Here_3")
+                        AlertUtils.showCustomAlert(requireContext(), "Please enter 8-digit gift card number.")
+                    }
+
+
+
                 }
             }
         }
