@@ -47,7 +47,7 @@ class ActiveTipsListAdapter() :
 
                 //Show only whole number if there is 00 after decimal.
                 val tipRate = model.rate.toString()
-                val formattedValue = if (tipRate.substringAfter(".").equals("00",true)) {
+                val formattedValue = if (tipRate.substringAfter(".") == "00" || tipRate.substringAfter(".") == "0") {
                     tipRate.substringBefore(".") // Print only the integer part
                 } else {
                     tipRate // Print the full value
