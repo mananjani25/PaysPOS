@@ -44,7 +44,16 @@ class ActiveTipsListAdapter() :
 
 //                txtTipTitle.text = "${String.format("%.0f", model.rate)}%"
                 Log.d("C_Disp_1::", wholeTotalPrice.toString())
-                txtTipTitle.text = model.rate.toString().plus("%")
+
+                //Show only whole number if there is 00 after decimal.
+                val tipRate = model.rate.toString()
+                val formattedValue = if (tipRate.substringAfter(".") == "00") {
+                    tipRate.substringBefore(".") // Print only the integer part
+                } else {
+                    tipRate // Print the full value
+                }
+
+                txtTipTitle.text = formattedValue.plus("%")
 
 
                 Log.e("TOTAL TIP Check","IN TIP LIST ADAPTER = WHOLE AMOUNT = $wholeTotalPrice AND Rate = ${model.rate}")
