@@ -100,6 +100,7 @@ class PaymentBoldPosFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         binding = FragmentPaymentBoldPosBinding.inflate(inflater, container, false)
         prefProvider.setValueboolean(Constants.IS_PAYMENT_SCREEN, true)
         val onBackPressedCallback: OnBackPressedCallback =
@@ -468,6 +469,11 @@ class PaymentBoldPosFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+
+        viewModel.tipBeforeEnabled = false
+        viewModel.paymentInProgress.value = false
+
+
         if (!prefProvider.getValueboolean(SPLIT_ENABLE, false)) {
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 removeCustomer()

@@ -1851,7 +1851,7 @@
         android:layout_height="match_parent"
         android:background="#1D1D1F"
         android:paddingHorizontal="@dimen/_5sdp"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/wouldYouLikeToAddTipLabelBefore"
@@ -1891,7 +1891,7 @@
                 android:id="@+id/otherNoTipLayoutTipBefore"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_marginHorizontal="5dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -1941,6 +1941,8 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+
+
             </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatButton
@@ -1960,6 +1962,20 @@
                 android:textSize="@dimen/_7mdpi"
                 android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@id/signRootLayout" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtsurchargeAdded"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:gravity="center"
+                android:padding="@dimen/_1sdp"
+                android:text="@string/surcharge_included"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_8ssp"
+                android:textStyle="normal"
+                app:layout_constraintTop_toTopOf="parent" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

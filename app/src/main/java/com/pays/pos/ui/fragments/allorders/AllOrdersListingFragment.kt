@@ -5006,7 +5006,6 @@ class AllOrdersListingFragment(
                                 receiptModel?.customer?.phones?.get(receiptModel?.customer?.phones?.size - 1).phoneNumber
                             )
                             PrintSunmiUtils.customerPhone(phoneNoFormatted)
-
                         }
                     }
 
@@ -8855,7 +8854,7 @@ class AllOrdersListingFragment(
                     if (customerSettingModel.showCustomerPhone) {
                         if (receiptModel?.customer?.phones?.isNotEmpty()) {
 
-                            val phoneNoFormatted = MethodUtils.getUSFormatNumber(
+                            val phoneNoFormatted = MethodUtils.formatPhoneNumber(
                                 receiptModel?.customer?.phones?.get(receiptModel?.customer?.phones?.size - 1).phoneNumber
                             )
                             PrintSunmiUtils.normalText(phoneNoFormatted)

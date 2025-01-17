@@ -308,7 +308,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         Log.e("ThisISInit", "InitStarted")
 
 
-
        // Log.e("onLineStatus","onLineStatis:  ${onlineStatus("N43422AR01072")}")
 
        // sign("", Constants.SUNMI_APP_ID, timestamp, Constants.RANDOM_NUMBER_FOR_SUNMI)
@@ -373,6 +372,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         prefProvider.setValueInt(
             Constants.SERVER_ORDER_ID, -1
         )
+
+
+        viewModel.tipBeforeEnabled = false
+
+        //Added to resolve tip before related issue where tip list on custom display gets half of actual tip amount
+        viewModel.splitChanged.value = 1
 
         changeCustomerDisplayState()
         reloadCustomerDisplay()
@@ -2643,6 +2648,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         cartModel: CartModel?
     ) {
 
+        createOrderResponse.data.order.orderItems=createOrderResponse.data.order.orderItems.sortedBy { it.itemName.lowercase() }
+
         /* Start from here the object of the cart has come here, now just match the isEdited field and set the Updated parameter*/
         Log.d("DashboardCategoryBoldPOS_model:", Gson().toJson(cartModel))
         if (data.name.startsWith("CloudPrint",true) && data.printer_type == WIFI){
@@ -2775,6 +2782,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
 
             if (createOrderResponse.data.order.note.isNotEmpty()){
+                lineFeed(1)
 
                 setAlignment(1)
                 appendText("Order Note")
@@ -3608,6 +3616,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 add(
                                     PrinterBuilder()
                                         .styleBold(true)
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
+                                        )
                                         .actionPrintText(
                                             "***** UPDATED *****"
                                         )
@@ -3630,7 +3641,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                             add(
                                 PrinterBuilder()
-                                    .styleBold(true)
+                                    .styleBold(true).styleMagnification(
+                                        MagnificationParameter(2, 2)
+                                    )
                                     .actionPrintText(
                                         if (kitchenSettingModel.showOrderType)
                                             createOrderResponse.data.order.orderType
@@ -3644,6 +3657,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 add(
                                     PrinterBuilder()
                                         .styleBold(true)
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
+                                        )
                                         .actionPrintText(
                                             createOrderResponse.data.order.deliveryType
                                         )
@@ -3653,6 +3669,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                             add(
                                 PrinterBuilder()
+                                    .styleMagnification(
+                                        MagnificationParameter(2, 2)
+                                    )
                                     .actionPrintText(
                                         "Employee:${createOrderResponse.data?.order?.employee?.name}"
                                     )
@@ -3661,6 +3680,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                             add(
                                 PrinterBuilder()
+                                    .styleMagnification(
+                                        MagnificationParameter(2, 2)
+                                    )
                                     .actionPrintText(
                                         Constants.getReceiptFormatDateFromUTCServer(
                                             requireContext(),
@@ -3684,6 +3706,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             add(
                                 PrinterBuilder()
                                     .styleAlignment(Alignment.Left)
+                                    .styleMagnification(
+                                        MagnificationParameter(2, 2)
+                                    )
                                     .actionPrintText(
                                         content = addOrdersForStarKitchen(
                                             createOrderResponse.data?.order?.orderItems!!,
@@ -3700,14 +3725,32 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         .styleBold(true)
                                         .actionPrintText(
                                             content = if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
-                                                "--------------------------------------------\nOrder Note\n "
+                                                "--------------------------------------------"
+                                            } else ""
+                                        )
+                                )
+
+                                add(
+                                    PrinterBuilder()
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
+                                        )
+                                        .styleAlignment(Alignment.Center)
+                                        .styleBold(true)
+                                        .actionPrintText(
+                                            content = if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
+                                                "\nOrder Note"
                                             } else ""
                                         )
                                 )
                             }
+                            actionFeedLine(1)
                             if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
                                 add(
                                     PrinterBuilder()
+                                        .styleMagnification(
+                                            MagnificationParameter(2, 2)
+                                        )
                                         .styleAlignment(Alignment.Center)
                                         .actionPrintText(
                                             content = if (createOrderResponse.data?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote == true) {
@@ -3717,10 +3760,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 )
                             }
                             actionFeedLine(1)
+                            actionFeedLine(1)
                             try {
                                 if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
                                     add(
                                         PrinterBuilder()
+                                            .styleMagnification(
+                                                MagnificationParameter(2, 2)
+                                            )
                                             .styleAlignment(Alignment.Left)
                                             .styleBold(true)
                                             .actionPrintText(
@@ -3745,6 +3792,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
                                     add(
                                         PrinterBuilder()
+                                            .styleMagnification(
+                                                MagnificationParameter(2, 2)
+                                            )
                                             .styleAlignment(Alignment.Left)
                                             .actionPrintText(
                                                 content = if (kitchenSettingModel.showCustomerName && (createOrderResponse.data?.order?.customer?.firstName != null || createOrderResponse.data?.order?.customer?.lastName != null)) {
@@ -3764,6 +3814,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                 ) {
                                     add(
                                         PrinterBuilder()
+                                            .styleMagnification(
+                                                MagnificationParameter(2, 2)
+                                            )
                                             .styleAlignment(Alignment.Left)
                                             .actionPrintText(
                                                 content = if (kitchenSettingModel.showCustomerPhone && createOrderResponse.data?.order?.customer?.phones?.get(

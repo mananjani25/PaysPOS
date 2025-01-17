@@ -187,6 +187,28 @@ class CustomDisplay(
         }
 
 
+
+        //payment is in progress disable tip before clicks
+        dashBoardCategoryViewModel.paymentInProgress.observe(lifecycleOwner) {
+            if(it) {
+                binding.askForTipBeforeLayout.gone()
+                binding.mainCartLayout.visible()
+            } else {
+                if(dashBoardCategoryViewModel.tipBeforeEnabled)
+                binding.askForTipBeforeLayout.visible()
+            }
+        }
+        dashBoardCategoryViewModel.removeMainCart.observe(lifecycleOwner,object :Observer<Boolean>{
+            override fun onChanged(t: Boolean?) {
+                t?.let {
+                    if (it){
+                        binding.mainCartLayout.gone()
+                    }else{
+                        binding.mainCartLayout.visible()
+                    }
+                }
+            }
+        })
     }
 
 
@@ -200,6 +222,7 @@ class CustomDisplay(
 
         binding.otherRootLayoutTipBefore.setOnClickListener {
             Log.e("TIP BEFORE WORKING","NO TIP CLICKED")
+
             activeTipsListAdapter?.clearSelectedItem()
             showTipKeypad(dashBoardCategoryViewModel.totalPrice)
         }
@@ -3126,6 +3149,8 @@ class CustomDisplay(
                 if (!binding.signaturePad.isEmpty) {
                     enableConfirmButton()
                 }
+            }else {
+                callUpdateTip()
             }
         }
     }

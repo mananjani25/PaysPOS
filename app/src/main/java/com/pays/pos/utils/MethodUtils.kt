@@ -302,7 +302,8 @@ class MethodUtils {
         fun formatPhoneNumber(phoneNumber: String): String {
             if (phoneNumber.length != 10) {
                 // Handle invalid input (must be 10 digits)
-                return "Invalid phone number"
+//                Invalid phone number
+                return " "
             }
 
             val areaCode = phoneNumber.substring(0, 3)

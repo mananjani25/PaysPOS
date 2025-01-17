@@ -2329,6 +2329,7 @@ class TransactionDetailsFragment : Fragment() {
                     binding.llLoyaltyPoints.visibility = View.VISIBLE
                 }
 
+                Log.d("Data_paymentDetailsResponse: ",Gson().toJson(paymentDetailsResponse.data.order.refund_detail.refunded_amount))
                 if (!paymentDetailsResponse.data.order.refund_detail.refunded_amount.equals(0.0) && paymentDetailsResponse.data.order.payment_status != "Cancelled") {
                     binding.llRefundAmount.visibility = View.VISIBLE
                     binding.tvtipadd.visibility = View.GONE
@@ -2352,7 +2353,7 @@ class TransactionDetailsFragment : Fragment() {
                      */
 
                     if (total.toDouble() <= refundedAmount.toDouble() /*refundedAmount.toDouble() > 0.0*/
-                        || paymentDetailsResponse.data.order.payment_status == "Cancelled"
+                        || (total.toDouble()-0.10) <= refundedAmount.toDouble()   || paymentDetailsResponse.data.order.payment_status == "Cancelled"
                     ) {
                         binding.tvIssueRefund.visibility = View.GONE
                         binding.tvtipadd.visibility = View.GONE
@@ -2389,9 +2390,6 @@ class TransactionDetailsFragment : Fragment() {
                     binding.tvIssueRefund.visibility = View.GONE
                     binding.tvtipadd.visibility = View.GONE
                 }
-
-
-
 
 
                 if (MethodUtils.isEnableCashDiscount(requireContext())) {
@@ -2433,9 +2431,6 @@ class TransactionDetailsFragment : Fragment() {
                 } else {
                     binding.linearCashDiscount.visibility = View.GONE
                 }
-
-
-
 
                 ProgressUtils.dismissProgressDialog()
             }
@@ -7134,15 +7129,29 @@ class TransactionDetailsFragment : Fragment() {
                 )
             }
 
-            if (paymentDetailsResponse?.data?.order.refund_detail != null && paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount != 0.0 && customerSettingModel.showRefundAmount) {
+            if (paymentDetailsResponse?.data?.order.refund_detail != null && paymentDetailsResponse.data.order.refund_detail.refunded_amount != 0.0 && customerSettingModel.showRefundAmount) {
 
-                PrintSunmiUtils.boldText(
-                    padLine(
-                        "Refund Amount",
-                        "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount),
-                        PrintSunmiUtils.lineChar()
-                    ).toString()
-                )
+
+                if (sunmiFrameworkVersion?.get(0)?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                        ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                ) {
+                    PrintSunmiUtils.boldTextNew(
+                        padLine(
+                            "Refund Amount",
+                            "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order.refund_detail.refunded_amount),
+                            PrintSunmiUtils.lineChar()
+                        ).toString()
+                    )
+                } else {
+                    PrintSunmiUtils.boldText(
+                        padLine(
+                            "Refund Amount",
+                            "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order.refund_detail.refunded_amount),
+                            PrintSunmiUtils.lineChar()
+                        ).toString()
+                    )
+                }
+
                 SunmiPrintHelper.getInstance().lineWrap(1)
             } else {
                 SunmiPrintHelper.getInstance().lineWrap(1)
@@ -7311,13 +7320,13 @@ class TransactionDetailsFragment : Fragment() {
                     }
                     if (customerSettingModel.showCustomerName) {
 
-                        PrintSunmiUtils.normalText(paymentDetailsResponse?.data.order?.customer.firstName + " " + paymentDetailsResponse?.data.order?.customer.lastName)
+                        PrintSunmiUtils.normalText(paymentDetailsResponse.data.order.customer.firstName + " " + paymentDetailsResponse.data.order.customer.lastName)
                     }
 
                     if (customerSettingModel.showCustomerPhone) {
-                        if (paymentDetailsResponse?.data?.order?.customer?.phones?.isNotEmpty()) {
+                        if (!paymentDetailsResponse.data.order.customer.phones.isNullOrEmpty()) {
 
-                            val phoneNoFormatted = MethodUtils.getUSFormatNumber(
+                            val phoneNoFormatted = MethodUtils.formatPhoneNumber(
                                 paymentDetailsResponse.data.order.customer.phones.get(
                                     paymentDetailsResponse.data.order.customer.phones.size - 1
                                 ).phoneNumber
@@ -7330,7 +7339,7 @@ class TransactionDetailsFragment : Fragment() {
                     }
 
                     if (customerSettingModel.showCustomerAddress) {
-                        if (paymentDetailsResponse?.data?.order?.customer?.addresses?.isNotEmpty() == true) {
+                        if (paymentDetailsResponse.data.order.customer.addresses.isNotEmpty()) {
 
 
                             paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == SHIPPING_ADDRESS }
