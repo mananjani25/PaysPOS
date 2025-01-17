@@ -513,47 +513,57 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     if (it.isChecked)
                         totalCheckedItemPrice += it.deductedPrice
                 }
-                val bundle = Bundle().apply {
-                    putParcelable("refundData", refundData)
-                    //putString("orderItemRefundsAttributes", Gson().toJson(ordersItemList))
-                    putDouble("refundAmount", totalCheckedItemPrice)
-                    putString("pax_ref_num", paymentOrderDetailsResponse.data.ref_num)
-                    putString(
-                        "pax_ecrref_num",
-                        paymentOrderDetailsResponse.data.ecr_ref_num
+
+                refundAmount = paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
+
+                if ((totalCheckedItemPrice + refundAmount) > screenTotalAmount.toDouble()) {
+                    AlertUtils.showCustomAlert(
+                        requireActivity(),
+                        getString(R.string.the_refund_amount_cannot_exceed_the_total_order_value)
                     )
-                    putString(
-                        "pax_token",
-                        paymentOrderDetailsResponse.data.pax_transaction_token
-                    )
-                    putString("pax_ext_data", paymentOrderDetailsResponse.data.ext_data)
-                    putString("paymentType", paymentOrderDetailsResponse.data.payment_type)
-                    putString(
-                        "magensa_response_data",
-                        paymentOrderDetailsResponse.data.magensa_response_data
-                    )
-                    Log.d("subTotalPriceRefund", "::$totalItemPrice")
+                } else {
+                    val bundle = Bundle().apply {
+                        putParcelable("refundData", refundData)
+                        //putString("orderItemRefundsAttributes", Gson().toJson(ordersItemList))
+                        putDouble("refundAmount", totalCheckedItemPrice)
+                        putString("pax_ref_num", paymentOrderDetailsResponse.data.ref_num)
+                        putString(
+                            "pax_ecrref_num",
+                            paymentOrderDetailsResponse.data.ecr_ref_num
+                        )
+                        putString(
+                            "pax_token",
+                            paymentOrderDetailsResponse.data.pax_transaction_token
+                        )
+                        putString("pax_ext_data", paymentOrderDetailsResponse.data.ext_data)
+                        putString("paymentType", paymentOrderDetailsResponse.data.payment_type)
+                        putString(
+                            "magensa_response_data",
+                            paymentOrderDetailsResponse.data.magensa_response_data
+                        )
+                        Log.d("subTotalPriceRefund", "::$totalItemPrice")
 
 
-                    if (paymentOrderDetailsResponse.data.order.order_type == "OnlineOrder" && paymentOrderDetailsResponse.data.pax_data != null) {
-                        /*Online order refund should pass a new parameter so that the next screen will detect the parameter and process the operation accordingly, because there are two processes
-                        * 1. PAX Gateway refund
-                        * 2. NAB Server POST API Call */
-                        putString("pax_data", paxData)
-                        putBoolean(
-                            "requiredNABServerPostAPICall",
-                            requiredNABServerPostAPICall
+                        if (paymentOrderDetailsResponse.data.order.order_type == "OnlineOrder" && paymentOrderDetailsResponse.data.pax_data != null) {
+                            /*Online order refund should pass a new parameter so that the next screen will detect the parameter and process the operation accordingly, because there are two processes
+                            * 1. PAX Gateway refund
+                            * 2. NAB Server POST API Call */
+                            putString("pax_data", paxData)
+                            putBoolean(
+                                "requiredNABServerPostAPICall",
+                                requiredNABServerPostAPICall
+                            )
+                        }
+                    }
+
+
+
+                    if (findNavController().currentDestination?.id == R.id.issueRefundFragment) {
+                        findNavController().navigate(
+                            R.id.action_issueRefundFragment_to_reasonForRefundDialog,
+                            bundle
                         )
                     }
-                }
-
-
-
-                if (findNavController().currentDestination?.id == R.id.issueRefundFragment) {
-                    findNavController().navigate(
-                        R.id.action_issueRefundFragment_to_reasonForRefundDialog,
-                        bundle
-                    )
                 }
             }
         }
