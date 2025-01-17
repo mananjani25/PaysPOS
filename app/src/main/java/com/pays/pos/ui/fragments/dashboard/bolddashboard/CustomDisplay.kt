@@ -238,7 +238,7 @@ class CustomDisplay(
                 customerGivenTipBefore.value = true
             }
 
-            showThankYou(mWholeTotalPrice)
+          //  showThankYou(mWholeTotalPrice)
         }
 
         setupActiveTipsList(_tipListViewModel)
