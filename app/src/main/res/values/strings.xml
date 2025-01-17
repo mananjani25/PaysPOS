@@ -964,6 +964,7 @@
 
 <!--    TIP BEFORE -->
     <string name="surcharge_included">Tip will include surcharge.</string>
+    <string name="proceed_with_refund_void">Do you want to proceed with Void/Refund?</string>
 
 </resources>
 
