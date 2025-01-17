@@ -5006,7 +5006,6 @@ class AllOrdersListingFragment(
                                 receiptModel?.customer?.phones?.get(receiptModel?.customer?.phones?.size - 1).phoneNumber
                             )
                             PrintSunmiUtils.customerPhone(phoneNoFormatted)
-
                         }
                     }
 
