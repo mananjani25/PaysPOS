@@ -300,7 +300,7 @@ class BalanceInquiryFragment : Fragment() {
                     }
                     else {
                         Log.d("VALID: ", "Here_3")
-                        AlertUtils.showCustomAlert(requireContext(), "Please enter 8-digit gift card number.")
+                        AlertUtils.showCustomAlert(requireContext(), "Please enter physical or digital gift card number.")
                     }
 
 
@@ -331,7 +331,7 @@ class BalanceInquiryFragment : Fragment() {
         }
         else {
             Log.d("VALID: ", "Here_3")
-            AlertUtils.showCustomAlert(requireContext(), "Please enter 8-digit gift card number.")
+            AlertUtils.showCustomAlert(requireContext(), "Please enter physical or digital gift card number.")
             return
         }
     }
