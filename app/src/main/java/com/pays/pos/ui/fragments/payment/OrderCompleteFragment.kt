@@ -680,7 +680,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             employeeGivenTip = false
                             binding.txtChangeAmount.gone()
                         }
-                    } else if(paymentTypeForTip.toLowerCase().equals("card", true) && dashboardViewModel.customerGivenTipBefore.value == true) {
+                    } else if(paymentTypeForTip.toLowerCase().equals("card", true)) {
 
                         finalAmountToShow -= tipToShow
 

@@ -1101,7 +1101,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
                          //to resolve tip before transaction issue
+
+                        if(isSelectedCount > 1)
                         remainingValue += surchargeOnTip
+
 
                         prefProvider.setValue(
                             Constants.WHOLE_AMOUNT,
