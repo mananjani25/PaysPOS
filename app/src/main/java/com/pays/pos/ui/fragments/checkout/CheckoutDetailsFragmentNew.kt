@@ -472,7 +472,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 var cardTip = tipAmount + surchargeOnTip
 
-
                 dashboardViewModel.apply {
                     employeeGivenTip = true
                     tipAmount = totalTipAmount
@@ -743,7 +742,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 dashboardViewModel.apply {
                     totalTipAmount = tipAmount
                     employeeGivenTip = true
-                    customerGivenTip.value = true
+                    customerGivenTipBefore.value = true
+                   // customerGivenTip.value = true
                 }
 
                 dashboardViewModel.setTipAmount(tipAmount)
