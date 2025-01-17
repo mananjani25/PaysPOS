@@ -20877,6 +20877,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        //Added to resolve tip before related issue where tip list on custom display gets half of actual tip amount
+        dashboardViewModel.splitChanged.value = 1
+    }
+
     fun deleteCache(context: Context) {
         try {
             val dir: File = context.cacheDir
