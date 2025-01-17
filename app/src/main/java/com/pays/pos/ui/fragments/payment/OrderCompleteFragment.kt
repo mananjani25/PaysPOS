@@ -10690,8 +10690,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                     try {
                         var printer = omniDriver?.getPrinter(Bundle())
+                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragement.kt_printFromLandiInnerPrinter() = ${Gson().toJson(printer)}"))
+
                         printer?.openDevice(1)
                     } catch (ex: java.lang.Exception) {
+                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragement.kt_printFromLandiInnerPrinter()_Catch = ${ex.printStackTrace()}"))
                         requireActivity().runOnUiThread(Runnable {
                             Toast.makeText(
                                 activity,
@@ -19767,8 +19770,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                     try {
                         var printer = omniDriver?.getPrinter(Bundle())
+                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragement.kt_landiInnerPrintForGiftCard() = ${Gson().toJson(printer)}"))
+
                         printer?.openDevice(1)
                     } catch (ex: java.lang.Exception) {
+                        EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} OrderCompleteFragement.kt_landiInnerPrintForGiftCard()_Catch = ${ex.printStackTrace()}"))
+
                         requireActivity().runOnUiThread(Runnable {
                             Toast.makeText(
                                 activity,
