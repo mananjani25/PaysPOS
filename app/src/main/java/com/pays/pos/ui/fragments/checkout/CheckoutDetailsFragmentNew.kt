@@ -3934,7 +3934,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 refId = "Ref${System.currentTimeMillis()}",
                 printReceipt = false,
                 performedBy = prefProvider.employeeName(),
-                isProd = false,
+                isProd = Constants.paymentLive,
                 txnType = TransactionType.CREDIT_SALE
             )
 
