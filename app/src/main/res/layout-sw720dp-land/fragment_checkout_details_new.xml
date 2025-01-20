@@ -727,16 +727,24 @@
 
                             </androidx.appcompat.widget.LinearLayoutCompat>
 
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:orientation="horizontal"
+                            android:weightSum="2">
+
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/tvCustom"
                                 style="@style/CustomFontBold"
-                                android:layout_width="match_parent"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_centerInParent="true"
                                 android:layout_gravity="center_horizontal"
-
+                                android:layout_weight="1"
                                 android:layout_marginTop="@dimen/_5sdp"
+                                android:layout_marginRight="@dimen/_5sdp"
 
                                 android:background="@drawable/background_square_border_grey"
                                 android:gravity="center_horizontal"
@@ -745,6 +753,25 @@
                                 android:textAlignment="center"
                                 android:textColor="@color/txtColor"
                                 android:textSize="@dimen/_7mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvAmountWiseSpilt"
+                                style="@style/CustomFontBold"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_weight="1"
+                                android:layout_marginTop="@dimen/_5sdp"
+
+                                android:background="@drawable/background_square_border_grey"
+                                android:gravity="center_horizontal"
+                                android:paddingVertical="@dimen/_10sdp"
+                                android:text="Split By Amount"
+                                android:textAlignment="center"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_7mdpi" />
+                        </androidx.appcompat.widget.LinearLayoutCompat>
 
 
                             <androidx.appcompat.widget.LinearLayoutCompat

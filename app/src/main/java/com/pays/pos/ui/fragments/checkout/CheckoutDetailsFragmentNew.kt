@@ -976,6 +976,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         binding.tvCustom.setOnClickListener {
             binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tvAmountWiseSpilt.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -983,6 +984,32 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
 
             binding.tvCustom.setTextColor(resources.getColor(R.color.white))
+            binding.tvFullAmount.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvAmountWiseSpilt.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv2ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv3ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv4ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
+            val bundle = Bundle()
+            bundle.putDouble("totalPrice", WholetotalPrice)
+            bundle.putInt("splitValue", isSelectedCount)
+            bundle.putBoolean("amountWiseSplit", false)
+            dashboardViewModel.wholetotalPrice = WholetotalPrice
+            findNavController().navigate(R.id.action_splitFragment_to_splitdialog, bundle)
+        }
+        binding.tvAmountWiseSpilt.setOnClickListener {
+            binding.tvAmountWiseSpilt.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
+            binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv5ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+
+            binding.tvAmountWiseSpilt.setTextColor(resources.getColor(R.color.white))
+            binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvFullAmount.setTextColor(resources.getColor(R.color.txtColor))
             binding.tv2ways.setTextColor(resources.getColor(R.color.txtColor))
             binding.tv3ways.setTextColor(resources.getColor(R.color.txtColor))
@@ -992,8 +1019,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             val bundle = Bundle()
             bundle.putDouble("totalPrice", WholetotalPrice)
             bundle.putInt("splitValue", isSelectedCount)
+            bundle.putBoolean("amountWiseSplit", true)
             dashboardViewModel.wholetotalPrice = WholetotalPrice
-            findNavController().navigate(R.id.action_splitFragment_to_splitdialog)
+            findNavController().navigate(R.id.action_splitFragment_to_splitdialog, bundle)
         }
     }
 
