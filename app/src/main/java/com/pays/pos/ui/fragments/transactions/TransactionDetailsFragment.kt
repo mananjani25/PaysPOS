@@ -558,7 +558,7 @@ class TransactionDetailsFragment : Fragment() {
                     refId= dejavooRefTxnId,
                     printReceipt= false,
                     performedBy=  prefProvider.employeeName(),
-                    isProd= false,
+                    isProd=  Constants.paymentLive,
                     txnType = TransactionType.TIP_ADJUSTMENT
                 )
                 paymentGateway.processPayment(
