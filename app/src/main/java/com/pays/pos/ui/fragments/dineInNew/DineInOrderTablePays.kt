@@ -1181,6 +1181,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 duplicateCurrentCartItem = arrayListOf()
                 deleteCartItems()
                 deleteCart()
+                clearCustomer()
             }
 
             findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
