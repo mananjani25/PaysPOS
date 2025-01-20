@@ -458,7 +458,7 @@ class TransactionDetailsFragment : Fragment() {
                         ) {
                             weakContext.get()?.let {
                                 AlertUtils.showCustomAlertWithListenerWithOKCancel(it,
-                                    "Do you want to refund the transaction?",
+                                    getString(R.string.proceed_with_refund_void),
                                     getString(android.R.string.ok),
                                     object : DialogInterface.OnClickListener {
                                         override fun onClick(p0: DialogInterface?, p1: Int) {
@@ -471,9 +471,21 @@ class TransactionDetailsFragment : Fragment() {
                                     })
                             }
 
+
                         } else if (paymentDetailsResponse.data.ext_data.contains(Constants.DEJAVOO)) {
-                            ProgressUtils.showProgressDialog(requireActivity())
-                            checkIfDejavooTransactionEligibleForVoid(paymentDetailsResponse)
+                            weakContext.get()?.let {
+                                AlertUtils.showCustomAlertWithListenerWithOKCancel(it,
+                                    getString(R.string.proceed_with_refund_void),
+                                    getString(android.R.string.ok),
+                                    object : DialogInterface.OnClickListener {
+                                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                                            ProgressUtils.showProgressDialog(requireActivity())
+                                            checkIfDejavooTransactionEligibleForVoid(paymentDetailsResponse)
+                                            p0?.dismiss()
+                                        }
+                                    })
+                            }
+
                         }
 //                    Check if the the PAX is connected or not then perform the void checking
                         else if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {

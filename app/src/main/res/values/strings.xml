@@ -940,6 +940,7 @@
     <string name="external">External</string>
     <string name="remove_note">Remove Note</string>
 
+    <string name="the_refund_amount_cannot_exceed_the_total_order_value">The refund amount cannot exceed the total order value.</string>
     <string name="cant_decrease_item_quantity_dinein">Item is already fired to kitchen . You can decrease quantity from table !</string>
     <string name="cash_received_by">Cash Received by</string>
     <string name="incompatible_printer">"This printer is not compatible with Customer receipts."</string>
@@ -962,8 +963,9 @@
     <!-- Customer Loyalty -->
 
 
-<!--    TIP BEFORE -->
+    <!--    TIP BEFORE -->
     <string name="surcharge_included">Tip will include surcharge.</string>
+    <string name="proceed_with_refund_void">Do you want to proceed with Void/Refund?</string>
 
 </resources>
 
