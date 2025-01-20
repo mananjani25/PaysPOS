@@ -1,5 +1,6 @@
 package com.pays.pos.ui.adapter.boldpos
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -35,7 +36,18 @@ class SalesPerCategorySummary : RecyclerView.Adapter<SalesPerCategorySummary.MyV
     }
 
     override fun onBindViewHolder(holder: SalesPerCategorySummary.MyViewHolder, position: Int) {
-        holder.bind(arrayList[position])
+//        holder.bind(arrayList[position])
+        val item = arrayList[position]
+        if (item.key == "FULL_LINE_DIVIDER") {
+            holder.itemView.apply {
+                setBackgroundColor(Color.WHITE)
+                layoutParams = layoutParams.apply {
+                    height = 2
+                }
+            }
+        } else {
+            holder.bind(item)
+        }
 
     }
 
