@@ -1940,19 +1940,42 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             paymentAmount += tipAmount
 
             if (paymentAmount != 0.0) {
-                if (mSessionManager.isConnected) {
-                    magtekModule.stopListner(false)
-                    if (device == 0) {
-                        magtekPaymentCall()
-                    } else {
-                        magtekProPaymentCall()
+                when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
+                    Constants.PAX->{
+                        if (prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            ) && !mSessionManager.isConnected
+                        ) {
+                            makePaxPaymentRequest()
+                        }else{
+                            showPaymentNotConnectedMessage(getString(R.string.please_connect_pax))
+                        }
                     }
-                    prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, false)
-                } else if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false) && !mSessionManager.isConnected) {
-                    makePaxPaymentRequest()
-                } else {
-                    errorDisplay("Please connect a payment device.")
+
+                    Constants.DEJAVOO->{
+                        makeDejavooPaymentRequest()
+                    }
+
+                    Constants.VALOR,Constants.VELOR->{
+                        makeValorPaymentRequest()
+                    }
+
+                    else->{
+                        if (mSessionManager.isConnected) {
+                            magtekModule.stopListner(false)
+                            if (device == 0) {
+                                magtekPaymentCall()
+                            } else {
+                                magtekProPaymentCall()
+                            }
+                            prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, false)
+                        } else {
+                            errorDisplay("Please connect a payment device.")
+                        }
+                    }
                 }
+
             } else {
                 errorDisplay(getString(R.string.payment_amount_is_zero))
             }
@@ -2156,6 +2179,24 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 errorDisplay(getString(R.string.payment_amount_is_zero))
             }
         }
+    }
+
+    private fun makeValorPaymentRequest() {
+//        Todo: Give Implementation for VALOR
+    }
+
+    private fun makeDejavooPaymentRequest() {
+//        Todo: give implementation for DEJAVOO
+    }
+
+    private fun showPaymentNotConnectedMessage(errorMessage:String) {
+        runOnUiThread(object : java.lang.Runnable {
+            override fun run() {
+                binding.llCreditCard.isEnabled = true
+//                dismissProgressDialog()
+            }
+        })
+        errorDisplay(errorMessage)
     }
 
     // To make card payment via pax device
