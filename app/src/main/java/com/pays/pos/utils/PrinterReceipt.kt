@@ -5770,11 +5770,11 @@ fun addWholeTbItemToGuestInnerLandi(
 
     var subTotal = (obj.price * obj.itemQuantity).toDouble()
 
-    if (obj.modifiers.isNotEmpty() && showModifiers) {
-        obj.modifiers.forEach {
-            subTotal += it.price * it.itemQuantity
-        }
-    }
+//    if (obj.modifiers.isNotEmpty() && showModifiers) {
+//        obj.modifiers.forEach {
+//            subTotal += it.price * it.itemQuantity
+//        }
+//    }
     var WTTaxes = 0.0
     var serviceCharge = 0.0
 
@@ -5851,7 +5851,7 @@ fun addWholeTbItemToGuestInnerLandi(
                     } else {
                         "   " + it.modifier_quantity + "x " + it.name
                     },
-                    "" + MethodUtils.roundOffAmount(it.price * it.itemQuantity),
+                    "" + MethodUtils.roundOffAmount(it.price * it.itemQuantity * it.modifier_quantity),
                     48
                 ).toString()
             )

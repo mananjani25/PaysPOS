@@ -808,12 +808,14 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
     fun checkMaxGuestCountId(): Int {
         var maxValue = 0
         var serviceChargeId = 0
-        viewModel.serviceChargesList.forEach { serviceCharge ->
-            if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                serviceCharge.max_guest_count?.let { maxGuestCount ->
-                    if (maxGuestCount >= maxValue) {
-                        maxValue = maxGuestCount
-                        serviceChargeId = serviceCharge.id
+        viewModel.serviceChargesList.let { serviceChargeList ->
+            serviceChargeList.forEach { serviceCharge ->
+                if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                    serviceCharge.max_guest_count?.let { maxGuestCount ->
+                        if (maxGuestCount >= maxValue) {
+                            maxValue = maxGuestCount
+                            serviceChargeId = serviceCharge.id
+                        }
                     }
                 }
             }
@@ -1256,7 +1258,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                 binding.liinearInfoLayout.layoutParams.height =
                                     resources.getDimension(R.dimen._70sdp).toInt()
 
-                                binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                                if(prefProvider.getValue(ORDER_TYPE,"") != DINE_IN)
+                                    binding.relativeLoylatyPoints.visibility = View.VISIBLE
                                 binding.lblLoyaltyPoints.visibility = View.VISIBLE
                                 binding.lblLoyaltyBalance.visibility = View.VISIBLE
                                 LogUtil.logE(TAG, "InsideLoyalty")
@@ -1322,7 +1325,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         if (viewModel.loyaltyPointCondition(data)) {
                             binding.liinearInfoLayout.layoutParams.height =
                                 resources.getDimension(R.dimen._70sdp).toInt()
-                            binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                            if(prefProvider.getValue(ORDER_TYPE,"") != DINE_IN)
+                                binding.relativeLoylatyPoints.visibility = View.VISIBLE
                             binding.lblLoyaltyPoints.visibility = View.VISIBLE
                             binding.lblLoyaltyBalance.visibility = View.VISIBLE
 
@@ -2688,7 +2692,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                         if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
                             binding.liinearInfoLayout.layoutParams.height =
                                 resources.getDimension(R.dimen._70sdp).toInt()
-                            binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                            if(prefProvider.getValue(ORDER_TYPE,"") != DINE_IN)
+                                binding.relativeLoylatyPoints.visibility = View.VISIBLE
                             binding.lblLoyaltyPoints.visibility = View.VISIBLE
                             binding.lblLoyaltyBalance.visibility = View.VISIBLE
                             binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
@@ -2732,7 +2737,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     } else {
                         binding.liinearInfoLayout.layoutParams.height =
                             resources.getDimension(R.dimen._70sdp).toInt()
-                        binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                        if(prefProvider.getValue(ORDER_TYPE,"") != DINE_IN)
+                            binding.relativeLoylatyPoints.visibility = View.VISIBLE
                         binding.lblLoyaltyPoints.visibility = View.VISIBLE
                         binding.lblLoyaltyBalance.visibility = View.VISIBLE
 
@@ -2833,7 +2839,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 if (viewModel.loyaltyPointCondition(data)) {
                     binding.liinearInfoLayout.layoutParams.height =
                         resources.getDimension(R.dimen._70sdp).toInt()
-                    binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                    if(prefProvider.getValue(ORDER_TYPE,"") != DINE_IN)
+                        binding.relativeLoylatyPoints.visibility = View.VISIBLE
                     binding.lblLoyaltyPoints.visibility = View.VISIBLE
                     binding.lblLoyaltyBalance.visibility = View.VISIBLE
 
@@ -3154,14 +3161,25 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 .isNotEmpty() && dineInCartAdapter.getList().size > 2 && cartModelsList.isNotEmpty()
         ) {
             if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
+
+                val dineIn = cartModelsList[0].dineInList as ArrayList<DineInModel>
+
                 cartModelsList.get(0).dineInList?.forEach {
                     if (it.title == dineInCartAdapter.getList()[position].title) {
+
+
                         it.apply {
                             this.isDestroy = true
+                            viewModel.destroyedDineGuestsList.add(it)
                             viewModel.updateDineInCartItemGuestDineInPositions(position)
                         }
+
                     }
                 }
+
+                dineIn.removeAll(viewModel.destroyedDineGuestsList)
+                cartModelsList[0].dineInList = dineIn
+
             } else {
                 val dineIn = cartModelsList[0].dineInList as ArrayList<DineInModel>
                 val destroyedGuestsList: ArrayList<DineInModel> = ArrayList()
@@ -3289,6 +3307,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                         }
                                     }
                                     //}
+
 
                                     clearCustomer()
                                     viewModel.deleteCart()
@@ -3484,6 +3503,14 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             }
 
                             val valuess = cartModelsList[0]
+
+
+
+                            val dineIn = cartModelsList[0].dineInList as ArrayList<DineInModel>
+
+                            cartModelsList[0].dineInList = dineIn + viewModel.destroyedDineGuestsList
+
+                            viewModel.destroyedDineGuestsList.clear()
 
 
                             val request = viewModel.updateOrder(cartModelsList[0])
