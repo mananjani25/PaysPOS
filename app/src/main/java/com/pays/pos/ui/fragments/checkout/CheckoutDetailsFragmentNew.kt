@@ -768,6 +768,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     totalTipAmount = tipAmount
                     employeeGivenTip = false
                     customerGivenTip.value = false
+
+                    if(tipAmount == 0.0) {
+                        tipRemovedObserver.value = true
+                    }
                 }
 
                 dashboardViewModel.setTipAmount(tipAmount)
@@ -5472,7 +5476,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         } else {
             if (this::presentation.isInitialized) {
                 presentation.show()
-                presentation.showTipsAddedNew(tipAmount, tipAmount, WholetotalPrice)
+                presentation.showTipsAddedNew(cardTip, cashTip, WholetotalPrice)
             }
 
             MethodUtils.setPriceTextView(
@@ -5490,7 +5494,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             if (this::presentation.isInitialized) {
                 presentation.show()
-                presentation.showTipsAddedNew(tipAmount, tipAmount, WholetotalPrice)
+                presentation.showTipsAddedNew(cardTip, cashTip, WholetotalPrice)
                 presentation.updateTotals(
                     binding.tvCash.text.toString(),
                     binding.tvCard.text.toString()

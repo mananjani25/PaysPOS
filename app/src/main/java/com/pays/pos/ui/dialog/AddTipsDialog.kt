@@ -330,6 +330,8 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
         binding.txtRemove?.setOnClickListener {
 
 
+
+
             val result = Bundle().apply {
                 putDouble("tipAmount", 0.0)
                 putDouble("tipPercent",0.0)
@@ -345,6 +347,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
                 )
             }
 
+            dashboardViewModel.tipRemovedObserver.value = true
             findNavController().navigateUp()
         }
     }

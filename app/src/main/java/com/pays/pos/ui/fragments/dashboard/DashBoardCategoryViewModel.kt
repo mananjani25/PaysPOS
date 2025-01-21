@@ -330,6 +330,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var paymentInProgress = MutableLiveData(false)
     var removeMainCart = MutableLiveData<Boolean>(false)
     var tipBeforeEnabled = false
+    var tipRemovedObserver = MutableLiveData<Boolean>(false)
 
     var employeeGivenTip = false
     var totalTipAmount = 0.0
