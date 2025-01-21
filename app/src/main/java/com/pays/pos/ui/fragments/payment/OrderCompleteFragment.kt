@@ -13997,6 +13997,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String
     ) {
+
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} Printer.kt_initKitchenPrinter("
+            )
+        )
+
+
         prefProvider.deleteValue(Constants.DO_PRINT)
         Log.d("initKitchenPrinter", "SunmiBlueToothPrinter is ${data.name}")
         if (data.name.startsWith(SUNMI_PRINTER, true) && data.printer_type == WIFI) {
