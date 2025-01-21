@@ -338,6 +338,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
                 tipID?.let { putInt("tipId", tipID ?: 0) }
 
             }
+            dashboardViewModel.customerGivenTipBefore.value = false
             if (isFromTransaction) {
                 setFragmentResult("request_key_tips", result)
             } else {
