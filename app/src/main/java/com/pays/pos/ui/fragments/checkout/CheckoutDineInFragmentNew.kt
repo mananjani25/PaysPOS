@@ -70,12 +70,17 @@ import com.magtek.mobile.android.mtusdk.*
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
+import com.pays.payments.design.Dejavoo
+import com.pays.payments.design.PaymentGatewayFactory
+import com.pays.payments.design.PaymentGatewayType
+import com.pays.payments.design.TransactionType
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.pays.pos.data.remote.Constants.DINE_IN
 import com.pays.pos.data.remote.Constants.GIFT_CARD
 import com.pays.pos.data.remote.Constants.IS_GIFT_CARD_REDEEM
 import com.pays.pos.data.remote.Constants.ORDER_TYPE
+import com.pays.pos.data.remote.Constants.PAX
 import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
@@ -83,15 +88,23 @@ import com.pays.pos.ui.fragments.dineInNew.DineInOrderTableViewModelPays
 import com.pays.pos.ui.fragments.eGiftCard.GiftCardViewModel
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
+import com.pays.pos.utils.ProgressUtils.dismissProgressDialog
+import com.pays.pos.utils.ProgressUtils.showProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
+import org.w3c.dom.Document
+import org.w3c.dom.Element
+import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.StringReader
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.math.roundToInt
 
 @AndroidEntryPoint
@@ -1940,19 +1953,42 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             paymentAmount += tipAmount
 
             if (paymentAmount != 0.0) {
-                if (mSessionManager.isConnected) {
-                    magtekModule.stopListner(false)
-                    if (device == 0) {
-                        magtekPaymentCall()
-                    } else {
-                        magtekProPaymentCall()
+                when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
+                    Constants.PAX->{
+                        if (prefProvider.getValueboolean(
+                                Constants.IS_PAX_CONNECTED,
+                                false
+                            ) && !mSessionManager.isConnected
+                        ) {
+                            makePaxPaymentRequest()
+                        }else{
+                            showPaymentNotConnectedMessage(getString(R.string.please_connect_pax))
+                        }
                     }
-                    prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, false)
-                } else if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false) && !mSessionManager.isConnected) {
-                    makePaxPaymentRequest()
-                } else {
-                    errorDisplay("Please connect a payment device.")
+
+                    Constants.DEJAVOO->{
+                        makeDejavooPaymentRequest()
+                    }
+
+                    Constants.VALOR,Constants.VELOR->{
+                        makeValorPaymentRequest()
+                    }
+
+                    else->{
+                        if (mSessionManager.isConnected) {
+                            magtekModule.stopListner(false)
+                            if (device == 0) {
+                                magtekPaymentCall()
+                            } else {
+                                magtekProPaymentCall()
+                            }
+                            prefProvider.setValueboolean(Constants.IS_PAX_CONNECTED, false)
+                        } else {
+                            errorDisplay("Please connect a payment device.")
+                        }
+                    }
                 }
+
             } else {
                 errorDisplay(getString(R.string.payment_amount_is_zero))
             }
@@ -2156,6 +2192,263 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 errorDisplay(getString(R.string.payment_amount_is_zero))
             }
         }
+    }
+
+    private fun makeValorPaymentRequest() {
+//        Todo: Give Implementation for VALOR
+    }
+
+
+    @Inject
+    lateinit var paymentGatewayFactory: PaymentGatewayFactory
+    lateinit var paymentCoroutineScope: CoroutineScope
+
+    val paymentCoroutineExceptionHandler =
+        CoroutineExceptionHandler { coroutineContext, exception ->
+            EventBus.getDefault()
+                .post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
+                            Gson().toJson(
+                                exception
+                            )
+                        } "
+                    )
+                )
+        }
+
+
+    fun parseXml(xmlContent: String): Document {
+        val factory = DocumentBuilderFactory.newInstance()
+        val builder = factory.newDocumentBuilder()
+        return builder.parse(xmlContent.byteInputStream())
+    }
+
+    private fun dismissProgressDialogWithAlert(errorMessage: String? = null) {
+        runOnUiThread {
+            ProgressUtils.dismissProgressDialog()
+            dismissProgressDialog()
+            if (errorMessage != null) {
+                AlertUtils.showCustomAlert(requireContext(), errorMessage)
+            }
+        }
+    }
+
+    private fun getPaymentDetails(keyValuePairs: List<String>, toFind: String): String? {
+        try {
+            var key = keyValuePairs.filter { it.contains(toFind) }.first()
+            return key.substring(key.lastIndexOf('=')+1)
+        }catch (e:Exception){
+            return ""
+        }
+    }
+
+    private fun makeDejavooPaymentRequest() {
+//        Todo: give implementation for DEJAVOO
+
+
+        runOnUiThread(object : java.lang.Runnable {
+            override fun run() {
+                showProgressDialog(requireActivity())
+            }
+        })
+        paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutineScope.launch {
+            val gatewayType = PaymentGatewayType.DEJAVOO
+            val paymentGateway = paymentGatewayFactory.create(gatewayType)
+
+            val amt = String.format("%.2f", (paymentAmount)).toDouble()
+            val tip_amt = String.format("%.2f", tipAmount).toDouble()
+
+            /*    Test Credentials
+                  registerId = "4986101",
+                authKey = "kwg2GRbykg",
+                tpn = "659324491704"
+                authToken= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0cG4iOiI2NTkzMjQ0OTE3MDQiLCJlbWFpbCI6InN1cHBvcnQrMUBwYXlzcG9zLmNvbSIsImlhdCI6MTczMzc0ODk4M30.spR9JiJS6jt0VMB0MGu9HZQYKUrNaWV-U_pzQ4VCvYw"*/
+
+            /* Process Payment */
+            var dejavoo = Dejavoo(
+                registerId =  prefProvider.getValue(
+                    Constants.DEJAVOO_REGISTER_ID,""
+                ),
+                authKey = prefProvider.getValue(
+                    Constants.DEJAVOO_AUTH_KEY,""
+                ),
+                tpn = prefProvider.getValue(
+                    Constants.DEJAVOO_TPN,""
+                ),
+                paymentType = "Credit",
+                transType = "Sale",
+                amount = amt.toString(),
+                tip = if (tip_amt > 0) tip_amt.toString() else "",
+                refId = "Ref${System.currentTimeMillis()}",
+                printReceipt = false,
+                performedBy = prefProvider.employeeName(),
+                isProd = false,
+                txnType = TransactionType.CREDIT_SALE
+            )
+
+            context?.let {
+                paymentGateway.processPayment(
+                    it.applicationContext,
+                    dejavoo,
+                    onSuccess = { tResponse ->
+                        dismissProgressDialog()
+                        var transactionJsonResponse = Gson().fromJson<String>(
+                            tResponse,
+                            String::class.java
+                        )
+                        val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
+                        factory.setNamespaceAware(true)
+                        val xpp: XmlPullParser = factory.newPullParser()
+                        xpp.setInput(StringReader(transactionJsonResponse))
+                        var eventType = xpp.eventType
+
+                        val parsedXml =
+                            parseXml(transactionJsonResponse)/*.getElementsByTagName("xmp").item(0)?.textContent.toString()*/
+                        var Message = ""
+                        var RefId = ""
+                        var RegisterId = ""
+                        var TPN = ""
+                        var AuthCode = ""
+                        var PNRef = ""
+                        var TransNum = ""
+                        var ResultCode = ""
+                        var RespMSG = ""
+                        var PaymentType = ""
+                        var Voided = ""
+                        var TransType = ""
+                        var SN = ""
+                        var ExtData = ""
+                        with(parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes) {
+                            for (i in 0 until this.length) {
+
+                                when ((this.item(i) as Element).tagName.toString()) {
+                                    "Message" -> Message =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "RefId" -> RefId =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "RegisterId" -> RegisterId =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "TPN" -> TPN =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "AuthCode" -> AuthCode =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "PNRef" -> PNRef =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "TransNum" -> TransNum =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "ResultCode" -> ResultCode =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "RespMSG" -> RespMSG =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "PaymentType" -> PaymentType =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "Voided" -> Voided =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "TransType" -> TransType =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "SN" -> SN =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "ExtData" -> ExtData =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    else -> {
+
+                                    }
+                                }
+                            }
+                        }
+
+                        // Split the data into key-value pairs
+                        val keyValuePairs = ExtData.split(",")
+/*
+
+                        // Create a map to store the parsed data
+                        val dataMap = mutableMapOf<String, String>()
+
+                        // Process each key-value pair
+                        for (pair in keyValuePairs) {
+                            val keyValue = pair.split("=")
+                            if (keyValue.size == 2) {
+                                val key = keyValue[0]
+                                val value = keyValue[1]
+                                dataMap[key] = value
+                            }
+                        }
+*/
+
+
+                        // Access the specific values
+                        cardLastDigits = getPaymentDetails(keyValuePairs,"AcntLast4")?:"Not Found"
+                        EDCType = getPaymentDetails(keyValuePairs,"CardType")?:"Not Found"
+//                        EDCType = dataMap["CardType"] ?: "Not Found"
+
+//                    parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes
+                        if (Message.equals("Canceled") || Message.equals("Error")) {
+                            dismissProgressDialogWithAlert(RespMSG.replace("%20", " "))
+                        } else if (Message.contains("Approved")) {
+//                            Check for Order Types
+                            if (prefProvider.getValue(
+                                    ORDER_TYPE,
+                                    TAKEOUT
+                                ).equals(GIFT_CARD)
+                            ) {
+                                if (prefProvider.getValueboolean(
+                                        Constants.IS_ADD_VALUE_IN_GIFT_CARD,
+                                        false
+                                    )
+                                ) {
+                                    giftCardViewModel.paxResponse = Constants.DEJAVOO
+                                    giftCardViewModel.cardNumberLast4 = cardLastDigits
+                                    giftCardViewModel.cardNamePax = EDCType
+                                    giftCardViewModel.transactionID = RefId
+                                  //  addValueInGiftCardUsingCard()
+                                }else{
+                                    giftCardViewModel.paxResponse = Constants.DEJAVOO
+                                    giftCardViewModel.cardNumberLast4 = cardLastDigits
+                                    giftCardViewModel.cardNamePax = EDCType
+                                    giftCardViewModel.transactionID = RefId
+                                 //   sellGiftCardUsingCard()
+                                }
+
+                            }else{
+                              //  makePaymentCreditCardDejavoo(RefId, ExtData)
+                                RefNumber = RefId
+                                makePaymentCreditCard(ExtData,Constants.DEJAVOO)
+                            }
+                        }
+                    },
+                    onFailure = { errorMessage ->
+                        Log.e("Dejavoo: ", errorMessage)
+                        EventBus.getDefault()
+                            .post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeDejavooPaymentRequest()-> ${
+                                        Gson().toJson(
+                                            errorMessage
+                                        )
+                                    } "
+                                )
+                            )
+                        dismissProgressDialogWithAlert()
+                    }
+                )
+            }
+        }
+
+
+    }
+
+
+
+    private fun showPaymentNotConnectedMessage(errorMessage:String) {
+        runOnUiThread(object : java.lang.Runnable {
+            override fun run() {
+                binding.llCreditCard.isEnabled = true
+//                dismissProgressDialog()
+            }
+        })
+        errorDisplay(errorMessage)
     }
 
     // To make card payment via pax device
@@ -2743,13 +3036,23 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         binding.splitLinearLayout.visibility = View.GONE
     }
 
-    private fun makePaymentCreditCard() {
+    private fun makePaymentCreditCard(_ExtData: String = "", paymentDevice: String = PAX) {
 
         paymentAmount -= tipAmount
         paymentAmount = MethodUtils.roundOffAmountDouble(paymentAmount)
         paymentType = "Card"
         paymentviewModel.saveOrder(false)
 
+
+        //Update EXT DATA
+        when(paymentDevice) {
+            Constants.DEJAVOO ->  ExtData = "${Constants.DEJAVOO} : $_ExtData?"
+            Constants.VALOR -> ExtData = "${Constants.VALOR} : $_ExtData"
+            else -> {
+                //it is pax Payment
+
+            }
+        }
 
         if (isGuestPay) {
 
@@ -2778,7 +3081,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     tipID,
                     GlobalUID,
                     RefNumber,
-                    ExtData,
+                    this.ExtData,
                     ECRRefNumber,
                     PAXtoken,
                     cardLastDigits,
@@ -2869,7 +3172,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     tipID,
                     GlobalUID,
                     RefNumber,
-                    ExtData,
+                    this.ExtData,
                     ECRRefNumber,
                     PAXtoken,
                     cardLastDigits,

@@ -514,9 +514,9 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                         totalCheckedItemPrice += it.deductedPrice
                 }
 
-                refundAmount = paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
+                val refundedAmount = paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
 
-                if ((totalCheckedItemPrice + refundAmount) > screenTotalAmount.toDouble()) {
+                if ((totalCheckedItemPrice + refundedAmount) > screenTotalAmount.toDouble()) {
                     AlertUtils.showCustomAlert(
                         requireActivity(),
                         getString(R.string.the_refund_amount_cannot_exceed_the_total_order_value)

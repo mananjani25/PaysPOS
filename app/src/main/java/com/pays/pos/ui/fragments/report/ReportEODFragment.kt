@@ -4517,12 +4517,16 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
 
                 it.salesPerCategorySummary.forEachIndexed { index, arrayList ->
                     if (index == 0) {
+                        arrayListSalePerCategory.add(KeyValue("FULL_LINE_DIVIDER", ""))
                         arrayListSalePerCategory.add(KeyValue("Cash Sales", ""))
+                        arrayListSalePerCategory.add(KeyValue("FULL_LINE_DIVIDER", ""))
                         arrayList.forEach {
                             arrayListSalePerCategory.add(it)
                         }
                     } else if (index == 1) {
+                        arrayListSalePerCategory.add(KeyValue("FULL_LINE_DIVIDER", ""))
                         arrayListSalePerCategory.add(KeyValue("Credit/Non Cash Sales", ""))
+                        arrayListSalePerCategory.add(KeyValue("FULL_LINE_DIVIDER", ""))
                         arrayList.forEach {
                             arrayListSalePerCategory.add(it)
                         }

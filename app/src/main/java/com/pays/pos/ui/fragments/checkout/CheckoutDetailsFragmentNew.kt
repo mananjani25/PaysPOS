@@ -3962,7 +3962,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 refId = "Ref${System.currentTimeMillis()}",
                 printReceipt = false,
                 performedBy = prefProvider.employeeName(),
-                isProd = false,
+                isProd = Constants.paymentLive,
                 txnType = TransactionType.CREDIT_SALE
             )
 
@@ -4743,7 +4743,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 reqTxnId = "INV${System.currentTimeMillis()}",
                 amount = amt.toString(),
                 tipAmount = if (tip_amt > 0) tip_amt.toString() else "",
-                tipEntry = "1",
+                tipEntry = if (tip_amt > 0) "1" else "-1",
                 txn_type = "",
                 surchargeIndicator = "",
                 sale_refund = "",
@@ -5848,6 +5848,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             } else {
                 CoroutineScope(Dispatchers.Main).launch {
                     ProgressUtils.dismissProgressDialog()
+                    dismissProgressDialog()
+
                     AlertUtils.showCustomAlertWithListenerWithOKCancel(
                         requireContext(),
                         getString(R.string.pax_connect_error), getString(R.string.reconnect),

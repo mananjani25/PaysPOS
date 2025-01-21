@@ -7728,25 +7728,38 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     }
 
 
-                                    outputStream.write(LPrint.LINE_FEED)
-                                    outputStream.write(LPrint.LINE_FEED)
-                                    outputStream.write(LPrint.BOLD_ON)
+                                    try {
+                                       write(LPrint.LINE_FEED)
+                                        write(LPrint.LINE_FEED)
+                                        write(LPrint.BOLD_ON)
+                                    }
+                                    catch (e:Exception) {
+
+                                    }
 
                                     /***
                                      * Print total price
                                      */
 
+                                    try {
 //                                    MethodUtils.roundOffAmountString(totalAmt)
-                                    val str5 = padLine(
-                                        "Total Price",
-                                        "$" + order?.payments?.last()?.let {
-                                            MethodUtils.roundOffAmountString(
-                                                it.amount + it.tips
-                                            )
-                                        },
-                                        48
-                                    ).toString().toByteArray()
-                                    write(str5)
+                                        val str5 = padLine(
+                                            "Total Price",
+                                            "$" + order?.payments?.last()?.let {
+                                                MethodUtils.roundOffAmountString(
+                                                    it.amount + it.tips
+                                                )
+                                            },
+                                            48
+                                        ).toString().toByteArray()
+                                        write(str5)
+                                    }catch(e:Exception) {
+                                        Log.e(
+                                            "PRINTING ERROR WHILE DINE IN _ LANDI INNER PRINTER",
+                                            "Total price printing" + e.message.toString()
+                                        )
+                                    }
+
                                     write(LPrint.LINE_FEED)
 
                                     /***
@@ -7895,10 +7908,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                      * CARD DETAILS
                                      */
 
+                                    try {
 
-                                    if (_order?.payments?.isNotEmpty() == true)
-                                        if (_order?.payments?.first()?.paymentType?.lowercase() == "Card".lowercase()) {
-                                            /*val str12 = padLine(
+                                        if (_order?.payments?.isNotEmpty() == true)
+                                            if (_order.payments.first().paymentType.lowercase() == "Card".lowercase()) {
+                                                /*val str12 = padLine(
                                                 "",
                                                 receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString(),
                                                 if (customerSettingModel.fonts == LARGE) 23 else 48
@@ -7909,43 +7923,49 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 SunmiPrintHelper.getInstance().lineWrap(1)
                                             }*/
 
-                                            var strCardType =
-                                                _order.payments.get(_order.payments.size!! - 1).cardType.toString()
+                                                var strCardType =
+                                                    _order.payments[_order.payments.size - 1].cardType.toString()
+                                                        ?: ""
 
-                                            if (!paymentViewModel.extData.isNullOrEmpty()) {
+                                                if (!paymentViewModel.extData.isNullOrEmpty()) {
 
-                                                var applabStartIndex =
-                                                    paymentViewModel.extData.indexOf("<APPLAB>")
-                                                var applabEndIndex =
-                                                    paymentViewModel.extData.indexOf("</APPLAB>")
-                                                strCardType =
-                                                    paymentViewModel.extData.substring(
-                                                        applabStartIndex + "<APPLAB>".length,
-                                                        applabEndIndex
-                                                    )
+                                                    var applabStartIndex =
+                                                        paymentViewModel.extData.indexOf("<APPLAB>")
+                                                    var applabEndIndex =
+                                                        paymentViewModel.extData.indexOf("</APPLAB>")
+                                                    strCardType =
+                                                        paymentViewModel.extData.substring(
+                                                            applabStartIndex + "<APPLAB>".length,
+                                                            applabEndIndex
+                                                        )
+                                                }
+
+                                                val str13 = padLine(
+                                                    "",
+                                                    strCardType, 48
+                                                ).toString()
+
+                                                if (!str13.isBlank()) {
+                                                    write(str13.toByteArray())
+                                                    write(LPrint.LINE_FEED)
+                                                }
+                                                val str14 = padLine(
+                                                    "",
+                                                    _order.payments[_order.payments.size - 1].cardNumber.toString(),
+                                                    48
+                                                ).toString()
+
+                                                if (!str14.isBlank()) {
+                                                    write(str14.toByteArray())
+                                                    write(LPrint.LINE_FEED)
+                                                }
                                             }
-
-                                            val str13 = padLine(
-                                                "",
-                                                strCardType, 48
-                                            ).toString()
-
-                                            if (!str13.isBlank()) {
-                                                write(str13.toByteArray())
-                                                write(LPrint.LINE_FEED)
-                                            }
-                                            val str14 = padLine(
-                                                "",
-                                                _order.payments[_order.payments.size - 1].cardNumber.toString(),
-                                                48
-                                            ).toString()
-
-                                            if (!str14.isBlank()) {
-                                                write(str14.toByteArray())
-                                                write(LPrint.LINE_FEED)
-                                            }
-                                        }
-
+                                    }catch (e:Exception) {
+                                        Log.e(
+                                            "PRINTING ERROR WHILE DINE IN _ LANDI INNER PRINTER",
+                                            "PAYMENTS printing issue" + e.message.toString()
+                                        )
+                                    }
 
 
                                     write(LPrint.LINE_FEED)
@@ -7983,10 +8003,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 }
 
                             } catch (e: Exception) {
+                                outputStream.write(LPrint.CUT_PAPER)
+                                LPrint.disconnectLandiPrinter()
+
                                 printingCustomer = false
                                 Log.e(
                                     "PRINTING ERROR WHILE DINE IN _ LANDI INNER PRINTER",
-                                    e.printStackTrace().toString()
+                                    e.printStackTrace().toString() + " " + e.message.toString()
                                 )
                             }
                         }
