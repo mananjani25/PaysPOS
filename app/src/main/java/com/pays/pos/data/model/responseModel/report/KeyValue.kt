@@ -82,7 +82,15 @@ data class KeyValue(
         "%.2f", value?.toDouble() ?: 0.0
     )*/
     fun showFormattedValue() =
-        if (value?.isEmpty() == true) "$0.00" else if ((value?.toDouble() ?: 0.0) < 0.0){ "-$${String.format(
+        if (value?.isEmpty() == true) "$0.00" else if ((value?.toDouble() ?: 0.0) < 0.0){
+            if (String.format(
+                    "%.2f", value?.toDouble()?.absoluteValue ?: 0.0
+                ).toDouble()==0.0)
+                "$${String.format(
+                    "%.2f", value?.toDouble()?.absoluteValue ?: 0.0
+                )}"
+            else
+            "-$${String.format(
             "%.2f", value?.toDouble()?.absoluteValue ?: 0.0
         )}" } else "$${String.format(
             "%.2f", value?.toDouble()?.absoluteValue ?: 0.0
