@@ -323,6 +323,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 }
                             }.start()
 
+                            transactionInProgress()
                             startPAXWithGiftCard()
                         }else{
                             showAlertDialog(getString(R.string.please_connect_pax))
@@ -2916,6 +2917,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
             }
         } else {
+            transactionInProgress()
             makeDynamicCashPayment(
                 dynamicPaymentType = dynamicPaymentName,
                 dynamicPaymentId = dynamicPaymentId
@@ -2981,7 +2983,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             if (InternetUtils.isInternetAvailable(applicationContext = requireActivity().applicationContext)) {
 
-                dashboardViewModel.paymentInProgress.value = true
 
                 restrictTvCashClicks()
 
@@ -3156,6 +3157,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     }
 //                                makePaymentCreditCard()
                                 } else {
+                                    transactionInProgress()
                                     makePaxPaymentRequest()
                                 }
                             }
@@ -3570,6 +3572,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 disconnectSyncChannel()
 
                 restrictTvCashClicks()
+                transactionInProgress()
 
                 if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
                     EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
@@ -3594,6 +3597,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
                 disconnectSyncChannel()
                 restrictTvCashClicks()
+                transactionInProgress()
 //                SunmiPrintHelper.getInstance().openCashBox()
                 if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
                     EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
@@ -3611,6 +3615,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
                 disconnectSyncChannel()
                 restrictTvCashClicks()
+                transactionInProgress()
 //                SunmiPrintHelper.getInstance().openCashBox()
                 if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
                     EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
@@ -3628,6 +3633,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
                 disconnectSyncChannel()
                 restrictTvCashClicks()
+                transactionInProgress()
 //                SunmiPrintHelper.getInstance().openCashBox()
 
                 if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
@@ -3644,6 +3650,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
         binding.tvCustomAmount.setOnSingleClickListener {
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
+                transactionInProgress()
                 paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
                 val bundleVal = Bundle().apply {
                     putDouble("totalprice", ((paymentAmount)))
@@ -3781,6 +3788,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         binding.txtChargeGC.setOnSingleClickListener {
+            transactionInProgress()
             startTransactionWithGiftCardPayment()
         }
     }
@@ -4530,6 +4538,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     }
 
+    private fun transactionInProgress() {
+        dashboardViewModel.paymentInProgress.value = true
+    }
     //Restrict user from clicking cash value multiple times
     private fun restrictTvCashClicks() {
         binding.apply {
