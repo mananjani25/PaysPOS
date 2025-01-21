@@ -5820,6 +5820,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             } else {
                 CoroutineScope(Dispatchers.Main).launch {
                     ProgressUtils.dismissProgressDialog()
+                    dismissProgressDialog()
+
                     AlertUtils.showCustomAlertWithListenerWithOKCancel(
                         requireContext(),
                         getString(R.string.pax_connect_error), getString(R.string.reconnect),
