@@ -339,23 +339,33 @@ class TransactionDetailsFragment : Fragment() {
         }
 
         binding.tvtipadd.setOnClickListener {
-            if (this::paymentDetailsResponse.isInitialized) {
-                if (!paymentDetailsResponse.data.payable_type.equals(
-                        "GiftCard",
-                        true
-                    ) && !paymentDetailsResponse.data.payable_type.equals(
-                        "Invoice", true
-                    )
-                ) {
-                    val bundle = Bundle()
-                    bundle.putDouble("totalTip", paymentDetailsResponse.data.tips)
-                    bundle.putBoolean("isFromTransaction", true)
-                    paymentDetailsResponse.data.amount.let { bundle.putDouble("totalPrice", it) }
-                    findNavController().navigate(
-                        R.id.action_transactionDetailsFragment_to_tipdialog,
-                        bundle
-                    )
+
+            if (paymentDetailsResponse.data.payment_type == "External") {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    "Tip cannot be adjusted for this transaction."
+                ) { _, _ ->
                 }
+            } else {
+                if (this::paymentDetailsResponse.isInitialized) {
+                    if (!paymentDetailsResponse.data.payable_type.equals(
+                            "GiftCard",
+                            true
+                        ) && !paymentDetailsResponse.data.payable_type.equals(
+                            "Invoice", true
+                        )
+                    ) {
+                        val bundle = Bundle()
+                        bundle.putDouble("totalTip", paymentDetailsResponse.data.tips)
+                        bundle.putBoolean("isFromTransaction", true)
+                        paymentDetailsResponse.data.amount.let { bundle.putDouble("totalPrice", it) }
+                        findNavController().navigate(
+                            R.id.action_transactionDetailsFragment_to_tipdialog,
+                            bundle
+                        )
+                    }
+                }
+
             }
         }
         setFragmentResultListener("request_key_tips") { requestKey: String, bundle: Bundle ->
