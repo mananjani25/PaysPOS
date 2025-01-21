@@ -1,6 +1,7 @@
 package com.pays.pos.ui.adapter
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Build
 import android.util.Log
@@ -21,6 +22,7 @@ import com.pays.pos.databinding.ViewPaginationBinding
 import com.pays.pos.databinding.ViewTransactionItemBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.transactions.TransactionViewModel
+import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.TimeFormatUtils.convertCurrentDate
 import com.pays.pos.utils.TimeFormatUtils.convertCurrentTime
@@ -209,8 +211,12 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
 
             itemBinding.txtTip.setOnClickListener {
 
-                if (filterList[position].paymentType == "Card" && filterList[position].tips > 0) {
-
+                if ((filterList[position].paymentType == "Card" && filterList[position].tips > 0) || (filterList[position].paymentType == "External") ) {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        context,
+                        "Tip cannot be adjusted for this transaction."
+                    ) { _, _ ->
+                    }
                 } else
                     mCallback?.onItemClickListener(it, position)
             }
