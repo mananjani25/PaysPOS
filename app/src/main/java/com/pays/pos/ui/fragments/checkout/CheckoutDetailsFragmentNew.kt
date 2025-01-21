@@ -4994,6 +4994,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             initPOSLink()
                             runOnUiThread(Runnable {
                                 dashboardViewModel.paymentInProgress.value = false
+                                dashboardViewModel.tipBeforeEnabled = true
+                                dashboardViewModel.removeMainCart.value = true
                                 dismissProgressDialog()
                             })
                             CoroutineScope(Dispatchers.Main).launch {
@@ -5021,6 +5023,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     CoroutineScope(Dispatchers.Main).launch {
                         dashboardViewModel.paymentInProgress.value = false
                         dashboardViewModel.tipBeforeEnabled = true
+                        dashboardViewModel.removeMainCart.value = true
                         ProgressUtils.dismissProgressDialog()
                         /*                    if (retryCount <= 1) {
                                                 retryCount++
