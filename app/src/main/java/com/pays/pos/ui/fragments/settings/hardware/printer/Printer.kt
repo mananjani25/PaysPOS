@@ -1698,7 +1698,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         EventBus.getDefault().post(
             MessageEvent(
-                "${Constants.LINE_BREAK_TAB} Printer.kt_onPrinterSelected_LINE-> ${Thread.currentThread().stackTrace[2].lineNumber}"
+                "${Constants.LINE_BREAK_TAB} Printer.kt_onPrinterSelected_LINE-> ${Thread.currentThread().stackTrace[2].lineNumber}, printerListModel -> ${Gson().toJson(printerListModel)}"
             )
         )
 

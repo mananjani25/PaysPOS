@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.pays.pos.R
 import com.pays.pos.data.model.PrinterListModel
 import com.pays.pos.data.remote.Constants
@@ -59,7 +60,7 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
             binding.imgPrinter.setOnClickListener {
                 EventBus.getDefault().post(
                     MessageEvent(
-                        "${Constants.LINE_BREAK_TAB} PrinterListAdapter.kt_binding.imgPrinter.setOnClickListener Clicked"
+                        "${Constants.LINE_BREAK_TAB} PrinterListAdapter.kt_binding.imgPrinter.setOnClickListener Clicked, dataList-> ${dataList}"
                     )
                 )
                 if (dataList.isNotEmpty()) {
@@ -195,6 +196,11 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
 
     @SuppressLint("NotifyDataSetChanged")
     fun addItem(model: PrinterListModel) {
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} PrinterListAdapter.kt_addItem(model: PrinterListModel), model-> ${Gson().toJson(model)}"
+            )
+        )
         dataList.add(model)
         notifyItemRangeInserted(0, dataList.size)
         notifyDataSetChanged()
