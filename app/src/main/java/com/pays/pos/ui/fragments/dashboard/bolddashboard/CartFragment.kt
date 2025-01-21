@@ -3969,6 +3969,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                 bundle.putInt("paymentId", paymentId!!)
                                 bundle.putString("paymentOfflineId", paymentOfflineId)
                                 bundle.putString("orderOfflineId", orderOfflineId)
+                                bundle.putString("orderType_to_check_kiosk", prefProvider.getValue(ORDER_TYPE, ""))
+
                                 bundle.putString(
                                     Constants.OLD_ITEM,
                                     prefProvider.getValue(Constants.OLD_ITEM, "")

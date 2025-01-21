@@ -14120,7 +14120,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             )
                                         )
                                         receiptModel?.order?.orderItems?.forEach { item ->
-                                            if (!item.isPrinted || item.isItemEdited) { // In case of Single item per receipt, isPrinted variable is maintained
+                                            if (!item.isPrinted || item.isItemEdited || (orderTypeToCheckKiosk.equals("KioskOpenorder", true) && !item.isItemEdited)) { // In case of Single item per receipt, isPrinted variable is maintained
                                                 EventBus.getDefault().post(
                                                     MessageEvent(
                                                         "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_condition-> ${item}"
