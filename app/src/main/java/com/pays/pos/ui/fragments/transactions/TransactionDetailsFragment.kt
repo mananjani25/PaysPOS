@@ -558,7 +558,7 @@ class TransactionDetailsFragment : Fragment() {
                     refId= dejavooRefTxnId,
                     printReceipt= false,
                     performedBy=  prefProvider.employeeName(),
-                    isProd= false,
+                    isProd=  Constants.paymentLive,
                     txnType = TransactionType.TIP_ADJUSTMENT
                 )
                 paymentGateway.processPayment(
@@ -790,7 +790,7 @@ class TransactionDetailsFragment : Fragment() {
                         Constants.DEJAVOO_TPN,""
                     ),
                     amount = "",
-                    isProd = false,
+                    isProd = Constants.paymentLive,
                     paymentType = "Credit",
                     performedBy = "",
                     printReceipt = false,
@@ -890,7 +890,7 @@ class TransactionDetailsFragment : Fragment() {
                         Constants.DEJAVOO_TPN,""
                     ),
                     amount = paymentDetailsResponse.data.amount.toString(),
-                    isProd = false,
+                    isProd = Constants.paymentLive,
                     paymentType = "Credit",
                     performedBy = "",
                     printReceipt = false,

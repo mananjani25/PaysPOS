@@ -316,7 +316,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                     Constants.DEJAVOO_TPN,""
                 ),
                 amount = (refundAmount * 100).toInt().toString(),
-                isProd = false,
+                isProd = Constants.paymentLive,
                 paymentType = "Credit",
                 performedBy = "",
                 printReceipt = false,
@@ -431,7 +431,7 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                         Constants.DEJAVOO_TPN,""
                     ),
                     amount = refundAmount.toString(),
-                    isProd = false,
+                    isProd = Constants.paymentLive,
                     paymentType = "Credit",
                     performedBy = "",
                     printReceipt = false,

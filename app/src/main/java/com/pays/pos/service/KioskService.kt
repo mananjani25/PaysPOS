@@ -44,6 +44,7 @@ import com.pays.pos.data.repositories.KioskRepository
 import com.pays.pos.data.repositories.PosRepository
 import com.pays.pos.di.ApiModule
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.fragments.payment.OrderCompleteFragment.OnBluetoothPermissionGranted
 import com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
@@ -66,6 +67,7 @@ import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
@@ -271,6 +273,16 @@ class KioskService : Service(), StatusChangeEventListener {
                             Log.d("HEY", "ONResponse")
                             response?.let {
                                 try {
+                                    EventBus.getDefault().post(
+                                        MessageEvent(
+                                            "${Constants.LINE_BREAK_TAB} KioskService.kt getOrderFromServer()_SUCCESS-> ${
+                                                Gson().fromJson<KioskOrderResponse>(
+                                                    it,
+                                                    KioskOrderResponse::class.java
+                                                )
+                                            }"
+                                        )
+                                    )
                                     getKitchenPrinters(
                                         Gson().fromJson<KioskOrderResponse>(
                                             it,
@@ -278,7 +290,13 @@ class KioskService : Service(), StatusChangeEventListener {
                                         )
                                     )
                                 } catch (e: Exception) {
-
+                                    EventBus.getDefault().post(
+                                        MessageEvent(
+                                            "${Constants.LINE_BREAK_TAB} KioskService.kt getOrderFromServer()_EXCEPTION-> ${
+                                                e.printStackTrace()
+                                            }"
+                                        )
+                                    )
                                 }
 
                             }
