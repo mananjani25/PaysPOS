@@ -707,7 +707,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                     listWT.add(list.get(j).item!!)
 
                                     if(guestPaid>0) {
-                                        list[j].item?.price.let {
+                                        list[j].item?.price.let { it ->
                                             val totalPricePaid = it?.div(eligibleGuestsForDivision)
 
                                             list[j].item?.price = totalPricePaid?.let { it1 ->
@@ -715,6 +715,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                     it1 * guestPaid
                                                 )
                                             }!!
+
+                                            list[j].item?.modifiers?.forEach { modifier ->
+                                                modifier.price = modifier.price.minus(modifier.price / guestCount * guestPaid )
+                                            }
                                         }
                                     }
                                     dashboardViewModel.currentCartItems.add(list[j].item!!)
@@ -918,6 +922,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 //                            dashboardViewModel.addItemToCartItems(cartItem)
 //                        }
 //                    }
+
+
+                    val totalPaid =dineInTableAdapter.getList().count { it.isHeader == 0 && it.isPaid }
 
                     dashboardViewModel.currentCartItems.filter {!it.isPaid}.forEach { cartItem ->
                         val item = cartItem.price
