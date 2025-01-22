@@ -55,7 +55,6 @@ import com.pays.pos.data.remote.Constants.GIFT_CARD_PIN
 import com.pays.pos.data.remote.Constants.IS_GIFT_CARD_REDEEM
 import com.pays.pos.data.remote.Constants.IS_ORDER_REDEEMABLE_WITH_GIFT_CARD
 import com.pays.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
-import com.pays.pos.data.remote.Constants.OPTION_TYPE
 import com.pays.pos.data.remote.Constants.ORDER_TYPE
 import com.pays.pos.data.remote.Constants.PRE_AUTH_DETAILS
 import com.pays.pos.data.remote.Constants.TAKEOUT
@@ -143,8 +142,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private var paymentId: Int = -1
     private var isPaymentScreen = true
     private var isSplitScreen = false
+    private var isAmountWiseSplit = false
 
     private var remainingAmount: Double = 0.0
+    private var amountWiseSplit: Double = 0.0
     var cashDiscountType = ""
     var paymentAmount = 0.0
     private var redeemLoyaltyInfo: RedeemLoyaltyInfo? = null
@@ -226,6 +227,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 dineInViewModel
             )
         }
+
+        binding.enteredSplitAmount.addTextChangedListener(AmountTextWatcher(binding.enteredSplitAmount, false))
 
         dashboardViewModel.paymentInProgress.value = false
         dashboardViewModel.tipBeforeEnabled = true
@@ -833,6 +836,22 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             loadPaymentLayout()
             tipAmountCalculation()
         }
+        binding.linearNextAmountSplit.setOnSingleClickListener {
+            if (binding.enteredSplitAmount.text.toString().isNotEmpty()) {
+                isAmountWiseSplit = true
+                PaymentBoldPosFragment.newInstance().addTipHideShow(false)
+                amountWiseSplit = binding.enteredSplitAmount.text.toString().replace("$", "").toDouble()
+                loadPaymentLayout(isAmountWiseSplit = true)
+                tipAmountCalculation(isAmountWiseSplit = true)
+
+            } else {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    "Please enter amount greater than zero to split."
+                ) { _, _ ->
+                }
+            }
+        }
         binding.tvFullAmount.setOnClickListener {
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -976,7 +995,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         binding.tvCustom.setOnClickListener {
             binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvAmountWiseSpilt.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -985,7 +1003,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             binding.tvCustom.setTextColor(resources.getColor(R.color.white))
             binding.tvFullAmount.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvAmountWiseSpilt.setTextColor(resources.getColor(R.color.txtColor))
             binding.tv2ways.setTextColor(resources.getColor(R.color.txtColor))
             binding.tv3ways.setTextColor(resources.getColor(R.color.txtColor))
             binding.tv4ways.setTextColor(resources.getColor(R.color.txtColor))
@@ -995,31 +1012,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             bundle.putDouble("totalPrice", WholetotalPrice)
             bundle.putInt("splitValue", isSelectedCount)
             bundle.putBoolean("amountWiseSplit", false)
-            dashboardViewModel.wholetotalPrice = WholetotalPrice
-            findNavController().navigate(R.id.action_splitFragment_to_splitdialog, bundle)
-        }
-        binding.tvAmountWiseSpilt.setOnClickListener {
-            binding.tvAmountWiseSpilt.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
-            binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tv5ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-
-            binding.tvAmountWiseSpilt.setTextColor(resources.getColor(R.color.white))
-            binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvFullAmount.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tv2ways.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tv3ways.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tv4ways.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
-            val bundle = Bundle()
-            bundle.putDouble("totalPrice", WholetotalPrice)
-            bundle.putInt("splitValue", isSelectedCount)
-            bundle.putBoolean("amountWiseSplit", true)
             dashboardViewModel.wholetotalPrice = WholetotalPrice
             findNavController().navigate(R.id.action_splitFragment_to_splitdialog, bundle)
         }
@@ -2776,7 +2768,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     // To make cash payment for placing order
     private fun cashPaymentWithVariation(
     ) {
-        paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+        paymentAmount = String.format("%.2f", if (isAmountWiseSplit) amountWiseSplit else (WholetotalPrice / isSelectedCount)).toDouble()
         EventBus.getDefault().post(
             MessageEvent(
                 "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_cashPaymentWithVariation() paymentAmount-> ${
@@ -2832,7 +2824,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             0.0
         } else {
             MethodUtils.getLatestCashDiscountOrSurCharge(
-                WholetotalPrice,
+                if (isAmountWiseSplit) amountWiseSplit else (WholetotalPrice / isSelectedCount) ,
                 prefProvider,
                 requireContext()
             ) / isSelectedCount
@@ -5407,10 +5399,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     // To set different cash payment options and total amount values
-    private fun setupPaymentScreen(isSelectCount: Int,cashTip:Double = 0.0,cardTip:Double=0.0) {
+    private fun setupPaymentScreen(
+        isSelectCount: Int,
+        cashTip: Double = 0.0,
+        cardTip: Double = 0.0,
+        isAmountWiseSplit: Boolean = false
+    ) {
         MethodUtils.getCashPaymentOptionList(
 //   Commented to solve BIS-4196         getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount,
-            (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount) + cashTip,
+            (getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, true) / isSelectCount) + cashTip,
             binding.tvCash1,
             binding.tvCash2,
             binding.tvCash3
@@ -5418,18 +5415,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         MethodUtils.setPriceTextView(
             binding.tvCash,
-            (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount) + cashTip
+            (getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, true) / isSelectCount) + cashTip
 //     Commented to solve BIS-4196       getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
         )
         MethodUtils.setPriceTextView(
             binding.tvCash0,
-            (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount) + cashTip
+            (getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, true) / isSelectCount) + cashTip
             //     Commented to solve BIS-4196  getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
         )
         Log.e(TAG, "WholetotalPrice:   ${WholetotalPrice}")
         MethodUtils.setPriceTextView(
             binding.tvCard,
-            (getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectCount) + cardTip
+            (getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, false) / isSelectCount) + cardTip
             //     Commented to solve BIS-4196  getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectCount
         )
         if (this::presentation.isInitialized) {
@@ -5458,22 +5455,22 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     // To calculate tip added by user
-    private fun tipAmountCalculation(cashTip:Double = 0.0,cardTip:Double=0.0) {
+    private fun tipAmountCalculation(cashTip:Double = 0.0,cardTip:Double=0.0,isAmountWiseSplit: Boolean = false) {
         if (tipAmount == 0.00) {
             binding.tvsplittip?.gone()
             binding.tvtipcard?.gone()
             binding.tvtipcash?.gone()
             MethodUtils.setPriceTextView(
                 binding.tvCash,
-                getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount
+                getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, true) / isSelectedCount
             )
             MethodUtils.setPriceTextView(
                 binding.tvCash0,
-                getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount
+                getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, true) / isSelectedCount
             )
             MethodUtils.setPriceTextView(
                 binding.tvCard,
-                getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
+                getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, false) / isSelectedCount
             )
             if (this::presentation.isInitialized) {
                 presentation.show()
@@ -5500,25 +5497,25 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         } else {
             if (this::presentation.isInitialized) {
                 presentation.show()
-                presentation.showTipsAddedNew(tipAmount, tipAmount, WholetotalPrice)
+                presentation.showTipsAddedNew(tipAmount, tipAmount, if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice)
             }
 
             MethodUtils.setPriceTextView(
                 binding.tvCash,
-                (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + cashTip
+                (getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, true) / isSelectedCount) + cashTip
             )
             MethodUtils.setPriceTextView(
                 binding.tvCash0,
-                (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + cashTip
+                (getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, true) / isSelectedCount) + cashTip
             )
             MethodUtils.setPriceTextView(
                 binding.tvCard,
-                (getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount) + cardTip
+                (getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, false) / isSelectedCount) + cardTip
             )
 
             if (this::presentation.isInitialized) {
                 presentation.show()
-                presentation.showTipsAddedNew(tipAmount, tipAmount, WholetotalPrice)
+                presentation.showTipsAddedNew(tipAmount, tipAmount, if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice)
                 presentation.updateTotals(
                     binding.tvCash.text.toString(),
                     binding.tvCard.text.toString()
@@ -5536,7 +5533,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvtipcard?.text =
                 "(" + MethodUtils.roundOffAmount(cardTip) + " Tip Added)"
             MethodUtils.getCashPaymentOptionList(
-                (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + cashTip,
+                (getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, true) / isSelectedCount) + cashTip,
                 binding.tvCash1,
                 binding.tvCash2,
                 binding.tvCash3
@@ -5910,9 +5907,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
             PaymentBoldPosFragment.newInstance().addTipHideShow(true)
             binding.linearTab2.gone()
+            binding.linearTab3.gone()
         } else {
             PaymentBoldPosFragment.newInstance().addTipHideShow(false)
             binding.linearTab2.visible()
+            binding.linearTab3.visible()
         }
 
         binding.linearTab1.setOnSingleClickListener {
@@ -6028,6 +6027,34 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
 
         }
+        binding.linearTab3.setOnSingleClickListener {
+            if (tipAmount != 0.0 && dashboardViewModel.tipTransactionAmount != 0.0) {
+                AlertUtils.showCustomAlertWithListenerWithOKCancel(
+                    requireContext(),
+                    "If you are going to do split payment then existing tip will be removed."
+                ) { _, _ ->
+                    PaymentBoldPosFragment.newInstance().addTipHideShow(true)
+                    tipAmount = 0.0
+                    dashboardViewModel.setTipAmount(0.0)
+                    dashboardViewModel.totalTipAmount = 0.0
+                    dashboardViewModel.customerGivenTip.value = false
+                    prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+                    dashboardViewModel.employeeGivenTip = false
+
+                    if (this::presentation.isInitialized) {
+                        presentation.show()
+                        presentation.showTipsAddedNew(tipAmount, tipAmount, WholetotalPrice)
+//                        presentation.updateTotals(
+//                            binding.tvCash.text.toString(),
+//                            binding.tvCard.text.toString()
+//                        )
+                    }
+                    loadAmountSplitLayout()
+                }
+            } else {
+                loadAmountSplitLayout()
+            }
+        }
     }
 
     private fun loadSplitLayout() {
@@ -6035,30 +6062,58 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         binding.view2.setBackgroundColor(resources.getColor(R.color.txt_color_blue))
         binding.tab1.setTextColor(resources.getColor(R.color.white))
         binding.view1.setBackgroundColor(resources.getColor(R.color.backgroundColor))
+        binding.tab3.setTextColor(resources.getColor(R.color.white))
+        binding.view3.setBackgroundColor(resources.getColor(R.color.backgroundColor))
         isSplitScreen = true
         isPaymentScreen = false
         binding.paymentLinearLayout.visibility = View.GONE
+        binding.splitAmountLayout.visibility = View.GONE
         binding.splitLinearLayout.visibility = View.VISIBLE
     }
 
-    private fun loadPaymentLayout(cashTip:Double = 0.0,cardTip:Double=0.0) {
-        setupPaymentScreen(isSelectedCount,cashTip,cardTip)
+    private fun loadAmountSplitLayout() {
+        binding.tab3.setTextColor(resources.getColor(R.color.txt_color_blue))
+        binding.view3.setBackgroundColor(resources.getColor(R.color.txt_color_blue))
+        binding.tab2.setTextColor(resources.getColor(R.color.white))
+        binding.view2.setBackgroundColor(resources.getColor(R.color.backgroundColor))
+        binding.tab1.setTextColor(resources.getColor(R.color.white))
+        binding.view1.setBackgroundColor(resources.getColor(R.color.backgroundColor))
+        isSplitScreen = false
+        isPaymentScreen = false
+        binding.paymentLinearLayout.visibility = View.GONE
+        binding.splitLinearLayout.visibility = View.GONE
+        binding.splitAmountLayout.visibility = View.VISIBLE
+    }
+
+    private fun loadPaymentLayout(cashTip:Double = 0.0,cardTip:Double=0.0,isAmountWiseSplit:Boolean = false) {
+        setupPaymentScreen(isSelectedCount,cashTip,cardTip,isAmountWiseSplit)
         binding.tab1.setTextColor(resources.getColor(R.color.txt_color_blue))
         binding.view1.setBackgroundColor(resources.getColor(R.color.txt_color_blue))
         binding.tab2.setTextColor(resources.getColor(R.color.white))
         binding.view2.setBackgroundColor(resources.getColor(R.color.backgroundColor))
+        binding.tab3.setTextColor(resources.getColor(R.color.white))
+        binding.view3.setBackgroundColor(resources.getColor(R.color.backgroundColor))
         isPaymentScreen = true
         isSplitScreen = false
         binding.paymentLinearLayout.visibility = View.VISIBLE
+        binding.splitAmountLayout.visibility = View.GONE
         binding.splitLinearLayout.visibility = View.GONE
         cashDiscountSurcharge = if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
             0.0
         } else {
-            MethodUtils.getLatestCashDiscountOrSurCharge(
-                WholetotalPrice / isSelectedCount,
-                prefProvider,
-                requireContext()
-            )
+            if (isAmountWiseSplit) {
+                MethodUtils.getLatestCashDiscountOrSurCharge(
+                    amountWiseSplit,
+                    prefProvider,
+                    requireContext()
+                )
+            } else {
+                MethodUtils.getLatestCashDiscountOrSurCharge(
+                    WholetotalPrice / isSelectedCount,
+                    prefProvider,
+                    requireContext()
+                )
+            }
 
         }
 
