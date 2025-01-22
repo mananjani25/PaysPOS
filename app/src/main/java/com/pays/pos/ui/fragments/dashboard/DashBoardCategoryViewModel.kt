@@ -8001,25 +8001,25 @@ class DashBoardCategoryViewModel @Inject constructor(
                                  var channelID = "bd967b4e0ccd6309c5ac16634bd367b6"
                                  var epi = "2319995597"*/
 
-                                var foundTerminal=it.settingData.data.terminals.filter { term-> term.name.equals(prefProvider.getValue(
+                               /* var foundTerminal=it.settingData.data.terminals.filter { term-> term.name.equals(prefProvider.getValue(
                                     Constants.TERMINAL_NAME, ""
                                 ),ignoreCase = true) }
                                 if (foundTerminal.isNotEmpty()){
                                     prefProvider.setValue(
-                                        VALOR_APP_ID, foundTerminal.get(0).app_id/*appID*/ ?: ""
+                                        VALOR_APP_ID, foundTerminal.get(0).app_id*//*appID*//* ?: ""
                                     )
 
                                     prefProvider.setValue(
-                                        VALOR_APP_KEY, foundTerminal.get(0).app_key/*apiKey*/ ?: ""
+                                        VALOR_APP_KEY, foundTerminal.get(0).app_key*//*apiKey*//* ?: ""
                                     )
 
                                     prefProvider.setValue(
-                                        VALOR_EPI, foundTerminal.get(0).epi/*epi*/ ?: ""
+                                        VALOR_EPI, foundTerminal.get(0).epi*//*epi*//* ?: ""
                                     )
                                     prefProvider.setValue(
-                                        VALOR_CHANNEL_ID, foundTerminal.get(0).channel_id/*channelID*/ ?: ""
+                                        VALOR_CHANNEL_ID, foundTerminal.get(0).channel_id*//*channelID*//* ?: ""
                                     )
-                                }
+                                }*/
                                 /*------------VALOR---------------*/
 
 
@@ -8126,6 +8126,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.addTerminalsDatabase(it.settingData.data.terminals)
 //                                tipDiscountRepository.deleteTipsFromDb()
                                 tipDiscountRepository.addTips(it.settingData.data.tip_settings)
+
+                                withContext(Dispatchers.IO) {
+
+                                    var allTips=tipDiscountRepository.allTipsList()
+                                    allTips.forEach {localTip->
+                                        var found = it.settingData.data.tip_settings.filter {it.id == localTip.id && it.name.equals(localTip.name) }
+                                        if (found.isEmpty()){
+                                            tipDiscountRepository.deleteTipDatabase(localTip.id)
+                                        }
+                                    }
+                                }
 //                                posRepository.deleteCustomerReceiptSettingsFromDb()
                                 posRepository.addCancelOrderReasonFromDb(it.settingData.data.cancelOrderReasons)
                                 posRepository.addWastageReasonInDb(it.settingData.data.wastageReasons)
