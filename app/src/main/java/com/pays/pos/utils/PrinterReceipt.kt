@@ -5860,6 +5860,11 @@ fun addWholeTbItemToGuestInnerLandi(
 
     }
 
+    if (obj.note.isNotEmpty()) {
+        lPrint.printLeft("   Note: " + obj.note)
+        lPrint.lineBreak()
+    }
+
 }
 
 fun addWholeTbItemToGuestInner(
@@ -6270,6 +6275,7 @@ fun addOrderItemForDineInInnerLandi(
 
     if (obj.note.isNotEmpty()) {
         lPrint.printLeft("   Note: " + obj.note)
+        lPrint.lineBreak()
     }
 
 
