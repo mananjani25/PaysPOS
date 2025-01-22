@@ -2725,8 +2725,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 String.format("%.2f", viewModel.cashdiscountAmount)
             )
         } else {
-            cashDiscountSurcharge =
+            cashDiscountSurcharge = if (viewModel.cashdiscountAmount == prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").toDouble())
                 prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").toDouble()
+            else
+                viewModel.cashdiscountAmount
+            prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, cashDiscountSurcharge.toString())
         }
         cashDiscountType = viewModel.cashDiscountType
 
