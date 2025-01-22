@@ -2778,28 +2778,57 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     // To set different cash payment options and total amount values
     private fun setupPaymentScreen(isSelectCount: Int) {
+
+        var totalprice = WholetotalPrice
+
+        var cashDiscountAmount = MethodUtils.calculateCashDiscount(
+            WholetotalPrice,
+            prefProvider,
+            requireContext()
+        ) / isSelectCount
+
+        if (cashDiscountType == "CashDiscount") {
+            totalprice -= cashDiscountAmount
+        }
+
+
+
         MethodUtils.getCashPaymentOptionList(
-            getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount,
+           totalprice / isSelectCount,
             binding.tvCash1,
             binding.tvCash2,
             binding.tvCash3
         )
         MethodUtils.setPriceTextView(
             binding.tvCash,
-            getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
+            totalprice / isSelectCount
         )
         MethodUtils.setPriceTextView(
             binding.tvCash0,
-            getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
+           totalprice / isSelectCount
         )
 
         Log.e("Whole Table Price","Whole Table Price SPC = $WholetotalPrice")
 
         binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
+
+
+        totalprice = WholetotalPrice
+        cashDiscountAmount = MethodUtils.calculateCashDiscount(
+            WholetotalPrice,
+            prefProvider,
+            requireContext()
+        ) / isSelectCount
+
+         if (cashDiscountType == "SurCharge") {
+            totalprice += cashDiscountAmount
+        }
+
         MethodUtils.setPriceTextView(
             binding.tvCard,
-            getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectCount
+            totalprice
         )
+
         binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
     }
 
