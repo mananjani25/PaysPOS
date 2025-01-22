@@ -91,11 +91,8 @@ import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
 import com.pays.pos.ui.fragments.payment.OrderCompleteFragment
-import com.pays.pos.utils.PrintSunmiUtils.Companion.addValue
 import com.pays.pos.utils.extensions.*
 import com.pays.pos.utils.landi.LPrint
-import com.pays.pos.utils.landi.LPrint.FONT_B
-import com.pays.pos.utils.landi.LPrint.printCenter
 import com.pays.pos.utils.printer.CommonPrinterTypes
 import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
@@ -2560,7 +2557,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             if (kitchenPrinterList[i].status) {
                 if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
                     initKitchenPrinter(
-                        kitchenPrinterList.get(i), Constants.KITCHEN, listItem, listItemWithGuest
+                        kitchenPrinterList.get(i),
+                        Constants.KITCHEN,
+                        listItem,
+                        listItemWithGuest
                     )
                 }
             }
@@ -9899,11 +9899,19 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
+    data class UpdateFireItemsForPrinterQueue(
+        val isCheckAndFire: Boolean,
+        val builder: ArrayList<String>,
+        val autoPrintEnable: Boolean,
+        val printerQueueFilteredList: ArrayList<Int>
+    )
+
     private fun  initKitchenPrinter(
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
         item: ArrayList<TbCartItem>,
-        listItemWithGuest: HashMap<String, ArrayList<TbCartItem>> = hashMapOf()
+        listItemWithGuest: HashMap<String, ArrayList<TbCartItem>> = hashMapOf(),
+        updateFireItemsForPrinterQueue: UpdateFireItemsForPrinterQueue ? = null
 
     ) {
 
@@ -9973,43 +9981,39 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 lineFeed(1)
 
                 it.value.forEach {obj->
-                   data.printerCategories?.forEach {
-                       if (it.id == obj.categoryId && it.printerEnable && it.categoryActive){
-                           appendText(obj.itemQuantity.toString() + " " + obj.name.uppercase())
-                           lineFeed(1)
+                    data.printerCategories.forEach {
+                        if (it.id == obj.categoryId && it.printerEnable && it.categoryActive){
+                            appendText(obj.itemQuantity.toString() + " " + obj.name.uppercase())
+                            lineFeed(1)
 
-                           if (obj.modifiers.isNotEmpty()){
-
-
-                               for (j in 0 until obj.modifiers.size) {
-                                   val modifierObj = obj.modifiers.get(j)
-                                   appendText(
-                                       "  " + if (modifierObj.modifier_quantity == 1) {
-                                           "   "
-                                       } else {
-                                           "" + modifierObj.modifier_quantity + "x "
-                                       } + modifierObj.name.uppercase()
-                                   )
-                                   lineFeed(1)
-
-                               }
+                            if (obj.modifiers.isNotEmpty()){
 
 
+                                for (j in 0 until obj.modifiers.size) {
+                                    val modifierObj = obj.modifiers.get(j)
+                                    appendText(
+                                        "  " + if (modifierObj.modifier_quantity == 1) {
+                                            "   "
+                                        } else {
+                                            "" + modifierObj.modifier_quantity + "x "
+                                        } + modifierObj.name.uppercase()
+                                    )
+                                    lineFeed(1)
 
-                           }
-
-                           if (obj.note.isNotEmpty()) {
-
-                               appendText("  Note:" + obj.note)
-                               lineFeed(1)
-                           }
+                                }
 
 
+                            }
+
+                            if (obj.note.isNotEmpty()) {
+
+                                appendText("  Note:" + obj.note)
+                                lineFeed(1)
+                            }
 
 
-
-                       }
-                   }
+                        }
+                    }
 
                 }
 
@@ -10030,10 +10034,45 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             Log.e("checkKey","pushContent: checkSN:${data.ipAddress} ${pushContent(trade_no =
             String.format("%s_%010d", "${data.ipAddress}", System.currentTimeMillis()),
                 "${data.ipAddress}", 1, 1, "您有新的订单", 0)}")
-            dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(
-                true
-            )
+//            dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(
+//                true
+//            )
 
+
+            CoroutineScope(Dispatchers.Main).launch {
+                if (updateFireItemsForPrinterQueue != null) {
+                    if (updateFireItemsForPrinterQueue.printerQueueFilteredList.isNotEmpty()) {
+
+                        val list = dineInTableAdapter.getList()
+
+                        updateFireItemsForPrinterQueue.printerQueueFilteredList.forEach { index ->
+                            list[index].item?.isFired = true
+                            Log.e("DATA ", Gson().toJson(list[index]))
+                        }
+
+
+                        dineInTableAdapter.setList(
+                            ArrayList(list),
+                            notPayAnyAmount
+                        )
+                        updateFireItemsForPrinterQueue.printerQueueFilteredList.clear()
+
+                        if (!updateFireItemsForPrinterQueue.isCheckAndFire or (updateFireItemsForPrinterQueue.isCheckAndFire && updateFireItemsForPrinterQueue.autoPrintEnable)) {
+                            var fireAllIds =
+                                android.text.TextUtils.join(
+                                    ",",
+                                    updateFireItemsForPrinterQueue.builder
+                                )
+                            viewModel.fireItemToKitchen(
+                                orderId ?: 0,
+                                true,
+                                fireAllIds,
+                                true
+                            )
+                        }
+                    }
+                }
+            }
 
 
 
@@ -12915,6 +12954,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
         try {
 
+            val printerQueueFilteredList = ArrayList<Int>()
+
             Log.d("###17MAR23", "checkForAutoFire: Called - Start - $isCheckAndFire")
             var list: List<DineInModel> = arrayListOf()
             list = dineInTableAdapter.getList() ?: arrayListOf()
@@ -12986,6 +13027,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                 listItem.add(it)
                                 //it.isFired = true
                                 firedItemsList.add(itemIndex)
+                                printerQueueFilteredList.add(itemIndex)
 
                                 //add items ids for api call
                                 it.orderItemId?.let {
@@ -13029,6 +13071,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                             listItem.add(it)
                                             //it.isFired = true
                                             firedItemsList.add(itemIndex)
+                                            printerQueueFilteredList.add(itemIndex)
 
                                             //add items ids for api call
                                             it.orderItemId?.let {
@@ -13046,6 +13089,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                             listItem.add(it)
                                             //it.isFired = true
                                             firedItemsList.add(itemIndex)
+                                            printerQueueFilteredList.add(itemIndex)
 
                                             //add items ids for api call
                                             it.orderItemId?.let {
@@ -13233,7 +13277,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                                 kit,
                                                                 Constants.KITCHEN,
                                                                 listItem,
-                                                                listItemWithGuest
+                                                                listItemWithGuest,
+                                                                UpdateFireItemsForPrinterQueue(
+                                                                    isCheckAndFire,
+                                                                    builder,
+                                                                    autoPrintEnable,
+                                                                    printerQueueFilteredList
+                                                                )
                                                             )
                                                         }
                                                     }
@@ -13261,7 +13311,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 kit,
                                                 Constants.KITCHEN,
                                                 listItem,
-                                                listItemWithGuest
+                                                listItemWithGuest,
+                                                UpdateFireItemsForPrinterQueue(isCheckAndFire,builder,autoPrintEnable,printerQueueFilteredList)
                                             )
                                         }
                                     }
