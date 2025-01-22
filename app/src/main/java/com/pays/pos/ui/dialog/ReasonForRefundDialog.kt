@@ -42,6 +42,7 @@ import com.pays.pos.data.remote.Constants.VALOR
 import com.pays.pos.databinding.DialogRefundReasonBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.CashBoxEvent
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.fragments.magtek.MagtekRequestUtils
@@ -1765,8 +1766,10 @@ class ReasonForRefundDialog : DialogFragment(), ICallback {
                                 ) {
 
 //                                    if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
+                                    /*EventBus.getDefault()
+                                        .post(MessageEvent(Constants.CASHBOX, true))*/
                                     EventBus.getDefault()
-                                        .post(MessageEvent(Constants.CASHBOX, true))
+                                        .post(CashBoxEvent(Constants.CASHBOX))
 //                                    }
                                     sendToTransaction()
 
