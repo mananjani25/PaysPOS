@@ -2944,14 +2944,19 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
     }
 
     override fun onItemSelected(headerPosition: Int, position: Int, item: TbCartItem) {
-        LogUtil.logE(TAG, "onDineinItemClick ${position}")
 
-        viewModel.selectedItemPositionDine = position
-        // viewModel.dineInHeaderPosition = headerPosition
-        viewModel.dineInSelectedItemHeaderPos = headerPosition
+        if (!item.isFired) {
+            LogUtil.logE(TAG, "onDineinItemClick ${position}")
 
-        item.headerPositionDinein = headerPosition
-        itemClickListner?.onItemUpdate(item, position)
+            viewModel.selectedItemPositionDine = position
+            // viewModel.dineInHeaderPosition = headerPosition
+            viewModel.dineInSelectedItemHeaderPos = headerPosition
+
+            item.headerPositionDinein = headerPosition
+            itemClickListner?.onItemUpdate(item, position)
+        } else {
+            AlertUtils.showCustomAlert(requireContext(), "Cannot update this item as the item is already fired.")
+        }
         /* if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN) {
              val dineinList = dineInCartAdapter.getList()
              dineinList.get(0).selectedPosition = viewModel.dineInHeaderPosition
