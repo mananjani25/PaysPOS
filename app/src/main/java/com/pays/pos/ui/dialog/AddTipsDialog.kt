@@ -54,6 +54,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
     private var tipModel: GetTipReponse.Data? = null
     var selectedListPos: Int = -1
     var splitCount = 1
+    var isAmountWiseSplit = false
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -77,6 +78,11 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
             if (arguments?.getInt("splitCount") != null) {
                 splitCount =
                     requireArguments().getInt("splitCount")
+            }
+
+            if (arguments?.getInt("isAmountWiseSplit") != null) {
+                isAmountWiseSplit =
+                    requireArguments().getBoolean("isAmountWiseSplit", false)
             }
 
             if (arguments?.getBoolean("isFromTransaction") != null) {

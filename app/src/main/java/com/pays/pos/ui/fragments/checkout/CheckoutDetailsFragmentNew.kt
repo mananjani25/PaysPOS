@@ -487,7 +487,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, tipAmount.toString())
                 prefProvider.setValueInt(Constants.TIP_ADDED_ID, tipID)
 
-                tipAmountCalculation(cashTip,cardTip)
+                tipAmountCalculation(cashTip,cardTip,isAmountWiseSplit)
                 loadPaymentLayout(cashTip,cardTip)
             }
         }
@@ -756,7 +756,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 prefProvider.setValue(Constants.TIP_ADDED_AMOUNT, tipAmount.toString())
                 prefProvider.setValueInt(Constants.TIP_ADDED_ID, tipID)
 
-                tipAmountCalculation(cashTip, cardTip)
+                tipAmountCalculation(cashTip, cardTip,isAmountWiseSplit)
                 loadPaymentLayout(cashTip, cardTip)
             } else {
 
@@ -5540,8 +5540,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
             MethodUtils.setPriceTextViewDown(
                 binding.tvAmount,
-                (getCalCashDiscWithAmount(
-                    prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(), true
+                (getCalCashDiscWithAmount( if(isAmountWiseSplit) amountWiseSplit else prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(), true
                 ) / isSelectedCount).toDouble() + cardTip
             )
             binding.tvAmount.text =
