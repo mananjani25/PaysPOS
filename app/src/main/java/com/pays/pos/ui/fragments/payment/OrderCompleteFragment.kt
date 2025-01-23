@@ -7527,10 +7527,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                                     }
 
-                                                    /*
-                                                                                                    if (obj.note.isNotEmpty()) {
-                                                                                                        PrintSunmiUtils.normalText("   Note: " + obj.note)
-                                                                                                    }*/
+                                                    if (obj.note.isNotEmpty()) {
+                                                        write("   Note: ${obj.note}".toByteArray())
+                                                        write(LPrint.LINE_FEED)
+                                                    }
 
                                                 }
 
