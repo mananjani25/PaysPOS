@@ -86,6 +86,7 @@ import com.epson.eposprint.Print
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.pays.pos.data.remote.Constants.DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT
 import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.pays.pos.logger.MessageEvent
@@ -603,6 +604,12 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
         binding.btnPayNew.setOnClickListener {
             try {
+
+
+                // This amount will be used to show sub total on customer receipt // BIS 5176
+                val subTotalAmount = binding.txtTotalAmountNew.text.toString().replace("$", "").trim().toDouble()
+                prefProvider.setValue(DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT,"$subTotalAmount")
+
 
                 //new Calculation for total Discount
                 var listWT: ArrayList<TbCartItem> = arrayListOf()
