@@ -693,6 +693,8 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
 
         binding.chooseCategory.setOnClickListener(this)
         binding.ivCategory.setOnClickListener(this)
+        binding.llCategory.setOnClickListener(this)
+        binding.txtCategoryName.setOnClickListener(this)
         binding.chooseTax.setOnClickListener(this)
         binding.ivTax.setOnClickListener(this)
         binding.imgEdit.setOnClickListener(this)
@@ -756,6 +758,14 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback, It
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.chooseCategory -> {
+                openCategoryDialog()
+
+            }
+            R.id.txtCategoryName -> {
+                openCategoryDialog()
+
+            }
+            R.id.llCategory -> {
                 openCategoryDialog()
 
             }
