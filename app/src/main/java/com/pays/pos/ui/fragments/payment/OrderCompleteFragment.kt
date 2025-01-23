@@ -61,6 +61,7 @@ import com.pays.pos.data.remote.Constants.BUSINESS_WEBSITE
 import com.pays.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE
 import com.pays.pos.data.remote.Constants.CUSTOMER
 import com.pays.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
+import com.pays.pos.data.remote.Constants.DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT
 import com.pays.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.pays.pos.data.remote.Constants.GIFT_CARD
 import com.pays.pos.data.remote.Constants.GUEST_POSITION
@@ -7573,10 +7574,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                      * Print Subtotal
                                      */
 
+                                    var fetchSubTotalFromPreference = order?.subTotal ?: 0.0
+
+                                    try {
+                                        fetchSubTotalFromPreference = prefProvider.getValue(
+                                            DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT,fetchSubTotalFromPreference.toString()).toDouble()
+                                    }catch (e:Exception) {
+
+                                        Log.e("DINE IN CRASH","${e.message.toString()}")
+                                    }
+
                                     val subTotalToPrint = padLine(
                                         "Sub Total",
                                         "$" + MethodUtils.roundOffAmountString(
-                                            order?.subTotal ?: 0.0
+                                            fetchSubTotalFromPreference
                                         ),
                                         if (customerSettingModel.fonts == Constants.LARGE) {
                                             23
