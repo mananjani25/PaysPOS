@@ -578,6 +578,9 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
+    private val _isGiftCardSold = MutableLiveData<Event<Boolean>>()
+    val isGiftCardSold: LiveData<Event<Boolean>> = _isGiftCardSold
+
     private val _syncDone = MutableLiveData<Event<Boolean?>>()
     val syncDone: LiveData<Event<Boolean?>> = _syncDone
 
@@ -9050,6 +9053,46 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
 
+
+    }
+
+    fun checkCardExistOrNotOnSell(cardNumber: String) {
+
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+            val resource = posRepository.checkPhysicalCardExistsOrNot(cardNumber)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    resource.data.let { response ->
+                        if (response?.status == 200) {
+                            _showProgress.value = Event(false)
+                            _isGiftCardSold.value = Event(false)
+                            _snackbarText.value = Event("This gift card has not been activated.")
+//                            _physicalGiftCardCheck.value = Event(response?.status?: 400)
+
+                        }
+//                        else {
+//                            _physicalGiftCardCheck.value= Event(response?.status?: 400)
+//                        }
+                    }
+                }
+
+                Status.ERROR -> {
+                    if (resource.message?.isNotEmpty() == true && resource.message.contains("Gift Card number has already been taken.")) {
+                        _isGiftCardSold.value = Event(true)
+                    } else {
+                        _snackbarText.value = Event(resource.message)
+                        _showProgress.value = Event(false)
+                    }
+//                    _physicalGiftCardCheck.value= Event(resource.data?.status ?: 400)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
 
     }
 }

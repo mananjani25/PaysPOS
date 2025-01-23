@@ -3828,8 +3828,22 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.txtChargeGC.isEnabled = true
             return
         } else if (giftCardNumber.isNotEmpty() && giftCardNumber.length > 8) {
-            closePaxRequest()
-            giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
+            dashboardViewModel.checkCardExistOrNotOnSell(giftCardNumber)
+            dashboardViewModel.isGiftCardSold.observe(viewLifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let {
+                    Log.e("ObserverdGiftCardProgress", it.toString())
+                    if (it) {
+                        closePaxRequest()
+                        giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
+                    } else {
+                        AlertUtils.showCustomAlert(
+                            requireContext(),
+                            "This gift card has not been activated."
+                        )
+                    }
+                }
+
+            }
 
         } else {
 
