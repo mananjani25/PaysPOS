@@ -187,7 +187,7 @@ class CreateTeamMember : Fragment() {
             }
             if (employeeModel != null) {
                 country_name.forEachIndexed { index, item ->
-                    if (item == employeeModel!!.phone_country) {
+                    if (item == employeeModel!!.phone_country && index < country.size) {
                         viewModel.isCountryChanged(country[index].id)
                         binding.txtCountrName.text = country_name[index].toString()
                     }
