@@ -2930,7 +2930,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
     override fun onHeaderSelected(position: Int) {
 
-        if (!viewModel.isItemEditInProgress) {
+        if (!viewModel.isItemEditing) {
 
             prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, position)
             Log.d(TAG, "onHeaderSelected: header position : $position")
