@@ -1183,6 +1183,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                         bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                         bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
+                        bundle.putString("orderType_to_check_kiosk", orderTypeToCheckKioskOrder)
 
                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                             clearObserver()
@@ -1276,7 +1277,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                         bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                         bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
-
+                        bundle.putString("orderType_to_check_kiosk", orderTypeToCheckKioskOrder)
 
                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                             clearObserver()
@@ -1516,6 +1517,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                             bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                             bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
+                            bundle.putString("orderType_to_check_kiosk", orderTypeToCheckKioskOrder)
 
 
                             if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
@@ -1639,6 +1641,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                             bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                             bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
+                            bundle.putString("orderType_to_check_kiosk", orderTypeToCheckKioskOrder)
 
                             if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                                 clearObserver()
@@ -1837,6 +1840,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                             bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                             bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
+                            bundle.putString("orderType_to_check_kiosk", orderTypeToCheckKioskOrder)
 
 
                             if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
@@ -2087,6 +2091,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                             bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                             bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
+                            bundle.putString("orderType_to_check_kiosk", orderTypeToCheckKioskOrder)
 
 
                             if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
@@ -2213,6 +2218,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                             bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                             bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
+                            bundle.putString("orderType_to_check_kiosk", orderTypeToCheckKioskOrder)
 
                             if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                                 clearObserver()
@@ -2407,6 +2413,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                             bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                             bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
+                            bundle.putString("orderType_to_check_kiosk", orderTypeToCheckKioskOrder)
 
 
                             if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
