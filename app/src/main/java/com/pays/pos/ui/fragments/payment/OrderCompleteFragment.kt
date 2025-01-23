@@ -415,7 +415,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
             }
 
-            if (prefProvider.getValueboolean(Constants.TIP_ADDED, false)) {
+            if (prefProvider.getValueboolean(Constants.TIP_ADDED, false) && !dashboardViewModel.customerGivenTipBefore.value!!) {
                 prefProvider.setValueboolean(Constants.TIP_ADDED, false)
                 presentation.showThankYou(finalPaidAmount)
             } else {
