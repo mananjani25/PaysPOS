@@ -2632,6 +2632,18 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         if ((getOrderDetailsResponse?.guestAttributes?.size?.minus(1) ?: 0) > 1) {
             // Remove guest from list
             dineInTableAdapter.getList()[position].apply { this.isDestroy = true }
+
+            // Added to resolve BIS 5365: After removing a guest, the guest dine in index of all below guest items must be decremented by one.
+            val list = dineInTableAdapter.getList()
+
+            for (currentIndex in position+1 until list.size) {
+                if(list[currentIndex].isHeader == 1) {
+                    list[currentIndex].item?.guestIndexForDineIn = list[currentIndex].item?.guestIndexForDineIn?.minus(
+                        1
+                    )
+                }
+            }
+
             updateOrderCall(isFromReorder = false)
         } else {
             viewModel.unableToRemoveGuest(getString(R.string.minimum_one_guest_is_required))
