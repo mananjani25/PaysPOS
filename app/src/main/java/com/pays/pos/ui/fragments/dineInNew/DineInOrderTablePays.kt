@@ -9989,7 +9989,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 appendText("------------------------")
                 lineFeed(1)
 
-                appendText(it.key.toString())
+                appendText(it.key.substringBefore("name:"))
                 lineFeed(1)
                 appendText("------------------------")
                 lineFeed(1)
@@ -12291,7 +12291,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                                 )
                                                             )
                                                             .actionPrintText(
-                                                                it.key
+                                                                it.key.substringBefore("name:")
                                                             )
                                                     )
 
@@ -12994,6 +12994,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                     if (customer_name == "")
                                         customer_name = list[i].title ?: ""
 
+                                    if (listItemWithGuest.containsKey(customer_name)){
+                                        customer_name += "name: "+System.currentTimeMillis().toString()
+                                    }
+
                                     listItemWithGuest.put(customer_name, listItemLocal)
                                     break
                                 }
@@ -13004,6 +13008,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                 var customer_name = list[i].customer?.first_name ?: ""
                                 if (customer_name == "")
                                     customer_name = list[i].title ?: ""
+
+                                if (listItemWithGuest.containsKey(customer_name)){
+                                    customer_name += "name: "+System.currentTimeMillis().toString()
+                                }
 
                                 listItemWithGuest.put(customer_name, listItemLocal)
 
