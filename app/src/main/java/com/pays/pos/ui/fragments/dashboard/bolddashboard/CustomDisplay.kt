@@ -85,6 +85,8 @@ import com.pays.pos.utils.paxUtils.POSLinkCreatorWrapper
 import com.pays.pos.utils.paxUtils.SettingINI
 import com.pays.pos.utils.statusUtils.Status
 import com.pays.pos.data.remote.Constants.IS_PAYMENT_SCREEN
+import com.pays.pos.logger.CashBoxEvent
+import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
@@ -3195,6 +3197,7 @@ class CustomDisplay(
                     )
                 }*/
                     } else if (!mIsCardPayment) {
+                        openCashDrawer()
                         callUpdateTip()
                     }
                 } catch (e: Exception) {
@@ -3204,8 +3207,17 @@ class CustomDisplay(
                     enableConfirmButton()
                 }
             }else {
+                openCashDrawer()
                 callUpdateTip()
             }
+        }
+    }
+
+    private fun openCashDrawer(){
+        if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
+            EventBus.getDefault().post(CashBoxEvent(Constants.CASHBOX))
+        } else {
+            SunmiPrintHelper.getInstance().openCashBox()
         }
     }
 

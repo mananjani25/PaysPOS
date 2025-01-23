@@ -80,6 +80,7 @@ import com.pays.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.VENUE_LOGO
 import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
+import com.pays.pos.logger.CashBoxEvent
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.utils.landi.LPrint
@@ -447,10 +448,16 @@ class TransactionDetailsFragment : Fragment() {
                     )
                 }*/
             } else {
-                tipCall(false)
+                CoroutineScope(Dispatchers.IO).launch {
+                    launch {
+                        tipCall(false)
+                    }
+
+                    launch {
+                        openCashDrawer()
+                    }
+                }
             }
-
-
         }
         binding.tvIssueRefund.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
@@ -540,6 +547,13 @@ class TransactionDetailsFragment : Fragment() {
 
     }
 
+    private fun openCashDrawer() {
+        if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
+            EventBus.getDefault().post(CashBoxEvent(Constants.CASHBOX))
+        } else {
+            SunmiPrintHelper.getInstance().openCashBox()
+        }
+    }
 
     private fun adjustDejavooTips() {
         paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
