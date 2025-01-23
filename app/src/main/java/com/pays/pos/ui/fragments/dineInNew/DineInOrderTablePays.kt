@@ -87,6 +87,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.pays.pos.data.remote.Constants.DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT
+import com.pays.pos.data.remote.Constants.DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT_GUEST
 import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.pays.pos.logger.MessageEvent
@@ -1878,6 +1879,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
         divideDiscount += dividedWtDis
         LogUtil.logE("saff", "afadivideDiscount ${divideDiscount}")
+
+        prefProvider.setValue(DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT_GUEST,"${subTotalGuest + dividedGuestAmt}")
 
         LogUtil.logE("TODAYBOLD", "subTotalB  ${subTotalGuest + dividedGuestAmt}")
         LogUtil.logE("TODAYBOLD", "totalGuest ${totalGuest}")

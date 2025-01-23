@@ -787,6 +787,7 @@ object Constants {
     const val TOTAL_PRICE_DINEIN = "totalprice_dinein"
     const val LAYOUT_ORIENTATION = "layout_orientation"
     const val DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT = "dine_in_sub_total_amount_before_payment"
+    const val DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT_GUEST = "dine_in_sub_total_amount_before_payment_gues"
 
 
     const val MAGENSA_SETTINGS = "magensaSettings"
