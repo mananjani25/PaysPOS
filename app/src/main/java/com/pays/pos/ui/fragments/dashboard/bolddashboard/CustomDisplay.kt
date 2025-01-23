@@ -2997,9 +2997,11 @@ class CustomDisplay(
                             customerGivenTip.value = true
                             employeeGivenTip = false
                         }
-                        /*TODO: Make cash_event call here with the same orderID*/
-                        if (tippedAmount > 0) {
-                            makeCashEventCallToUpdateTip(mOrderID, tippedAmount)
+                        if (!mIsCardPayment){
+                            /*TODO: Make cash_event call here with the same orderID*/
+                            if (tippedAmount > 0) {
+                                makeCashEventCallToUpdateTip(mOrderID, tippedAmount)
+                            }
                         }
                         dashBoardCategoryViewModel.processingTipForCard.value = false
                         // dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=false
