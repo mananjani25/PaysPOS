@@ -2333,6 +2333,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         lp.width = WindowManager.LayoutParams.WRAP_CONTENT
         lp.height = WindowManager.LayoutParams.MATCH_PARENT
         dialog.window!!.attributes = lp
+        dialog.window!!.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
         dialog.setContentView(R.layout.dialog_update_quantity)
 

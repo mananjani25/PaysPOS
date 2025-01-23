@@ -1,5 +1,6 @@
 package com.pays.pos.ui.fragments.settings.hardware.printer
 
+import android.app.Dialog
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
@@ -111,5 +112,10 @@ class DialogSNumber : DialogFragment() {
             }
             false
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     }
 }
