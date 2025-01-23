@@ -1197,9 +1197,24 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                 }
 
-                binding.txtPaymentAmount.text =
+                if (isCustomCash) {
+                    binding.txtTitle.text =
+                        "$" + MethodUtils.roundOffAmountString(paidAmount)
+                    binding.txtPaymentAmount.text =
+                        "" + MainApplication.getInstance()!!
+                            .getText(R.string.symbole) + MethodUtils.roundOffAmountString(paidAmount) + " payment successful"
+
+                } else {
+                    binding.txtTitle.text =
+                        "$" + MethodUtils.roundOffAmountString(paidAmount + tipAmount)
+                    binding.txtPaymentAmount.text =
+                        "" + MainApplication.getInstance()!!
+                            .getText(R.string.symbole) + MethodUtils.roundOffAmountString(paidAmount + tipAmount) + " payment successful"
+                }
+
+                /*binding.txtPaymentAmount.text =
                     "" + MainApplication.getInstance()!!
-                        .getText(R.string.symbole) + MethodUtils.roundOffAmountString(paidAmount + tipAmount) + " payment successful"
+                        .getText(R.string.symbole) + MethodUtils.roundOffAmountString(paidAmount *//*+ tipAmount*//*) + " payment successful"*/
 
 
             }
