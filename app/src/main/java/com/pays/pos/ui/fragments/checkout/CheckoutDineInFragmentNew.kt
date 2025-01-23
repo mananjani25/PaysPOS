@@ -576,6 +576,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
             } else {
                 Log.d(TAG, "paymentClick: click 3")
+
                 makeDynamicCashPayment(
                     dynamicPaymentType = dynamicPaymentName,
                     dynamicPaymentId = dynamicPaymentId
@@ -598,11 +599,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             paymentTypeForTip = "cash"
         }
 
-        paymentType = if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
-            "External"
-        } else {
-            "Cash"
-        }
+        paymentType = "External"
+
 
         if (orderId != -1 && orderId != 0) {
             paymentviewModel.updateOrder(
@@ -1414,7 +1412,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                         bundle.putParcelable("receiptData", it.data)
                         bundle.putInt("splitValue", isSelectedCount)
                         bundle.putBoolean("isSplitByAmount", false)
-                        bundle.putString("paymentType", paymentType)
+                        bundle.putString("paymentType", "External")
                         bundle.putParcelable("cartList", cartList)
                         bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
                         bundle.putDouble("TipAmount", tipAmount)
