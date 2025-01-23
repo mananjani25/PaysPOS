@@ -717,7 +717,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                             }!!
 
                                             list[j].item?.modifiers?.forEach { modifier ->
-                                                modifier.price = modifier.price.minus(modifier.price / guestCount * guestPaid )
+                                                modifier.price = modifier.price.minus(modifier.price / eligibleGuestsForDivision * guestPaid )
                                             }
                                         }
                                     }
