@@ -65,6 +65,7 @@ import com.pays.pos.databinding.FragmentCheckoutDetailsNewBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.MagtekModule
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.CashBoxEvent
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
@@ -820,7 +821,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //            SunmiPrintHelper.getInstance().openCashBox()
 
             if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
-                EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+//                EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+                EventBus.getDefault().post(CashBoxEvent(Constants.CASHBOX))
             } else {
                 SunmiPrintHelper.getInstance().openCashBox()
             }
@@ -3582,7 +3584,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 transactionInProgress()
 
                 if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
-                    EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+//                    EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+                    EventBus.getDefault().post(CashBoxEvent(Constants.CASHBOX))
                 } else {
                     SunmiPrintHelper.getInstance().openCashBox()
                 }
@@ -3607,7 +3610,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 transactionInProgress()
 //                SunmiPrintHelper.getInstance().openCashBox()
                 if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
-                    EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+//                    EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+                    EventBus.getDefault().post(CashBoxEvent(Constants.CASHBOX))
                 } else {
                     SunmiPrintHelper.getInstance().openCashBox()
                 }
@@ -3625,7 +3629,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 transactionInProgress()
 //                SunmiPrintHelper.getInstance().openCashBox()
                 if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
-                    EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+//                    EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+                    EventBus.getDefault().post(CashBoxEvent(Constants.CASHBOX))
                 } else {
                     SunmiPrintHelper.getInstance().openCashBox()
                 }
@@ -3644,7 +3649,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //                SunmiPrintHelper.getInstance().openCashBox()
 
                 if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
-                    EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+//                    EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+                    EventBus.getDefault().post(CashBoxEvent(Constants.CASHBOX))
                 } else {
                     SunmiPrintHelper.getInstance().openCashBox()
                 }
