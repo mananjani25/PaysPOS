@@ -1,10 +1,12 @@
 package com.pays.pos.ui.fragments.settings.hardware.printer
 
+import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
@@ -73,5 +75,10 @@ class DialogSNumber : DialogFragment() {
             dismiss()
         }
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     }
 }
