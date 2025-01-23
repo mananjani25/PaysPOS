@@ -10198,7 +10198,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 data,
                                                 type,
                                                 item,
-                                                listItemWithGuest
+                                                listItemWithGuest,
+                                                updateFireItemsForPrinterQueue
                                             )
                                         }
                                     }
@@ -11947,7 +11948,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
         item: ArrayList<TbCartItem>,
-        listItemWithGuest: HashMap<String, ArrayList<TbCartItem>> = hashMapOf()
+        listItemWithGuest: HashMap<String, ArrayList<TbCartItem>> = hashMapOf(),
+        updateFireItemsForPrinterQueue: DineInOrderTablePays.UpdateFireItemsForPrinterQueue? = null
     ) {
         try {
             //ProgressUtils.showProgressDialog(requireActivity())
@@ -12141,11 +12143,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         printDashedLineAndBreak()
 
 
-                        addOrdersForKitchenDineInLandi(
+                        val firedItems = addOrdersForKitchenDineInLandi(
                             item, customerReceiptPrinters.printerCategories.toCollection(
                                 arrayListOf()
                             ), listItemWithGuest
                         )
+
+
 
                         lineBreak()
                         if(orderNote.isNotEmpty())
@@ -12153,7 +12157,47 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         lineBreak()
                         lineBreak()
 
-                        dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(true)
+                       // dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(true)
+
+
+                        try {
+
+                            updateFireItemsForPrinterQueue?.apply {
+
+                                CoroutineScope(Dispatchers.Main).launch {
+
+                                    if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
+                                        var fireAllIds =
+                                            android.text.TextUtils.join(",", firedItems)
+
+                                        viewModel.fireItemToKitchen(
+                                            orderId ?: 0,
+                                            true,
+                                            fireAllIds,
+                                            true
+                                        )
+
+                                        val list = dineInTableAdapter.getList()
+
+                                        val firedItemIds = firedItems.map { it.toInt() }.toSet()
+
+                                        list.forEach { item ->
+                                            if (item.item?.orderItemId in firedItemIds) {
+                                                item.item?.isFired = true
+                                            }
+                                        }
+
+                                        dineInTableAdapter.setList(ArrayList(list),notPayAnyAmount)
+
+                                    }
+                                }
+                            }
+
+
+
+                        }catch (e:Exception) {
+                            e.printStackTrace()
+                        }
                     }
 
 
