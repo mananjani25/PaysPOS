@@ -1822,10 +1822,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     splitAllAmounts(Constants.TIP, 0.0)
 
                                     EventBus.getDefault()
-                                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) _5"))
-                                    EventBus.getDefault()
-                                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ custom_paymentAmount -> ${custom_paymentAmount} _5"))
-
+                                        .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true) custom_paymentAmount -> ${custom_paymentAmount} _5"))
                                 }
 
                             }
@@ -2476,10 +2473,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             .post(
                 MessageEvent(
                     "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ performCashOperation_prefProvider.getValue(Constants.WHOLE_AMOUNT....).toDouble()_%.1f_2: ${
-                        String.format(
-                            "%.1f",
-                            prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.00").toDouble()
-                        ).toDouble()
+                        prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.00")
                     }"
                 )
             )
@@ -2489,19 +2483,21 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             .post(
                 MessageEvent(
                     "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ performCashOperation_prefProvider.getValue(Constants.WHOLE_AMOUNT....).toDouble()_%.2f_3: ${
-                        String.format(
-                            "%.2f",
-                            prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.00").toDouble()
-                        ).toDouble()
+                        prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.00")
                     }"
                 )
             )
+        var wholePrice = 0.0
+        if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.00").isNotEmpty()){
+            wholePrice =
+                String.format(
+                    "%.2f",
+                    prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.00").toDouble()
+                ).toDouble()
+        }else{
+            wholePrice = paymentAmount
+        }
 
-        var wholePrice =
-            String.format(
-                "%.2f",
-                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.00").toDouble()
-            ).toDouble()
 
         bundle.putDouble("WholetotalPrice", wholePrice)
         var remainingValue = 0.0
