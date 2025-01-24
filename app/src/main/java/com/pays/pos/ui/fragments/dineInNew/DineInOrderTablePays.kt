@@ -4098,6 +4098,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder
             ) {
+
+                super.clearView(recyclerView, viewHolder)
+
                 if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
                     /* reallyMoved(
                          adapter.getItem(dragFrom).sort,
