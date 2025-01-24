@@ -1950,6 +1950,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
             paymentAmount += tipAmount
 
+
+            val rawAmountString =  binding.tvCard.text.toString()
+            paymentAmount = Regex("\\d+\\.\\d+").find(rawAmountString)!!.value.toDouble()
+
             if (paymentAmount != 0.0) {
                 when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
                     Constants.PAX->{
