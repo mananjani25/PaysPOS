@@ -415,7 +415,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 MethodUtils.roundOffAmountDown(paidAmount + tipAmount)
             }
 
-            if (prefProvider.getValueboolean(Constants.TIP_ADDED, false)) {
+            if (prefProvider.getValueboolean(Constants.TIP_ADDED, false) && !dashboardViewModel.customerGivenTipBefore.value!!) {
                 prefProvider.setValueboolean(Constants.TIP_ADDED, false)
                 presentation.showThankYou(finalPaidAmount)
             } else {
@@ -11328,7 +11328,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                                             if (tipsList.isNotEmpty()) {
-                                                val tipsToPrint = totalAmt?.let {
+                                                val tipsToPrint = receiptModel?.order?.payments?.last()?.amount?.let {
                                                     addTipsListInnerLandi(
                                                         tipsList,
                                                         it,
@@ -14143,7 +14143,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             )
                                         )
                                         receiptModel?.order?.orderItems?.forEach { item ->
-                                            if (!item.isPrinted || item.isItemEdited) { // In case of Single item per receipt, isPrinted variable is maintained
+                                            if (!item.isPrinted || item.isItemEdited || (orderTypeToCheckKiosk.equals("KioskOpenorder", true) && !item.isItemEdited)) { // In case of Single item per receipt, isPrinted variable is maintained
                                                 EventBus.getDefault().post(
                                                     MessageEvent(
                                                         "${Constants.LINE_BREAK_TAB} OrderCompleteFragment_TSP_printing_condition-> ${item}"
@@ -18391,15 +18391,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     PrintSunmiUtils.additionalTips()
 
                     if (tipsList.isNotEmpty()) {
-                        addTipsList(
-                            tipsList,
-                            if (receiptModel?.order?.totalDiscount != 0.0 && receiptModel?.order?.totalAmount ?: 0.0 > receiptModel?.order?.totalDiscount ?: 0.0) {
-                                (totalfamount)
-                            } else {
-                                receiptModel?.order?.totalAmount!!
-                            },
-                            customerSettingModel.fonts
-                        )
+                        (if (receiptModel?.order?.totalDiscount != 0.0 && (receiptModel?.order?.totalAmount
+                                ?: 0.0) > (receiptModel?.order?.totalDiscount ?: 0.0)
+                        ) {
+                            /*(totalfamount)*/receiptModel?.order?.payments?.last()?.amount
+                        } else {
+                            /*receiptModel?.order?.totalAmount!!*/receiptModel?.order?.payments?.last()?.amount
+                        })?.let {
+                            addTipsList(
+                                tipsList,
+                                it,
+                                customerSettingModel.fonts
+                            )
+                        }
                         SunmiPrinterApi.getInstance().lineWrap(2)
 
                     }
@@ -19407,10 +19411,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 //                    -----------------------------
 
-                            (if (receiptModel?.order?.totalDiscount != 0.0 && receiptModel?.order?.totalAmount ?: 0.0 > receiptModel?.order?.totalDiscount ?: 0.0) {
-                                (receiptModel?.order?.payments?.last()?.amount?.plus(receiptModel?.order?.payments?.last()?.tips!!))
+                            (if (receiptModel?.order?.totalDiscount != 0.0 && (receiptModel?.order?.totalAmount
+                                    ?: 0.0) > (receiptModel?.order?.totalDiscount ?: 0.0)
+                            ) {
+                                receiptModel?.order?.payments?.last()?.amount /*?.plus(receiptModel?.order?.payments?.last()?.tips!!)*/
                             } else {
-                                receiptModel?.order?.totalAmount!!
+                                /*receiptModel?.order?.totalAmount!!*/receiptModel?.order?.payments?.last()?.amount
                             })?.let {
                                 addTipsListInnerNew(
                                     tipsList,
@@ -19435,10 +19441,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             }
 
                             if (tipsList.isNotEmpty()) {
-                                (if (receiptModel?.order?.totalDiscount != 0.0 && receiptModel?.order?.totalAmount ?: 0.0 > receiptModel?.order?.totalDiscount ?: 0.0) {
-                                    (receiptModel?.order?.payments?.last()?.amount?.plus(receiptModel?.order?.payments?.last()?.tips!!))
+                                (if (receiptModel?.order?.totalDiscount != 0.0 && (receiptModel?.order?.totalAmount
+                                        ?: 0.0) > (receiptModel?.order?.totalDiscount ?: 0.0)
+                                ) {
+                                    receiptModel?.order?.payments?.last()?.amount/*?.plus(receiptModel?.order?.payments?.last()?.tips!!))*/
                                 } else {
-                                    receiptModel?.order?.totalAmount!!
+                                    /*receiptModel?.order?.totalAmount!!*/receiptModel?.order?.payments?.last()?.amount
                                 })?.let {
                                     addTipsListInner(
                                         tipsList,

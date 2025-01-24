@@ -65,7 +65,9 @@ import com.pays.payments.design.*
 import com.pays.payments.gateways.dejavoo.DejavooPaymentGateway
 import com.pays.payments.gateways.valor.ValorPaymentGateway
 import com.pays.pos.data.model.valor.ValorSuccessResponse
+import com.pays.pos.logger.CashBoxEvent
 import com.pays.pos.logger.MessageEvent
+import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -205,9 +207,16 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         }
 
         endTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
-            var fromDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(viewModel.startDate.value).getTime() / 1000
-            var endDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(timeCalculateForStartEndTime(hour, minute, "isend")).getTime() / 1000
-            if (fromDate<=endDate){
+            var fromDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(viewModel.startDate.value)
+                .getTime() / 1000
+            var endDate = SimpleDateFormat("dd/MM/yyyy hh:mm a").parse(
+                timeCalculateForStartEndTime(
+                    hour,
+                    minute,
+                    "isend"
+                )
+            ).getTime() / 1000
+            if (fromDate <= endDate) {
                 val timecalender = Calendar.getInstance()
                 timecalender.set(Calendar.HOUR_OF_DAY, hour)
                 timecalender.set(Calendar.MINUTE, minute)
@@ -224,7 +233,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     ) { _, _ ->
                     }
                 }
-            }else {
+            } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
                     "The end date cannot be earlier than the start date. Please select a valid date range."
@@ -293,15 +302,15 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 } else {
                     adjustPaxTips()
                 }*/
-                when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
-                    Constants.PAX->{
+                when (prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE, "")) {
+                    Constants.PAX -> {
                         if (!singleTransaction?.ref_num.isNullOrEmpty() && prefProvider.getValueboolean(
                                 Constants.IS_PAX_CONNECTED,
                                 false
                             )
                         ) {
                             adjustPaxTips()
-                        }else{
+                        } else {
                             if (!singleTransaction?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(
                                     Constants.IS_PAX_CONNECTED,
                                     false
@@ -314,17 +323,17 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             }
                         }
                     }
-                    Constants.VALOR, Constants.VELOR->{
+                    Constants.VALOR, Constants.VELOR -> {
                         adjustValorTips()
                     }
-                    Constants.DEJAVOO->{
+                    Constants.DEJAVOO -> {
                         adjustDejavooTips()
                     }
 
-                    else->{
+                    else -> {
                         if (singleTransaction?.ref_num.isNullOrEmpty()) {
                             magtekCall(tipAmount)
-                        }else{
+                        } else {
                             if (!singleTransaction?.ref_num.isNullOrEmpty() && !prefProvider.getValueboolean(
                                     Constants.IS_PAX_CONNECTED,
                                     false
@@ -339,8 +348,17 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     }
                 }
             } else {
-                tipCall(false)
-                cashLogEventCall(bundle)
+                CoroutineScope(Dispatchers.IO).launch {
+                    launch {
+                        tipCall(false)
+                    }
+                    launch {
+                        cashLogEventCall(bundle)
+                    }
+                    launch {
+                        openCashDrawer()
+                    }
+                }
             }
         }
 
@@ -430,6 +448,14 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         return binding.root
     }
 
+    private fun openCashDrawer() {
+        if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
+            EventBus.getDefault().post(CashBoxEvent(Constants.CASHBOX))
+        } else {
+            SunmiPrintHelper.getInstance().openCashBox()
+        }
+    }
+
     lateinit var paymentCoroutineScope: CoroutineScope
     val paymentCoroutineExceptionHandler =
         CoroutineExceptionHandler { coroutineContext, exception ->
@@ -457,30 +483,30 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             ).create(gatewayType)
 
             singleTransaction?.ref_num?.let { dejavooRefTxnId ->
-                var dejavoo= Dejavoo(
-                    registerId =  prefProvider.getValue(
-                        Constants.DEJAVOO_REGISTER_ID,""
+                var dejavoo = Dejavoo(
+                    registerId = prefProvider.getValue(
+                        Constants.DEJAVOO_REGISTER_ID, ""
                     ),
                     authKey = prefProvider.getValue(
-                        Constants.DEJAVOO_AUTH_KEY,""
+                        Constants.DEJAVOO_AUTH_KEY, ""
                     ),
                     tpn = prefProvider.getValue(
-                        Constants.DEJAVOO_TPN,""
+                        Constants.DEJAVOO_TPN, ""
                     ),
                     paymentType = "Credit",
-                    transType="TipAdjust",
-                    amount= singleTransaction?.totalAmount.toString(),
+                    transType = "TipAdjust",
+                    amount = singleTransaction?.totalAmount.toString(),
                     tip = tipAmount.toString(),
-                    refId= dejavooRefTxnId,
-                    printReceipt= false,
-                    performedBy=  prefProvider.employeeName(),
-                    isProd=  Constants.paymentLive,
+                    refId = dejavooRefTxnId,
+                    printReceipt = false,
+                    performedBy = prefProvider.employeeName(),
+                    isProd = Constants.paymentLive,
                     txnType = TransactionType.TIP_ADJUSTMENT
                 )
                 paymentGateway.processPayment(
                     requireContext().applicationContext,
                     dejavoo,
-                    onSuccess = { tResponse->
+                    onSuccess = { tResponse ->
                         var transactionJsonResponse = Gson().fromJson<String>(
                             tResponse,
                             String::class.java
@@ -506,8 +532,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     }
 
     private fun cashLogEventCall(bundle: Bundle) {
-        if(bundle.containsKey("tipAmount")){
-            if (bundle.getDouble("tipAmount")>0.0){
+        if (bundle.containsKey("tipAmount")) {
+            if (bundle.getDouble("tipAmount") > 0.0) {
                 makeCashEventCallToUpdateTip(bundle.getDouble("tipAmount"))
             }
         }
@@ -518,8 +544,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             tippedAmount,
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
             "in",
-            singleTransaction?.orderId?:-1,
-            singleTransaction?.id?:-1,
+            singleTransaction?.orderId ?: -1,
+            singleTransaction?.id ?: -1,
             "Tip added to the order",
             prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
             null,
@@ -577,9 +603,14 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     // Adjust tip on transactions done via PAX
     private fun adjustPaxTips() {
         GlobalScope.launch {
-            posLink.SetCommSetting(SettingINI.getCommSettingFromFile(context!!,FILE_PATH + SettingINI.FILENAME))
-            val tip_amt = (tipAmount*100).toInt()
-            Log.d("Amt: ","tip $tip_amt RefNo ${singleTransaction?.ref_num}")
+            posLink.SetCommSetting(
+                SettingINI.getCommSettingFromFile(
+                    context!!,
+                    FILE_PATH + SettingINI.FILENAME
+                )
+            )
+            val tip_amt = (tipAmount * 100).toInt()
+            Log.d("Amt: ", "tip $tip_amt RefNo ${singleTransaction?.ref_num}")
 
             CoroutineScope(Dispatchers.Main).launch {
                 ProgressUtils.showProgressDialog(requireActivity())
@@ -617,7 +648,12 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     "Payment Details: ",
                     "$ExtData $resultCode $resultTxt $globalUID"
                 )
-                Log.d("Payment Details: ", "$cardLastDigits $approvedAmount $CARDBIN $EDCType $tipAmount ${Gson().toJson(response)}")
+                Log.d(
+                    "Payment Details: ",
+                    "$cardLastDigits $approvedAmount $CARDBIN $EDCType $tipAmount ${
+                        Gson().toJson(response)
+                    }"
+                )
 
                 if (resultCode == "000000") {
                     CoroutineScope(Dispatchers.Main).launch {
@@ -630,15 +666,18 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 } else {
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
-                        AlertUtils.showCustomAlertWithListenerWithOK(requireContext(),resultTxt,object:
-                            DialogInterface.OnClickListener{
-                            override fun onClick(p0: DialogInterface?, p1: Int) {
-                                try {
-                                    p0?.dismiss()
-                                } catch (e: Exception) {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(),
+                            resultTxt,
+                            object :
+                                DialogInterface.OnClickListener {
+                                override fun onClick(p0: DialogInterface?, p1: Int) {
+                                    try {
+                                        p0?.dismiss()
+                                    } catch (e: Exception) {
+                                    }
                                 }
-                            }
-                        })
+                            })
 //                        requireActivity().toast("$resultCode $resultTxt", Toast.LENGTH_LONG)
                     }
                 }
@@ -713,7 +752,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     paymentGateway.processPayment(
                         context = it.applicationContext,
                         valor,
-                        onSuccess = {tResponse->
+                        onSuccess = { tResponse ->
                             var transactionJsonResponse = Gson().fromJson<ValorSuccessResponse>(
                                 tResponse,
                                 ValorSuccessResponse::class.java
@@ -737,7 +776,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                                 }
                             }
                         },
-                        onFailure = {errorMessage->
+                        onFailure = { errorMessage ->
                             println("Payment Failed: $errorMessage")
 
                             ProgressUtils.dismissProgressDialog()
@@ -1173,7 +1212,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     Status.LOADING -> {
                         try {
                             ProgressUtils.showProgressDialog(requireActivity())
-                        }catch (e:Exception) {
+                        } catch (e: Exception) {
                             e.printStackTrace()
                         }
 
@@ -1231,9 +1270,9 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
                     }
                     Status.LOADING -> {
-                        try{
+                        try {
                             ProgressUtils.showProgressDialog(requireActivity())
-                        }catch (e:Exception) {
+                        } catch (e: Exception) {
                             e.printStackTrace()
                         }
                     }
@@ -1284,9 +1323,9 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     }
                     Status.LOADING -> {
 
-                        try{
+                        try {
                             ProgressUtils.showProgressDialog(requireActivity())
-                        }catch (e:Exception) {
+                        } catch (e: Exception) {
                             e.printStackTrace()
                         }
                     }
@@ -1327,9 +1366,9 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
                     }
                     Status.LOADING -> {
-                        try{
+                        try {
                             ProgressUtils.showProgressDialog(requireActivity())
-                        }catch (e:Exception) {
+                        } catch (e: Exception) {
                             e.printStackTrace()
                         }
                     }
@@ -1468,12 +1507,16 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         ) {
 
             singleTransaction?.let {
-                val refundedAmount = String.format("%.2f", singleTransaction?.refundedAmount).toDouble()
+                val refundedAmount =
+                    String.format("%.2f", singleTransaction?.refundedAmount).toDouble()
                 val totalAmount = String.format("%.2f", singleTransaction?.totalAmount).toDouble()
 
                 if (refundedAmount == totalAmount) {
 
-                    AlertUtils.showCustomAlert(requireContext(), "Tips cannot be added to transactions that have been refunded.")
+                    AlertUtils.showCustomAlert(
+                        requireContext(),
+                        "Tips cannot be added to transactions that have been refunded."
+                    )
 
                 } else {
                     val bundle = Bundle()
@@ -1545,7 +1588,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 Constants.EPX_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
                     jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                            singleTransaction?.amount?.times(100)?.let {
+                        singleTransaction?.amount?.times(100)?.let {
                             magtekRequestUtils.processReferenceIDEPXForce(
                                 it,
                                 model.customerTransactionID ?: "", it1, Constants.CAPTURE,
@@ -1820,8 +1863,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             }
 
             override fun afterTextChanged(s: Editable) {
-                    transactionAdapter.showLoading(false)
-                    transactionAdapter.filter.filter(s.toString().trim())
+                transactionAdapter.showLoading(false)
+                transactionAdapter.filter.filter(s.toString().trim())
             }
         })
     }

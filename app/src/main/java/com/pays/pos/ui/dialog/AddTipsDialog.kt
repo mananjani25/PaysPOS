@@ -336,12 +336,15 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
         binding.txtRemove?.setOnClickListener {
 
 
+
+
             val result = Bundle().apply {
                 putDouble("tipAmount", 0.0)
                 putDouble("tipPercent",0.0)
                 tipID?.let { putInt("tipId", tipID ?: 0) }
 
             }
+            dashboardViewModel.customerGivenTipBefore.value = false
             if (isFromTransaction) {
                 setFragmentResult("request_key_tips", result)
             } else {
@@ -351,6 +354,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
                 )
             }
 
+            dashboardViewModel.tipRemovedObserver.value = true
             findNavController().navigateUp()
         }
     }

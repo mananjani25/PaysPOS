@@ -78,6 +78,7 @@ import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.pays.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
+import com.pays.pos.logger.CashBoxEvent
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.fragments.allorders.AllOrdersViewModel
@@ -1650,7 +1651,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             true
                         ) == true
                     ) {
-                        EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+//                        EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+                        EventBus.getDefault().post(CashBoxEvent(Constants.CASHBOX))
                     } else {
                         Log.d(TAG, "CASH-DRAWER: STEP 3 in TM-m30 ")
 

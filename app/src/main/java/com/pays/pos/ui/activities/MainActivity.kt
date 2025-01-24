@@ -91,6 +91,7 @@ import com.pays.pos.di.ApiModule.BASE_URL
 import com.pays.pos.di.HostSelectionInterceptor
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.di.RolePermission
+import com.pays.pos.logger.CashBoxEvent
 import com.pays.pos.logger.CreateCustomerEvent
 import com.pays.pos.logger.CustomerCreatedEvent
 import com.pays.pos.logger.MessageEvent
@@ -1390,24 +1391,31 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     }
 
 
-    @Subscribe(threadMode = ThreadMode.ASYNC)
+    @Subscribe(threadMode = ThreadMode.POSTING)
     fun onMessageEvent(event: MessageEvent?) {
         event?.let {
-            if (it.data.equals(Constants.CASHBOX, ignoreCase = true) && it.newTrack) {
-                openLandiCashBox()
-            } else {
+//            if (it.data.equals(Constants.CASHBOX, ignoreCase = true) && it.newTrack) {
+//                openLandiCashBox()
+//            } else {
                 log(it.data.toString())
                 it.newTrack.let {
                     if (it == true) {
                         logNewTrack(event?.data.toString())
                     }
                 }
-            }
+//            }
         }
-
-
     }
 
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    fun onMessageEvent(event: CashBoxEvent?)
+    {
+        event?.let {
+            if (it.data.equals(Constants.CASHBOX, ignoreCase = true)) {
+                openLandiCashBox()
+            }
+        }
+    }
     lateinit var omniDriver: OmniDriver
     private var landiCashboxConnected: Boolean = false
 

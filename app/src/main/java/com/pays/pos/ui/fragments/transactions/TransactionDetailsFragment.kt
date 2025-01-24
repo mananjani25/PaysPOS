@@ -80,6 +80,7 @@ import com.pays.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.VENUE_LOGO
 import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
+import com.pays.pos.logger.CashBoxEvent
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.utils.landi.LPrint
@@ -339,23 +340,33 @@ class TransactionDetailsFragment : Fragment() {
         }
 
         binding.tvtipadd.setOnClickListener {
-            if (this::paymentDetailsResponse.isInitialized) {
-                if (!paymentDetailsResponse.data.payable_type.equals(
-                        "GiftCard",
-                        true
-                    ) && !paymentDetailsResponse.data.payable_type.equals(
-                        "Invoice", true
-                    )
-                ) {
-                    val bundle = Bundle()
-                    bundle.putDouble("totalTip", paymentDetailsResponse.data.tips)
-                    bundle.putBoolean("isFromTransaction", true)
-                    paymentDetailsResponse.data.amount.let { bundle.putDouble("totalPrice", it) }
-                    findNavController().navigate(
-                        R.id.action_transactionDetailsFragment_to_tipdialog,
-                        bundle
-                    )
+
+            if (paymentDetailsResponse.data.payment_type == "External") {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    "Tip cannot be adjusted for this transaction."
+                ) { _, _ ->
                 }
+            } else {
+                if (this::paymentDetailsResponse.isInitialized) {
+                    if (!paymentDetailsResponse.data.payable_type.equals(
+                            "GiftCard",
+                            true
+                        ) && !paymentDetailsResponse.data.payable_type.equals(
+                            "Invoice", true
+                        )
+                    ) {
+                        val bundle = Bundle()
+                        bundle.putDouble("totalTip", paymentDetailsResponse.data.tips)
+                        bundle.putBoolean("isFromTransaction", true)
+                        paymentDetailsResponse.data.amount.let { bundle.putDouble("totalPrice", it) }
+                        findNavController().navigate(
+                            R.id.action_transactionDetailsFragment_to_tipdialog,
+                            bundle
+                        )
+                    }
+                }
+
             }
         }
         setFragmentResultListener("request_key_tips") { requestKey: String, bundle: Bundle ->
@@ -437,10 +448,16 @@ class TransactionDetailsFragment : Fragment() {
                     )
                 }*/
             } else {
-                tipCall(false)
+                CoroutineScope(Dispatchers.IO).launch {
+                    launch {
+                        tipCall(false)
+                    }
+
+                    launch {
+                        openCashDrawer()
+                    }
+                }
             }
-
-
         }
         binding.tvIssueRefund.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
@@ -530,6 +547,13 @@ class TransactionDetailsFragment : Fragment() {
 
     }
 
+    private fun openCashDrawer() {
+        if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
+            EventBus.getDefault().post(CashBoxEvent(Constants.CASHBOX))
+        } else {
+            SunmiPrintHelper.getInstance().openCashBox()
+        }
+    }
 
     private fun adjustDejavooTips() {
         paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)

@@ -429,11 +429,12 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     }
 
                 }
-
-                findNavController().navigate(
-                    R.id.action_issueRefundFragment_to_reasonForRefundDialog,
-                    bundle
-                )
+                if (findNavController().currentDestination?.id == R.id.issueRefundFragment) {
+                    findNavController().navigate(
+                        R.id.action_issueRefundFragment_to_reasonForRefundDialog,
+                        bundle
+                    )
+                }
             }
         } else {
 
@@ -701,9 +702,16 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                    setUpAmountTab()
                 }
             } else {
-                binding.rbItems.visible()
-                binding.rvItemListRefund.visible()
-
+                if (isAmountRefund) {
+                    binding.rbItems.gone()
+                    binding.rvItemListRefund.gone()
+                }else if(isItemRefund){
+                    binding.rbItems.visible()
+                    binding.rvItemListRefund.visible()
+                }else{
+                    binding.rbItems.visible()
+                    binding.rvItemListRefund.visible()
+                }
                 refundItemListAdapter.addItems(
                     (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount),
                     paymentOrderDetailsResponse.data.order.order_items,

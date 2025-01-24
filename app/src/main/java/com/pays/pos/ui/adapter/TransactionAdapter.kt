@@ -211,7 +211,8 @@ class TransactionAdapter(val viewModel: TransactionViewModel, val prefProvider: 
 
             itemBinding.txtTip.setOnClickListener {
 
-                if ((filterList[position].paymentType == "Card" && filterList[position].tips > 0) || (filterList[position].paymentType == "External") ) {
+//                (filterList[position].paymentType == "Card" && filterList[position].tips > 0) ||
+                if (filterList[position].paymentType == "External") {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         context,
                         "Tip cannot be adjusted for this transaction."

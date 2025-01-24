@@ -34,7 +34,15 @@ import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class Categories(val clickedPosition: Int) : Fragment(),ItemCallback {
+class Categories : Fragment,ItemCallback {
+
+    constructor() : super()
+
+    constructor(clickedPosition: Int?): this() {
+        this.clickedPosition=clickedPosition
+    }
+
+    var clickedPosition: Int?=null
     private var isreOrder: Boolean = false
     private lateinit var adapter: CategoriesListAdapter
     private lateinit var binding: FragmentCategoriesBinding
