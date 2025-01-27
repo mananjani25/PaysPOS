@@ -14163,7 +14163,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 .setPrinter(SunmiPrinter.SunmiNetPrinter, data.ipAddress)
                             Log.d("initKitchenPrinter", "SunmiNetPrinter")
                         }catch (e:Exception){
-                            e.printStackTrace(
+                            e.printStackTrace()
                         }
 
                     }
