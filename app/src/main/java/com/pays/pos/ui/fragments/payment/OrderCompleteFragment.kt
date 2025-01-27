@@ -646,9 +646,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     paidAmountToShow = MethodUtils.roundOffAmountString(paidAmount).toDouble()
 
 
-                    changeAmount =
-                        MethodUtils.roundOffAmountString(paidAmountToShow - finalAmountToShow)
-                            .toDouble()
+                    changeAmount = paidAmountToShow - finalAmountToShow
+
+                    changeAmount = MethodUtils.roundOffAmountDouble(changeAmount)
+
 
                     if (paymentTypeForTip.equals("cash", true)) {
 

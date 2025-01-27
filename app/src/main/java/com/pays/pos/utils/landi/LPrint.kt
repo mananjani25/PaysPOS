@@ -532,7 +532,8 @@ final object LPrint {
                             lineBreak()
                             printDashedLineAndBreak()
 
-                            printText(guest.key + "\n")
+                            //printText(guest.key + "\n")
+                            printWithFontSize(guest.key + "\n", FONT_B)
 
                             printDashedLineAndBreak()
                             lineBreak()
