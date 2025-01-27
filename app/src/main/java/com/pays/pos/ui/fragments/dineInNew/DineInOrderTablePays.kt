@@ -4109,6 +4109,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                      )*/
                     updateAdapterData()
                 }
+
+                dineInTableAdapter.notifyDataSetChanged()
             }
         })
 
