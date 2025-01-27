@@ -380,11 +380,23 @@ class AddValueInGiftCardFragment : Fragment() {
                 startProcessingForAddValue()
             }else{
                 weakContext.get()?.let {
-                    AlertUtils.showCustomAlertWithListenerWithOK(it,getString(R.string.are_you_sure_proceed),object:DialogInterface.OnClickListener{
-                        override fun onClick(p0: DialogInterface?, p1: Int) {
+//                    AlertUtils.showCustomAlertWithListenerWithOK(it,getString(R.string.are_you_sure_proceed),object:DialogInterface.OnClickListener{
+//                        override fun onClick(p0: DialogInterface?, p1: Int) {
+//                            startProcessingForAddValue()
+//                        }
+//                    })
+
+                    AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
+                        requireContext(),
+                        getString(R.string.are_you_sure_proceed),
+                        "Ok"
+                    ) { dialogInterface, clickedButton ->
+                        if (clickedButton == 0) {
                             startProcessingForAddValue()
+                        } else {
+                            dialogInterface?.dismiss()
                         }
-                    })
+                    }
                 }
             }
         }
