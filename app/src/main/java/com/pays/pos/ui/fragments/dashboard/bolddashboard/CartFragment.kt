@@ -32,6 +32,10 @@ import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
 import com.pax.poslink.ReportRequest
+import com.pays.payments.design.Dejavoo
+import com.pays.payments.design.PaymentGatewayFactory
+import com.pays.payments.design.PaymentGatewayType
+import com.pays.payments.design.TransactionType
 import com.pays.pos.R
 import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.DineInModel
@@ -108,11 +112,17 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.json.JSONArray
 import org.json.JSONObject
+import org.w3c.dom.Document
+import org.w3c.dom.Element
+import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserFactory
+import java.io.StringReader
 import java.lang.Runnable
 import java.lang.System
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
@@ -389,8 +399,186 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             binding.preAuthOption?.gone()
     }
 
-    private fun makeDejavooPreAuthPaymentRequest() {
 
+    @Inject
+    lateinit var paymentGatewayFactory: PaymentGatewayFactory
+    lateinit var paymentCoroutineScope: CoroutineScope
+
+    val paymentCoroutineExceptionHandler =
+        CoroutineExceptionHandler { coroutineContext, exception ->
+            EventBus.getDefault()
+                .post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeValorPaymentRequest()-> ${
+                            Gson().toJson(
+                                exception
+                            )
+                        } "
+                    )
+                )
+        }
+
+    fun parseXml(xmlContent: String): Document {
+        val factory = DocumentBuilderFactory.newInstance()
+        val builder = factory.newDocumentBuilder()
+        return builder.parse(xmlContent.byteInputStream())
+    }
+
+    private fun makeDejavooPreAuthPaymentRequest() {
+        paymentCoroutineScope = CoroutineScope(Dispatchers.IO + paymentCoroutineExceptionHandler)
+        paymentCoroutineScope.launch {
+            val gatewayType = PaymentGatewayType.DEJAVOO
+            val paymentGateway = paymentGatewayFactory.create(gatewayType)
+
+            val amt = PRE_AUTH_AMOUNT
+            val tip_amt = 0
+
+            /* Process Payment */
+            var dejavoo = Dejavoo(
+                registerId = "4986101",
+                authKey = "kwg2GRbykg",
+                tpn = "659324491704",
+                paymentType = "Credit",
+                transType = "Auth",
+                amount = amt.toString(),
+                tip = "",
+                refId = "AuthRef${System.currentTimeMillis()}",
+                printReceipt = false,
+                performedBy = prefProvider.employeeName(),
+                isProd = false,
+                txnType = TransactionType.CREDIT_SALE
+            )
+
+            context?.let {
+                paymentGateway.performPreAuth(
+                    it.applicationContext,
+                    dejavoo,
+                    onSuccess = { tResponse ->
+                        var transactionJsonResponse = Gson().fromJson<String>(
+                            tResponse,
+                            String::class.java
+                        )
+
+                        val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
+                        factory.setNamespaceAware(true)
+                        val xpp: XmlPullParser = factory.newPullParser()
+                        xpp.setInput(StringReader(transactionJsonResponse))
+                        var eventType = xpp.eventType
+
+                        val parsedXml =
+                            parseXml(transactionJsonResponse)/*.getElementsByTagName("xmp").item(0)?.textContent.toString()*/
+                        var Message = ""
+                        var RefId = ""
+                        var RegisterId = ""
+                        var TPN = ""
+                        var AuthCode = ""
+                        var PNRef = ""
+                        var TransNum = ""
+                        var ResultCode = ""
+                        var RespMSG = ""
+                        var PaymentType = ""
+                        var Voided = ""
+                        var TransType = ""
+                        var SN = ""
+                        var ExtData = ""
+                        with(parseXml(transactionJsonResponse).childNodes.item(0).childNodes.item(0).childNodes) {
+                            for (i in 0 until this.length) {
+
+                                when ((this.item(i) as Element).tagName.toString()) {
+                                    "Message" -> Message =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "RefId" -> RefId =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "RegisterId" -> RegisterId =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "TPN" -> TPN =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "AuthCode" -> AuthCode =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "PNRef" -> PNRef =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "TransNum" -> TransNum =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "ResultCode" -> ResultCode =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "RespMSG" -> RespMSG =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "PaymentType" -> PaymentType =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "Voided" -> Voided =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "TransType" -> TransType =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "SN" -> SN =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    "ExtData" -> ExtData =
+                                        this.item(i).childNodes.item(0).nodeValue.intern() ?: ""
+                                    else -> {
+
+                                    }
+                                }
+                            }
+                        }
+
+                        if (Message.equals("Canceled") || Message.equals("Error")) {
+                            dismissProgressDialogWithAlert(RespMSG.replace("%20", " "))
+                        } else if (Message.contains("Approved")) {
+
+                            viewModelPayment.setPAXData(RefId, ExtData)
+
+                            val paymentAttributes = PaymentAttributes()
+
+                            paymentAttributes.apply {
+                                amount = PRE_AUTH_AMOUNT
+                                cardName = "Card"
+                                cardNumber = ""
+                                ecr_ref_num = RefId
+                                employeeId = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                                ext_data = "${Constants.DEJAVOO} : $ExtData?"
+                                global_uniq_id = PNRef
+                                pax_transaction_token =""
+                                payableType = "Order"
+                                paymentType = "Card"
+                                ref_num = TransNum
+                                subTotal = 1.0
+                                terminalId = prefProvider.getTerminalId()
+                            }
+
+                            prefProvider.setValue(PRE_AUTH_DETAILS,Gson().toJson(paymentAttributes))
+                            viewModel.paymentAttributes = paymentAttributes
+
+                            viewModelPayment.preAuthData = PreAuthData(ecrRefNum = paymentAttributes.ecr_ref_num , refNum = paymentAttributes.ref_num)
+
+                        }
+                    },
+                    onFailure = { errorMessage ->
+                        Log.e("Dejavoo: ",errorMessage)
+                        EventBus.getDefault()
+                            .post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew makeDejavooPaymentRequest()-> ${
+                                        Gson().toJson(
+                                            errorMessage
+                                        )
+                                    } "
+                                )
+                            )
+//                        dismissProgressDialogWithAlert()
+                    }
+                )
+            }
+        }
+    }
+
+
+    private fun dismissProgressDialogWithAlert(errorMessage: String? = null) {
+        runOnUiThread {
+            ProgressUtils.dismissProgressDialog()
+            dismissProgressDialog()
+            if (errorMessage!=null) {
+                AlertUtils.showCustomAlert(requireContext(), errorMessage)
+            }
+        }
     }
 
     // To check selected order type
