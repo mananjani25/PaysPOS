@@ -774,6 +774,48 @@ class CustomDisplay(
 
     /*-------------Customer Loyalty---------------*/
 
+    private fun getCalCashDiscWithAmount(totalprice: Double, isCash: Boolean): Double {
+        return if (isCash) {
+            if (dashBoardCategoryViewModel.cashDiscountType == "CashDiscount" && prefProvider.getValue(
+                    ORDER_TYPE,
+                    TAKEOUT
+                ) != Constants.GIFT_CARD
+            ) {
+                if (totalprice - MethodUtils.getLatestCashDiscountOrSurCharge(
+                        totalprice,
+                        prefProvider,
+                        context
+                    ) < 0.0
+                ) {
+                    0.0
+                } else {
+                    totalprice - MethodUtils.getLatestCashDiscountOrSurCharge(
+                        totalprice,
+                        prefProvider,
+                        context
+                    )
+                }
+            } else {
+                totalprice
+            }
+        } else {
+//            if (cashDiscountType == "SurCharge" && prefProvider.getValue(
+//                    ORDER_TYPE,
+//                    TAKEOUT
+//                ) != GIFT_CARD
+//            )
+            if (dashBoardCategoryViewModel.cashDiscountType == "SurCharge") {
+                totalprice + MethodUtils.getLatestCashDiscountOrSurCharge(
+                    totalprice,
+                    prefProvider,
+                    context
+                )
+            } else {
+                totalprice
+            }
+        }
+        return totalprice
+    }
 
     private fun observeCashCardChange() {
         dashBoardCategoryViewModel.customerCashAmount.observe(lifecycleOwner,
@@ -801,23 +843,18 @@ class CustomDisplay(
                         binding.txtDiscountCard?.text = "-$${String.format("%.2f", t)}"
                         binding.txtDiscountCash?.text = "-$${String.format("%.2f", t)}"
 
-                        if (dashBoardCategoryViewModel.cashDiscountType.equals("CashDiscount", ignoreCase = true)){
-                            var discount=MethodUtils.getLatestCashDiscountOrSurCharge(
-                                dashBoardCategoryViewModel.wholetotalPrice,
-                                prefProvider,
-                                context
-                            )
-                            binding.txtTotalCard.text= dashBoardCategoryViewModel.wholetotalPrice.toString()
-                            binding.txtTotalCash.text= (dashBoardCategoryViewModel.wholetotalPrice-discount).toString()
-                        }else{
-                            var discount=MethodUtils.getLatestCashDiscountOrSurCharge(
-                                dashBoardCategoryViewModel.wholetotalPrice,
-                                prefProvider,
-                                context
-                            )
+                        if (dashBoardCategoryViewModel.cashDiscountType.equals("CashDiscount", ignoreCase = true)) {
 
-                            binding.txtTotalCash.text= dashBoardCategoryViewModel.wholetotalPrice.toString()
-                            binding.txtTotalCard.text= getSurchargedPrice(dashBoardCategoryViewModel.wholetotalPrice)
+                            t?.let {
+                                binding.txtTotalCash?.text = (getCashDiscountedPrice(dashBoardCategoryViewModel.wholetotalPrice).removePrefix("$").toDouble()-it).toString()
+                                binding.txtTotalCard?.text = (MethodUtils.roundOffAmount(dashBoardCategoryViewModel.wholetotalPrice).removePrefix("$").toDouble()).toString()
+                            }
+
+                        } else {
+                            t?.let {
+                                binding.txtTotalCash?.text = (MethodUtils.roundOffAmount(dashBoardCategoryViewModel.wholetotalPrice).removePrefix("$").toDouble()).toString()
+                                binding.txtTotalCard?.text = (getCashDiscountedPrice(dashBoardCategoryViewModel.wholetotalPrice).removePrefix("$").toDouble()-it).toString()
+                            }
                         }
                     }
                 }
