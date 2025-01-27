@@ -4731,9 +4731,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                     if (guestPayment.paymentType == "Cash") {
 
+
+                                        val changeAmount = (paidAmount ) - (guestPayment!!.amount + tipAmount)
+
                                         val str7 = padLine(
                                             "Change Amount",
-                                            "$" + MethodUtils.roundOffAmountString((paidAmount + tipAmount) - (guestPayment!!.amount + tipAmount)),
+                                             MethodUtils.roundOffAmount(changeAmount),
                                             48
                                         ).toString()
 
@@ -7822,11 +7825,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                                     if (_order?.payments?.last()?.paymentType == "Cash") {
+
+                                        val changeAmount = (paidAmount ) - (order?.payments?.last()?.amount!!.plus(tipAmount))
+
+//                                        val str7 = padLine(
+//                                            "Change Amount",
+//                                            "$" + MethodUtils.roundOffAmountString(
+//                                                changeAmtGlobal + tipAmount
+//                                            ),
+//                                            48
+//                                        ).toString().toByteArray()
+
                                         val str7 = padLine(
                                             "Change Amount",
-                                            "$" + MethodUtils.roundOffAmountString(
-                                                changeAmtGlobal + tipAmount
-                                            ),
+                                            MethodUtils.roundOffAmount(changeAmount),
                                             48
                                         ).toString().toByteArray()
 
