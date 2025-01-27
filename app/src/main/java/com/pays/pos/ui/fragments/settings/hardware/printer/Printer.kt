@@ -2248,17 +2248,17 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 SunmiPrinterApi.getInstance().setFontZoom(2, 2)
                 SunmiPrinterApi.getInstance().printText("Test Print")
                 SunmiPrinterApi.getInstance().lineWrap(1)
-                val current = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+             /*   val current = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     LocalDateTime.now()
                 } else {
-                    TODO("VERSION.SDK_INT < O")
-                }
-                val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
-                val formatted = current.format(formatter)
+
+                }*/
+               // val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+              //  val formatted = current.format(formatter)
                 SunmiPrinterApi.getInstance().setAlignMode(1)
                 SunmiPrinterApi.getInstance().setFontZoom(2, 2)
                 SunmiPrinterApi.getInstance()
-                    .printText(getCurrentTimeFromTimeZone(requireContext(), formatted))
+                    .printText("Test Print")
                 SunmiPrinterApi.getInstance().lineWrap(2)
                 SunmiPrinterApi.getInstance().cutPaper(2, 20)
                 LogUtil.logE(TAG, "WOHO SERIESNULL ${woyouService}")
