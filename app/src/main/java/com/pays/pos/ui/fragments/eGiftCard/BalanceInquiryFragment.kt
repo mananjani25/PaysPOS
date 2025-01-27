@@ -272,10 +272,8 @@ class BalanceInquiryFragment : Fragment() {
                             "Ok"
                         ) { dialogInterface, clickedButton ->
                             if (clickedButton == 0) {
-                                // Perform the OK action: call `checkBalanceEnquiryForGiftcard()`
                                 checkBalanceEnquiryForGiftcard()
                             } else {
-                                // Perform the Cancel action: dismiss the dialog
                                 dialogInterface?.dismiss()
                             }
                         }
