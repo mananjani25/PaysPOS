@@ -800,6 +800,25 @@ class CustomDisplay(
                     lifecycleOwner.lifecycleScope.launch {
                         binding.txtDiscountCard?.text = "-$${String.format("%.2f", t)}"
                         binding.txtDiscountCash?.text = "-$${String.format("%.2f", t)}"
+
+                        if (dashBoardCategoryViewModel.cashDiscountType.equals("CashDiscount", ignoreCase = true)){
+                            var discount=MethodUtils.getLatestCashDiscountOrSurCharge(
+                                dashBoardCategoryViewModel.wholetotalPrice,
+                                prefProvider,
+                                context
+                            )
+                            binding.txtTotalCard.text= dashBoardCategoryViewModel.wholetotalPrice.toString()
+                            binding.txtTotalCash.text= (dashBoardCategoryViewModel.wholetotalPrice-discount).toString()
+                        }else{
+                            var discount=MethodUtils.getLatestCashDiscountOrSurCharge(
+                                dashBoardCategoryViewModel.wholetotalPrice,
+                                prefProvider,
+                                context
+                            )
+
+                            binding.txtTotalCash.text= dashBoardCategoryViewModel.wholetotalPrice.toString()
+                            binding.txtTotalCard.text= getSurchargedPrice(dashBoardCategoryViewModel.wholetotalPrice)
+                        }
                     }
                 }
 
