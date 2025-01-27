@@ -100,11 +100,13 @@ class CreateModifierSet : Fragment(), TextWatcher {
                 binding.txtItemsTotal.text = "No Items"
             }
 
-            modifierSet!!.modifiers.sortedBy {
+            /*modifierSet!!.modifiers.sortedBy {
                 it.sort
-            }
+            }*/
 
-            adapter.addAll(modifierSet!!.modifiers)
+            adapter.addAll(modifierSet!!.modifiers.sortedBy {
+                it.sort
+            })
         }
 
         binding.header.txtSave.setOnClickListener {
@@ -116,7 +118,11 @@ class CreateModifierSet : Fragment(), TextWatcher {
                     ) { _, _ ->
                     }
                 }else{
-                    viewModel.setModifiers(adapter.getAll())
+                    val newSortedList = ArrayList<Modifier>(adapter.getAll().mapIndexed { index, modifier ->
+                        modifier.apply { sort = index + 1 }
+                    })
+
+                    viewModel.setModifiers(newSortedList)
                     viewModel.setDeleteModifiers(adapter.getDelete())
 
                     EventBus.getDefault().post(MessageEvent("${Constants.LINE_BREAK_TAB} CreateModifierSet, binding.header.txtSave.setOnClic.._else_1"))

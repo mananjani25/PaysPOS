@@ -33,6 +33,10 @@ class TipDiscountRepository @Inject constructor(
         appDatabase.tipDao().delete()
     }
 
+    suspend fun allTipsList(): List<GetTipReponse.Data> {
+        return appDatabase.tipDao().allTipsList()
+    }
+
     suspend fun addTips(tipSettings: List<GetTipReponse.Data>) {
         appDatabase.tipDao().addAllTips(tipSettings)
     }

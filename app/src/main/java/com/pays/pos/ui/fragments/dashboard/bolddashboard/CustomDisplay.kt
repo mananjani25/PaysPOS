@@ -17,6 +17,7 @@ import android.view.View
 import android.view.Window
 import android.widget.Toast
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.core.view.indices
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -84,6 +85,8 @@ import com.pays.pos.utils.paxUtils.POSLinkCreatorWrapper
 import com.pays.pos.utils.paxUtils.SettingINI
 import com.pays.pos.utils.statusUtils.Status
 import com.pays.pos.data.remote.Constants.IS_PAYMENT_SCREEN
+import com.pays.pos.logger.CashBoxEvent
+import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
@@ -209,6 +212,24 @@ class CustomDisplay(
                 }
             }
         })
+
+        dashBoardCategoryViewModel.tipRemovedObserver.observe(lifecycleOwner,object :Observer<Boolean>{
+            override fun onChanged(value: Boolean) {
+                if(value) {
+
+                    Log.e("TIP BEFORE TRANSACTION","TIP BEFORE TRANSACTION")
+
+                    binding.apply {
+                        lnrLayoutTip.gone()
+                    }
+
+
+                    //shouldHighlightNoTipLayoutBefore(dashBoardCategoryViewModel.totalTipAmount == 0.0 )
+                    //dashBoardCategoryViewModel.tipRemovedObserver.value = false
+                }
+            }
+        })
+
     }
 
 
@@ -218,6 +239,17 @@ class CustomDisplay(
 
          Log.e("TIP BEFORE WORKING","CHECK FOR TIP BEFORE TRANSACTION")
 
+
+        dashBoardCategoryViewModel.customerGivenTipBefore.observe(lifecycleOwner){
+            if(it){
+                if(dashBoardCategoryViewModel.totalTipAmount > 0.0) {
+                    binding.apply {
+                        askForTipBeforeLayout.gone()
+                        mainCartLayout.visible()
+                    }
+                }
+            }
+        }
 
 
         binding.otherRootLayoutTipBefore.setOnClickListener {
@@ -238,7 +270,13 @@ class CustomDisplay(
                 customerGivenTipBefore.value = true
             }
 
-            showThankYou(mWholeTotalPrice)
+            binding.apply {
+                mainCartLayout.visible()
+                askForTipBeforeLayout.gone()
+            }
+
+           // shouldHighlightNoTipLayoutBefore(true)
+          //  showThankYou(mWholeTotalPrice)
         }
 
         setupActiveTipsList(_tipListViewModel)
@@ -270,7 +308,6 @@ class CustomDisplay(
 
             observeActiveTipsList(/*dashBoardCategoryViewModel.totalPrice*/ wholeAmount / it)
         }
-
 
     }
 
@@ -2412,7 +2449,7 @@ class CustomDisplay(
                     }
 
                     addTipKeypadLayout.gone()
-                    askForTipBeforeLayout.visible()
+                    askForTipBeforeLayout.gone()
 
                 } else {
 
@@ -2901,6 +2938,19 @@ class CustomDisplay(
         }
     }
 
+
+    private fun shouldHighlightNoTipLayoutBefore(isHighlight: Boolean) {
+        if (isHighlight) {
+            activeTipsListAdapter?.clearSelectedItem()
+            binding.noTipRootLayoutTipBefore.setBackgroundColor(Color.parseColor("#ff6000"))
+            binding.txtNoTipLabelTipBefore.setTextColor(Color.parseColor("#FFFFFF"))
+        } else {
+            binding.noTipRootLayoutTipBefore.setBackgroundColor(Color.parseColor("#363636"))
+            binding.txtNoTipLabelTipBefore.setTextColor(Color.parseColor("#ff6000"))
+        }
+
+    }
+
     private fun shouldHighlightNoTipLayout(isHighlight: Boolean) {
         if (isHighlight) {
             binding.noTipRootLayout.setBackgroundColor(Color.parseColor("#ff6000"))
@@ -2947,9 +2997,11 @@ class CustomDisplay(
                             customerGivenTip.value = true
                             employeeGivenTip = false
                         }
-                        /*TODO: Make cash_event call here with the same orderID*/
-                        if (tippedAmount > 0) {
-                            makeCashEventCallToUpdateTip(mOrderID, tippedAmount)
+                        if (!mIsCardPayment){
+                            /*TODO: Make cash_event call here with the same orderID*/
+                            if (tippedAmount > 0) {
+                                makeCashEventCallToUpdateTip(mOrderID, tippedAmount)
+                            }
                         }
                         dashBoardCategoryViewModel.processingTipForCard.value = false
                         // dashBoardCategoryViewModel.tipButtonOnCustomerDisplayClicked.value=false
@@ -3047,6 +3099,7 @@ class CustomDisplay(
 
         Log.e("TOTAL TIP Check", "TIP RATE")
 
+
         if (prefProvider.getValueboolean(Constants.IS_PAYMENT_SCREEN, false)) {
             /**
              * Used to show Given TIPS on OrderCompleted Fragment
@@ -3056,6 +3109,11 @@ class CustomDisplay(
                 customerGivenTipBefore.value = true
                 Log.d("selectedItem: ", "updating tip params $tipRate $tippedAmount")
             }
+
+            shouldHighlightNoTipLayoutBefore(false)
+
+            binding.askForTipBeforeLayout.gone()
+
         } else {
             if (mIsCardPayment /*&& !mIsSignatureRequired*/) {
                 /**
@@ -3141,6 +3199,7 @@ class CustomDisplay(
                     )
                 }*/
                     } else if (!mIsCardPayment) {
+                        openCashDrawer()
                         callUpdateTip()
                     }
                 } catch (e: Exception) {
@@ -3150,8 +3209,17 @@ class CustomDisplay(
                     enableConfirmButton()
                 }
             }else {
+                openCashDrawer()
                 callUpdateTip()
             }
+        }
+    }
+
+    private fun openCashDrawer(){
+        if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
+            EventBus.getDefault().post(CashBoxEvent(Constants.CASHBOX))
+        } else {
+            SunmiPrintHelper.getInstance().openCashBox()
         }
     }
 

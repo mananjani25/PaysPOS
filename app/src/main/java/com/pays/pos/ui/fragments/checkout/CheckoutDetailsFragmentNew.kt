@@ -65,6 +65,7 @@ import com.pays.pos.databinding.FragmentCheckoutDetailsNewBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.MagtekModule
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.CashBoxEvent
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
@@ -323,6 +324,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 }
                             }.start()
 
+                            transactionInProgress()
                             startPAXWithGiftCard()
                         }else{
                             showAlertDialog(getString(R.string.please_connect_pax))
@@ -768,6 +770,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     totalTipAmount = tipAmount
                     employeeGivenTip = false
                     customerGivenTip.value = false
+
+                    if(tipAmount == 0.0) {
+                        tipRemovedObserver.value = true
+                    }
                 }
 
                 dashboardViewModel.setTipAmount(tipAmount)
@@ -815,7 +821,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //            SunmiPrintHelper.getInstance().openCashBox()
 
             if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
-                EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+//                EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+                EventBus.getDefault().post(CashBoxEvent(Constants.CASHBOX))
             } else {
                 SunmiPrintHelper.getInstance().openCashBox()
             }
@@ -1178,6 +1185,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                         bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                         bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
+                        bundle.putString("orderType_to_check_kiosk", orderTypeToCheckKioskOrder)
 
                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                             clearObserver()
@@ -1271,7 +1279,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                         bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                         bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
-
+                        bundle.putString("orderType_to_check_kiosk", orderTypeToCheckKioskOrder)
 
                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                             clearObserver()
@@ -1511,6 +1519,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                             bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                             bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
+                            bundle.putString("orderType_to_check_kiosk", orderTypeToCheckKioskOrder)
 
 
                             if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
@@ -1634,6 +1643,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                             bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                             bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
+                            bundle.putString("orderType_to_check_kiosk", orderTypeToCheckKioskOrder)
 
                             if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                                 clearObserver()
@@ -1832,6 +1842,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                             bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                             bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
+                            bundle.putString("orderType_to_check_kiosk", orderTypeToCheckKioskOrder)
 
 
                             if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
@@ -2082,6 +2093,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                             bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                             bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
+                            bundle.putString("orderType_to_check_kiosk", orderTypeToCheckKioskOrder)
 
 
                             if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
@@ -2208,6 +2220,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                             bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                             bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
+                            bundle.putString("orderType_to_check_kiosk", orderTypeToCheckKioskOrder)
 
                             if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                                 clearObserver()
@@ -2402,6 +2415,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                             bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                             bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
+                            bundle.putString("orderType_to_check_kiosk", orderTypeToCheckKioskOrder)
 
 
                             if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
@@ -2912,6 +2926,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
             }
         } else {
+            transactionInProgress()
             makeDynamicCashPayment(
                 dynamicPaymentType = dynamicPaymentName,
                 dynamicPaymentId = dynamicPaymentId
@@ -2977,7 +2992,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             if (InternetUtils.isInternetAvailable(applicationContext = requireActivity().applicationContext)) {
 
-                dashboardViewModel.paymentInProgress.value = true
 
                 restrictTvCashClicks()
 
@@ -3152,6 +3166,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     }
 //                                makePaymentCreditCard()
                                 } else {
+                                    transactionInProgress()
                                     makePaxPaymentRequest()
                                 }
                             }
@@ -3566,9 +3581,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 disconnectSyncChannel()
 
                 restrictTvCashClicks()
+                transactionInProgress()
 
                 if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
-                    EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+//                    EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+                    EventBus.getDefault().post(CashBoxEvent(Constants.CASHBOX))
                 } else {
                     SunmiPrintHelper.getInstance().openCashBox()
                 }
@@ -3590,9 +3607,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
                 disconnectSyncChannel()
                 restrictTvCashClicks()
+                transactionInProgress()
 //                SunmiPrintHelper.getInstance().openCashBox()
                 if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
-                    EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+//                    EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+                    EventBus.getDefault().post(CashBoxEvent(Constants.CASHBOX))
                 } else {
                     SunmiPrintHelper.getInstance().openCashBox()
                 }
@@ -3607,9 +3626,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
                 disconnectSyncChannel()
                 restrictTvCashClicks()
+                transactionInProgress()
 //                SunmiPrintHelper.getInstance().openCashBox()
                 if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
-                    EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+//                    EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+                    EventBus.getDefault().post(CashBoxEvent(Constants.CASHBOX))
                 } else {
                     SunmiPrintHelper.getInstance().openCashBox()
                 }
@@ -3624,10 +3645,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
                 disconnectSyncChannel()
                 restrictTvCashClicks()
+                transactionInProgress()
 //                SunmiPrintHelper.getInstance().openCashBox()
 
                 if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
-                    EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+//                    EventBus.getDefault().post(MessageEvent(Constants.CASHBOX, true))
+                    EventBus.getDefault().post(CashBoxEvent(Constants.CASHBOX))
                 } else {
                     SunmiPrintHelper.getInstance().openCashBox()
                 }
@@ -3640,6 +3663,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
         binding.tvCustomAmount.setOnSingleClickListener {
             if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
+                transactionInProgress()
                 paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
                 val bundleVal = Bundle().apply {
                     putDouble("totalprice", ((paymentAmount)))
@@ -3777,6 +3801,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         binding.txtChargeGC.setOnSingleClickListener {
+            transactionInProgress()
             startTransactionWithGiftCardPayment()
         }
     }
@@ -3803,8 +3828,22 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.txtChargeGC.isEnabled = true
             return
         } else if (giftCardNumber.isNotEmpty() && giftCardNumber.length > 8) {
-            closePaxRequest()
-            giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
+            dashboardViewModel.checkCardExistOrNotOnSell(giftCardNumber)
+            dashboardViewModel.isGiftCardSold.observe(viewLifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let {
+                    Log.e("ObserverdGiftCardProgress", it.toString())
+                    if (it) {
+                        closePaxRequest()
+                        giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
+                    } else {
+                        AlertUtils.showCustomAlert(
+                            requireContext(),
+                            "This gift card has not been activated."
+                        )
+                    }
+                }
+
+            }
 
         } else {
 
@@ -4526,6 +4565,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     }
 
+    private fun transactionInProgress() {
+        dashboardViewModel.paymentInProgress.value = true
+    }
     //Restrict user from clicking cash value multiple times
     private fun restrictTvCashClicks() {
         binding.apply {
@@ -4979,6 +5021,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             initPOSLink()
                             runOnUiThread(Runnable {
                                 dashboardViewModel.paymentInProgress.value = false
+                                dashboardViewModel.tipBeforeEnabled = true
+                                dashboardViewModel.removeMainCart.value = true
                                 dismissProgressDialog()
                             })
                             CoroutineScope(Dispatchers.Main).launch {
@@ -5006,6 +5050,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     CoroutineScope(Dispatchers.Main).launch {
                         dashboardViewModel.paymentInProgress.value = false
                         dashboardViewModel.tipBeforeEnabled = true
+                        dashboardViewModel.removeMainCart.value = true
                         ProgressUtils.dismissProgressDialog()
                         /*                    if (retryCount <= 1) {
                                                 retryCount++
@@ -5472,7 +5517,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         } else {
             if (this::presentation.isInitialized) {
                 presentation.show()
-                presentation.showTipsAddedNew(tipAmount, tipAmount, WholetotalPrice)
+                presentation.showTipsAddedNew(cardTip, cashTip, WholetotalPrice)
             }
 
             MethodUtils.setPriceTextView(
@@ -5490,7 +5535,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             if (this::presentation.isInitialized) {
                 presentation.show()
-                presentation.showTipsAddedNew(tipAmount, tipAmount, WholetotalPrice)
+                presentation.showTipsAddedNew(cardTip, cashTip, WholetotalPrice)
                 presentation.updateTotals(
                     binding.tvCash.text.toString(),
                     binding.tvCard.text.toString()
@@ -5978,6 +6023,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
             } else {
                 loadSplitLayout()
+                PaymentBoldPosFragment.newInstance().addTipHideShow(true)
                 binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
                 binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
                 binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
