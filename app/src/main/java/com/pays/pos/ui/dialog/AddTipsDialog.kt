@@ -71,11 +71,13 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
         super.onViewCreated(view, savedInstanceState)
 
         dashboardViewModel.isAmountWiseSplit.value?.let {
-            isAmountWiseSplit = it
+            if (it)
+                isAmountWiseSplit = true
         }
 
         dashboardViewModel.amountWiseSplit.value?.let {
-            amountWiseSplit = it
+            if (it > 0.0)
+                amountWiseSplit = it
         }
 
         if (arguments != null) {

@@ -11,6 +11,7 @@ import java.util.*
 class AmountTextWatcher(
     private val editText: AppCompatEditText,
     private val isManual: Boolean,
+    private val maxValue: Double? = null, // maxValue is optional and defaults to null
     var isFromGiftCard: Boolean = false
 ) :
     TextWatcher {
@@ -25,12 +26,22 @@ class AmountTextWatcher(
             val cleanString: String = s.replace("""[$,.]""".toRegex(), "")
 
 
-            val parsed = cleanString.trim().toDouble()
+//            val parsed = cleanString.trim().toDouble()
+
+            // Safely parse the value
+            val parsed = try {
+                cleanString.trim().toDouble() / 100
+            } catch (e: NumberFormatException) {
+                0.0
+            }
+
+            // Clamp the value if maxValue is not null
+            val clampedValue = if (maxValue != null && parsed > maxValue) maxValue else parsed
 
             var formatted = if (isManual) {
-                NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
+                NumberFormat.getCurrencyInstance(Locale.US).format(clampedValue)
             } else {
-                NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
+                NumberFormat.getCurrencyInstance(Locale.US).format(clampedValue)
             }
 
             if (isFromGiftCard) {
