@@ -14079,14 +14079,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                     try {
+                        Log.d("initKitchenPrinter", "SunmiBlueToothPrinter is ${data.ipAddress}")
                         SunmiPrinterApi.getInstance()
                             .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
-                        Log.d("initKitchenPrinter", "SunmiBlueToothPrinter is ${data.ipAddress}")
+
 
                     } catch (e: Exception) {
-                        SunmiPrinterApi.getInstance()
-                            .setPrinter(SunmiPrinter.SunmiNetPrinter, data.ipAddress)
-                        Log.d("initKitchenPrinter", "SunmiNetPrinter")
+                        try {
+                            SunmiPrinterApi.getInstance()
+                                .setPrinter(SunmiPrinter.SunmiNetPrinter, data.ipAddress)
+                            Log.d("initKitchenPrinter", "SunmiNetPrinter")
+                        }catch (e:Exception){
+                            e.printStackTrace(
+                        }
 
                     }
 

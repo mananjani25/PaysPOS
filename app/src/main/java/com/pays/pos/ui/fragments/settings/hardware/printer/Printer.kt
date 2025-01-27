@@ -79,7 +79,6 @@ import com.pays.pos.data.remote.Constants.createCloudPrinterWithName
 import com.pays.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.pays.pos.databinding.FragmentPrinterBinding
 import com.pays.pos.di.PrefProvider
-import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.activities.MainActivity
 import com.pays.pos.ui.adapter.PrinterListAdapter
 import com.pays.pos.utils.*
@@ -108,7 +107,6 @@ import com.sunmi.externalprinterlibrary2.printer.CloudPrinter
 import com.sunmi.externalprinterlibrary2.style.CloudPrinterStatus
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
-import org.greenrobot.eventbus.EventBus
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
@@ -1696,20 +1694,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     override fun onPrinterSelected(printerListModel: PrinterListModel) {
 
-        EventBus.getDefault().post(
-            MessageEvent(
-                "${Constants.LINE_BREAK_TAB} Printer.kt_onPrinterSelected_LINE-> ${Thread.currentThread().stackTrace[2].lineNumber}, printerListModel -> ${Gson().toJson(printerListModel)}"
-            )
-        )
-
         Log.e(TAG,"checkConnType:  ${printerListModel?.connectionType}")
         printerListModel.printerName?.let {
             with(it) {
-                EventBus.getDefault().post(
-                    MessageEvent(
-                        "${Constants.LINE_BREAK_TAB} Printer.kt_onPrinterSelected_LINE-> ${Thread.currentThread().stackTrace[2].lineNumber} _name-> ${it}"
-                    )
-                )
                 if (it?.startsWith(
                         "CloudPrint",
                         true
@@ -1853,11 +1840,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                             ignoreCase = true
                         ) == true
                     ) {
-                        EventBus.getDefault().post(
-                            MessageEvent(
-                                "${Constants.LINE_BREAK_TAB} Printer.kt_onPrinterSelected_it?.contains(TSP, ignoreCase = true)"
-                            )
-                        )
                         initStarPrinter(printerListModel)
                     } else {
                         Log.e(TAG, "printerListModel  ${Gson().toJson(printerListModel)}")
@@ -1929,21 +1911,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     private fun initStarPrinter(printerListModel: PrinterListModel) {
 
-        EventBus.getDefault().post(
-            MessageEvent(
-                "${Constants.LINE_BREAK_TAB} Printer.kt_initStarPrinter("
-            )
-        )
-
         val settings =
             StarConnectionSettings(InterfaceType.Lan, printerListModel.deviceModel!!.macAddress)
         val printer = StarPrinter(settings, requireContext())
 
-        EventBus.getDefault().post(
-            MessageEvent(
-                "${Constants.LINE_BREAK_TAB} Printer.kt_initStarPrinter(-> Printer-> MAC_ADDRESS -> ${printerListModel.deviceModel!!.macAddress}"
-            )
-        )
+
 
         CoroutineScope(Dispatchers.Main).launch {
 /*
@@ -1981,41 +1953,16 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                 .actionCut(CutType.Partial)
                         )
                 )
-
-                EventBus.getDefault().post(
-                    MessageEvent(
-                        "${Constants.LINE_BREAK_TAB} Printer.kt_initStarPrinter(-> CoroutineScope(Dispatchers.Main)"
-                    )
-                )
-
                 val commands = builder.getCommands()
                 printer.openAsync().await()
                 printer.printAsync(commands).await()
 
-                EventBus.getDefault().post(
-                    MessageEvent(
-                        "${Constants.LINE_BREAK_TAB} Printer.kt_initStarPrinter(-> Successfully Printed"
-                    )
-                )
 
                 Log.d("Printing", "Success")
             } catch (e: Exception) {
-
-                EventBus.getDefault().post(
-                    MessageEvent(
-                        "${Constants.LINE_BREAK_TAB} Printer.kt_initStarPrinter(_catch -> ${e.printStackTrace()}"
-                    )
-                )
-
-
                 e.printStackTrace()
                 Log.d("Printing", "Error: ${e.printStackTrace()}")
             } finally {
-                EventBus.getDefault().post(
-                    MessageEvent(
-                        "${Constants.LINE_BREAK_TAB} Printer.kt_initStarPrinter(_finally"
-                    )
-                )
                 printer.closeAsync().await()
             }
         }
@@ -2301,17 +2248,17 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 SunmiPrinterApi.getInstance().setFontZoom(2, 2)
                 SunmiPrinterApi.getInstance().printText("Test Print")
                 SunmiPrinterApi.getInstance().lineWrap(1)
-                val current = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+             /*   val current = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     LocalDateTime.now()
                 } else {
-                    TODO("VERSION.SDK_INT < O")
-                }
-                val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
-                val formatted = current.format(formatter)
+
+                }*/
+               // val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+              //  val formatted = current.format(formatter)
                 SunmiPrinterApi.getInstance().setAlignMode(1)
                 SunmiPrinterApi.getInstance().setFontZoom(2, 2)
                 SunmiPrinterApi.getInstance()
-                    .printText(getCurrentTimeFromTimeZone(requireContext(), formatted))
+                    .printText("Test Print")
                 SunmiPrinterApi.getInstance().lineWrap(2)
                 SunmiPrinterApi.getInstance().cutPaper(2, 20)
                 LogUtil.logE(TAG, "WOHO SERIESNULL ${woyouService}")
