@@ -845,11 +845,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
         binding.linearNextAmountSplit.setOnSingleClickListener {
             if (binding.enteredSplitAmount.text.toString().isNotEmpty()) {
-                isAmountWiseSplit = true
+                dashboardViewModel.isAmountWiseSplit.value = true
+                dashboardViewModel.amountWiseSplit.value = binding.enteredSplitAmount.text.toString().replace("$", "").toDouble()
+                dashboardViewModel.amountWiseSplit.value?.let {
+                    amountWiseSplit = it
+                }
                 PaymentBoldPosFragment.newInstance().addTipHideShow(false)
-                amountWiseSplit = binding.enteredSplitAmount.text.toString().replace("$", "").toDouble()
-                loadPaymentLayout(isAmountWiseSplit = true)
-                tipAmountCalculation(isAmountWiseSplit = true)
+                loadPaymentLayout(isAmountWiseSplit = dashboardViewModel.isAmountWiseSplit.value!!)
+                tipAmountCalculation(isAmountWiseSplit = dashboardViewModel.isAmountWiseSplit.value!!)
 
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
