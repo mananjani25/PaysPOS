@@ -3801,8 +3801,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         binding.txtChargeGC.setOnSingleClickListener {
-            transactionInProgress()
-            startTransactionWithGiftCardPayment()
+            AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
+                requireContext(),
+                getString(R.string.are_you_sure_proceed),
+                "Ok"
+            ) { dialogInterface, clickedButton ->
+                if (clickedButton == 0) {
+                    transactionInProgress()
+                    startTransactionWithGiftCardPayment()
+                } else {
+                    dialogInterface?.dismiss()
+                }
+            }
         }
     }
 
