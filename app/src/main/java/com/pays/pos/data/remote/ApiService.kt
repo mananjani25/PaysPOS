@@ -160,7 +160,7 @@ interface ApiService {
     ): TerminalResponse
 
     @GET(GET_EVENT_BY_ORDER_ID)
-    suspend fun getEventDetailsByOrderId(@Query("order_id") orderId:String)
+    suspend fun getEventDetailsByOrderId(@Query("order_id") orderId:String):CashEventDetailsResponse
 
     @GET(CHECK_PERMISSION_MANAGER)
     suspend fun checkEmployeeRole(

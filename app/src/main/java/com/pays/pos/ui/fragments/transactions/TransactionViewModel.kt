@@ -271,7 +271,7 @@ class TransactionViewModel @Inject constructor(
             when(resource.status){
                 Status.SUCCESS->{
                     resource.data?.let {
-
+                        it.data
                     }
                 }
 
