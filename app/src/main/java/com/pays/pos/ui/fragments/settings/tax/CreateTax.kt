@@ -220,6 +220,7 @@ class CreateTax : Fragment() {
 
             }
             viewModel.submit(rate_double)
+            dismissProgressDialog()
         }
 
         val callback: OnBackPressedCallback =
@@ -493,7 +494,7 @@ class CreateTax : Fragment() {
 
             }
         }
-    }
+   }
 
     private fun dismissProgressDialog()
     {
