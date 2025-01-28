@@ -2596,6 +2596,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     "remainingAmount",
                     remainingValue
                 )
+            } else if (isAmountWiseSplit && paymentType.toLowerCase() == "cash") {
+                var splitChange = 0.0
+                splitChange = custom_paymentAmount - (paymentAmount + tipAmount)
+                bundle.putDouble(
+                    "splitChange", String.format("%.2f", splitChange).toDouble()
+                )
+                remainingValue = wholePrice - paymentAmount
+
+                bundle.putDouble(
+                    "remainingAmount",
+                    remainingValue
+                )
             } else {
                 if (custom_paymentAmount >= wholePrice) {
                     remainingValue =
@@ -2663,7 +2675,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false) _10"))
 
         } else {
-            if (custom_paymentAmount != 0.0 && (isSelectedCount != 1 || isAmountWiseSplit)) {
+
+            if (custom_paymentAmount != 0.0 && (isSelectedCount != 1 || (isAmountWiseSplit && remainingValue > 0.0))) {
                 prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true)
                 bundle.putBoolean("isSpilt", true)
                 bundle.putBoolean("isSplitByNo", true)
