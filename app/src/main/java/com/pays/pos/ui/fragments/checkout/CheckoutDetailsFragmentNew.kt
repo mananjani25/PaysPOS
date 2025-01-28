@@ -83,6 +83,7 @@ import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
 import com.pays.pos.utils.*
+import com.pays.pos.utils.MethodUtils.Companion.hideSoftKeyboard
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
 import com.pays.pos.utils.callback.DeleteOptionCallback
 import com.pays.pos.utils.callback.magtekCallback
@@ -879,6 +880,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             tipAmountCalculation()
         }
         binding.linearNextAmountSplit.setOnSingleClickListener {
+            hideSoftKeyboard(requireActivity())
             if (binding.enteredSplitAmount.text.toString().isNotEmpty()) {
                 dashboardViewModel.isAmountWiseSplit.value = true
                 isAmountWiseSplit = dashboardViewModel.isAmountWiseSplit.value!!
@@ -5532,7 +5534,30 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         cashTip: Double = 0.0,
         cardTip: Double = 0.0,
     ) {
+        // Extract reusable variables for cleaner code
+        val effectivePrice = if (isAmountWiseSplit) amountWiseSplit else WholetotalPrice
+        val cashAmount = (getCalCashDiscWithAmount(effectivePrice, true) / isSelectCount) + cashTip
+        val cardAmount = (getCalCashDiscWithAmount(effectivePrice, false) / isSelectCount) + cardTip
+
+        // Log the total price for debugging
+        Log.e(TAG, "WholetotalPrice: $WholetotalPrice")
+
+        // Update cash payment options
         MethodUtils.getCashPaymentOptionList(
+            cashAmount,
+            binding.tvCash1,
+            binding.tvCash2,
+            binding.tvCash3
+        )
+
+        // Set price for cash views
+        MethodUtils.setPriceTextView(binding.tvCash, cashAmount)
+        MethodUtils.setPriceTextView(binding.tvCash0, cashAmount)
+
+        // Set price for card view
+        MethodUtils.setPriceTextView(binding.tvCard, cardAmount)
+
+        /*MethodUtils.getCashPaymentOptionList(
 //   Commented to solve BIS-4196         getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount,
             (getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, true) / isSelectCount) + cashTip,
             binding.tvCash1,
@@ -5555,7 +5580,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvCard,
             (getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, false) / isSelectCount) + cardTip
             //     Commented to solve BIS-4196  getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectCount
-        )
+        )*/
         if (this::presentation.isInitialized) {
             presentation.show()
             /*presentation.updateTotals(
@@ -5583,21 +5608,23 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     // To calculate tip added by user
     private fun tipAmountCalculation(cashTip:Double = 0.0,cardTip:Double=0.0) {
+        val effectivePrice = if (isAmountWiseSplit) amountWiseSplit else WholetotalPrice
+
         if (tipAmount == 0.00) {
             binding.tvsplittip?.gone()
             binding.tvtipcard?.gone()
             binding.tvtipcash?.gone()
             MethodUtils.setPriceTextView(
                 binding.tvCash,
-                getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, true) / isSelectedCount
+                getCalCashDiscWithAmount(effectivePrice, true) / isSelectedCount
             )
             MethodUtils.setPriceTextView(
                 binding.tvCash0,
-                getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, true) / isSelectedCount
+                getCalCashDiscWithAmount(effectivePrice, true) / isSelectedCount
             )
             MethodUtils.setPriceTextView(
                 binding.tvCard,
-                getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, false) / isSelectedCount
+                getCalCashDiscWithAmount(effectivePrice, false) / isSelectedCount
             )
             if (this::presentation.isInitialized) {
                 presentation.show()
@@ -5629,15 +5656,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             MethodUtils.setPriceTextView(
                 binding.tvCash,
-                (getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, true) / isSelectedCount) + cashTip
+                (getCalCashDiscWithAmount(effectivePrice, true) / isSelectedCount) + cashTip
             )
             MethodUtils.setPriceTextView(
                 binding.tvCash0,
-                (getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, true) / isSelectedCount) + cashTip
+                (getCalCashDiscWithAmount(effectivePrice, true) / isSelectedCount) + cashTip
             )
             MethodUtils.setPriceTextView(
                 binding.tvCard,
-                (getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, false) / isSelectedCount) + cardTip
+                (getCalCashDiscWithAmount(effectivePrice, false) / isSelectedCount) + cardTip
             )
 
             if (this::presentation.isInitialized) {
@@ -5660,7 +5687,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.tvtipcard?.text =
                 "(" + MethodUtils.roundOffAmount(cardTip) + " Tip Added)"
             MethodUtils.getCashPaymentOptionList(
-                (getCalCashDiscWithAmount(if(isAmountWiseSplit) amountWiseSplit else WholetotalPrice, true) / isSelectedCount) + cashTip,
+                (getCalCashDiscWithAmount(effectivePrice, true) / isSelectedCount) + cashTip,
                 binding.tvCash1,
                 binding.tvCash2,
                 binding.tvCash3
