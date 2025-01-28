@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutionException
 
 object Constants {
 
-    const val paymentLive: Boolean = false
+    const val paymentLive: Boolean = true
     const val paxLive="https://secure.epx.com/"
     const val paxDebug="https://secure.epxuap.com/"
 
@@ -786,6 +786,8 @@ object Constants {
     const val SERVICE_CHARGE_DINEIN = "servicecharge_dinein"
     const val TOTAL_PRICE_DINEIN = "totalprice_dinein"
     const val LAYOUT_ORIENTATION = "layout_orientation"
+    const val DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT = "dine_in_sub_total_amount_before_payment"
+    const val DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT_GUEST = "dine_in_sub_total_amount_before_payment_gues"
 
 
     const val MAGENSA_SETTINGS = "magensaSettings"

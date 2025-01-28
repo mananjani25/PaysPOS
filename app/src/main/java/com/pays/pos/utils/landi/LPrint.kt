@@ -11,8 +11,8 @@ import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.pays.pos.data.model.responseModel.PrinterResponse
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.ui.fragments.dineInNew.DineInOrderTablePays
 import com.pays.pos.utils.*
-import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import java.io.IOException
 import java.io.OutputStream
 import java.util.*
@@ -515,10 +515,11 @@ final object LPrint {
     fun addOrdersForKitchenDineInLandi(
         list: ArrayList<TbCartItem>,
         printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null,
-        listItemWithGuest: HashMap<String, ArrayList<TbCartItem>> = hashMapOf()
-    ) {
+        listItemWithGuest: HashMap<String, ArrayList<TbCartItem>> = hashMapOf(),
+    ):List<String> {
 
 
+        val builder = mutableListOf<String>()
 
         listItemWithGuest.forEach { guest ->
             var isGuestNamePrinted = false
@@ -531,7 +532,8 @@ final object LPrint {
                             lineBreak()
                             printDashedLineAndBreak()
 
-                            printText(guest.key + "\n")
+                            //printText(guest.key + "\n")
+                            printWithFontSize(guest.key + "\n", FONT_B)
 
                             printDashedLineAndBreak()
                             lineBreak()
@@ -539,8 +541,10 @@ final object LPrint {
                             isGuestNamePrinted = true
                         }
 
-                        printWithFontSize(obj.itemQuantity.toString() + " " + obj.name.uppercase(),
-                            FONT_B)
+                        printWithFontSize(
+                            obj.itemQuantity.toString() + " " + obj.name.uppercase(),
+                            FONT_B
+                        )
 
                         if (obj.modifiers.isNotEmpty()) {
                             for (j in 0 until obj.modifiers.size) {
@@ -565,11 +569,16 @@ final object LPrint {
                         }
 
                         lineBreak()
+
+                        builder.add(obj.orderItemId.toString())
                     }
                 }
             }
 
         }
+
+       return builder
+
     }
 
 

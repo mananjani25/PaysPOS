@@ -25,6 +25,7 @@ import com.pays.pos.utils.scanner.helpers.AvailableScanner
 import com.pays.pos.utils.scanner.helpers.Barcode
 import com.pays.pos.utils.scanner.helpers.Foreground
 import com.pays.pos.utils.scanner.helpers.ScannerAppEngine
+import com.testfairy.TestFairy
 import dagger.hilt.android.HiltAndroidApp
 import org.greenrobot.eventbus.EventBus
 import retrofit2.HttpException
@@ -126,7 +127,9 @@ class MainApplication : Application() {
         } catch (e: Exception) {
         }*/
         //bhumit.bhadani@bacancy.com = 10Ce70901@
-        //TestFairy.begin(this, "SDK-SrnpgIU9"); // vishal.j.patel+103@bacancy.com/Pos@2022
+
+      //  TestFairy.begin(this, "SDK-SrnpgIU9"); // vishal.j.patel+103@bacancy.com/Pos@2022
+        TestFairy.begin(this, "SDK-DjxrMaPz"); // vishal.j.patel+103@bacancy.com/Pos@2022
         instance = this
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 

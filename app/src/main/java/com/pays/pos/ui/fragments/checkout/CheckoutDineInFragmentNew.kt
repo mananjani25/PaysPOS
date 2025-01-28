@@ -576,6 +576,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
             } else {
                 Log.d(TAG, "paymentClick: click 3")
+
                 makeDynamicCashPayment(
                     dynamicPaymentType = dynamicPaymentName,
                     dynamicPaymentId = dynamicPaymentId
@@ -598,11 +599,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             paymentTypeForTip = "cash"
         }
 
-        paymentType = if (prefProvider.getValueboolean(IS_GIFT_CARD_REDEEM, false)) {
-            "External"
-        } else {
-            "Cash"
-        }
+        paymentType = "External"
+
 
         if (orderId != -1 && orderId != 0) {
             paymentviewModel.updateOrder(
@@ -1414,7 +1412,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                         bundle.putParcelable("receiptData", it.data)
                         bundle.putInt("splitValue", isSelectedCount)
                         bundle.putBoolean("isSplitByAmount", false)
-                        bundle.putString("paymentType", paymentType)
+                        bundle.putString("paymentType", "External")
                         bundle.putParcelable("cartList", cartList)
                         bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
                         bundle.putDouble("TipAmount", tipAmount)
@@ -1951,6 +1949,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
 
             paymentAmount += tipAmount
+
+
+            val rawAmountString =  binding.tvCard.text.toString()
+            paymentAmount = Regex("\\d+\\.\\d+").find(rawAmountString)!!.value.toDouble()
 
             if (paymentAmount != 0.0) {
                 when(prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"")){
@@ -2725,8 +2727,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 String.format("%.2f", viewModel.cashdiscountAmount)
             )
         } else {
-            cashDiscountSurcharge =
+            cashDiscountSurcharge = if (viewModel.cashdiscountAmount == prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").toDouble())
                 prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").toDouble()
+            else
+                viewModel.cashdiscountAmount
+            prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, cashDiscountSurcharge.toString())
         }
         cashDiscountType = viewModel.cashDiscountType
 
@@ -2775,28 +2780,57 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     // To set different cash payment options and total amount values
     private fun setupPaymentScreen(isSelectCount: Int) {
+
+        var totalprice = WholetotalPrice
+
+        var cashDiscountAmount = MethodUtils.calculateCashDiscount(
+            WholetotalPrice,
+            prefProvider,
+            requireContext()
+        ) / isSelectCount
+
+        if (cashDiscountType == "CashDiscount") {
+            totalprice -= cashDiscountAmount
+        }
+
+
+
         MethodUtils.getCashPaymentOptionList(
-            getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount,
+           totalprice / isSelectCount,
             binding.tvCash1,
             binding.tvCash2,
             binding.tvCash3
         )
         MethodUtils.setPriceTextView(
             binding.tvCash,
-            getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
+            totalprice / isSelectCount
         )
         MethodUtils.setPriceTextView(
             binding.tvCash0,
-            getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount
+           totalprice / isSelectCount
         )
 
         Log.e("Whole Table Price","Whole Table Price SPC = $WholetotalPrice")
 
         binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
+
+
+        totalprice = WholetotalPrice
+        cashDiscountAmount = MethodUtils.calculateCashDiscount(
+            WholetotalPrice,
+            prefProvider,
+            requireContext()
+        ) / isSelectCount
+
+         if (cashDiscountType == "SurCharge") {
+            totalprice += cashDiscountAmount
+        }
+
         MethodUtils.setPriceTextView(
             binding.tvCard,
-            getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectCount
+            totalprice
         )
+
         binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
     }
 

@@ -400,22 +400,33 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     }
 
+    override fun onLowMemory() {
+        super.onLowMemory()
+
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} MainActivity.kt_onLowMemory() Memory cleared"
+            )
+        )
+
+        System.gc()
+    }
 
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
 
 
         when (level) {
-            ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE, ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW, ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL -> {
+            /*ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE,*/ ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW, ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL -> {
                 System.gc()
-                cacheDir.delete()
+                /*cacheDir.delete()*/
                 Log.e("Cache Clear", "Cleared cache")
             }
 
             ComponentCallbacks2.TRIM_MEMORY_BACKGROUND, ComponentCallbacks2.TRIM_MEMORY_MODERATE, ComponentCallbacks2.TRIM_MEMORY_COMPLETE -> {
                 System.gc()
                 // val lruCache = LruCache(100,10)
-                cacheDir.delete()
+                /*cacheDir.delete()*/
 
                 Log.e("Cache Clear", "Cleared cache")
             }

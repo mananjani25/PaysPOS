@@ -130,6 +130,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
         binding = FragmentAddItemBinding.inflate(inflater, container, false)
         getServiceCharges()
 
+        viewModel.isItemEditing = true
+
         /*Commented to solve BIS-4451 */
 //        binding.lifecycleOwner = this
         /*Commented to solve BIS-4451 */
@@ -328,6 +330,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
 
                 }
                 viewModel.isItemEditInProgress = false
+                viewModel.isItemEditing = false
             }
         })
 
@@ -1810,6 +1813,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                 //   viewModel.fragmentNeedToBeUpdated.value = true
 
                 viewModel.isItemEditInProgress = false
+                viewModel.isItemEditing = false
             }
         })
 
@@ -1953,6 +1957,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback,
                     }
 
                     viewModel.isItemEditInProgress = false
+                    viewModel.isItemEditing = false
                 }
             } else {
                 item.guestIndexForDineIn = null

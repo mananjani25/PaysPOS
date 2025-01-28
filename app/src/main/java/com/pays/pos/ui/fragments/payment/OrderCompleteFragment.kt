@@ -61,6 +61,8 @@ import com.pays.pos.data.remote.Constants.BUSINESS_WEBSITE
 import com.pays.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE
 import com.pays.pos.data.remote.Constants.CUSTOMER
 import com.pays.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
+import com.pays.pos.data.remote.Constants.DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT
+import com.pays.pos.data.remote.Constants.DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT_GUEST
 import com.pays.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.pays.pos.data.remote.Constants.GIFT_CARD
 import com.pays.pos.data.remote.Constants.GUEST_POSITION
@@ -352,6 +354,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         } else {
             prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT, "")
         }
+
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_onCreateView()_before getKitchenReceiptSettings()"
+            )
+        )
+
         getKitchenReceiptSettings()
 
         observeTipsList()
@@ -646,9 +655,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     paidAmountToShow = MethodUtils.roundOffAmountString(paidAmount).toDouble()
 
 
-                    changeAmount =
-                        MethodUtils.roundOffAmountString(paidAmountToShow - finalAmountToShow)
-                            .toDouble()
+                    changeAmount = paidAmountToShow - finalAmountToShow
+
+                    changeAmount = MethodUtils.roundOffAmountDouble(changeAmount)
+
 
                     if (paymentTypeForTip.equals("cash", true)) {
 
@@ -1234,9 +1244,24 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                 }
 
-                binding.txtPaymentAmount.text =
+                if (isCustomCash) {
+                    binding.txtTitle.text =
+                        "$" + MethodUtils.roundOffAmountString(paidAmount)
+                    binding.txtPaymentAmount.text =
+                        "" + MainApplication.getInstance()!!
+                            .getText(R.string.symbole) + MethodUtils.roundOffAmountString(paidAmount) + " payment successful"
+
+                } else {
+                    binding.txtTitle.text =
+                        "$" + MethodUtils.roundOffAmountString(paidAmount + tipAmount)
+                    binding.txtPaymentAmount.text =
+                        "" + MainApplication.getInstance()!!
+                            .getText(R.string.symbole) + MethodUtils.roundOffAmountString(paidAmount + tipAmount) + " payment successful"
+                }
+
+                /*binding.txtPaymentAmount.text =
                     "" + MainApplication.getInstance()!!
-                        .getText(R.string.symbole) + MethodUtils.roundOffAmountString(paidAmount + tipAmount) + " payment successful"
+                        .getText(R.string.symbole) + MethodUtils.roundOffAmountString(paidAmount *//*+ tipAmount*//*) + " payment successful"*/
 
 
             }
@@ -4576,10 +4601,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                      * Print Subtotal
                                      */
 
+                                    var fetchSubTotalFromPreference = guestPayment?.subTotal ?: 0.0
+
+                                    try {
+                                        fetchSubTotalFromPreference = prefProvider.getValue(
+                                            DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT_GUEST,fetchSubTotalFromPreference.toString()).toDouble()
+                                    }catch (e:Exception) {
+
+                                        Log.e("DINE IN CRASH","${e.message.toString()}")
+                                    }
+
                                     val subTotalToPrint = padLine(
                                         "Sub Total",
                                         "$" + MethodUtils.roundOffAmountString(
-                                            guestPayment?.subTotal ?: 0.0
+                                            fetchSubTotalFromPreference
                                         ),
                                         48
                                     ).toString()
@@ -4741,13 +4776,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                     if (guestPayment.paymentType == "Cash") {
 
-                                        val str7 = padLine(
-                                            "Change Amount",
-                                            "$" + MethodUtils.roundOffAmountString((paidAmount + tipAmount) - (guestPayment!!.amount + tipAmount)),
-                                            48
-                                        ).toString()
 
-                                        printBoldLeft(str7)
+                                        val changeAmount = (paidAmount ) - (guestPayment!!.amount + tipAmount)
+
+                                        if(changeAmount>=0.0) {
+                                            val str7 = padLine(
+                                                "Change Amount",
+                                                MethodUtils.roundOffAmount(changeAmount),
+                                                48
+                                            ).toString()
+
+                                            printBoldLeft(str7)
+                                        }
                                         lineBreak()
                                     }
 
@@ -7565,10 +7605,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                                     }
 
-                                                    /*
-                                                                                                    if (obj.note.isNotEmpty()) {
-                                                                                                        PrintSunmiUtils.normalText("   Note: " + obj.note)
-                                                                                                    }*/
+                                                    if (obj.note.isNotEmpty()) {
+                                                        write("   Note: ${obj.note}".toByteArray())
+                                                        write(LPrint.LINE_FEED)
+                                                    }
 
                                                 }
 
@@ -7611,10 +7651,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                      * Print Subtotal
                                      */
 
+                                    var fetchSubTotalFromPreference = order?.subTotal ?: 0.0
+
+                                    try {
+                                        fetchSubTotalFromPreference = prefProvider.getValue(
+                                            DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT,fetchSubTotalFromPreference.toString()).toDouble()
+                                    }catch (e:Exception) {
+
+                                        Log.e("DINE IN CRASH","${e.message.toString()}")
+                                    }
+
                                     val subTotalToPrint = padLine(
                                         "Sub Total",
                                         "$" + MethodUtils.roundOffAmountString(
-                                            order?.subTotal ?: 0.0
+                                            fetchSubTotalFromPreference
                                         ),
                                         if (customerSettingModel.fonts == Constants.LARGE) {
                                             23
@@ -7821,19 +7871,37 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     val _order = receiptModel?.order
 
 
-                                    if (_order?.payments?.last()?.paymentType == "Cash") {
-                                        val str7 = padLine(
-                                            "Change Amount",
-                                            "$" + MethodUtils.roundOffAmountString(
-                                                changeAmtGlobal + tipAmount
-                                            ),
-                                            48
-                                        ).toString().toByteArray()
+                                    try {
+                                        if (_order?.payments?.last()?.paymentType == "Cash") {
 
-                                        write(str7)
-                                        write(LPrint.LINE_FEED)
+                                            val changeAmount =
+                                                (paidAmount) - (order?.payments?.last()?.amount!!.plus(
+                                                    tipAmount
+                                                ))
+
+//                                        val str7 = padLine(
+//                                            "Change Amount",
+//                                            "$" + MethodUtils.roundOffAmountString(
+//                                                changeAmtGlobal + tipAmount
+//                                            ),
+//                                            48
+//                                        ).toString().toByteArray()
+
+                                            if (changeAmount >= 0.0) {
+
+                                                val str7 = padLine(
+                                                    "Change Amount",
+                                                    MethodUtils.roundOffAmount(changeAmount),
+                                                    48
+                                                ).toString().toByteArray()
+
+                                                write(str7)
+                                                write(LPrint.LINE_FEED)
+                                            }
+                                        }
+                                    }catch (e:Exception){
+
                                     }
-
 
                                     /**
                                      * Print Remaining amount
@@ -9814,6 +9882,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         viewModel.getKitchenPrinterList().observe(viewLifecycleOwner,
             object : Observer<Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>> {
                 override fun onChanged(it: Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>?) {
+
+                    EventBus.getDefault().post(
+                        MessageEvent(
+                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_getKitchenPrinters()_onChanged it -> ${Gson().toJson(it)}"
+                        )
+                    )
+
                     when (it?.status) {
                         Status.SUCCESS -> {
                             ProgressUtils.dismissProgressDialog()
@@ -9902,6 +9977,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                             TAG2,
                                                                                             "initKit "
                                                                                         )
+                                                                                        EventBus.getDefault().post(
+                                                                                            MessageEvent(
+                                                                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_LINE -> ${Exception().stackTrace[0].lineNumber}"
+                                                                                            )
+                                                                                        )
                                                                                         initKitchenPrinter(
                                                                                             kitchenPrinterList.get(
                                                                                                 i
@@ -9924,6 +10004,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                                     cartList?.note
                                                                                                 )
                                                                                             ) {
+                                                                                                EventBus.getDefault().post(
+                                                                                                    MessageEvent(
+                                                                                                        "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_initKitchenPrinter, LINE -> ${Exception().stackTrace[0].lineNumber}"
+                                                                                                    )
+                                                                                                )
+
                                                                                                 initKitchenPrinter(
                                                                                                     kitchenPrinterList.get(
                                                                                                         i
@@ -9961,6 +10047,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                 false
                                                             )
                                                         ) {
+                                                            EventBus.getDefault().post(
+                                                                MessageEvent(
+                                                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_initKitchenPrinter, LINE -> ${Exception().stackTrace[0].lineNumber}"
+                                                                )
+                                                            )
+
                                                             initKitchenPrinter(
                                                                 kitchenPrinterList.get(
                                                                     i
@@ -10019,6 +10111,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                                 false
                                                                                             )
                                                                                         ) {
+                                                                                            EventBus.getDefault().post(
+                                                                                                MessageEvent(
+                                                                                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_initKitchenPrinter, LINE -> ${Exception().stackTrace[0].lineNumber}"
+                                                                                                )
+                                                                                            )
+
                                                                                             initKitchenPrinter(
                                                                                                 kitchenPrinterList.get(
                                                                                                     i
@@ -10030,6 +10128,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                                 true
                                                                                             )
                                                                                         ) {
+                                                                                            EventBus.getDefault().post(
+                                                                                                MessageEvent(
+                                                                                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_initKitchenPrinter, LINE -> ${Exception().stackTrace[0].lineNumber}"
+                                                                                                )
+                                                                                            )
+
                                                                                             initKitchenPrinter(
                                                                                                 kitchenPrinterList.get(
                                                                                                     i
@@ -10043,6 +10147,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                                         ignoreCase = true
                                                                                                     )
                                                                                                 ) {
+                                                                                                    EventBus.getDefault().post(
+                                                                                                        MessageEvent(
+                                                                                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_initKitchenPrinter, LINE -> ${Exception().stackTrace[0].lineNumber}"
+                                                                                                        )
+                                                                                                    )
                                                                                                     initKitchenPrinter(
                                                                                                         kitchenPrinterList.get(
                                                                                                             i
@@ -10123,6 +10232,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             ) {
 //                                                                Log.d("KioskOpenOrderKitchenPrint", "5 -> Index$i, ${kitchenPrinterList[i].name}")
 //                                                                val kitchenPrinterList = kitchenPrinterList[i]
+                                                                EventBus.getDefault().post(
+                                                                    MessageEvent(
+                                                                        "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_initKitchenPrinter, LINE -> ${Exception().stackTrace[0].lineNumber}"
+                                                                    )
+                                                                )
                                                                 initKitchenPrinter(
                                                                     kitchenPrinterList[i],
                                                                     KITCHEN,
@@ -10161,6 +10275,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }
 
                         Status.ERROR -> {
+
+                            EventBus.getDefault().post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_getKitchenPrinters()_ERROR -> ${Gson().toJson(it)}"
+                                )
+                            )
                             ProgressUtils.dismissProgressDialog()
 
                         }
@@ -14058,6 +14178,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String
     ) {
+
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} Printer.kt_initKitchenPrinter("
+            )
+        )
+
+
         prefProvider.deleteValue(Constants.DO_PRINT)
         Log.d("initKitchenPrinter", "SunmiBlueToothPrinter is ${data.name}")
         if (data.name.startsWith(SUNMI_PRINTER, true) && data.printer_type == WIFI) {
@@ -14073,14 +14201,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                     try {
+                        Log.d("initKitchenPrinter", "SunmiBlueToothPrinter is ${data.ipAddress}")
                         SunmiPrinterApi.getInstance()
                             .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
-                        Log.d("initKitchenPrinter", "SunmiBlueToothPrinter is ${data.ipAddress}")
+
 
                     } catch (e: Exception) {
-                        SunmiPrinterApi.getInstance()
-                            .setPrinter(SunmiPrinter.SunmiNetPrinter, data.ipAddress)
-                        Log.d("initKitchenPrinter", "SunmiNetPrinter")
+                        try {
+                            SunmiPrinterApi.getInstance()
+                                .setPrinter(SunmiPrinter.SunmiNetPrinter, data.ipAddress)
+                            Log.d("initKitchenPrinter", "SunmiNetPrinter")
+                        }catch (e:Exception){
+                            e.printStackTrace()
+                        }
 
                     }
 

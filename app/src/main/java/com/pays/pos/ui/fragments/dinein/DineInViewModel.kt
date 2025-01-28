@@ -660,6 +660,7 @@ class DineInViewModel @Inject constructor(
                     orderModifier.name = modifier.name
                     orderModifier.totalPrice = modifier.price
                     modifier.modifier_set_id?.let { orderModifier.modifier_set_id = it }
+                    modifier.modifierId?.let { orderModifier.modifier_id = it }
                     var itemTaxes: ArrayList<OrderModifierTaxesAttribute> = arrayListOf()
                     modifier.orderItemTaxes.forEach { tax ->
                         var modifierTax = OrderModifierTaxesAttribute()

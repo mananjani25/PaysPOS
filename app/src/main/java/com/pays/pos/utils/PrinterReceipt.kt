@@ -5851,13 +5851,18 @@ fun addWholeTbItemToGuestInnerLandi(
                     } else {
                         "   " + it.modifier_quantity + "x " + it.name
                     },
-                    "" + MethodUtils.roundOffAmount(it.price * it.itemQuantity * it.modifier_quantity),
+                    "" + MethodUtils.roundOffAmount((it.price * obj.itemQuantity * it.modifier_quantity)),
                     48
                 ).toString()
             )
         }
 
 
+    }
+
+    if (obj.note.isNotEmpty()) {
+        lPrint.printLeft("   Note: " + obj.note)
+        lPrint.lineBreak()
     }
 
 }
@@ -6270,6 +6275,7 @@ fun addOrderItemForDineInInnerLandi(
 
     if (obj.note.isNotEmpty()) {
         lPrint.printLeft("   Note: " + obj.note)
+        lPrint.lineBreak()
     }
 
 

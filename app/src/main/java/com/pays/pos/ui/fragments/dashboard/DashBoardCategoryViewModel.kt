@@ -203,6 +203,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     var isItemEditInProgress = false
 
+    var isItemEditing = false
+
     /**
      * To check if removed last item from the cart
      */

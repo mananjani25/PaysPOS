@@ -150,6 +150,18 @@ class DineInOrderTableViewModel @Inject constructor(
                                 Event(response!!)
                         }
 
+                        if (response.data.order.payments.isNotEmpty()) {
+                            prefProvider.setValueInt(
+                                Constants.PAYMENT_ID,
+                                response.data.order.payments[response.data.order.payments.size - 1].id
+                            )
+
+                            prefProvider.setValueInt(
+                                Constants.PAYMENT_ID_FOR_CUSTOMER_DISPLAY,
+                                response.data.order.payments[response.data.order.payments.size - 1].id
+                            )
+                        }
+
                     }
                 }
 

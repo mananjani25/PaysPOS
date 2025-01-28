@@ -86,16 +86,15 @@ import com.epson.eposprint.Print
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.pays.pos.data.remote.Constants.DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT
+import com.pays.pos.data.remote.Constants.DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT_GUEST
 import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
 import com.pays.pos.ui.fragments.payment.OrderCompleteFragment
-import com.pays.pos.utils.PrintSunmiUtils.Companion.addValue
 import com.pays.pos.utils.extensions.*
 import com.pays.pos.utils.landi.LPrint
-import com.pays.pos.utils.landi.LPrint.FONT_B
-import com.pays.pos.utils.landi.LPrint.printCenter
 import com.pays.pos.utils.printer.CommonPrinterTypes
 import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
@@ -607,6 +606,12 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.btnPayNew.setOnClickListener {
             try {
 
+
+                // This amount will be used to show sub total on customer receipt // BIS 5176
+                val subTotalAmount = binding.txtTotalAmountNew.text.toString().replace("$", "").trim().toDouble()
+                prefProvider.setValue(DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT,"$subTotalAmount")
+
+
                 //new Calculation for total Discount
                 var listWT: ArrayList<TbCartItem> = arrayListOf()
                 var list = dineInTableAdapter.getList()
@@ -710,7 +715,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                     listWT.add(list.get(j).item!!)
 
                                     if(guestPaid>0) {
-                                        list[j].item?.price.let {
+                                        list[j].item?.price.let { it ->
                                             val totalPricePaid = it?.div(eligibleGuestsForDivision)
 
                                             list[j].item?.price = totalPricePaid?.let { it1 ->
@@ -718,6 +723,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                     it1 * guestPaid
                                                 )
                                             }!!
+
+                                            list[j].item?.modifiers?.forEach { modifier ->
+                                                modifier.price = modifier.price.minus(modifier.price / eligibleGuestsForDivision * guestPaid )
+                                            }
                                         }
                                     }
                                     dashboardViewModel.currentCartItems.add(list[j].item!!)
@@ -921,6 +930,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 //                            dashboardViewModel.addItemToCartItems(cartItem)
 //                        }
 //                    }
+
+
+                    val totalPaid =dineInTableAdapter.getList().count { it.isHeader == 0 && it.isPaid }
 
                     dashboardViewModel.currentCartItems.filter {!it.isPaid}.forEach { cartItem ->
                         val item = cartItem.price
@@ -1868,6 +1880,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         divideDiscount += dividedWtDis
         LogUtil.logE("saff", "afadivideDiscount ${divideDiscount}")
 
+        prefProvider.setValue(DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT_GUEST,"${subTotalGuest + dividedGuestAmt}")
+
         LogUtil.logE("TODAYBOLD", "subTotalB  ${subTotalGuest + dividedGuestAmt}")
         LogUtil.logE("TODAYBOLD", "totalGuest ${totalGuest}")
         LogUtil.logE("TODAYBOLD", "taxGuest ${taxGuest}")
@@ -2560,7 +2574,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             if (kitchenPrinterList[i].status) {
                 if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
                     initKitchenPrinter(
-                        kitchenPrinterList.get(i), Constants.KITCHEN, listItem, listItemWithGuest
+                        kitchenPrinterList.get(i),
+                        Constants.KITCHEN,
+                        listItem,
+                        listItemWithGuest
                     )
                 }
             }
@@ -2618,6 +2635,18 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         if ((getOrderDetailsResponse?.guestAttributes?.size?.minus(1) ?: 0) > 1) {
             // Remove guest from list
             dineInTableAdapter.getList()[position].apply { this.isDestroy = true }
+
+            // Added to resolve BIS 5365: After removing a guest, the guest dine in index of all below guest items must be decremented by one.
+            val list = dineInTableAdapter.getList()
+
+            for (currentIndex in position+1 until list.size) {
+                if(list[currentIndex].isHeader == 1) {
+                    list[currentIndex].item?.guestIndexForDineIn = list[currentIndex].item?.guestIndexForDineIn?.minus(
+                        1
+                    )
+                }
+            }
+
             updateOrderCall(isFromReorder = false)
         } else {
             viewModel.unableToRemoveGuest(getString(R.string.minimum_one_guest_is_required))
@@ -4069,6 +4098,9 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder
             ) {
+
+                super.clearView(recyclerView, viewHolder)
+
                 if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
                     /* reallyMoved(
                          adapter.getItem(dragFrom).sort,
@@ -4077,6 +4109,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                      )*/
                     updateAdapterData()
                 }
+
+                dineInTableAdapter.notifyDataSetChanged()
             }
         })
 
@@ -9899,11 +9933,19 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
+    data class UpdateFireItemsForPrinterQueue(
+        val isCheckAndFire: Boolean,
+        val builder: ArrayList<String>,
+        val autoPrintEnable: Boolean,
+        val printerQueueFilteredList: ArrayList<Int>
+    )
+
     private fun  initKitchenPrinter(
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
         item: ArrayList<TbCartItem>,
-        listItemWithGuest: HashMap<String, ArrayList<TbCartItem>> = hashMapOf()
+        listItemWithGuest: HashMap<String, ArrayList<TbCartItem>> = hashMapOf(),
+        updateFireItemsForPrinterQueue: UpdateFireItemsForPrinterQueue ? = null
 
     ) {
 
@@ -9967,49 +10009,45 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 appendText("------------------------")
                 lineFeed(1)
 
-                appendText(it.key.toString())
+                appendText(it.key.substringBefore("name:"))
                 lineFeed(1)
                 appendText("------------------------")
                 lineFeed(1)
 
                 it.value.forEach {obj->
-                   data.printerCategories?.forEach {
-                       if (it.id == obj.categoryId && it.printerEnable && it.categoryActive){
-                           appendText(obj.itemQuantity.toString() + " " + obj.name.uppercase())
-                           lineFeed(1)
+                    data.printerCategories.forEach {
+                        if (it.id == obj.categoryId && it.printerEnable && it.categoryActive){
+                            appendText(obj.itemQuantity.toString() + " " + obj.name.uppercase())
+                            lineFeed(1)
 
-                           if (obj.modifiers.isNotEmpty()){
-
-
-                               for (j in 0 until obj.modifiers.size) {
-                                   val modifierObj = obj.modifiers.get(j)
-                                   appendText(
-                                       "  " + if (modifierObj.modifier_quantity == 1) {
-                                           "   "
-                                       } else {
-                                           "" + modifierObj.modifier_quantity + "x "
-                                       } + modifierObj.name.uppercase()
-                                   )
-                                   lineFeed(1)
-
-                               }
+                            if (obj.modifiers.isNotEmpty()){
 
 
+                                for (j in 0 until obj.modifiers.size) {
+                                    val modifierObj = obj.modifiers.get(j)
+                                    appendText(
+                                        "  " + if (modifierObj.modifier_quantity == 1) {
+                                            "   "
+                                        } else {
+                                            "" + modifierObj.modifier_quantity + "x "
+                                        } + modifierObj.name.uppercase()
+                                    )
+                                    lineFeed(1)
 
-                           }
-
-                           if (obj.note.isNotEmpty()) {
-
-                               appendText("  Note:" + obj.note)
-                               lineFeed(1)
-                           }
+                                }
 
 
+                            }
+
+                            if (obj.note.isNotEmpty()) {
+
+                                appendText("  Note:" + obj.note)
+                                lineFeed(1)
+                            }
 
 
-
-                       }
-                   }
+                        }
+                    }
 
                 }
 
@@ -10030,10 +10068,45 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
             Log.e("checkKey","pushContent: checkSN:${data.ipAddress} ${pushContent(trade_no =
             String.format("%s_%010d", "${data.ipAddress}", System.currentTimeMillis()),
                 "${data.ipAddress}", 1, 1, "您有新的订单", 0)}")
-            dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(
-                true
-            )
+//            dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(
+//                true
+//            )
 
+
+            CoroutineScope(Dispatchers.Main).launch {
+                if (updateFireItemsForPrinterQueue != null) {
+                    if (updateFireItemsForPrinterQueue.printerQueueFilteredList.isNotEmpty()) {
+
+                        val list = dineInTableAdapter.getList()
+
+                        updateFireItemsForPrinterQueue.printerQueueFilteredList.forEach { index ->
+                            list[index].item?.isFired = true
+                            Log.e("DATA ", Gson().toJson(list[index]))
+                        }
+
+
+                        dineInTableAdapter.setList(
+                            ArrayList(list),
+                            notPayAnyAmount
+                        )
+                        updateFireItemsForPrinterQueue.printerQueueFilteredList.clear()
+
+                        if (!updateFireItemsForPrinterQueue.isCheckAndFire or (updateFireItemsForPrinterQueue.isCheckAndFire && updateFireItemsForPrinterQueue.autoPrintEnable)) {
+                            var fireAllIds =
+                                android.text.TextUtils.join(
+                                    ",",
+                                    updateFireItemsForPrinterQueue.builder
+                                )
+                            viewModel.fireItemToKitchen(
+                                orderId ?: 0,
+                                true,
+                                fireAllIds,
+                                true
+                            )
+                        }
+                    }
+                }
+            }
 
 
 
@@ -10145,7 +10218,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 data,
                                                 type,
                                                 item,
-                                                listItemWithGuest
+                                                listItemWithGuest,
+                                                updateFireItemsForPrinterQueue
                                             )
                                         }
                                     }
@@ -11894,7 +11968,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
         customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String,
         item: ArrayList<TbCartItem>,
-        listItemWithGuest: HashMap<String, ArrayList<TbCartItem>> = hashMapOf()
+        listItemWithGuest: HashMap<String, ArrayList<TbCartItem>> = hashMapOf(),
+        updateFireItemsForPrinterQueue: DineInOrderTablePays.UpdateFireItemsForPrinterQueue? = null
     ) {
         try {
             //ProgressUtils.showProgressDialog(requireActivity())
@@ -12088,11 +12163,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         printDashedLineAndBreak()
 
 
-                        addOrdersForKitchenDineInLandi(
+                        val firedItems = addOrdersForKitchenDineInLandi(
                             item, customerReceiptPrinters.printerCategories.toCollection(
                                 arrayListOf()
                             ), listItemWithGuest
                         )
+
+
 
                         lineBreak()
                         if(orderNote.isNotEmpty())
@@ -12100,7 +12177,47 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                         lineBreak()
                         lineBreak()
 
-                        dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(true)
+                       // dashboardViewModel.itemsFiredToTheKitchenSuccesfully.postValue(true)
+
+
+                        try {
+
+                            updateFireItemsForPrinterQueue?.apply {
+
+                                CoroutineScope(Dispatchers.Main).launch {
+
+                                    if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {
+                                        var fireAllIds =
+                                            android.text.TextUtils.join(",", firedItems)
+
+                                        viewModel.fireItemToKitchen(
+                                            orderId ?: 0,
+                                            true,
+                                            fireAllIds,
+                                            true
+                                        )
+
+                                        val list = dineInTableAdapter.getList()
+
+                                        val firedItemIds = firedItems.map { it.toInt() }.toSet()
+
+                                        list.forEach { item ->
+                                            if (item.item?.orderItemId in firedItemIds) {
+                                                item.item?.isFired = true
+                                            }
+                                        }
+
+                                        dineInTableAdapter.setList(ArrayList(list),notPayAnyAmount)
+
+                                    }
+                                }
+                            }
+
+
+
+                        }catch (e:Exception) {
+                            e.printStackTrace()
+                        }
                     }
 
 
@@ -12238,7 +12355,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                                 )
                                                             )
                                                             .actionPrintText(
-                                                                it.key
+                                                                it.key.substringBefore("name:")
                                                             )
                                                     )
 
@@ -12915,6 +13032,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
         try {
 
+            val printerQueueFilteredList = ArrayList<Int>()
+
             Log.d("###17MAR23", "checkForAutoFire: Called - Start - $isCheckAndFire")
             var list: List<DineInModel> = arrayListOf()
             list = dineInTableAdapter.getList() ?: arrayListOf()
@@ -12939,6 +13058,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                     if (customer_name == "")
                                         customer_name = list[i].title ?: ""
 
+                                    if (listItemWithGuest.containsKey(customer_name)){
+                                        customer_name += "name: "+System.currentTimeMillis().toString()
+                                    }
+
                                     listItemWithGuest.put(customer_name, listItemLocal)
                                     break
                                 }
@@ -12949,6 +13072,10 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                 var customer_name = list[i].customer?.first_name ?: ""
                                 if (customer_name == "")
                                     customer_name = list[i].title ?: ""
+
+                                if (listItemWithGuest.containsKey(customer_name)){
+                                    customer_name += "name: "+System.currentTimeMillis().toString()
+                                }
 
                                 listItemWithGuest.put(customer_name, listItemLocal)
 
@@ -12986,6 +13113,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                 listItem.add(it)
                                 //it.isFired = true
                                 firedItemsList.add(itemIndex)
+                                printerQueueFilteredList.add(itemIndex)
 
                                 //add items ids for api call
                                 it.orderItemId?.let {
@@ -13029,6 +13157,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                             listItem.add(it)
                                             //it.isFired = true
                                             firedItemsList.add(itemIndex)
+                                            printerQueueFilteredList.add(itemIndex)
 
                                             //add items ids for api call
                                             it.orderItemId?.let {
@@ -13046,6 +13175,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                             listItem.add(it)
                                             //it.isFired = true
                                             firedItemsList.add(itemIndex)
+                                            printerQueueFilteredList.add(itemIndex)
 
                                             //add items ids for api call
                                             it.orderItemId?.let {
@@ -13233,7 +13363,13 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                                 kit,
                                                                 Constants.KITCHEN,
                                                                 listItem,
-                                                                listItemWithGuest
+                                                                listItemWithGuest,
+                                                                UpdateFireItemsForPrinterQueue(
+                                                                    isCheckAndFire,
+                                                                    builder,
+                                                                    autoPrintEnable,
+                                                                    printerQueueFilteredList
+                                                                )
                                                             )
                                                         }
                                                     }
@@ -13261,7 +13397,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 kit,
                                                 Constants.KITCHEN,
                                                 listItem,
-                                                listItemWithGuest
+                                                listItemWithGuest,
+                                                UpdateFireItemsForPrinterQueue(isCheckAndFire,builder,autoPrintEnable,printerQueueFilteredList)
                                             )
                                         }
                                     }

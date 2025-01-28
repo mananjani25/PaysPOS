@@ -800,6 +800,8 @@ class CustomDisplay(
                     lifecycleOwner.lifecycleScope.launch {
                         binding.txtDiscountCard?.text = "-$${String.format("%.2f", t)}"
                         binding.txtDiscountCash?.text = "-$${String.format("%.2f", t)}"
+
+
                     }
                 }
 
@@ -1078,7 +1080,7 @@ class CustomDisplay(
                                 dashBoardCategoryViewModel.customerCashAmount.value
                         } else {
                             binding.txtTotalCash?.text =
-                                MethodUtils.roundOffAmount(dashBoardCategoryViewModel.wholetotalPrice)
+                                MethodUtils.roundOffAmount(/*dashBoardCategoryViewModel.wholetotalPrice*/dashBoardCategoryViewModel.totalPrice)
                         }
 
                         if (dashBoardCategoryViewModel.customerCardAmount.value?.isNotEmpty()
@@ -1088,7 +1090,7 @@ class CustomDisplay(
                                 dashBoardCategoryViewModel.customerCardAmount.value
                         } else {
                             binding.txtTotalCard?.text =
-                                getSurchargedPrice(dashBoardCategoryViewModel.wholetotalPrice)
+                                getSurchargedPrice(/*dashBoardCategoryViewModel.wholetotalPrice*/dashBoardCategoryViewModel.totalPrice)
                         }
 
                         Log.v("CustomerScreen:", "1")
