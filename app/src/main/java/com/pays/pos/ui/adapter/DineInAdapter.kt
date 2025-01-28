@@ -153,7 +153,7 @@ class DineInAdapter(val dashBoardCategoryViewModel: DashBoardCategoryViewModel? 
                         } else {
                             AlertUtils.showCustomAlert(
                                 itemView.context,
-                                "Cannot change guest as already updating another item"
+                                "Cannot add guest as already updating another item"
                             )
                         }
 
