@@ -268,19 +268,22 @@ class TransactionViewModel @Inject constructor(
         viewModelScope.launch {
             val resource=posRepository.getEventDetailsByOrderId(orderId.toString())
 
+            when(resource.status){
+                Status.SUCCESS->{
+                    resource.data?.let {
 
+                    }
+                }
 
-            /*Proceed from Here*/
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
 
-
-
-            
-
-
-
-
-
-
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
         }
     }
 
