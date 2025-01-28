@@ -1168,7 +1168,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                          //to resolve tip before transaction issue
 
-                        if(isSelectedCount > 1)
+                        if(isSelectedCount > 1 || isAmountWiseSplit)
                         remainingValue += surchargeOnTip
 
 
@@ -8061,6 +8061,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         }  _6"
                     )
                 )
+
+                if(isAmountWiseSplit ) {
+                    aa.completed_all_payments = WholetotalPrice - paymentAmount <= 0.0
+                }
+
                 paymentviewModel.splitByOrder(aa, false)
                 runOnUiThread(Runnable {
                     dismissProgressDialog()
