@@ -264,6 +264,26 @@ class TransactionViewModel @Inject constructor(
         return b
     }
 
+    fun getCashEventDetails(tippedAmount: Double, orderId: Int?){
+        viewModelScope.launch {
+            val resource=posRepository.getEventDetailsByOrderId(orderId.toString())
+
+
+
+            /*Proceed from Here*/
+
+
+
+            
+
+
+
+
+
+
+        }
+    }
+
     fun orderUpdateTip(orderID: Int, tipAmount: Double, is_captured: Boolean) {
 
         val paymentModel = CashInOutPaymentModel()

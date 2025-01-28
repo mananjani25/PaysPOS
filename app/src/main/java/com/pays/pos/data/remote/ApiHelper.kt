@@ -752,4 +752,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun addItemToWastage(data: WastageItemRequest) =
         getResult { apiService.addItemToWastage(data) }
+
+    suspend fun getEventDetailsByOrderId(orderId: String) =
+        getResult { apiService.getEventDetailsByOrderId(orderId) }
 }

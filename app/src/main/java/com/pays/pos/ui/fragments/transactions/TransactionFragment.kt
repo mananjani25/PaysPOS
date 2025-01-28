@@ -58,9 +58,7 @@ import com.google.gson.JsonArray
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
-import com.pax.poslink.log.LogFilter.Const
 import com.pays.pos.data.model.requestModel.CashLogRequest
-import com.pays.payments.callbacks.PaymentCallback
 import com.pays.payments.design.*
 import com.pays.payments.gateways.dejavoo.DejavooPaymentGateway
 import com.pays.payments.gateways.valor.ValorPaymentGateway
@@ -534,9 +532,14 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     private fun cashLogEventCall(bundle: Bundle) {
         if (bundle.containsKey("tipAmount")) {
             if (bundle.getDouble("tipAmount") > 0.0) {
-                makeCashEventCallToUpdateTip(bundle.getDouble("tipAmount"))
+                getTipDetails(bundle.getDouble("tipAmount"),singleTransaction?.orderId)
+//                makeCashEventCallToUpdateTip(bundle.getDouble("tipAmount"))
             }
         }
+    }
+
+    private fun getTipDetails(tippedAmount: Double, orderId: Int?){
+        viewModel.getCashEventDetails(tippedAmount, orderId)
     }
 
     private fun makeCashEventCallToUpdateTip(tippedAmount: Double) {

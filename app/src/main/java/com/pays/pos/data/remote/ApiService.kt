@@ -57,6 +57,7 @@ import com.pays.pos.data.remote.Constants.END_DATE
 import com.pays.pos.data.remote.Constants.FIRE_ITEM_TO_KITCHEN
 import com.pays.pos.data.remote.Constants.FLOOR_PLAN_STATUS
 import com.pays.pos.data.remote.Constants.FORGOT_PASSWORD
+import com.pays.pos.data.remote.Constants.GET_EVENT_BY_ORDER_ID
 import com.pays.pos.data.remote.Constants.GET_FLOOR_PLAN
 import com.pays.pos.data.remote.Constants.GET_PRINTERS
 import com.pays.pos.data.remote.Constants.GET_TEAM_MODULE
@@ -157,6 +158,9 @@ interface ApiService {
         @Query("uniq_id") uniq_id: String?,
         @Query("device_token") device_token: String
     ): TerminalResponse
+
+    @GET(GET_EVENT_BY_ORDER_ID)
+    suspend fun getEventDetailsByOrderId(@Query("order_id") orderId:String)
 
     @GET(CHECK_PERMISSION_MANAGER)
     suspend fun checkEmployeeRole(
