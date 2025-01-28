@@ -10913,7 +10913,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             isBold = true,
                                             printOnNewLine = true
                                         )
-                                        lineBreak()
+//                                        lineBreak()
 
                                         var venueAddress =
                                             if (customerSettingModel.showVenueAddress) {
@@ -10980,7 +10980,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             }
                                             lineBreak()
                                         }
-                                        lineBreak()
+//                                        lineBreak()
 //                                outputStream.write(LPrint.LINE_FEED)
 //                                outputStream.write(LPrint.NORMAL_SIZE)
 //                                outputStream.write(LPrint.LEFT_ALIGN)
