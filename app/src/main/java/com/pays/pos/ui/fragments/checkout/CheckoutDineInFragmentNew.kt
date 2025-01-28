@@ -2171,6 +2171,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         binding.imgBackGiftCard.setOnSingleClickListener {
             binding.llGiftCard.gone()
             binding.relativeMain.visible()
+            binding.edtGiftCardNumber.text?.clear()
         }
 
         binding.lnrGiftCard.setOnSingleClickListener {
