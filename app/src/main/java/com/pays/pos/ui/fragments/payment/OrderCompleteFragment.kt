@@ -4741,13 +4741,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                         val changeAmount = (paidAmount ) - (guestPayment!!.amount + tipAmount)
 
-                                        val str7 = padLine(
-                                            "Change Amount",
-                                             MethodUtils.roundOffAmount(changeAmount),
-                                            48
-                                        ).toString()
+                                        if(changeAmount>=0.0) {
+                                            val str7 = padLine(
+                                                "Change Amount",
+                                                MethodUtils.roundOffAmount(changeAmount),
+                                                48
+                                            ).toString()
 
-                                        printBoldLeft(str7)
+                                            printBoldLeft(str7)
+                                        }
                                         lineBreak()
                                     }
 
@@ -7831,9 +7833,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     val _order = receiptModel?.order
 
 
-                                    if (_order?.payments?.last()?.paymentType == "Cash") {
+                                    try {
+                                        if (_order?.payments?.last()?.paymentType == "Cash") {
 
-                                        val changeAmount = (paidAmount ) - (order?.payments?.last()?.amount!!.plus(tipAmount))
+                                            val changeAmount =
+                                                (paidAmount) - (order?.payments?.last()?.amount!!.plus(
+                                                    tipAmount
+                                                ))
 
 //                                        val str7 = padLine(
 //                                            "Change Amount",
@@ -7843,16 +7849,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //                                            48
 //                                        ).toString().toByteArray()
 
-                                        val str7 = padLine(
-                                            "Change Amount",
-                                            MethodUtils.roundOffAmount(changeAmount),
-                                            48
-                                        ).toString().toByteArray()
+                                            if (changeAmount >= 0.0) {
 
-                                        write(str7)
-                                        write(LPrint.LINE_FEED)
+                                                val str7 = padLine(
+                                                    "Change Amount",
+                                                    MethodUtils.roundOffAmount(changeAmount),
+                                                    48
+                                                ).toString().toByteArray()
+
+                                                write(str7)
+                                                write(LPrint.LINE_FEED)
+                                            }
+                                        }
+                                    }catch (e:Exception){
+
                                     }
-
 
                                     /**
                                      * Print Remaining amount
