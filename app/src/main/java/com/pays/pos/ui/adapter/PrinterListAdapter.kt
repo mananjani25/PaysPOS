@@ -7,13 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.pays.pos.R
 import com.pays.pos.data.model.PrinterListModel
+import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.AVAILABLE
 import com.pays.pos.data.remote.Constants.WIFI
 import com.pays.pos.databinding.ViewPrinterItemBinding
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.settings.hardware.printer.Printer.Companion.viewModelObject
 import com.pays.pos.utils.TAG
+import org.greenrobot.eventbus.EventBus
 
 
 class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>() {
@@ -54,8 +58,23 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
             }
 
             binding.imgPrinter.setOnClickListener {
+                EventBus.getDefault().post(
+                    MessageEvent(
+                        "${Constants.LINE_BREAK_TAB} PrinterListAdapter.kt_binding.imgPrinter.setOnClickListener Clicked, dataList-> ${dataList}"
+                    )
+                )
                 if (dataList.isNotEmpty()) {
+                    EventBus.getDefault().post(
+                        MessageEvent(
+                            "${Constants.LINE_BREAK_TAB} PrinterListAdapter.kt_binding.imgPrinter.setOnClickListener dataList.isNotEmpty()"
+                        )
+                    )
                     if (dataList[layoutPosition].isActive) {
+                        EventBus.getDefault().post(
+                            MessageEvent(
+                                "${Constants.LINE_BREAK_TAB} PrinterListAdapter.kt_binding.imgPrinter.setOnClickListener isActive"
+                            )
+                        )
                         listner.onPrinterSelected(dataList[layoutPosition])
                     }
                 }
@@ -177,6 +196,11 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
 
     @SuppressLint("NotifyDataSetChanged")
     fun addItem(model: PrinterListModel) {
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} PrinterListAdapter.kt_addItem(model: PrinterListModel), model-> ${Gson().toJson(model)}"
+            )
+        )
         dataList.add(model)
         notifyItemRangeInserted(0, dataList.size)
         notifyDataSetChanged()

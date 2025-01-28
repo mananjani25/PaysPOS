@@ -352,6 +352,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         } else {
             prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT, "")
         }
+
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_onCreateView()_before getKitchenReceiptSettings()"
+            )
+        )
+
         getKitchenReceiptSettings()
 
         observeTipsList()
@@ -9837,6 +9844,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         viewModel.getKitchenPrinterList().observe(viewLifecycleOwner,
             object : Observer<Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>> {
                 override fun onChanged(it: Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>?) {
+
+                    EventBus.getDefault().post(
+                        MessageEvent(
+                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_getKitchenPrinters()_onChanged it -> ${Gson().toJson(it)}"
+                        )
+                    )
+
                     when (it?.status) {
                         Status.SUCCESS -> {
                             ProgressUtils.dismissProgressDialog()
@@ -9925,6 +9939,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                             TAG2,
                                                                                             "initKit "
                                                                                         )
+                                                                                        EventBus.getDefault().post(
+                                                                                            MessageEvent(
+                                                                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_LINE -> ${Exception().stackTrace[0].lineNumber}"
+                                                                                            )
+                                                                                        )
                                                                                         initKitchenPrinter(
                                                                                             kitchenPrinterList.get(
                                                                                                 i
@@ -9947,6 +9966,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                                     cartList?.note
                                                                                                 )
                                                                                             ) {
+                                                                                                EventBus.getDefault().post(
+                                                                                                    MessageEvent(
+                                                                                                        "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_initKitchenPrinter, LINE -> ${Exception().stackTrace[0].lineNumber}"
+                                                                                                    )
+                                                                                                )
+
                                                                                                 initKitchenPrinter(
                                                                                                     kitchenPrinterList.get(
                                                                                                         i
@@ -9984,6 +10009,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                 false
                                                             )
                                                         ) {
+                                                            EventBus.getDefault().post(
+                                                                MessageEvent(
+                                                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_initKitchenPrinter, LINE -> ${Exception().stackTrace[0].lineNumber}"
+                                                                )
+                                                            )
+
                                                             initKitchenPrinter(
                                                                 kitchenPrinterList.get(
                                                                     i
@@ -10042,6 +10073,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                                 false
                                                                                             )
                                                                                         ) {
+                                                                                            EventBus.getDefault().post(
+                                                                                                MessageEvent(
+                                                                                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_initKitchenPrinter, LINE -> ${Exception().stackTrace[0].lineNumber}"
+                                                                                                )
+                                                                                            )
+
                                                                                             initKitchenPrinter(
                                                                                                 kitchenPrinterList.get(
                                                                                                     i
@@ -10053,6 +10090,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                                 true
                                                                                             )
                                                                                         ) {
+                                                                                            EventBus.getDefault().post(
+                                                                                                MessageEvent(
+                                                                                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_initKitchenPrinter, LINE -> ${Exception().stackTrace[0].lineNumber}"
+                                                                                                )
+                                                                                            )
+
                                                                                             initKitchenPrinter(
                                                                                                 kitchenPrinterList.get(
                                                                                                     i
@@ -10066,6 +10109,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                                         ignoreCase = true
                                                                                                     )
                                                                                                 ) {
+                                                                                                    EventBus.getDefault().post(
+                                                                                                        MessageEvent(
+                                                                                                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_initKitchenPrinter, LINE -> ${Exception().stackTrace[0].lineNumber}"
+                                                                                                        )
+                                                                                                    )
                                                                                                     initKitchenPrinter(
                                                                                                         kitchenPrinterList.get(
                                                                                                             i
@@ -10146,6 +10194,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             ) {
 //                                                                Log.d("KioskOpenOrderKitchenPrint", "5 -> Index$i, ${kitchenPrinterList[i].name}")
 //                                                                val kitchenPrinterList = kitchenPrinterList[i]
+                                                                EventBus.getDefault().post(
+                                                                    MessageEvent(
+                                                                        "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_initKitchenPrinter, LINE -> ${Exception().stackTrace[0].lineNumber}"
+                                                                    )
+                                                                )
                                                                 initKitchenPrinter(
                                                                     kitchenPrinterList[i],
                                                                     KITCHEN,
@@ -10184,6 +10237,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }
 
                         Status.ERROR -> {
+
+                            EventBus.getDefault().post(
+                                MessageEvent(
+                                    "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_getKitchenPrinters()_ERROR -> ${Gson().toJson(it)}"
+                                )
+                            )
                             ProgressUtils.dismissProgressDialog()
 
                         }
@@ -14081,6 +14140,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String
     ) {
+
+        EventBus.getDefault().post(
+            MessageEvent(
+                "${Constants.LINE_BREAK_TAB} Printer.kt_initKitchenPrinter("
+            )
+        )
+
+
         prefProvider.deleteValue(Constants.DO_PRINT)
         Log.d("initKitchenPrinter", "SunmiBlueToothPrinter is ${data.name}")
         if (data.name.startsWith(SUNMI_PRINTER, true) && data.printer_type == WIFI) {
@@ -14096,14 +14163,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                     try {
+                        Log.d("initKitchenPrinter", "SunmiBlueToothPrinter is ${data.ipAddress}")
                         SunmiPrinterApi.getInstance()
                             .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
-                        Log.d("initKitchenPrinter", "SunmiBlueToothPrinter is ${data.ipAddress}")
+
 
                     } catch (e: Exception) {
-                        SunmiPrinterApi.getInstance()
-                            .setPrinter(SunmiPrinter.SunmiNetPrinter, data.ipAddress)
-                        Log.d("initKitchenPrinter", "SunmiNetPrinter")
+                        try {
+                            SunmiPrinterApi.getInstance()
+                                .setPrinter(SunmiPrinter.SunmiNetPrinter, data.ipAddress)
+                            Log.d("initKitchenPrinter", "SunmiNetPrinter")
+                        }catch (e:Exception){
+                            e.printStackTrace()
+                        }
 
                     }
 
