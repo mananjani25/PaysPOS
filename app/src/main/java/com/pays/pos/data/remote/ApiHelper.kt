@@ -755,4 +755,6 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun getEventDetailsByOrderId(orderId: String) =
         getResult { apiService.getEventDetailsByOrderId(orderId) }
+
+    suspend fun updateCashEventsByOrderId(cashEventId: Int, cashLogRequest: CashLogRequest) = getResult { apiService.updateCashEventsByOrderId(cashEventId, cashLogRequest) }
 }

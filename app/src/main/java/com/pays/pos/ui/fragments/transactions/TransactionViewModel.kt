@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pays.pos.data.model.requestModel.CashInOutModel
 import com.pays.pos.data.model.requestModel.CashInOutPaymentModel
+import com.pays.pos.data.model.requestModel.CashLogRequest
 import com.pays.pos.data.model.responseModel.BaseResponse
 import com.pays.pos.data.model.responseModel.GetTransactionListResponse
 import com.pays.pos.data.remote.Constants
@@ -43,6 +44,10 @@ class TransactionViewModel @Inject constructor(
 
     private val _data2 = MutableLiveData<Event<Double>>()
     val data2: LiveData<Event<Double>> = _data2
+
+    private val _cashLogUpdated=MutableLiveData<Event<Boolean>>()
+    val cashLogUpdate get() = _cashLogUpdated
+
 
     private val _transactionDetails =
         MutableLiveData<Event<GetTransactionListResponse.Data.Payment>>()
@@ -264,15 +269,113 @@ class TransactionViewModel @Inject constructor(
         return b
     }
 
-    fun getCashEventDetails(tippedAmount: Double, orderId: Int?){
+    fun getCashEventDetails(tippedAmount: Double, orderId: Int, id: Int){
         viewModelScope.launch {
             val resource=posRepository.getEventDetailsByOrderId(orderId.toString())
 
             when(resource.status){
                 Status.SUCCESS->{
                     resource.data?.let {
-                        it.data
+                        if (it.data.isEmpty() || (it.data.size==1 && it.data.last().event.equals("in",ignoreCase = true) && (it.data.last().reason?.contains("Payment received", ignoreCase = true)?:false))){
+                            val cashLogRequest = CashLogRequest(
+                                tippedAmount,
+                                prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
+                                "in",
+                                orderId,
+                                id,
+                                "Tip added to the order",
+                                prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
+                                null,
+                                null
+                            )
+                            makeCashLogCreateRequest(cashLogRequest)
+
+                        }else{
+                            /*{
+                                "payment_id": 0,
+                                "order_id": 0,
+                                "amount": 0,
+                                "total_tips": 0,
+                                "tip_setting_id": 0,
+                                "employee_id": 0,
+                                "terminal_id": 0,
+                                "reason": "string",
+                                "event": "string"
+                            }*/
+
+                            val updateCashLogRequest = CashLogRequest(
+                                tippedAmount,
+                                prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
+                                "in",
+                                it.data.last().orderId?:orderId,
+                                it.data.last().id?:id,
+                                "Tip updated for order",
+                                prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
+                                null,
+                                null
+                            )
+//1536
+                            it.data.last().id?.let {
+                                updateCashLog(it,updateCashLogRequest)
+                            }
+                        }
                     }
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
+
+    private fun updateCashLog(cashEventId: Int, cashLogRequest: CashLogRequest) {
+        viewModelScope.launch {
+            val result=posRepository.updateCashEventsByOrderId(cashEventId, cashLogRequest)
+            when(result.status){
+                Status.SUCCESS->{
+                    _showProgress.value = Event(false)
+                    _cashLogUpdated.value=Event(true)
+                }
+
+                Status.LOADING->{
+                }
+
+                Status.ERROR->{
+                    _cashLogUpdated.value=Event(false)
+                    _snackbarText.value = Event(result.message)
+                    _showProgress.value = Event(false)
+                }
+
+            }
+        }
+
+    }
+
+    fun makeCashLogCreateRequest(cashLogRequest: CashLogRequest) {
+        viewModelScope.launch {
+            val resource = posRepository.cashInOut(cashLogRequest)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { response ->
+                        if (response?.status == 200) {
+
+                            resource.data?.let {
+
+                            }
+
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+
                 }
 
                 Status.ERROR -> {

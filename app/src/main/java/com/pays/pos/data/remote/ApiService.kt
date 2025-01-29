@@ -134,6 +134,7 @@ import com.pays.pos.data.remote.Constants.TIPS_UPDATE_DELETE
 import com.pays.pos.data.remote.Constants.TRANSACTION_LIST
 import com.pays.pos.data.remote.Constants.TRASNFER_TABLE
 import com.pays.pos.data.remote.Constants.UNMERGE_TABLE
+import com.pays.pos.data.remote.Constants.UPDATE_CASH_EVENTS_BY_ORDER_ID
 import com.pays.pos.data.remote.Constants.UPDATE_LOCK_SCREEN_PERMISSION
 import com.pays.pos.data.remote.Constants.UPDATE_ONLINE_ORDER
 import com.pays.pos.data.remote.Constants.UPDATE_PRINTER_STATUS
@@ -161,6 +162,9 @@ interface ApiService {
 
     @GET(GET_EVENT_BY_ORDER_ID)
     suspend fun getEventDetailsByOrderId(@Query("order_id") orderId:String):CashEventDetailsResponse
+
+    @PUT(UPDATE_CASH_EVENTS_BY_ORDER_ID)
+    suspend fun updateCashEventsByOrderId(@Path("id") id:Int, @Body cashLogRequest: CashLogRequest)
 
     @GET(CHECK_PERMISSION_MANAGER)
     suspend fun checkEmployeeRole(

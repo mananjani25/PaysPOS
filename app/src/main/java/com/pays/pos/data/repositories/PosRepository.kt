@@ -1356,6 +1356,8 @@ class PosRepository @Inject constructor(
 
     suspend fun getEventDetailsByOrderId(orderId: String)=apiHelperNew.getEventDetailsByOrderId(orderId)
 
+    suspend fun updateCashEventsByOrderId(cashEventId: Int, cashLogRequest:CashLogRequest)=apiHelperNew.updateCashEventsByOrderId(cashEventId,cashLogRequest)
+
     suspend fun updateTipWithSignature(orderId: Int, signatureInBase64: String, tip: Double) =
         apiHelperNew.updateTipWithSignature(orderId, signatureInBase64, tip)
 
