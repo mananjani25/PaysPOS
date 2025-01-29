@@ -967,7 +967,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtPaymentAmount.text =
                             "" + MainApplication.getInstance()!!
                                 .getText(R.string.symbole) + MethodUtils.roundOffAmountString(
-                                amountWiseSplit + tipAmount
+                                paidAmount + tipAmount
                             ) + " payment successful"
                         LogUtil.logE("Change 2", binding.txtChangeAmount.text.toString())
                     }

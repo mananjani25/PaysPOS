@@ -6355,6 +6355,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     loadAmountSplitLayout()
                 }
             } else {
+                PaymentBoldPosFragment.newInstance().addTipHideShow(true)
                 /*Solved BIS-4479*/
                 dashboardViewModel.isSelectCount = 1
                 /*Solved BIS-4479*/
