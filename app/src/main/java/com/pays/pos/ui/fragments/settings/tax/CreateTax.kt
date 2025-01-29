@@ -36,6 +36,7 @@ import com.pays.pos.databinding.DialogCreateNewTaxBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
+import com.pays.pos.ui.fragments.inventory.ItemsViewModel
 import com.pays.pos.utils.*
 import com.pays.pos.utils.extensions.getNavigationResultLiveData
 import com.pays.pos.utils.extensions.gone
@@ -58,6 +59,7 @@ class CreateTax : Fragment() {
     private val dashViewModel by activityViewModels<DashBoardCategoryViewModel>()
 
     private val viewModel by viewModels<CreateTaxViewModel>()
+    private val itemsViewModel by viewModels<ItemsViewModel>()
     private var itemIds = ArrayList<Int>()
     private var itemPricing: String = ""
     private var isSaveClicked:Boolean = false
@@ -110,7 +112,25 @@ class CreateTax : Fragment() {
             binding.header.txtTitle.text = getString(R.string.tv_update_tax)
             viewModel.setTaxData(taxData)
 
-            binding.itemsCount.text = "" + taxData.itemIds.size + " Items"
+            itemIds = taxData.itemIds as ArrayList<Int>
+            var selectedItemsCount = 0
+
+//            val itemsList: List<TbItem?> = itemsViewModel.allItemsList
+
+            itemsViewModel.getAllItemsList { itemsList ->
+                itemsList.forEach { item ->
+                    if (item != null) {
+                        if (itemIds.contains(item.itemId)) {
+                            selectedItemsCount++
+                        }
+                    }
+                }
+                runOnUiThread {
+                    binding.itemsCount.text = "$selectedItemsCount Items"
+                }
+
+            }
+
             binding.tvItemPricing.text = taxData.itemPricing
             binding.edtAmount.setText(String.format("%.2f", viewModel.createTaxDetails.value?.rate))
 
@@ -119,7 +139,6 @@ class CreateTax : Fragment() {
             viewModel.isEditData(isEdit, taxData.id)
 
             itemPricing = taxData.itemPricing.toString()
-            itemIds = taxData.itemIds as ArrayList<Int>
             viewModel.setItemPricing(itemPricing)
             viewModel.setItemIds(itemIds)
 
