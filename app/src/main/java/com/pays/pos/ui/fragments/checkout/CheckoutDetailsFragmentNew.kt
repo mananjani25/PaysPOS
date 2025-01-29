@@ -3818,9 +3818,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         binding.txtCharge.setOnSingleClickListener {
 
+            val effectivePrice = if (isAmountWiseSplit) amountWiseSplit else WholetotalPrice
+            val amountWiseSplitShare = amountWiseSplit / WholetotalPrice
+
             MethodUtils.hideKeyboard(requireActivity())
 
-            subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
+            subTotalPrice = String.format("%.2f", if (isAmountWiseSplit) { subTotalPrice * amountWiseSplit } else { subTotalPrice / isSelectedCount}).toDouble()
 
             EventBus.getDefault().post(
                 MessageEvent(
@@ -3831,19 +3834,19 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
 
             totalServiceCharge =
-                String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
-            totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
-            totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
+                String.format("%.2f", if (isAmountWiseSplit) { totalServiceCharge * amountWiseSplit } else { totalServiceCharge / isSelectedCount}).toDouble()
+            totalTax = String.format("%.2f", if (isAmountWiseSplit) { totalTax * amountWiseSplit } else {totalTax / isSelectedCount}).toDouble()
+            totalDiscount = String.format("%.2f", if (isAmountWiseSplit) { totalDiscount * amountWiseSplit } else {totalDiscount / isSelectedCount}).toDouble()
             cashDiscountSurcharge = if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == GIFT_CARD) {
                 0.0
             } else {
                 MethodUtils.getLatestCashDiscountOrSurCharge(
-                    WholetotalPrice / isSelectedCount,
+                    effectivePrice / isSelectedCount,
                     prefProvider,
                     requireContext()
                 )
             }
-            paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+            paymentAmount = String.format("%.2f", effectivePrice / isSelectedCount).toDouble()
 
             EventBus.getDefault().post(
                 MessageEvent(
@@ -4868,7 +4871,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             custom_paymentAmount = 0.0
 
                             val actualTotalAmountWithTip =
-                                (WholetotalPrice / isSelectedCount) + tipAmount
+                                (if (isAmountWiseSplit) amountWiseSplit else WholetotalPrice / isSelectedCount) + tipAmount
 
                             val giftCardBalanceAmount = it.data.amount
 
@@ -4882,7 +4885,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     IS_ORDER_REDEEMABLE_WITH_GIFT_CARD,
                                     true
                                 )
-                                val actualTotalAmount = (WholetotalPrice / isSelectedCount)
+                                val actualTotalAmount = (if (isAmountWiseSplit) amountWiseSplit else WholetotalPrice / isSelectedCount)
                                 paymentAmount = actualTotalAmount
                                 paymentviewModel.totalPayAmount(paymentAmount)
                                 redeemGiftCard()
