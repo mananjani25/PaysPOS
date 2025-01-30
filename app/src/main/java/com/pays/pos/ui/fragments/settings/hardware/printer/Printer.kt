@@ -2199,6 +2199,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     private fun sunmiPrinterInit(ipAddress: String) {
+        Log.e("checkSunmiPrinterIP","ipAddress: ${ipAddress}")
 
         SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiBlueToothPrinter, ipAddress)
 
@@ -2462,6 +2463,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         //ip address for bg printer
         //if (printerListModel.connectionType == WIFI) "TCP:" + printerListModel.deviceModel?.ipAddress else "BT:" + printerListModel.deviceModel?.ipAddress
+        Log.e("checkIPBEforeAdd","IpAdd:  ${printerListModel.deviceModel?.ipAddress}")
 
         val createPrinter = CreatePrinterRequestModel(
             name = printerListModel.printerName,
@@ -2473,7 +2475,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             locationId = prefProvider.getValueInt(LOCATION_ID, 1),
             receiptPrintType = KITCHEN,
             printer_type = printerListModel.connectionType,
-            ip_address = serialNumber,
+            ip_address = if(serialNumber?.length ?: 1 < 3) printerListModel.deviceModel?.ipAddress else serialNumber,
             printerSettingsAttributes = list,
             printerBrand = if (printerListModel.printerName?.startsWith("Cloud", true) == true) {
                 Constants.SUNMIBRAND
