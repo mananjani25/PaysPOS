@@ -10897,10 +10897,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         if (customerSettingModel.showVenueLogo && prefProvider.getValue(
                                                 VENUE_LOGO,
                                                 ""
-                                            )
-                                                .isNotEmpty()
-                                        ) {
-
+                                            ).isNotEmpty()
+                                            ) {
+                                            printLogoLandiInner(prefProvider.getValue(VENUE_LOGO, ""))
 //                            PrintSunmiUtils.printLogoInner(prefProvider.getValue(VENUE_LOGO, ""))
 
                                         }
