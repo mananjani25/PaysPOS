@@ -982,7 +982,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                         eodReportData?.externalPayments?.forEach { report ->
                                             report.forEach {
                                                 if(it.key?.contains("Name", true) == true){
-                                                    lineBreak()
+                                                    printDashedLineAndBreak()
                                                 }
 
                                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -993,6 +993,10 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                                             48
                                                         ).toString()
                                                     )
+                                                    if(it.key?.contains("Name", true) == true){
+                                                        printDashedLineAndBreak()
+                                                    }
+
                                                 }
                                             }
                                         }
