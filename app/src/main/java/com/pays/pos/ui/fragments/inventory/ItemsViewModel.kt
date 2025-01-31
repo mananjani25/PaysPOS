@@ -18,6 +18,8 @@ import com.pays.pos.utils.Event
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -42,6 +44,10 @@ class ItemsViewModel @Inject constructor(
     val items = posRepository.getWholeItemsWithManualFromPos()
     val hideItemsListPos = posRepository.unhideItemListPOS()
     val hideItemsListWebsite = posRepository.unhideItemListWebsite()
+
+    fun getAllItemsList(callback: (List<TbItem?>) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch { callback(posRepository.getAllItemsList()) }
+    }
 
     fun getItemsList(screenType: String): LiveData<Resource<List<TbItem?>>> {
         return if (screenType == "tax") {

@@ -22,6 +22,9 @@ interface DBItemDao {
     @get:Query("select * from TbItem where TbItem.hide_status = 'UnHide' and TbItem.isDeleted = 0 and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort DESC")
     val allItem: LiveData<List<TbItem?>>?
 
+    @get:Query("select * from TbItem where TbItem.hide_status = 'UnHide' and TbItem.isDeleted = 0 GROUP by TbItem.itemId ORDER BY TbItem.sort DESC")
+    val allItemCount: List<TbItem?>?
+
     @get:Query("select * from TbItem where TbItem.hide_status = 'UnHide' and TbItem.isDeleted = 0 and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort DESC")
     val allItemFromPos: LiveData<List<TbItem?>>?
 
