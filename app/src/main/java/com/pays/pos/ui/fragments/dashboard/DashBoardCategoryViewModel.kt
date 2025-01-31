@@ -6234,44 +6234,48 @@ class DashBoardCategoryViewModel @Inject constructor(
         var guestCount = cartModel.dineInList?.size?.minus(1)
         val orderServiceChargesAttributeList: ArrayList<OrderServiceChargesAttribute> =
             arrayListOf()
-        if (prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
-            var isApplied = false
-            serviceChargesList.forEach {
-                if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                    if (isInRange(
-                            it.min_guest_count!!, it.max_guest_count!!, guestCount!!
-                        )
-                    ) {
-                        val orderServiceChargesAttribute = OrderServiceChargesAttribute()
-                        orderServiceChargesAttribute.amount =
-                            MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
-                        orderServiceChargesAttribute.name = it.name
-                        orderServiceChargesAttribute.rate = it.percentage
-                        orderServiceChargesAttribute.serviceChargeId = it.id
-                        orderServiceChargesAttribute.order_type = it.order_type
-                        orderServiceChargesAttribute.max_guest_count = it.max_guest_count
-                        orderServiceChargesAttribute.min_guest_count = it.min_guest_count
-                        orderServiceChargesAttribute.serviceChargeId = it.id
-                        orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
+        try {
+            if (prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
+                var isApplied = false
+                serviceChargesList.forEach {
+                    if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                        if (isInRange(
+                                it.min_guest_count!!, it.max_guest_count!!, guestCount!!
+                            )
+                        ) {
+                            val orderServiceChargesAttribute = OrderServiceChargesAttribute()
+                            orderServiceChargesAttribute.amount =
+                                MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
+                            orderServiceChargesAttribute.name = it.name
+                            orderServiceChargesAttribute.rate = it.percentage
+                            orderServiceChargesAttribute.serviceChargeId = it.id
+                            orderServiceChargesAttribute.order_type = it.order_type
+                            orderServiceChargesAttribute.max_guest_count = it.max_guest_count
+                            orderServiceChargesAttribute.min_guest_count = it.min_guest_count
+                            orderServiceChargesAttribute.serviceChargeId = it.id
+                            orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
 
-                        isApplied = true
-                        Log.d(
-                            TAG,
-                            "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + guestCount
-                        )
-                        totalServiceCharge += (subTotalPrice * it.percentage) / 100
-                        return@forEach
+                            isApplied = true
+                            Log.d(
+                                TAG,
+                                "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + guestCount
+                            )
+                            totalServiceCharge += (subTotalPrice * it.percentage) / 100
+                            return@forEach
+                        }
+                    }
+                }
+                if (!isApplied) {
+                    serviceChargesList.forEach { service ->
+                        if (service.id == checkMaxGuestCountId()) {
+                            totalServiceCharge += (subTotalPrice * service.percentage) / 100
+                            return@forEach
+                        }
                     }
                 }
             }
-            if (!isApplied) {
-                serviceChargesList.forEach { service ->
-                    if (service.id == checkMaxGuestCountId()) {
-                        totalServiceCharge += (subTotalPrice * service.percentage) / 100
-                        return@forEach
-                    }
-                }
-            }
+        }catch (e:Exception) {
+            e.printStackTrace()
         }
         return orderServiceChargesAttributeList
     }

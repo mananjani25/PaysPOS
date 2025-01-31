@@ -3185,37 +3185,42 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                         }
                                         serviceChargeWT = 0.0
-                                        if (prefProvider.getValueboolean(
-                                                Constants.SERVICECHARGE_DINEIN_ORDER,
-                                                false
-                                            )
-                                        ) {
-                                            var isApplied = false
-                                            serviceChargeList.forEach {
-                                                if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                                                    if (isInRange(
-                                                            it.min_guest_count!!,
-                                                            it.max_guest_count!!,
-                                                            baseResponse.guestAttributes.size - 1
-                                                        )
-                                                    ) {
-                                                        isApplied = true
-                                                        serviceChargeWT += (subTotalWT * it.percentage) / 100
-                                                        return@forEach
+
+                                        try {
+                                            if (prefProvider.getValueboolean(
+                                                    Constants.SERVICECHARGE_DINEIN_ORDER,
+                                                    false
+                                                )
+                                            ) {
+                                                var isApplied = false
+                                                serviceChargeList.forEach {
+                                                    if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                                                        if (isInRange(
+                                                                it.min_guest_count!!,
+                                                                it.max_guest_count!!,
+                                                                baseResponse.guestAttributes.size - 1
+                                                            )
+                                                        ) {
+                                                            isApplied = true
+                                                            serviceChargeWT += (subTotalWT * it.percentage) / 100
+                                                            return@forEach
+                                                        }
+                                                    }
+                                                }
+                                                if (!isApplied) {
+                                                    serviceChargeList.forEach { service ->
+                                                        if (service.id == checkMaxGuestCountId(
+                                                                serviceChargeList
+                                                            )
+                                                        ) {
+                                                            serviceChargeWT += (subTotalWT * service.percentage) / 100
+                                                            return@forEach
+                                                        }
                                                     }
                                                 }
                                             }
-                                            if (!isApplied) {
-                                                serviceChargeList.forEach { service ->
-                                                    if (service.id == checkMaxGuestCountId(
-                                                            serviceChargeList
-                                                        )
-                                                    ) {
-                                                        serviceChargeWT += (subTotalWT * service.percentage) / 100
-                                                        return@forEach
-                                                    }
-                                                }
-                                            }
+                                        }catch (e:Exception) {
+                                            e.printStackTrace()
                                         }
 
                                         /**
