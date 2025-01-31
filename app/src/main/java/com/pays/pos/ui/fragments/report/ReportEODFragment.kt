@@ -985,7 +985,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                         eodReportData?.externalPayments?.forEach { report ->
                                             report.forEach {
                                                 if(it.key?.contains("Name", true) == true){
-                                                    lineBreak()
+                                                    printDashedLineAndBreak()
                                                 }
 
                                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -996,6 +996,10 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                                             48
                                                         ).toString()
                                                     )
+                                                    if(it.key?.contains("Name", true) == true){
+                                                        printDashedLineAndBreak()
+                                                    }
+
                                                 }
                                             }
                                         }
@@ -3729,6 +3733,14 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                 eodReportData?.externalPayments?.forEach { report ->
                     report.forEach {
                         if(it.key?.contains("Name", true) == true){
+                            if (sunmiFrameworkVersion?.get(0)
+                                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                            ) {
+                                PrintSunmiUtils.addHorizontalInnerNew()
+                            } else {
+                                PrintSunmiUtils.addHorizontalInner()
+                            }
                             SunmiPrintHelper.getInstance().lineWrap(1)
                         }
                         if (sunmiFrameworkVersion?.get(0)
@@ -3750,6 +3762,17 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                     48
                                 ).toString()
                             )
+                        }
+                        if(it.key?.contains("Name", true) == true){
+                            if (sunmiFrameworkVersion?.get(0)
+                                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(1)
+                                    ?.toInt()!! >= 3 && sunmiFrameworkVersion?.get(2)?.toInt() != 39
+                            ) {
+                                PrintSunmiUtils.addHorizontalInnerNew()
+                            } else {
+                                PrintSunmiUtils.addHorizontalInner()
+                            }
+                            SunmiPrintHelper.getInstance().lineWrap(1)
                         }
                     }
                 }
