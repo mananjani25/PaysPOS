@@ -883,12 +883,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
         binding.linearNextAmountSplit.setOnSingleClickListener {
             hideSoftKeyboard(requireActivity())
-            if (binding.enteredSplitAmount.text.toString().isNotEmpty()) {
-                dashboardViewModel.isAmountWiseSplit.value = true
-                isAmountWiseSplit = dashboardViewModel.isAmountWiseSplit.value!!
+            if (binding.enteredSplitAmount.text.toString().isNotEmpty() && binding.enteredSplitAmount.text.toString().replace("$", "").toDouble() > 0.00) {
                 dashboardViewModel.amountWiseSplit.value = binding.enteredSplitAmount.text.toString().replace("$", "").toDouble()
-                dashboardViewModel.amountWiseSplit.value?.let {
-                    amountWiseSplit = it
+                if (dashboardViewModel.amountWiseSplit.value != WholetotalPrice) {
+                    dashboardViewModel.isAmountWiseSplit.value = true
+                    isAmountWiseSplit = dashboardViewModel.isAmountWiseSplit.value!!
+                    dashboardViewModel.amountWiseSplit.value?.let {
+                        amountWiseSplit = it
+                    }
                 }
                 PaymentBoldPosFragment.newInstance().addTipHideShow(false)
                 loadPaymentLayout()
