@@ -96,6 +96,8 @@ import com.pays.pos.utils.landi.LPrint
 import com.pays.pos.utils.printer.CommonPrinterTypes
 import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.statusUtils.Status
+import com.pays.pos.utils.printer.PrinterClass
+import com.pays.pos.utils.statusUtils.Status
 import com.sdksuite.omnidriver.OmniConnection
 import com.sdksuite.omnidriver.OmniDriver
 import com.sdksuite.omnidriver.aidl.printer.Align
