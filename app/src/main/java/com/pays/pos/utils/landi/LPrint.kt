@@ -296,7 +296,7 @@ final object LPrint {
             for (y in 0 until height) {
                 val pixel = bitmap.getPixel(x, y)
                 val gray = (Color.red(pixel) * 0.3 + Color.green(pixel) * 0.59 + Color.blue(pixel) * 0.11).toInt()
-                val newPixel = if (gray < 128) Color.BLACK else Color.WHITE
+                val newPixel = if (gray < 140) Color.BLACK else Color.WHITE
                 bwBitmap.setPixel(x, y, newPixel)
             }
         }
@@ -311,7 +311,9 @@ final object LPrint {
         val imageData = ByteArray(8 + rowBytes * height)
 
         // ESC/POS command for printing a bitmap
-        val commandHeader = byteArrayOf(0x1D, 0x76, 0x30, 0x00, (width / 8).toByte(), 0x00, height.toByte(), 0x00)
+        val commandHeader = byteArrayOf(
+            0x1D, 0x76, 0x30, 0x00, ((width + 7) / 8).toByte(), 0x00, height.toByte(), 0x00
+        )
         System.arraycopy(commandHeader, 0, imageData, 0, commandHeader.size)
 
         var dataIndex = commandHeader.size
@@ -320,8 +322,8 @@ final object LPrint {
             var bitIndex = 0
             for (x in 0 until width) {
                 val pixel = bitmap.getPixel(x, y)
-                val isBlack = pixel == Color.BLACK
-
+                val alpha = Color.alpha(pixel)
+                val isBlack = alpha > 128 && pixel == Color.BLACK
                 rowByte = rowByte or (if (isBlack) 1 else 0 shl (7 - bitIndex))
                 bitIndex++
 
