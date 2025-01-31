@@ -4,6 +4,10 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.util.Base64
 import com.pays.pos.data.entities.TbCartItem
 import com.pays.pos.data.model.DineInModel
 import com.pays.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
@@ -12,6 +16,7 @@ import com.pays.pos.data.model.responseModel.PrinterResponse
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.dineInNew.DineInOrderTablePays
+import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.utils.*
 import java.io.IOException
 import java.io.OutputStream
@@ -280,6 +285,80 @@ final object LPrint {
                 }
             }
         }
+    }
+
+    private fun convertBitmapToMonochrome(bitmap: Bitmap): Bitmap {
+        val width = bitmap.width
+        val height = bitmap.height
+        val bwBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+
+        for (x in 0 until width) {
+            for (y in 0 until height) {
+                val pixel = bitmap.getPixel(x, y)
+                val gray = (Color.red(pixel) * 0.3 + Color.green(pixel) * 0.59 + Color.blue(pixel) * 0.11).toInt()
+                val newPixel = if (gray < 140) Color.BLACK else Color.WHITE
+                bwBitmap.setPixel(x, y, newPixel)
+            }
+        }
+        return bwBitmap
+    }
+
+    private fun convertBitmapToEscPos(bitmap: Bitmap): ByteArray {
+        val width = bitmap.width
+        val height = bitmap.height
+
+        val rowBytes = (width + 7) / 8 // Each byte represents 8 pixels
+        val imageData = ByteArray(8 + rowBytes * height)
+
+        // ESC/POS command for printing a bitmap
+        val commandHeader = byteArrayOf(
+            0x1D, 0x76, 0x30, 0x00, ((width + 7) / 8).toByte(), 0x00, height.toByte(), 0x00
+        )
+        System.arraycopy(commandHeader, 0, imageData, 0, commandHeader.size)
+
+        var dataIndex = commandHeader.size
+        for (y in 0 until height) {
+            var rowByte = 0
+            var bitIndex = 0
+            for (x in 0 until width) {
+                val pixel = bitmap.getPixel(x, y)
+                val alpha = Color.alpha(pixel)
+                val isBlack = alpha > 128 && pixel == Color.BLACK
+                rowByte = rowByte or (if (isBlack) 1 else 0 shl (7 - bitIndex))
+                bitIndex++
+
+                if (bitIndex == 8) {
+                    imageData[dataIndex] = rowByte.toByte()
+                    dataIndex++
+                    rowByte = 0
+                    bitIndex = 0
+                }
+            }
+            if (bitIndex > 0) { // Remaining bits
+                imageData[dataIndex] = rowByte.toByte()
+                dataIndex++
+            }
+        }
+        return imageData
+    }
+
+    fun printLogoLandiInner(value: String, align :ByteArray= CENTER_ALIGN) {
+
+        val decodedString: ByteArray = Base64.decode(
+            value,
+            Base64.DEFAULT
+        )
+        val bitmap: Bitmap =
+            BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+
+        val newBitmap = Bitmap.createScaledBitmap(bitmap, 210, 210, true)
+        val bwBitmap = convertBitmapToMonochrome(newBitmap)
+        val escPosData = convertBitmapToEscPos(bwBitmap)
+
+        outputStream?.write(align)
+        outputStream?.write(escPosData) // Send the image data
+//        outputStream?.write("\n".toByteArray()) // Move to the next line
+        outputStream?.flush()
     }
 
 

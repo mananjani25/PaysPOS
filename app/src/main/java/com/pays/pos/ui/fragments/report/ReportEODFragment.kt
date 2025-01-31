@@ -549,6 +549,9 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                                 try {
                                     Log.d("BIS-685", "createReportFormatEODLandiInner: Called")
 
+                                    prefProvider?.getValue(Constants.VENUE_LOGO,"")
+                                        ?.let { printLogoLandiInner(it) }
+
                                     printCenter(
                                         prefProvider?.getValue(
                                             Constants.BUSINESS_NAME,

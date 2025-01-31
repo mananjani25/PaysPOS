@@ -35,6 +35,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.epson.epos2.printer.Printer
+import com.epson.eposprint.Builder
+import com.epson.eposprint.Print
+import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.pays.pos.R
 import com.pays.pos.data.entities.*
 import com.pays.pos.data.model.DineInModel
@@ -50,6 +56,8 @@ import com.pays.pos.data.remote.Constants.DINE_IN_DISCOUNT
 import com.pays.pos.data.remote.Constants.DINE_IN_GUEST_PAYMENT_DATA
 import com.pays.pos.data.remote.Constants.DINE_IN_SERVICECHARGE
 import com.pays.pos.data.remote.Constants.DINE_IN_SUBTOTAL
+import com.pays.pos.data.remote.Constants.DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT
+import com.pays.pos.data.remote.Constants.DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT_GUEST
 import com.pays.pos.data.remote.Constants.DINE_IN_TAX
 import com.pays.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.pays.pos.data.remote.Constants.DINE_IN_UPDATE_LIST
@@ -57,6 +65,7 @@ import com.pays.pos.data.remote.Constants.EMPLOYEE_ID
 import com.pays.pos.data.remote.Constants.GUEST_POSITION
 import com.pays.pos.data.remote.Constants.IS_GUEST_PAYMNET
 import com.pays.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
+import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.LOCATION_ID
 import com.pays.pos.data.remote.Constants.MERGEDANDOCCUPIED
 import com.pays.pos.data.remote.Constants.ORDER_NUMBER_STARTING_FROM_ONE
@@ -69,33 +78,24 @@ import com.pays.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.SUNMI_PRINTER
 import com.pays.pos.data.remote.Constants.TERMINAL_ID
 import com.pays.pos.data.remote.Constants.getCurrentTimeFromTimeZone
+import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.pays.pos.databinding.FragmentDineInOrderTableBinding
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.adapter.DineInTableAdapter
 import com.pays.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
+import com.pays.pos.ui.fragments.payment.OrderCompleteFragment
 import com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.utils.*
-import com.pays.pos.utils.printer.PrinterClass
-import com.pays.pos.utils.statusUtils.Status
-import com.epson.epos2.printer.Printer
-import com.epson.eposprint.Builder
-import com.epson.eposprint.Print
-import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.pays.pos.data.remote.Constants.DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT
-import com.pays.pos.data.remote.Constants.DINE_IN_SUB_TOTAL_AMOUNT_BEFORE_PAYMENT_GUEST
-import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
-import com.pays.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
-import com.pays.pos.logger.MessageEvent
-import com.pays.pos.ui.fragments.dashboard.bolddashboard.CustomDisplayDineIn
-import com.pays.pos.ui.fragments.payment.OrderCompleteFragment
 import com.pays.pos.utils.extensions.*
 import com.pays.pos.utils.landi.LPrint
 import com.pays.pos.utils.printer.CommonPrinterTypes
+import com.pays.pos.utils.printer.PrinterClass
+import com.pays.pos.utils.statusUtils.Status
 import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
@@ -135,7 +135,6 @@ import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
@@ -6436,6 +6435,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                             .isNotEmpty()
                                     ) {
 
+                                        printLogoLandiInner(prefProvider.getValue(Constants.VENUE_LOGO,""))
 //                                        PrintSunmiUtils.printLogoInner(
 //                                            prefProvider.getValue(
 //                                                Constants.VENUE_LOGO,
@@ -10951,7 +10951,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         )
                                             .isNotEmpty()
                                     ) {
-
+                                        printLogoLandiInner(prefProvider.getValue(Constants.VENUE_LOGO,""))
                                         //PrintSunmiUtils.printLogoInner(prefProvider.getValue(VENUE_LOGO, ""))
 
                                     }

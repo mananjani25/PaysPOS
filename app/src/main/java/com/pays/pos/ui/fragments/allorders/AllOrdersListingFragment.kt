@@ -2537,7 +2537,7 @@ class AllOrdersListingFragment(
                                         )
                                             .isNotEmpty()
                                     ) {
-
+                                        printLogoLandiInner(prefProvider.getValue(Constants.VENUE_LOGO,""))
 //                            PrintSunmiUtils.printLogoInner(prefProvider.getValue(VENUE_LOGO, ""))
 
                                     }
