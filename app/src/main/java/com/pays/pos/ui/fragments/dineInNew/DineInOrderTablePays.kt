@@ -6847,7 +6847,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         }
                                     }
 
-                                    if (getOrderDetailsResponse?.payments?.isNotEmpty() == true && type.lowercase() != "unpaid") {
+                                    if (paymentType != "Unpaid") {
 
                                         printLeft(
                                             padLine(
@@ -6858,7 +6858,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         )
                                     }
 
-                                    if (getOrderDetailsResponse?.payments?.isNotEmpty() == true && type.lowercase() != "unpaid") {
+                                    if (paymentType != "Unpaid") {
 
 
                                         printLeft(
