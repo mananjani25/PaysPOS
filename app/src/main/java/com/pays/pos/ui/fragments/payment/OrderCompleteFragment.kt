@@ -2287,7 +2287,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         paymentType,
                                         true,
                                         listGuestItem = listItem,
-                                        dineInList.get(guestPos).title.toString(),
+                                        dineInList.get(guestPos).customer?.first_name ?: dineInList.get(guestPos).title.toString(),
                                         listItemWT
                                     )
                                 }
@@ -2301,7 +2301,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         paymentType,
                         true,
                         listGuestItem = listItem,
-                        dineInList.get(guestPos).title.toString(),
+                        dineInList.get(guestPos).customer?.first_name ?: dineInList.get(guestPos).title.toString(),
                         listItemWT
                     )
                 }
