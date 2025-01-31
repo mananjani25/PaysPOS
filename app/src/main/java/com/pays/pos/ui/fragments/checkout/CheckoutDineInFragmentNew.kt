@@ -2848,11 +2848,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             binding.tvtipcash?.gone()
             MethodUtils.setPriceTextView(
                 binding.tvCash,
-                getCashDiscountOrSurcharge(WholetotalPrice, true) / isSelectedCount
+                getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount
             )
             MethodUtils.setPriceTextView(
                 binding.tvCash0,
-                getCashDiscountOrSurcharge(WholetotalPrice, true) / isSelectedCount
+                getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount
             )
             MethodUtils.setPriceTextView(
                 binding.tvCard,
@@ -2873,11 +2873,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 //            }
             MethodUtils.setPriceTextView(
                 binding.tvCash,
-                (getCashDiscountOrSurcharge(WholetotalPrice, true) / isSelectedCount) + tipAmount
+                (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount
             )
             MethodUtils.setPriceTextView(
                 binding.tvCash0,
-                (getCashDiscountOrSurcharge(WholetotalPrice, true) / isSelectedCount) + tipAmount
+                (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount
             )
             MethodUtils.setPriceTextView(
                 binding.tvCard,
@@ -2892,14 +2892,14 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             binding.tvtipcard?.visible()
             binding.tvtipcard?.text = "(" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
             MethodUtils.getCashPaymentOptionList(
-                (getCashDiscountOrSurcharge(WholetotalPrice, true) / isSelectedCount) + tipAmount,
+                (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount,
                 binding.tvCash1,
                 binding.tvCash2,
                 binding.tvCash3
             )
             MethodUtils.setPriceTextView(
                 binding.tvAmount,
-                (getCashDiscountOrSurcharge(
+                (getCalCashDiscWithAmount(
                     prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble(), true
                 ) / isSelectedCount) + tipAmount
             )
