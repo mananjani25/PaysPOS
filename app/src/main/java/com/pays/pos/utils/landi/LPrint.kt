@@ -342,7 +342,7 @@ final object LPrint {
         return imageData
     }
 
-    fun printLogoLandiInner(value: String) {
+    fun printLogoLandiInner(value: String, align :ByteArray= CENTER_ALIGN) {
 
         val decodedString: ByteArray = Base64.decode(
             value,
@@ -355,6 +355,7 @@ final object LPrint {
         val bwBitmap = convertBitmapToMonochrome(newBitmap)
         val escPosData = convertBitmapToEscPos(bwBitmap)
 
+        outputStream?.write(align)
         outputStream?.write(escPosData) // Send the image data
 //        outputStream?.write("\n".toByteArray()) // Move to the next line
         outputStream?.flush()

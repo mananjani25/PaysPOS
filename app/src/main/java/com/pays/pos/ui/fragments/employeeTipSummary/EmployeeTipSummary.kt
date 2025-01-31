@@ -38,7 +38,23 @@ import com.pays.pos.ui.adapter.EmployeeTipSummaryAdapter
 import com.pays.pos.ui.fragments.payment.OrderCompleteFragment
 import com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
-import com.pays.pos.utils.*
+import com.pays.pos.utils.AlertUtils
+import com.pays.pos.utils.EventObserver
+import com.pays.pos.utils.LogUtil
+import com.pays.pos.utils.MethodUtils
+import com.pays.pos.utils.PrintSunmiUtils
+import com.pays.pos.utils.ProgressUtils
+import com.pays.pos.utils.addBuilderText
+import com.pays.pos.utils.addCustomerTextSize
+import com.pays.pos.utils.addHorizontalLine
+import com.pays.pos.utils.addItemsInEmployeeTipsSummary
+import com.pays.pos.utils.addItemsInEmployeeTipsSummaryInnerPrinter
+import com.pays.pos.utils.addItemsInEmployeeTipsSummaryInnerPrinterNew
+import com.pays.pos.utils.addItemsInEmployeeTipsSummaryM30
+import com.pays.pos.utils.addSixHeaderForEmployeeTipSummary
+import com.pays.pos.utils.addSixHeaderForEmployeeTipSummarySunmi
+import com.pays.pos.utils.employeeTipSummaryHeader
+import com.pays.pos.utils.employeeTipSummaryHeaderNew
 import com.pays.pos.utils.extensions.differenceTrue
 import com.pays.pos.utils.extensions.timeCalculateForStartEndTime
 import com.pays.pos.utils.landi.LPrint
@@ -57,7 +73,9 @@ import org.greenrobot.eventbus.ThreadMode
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -606,6 +624,7 @@ class EmployeeTipSummary : Fragment() {
                                 setOutputStream(outputStream)
 
                                 try {
+                                    prefProvider?.let { printLogoLandiInner(it.getValue(Constants.VENUE_LOGO, "")) }
                                     printCenter(
                                         prefProvider?.getValue(
                                             Constants.BUSINESS_NAME,

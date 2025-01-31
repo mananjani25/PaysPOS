@@ -124,6 +124,7 @@ import com.pays.pos.utils.extensions.liveSnackBar
 import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.landi.LPrint
+import com.pays.pos.utils.landi.LPrint.printLogoLandiInner
 import com.pays.pos.utils.printer.CommonPrinterTypes
 import com.pays.pos.utils.printer.LandiInnerPrinterPays
 import com.pays.pos.utils.printer.PrinterClass
@@ -4374,7 +4375,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         )
                                             .isNotEmpty()
                                     ) {
-
+                                        printLogoLandiInner(prefProvider.getValue(VENUE_LOGO, ""))
 //                                        PrintSunmiUtils.printLogoInner(
 //                                            prefProvider.getValue(
 //                                                Constants.VENUE_LOGO,
@@ -7372,6 +7373,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             .isNotEmpty()
                                     ) {
 
+                                        LPrint.printLogoLandiInner(prefProvider.getValue(VENUE_LOGO, ""))
                                     }
 
                                     /**
@@ -19985,7 +19987,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         ) {
 
 //                            PrintSunmiUtils.printLogoInner(prefProvider.getValue(VENUE_LOGO, ""))
-
+                                            printLogoLandiInner(prefProvider.getValue(VENUE_LOGO, ""))
                                         }
                                         printCenter(
                                             prefProvider.getValue(
