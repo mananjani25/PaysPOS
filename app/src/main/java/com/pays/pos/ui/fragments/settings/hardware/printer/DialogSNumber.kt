@@ -35,6 +35,8 @@ class DialogSNumber : DialogFragment() {
     ): View? {
         binding = DialogPrinterSnumberBinding.inflate(inflater,container,false)
 
+        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+
         return binding.root
     }
 
@@ -85,6 +87,8 @@ class DialogSNumber : DialogFragment() {
         binding.imgBack.setOnClickListener {
             dismiss()
         }
+
+        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
     }
 
