@@ -4760,7 +4760,33 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             ) { _, _ ->
                             }
                         } else {
-                            custom_paymentAmount = 0.0
+
+                            prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true)
+                            splitAllAmounts(Constants.SUB_TOTAL, it.data.amount?.toPrecision(2).toDouble())
+                            splitAllAmounts(Constants.TOTAL_DISCOUNT, 0.00)
+                            splitAllAmounts(Constants.TAX_CHARGE, 0.00)
+                            splitAllAmounts(Constants.SERVICE_CHARGE, 0.00)
+                            splitAllAmounts(
+                                Constants.CASH_DISCOUNT_SURCHARGE,
+                                0.00
+                            )
+                            splitAllAmounts(Constants.TIP, 0.0)
+
+                            val giftCardNumber =
+                                binding.edtGiftCardNumber.rawText.toString().trim()
+                            prefProvider.setValueboolean(IS_GIFT_CARD_REDEEM, true)
+                            prefProvider.setValue(GIFT_CARD_NUMBER, giftCardNumber)
+                            prefProvider.setValue(GIFT_CARD_PIN, "")
+                            prefProvider.setValueboolean(
+                                IS_ORDER_REDEEMABLE_WITH_GIFT_CARD,
+                                true
+                            )
+                            val actualTotalAmount = (WholetotalPrice / isSelectedCount)
+                            paymentAmount = it.data.amount
+                            paymentviewModel.totalPayAmount(it.data.amount)
+                            redeemGiftCard()
+
+                          /*  custom_paymentAmount = 0.0
 
                             val actualTotalAmountWithTip =
                                 (WholetotalPrice / isSelectedCount) + tipAmount
@@ -4796,7 +4822,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 ) { _, _ ->
                                 }
                             }
-                            binding.edtGiftCardNumber.setText("")
+                            binding.edtGiftCardNumber.setText("")*/
                         }
                     } else {
                         binding.edtGiftCardNumber.setText("")
