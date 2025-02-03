@@ -353,13 +353,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         } else {
             prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT, "")
         }
-
-        EventBus.getDefault().post(
-            MessageEvent(
-                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_onCreateView()_before getKitchenReceiptSettings()"
-            )
-        )
-
         getKitchenReceiptSettings()
 
         observeTipsList()
@@ -531,7 +524,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 EventBus.getDefault()
                     .post(
                         MessageEvent(
-                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getKitchenReceiptSettings()_2  it -> ${
+                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.getKitchenReceiptSettings()  it -> ${
                                 Gson().toJson(
                                     it
                                 )
@@ -657,6 +650,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     changeAmount = paidAmountToShow - finalAmountToShow
 
                     changeAmount = MethodUtils.roundOffAmountDouble(changeAmount)
+
 
 
                     if (paymentTypeForTip.equals("cash", true)) {
@@ -9846,13 +9840,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         viewModel.getKitchenPrinterList().observe(viewLifecycleOwner,
             object : Observer<Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>> {
                 override fun onChanged(it: Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>?) {
-
-                    EventBus.getDefault().post(
-                        MessageEvent(
-                            "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_getKitchenPrinters()_onChanged it -> ${Gson().toJson(it)}"
-                        )
-                    )
-
                     when (it?.status) {
                         Status.SUCCESS -> {
                             ProgressUtils.dismissProgressDialog()
@@ -9937,15 +9924,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                             false
                                                                                         )
                                                                                     ) {
-                                                                                        Log.e(
-                                                                                            TAG2,
-                                                                                            "initKit "
-                                                                                        )
-                                                                                        EventBus.getDefault().post(
-                                                                                            MessageEvent(
-                                                                                                "${Constants.LINE_BREAK_TAB} OrderCompleteFragment.kt_LINE -> ${Exception().stackTrace[0].lineNumber}"
-                                                                                            )
-                                                                                        )
+                                                                                        Log.e(TAG2,"initKit ")
                                                                                         initKitchenPrinter(
                                                                                             kitchenPrinterList.get(
                                                                                                 i
