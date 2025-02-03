@@ -22,7 +22,6 @@ import com.pays.pos.R
 import com.pays.pos.data.entities.CartModel
 import com.pays.pos.data.entities.TbCartItem
 import com.pays.pos.data.entities.TbCustomer
-import com.pays.pos.data.entities.TbOrderType
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.databinding.FragmentAddCustomerToGiftCardBinding
 import com.pays.pos.di.PrefProvider
@@ -42,10 +41,8 @@ import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -384,26 +381,29 @@ class AddCustomerToGiftCardFragment : Fragment(), ItemCallback {
 
     override fun onItemClickListener(view: View?, pos: Int) {
         MethodUtils.hideSoftKeyboard(requireActivity())
-        selectedPosition = pos
-        val customer = adapter.getItem(selectedPosition)
+        if (pos > 0 || pos <= adapter.itemCount) {
+            selectedPosition = pos
 
-        if (customer.email.isNullOrEmpty() && customer.phones.isEmpty()) {
-            AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
-                requireContext(),
-                getString(R.string.lbl_please_add_phone_or_email), "Edit",
-            )
-            { _, _ ->
-                prefProvider.setValue(Constants.ORDER_TYPE, Constants.GIFT_CARD)
-                prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.GIFT_CARD_NAME)
-                prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)
-                val bundle: Bundle = bundleOf("isEdit" to true, "dataModel" to customer)
-                findNavController().navigate(
-                    R.id.action_addCustomerToGiftCard_to_addEditCustomer,
-                    bundle
+            val customer = adapter.getItem(selectedPosition)
+
+            if (customer.email.isNullOrEmpty() && customer.phones.isEmpty()) {
+                AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
+                    requireContext(),
+                    getString(R.string.lbl_please_add_phone_or_email), "Edit",
                 )
+                { _, _ ->
+                    prefProvider.setValue(Constants.ORDER_TYPE, Constants.GIFT_CARD)
+                    prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.GIFT_CARD_NAME)
+                    prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, false)
+                    val bundle: Bundle = bundleOf("isEdit" to true, "dataModel" to customer)
+                    findNavController().navigate(
+                        R.id.action_addCustomerToGiftCard_to_addEditCustomer,
+                        bundle
+                    )
+                }
+            } else {
+                moveToCheckout()
             }
-        } else {
-            moveToCheckout()
         }
 
 
