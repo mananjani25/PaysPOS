@@ -7,6 +7,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.Matrix
 import android.util.Base64
 import android.util.Log
 import com.pays.pos.data.entities.TbCartItem
@@ -24,6 +25,7 @@ import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import java.net.URL
 import java.util.*
 
 final object LPrint {
@@ -303,79 +305,38 @@ final object LPrint {
         }
     }
 
-    public fun convertBitmapToMonochrome(bitmap: Bitmap): Bitmap {
-        val width = bitmap.width
-        val height = bitmap.height
-        val bwBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-
-        for (x in 0 until width) {
-            for (y in 0 until height) {
-                val pixel = bitmap.getPixel(x, y)
-                val gray = (Color.red(pixel) * 0.3 + Color.green(pixel) * 0.59 + Color.blue(pixel) * 0.11).toInt()
-                val newPixel = if (gray < 140) Color.BLACK else Color.WHITE
-                bwBitmap.setPixel(x, y, newPixel)
-            }
+    fun downloadImage(url: String): Bitmap? {
+        return try {
+            val inputStream = URL(url).openStream()
+            BitmapFactory.decodeStream(inputStream) // Convert URL to Bitmap
+        } catch (e: Exception) {
+            println("Error downloading image: ${e.message}")
+            null
         }
-        return bwBitmap
     }
 
-    public fun convertBitmapToEscPos(bitmap: Bitmap): ByteArray {
+    fun scaleBitmap(bitmap: Bitmap, newWidth: Int, newHeight: Int): Bitmap {
         val width = bitmap.width
         val height = bitmap.height
+        val scaleWidth = newWidth.toFloat() / width
+        val scaleHeight = newHeight.toFloat() / height
 
-        val rowBytes = (width + 7) / 8 // Each byte represents 8 pixels
-        val imageData = ByteArray(8 + rowBytes * height)
+        val matrix = Matrix()
+        matrix.postScale(scaleWidth, scaleHeight) // Apply scaling transformation
 
-        // ESC/POS command for printing a bitmap
-        val commandHeader = byteArrayOf(
-            0x1D, 0x76, 0x30, 0x00, ((width + 7) / 8).toByte(), 0x00, height.toByte(), 0x00
-        )
-        System.arraycopy(commandHeader, 0, imageData, 0, commandHeader.size)
-
-        var dataIndex = commandHeader.size
-        for (y in 0 until height) {
-            var rowByte = 0
-            var bitIndex = 0
-            for (x in 0 until width) {
-                val pixel = bitmap.getPixel(x, y)
-                val alpha = Color.alpha(pixel)
-                val isBlack = alpha > 128 && pixel == Color.BLACK
-                rowByte = rowByte or (if (isBlack) 1 else 0 shl (7 - bitIndex))
-                bitIndex++
-
-                if (bitIndex == 8) {
-                    imageData[dataIndex] = rowByte.toByte()
-                    dataIndex++
-                    rowByte = 0
-                    bitIndex = 0
-                }
-            }
-            if (bitIndex > 0) { // Remaining bits
-                imageData[dataIndex] = rowByte.toByte()
-                dataIndex++
-            }
-        }
-        return imageData
+        return Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true)
     }
 
-    fun printLogoLandiInner(value: String, align :ByteArray= CENTER_ALIGN) {
+    fun processImageForPrinting(url: String, newWidth: Int, newHeight: Int): ByteArray? {
+        val bitmap = downloadImage(url) ?: return null
+        val scaledBitmap = scaleBitmap(bitmap, newWidth, newHeight) // Proper scaling
+        return bitmapToByteArray(scaledBitmap)
+    }
 
-        val decodedString: ByteArray = Base64.decode(
-            value,
-            Base64.DEFAULT
-        )
-        val bitmap: Bitmap =
-            BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
-
-        val newBitmap = Bitmap.createScaledBitmap(bitmap, 210, 210, true)
-        val bwBitmap = convertBitmapToMonochrome(newBitmap)
-        val escPosData = convertBitmapToEscPos(bwBitmap)
-
-
-        outputStream?.write(align)
-        outputStream?.write(escPosData) // Send the image data
-//        outputStream?.write("\n".toByteArray()) // Move to the next line
-        outputStream?.flush()
+    fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
+        val outputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream) // Convert Bitmap to PNG byte array
+        return outputStream.toByteArray()
     }
 
 

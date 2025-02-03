@@ -60,13 +60,19 @@ import com.pays.pos.utils.extensions.timeCalculateForStartEndTime
 import com.pays.pos.utils.landi.LPrint
 import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.statusUtils.Status
+import com.sdksuite.omnidriver.OmniConnection
+import com.sdksuite.omnidriver.OmniDriver
+import com.sdksuite.omnidriver.aidl.printer.Align
+import com.sdksuite.omnidriver.api.OnPrintListener
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -101,6 +107,8 @@ class EmployeeTipSummary : Fragment() {
     private lateinit var startTime: TimePickerDialog.OnTimeSetListener
     private lateinit var endTime: TimePickerDialog.OnTimeSetListener
 
+    var omniDriver: OmniDriver? = null
+
     val myCalendar = Calendar.getInstance()
     val myCalendar1 = Calendar.getInstance()
 
@@ -129,16 +137,38 @@ class EmployeeTipSummary : Fragment() {
         return binding.root
     }
 
+    private fun initOmniDriver() {
+        omniDriver = OmniDriver.me(requireContext())
+        omniDriver?.init(object : OmniConnection {
+            override fun onConnected() {
+            }
+
+            override fun onDisconnected(error: Int) {
+            }
+        })
+    }
+
+    lateinit var venueUrlByteArray:ByteArray
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
 
+        initOmniDriver()
         setupCalender()
         initAdapter()
         setInitDate()
         loadData()
         initObserver()
         customerPrinters()
+
+        if (prefProvider?.getValue(Constants.VENUE_LOGO_URL,"")?.isNotEmpty() == true) {
+            runBlocking {
+                lifecycleScope.async {
+                    venueUrlByteArray=LPrint.processImageForPrinting(prefProvider?.getValue(Constants.VENUE_LOGO_URL, "")!!, 200,200)!!
+                }.await()
+            }
+        }
     }
 
 
@@ -623,8 +653,30 @@ class EmployeeTipSummary : Fragment() {
                             LPrint.apply {
                                 setOutputStream(outputStream)
 
+                                var landiPrinter = omniDriver!!.getPrinter(Bundle())
+                                landiPrinter.openDevice(1)
+
+                                val pWidth: Int = landiPrinter.getValidWidth()
+
                                 try {
-                                    prefProvider?.let { printLogoLandiInner(it.getValue(Constants.VENUE_LOGO, "")) }
+                                    try {
+
+                                        landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+
+                                        landiPrinter.startPrint(object : OnPrintListener {
+                                            override fun onSuccess() {
+
+                                            }
+
+                                            override fun onFail(i: Int) {
+
+                                            }
+                                        })
+
+                                    } catch (ex: java.lang.Exception) {
+                                        Log.d("DMJ", "Error getting image bytes to print")
+                                    }
+//                                    prefProvider?.let { printLogoLandiInner(it.getValue(Constants.VENUE_LOGO, "")) }
                                     printCenter(
                                         prefProvider?.getValue(
                                             Constants.BUSINESS_NAME,

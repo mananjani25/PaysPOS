@@ -307,7 +307,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (prefProvider.getValue(Constants.VENUE_LOGO_URL,"").isNotEmpty()) {
             runBlocking {
                 lifecycleScope.async {
-                    venueUrlByteArray=processImageForPrinting(prefProvider.getValue(Constants.VENUE_LOGO_URL, "")!!, 200,200)!!
+                    venueUrlByteArray=LPrint.processImageForPrinting(prefProvider.getValue(Constants.VENUE_LOGO_URL, "")!!, 200,200)!!
                 }.await()
             }
         }
@@ -4342,6 +4342,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             LPrint.apply {
 
+                                var landiPrinter = omniDriver!!.getPrinter(Bundle())
+                                landiPrinter.openDevice(1)
+
+                                val pWidth: Int = landiPrinter.getValidWidth()
+
                                 try {
                                     setOutputStream(outputStream)
 
@@ -4379,7 +4384,24 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         )
                                             .isNotEmpty()
                                     ) {
-                                        printLogoLandiInner(prefProvider.getValue(VENUE_LOGO, ""))
+                                        try {
+
+                                            landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+
+                                            landiPrinter.startPrint(object : OnPrintListener {
+                                                override fun onSuccess() {
+
+                                                }
+
+                                                override fun onFail(i: Int) {
+
+                                                }
+                                            })
+
+                                        } catch (ex: java.lang.Exception) {
+                                            Log.d("DMJ", "Error getting image bytes to print")
+                                        }
+//                                        printLogoLandiInner(prefProvider.getValue(VENUE_LOGO, ""))
 //                                        PrintSunmiUtils.printLogoInner(
 //                                            prefProvider.getValue(
 //                                                Constants.VENUE_LOGO,
@@ -7348,6 +7370,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                 outputStream.apply {
 
+                                    var landiPrinter = omniDriver!!.getPrinter(Bundle())
+                                    landiPrinter.openDevice(1)
+
+                                    val pWidth: Int = landiPrinter.getValidWidth()
+
                                     outputStream.write(LPrint.CENTER_ALIGN)  // Center align
                                     outputStream.write(LPrint.BOLD_ON)  // Center align
                                     outputStream.write(LPrint.FONT_SIZE_5X)     // Set large font size
@@ -7379,13 +7406,30 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         )
                                             .isNotEmpty()
                                     ) {
+                                        try {
 
-                                        LPrint.printLogoLandiInner(
-                                            prefProvider.getValue(
-                                                VENUE_LOGO,
-                                                ""
-                                            )
-                                        )
+                                            landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+
+                                            landiPrinter.startPrint(object : OnPrintListener {
+                                                override fun onSuccess() {
+
+                                                }
+
+                                                override fun onFail(i: Int) {
+
+                                                }
+                                            })
+
+                                        } catch (ex: java.lang.Exception) {
+                                            Log.d("DMJ", "Error getting image bytes to print")
+                                        }
+
+//                                        LPrint.printLogoLandiInner(
+//                                            prefProvider.getValue(
+//                                                VENUE_LOGO,
+//                                                ""
+//                                            )
+//                                        )
                                     }
 
                                     /**
@@ -10826,40 +10870,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     }
 
-    fun downloadImage(url: String): Bitmap? {
-        return try {
-            val inputStream = URL(url).openStream()
-            BitmapFactory.decodeStream(inputStream) // Convert URL to Bitmap
-        } catch (e: Exception) {
-            println("Error downloading image: ${e.message}")
-            null
-        }
-    }
-
-    fun scaleBitmap(bitmap: Bitmap, newWidth: Int, newHeight: Int): Bitmap {
-        val width = bitmap.width
-        val height = bitmap.height
-        val scaleWidth = newWidth.toFloat() / width
-        val scaleHeight = newHeight.toFloat() / height
-
-        val matrix = Matrix()
-        matrix.postScale(scaleWidth, scaleHeight) // Apply scaling transformation
-
-        return Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true)
-    }
-
-    fun processImageForPrinting(url: String, newWidth: Int, newHeight: Int): ByteArray? {
-        val bitmap = downloadImage(url) ?: return null
-        val scaledBitmap = scaleBitmap(bitmap, newWidth, newHeight) // Proper scaling
-        return bitmapToByteArray(scaledBitmap)
-    }
-
-    fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
-        val outputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream) // Convert Bitmap to PNG byte array
-        return outputStream.toByteArray()
-    }
-
 
     private fun printFromLandiInnerPrinter(
         isAutoPrint: Boolean,
@@ -10966,11 +10976,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                                     landiPrinter.startPrint(object : OnPrintListener {
                                                         override fun onSuccess() {
-
+                                                            Log.d("DMJ", "Logo printed successfully")
                                                         }
 
                                                         override fun onFail(i: Int) {
-
+                                                            Log.d("DMJ", "Logo printed Failed")
                                                         }
                                                     })
 
@@ -20167,6 +20177,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 ?.let { outputStream ->
                                     LPrint.apply {
                                         setOutputStream(outputStream)
+
+                                        var landiPrinter = omniDriver!!.getPrinter(Bundle())
+                                        landiPrinter.openDevice(1)
+
+                                        val pWidth: Int = landiPrinter.getValidWidth()
+
                                         try {
                                             if (customerSettingModel.showOrderIdTop) {
 
@@ -20197,14 +20213,30 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 )
                                                     .isNotEmpty()
                                             ) {
+                                                try {
 
+                                                    landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+
+                                                    landiPrinter.startPrint(object : OnPrintListener {
+                                                        override fun onSuccess() {
+
+                                                        }
+
+                                                        override fun onFail(i: Int) {
+
+                                                        }
+                                                    })
+
+                                                } catch (ex: java.lang.Exception) {
+                                                    Log.d("DMJ", "Error getting image bytes to print")
+                                                }
 //                            PrintSunmiUtils.printLogoInner(prefProvider.getValue(VENUE_LOGO, ""))
-                                                printLogoLandiInner(
-                                                    prefProvider.getValue(
-                                                        VENUE_LOGO,
-                                                        ""
-                                                    )
-                                                )
+//                                                printLogoLandiInner(
+//                                                    prefProvider.getValue(
+//                                                        VENUE_LOGO,
+//                                                        ""
+//                                                    )
+//                                                )
                                             }
                                             printCenter(
                                                 prefProvider.getValue(
