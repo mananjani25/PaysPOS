@@ -67,8 +67,6 @@ import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
 import com.google.gson.reflect.TypeToken
 import com.pax.poslink.ReportRequest
-import com.pays.pos.data.model.requestModel.CashLogRequest
-import com.pays.payments.callbacks.PaymentCallback
 import com.pays.payments.design.*
 import com.pays.payments.gateways.dejavoo.DejavooPaymentGateway
 import com.pays.payments.gateways.valor.ValorPaymentGateway
@@ -123,6 +121,7 @@ class TransactionDetailsFragment : Fragment() {
     private lateinit var binding: FragmentTransactionDetailsBinding
     private val viewModel by viewModels<TransactionDetailsViewModel>()
     private val dashboardCategoryViewModel by viewModels<DashBoardCategoryViewModel>()
+    private val transactionViewModel by viewModels<TransactionViewModel>()
     private var isPrint: Boolean = false
     private val magtekProViewModel by viewModels<MagtekViewModel>()
     lateinit var weakContext: WeakReference<Context>
@@ -270,6 +269,21 @@ class TransactionDetailsFragment : Fragment() {
         }
 
 
+    }
+
+    private fun cashLogEventCall(tippedAmount: Double) {
+//        if (bundle.containsKey("tipAmount")) {
+            if (tippedAmount > 0.0) {
+                getTipDetails(tippedAmount,orderId)
+//                makeCashEventCallToUpdateTip(bundle.getDouble("tipAmount"))
+            }
+//        }
+    }
+
+    private fun getTipDetails(tippedAmount: Double, orderId: Int?){
+        CoroutineScope(Dispatchers.Main).launch {
+        transactionViewModel.getCashEventDetails(tippedAmount, orderId?:-1,paymentId?:-1)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -452,7 +466,9 @@ class TransactionDetailsFragment : Fragment() {
                     launch {
                         tipCall(false)
                     }
-
+                    launch {
+                        cashLogEventCall(tipAmount)
+                    }
                     launch {
                         openCashDrawer()
                     }
