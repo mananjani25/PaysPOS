@@ -263,6 +263,10 @@ object Constants {
     const val INCREASE_ONGOING_ORDER_COUNTER = "locations/increase_ongoing_order_counter"
     const val DECREASE_ONGOING_ORDER_COUNTER = "locations/decrease_ongoing_order_counter"
 
+    /*------------Cash Events--------------*/
+    const val GET_EVENT_BY_ORDER_ID="cash_events/get_event_by_order_id"
+    const val UPDATE_CASH_EVENTS_BY_ORDER_ID="cash_events/{id}"
+    /*------------Cash Events--------------*/
 
     const val TAXES = "taxes"
     const val TAX_UPDATE_DELETE = "taxes/{id}"

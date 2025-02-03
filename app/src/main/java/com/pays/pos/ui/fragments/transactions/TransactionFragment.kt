@@ -58,9 +58,7 @@ import com.google.gson.JsonArray
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
-import com.pax.poslink.log.LogFilter.Const
 import com.pays.pos.data.model.requestModel.CashLogRequest
-import com.pays.payments.callbacks.PaymentCallback
 import com.pays.payments.design.*
 import com.pays.payments.gateways.dejavoo.DejavooPaymentGateway
 import com.pays.payments.gateways.valor.ValorPaymentGateway
@@ -68,6 +66,7 @@ import com.pays.pos.data.model.valor.ValorSuccessResponse
 import com.pays.pos.logger.CashBoxEvent
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
+import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -163,6 +162,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             )
         }
 
+        setCashEventObserver()
 
         startDatePickerObserver()
         endDatePickerObserver()
@@ -186,7 +186,6 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         setUpTipTypeSpinnerAdapter()
         initPOSLink()
         getMerchantDataObserver()
-
 
         startTime = TimePickerDialog.OnTimeSetListener { view, hour, minute ->
             val timecalender = Calendar.getInstance()
@@ -448,6 +447,20 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         return binding.root
     }
 
+    private fun setCashEventObserver() {
+        viewModel.cashLogUpdate.observe(viewLifecycleOwner,object:androidx.lifecycle.Observer<Event<Boolean>>{
+            override fun onChanged(t: Event<Boolean>?) {
+                t?.getContentIfNotHandled()?.let {
+                    if (it){
+                        runOnUiThread(Runnable {
+                            ProgressUtils.dismissProgressDialog()
+                        })
+                    }
+                }
+            }
+        })
+    }
+
     private fun openCashDrawer() {
         if (android.os.Build.BRAND.contains("Landi", ignoreCase = true)) {
             EventBus.getDefault().post(CashBoxEvent(Constants.CASHBOX))
@@ -534,9 +547,15 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     private fun cashLogEventCall(bundle: Bundle) {
         if (bundle.containsKey("tipAmount")) {
             if (bundle.getDouble("tipAmount") > 0.0) {
-                makeCashEventCallToUpdateTip(bundle.getDouble("tipAmount"))
+                getTipDetails(bundle.getDouble("tipAmount"),singleTransaction?.orderId)
+//                makeCashEventCallToUpdateTip(bundle.getDouble("tipAmount"))
             }
         }
+
+    }
+
+    private fun getTipDetails(tippedAmount: Double, orderId: Int?){
+        viewModel.getCashEventDetails(tippedAmount, orderId?:-1,singleTransaction?.id?:-1)
     }
 
     private fun makeCashEventCallToUpdateTip(tippedAmount: Double) {
