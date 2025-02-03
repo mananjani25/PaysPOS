@@ -400,18 +400,6 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     }
 
-    override fun onLowMemory() {
-        super.onLowMemory()
-
-        EventBus.getDefault().post(
-            MessageEvent(
-                "${Constants.LINE_BREAK_TAB} MainActivity.kt_onLowMemory() Memory cleared"
-            )
-        )
-
-        System.gc()
-    }
-
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
 
