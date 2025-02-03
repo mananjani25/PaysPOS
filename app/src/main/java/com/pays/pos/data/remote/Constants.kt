@@ -450,6 +450,7 @@ object Constants {
     const val REPORT_START_TIME = "report_start_time"
     const val REPORT_END_TIME = "report_end_time"
     const val VENUE_LOGO_URL = "venue_logo_url"
+//    const val VENUE_LOGO_BYTE_ARRAY = "venue_logo_byte_array"
 
     const val CUSTOMER_ID = "customer_id"
 

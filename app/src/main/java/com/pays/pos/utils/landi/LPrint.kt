@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.util.Base64
+import android.util.Log
 import com.pays.pos.data.entities.TbCartItem
 import com.pays.pos.data.model.DineInModel
 import com.pays.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
@@ -18,7 +19,10 @@ import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.dineInNew.DineInOrderTablePays
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.utils.*
+import com.sdksuite.omnidriver.aidl.printer.Align
+import java.io.ByteArrayOutputStream
 import java.io.IOException
+import java.io.InputStream
 import java.io.OutputStream
 import java.util.*
 
@@ -100,6 +104,18 @@ final object LPrint {
     }
 
     fun getOutputStream() = outputStream
+
+    fun printImage(ba:ByteArray){
+        outputStream?.apply {
+            try {
+
+//                addImage(ba, Align.CENTER, 0)
+//                feedLine(2)
+            } catch (ex: java.lang.Exception) {
+                Log.d("DMJ", "Error getting image bytes to print")
+            }
+        }
+    }
 
     fun print(string: String,fontSize:ByteArray = NORMAL_SIZE, isBold:Boolean = false ,printOnNewLine:Boolean = false,align: ByteArray = LEFT_ALIGN, trim:Boolean = true){
         outputStream?.apply {
@@ -287,7 +303,7 @@ final object LPrint {
         }
     }
 
-    private fun convertBitmapToMonochrome(bitmap: Bitmap): Bitmap {
+    public fun convertBitmapToMonochrome(bitmap: Bitmap): Bitmap {
         val width = bitmap.width
         val height = bitmap.height
         val bwBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
@@ -303,7 +319,7 @@ final object LPrint {
         return bwBitmap
     }
 
-    private fun convertBitmapToEscPos(bitmap: Bitmap): ByteArray {
+    public fun convertBitmapToEscPos(bitmap: Bitmap): ByteArray {
         val width = bitmap.width
         val height = bitmap.height
 
@@ -354,6 +370,7 @@ final object LPrint {
         val newBitmap = Bitmap.createScaledBitmap(bitmap, 210, 210, true)
         val bwBitmap = convertBitmapToMonochrome(newBitmap)
         val escPosData = convertBitmapToEscPos(bwBitmap)
+
 
         outputStream?.write(align)
         outputStream?.write(escPosData) // Send the image data

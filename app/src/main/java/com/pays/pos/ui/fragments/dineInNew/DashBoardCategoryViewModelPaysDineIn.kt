@@ -7220,6 +7220,7 @@ class DashBoardCategoryViewModelPaysDineIn @Inject constructor(
                                                 Constants.VENUE_LOGO_URL,
                                                 it.settingData.data.logo.thumb.thumbUrl
                                             )
+
                                         }
 
 
