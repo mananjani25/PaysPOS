@@ -613,11 +613,19 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 binding.txtAddCustomer.invisible()
                 binding.rvCartDineIn.visible()
             } else {
-                if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text == getString(R.string.add_customer2)) {
-                    binding.txtAddCustomer.gone()
-                }  else if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text != getString(R.string.add_customer2)) {
-                    binding.txtAddCustomer.visible()
-                    binding.txtAddCustomer.isEnabled = false
+                if (isAdded && parentFragmentManager!=null) {
+                    if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text == getString(
+                            R.string.add_customer2
+                        )
+                    ) {
+                        binding.txtAddCustomer.gone()
+                    } else if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment && binding.txtAddCustomer.text != getString(
+                            R.string.add_customer2
+                        )
+                    ) {
+                        binding.txtAddCustomer.visible()
+                        binding.txtAddCustomer.isEnabled = false
+                    }
                 }
 
             }
