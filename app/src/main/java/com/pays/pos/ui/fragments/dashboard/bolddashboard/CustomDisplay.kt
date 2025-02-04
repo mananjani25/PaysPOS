@@ -89,13 +89,9 @@ import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
 import com.pays.pos.ui.fragments.transactions.TransactionViewModel
-import com.pays.pos.utils.AlertUtils
-import com.pays.pos.utils.AmountTextWatcher
-import com.pays.pos.utils.LogUtil
-import com.pays.pos.utils.MethodUtils
+import com.pays.pos.utils.*
 import com.pays.pos.utils.MethodUtils.Companion.generalizeAmount
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
-import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.ProgressUtils.dismissProgressDialog
 import com.pays.pos.utils.callback.MyCallback
 import com.pays.pos.utils.extensions.gone
