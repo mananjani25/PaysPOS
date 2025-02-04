@@ -11046,24 +11046,23 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 lineBreak()
                                             }
 
-
-                                            if (order?.orderTypeName?.trim()
-                                                    .equals("Online Order", true) ||
-                                                order?.orderTypeName?.trim()
-                                                    .equals("OnlineWebOrder", true) ||
-                                                order?.orderTypeName?.trim()
-                                                    .equals(PHONE_ORDER, true)
+                                            if (receiptModel?.order?.orderType.equals(PHONE_ORDER, true) ||
+                                                receiptModel?.order?.orderType.equals("OnlineWebOrder", true) ||
+                                                receiptModel?.order?.orderType.equals("Online Order", true) ||
+                                                receiptModel?.order?.orderType.equals("OnlineOrder", true)
                                             ) {
+
                                                 order?.deliveryType?.let {
                                                     printCenter(
                                                         it,
                                                         isBold = true,
-                                                        fontSize = FONT_SIZE_4X
+                                                        fontSize = FONT_SIZE_5X
                                                     )
                                                 }
                                                 lineBreak()
+                                                lineBreak()
                                             }
-//                                        lineBreak()
+
 //                                outputStream.write(LPrint.LINE_FEED)
 //                                outputStream.write(LPrint.NORMAL_SIZE)
 //                                outputStream.write(LPrint.LEFT_ALIGN)
