@@ -555,7 +555,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     }
 
     private fun getTipDetails(tippedAmount: Double, orderId: Int?){
-        viewModel.getCashEventDetails(tippedAmount, orderId?:-1,singleTransaction?.id?:-1)
+        viewModel.getCashEventDetails(tippedAmount, orderId?:-1,singleTransaction?.id?:-1,"in",0)
     }
 
     private fun makeCashEventCallToUpdateTip(tippedAmount: Double) {
