@@ -508,6 +508,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         observeForTipBeforeTransaction()
+
+        Log.e("totalPriceChcek","totalPrice ${totalPrice}")
     }
 
     private fun observeForTipBeforeTransaction() {
@@ -4836,7 +4838,22 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         } else {
 
                             prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true)
-                            splitAllAmounts(Constants.SUB_TOTAL, it.data.amount?.toPrecision(2).toDouble())
+
+                            Log.e("checkTotalAmount","totalPrice:  ${totalPrice}")
+                            Log.e("checkDataAmount","amount:  ${it.data.amount}")
+                            if (totalPrice.toDouble() > it.data.amount) {
+
+                                splitAllAmounts(
+                                    Constants.SUB_TOTAL,
+                                    it.data.amount?.toPrecision(2).toDouble()
+                                )
+                            }
+                            else{
+                                splitAllAmounts(
+                                    Constants.SUB_TOTAL,
+                                    totalPrice.toDouble()
+                                )
+                            }
                             splitAllAmounts(Constants.TOTAL_DISCOUNT, 0.00)
                             splitAllAmounts(Constants.TAX_CHARGE, 0.00)
                             splitAllAmounts(Constants.SERVICE_CHARGE, 0.00)
@@ -8091,6 +8108,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
 
                 // total amount - (hal pay amoutn + alredy pay )
+
+                if (paymentReq?.gift_card_redeemed_amount != null && paymentReq?.gift_card_redeemed_amount?:0.00  > 0.00){
+                    Log.e("checkSplit","giftCard")
+                    if (paymentReq.gift_card_redeemed_amount?.toDouble() != totalPrice.toDouble()) {
+                        paymentReq.gift_card_redeemed_amount = totalPrice
+                        paymentReq.amount = totalPrice
+                        Log.e("AcceptPaymentReq","changedParams")
+                    }
+
+
+                }
                 val aa = SpitByOrderRequestModel(
                     orderId, isSelectedCount <= 1,
                     SpitByOrderPaymentModel(
