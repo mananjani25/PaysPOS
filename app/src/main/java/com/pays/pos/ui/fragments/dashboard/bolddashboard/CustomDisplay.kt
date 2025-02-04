@@ -17,8 +17,11 @@ import android.view.View
 import android.view.Window
 import android.widget.Toast
 import androidx.appcompat.view.ContextThemeWrapper
-import androidx.core.view.indices
-import androidx.lifecycle.*
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -31,13 +34,22 @@ import com.google.gson.JsonArray
 import com.pax.poslink.PaymentRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
-import com.pax.poslink.log.LogFilter.Const
-import com.pays.payments.callbacks.PaymentCallback
-import com.pays.payments.design.*
+import com.pays.payments.design.Dejavoo
+import com.pays.payments.design.PaymentGatewayFactory
+import com.pays.payments.design.PaymentGatewayType
+import com.pays.payments.design.TransactionType
+import com.pays.payments.design.Valor
 import com.pays.payments.gateways.dejavoo.DejavooPaymentGateway
 import com.pays.payments.gateways.valor.ValorPaymentGateway
 import com.pays.pos.R
-import com.pays.pos.data.entities.*
+import com.pays.pos.data.entities.LoyaltyProgramsModel
+import com.pays.pos.data.entities.Modifier
+import com.pays.pos.data.entities.TaxData
+import com.pays.pos.data.entities.TbCartItem
+import com.pays.pos.data.entities.TbCustomer
+import com.pays.pos.data.entities.TbPhones
+import com.pays.pos.data.entities.TbServiceCharge
+import com.pays.pos.data.entities.VariationsAttribute
 import com.pays.pos.data.model.DineInModel
 import com.pays.pos.data.model.GuestPaymentCalculationModel
 import com.pays.pos.data.model.requestModel.CashLogRequest
@@ -50,6 +62,7 @@ import com.pays.pos.data.remote.ApiService
 import com.pays.pos.data.remote.Constants
 import com.pays.pos.data.remote.Constants.CUSTOMER_SIGN_REQUIRED_ON_CD
 import com.pays.pos.data.remote.Constants.DINE_IN
+import com.pays.pos.data.remote.Constants.IS_PAYMENT_SCREEN
 import com.pays.pos.data.remote.Constants.MANUAL_SALE
 import com.pays.pos.data.remote.Constants.ORDER_TYPE
 import com.pays.pos.data.remote.Constants.REDIRECT_FROM
@@ -58,6 +71,7 @@ import com.pays.pos.data.remote.Constants.TERMINAL_ID
 import com.pays.pos.databinding.ViewCustomDisplayBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.PrefProvider
+import com.pays.pos.logger.CashBoxEvent
 import com.pays.pos.logger.CreateCustomerEvent
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.logger.SyncCustomerEvent
@@ -72,22 +86,35 @@ import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.pays.pos.ui.fragments.magtek.PaymentResponse
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
+import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
 import com.pays.pos.ui.fragments.transactions.TransactionViewModel
-import com.pays.pos.utils.*
+import com.pays.pos.utils.AlertUtils
+import com.pays.pos.utils.AmountTextWatcher
+import com.pays.pos.utils.LogUtil
+import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.MethodUtils.Companion.generalizeAmount
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
+import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.ProgressUtils.dismissProgressDialog
 import com.pays.pos.utils.callback.MyCallback
-import com.pays.pos.utils.extensions.*
+import com.pays.pos.utils.extensions.gone
+import com.pays.pos.utils.extensions.invisible
+import com.pays.pos.utils.extensions.isVisible
+import com.pays.pos.utils.extensions.setOnSingleClickListener
+import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.paxUtils.AppThreadPool
 import com.pays.pos.utils.paxUtils.POSLinkCreatorWrapper
 import com.pays.pos.utils.paxUtils.SettingINI
 import com.pays.pos.utils.statusUtils.Status
-import com.pays.pos.data.remote.Constants.IS_PAYMENT_SCREEN
-import com.pays.pos.logger.CashBoxEvent
-import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
 import retrofit2.Callback
@@ -1284,7 +1311,7 @@ class CustomDisplay(
                     binding.tvLoyaltyBalance.visible()
                     binding.tvLoyaltyPoints.visible()
                     binding.tvLoyaltyBalance.text =
-                        "${context.resources.getString(R.string.applied_loyalty_balance)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount}"
+                        "${context.resources.getString(R.string.applied_loyalty_balance)}: $${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount}"
                     binding.tvLoyaltyPoints.text =
                         "${context.resources.getString(R.string.applied_loyalty_points)}: ${dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
                 }
