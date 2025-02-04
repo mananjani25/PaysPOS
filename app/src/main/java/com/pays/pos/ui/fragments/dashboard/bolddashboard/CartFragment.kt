@@ -3586,6 +3586,8 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                                 viewModel.currentCartItems = arrayListOf()
                                 viewModel.duplicateCurrentCartItem = arrayListOf()
                                 viewModel.fragmentNeedToBeUpdated.value = false
+
+                                viewModelPayment.clearPreAuthDetails()
                             } catch (e: Exception) {
                                 e.printStackTrace()
                             }
@@ -3879,15 +3881,15 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             clearCart()
                             cleanOrderBackupDetails()
 
-                            //Clear PREAUTH data
-                            prefProvider.setValue(PRE_AUTH_DETAILS,"")
-//                            viewModel.apply {
-//                                paymentAttributes = null
-//                                authPaymentResponse = null
-//                                allOrderResponse = null
-//                            }
-//
-                            viewModelPayment.preAuthData = null
+//                            //Clear PREAUTH data
+//                            prefProvider.setValue(PRE_AUTH_DETAILS,"")
+////                            viewModel.apply {
+////                                paymentAttributes = null
+////                                authPaymentResponse = null
+////                                allOrderResponse = null
+////                            }
+////
+//                            viewModelPayment.preAuthData = null
                         }
 
 
