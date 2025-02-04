@@ -307,6 +307,11 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _latestDiscount = MutableLiveData<Double>()
     val latestDiscount: LiveData<Double> = _latestDiscount
 
+    public val customerCardPrice = MutableLiveData<Double>()
+
+    public val customerCashPrice = MutableLiveData<Double>()
+    public val customerNormalPrice = MutableLiveData<Double>()
+
     public val tipButtonOnCustomerDisplayClicked = MutableLiveData<Boolean>()
 
     public val tipErrorObservable = MutableLiveData<String>()

@@ -2842,6 +2842,13 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                 binding.txtNoncashAdj.text =
                     "-" + MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
 
+                val total =
+                    viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge
+
+                viewModel.customerCardPrice.value=total
+                    viewModel.customerCashPrice.value=total-viewModel.totalDiscount
+
+
             } else {
 
                 if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
@@ -2862,11 +2869,26 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     } else {
                         val total =
                             viewModel.subTotalPrice + viewModel.totalTax + viewModel.totalServiceCharge
+
                         viewModel.cashdiscountAmount = MethodUtils.getLatestCashDiscountOrSurCharge(
                             total,
                             prefProvider,
                             requireContext()
                         )
+
+
+                        if (viewModel.cashDiscountType.equals("CashDiscount", ignoreCase = true)) {
+                          //Cash Discount
+                            viewModel.customerCardPrice.value=total
+                            viewModel.customerCashPrice.value=total-viewModel.cashdiscountAmount
+                        } else if(viewModel.cashDiscountType.equals("Surcharge", ignoreCase = true)) {
+                          //Surcharge
+                            viewModel.customerCashPrice.value=total
+                            viewModel.customerCardPrice.value=total+viewModel.cashdiscountAmount
+                        }else{
+                            viewModel.customerNormalPrice.value=total
+                        }
+
                     }
 
                 }
@@ -2911,6 +2933,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                             }"
 
 
+                            try{
                             binding.txtLoyaltyPoints.text =
                                 "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
                             /*  binding.txtLoyaltyBalance.text =
@@ -2918,6 +2941,9 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
                             binding.txtLoyaltyBalance.text =
                                 "${viewModel.redeemLoyaltyInfo.remainingLoyaltyPoints}"
+                                }catch (e:Exception){
+
+                                }
                         } else {
                             binding.liinearInfoLayout.layoutParams.height =
                                 resources.getDimension(R.dimen._50sdp).toInt()
@@ -3474,6 +3500,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
                     supervisorScope {
                         launch {
                             try {
+                                viewModel.wholetotalPrice=0.0
                                 viewModel.changeCustomerDispSignButtonTitle("")
                                 viewModel.selectedCatetory = 0
                                 // Do positive stuff here

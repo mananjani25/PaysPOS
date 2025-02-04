@@ -1037,10 +1037,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     changeAmtGlobal =
                         MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount).toDouble()
                     binding.txtChangeAmount.visible()
-
                     val ca = remainingAmount - tipAmount
                     binding.txtChangeAmount.text =
                         MethodUtils.roundOffAmount(if (ca > 0) ca else 0.00) + " Change"
+//                    --------------------------------------------------------------------
+                    //TODO: Add the network call to make the cash log entry for "out"
+//                    --------------------------------------------------------------------
+
+                    getCashEventDetails(ca, orderID,prefProvider.getValueInt(
+                        PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
+                    ))
 
                     LogUtil.logE("Change 6", binding.txtChangeAmount.text.toString())
                 } else {
@@ -1292,6 +1298,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
+    }
+
+    private fun getCashEventDetails(amount: Double, orderId: Int?,paymentId:Int){
+        transactionViewModel.getCashEventDetails(amount, orderId?:-1, paymentId,"out", 1)
     }
 
     private fun cloudQueuePrinting(
