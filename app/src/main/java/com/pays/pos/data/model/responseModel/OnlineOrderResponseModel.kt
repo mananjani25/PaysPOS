@@ -4,6 +4,7 @@ import android.os.Parcelable
 import com.pays.pos.data.model.GetPaymentOrderDetailsResponse
 import com.pays.pos.data.model.requestModel.OrderItemVariationAttribute
 import com.google.gson.annotations.SerializedName
+import com.pays.pos.data.model.responseModel.GetOrderDetailsResponse.Data.RefundDetails
 import kotlinx.parcelize.Parcelize
 
 
@@ -124,6 +125,8 @@ data class OnlineOrderResponseModel(
         val magensa_response_data: String,
         @SerializedName("terminal_name")
         val terminalName: String,
+        @SerializedName("refund_detail")
+        val refundDetails: RefundDetails
         //@SerializedName("order_type_name") val order_type_name: String,
     ) {
         data class OrderItem(

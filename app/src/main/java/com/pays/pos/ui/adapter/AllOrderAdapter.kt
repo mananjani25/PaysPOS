@@ -292,7 +292,7 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                 binding.imgIndicator.setColorFilter(ContextCompat.getColor(context, R.color.white))
             }
 
-            if(item.payments.isNotEmpty() && item.order_status == "Pending" && item.paymentStatus != "Paid") {
+            if(item.payments.isNotEmpty() && item.order_status == "Pending" && item.paymentStatus != "Paid" && item.refundDetails.refundedAmount == 0.0 ) {
                 binding.llMainLayout.setBackgroundColor(
                     ContextCompat.getColor(context, R.color.preAuthGreen)
                 )

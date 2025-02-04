@@ -6065,7 +6065,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             try {
                 val preAuthData = paymentviewModel.preAuthData
 
-                if (preAuthData!!.ecrRefNum.isNotEmpty() && preAuthData.refNum.isNotEmpty()) {
+                if (preAuthData!!.ecrRefNum.isNotEmpty() && preAuthData.refNum.isNotEmpty() ) {
                     binding.llSavedCard.visibility = View.VISIBLE
                 } else {
                     binding.llSavedCard.visibility = View.GONE

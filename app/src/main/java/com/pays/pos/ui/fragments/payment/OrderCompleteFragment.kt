@@ -278,6 +278,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        //CLEAR PRE AUTH DATA IF EXISTS
+//        paymentViewModel.preAuthData.let {
+//            paymentViewModel.preAuthData = null
+//        }
+//
     }
 
     private fun initOmniDriver() {
