@@ -40,7 +40,11 @@ import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.paxUtils.SettingINI
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.lang.ref.WeakReference
 import java.security.InvalidKeyException
 import java.security.KeyFactory
@@ -386,17 +390,19 @@ class AddValueInGiftCardFragment : Fragment() {
 //                        }
 //                    })
 
-                    AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
-                        requireContext(),
-                        getString(R.string.are_you_sure_proceed),
-                        "Ok"
-                    ) { dialogInterface, clickedButton ->
-                        if (clickedButton == 0) {
-                            startProcessingForAddValue()
-                        } else {
-                            dialogInterface?.dismiss()
-                        }
-                    }
+                    startProcessingForAddValue()
+
+//                    AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
+//                        requireContext(),
+//                        getString(R.string.are_you_sure_proceed),
+//                        "Ok"
+//                    ) { dialogInterface, clickedButton ->
+//                        if (clickedButton == 0) {
+//
+//                        } else {
+//                            dialogInterface?.dismiss()
+//                        }
+//                    }
                 }
             }
         }
@@ -442,33 +448,42 @@ class AddValueInGiftCardFragment : Fragment() {
         }
 
         else {
-            if (giftCardNumber.length > 8){
-                prefProvider.setValue(Constants.PHYSICAL_GIFT_CARD_NUMBER,giftCardNumber)
-                prefProvider.setValue(Constants.GIFT_CARD_TYPE,"Physical")
-            }
-            else{
-                prefProvider.setValue(Constants.GIFT_CARD_TYPE,"Digital")
+            AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
+                requireContext(),
+                getString(R.string.are_you_sure_proceed),
+                "Ok"
+            ) { dialogInterface, clickedButton ->
+                if (clickedButton == 0) {
+                    if (giftCardNumber.length > 8){
+                        prefProvider.setValue(Constants.PHYSICAL_GIFT_CARD_NUMBER,giftCardNumber)
+                        prefProvider.setValue(Constants.GIFT_CARD_TYPE,"Physical")
+                    }
+                    else{
+                        prefProvider.setValue(Constants.GIFT_CARD_TYPE,"Digital")
 
-            }
+                    }
 
 
-            prefProvider.setValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, amount.toString())
-            prefProvider.setValue(Constants.GIFT_CARD_NUMBER, giftCardNumber)
-            prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, true)
+                    prefProvider.setValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, amount.toString())
+                    prefProvider.setValue(Constants.GIFT_CARD_NUMBER, giftCardNumber)
+                    prefProvider.setValueboolean(Constants.IS_ADD_VALUE_IN_GIFT_CARD, true)
 
-            activity?.let {
-                if (InternetUtils.isInternetAvailable(it.applicationContext)) {
-                    dashboardViewModel.checkCardExistOrNot(giftCardNumber)
+                    activity?.let {
+                        if (InternetUtils.isInternetAvailable(it.applicationContext)) {
+                            dashboardViewModel.checkCardExistOrNot(giftCardNumber)
 
-                    /* giftCardViewModel.giftCardCheckBalance(
-                         GiftCardCheckBalanceRequest(
-                             giftCardNumber
-                         )
-                     )
-                     */
+                            /* giftCardViewModel.giftCardCheckBalance(
+                                 GiftCardCheckBalanceRequest(
+                                     giftCardNumber
+                                 )
+                             )
+                             */
+                        }
+                    }
+                } else {
+                    dialogInterface?.dismiss()
                 }
             }
-
 //                moveToCheckout()
         }
     }
