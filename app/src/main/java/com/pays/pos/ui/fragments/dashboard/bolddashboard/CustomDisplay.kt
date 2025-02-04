@@ -230,6 +230,22 @@ class CustomDisplay(
             }
         })
 
+        setCashCardAmountObservers()
+
+    }
+
+    private fun setCashCardAmountObservers() {
+        dashBoardCategoryViewModel.customerCashPrice.observe(lifecycleOwner,{
+            binding.txtTotalCash?.text = "$ ${String.format("%.2f", it)}"
+        })
+
+        dashBoardCategoryViewModel.customerCardPrice.observe(lifecycleOwner,{
+            binding.txtTotalCard?.text = "$ ${String.format("%.2f", it)}"
+        })
+
+        dashBoardCategoryViewModel.customerNormalPrice.observe(lifecycleOwner,{
+            binding.txtOrderTotal.text = "$ ${String.format("%.2f", it)}"
+        })
     }
 
 
@@ -844,20 +860,21 @@ class CustomDisplay(
                         binding.txtDiscountCash?.text = "-$${String.format("%.2f", t)}"
 
 
-
-                        if (dashBoardCategoryViewModel.cashDiscountType.equals("CashDiscount", ignoreCase = true)) {
+//                        var wholePrice=/* if (dashBoardCategoryViewModel.wholetotalPrice!=0.0) */ dashBoardCategoryViewModel.separateVariableToTrackTotalPrice /*else dashBoardCategoryViewModel.totalPrice*/
+                        /*if (dashBoardCategoryViewModel.cashDiscountType.equals("CashDiscount", ignoreCase = true)) {
 
                             t?.let {
-                                binding.txtTotalCash?.text = (getCashDiscountedPrice(dashBoardCategoryViewModel.wholetotalPrice).removePrefix("$").toDouble()-it).toString()
-                                binding.txtTotalCard?.text = (MethodUtils.roundOffAmount(dashBoardCategoryViewModel.wholetotalPrice).removePrefix("$").toDouble()).toString()
+
+                                binding.txtTotalCash?.text = '$'+(getCashDiscountedPrice(*//*dashBoardCategoryViewModel.wholetotalPrice*//*wholePrice).removePrefix("$").toDouble()-it).toString()
+                                binding.txtTotalCard?.text = '$'+(MethodUtils.generalizeAmount(MethodUtils.roundOffAmount(*//*dashBoardCategoryViewModel.wholetotalPrice*//*wholePrice).removePrefix("$").toDouble().toString()))
                             }
 
                         } else {
                             t?.let {
-                                binding.txtTotalCash?.text = (MethodUtils.roundOffAmount(dashBoardCategoryViewModel.wholetotalPrice).removePrefix("$").toDouble()).toString()
-                                binding.txtTotalCard?.text = (getCashDiscountedPrice(dashBoardCategoryViewModel.wholetotalPrice).removePrefix("$").toDouble()-it).toString()
+                                binding.txtTotalCash?.text = '$'+MethodUtils.generalizeAmount((MethodUtils.roundOffAmount(*//*dashBoardCategoryViewModel.wholetotalPrice*//*wholePrice).removePrefix("$").toDouble()).toString())
+                                binding.txtTotalCard?.text = '$'+MethodUtils.generalizeAmount((getCashDiscountedPrice(*//*dashBoardCategoryViewModel.wholetotalPrice*//*wholePrice).removePrefix("$").toDouble()-it).toString())
                             }
-                        }
+                        }*/
                     }
                 }
 
@@ -3047,6 +3064,24 @@ class CustomDisplay(
                 signatureInBase64,
                 tippedAmount
             )
+            mTransactionViewModel.showProgress.observe(lifecycleOwner, object : Observer<Event<Boolean>> {
+                override fun onChanged(event: Event<Boolean>?) {
+                    event?.getContentIfNotHandled()?.let {
+                        if (it){
+
+                        }else{
+                            dismissProgressDialog()
+                            ProgressUtils.dismissProgressDialog()
+                            binding.apply {
+                                progressLayout.gone()
+                                tipLayout.visible()
+
+                            }
+                        }
+                    }
+                }
+            })
+
             mTransactionViewModel.updateTipData.observe(lifecycleOwner) { event ->
                 event.getContentIfNotHandled()?.let {
                     if (it.status == 200) {
