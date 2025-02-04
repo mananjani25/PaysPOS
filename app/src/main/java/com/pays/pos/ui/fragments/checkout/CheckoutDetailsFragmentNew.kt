@@ -8,7 +8,11 @@ import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.*
+import android.os.Bundle
+import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -32,16 +36,46 @@ import com.google.gson.JsonArray
 import com.google.gson.reflect.TypeToken
 import com.magtek.mobile.android.mtlib.IMTCardData
 import com.magtek.mobile.android.mtlib.MTConnectionState
-import com.magtek.mobile.android.mtusdk.*
-import com.pax.poslink.*
+import com.magtek.mobile.android.mtusdk.ConnectionState
+import com.magtek.mobile.android.mtusdk.ConnectionStateBuilder
+import com.magtek.mobile.android.mtusdk.CoreAPI
+import com.magtek.mobile.android.mtusdk.DeviceType
+import com.magtek.mobile.android.mtusdk.EventType
+import com.magtek.mobile.android.mtusdk.IData
+import com.magtek.mobile.android.mtusdk.IDevice
+import com.magtek.mobile.android.mtusdk.IDeviceListCallback
+import com.magtek.mobile.android.mtusdk.Transaction
+import com.magtek.mobile.android.mtusdk.TransactionBuilder
+import com.magtek.mobile.android.mtusdk.TransactionStatus
+import com.magtek.mobile.android.mtusdk.TransactionStatusBuilder
+import com.pax.poslink.ManageRequest
+import com.pax.poslink.PaymentRequest
+import com.pax.poslink.PosLink
+import com.pax.poslink.ProcessTransResult
 import com.pax.poslink.aidl.BasePOSLinkCallback
 import com.pax.poslink.broadpos.BroadPOSCommunicator
 import com.pax.poslink.fullIntegration.InputAccount
 import com.pax.poslink.fullIntegration.InputAccount.InputAccountCallback
-import com.pays.payments.design.*
+import com.pays.payments.design.Dejavoo
+import com.pays.payments.design.PaymentGatewayFactory
+import com.pays.payments.design.PaymentGatewayType
+import com.pays.payments.design.TransactionType
+import com.pays.payments.design.Valor
 import com.pays.pos.R
-import com.pays.pos.data.entities.*
-import com.pays.pos.data.model.requestModel.*
+import com.pays.pos.data.entities.CartModel
+import com.pays.pos.data.entities.PAXData
+import com.pays.pos.data.entities.RedeemLoyaltyInfo
+import com.pays.pos.data.entities.TaxData
+import com.pays.pos.data.entities.TbCartItem
+import com.pays.pos.data.entities.TbCustomer
+import com.pays.pos.data.entities.TbDynamicPaymentRecords
+import com.pays.pos.data.entities.TbItem
+import com.pays.pos.data.model.requestModel.CreateQueuePrinterRequestModel
+import com.pays.pos.data.model.requestModel.OrderAttributeRequestModel
+import com.pays.pos.data.model.requestModel.OrderRequestModel
+import com.pays.pos.data.model.requestModel.PaymentAttributes
+import com.pays.pos.data.model.requestModel.SpitByOrderPaymentModel
+import com.pays.pos.data.model.requestModel.SpitByOrderRequestModel
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.pays.pos.data.model.valor.ValorSuccessResponse
@@ -55,13 +89,11 @@ import com.pays.pos.data.remote.Constants.GIFT_CARD_PIN
 import com.pays.pos.data.remote.Constants.IS_GIFT_CARD_REDEEM
 import com.pays.pos.data.remote.Constants.IS_ORDER_REDEEMABLE_WITH_GIFT_CARD
 import com.pays.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
-import com.pays.pos.data.remote.Constants.OPTION_TYPE
 import com.pays.pos.data.remote.Constants.ORDER_TYPE
 import com.pays.pos.data.remote.Constants.PRE_AUTH_DETAILS
 import com.pays.pos.data.remote.Constants.TAKEOUT
 import com.pays.pos.data.remote.Constants.TIP_ADDED
 import com.pays.pos.data.remote.Constants.TIP_ADDED_AMOUNT
-import com.pays.pos.data.remote.PRINT_TRANSACTION_TYPE
 import com.pays.pos.databinding.FragmentCheckoutDetailsNewBinding
 import com.pays.pos.di.ApiModule1
 import com.pays.pos.di.MagtekModule
@@ -83,19 +115,42 @@ import com.pays.pos.ui.fragments.payment.PaymentBoldPosFragment
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
-import com.pays.pos.utils.*
+import com.pays.pos.utils.AlertUtils
+import com.pays.pos.utils.CardValidator
+import com.pays.pos.utils.Event
+import com.pays.pos.utils.InternetUtils
+import com.pays.pos.utils.LogUtil
+import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
+import com.pays.pos.utils.ProgressUtils
+import com.pays.pos.utils.TLVParser
 import com.pays.pos.utils.callback.DeleteOptionCallback
 import com.pays.pos.utils.callback.magtekCallback
-import com.pays.pos.utils.extensions.*
+import com.pays.pos.utils.extensions.gone
+import com.pays.pos.utils.extensions.invisible
+import com.pays.pos.utils.extensions.runOnUiThread
+import com.pays.pos.utils.extensions.setOnSingleClickListener
+import com.pays.pos.utils.extensions.visible
+import com.pays.pos.utils.getCustomerDisplay
 import com.pays.pos.utils.paxUtils.AppThreadPool
 import com.pays.pos.utils.paxUtils.POSLinkCreatorWrapper
 import com.pays.pos.utils.paxUtils.SettingINI
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
-import org.simpleframework.xml.core.Persister
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.xmlpull.v1.XmlPullParser
@@ -105,7 +160,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.StringReader
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 import javax.xml.parsers.DocumentBuilderFactory
 import kotlin.math.roundToInt
@@ -3799,18 +3855,20 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
 
         binding.txtChargeGC.setOnSingleClickListener {
-            AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
-                requireContext(),
-                getString(R.string.are_you_sure_proceed),
-                "Ok"
-            ) { dialogInterface, clickedButton ->
-                if (clickedButton == 0) {
-                    transactionInProgress()
-                    startTransactionWithGiftCardPayment()
-                } else {
-                    dialogInterface?.dismiss()
-                }
-            }
+
+            transactionInProgress()
+            startTransactionWithGiftCardPayment()
+//            AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
+//                requireContext(),
+//                getString(R.string.are_you_sure_proceed),
+//                "Ok"
+//            ) { dialogInterface, clickedButton ->
+//                if (clickedButton == 0) {
+//
+//                } else {
+//                    dialogInterface?.dismiss()
+//                }
+//            }
         }
     }
 
@@ -3952,7 +4010,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         if (giftCardNumber.isEmpty() || giftCardNumber.length < 8) {
             AlertUtils.showCustomAlert(
                 requireContext(),
-                "Please enter 8-digit gift card number."
+                "Please enter physical or digital gift card number."
             )
             binding.txtChargeGC.isEnabled = true
             return
@@ -3976,7 +4034,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         } else {
 
-            giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = giftCardNumber))
+            AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
+                requireContext(),
+                getString(R.string.are_you_sure_proceed),
+                "Ok"
+            ) { dialogInterface, clickedButton ->
+                if (clickedButton == 0) {
+                    giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = giftCardNumber))
+                } else {
+                    dialogInterface?.dismiss()
+                }
+            }
         }
         /**
          * Added to prevent multiple api calls on multiple clicks.
