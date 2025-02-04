@@ -210,7 +210,6 @@ open class PaymentViewModel @Inject constructor(
 
                             resource.data?.let { createOrderResponse ->
 
-                                prefProvider.setValue(PRE_AUTH_DETAILS,"")
 
                                 if (createOrderResponse.data.order.customer != null) {
                                     if (createOrderResponse.data.order.payments.isNotEmpty()) {

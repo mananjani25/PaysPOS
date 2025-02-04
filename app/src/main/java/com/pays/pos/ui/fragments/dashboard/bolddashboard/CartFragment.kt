@@ -102,6 +102,7 @@ import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
 import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
 import com.pays.pos.utils.*
+import com.pays.pos.utils.TimeFormatUtils.prefProvider
 import com.pays.pos.utils.callback.*
 import com.pays.pos.utils.extensions.*
 import com.pays.pos.utils.paxUtils.SettingINI

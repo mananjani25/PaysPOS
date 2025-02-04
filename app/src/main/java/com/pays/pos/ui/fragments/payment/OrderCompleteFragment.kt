@@ -222,6 +222,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var WholetotalPrice: Double = 0.0
     private val viewModel by viewModels<OrderCompleteViewModel>()
     private val paymentviewModel by viewModels<PaymentViewModel>()
+    private val preAuthPaymentviewModel by activityViewModels<PaymentViewModel>()
     private var receiptModel: CreateOrderResponse.Data? = null
     private var giftCardReceiptModel: SellGiftCardResponseModel.Data? = null
     private var giftCardAddValueReceiptModel: GiftCardAddValueResponse.Data? = null
@@ -602,15 +603,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.llHome.isClickable = true
                         binding.llNoReceipt.isClickable = true
                         context?.let {
-                            AlertUtils.showCustomAlertWithListenerWithOK(it, t, object :
-                                DialogInterface.OnClickListener {
-                                override fun onClick(p0: DialogInterface?, p1: Int) {
-                                    try {
-                                        p0?.dismiss()
-                                    } catch (e: Exception) {
+
+                            if (t.isNotEmpty()) {
+                                viewModelDashBoard.tipErrorObservable.value = ""
+                                AlertUtils.showCustomAlertWithListenerWithOK(it, t, object :
+                                    DialogInterface.OnClickListener {
+                                    override fun onClick(p0: DialogInterface?, p1: Int) {
+                                        try {
+                                            p0?.dismiss()
+                                        } catch (e: Exception) {
+                                        }
                                     }
-                                }
-                            })
+                                })
+                        }
                         }
                     })
 
@@ -627,6 +632,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 ProgressUtils.showProgressDialog("Processing Tip", requireActivity())
                 //alertDialog.show()
             } else {
+                binding.llHome.isClickable = true
+                binding.llNoReceipt.isClickable = true
 
                 // alertDialog.dismiss()
             }
@@ -1535,7 +1542,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             object : Observer<Boolean> {
                 override fun onChanged(t: Boolean?) {
                     t?.let {
-                        binding.llHome.isClickable = !it
+                      //  binding.llHome.isClickable = !it
                     }
                 }
             })
@@ -9701,7 +9708,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     private fun moveToDashboard() {
-        paymentviewModel.clearPreAuthDetails()
+      //preAuthPaymentviewModel.clearPreAuthDetails()
         prefProvider.setValueboolean(Constants.TIP_ADDED, false)
         prefProvider.deleteValue(Constants.DO_PRINT)
         prefProvider.setValue(Constants.DELIVERY_TYPE, "")
@@ -9776,7 +9783,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         prefProvider.setValue(Constants.OLD_ITEM, "")
                         prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
 
-                        paymentviewModel.clearPreAuthDetails()
+                     //preAuthPaymentviewModel.clearPreAuthDetails()
 
                         if (viewModelDashBoard.boldPosNeedToRefresh)
                             findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
@@ -9790,7 +9797,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         prefProvider.setValue(Constants.OLD_ITEM, "")
                         prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
 
-                        paymentviewModel.clearPreAuthDetails()
+                     //preAuthPaymentviewModel.clearPreAuthDetails()
                         findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
 
                     }
@@ -9810,7 +9817,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         clearObserver()
                         prefProvider.setValueboolean(ORDER_COMPLETED, true)
-                        paymentviewModel.clearPreAuthDetails()
+                     //preAuthPaymentviewModel.clearPreAuthDetails()
 
                         if (viewModelDashBoard.boldPosNeedToRefresh) {
                             findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
@@ -9819,7 +9826,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }
                     } else {
 
-                        paymentviewModel.clearPreAuthDetails()
+                     //preAuthPaymentviewModel.clearPreAuthDetails()
                         prefProvider.setValue(Constants.OLD_ITEM_BASE_CUSTOM_ITEM, "")
                         prefProvider.setValue(Constants.OLD_ITEM, "")
                         prefProvider.setValue(Constants.OLD_ITEM_BASE, "")
@@ -11593,19 +11600,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         )*/
 
                                                 var strCardType =
-                                                    receiptModel?.order?.payments?.last()?.cardType
+                                                    receiptModel?.order?.payments?.last()?.cardType ?: ""
 
-                                                if (paymentViewModel.extData != null && !paymentViewModel.extData.isNullOrEmpty()) {
+                                                if(strCardType == "") {
+                                                    if (paymentViewModel.extData != null && !paymentViewModel.extData.isNullOrEmpty()) {
 
-                                                    var applabStartIndex =
-                                                        paymentViewModel.extData.indexOf("<APPLAB>")
-                                                    var applabEndIndex =
-                                                        paymentViewModel.extData.indexOf("</APPLAB>")
-                                                    strCardType =
-                                                        paymentViewModel.extData.substring(
-                                                            applabStartIndex + "<APPLAB>".length,
-                                                            applabEndIndex
-                                                        )
+                                                        var applabStartIndex =
+                                                            paymentViewModel.extData.indexOf("<APPLAB>")
+                                                        var applabEndIndex =
+                                                            paymentViewModel.extData.indexOf("</APPLAB>")
+                                                        strCardType =
+                                                            paymentViewModel.extData.substring(
+                                                                applabStartIndex + "<APPLAB>".length,
+                                                                applabEndIndex
+                                                            )
+                                                    }
                                                 }
 
                                                 printLeft(
