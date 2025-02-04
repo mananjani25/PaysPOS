@@ -198,7 +198,7 @@ class CustomDisplay(
                 binding.mainCartLayout.visible()
             } else {
                 if(dashBoardCategoryViewModel.tipBeforeEnabled)
-                binding.askForTipBeforeLayout.visible()
+                    binding.askForTipBeforeLayout.visible()
             }
         }
         dashBoardCategoryViewModel.removeMainCart.observe(lifecycleOwner,object :Observer<Boolean>{

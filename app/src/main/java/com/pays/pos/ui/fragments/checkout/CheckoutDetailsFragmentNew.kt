@@ -837,6 +837,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         binding.linearNextSplit.setOnSingleClickListener {
             PaymentBoldPosFragment.newInstance().addTipHideShow(false)
+            dashboardViewModel.paymentInProgress.value = false
+            dashboardViewModel.tipBeforeEnabled = true
+            dashboardViewModel.removeMainCart.value = true
             dashboardViewModel.splitChanged.value = isSelectedCount
             dashboardViewModel.setSplitCount(isSelectedCount)
             loadPaymentLayout()
@@ -5175,9 +5178,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         } else {
                             initPOSLink()
                             runOnUiThread(Runnable {
-                                dashboardViewModel.paymentInProgress.value = false
-                                dashboardViewModel.tipBeforeEnabled = true
-                                dashboardViewModel.removeMainCart.value = true
+                                if (dashboardViewModel.customerGivenTipBefore.value == false) {
+                                    dashboardViewModel.paymentInProgress.value = false
+                                    dashboardViewModel.tipBeforeEnabled = true
+                                    dashboardViewModel.removeMainCart.value = true
+                                }
                                 dismissProgressDialog()
                             })
                             CoroutineScope(Dispatchers.Main).launch {
@@ -5203,9 +5208,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     }
                 } else {
                     CoroutineScope(Dispatchers.Main).launch {
-                        dashboardViewModel.paymentInProgress.value = false
-                        dashboardViewModel.tipBeforeEnabled = true
-                        dashboardViewModel.removeMainCart.value = true
+                        if (dashboardViewModel.customerGivenTipBefore.value == false) {
+                            dashboardViewModel.paymentInProgress.value = false
+                            dashboardViewModel.tipBeforeEnabled = true
+                            dashboardViewModel.removeMainCart.value = true
+                        }
                         ProgressUtils.dismissProgressDialog()
                         /*                    if (retryCount <= 1) {
                                                 retryCount++
