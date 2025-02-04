@@ -88,6 +88,10 @@ import com.pays.pos.utils.extensions.*
 import com.pays.pos.utils.landi.LPrint
 import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.statusUtils.Status
+import com.sdksuite.omnidriver.OmniConnection
+import com.sdksuite.omnidriver.OmniDriver
+import com.sdksuite.omnidriver.aidl.printer.Align
+import com.sdksuite.omnidriver.api.OnPrintListener
 import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
@@ -190,6 +194,7 @@ class AllOrdersListingFragment(
     var asciiCharWidth: Int = 12
     var cjkCharWidth: Int = 24
     var orderContent: java.lang.StringBuilder = java.lang.StringBuilder()
+    var omniDriver: OmniDriver? = null
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -223,6 +228,19 @@ class AllOrdersListingFragment(
         requireActivity().unregisterReceiver(broadcastReceiver)
     }
 
+    private fun initOmniDriver() {
+        omniDriver = OmniDriver.me(requireContext())
+        omniDriver?.init(object : OmniConnection {
+            override fun onConnected() {
+            }
+
+            override fun onDisconnected(error: Int) {
+            }
+        })
+    }
+
+    lateinit var venueUrlByteArray:ByteArray
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupAdapter()
@@ -252,6 +270,7 @@ class AllOrdersListingFragment(
         )
         binding.txtOrderWillAppear.text = "$orderStatusLabel order will appear here."
 
+        initOmniDriver()
         searchFilter()
         getAllOrders()
         setupEmployeeSort()
@@ -279,6 +298,14 @@ class AllOrdersListingFragment(
         ) { requestKey: String, bundle: Bundle ->
             var order_id = bundle.getInt("order_id")
             acceptedAndDeclineOrder("", 0, order_id, false)
+        }
+
+        if (prefProvider?.getValue(Constants.VENUE_LOGO_URL,"")?.isNotEmpty() == true) {
+            runBlocking {
+                lifecycleScope.async {
+                    venueUrlByteArray=LPrint.processImageForPrinting(prefProvider?.getValue(Constants.VENUE_LOGO_URL, "")!!, 200,200)!!
+                }.await()
+            }
         }
     }
 
@@ -2506,6 +2533,11 @@ class AllOrdersListingFragment(
                             LPrint.apply {
                                 setOutputStream(outputStream)
 
+                                var landiPrinter = omniDriver!!.getPrinter(Bundle())
+                                landiPrinter.openDevice(1)
+
+                                val pWidth: Int = landiPrinter.getValidWidth()
+
                                 try  {
 
                                     if (customerSettingModel.showOrderIdTop) {
@@ -2537,7 +2569,24 @@ class AllOrdersListingFragment(
                                         )
                                             .isNotEmpty()
                                     ) {
-                                        printLogoLandiInner(prefProvider.getValue(Constants.VENUE_LOGO,""))
+                                        try {
+
+                                            landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+
+                                            landiPrinter.startPrint(object : OnPrintListener {
+                                                override fun onSuccess() {
+
+                                                }
+
+                                                override fun onFail(i: Int) {
+
+                                                }
+                                            })
+
+                                        } catch (ex: java.lang.Exception) {
+                                            Log.d("DMJ", "Error getting image bytes to print")
+                                        }
+//                                        printLogoLandiInner(prefProvider.getValue(Constants.VENUE_LOGO,""))
 //                            PrintSunmiUtils.printLogoInner(prefProvider.getValue(VENUE_LOGO, ""))
 
                                     }

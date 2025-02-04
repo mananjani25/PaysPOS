@@ -96,6 +96,10 @@ import com.pays.pos.utils.landi.LPrint
 import com.pays.pos.utils.printer.CommonPrinterTypes
 import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.statusUtils.Status
+import com.sdksuite.omnidriver.OmniConnection
+import com.sdksuite.omnidriver.OmniDriver
+import com.sdksuite.omnidriver.aidl.printer.Align
+import com.sdksuite.omnidriver.api.OnPrintListener
 import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
@@ -211,6 +215,8 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
     var dineInCartItemMoved = false
 
+    var omniDriver: OmniDriver? = null
+
     /**
      * List of index of items fired to kitchen
      */
@@ -225,6 +231,20 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
     lateinit var prefProvider: PrefProvider
     private val viewModel by viewModels<DineInOrderTableViewModelPays>()
     private val viewModelPayment by activityViewModels<CheckoutDineInPaymentViewModel>()
+
+    private fun initOmniDriver() {
+        omniDriver = OmniDriver.me(requireContext())
+        omniDriver?.init(object : OmniConnection {
+            override fun onConnected() {
+            }
+
+            override fun onDisconnected(error: Int) {
+            }
+        })
+    }
+
+    lateinit var venueUrlByteArray:ByteArray
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -257,6 +277,7 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                 viewModel
             )
         }
+        initOmniDriver()
         observeShowProgress()
         setupSnackbar()
         getCustomerList()
@@ -299,6 +320,14 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
+        if (prefProvider.getValue(Constants.VENUE_LOGO_URL,"").isNotEmpty()) {
+            runBlocking {
+                lifecycleScope.async {
+                    venueUrlByteArray=LPrint.processImageForPrinting(prefProvider.getValue(Constants.VENUE_LOGO_URL, "")!!, 200,200)!!
+                }.await()
+            }
+        }
 
 
         return binding.root
@@ -6335,6 +6364,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                 setOutputStream(outputStream)
 
+                                var landiPrinter = omniDriver!!.getPrinter(Bundle())
+                                landiPrinter.openDevice(1)
+
+                                val pWidth: Int = landiPrinter.getValidWidth()
+
                                 var guestSubTotal = 0.0
                                 var guestTaxes = 0.0
                                 var guestServiceCharge = 0.0
@@ -6434,8 +6468,24 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         )
                                             .isNotEmpty()
                                     ) {
+                                        try {
 
-                                        printLogoLandiInner(prefProvider.getValue(Constants.VENUE_LOGO,""))
+                                            landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+
+                                            landiPrinter.startPrint(object : OnPrintListener {
+                                                override fun onSuccess() {
+
+                                                }
+
+                                                override fun onFail(i: Int) {
+
+                                                }
+                                            })
+
+                                        } catch (ex: java.lang.Exception) {
+                                            Log.d("DMJ", "Error getting image bytes to print")
+                                        }
+//                                        printLogoLandiInner(prefProvider.getValue(Constants.VENUE_LOGO,""))
 //                                        PrintSunmiUtils.printLogoInner(
 //                                            prefProvider.getValue(
 //                                                Constants.VENUE_LOGO,
@@ -10914,6 +10964,11 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                 LPrint.setOutputStream(outputStream)
 
+                                var landiPrinter = omniDriver!!.getPrinter(Bundle())
+                                landiPrinter.openDevice(1)
+
+                                val pWidth: Int = landiPrinter.getValidWidth()
+
                                 LPrint.apply {
 
                                     if (customerSettingModel.showOrderIdTop) {
@@ -10951,7 +11006,24 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                                         )
                                             .isNotEmpty()
                                     ) {
-                                        printLogoLandiInner(prefProvider.getValue(Constants.VENUE_LOGO,""))
+                                        try {
+
+                                            landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+
+                                            landiPrinter.startPrint(object : OnPrintListener {
+                                                override fun onSuccess() {
+
+                                                }
+
+                                                override fun onFail(i: Int) {
+
+                                                }
+                                            })
+
+                                        } catch (ex: java.lang.Exception) {
+                                            Log.d("DMJ", "Error getting image bytes to print")
+                                        }
+//                                        printLogoLandiInner(prefProvider.getValue(Constants.VENUE_LOGO,""))
                                         //PrintSunmiUtils.printLogoInner(prefProvider.getValue(VENUE_LOGO, ""))
 
                                     }

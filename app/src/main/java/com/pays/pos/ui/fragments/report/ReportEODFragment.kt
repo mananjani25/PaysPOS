@@ -28,8 +28,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import com.epson.eposprint.Builder
+import com.epson.eposprint.Print
+import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 import com.pays.pos.R
-import com.pays.pos.databinding.FragmentReportEodBinding
 import com.pays.pos.data.entities.Employee
 import com.pays.pos.data.model.ClockinOutReportModel
 import com.pays.pos.data.model.ShiftRportConfiguration
@@ -37,16 +40,19 @@ import com.pays.pos.data.model.responseModel.EodReportResponse
 import com.pays.pos.data.model.responseModel.PrinterResponse
 import com.pays.pos.data.model.responseModel.report.KeyValue
 import com.pays.pos.data.remote.Constants
+import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.MEDIUM
 import com.pays.pos.data.remote.Constants.SMALL
 import com.pays.pos.data.remote.Constants.SUNMI_INNER_PRINTER
-import com.pays.pos.data.remote.Constants.LANDI_INNER_PRINTER
 import com.pays.pos.data.remote.Constants.SUNMI_PRINTER
+import com.pays.pos.data.remote.Constants.getCurrentTimeFromTimeZone
+import com.pays.pos.databinding.FragmentReportEodBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.adapter.ClockInClockOutAdapter
 import com.pays.pos.ui.adapter.CreditCardBreakDownAdapter
 import com.pays.pos.ui.adapter.CreditTipAuditAdapter
 import com.pays.pos.ui.adapter.EmployeeGuestDetailsAdapter
+import com.pays.pos.ui.adapter.ExternalPaymentDetailsAdapter
 import com.pays.pos.ui.adapter.ItemWiseSalesAdapter
 import com.pays.pos.ui.adapter.PaymentDetailsAdapter
 import com.pays.pos.ui.adapter.SalesOrderDetailsAdapter
@@ -55,6 +61,7 @@ import com.pays.pos.ui.adapter.ServiceChargeDetailsAdapter
 import com.pays.pos.ui.adapter.TerminalAdapter
 import com.pays.pos.ui.adapter.boldpos.SalesPerCategorySummary
 import com.pays.pos.ui.fragments.loginscreen.PasscodeViewModel
+import com.pays.pos.ui.fragments.payment.OrderCompleteFragment.OnBluetoothPermissionGranted
 import com.pays.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.utils.AlertUtils
@@ -67,41 +74,58 @@ import com.pays.pos.utils.addBuilderText
 import com.pays.pos.utils.addCreditCardBreakDown
 import com.pays.pos.utils.addCreditCardBreakDownData
 import com.pays.pos.utils.addCreditCardBreakDownDataInner
+import com.pays.pos.utils.addCreditCardBreakDownDataInnerNew
 import com.pays.pos.utils.addCreditCardBreakDownDataLandiInner
 import com.pays.pos.utils.addCreditCardBreakDownInner
+import com.pays.pos.utils.addCreditCardBreakDownInnerNew
 import com.pays.pos.utils.addCreditCardBreakDownLandiInner
 import com.pays.pos.utils.addCreditTipAuditData
 import com.pays.pos.utils.addCreditTipAuditDataInner
+import com.pays.pos.utils.addCreditTipAuditDataInnerNew
 import com.pays.pos.utils.addCreditTipAuditDataLandiInner
 import com.pays.pos.utils.addCreditTipAuditHeader
 import com.pays.pos.utils.addCreditTipAuditHeaderInner
+import com.pays.pos.utils.addCreditTipAuditHeaderInnerNew
 import com.pays.pos.utils.addCreditTipAuditHeaderLandiInner
 import com.pays.pos.utils.addCustomerTextSize
 import com.pays.pos.utils.addHorizontalLine
 import com.pays.pos.utils.addItemWiseSales
 import com.pays.pos.utils.addItemWiseSalesHeader
+import com.pays.pos.utils.addItemWiseSalesHeaderLandiInner
 import com.pays.pos.utils.addItemWiseSalesHeaderSunmiInner
-import com.pays.pos.utils.addItemWiseSalesSunmiInnerPrinter
+import com.pays.pos.utils.addItemWiseSalesHeaderSunmiInnerNew
 import com.pays.pos.utils.addItemWiseSalesLandiInnerPrinter
+import com.pays.pos.utils.addItemWiseSalesSunmiInnerPrinter
+import com.pays.pos.utils.addItemWiseSalesSunmiInnerPrinterNew
 import com.pays.pos.utils.addItemsInOrderSalesDetails
 import com.pays.pos.utils.addItemsInOrderSalesDetailsInner
+import com.pays.pos.utils.addItemsInOrderSalesDetailsInnerNew
+import com.pays.pos.utils.addItemsInOrderSalesDetailsLandiInner
 import com.pays.pos.utils.addPaymentDetailsHeader
 import com.pays.pos.utils.addPaymentDetailsHeaderInner
+import com.pays.pos.utils.addPaymentDetailsHeaderInnerNew
+import com.pays.pos.utils.addPaymentDetailsHeaderLandiInner
 import com.pays.pos.utils.addPaymentDetailsHeaderLandiInnerNew
 import com.pays.pos.utils.addPaymentDetailsThreeData
 import com.pays.pos.utils.addPaymentDetailsThreeDataInner
+import com.pays.pos.utils.addPaymentDetailsThreeDataInnerNew
 import com.pays.pos.utils.addPaymentDetailsThreeDataLandiInner
 import com.pays.pos.utils.addPaymentDetailsTwoData
 import com.pays.pos.utils.addPaymentDetailsTwoDataInner
+import com.pays.pos.utils.addPaymentDetailsTwoDataInnerNew
 import com.pays.pos.utils.addPaymentDetailsTwoDataLandiInner
 import com.pays.pos.utils.addRefundVoidsMultiple
 import com.pays.pos.utils.addRefundVoidsMultipleInner
+import com.pays.pos.utils.addRefundVoidsMultipleInnerNew
 import com.pays.pos.utils.addRefundVoidsMultipleLandiInner
 import com.pays.pos.utils.addSixHeaderForOrderSaleDetails
+import com.pays.pos.utils.addSixHeaderForOrderSaleDetailsLandiInner
 import com.pays.pos.utils.addSixHeaderForOrderSaleDetailsSunmi
 import com.pays.pos.utils.addSixHeaderForOrderSaleDetailsSunmiInner
+import com.pays.pos.utils.addSixHeaderForOrderSaleDetailsSunmiInnerNew
 import com.pays.pos.utils.employeeGuestDetailsData
 import com.pays.pos.utils.employeeGuestDetailsDataInner
+import com.pays.pos.utils.employeeGuestDetailsDataInnerNew
 import com.pays.pos.utils.employeeGuestDetailsDataLandiInner
 import com.pays.pos.utils.extensions.alert
 import com.pays.pos.utils.extensions.gone
@@ -111,44 +135,24 @@ import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.showAlert
 import com.pays.pos.utils.extensions.visible
 import com.pays.pos.utils.itemWiseSalesM30Print
+import com.pays.pos.utils.landi.LPrint
 import com.pays.pos.utils.padLine
 import com.pays.pos.utils.printer.PrinterClass
 import com.pays.pos.utils.repeat
 import com.pays.pos.utils.statusUtils.Status
-import com.epson.eposprint.Builder
-import com.epson.eposprint.Print
-import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
-import com.pays.pos.data.remote.Constants.BUSINESS_ADDRESS
-import com.pays.pos.data.remote.Constants.BUSINESS_PHONE_NO
-import com.pays.pos.data.remote.Constants.getCurrentTimeFromTimeZone
-import com.pays.pos.ui.adapter.ExternalPaymentDetailsAdapter
-import com.pays.pos.ui.fragments.payment.OrderCompleteFragment.OnBluetoothPermissionGranted
-import com.pays.pos.utils.addCreditCardBreakDownDataInnerNew
-import com.pays.pos.utils.addCreditCardBreakDownInnerNew
-import com.pays.pos.utils.addCreditTipAuditDataInnerNew
-import com.pays.pos.utils.addCreditTipAuditHeaderInnerNew
-import com.pays.pos.utils.addItemWiseSalesHeaderSunmiInnerNew
-import com.pays.pos.utils.addItemWiseSalesHeaderLandiInner
-import com.pays.pos.utils.addItemWiseSalesSunmiInnerPrinterNew
-import com.pays.pos.utils.addItemsInOrderSalesDetailsInnerNew
-import com.pays.pos.utils.addItemsInOrderSalesDetailsLandiInner
-import com.pays.pos.utils.addPaymentDetailsHeaderLandiInner
-import com.pays.pos.utils.addPaymentDetailsHeaderInnerNew
-import com.pays.pos.utils.addPaymentDetailsThreeDataInnerNew
-import com.pays.pos.utils.addPaymentDetailsTwoDataInnerNew
-import com.pays.pos.utils.addRefundVoidsMultipleInnerNew
-import com.pays.pos.utils.addSixHeaderForOrderSaleDetailsSunmiInnerNew
-import com.pays.pos.utils.addSixHeaderForOrderSaleDetailsLandiInner
-import com.pays.pos.utils.employeeGuestDetailsDataInnerNew
-import com.pays.pos.utils.landi.LPrint
+import com.sdksuite.omnidriver.OmniConnection
+import com.sdksuite.omnidriver.OmniDriver
+import com.sdksuite.omnidriver.aidl.printer.Align
+import com.sdksuite.omnidriver.api.OnPrintListener
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.text.SimpleDateFormat
@@ -217,6 +221,8 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
     val myCalendar2 = Calendar.getInstance()
     val myCalendar3 = Calendar.getInstance()
 
+    var omniDriver: OmniDriver? = null
+
     private var sunmiFrameworkVersion: Array<String>? = null //Fetching Sunmi OS version to format printing.
 
     @set:Inject
@@ -238,6 +244,19 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
         return binding.root
     }
 
+    private fun initOmniDriver() {
+        omniDriver = OmniDriver.me(requireContext())
+        omniDriver?.init(object : OmniConnection {
+            override fun onConnected() {
+            }
+
+            override fun onDisconnected(error: Int) {
+            }
+        })
+    }
+
+    lateinit var venueUrlByteArray:ByteArray
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -247,6 +266,7 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
             binding.rlHeader.visibility = View.GONE
         }
         try {
+            initOmniDriver()
             eodReportSettings()
             initControls()
             initObservers()
@@ -309,6 +329,14 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                     negativeButton(R.string.tv_cancel) {
                         // Do negative stuff here
                     }
+                }
+            }
+
+            if (prefProvider?.getValue(Constants.VENUE_LOGO_URL,"")?.isNotEmpty() == true) {
+                runBlocking {
+                    lifecycleScope.async {
+                        venueUrlByteArray=LPrint.processImageForPrinting(prefProvider?.getValue(Constants.VENUE_LOGO_URL, "")!!, 200,200)!!
+                    }.await()
                 }
             }
         } catch (e: Exception) {
@@ -546,11 +574,33 @@ class ReportEODFragment(var showHeader: Boolean = true) : Fragment(),
                             LPrint.apply {
                                 setOutputStream(outputStream)
 
+                                var landiPrinter = omniDriver!!.getPrinter(Bundle())
+                                landiPrinter.openDevice(1)
+
+                                val pWidth: Int = landiPrinter.getValidWidth()
+
                                 try {
                                     Log.d("BIS-685", "createReportFormatEODLandiInner: Called")
 
-                                    prefProvider?.getValue(Constants.VENUE_LOGO,"")
-                                        ?.let { printLogoLandiInner(it) }
+//                                    prefProvider?.getValue(Constants.VENUE_LOGO,"")
+//                                        ?.let { printLogoLandiInner(it) }
+                                    try {
+
+                                        landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+
+                                        landiPrinter.startPrint(object : OnPrintListener {
+                                            override fun onSuccess() {
+
+                                            }
+
+                                            override fun onFail(i: Int) {
+
+                                            }
+                                        })
+
+                                    } catch (ex: java.lang.Exception) {
+                                        Log.d("DMJ", "Error getting image bytes to print")
+                                    }
 
                                     printCenter(
                                         prefProvider?.getValue(
