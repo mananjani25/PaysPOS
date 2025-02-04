@@ -1,7 +1,6 @@
 package com.pays.pos.ui.fragments.eGiftCard
 
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Message
@@ -16,7 +15,6 @@ import com.google.gson.Gson
 import com.pax.poslink.ManageRequest
 import com.pax.poslink.PosLink
 import com.pax.poslink.ProcessTransResult
-import com.pax.poslink.log.LogFilter.Const
 import com.pays.pos.R
 import com.pays.pos.data.entities.CartModel
 import com.pays.pos.data.entities.TbCartItem
@@ -31,7 +29,13 @@ import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.setOnSingleClickListener
 import com.pays.pos.utils.paxUtils.SettingINI
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.lang.ref.WeakReference
 import javax.inject.Inject
 
@@ -417,17 +421,18 @@ class PlasticCardNumber : Fragment() {
 //                        }
 //                    })
 
-                    AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
-                        requireContext(),
-                        getString(R.string.are_you_sure_proceed),
-                        "Ok"
-                    ) { dialogInterface, clickedButton ->
-                        if (clickedButton == 0) {
-                            startProcessingWithGiftcard()
-                        } else {
-                            dialogInterface?.dismiss()
-                        }
-                    }
+                    startProcessingWithGiftcard()
+//                    AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
+//                        requireContext(),
+//                        getString(R.string.are_you_sure_proceed),
+//                        "Ok"
+//                    ) { dialogInterface, clickedButton ->
+//                        if (clickedButton == 0) {
+//
+//                        } else {
+//                            dialogInterface?.dismiss()
+//                        }
+//                    }
                 }
             }
         }
@@ -440,7 +445,18 @@ class PlasticCardNumber : Fragment() {
             AlertUtils.showCustomAlert(requireContext(), "Please enter Valid Gift Card number")
         } else {
             closePaxRequest()
-            dashboardViewModel.checkCardExistOrNot(binding.edtAmount?.text.toString().trim())
+            AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
+                requireContext(),
+                getString(R.string.are_you_sure_proceed),
+                "Ok"
+            ) { dialogInterface, clickedButton ->
+                if (clickedButton == 0) {
+                    dashboardViewModel.checkCardExistOrNot(binding.edtAmount?.text.toString().trim())
+                } else {
+                    dialogInterface?.dismiss()
+                }
+            }
+
         }
     }
 
