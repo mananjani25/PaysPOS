@@ -4319,8 +4319,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 )
                             )
                         dismissProgressDialogWithAlert()
-                        dashboardViewModel.paymentInProgress.value = false
-                        dashboardViewModel.tipBeforeEnabled = true
+                        if (dashboardViewModel.customerGivenTipBefore.value == false) {
+                            dashboardViewModel.paymentInProgress.value = false
+                            dashboardViewModel.tipBeforeEnabled = true
+                            dashboardViewModel.removeMainCart.value = true
+                        }
                     }
                 )
             }
@@ -5102,6 +5105,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     } "
                                 )
                             )
+                        if (dashboardViewModel.customerGivenTipBefore.value == false) {
+                            dashboardViewModel.paymentInProgress.value = false
+                            dashboardViewModel.tipBeforeEnabled = true
+                            dashboardViewModel.removeMainCart.value = true
+                        }
                     }
                 )
             }
