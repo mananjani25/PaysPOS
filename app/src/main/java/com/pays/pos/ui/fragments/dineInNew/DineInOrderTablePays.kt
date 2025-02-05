@@ -3254,13 +3254,15 @@ class DineInOrderTablePays : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                     totalServiceChargeAmount = 0.0
                     if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+
+                        val currentGuestCount = dineInTableAdapter.getList().count { it.isHeader==0 }
                         var isApplied = false
                         serviceChargeList.forEach {
                             if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
                                 if (isInRange(
                                         it.min_guest_count!!,
                                         it.max_guest_count!!,
-                                        eligibleGuestsForDivision
+                                        currentGuestCount
                                     )
                                 ) {
 
