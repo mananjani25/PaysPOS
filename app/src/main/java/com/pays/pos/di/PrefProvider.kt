@@ -166,7 +166,11 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
     }
 
     fun deleteValue(key:String){
-        sharedPreferences?.edit()?.remove(key)
+        try {
+            sharedPreferences?.edit()?.remove(key).apply { }
+        }catch (e:Exception) {
+            e.printStackTrace()
+        }
     }
 
     fun setClear() {
