@@ -82,6 +82,10 @@ import com.pays.pos.logger.CashBoxEvent
 import com.pays.pos.logger.MessageEvent
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.pays.pos.utils.landi.LPrint
+import com.sdksuite.omnidriver.OmniConnection
+import com.sdksuite.omnidriver.OmniDriver
+import com.sdksuite.omnidriver.aidl.printer.Align
+import com.sdksuite.omnidriver.api.OnPrintListener
 import com.starmicronics.stario10.InterfaceType
 import com.starmicronics.stario10.StarConnectionSettings
 import com.starmicronics.stario10.StarPrinter
@@ -178,9 +182,23 @@ class TransactionDetailsFragment : Fragment() {
     var cardLastDigits = ""
     var CardName = ""
     var EDCType = ""
+    var omniDriver: OmniDriver? = null
 
     @Inject
     lateinit var prefProvider: PrefProvider
+
+    private fun initOmniDriver() {
+        omniDriver = OmniDriver.me(requireContext())
+        omniDriver?.init(object : OmniConnection {
+            override fun onConnected() {
+            }
+
+            override fun onDisconnected(error: Int) {
+            }
+        })
+    }
+
+    lateinit var venueUrlByteArray:ByteArray
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -228,6 +246,15 @@ class TransactionDetailsFragment : Fragment() {
 //            viewModel.apiCallOrderDetails(orderId)
 //
 //        }
+
+        if (prefProvider.getValue(Constants.VENUE_LOGO_URL,"").isNotEmpty()) {
+            runBlocking {
+                lifecycleScope.async {
+                    venueUrlByteArray=LPrint.processImageForPrinting(prefProvider.getValue(Constants.VENUE_LOGO_URL, "")!!, 200,200)!!
+                }.await()
+            }
+        }
+
         observeTipsList()
         setupSnackbar()
         observeShowProgress()
@@ -293,6 +320,8 @@ class TransactionDetailsFragment : Fragment() {
         var selectedroleType = arguments?.getInt("selectedroleType")
         var selectedemployeeType = arguments?.getInt("selectedemployeeType")
         var selectedterminalType = arguments?.getInt("selectedterminalType")
+
+        initOmniDriver()
 
         sunmiFrameworkVersion =
             prefProvider?.getValue(Constants.SUNMI_FRAMEWORK_VERSION, "").toString().split(".")
@@ -7480,6 +7509,11 @@ class TransactionDetailsFragment : Fragment() {
                             LPrint.apply {
                                 setOutputStream(outputStream)
 
+                                var landiPrinter = omniDriver!!.getPrinter(Bundle())
+                                landiPrinter.openDevice(1)
+
+                                val pWidth: Int = landiPrinter.getValidWidth()
+
                                 try {
 
                                     if (customerSettingModel.showOrderIdTop) {
@@ -7513,6 +7547,23 @@ class TransactionDetailsFragment : Fragment() {
                                     ) {
 
 //                            PrintSunmiUtils.printLogoInner(prefProvider.getValue(VENUE_LOGO, ""))
+                                        try {
+
+                                            landiPrinter.addImage(venueUrlByteArray, Align.CENTER, 0)
+
+                                            landiPrinter.startPrint(object : OnPrintListener {
+                                                override fun onSuccess() {
+
+                                                }
+
+                                                override fun onFail(i: Int) {
+
+                                                }
+                                            })
+
+                                        } catch (ex: java.lang.Exception) {
+                                            Log.d("DMJ", "Error getting image bytes to print")
+                                        }
 
                                     }
 
