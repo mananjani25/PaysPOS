@@ -154,8 +154,8 @@ class DineInFragmentPays : Fragment() {
         tableStatusSucess()
         observeShowProgress()
 
-        binding.layoutHeader.imgTransferTable?.gone()
-        //binding.layoutHeader.txtMerge.gone()
+        //   binding.layoutHeader.imgTransferTable?.gone()
+        //   binding.layoutHeader.txtMerge.gone()
         binding.layoutHeader.imgRefreshTables?.visible()
         binding.layoutHeader.txtUserName.text = prefProvider.getValue(Constants.EMPLOYEE_NAME, "")
 
