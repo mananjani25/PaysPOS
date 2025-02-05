@@ -7634,7 +7634,7 @@ class TransactionDetailsFragment : Fragment() {
                                         printCenter(
                                             paymentDetailsResponse.data.order.delivery_type,
                                             isBold = true,
-                                            fontSize = FONT_SIZE_4X
+                                            fontSize = FONT_SIZE_5X
                                         )
                                         lineBreak()
                                         lineBreak()
