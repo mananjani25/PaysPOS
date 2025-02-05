@@ -4011,6 +4011,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun startTransactionWithGiftCardPayment() {
         binding.txtChargeGC.isEnabled = false
         val giftCardNumber = binding.edtGiftCardNumber.rawText.toString().trim()
+        Log.e(TAG,"checkGiftCardNumber:  ${giftCardNumber}")
 
         if (giftCardNumber.isEmpty() || giftCardNumber.length < 8) {
             AlertUtils.showCustomAlert(
@@ -4026,11 +4027,23 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     Log.e("ObserverdGiftCardProgress", it.toString())
                     if (it) {
                         closePaxRequest()
+                        Log.e("checkGiftCardNumber","giftCardNumber:  ${giftCardNumber}")
                         giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
                     } else {
-                        AlertUtils.showCustomAlert(
+                        AlertUtils.showCustomAlertWithListenerWithOK(
                             requireContext(),
-                            "This gift card has not been activated."
+                            "This gift card has not been activated.",
+                            object : DialogInterface.OnClickListener{
+                                override fun onClick(p0: DialogInterface?, p1: Int) {
+                                    binding.edtGiftCardNumber.text?.clear()
+                                    binding.frameLayoutId.gone()
+                                    binding.relativeMain.visible()
+                                    binding.llManualCard.visible()
+                                    binding.llGiftCard.gone()
+                                }
+
+                            }
+
                         )
                     }
                 }
@@ -4834,6 +4847,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 requireContext(),
                                 message = getString(R.string.msg_insufficient_gift_card_balance)
                             ) { _, _ ->
+                                binding.edtGiftCardNumber.text?.clear()
+                                binding.frameLayoutId.gone()
+                                binding.relativeMain.visible()
+                                binding.llManualCard.gone()
+                                binding.llGiftCard.gone()
+
                             }
                         } else {
 
@@ -8110,10 +8129,12 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 // total amount - (hal pay amoutn + alredy pay )
 
                 if (paymentReq?.gift_card_redeemed_amount != null && paymentReq?.gift_card_redeemed_amount?:0.00  > 0.00){
-                    Log.e("checkSplit","giftCard")
+                    Log.e("checkSplit","giftCardwholeTotal ${WholetotalPrice}" )
+
+                    Log.e("checkSplit","viewmodelTotal  ${dashboardViewModel.totalPrice}")
                     if (paymentReq.gift_card_redeemed_amount?.toDouble() != totalPrice.toDouble()) {
-                        paymentReq.gift_card_redeemed_amount = totalPrice
-                        paymentReq.amount = totalPrice
+                        paymentReq.gift_card_redeemed_amount = dashboardViewModel.totalPrice
+                        paymentReq.amount = dashboardViewModel.totalPrice
                         Log.e("AcceptPaymentReq","changedParams")
                     }
 
