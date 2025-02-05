@@ -1046,7 +1046,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     getCashEventDetails(ca, orderID,prefProvider.getValueInt(
                         PAYMENT_ID_FOR_CUSTOMER_DISPLAY, 0
-                    ))
+                    ),1)
 
                     LogUtil.logE("Change 6", binding.txtChangeAmount.text.toString())
                 } else {
@@ -1300,8 +1300,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     }
 
-    private fun getCashEventDetails(amount: Double, orderId: Int?,paymentId:Int){
-        transactionViewModel.getCashEventDetails(amount, orderId?:-1, paymentId,"out", 1)
+    private fun getCashEventDetails(amount: Double, orderId: Int?,paymentId:Int, fromOrderComplete:Byte=0){
+        transactionViewModel.getCashEventDetails(amount, orderId?:-1, paymentId,"out", 1,fromOrderComplete)
     }
 
     private fun cloudQueuePrinting(

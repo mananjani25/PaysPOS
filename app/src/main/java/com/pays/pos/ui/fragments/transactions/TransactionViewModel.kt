@@ -269,21 +269,21 @@ class TransactionViewModel @Inject constructor(
         return b
     }
 
-    fun getCashEventDetails(tippedAmount: Double, orderId: Int, id: Int,event:String,isChange:Byte){
+    fun getCashEventDetails(tippedAmount: Double, orderId: Int, id: Int,event:String,isChange:Byte, fromOrderComplete:Byte=0){
         viewModelScope.launch {
             val resource=posRepository.getEventDetailsByOrderId(orderId.toString())
 
             when(resource.status){
                 Status.SUCCESS->{
                     resource.data?.let {
-                        if (it.data.isEmpty() || (it.data.size==1 && it.data.last().event.equals("in",ignoreCase = true) && (it.data.last().reason?.contains("Payment received", ignoreCase = true)?:false))){
+                        if ((it.data.isEmpty() || (it.data.size==1 && it.data.last().event.equals("in",ignoreCase = true) && (it.data.last().reason?.contains("Payment received", ignoreCase = true)?:false))) || fromOrderComplete.toInt() == 1){
                             val cashLogRequest = CashLogRequest(
                                 tippedAmount,
                                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1),
                                 event,
                                 orderId,
                                 id,
-                                "Tip added to the order",
+                                if (isChange.toInt()==1) "Change returned after order's payment" else "Tip added to the order",
                                 prefProvider.getValueInt(Constants.TERMINAL_ID, -1),
                                 null,
                                 null

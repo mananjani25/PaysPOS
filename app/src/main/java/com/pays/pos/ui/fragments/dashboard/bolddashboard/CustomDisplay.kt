@@ -212,7 +212,7 @@ class CustomDisplay(
             binding.askForTipBeforeLayout.gone()
         }
 
-
+        setCashCardAmountObservers()
 
         //payment is in progress disable tip before clicks
         dashBoardCategoryViewModel.paymentInProgress.observe(lifecycleOwner) {
@@ -253,23 +253,9 @@ class CustomDisplay(
             }
         })
 
-        setCashCardAmountObservers()
 
     }
 
-    private fun setCashCardAmountObservers() {
-        dashBoardCategoryViewModel.customerCashPrice.observe(lifecycleOwner,{
-            binding.txtTotalCash?.text = "$ ${String.format("%.2f", it)}"
-        })
-
-        dashBoardCategoryViewModel.customerCardPrice.observe(lifecycleOwner,{
-            binding.txtTotalCard?.text = "$ ${String.format("%.2f", it)}"
-        })
-
-        dashBoardCategoryViewModel.customerNormalPrice.observe(lifecycleOwner,{
-            binding.txtOrderTotal.text = "$ ${String.format("%.2f", it)}"
-        })
-    }
 
 
     fun checkForTipBeforeTransaction(_tipListViewModel: TipListViewModel){
@@ -3869,4 +3855,20 @@ class CustomDisplay(
         }
         super.onStop()
     }
+
+
+    private fun setCashCardAmountObservers() {
+        dashBoardCategoryViewModel.customerCashPrice.observe(lifecycleOwner,{
+            binding.txtTotalCash?.text = "$ ${String.format("%.2f", it)}"
+        })
+
+        dashBoardCategoryViewModel.customerCardPrice.observe(lifecycleOwner,{
+            binding.txtTotalCard?.text = "$ ${String.format("%.2f", it)}"
+        })
+
+        dashBoardCategoryViewModel.customerNormalPrice.observe(lifecycleOwner,{
+            binding.txtOrderTotal.text = "$ ${String.format("%.2f", it)}"
+        })
+    }
+
 }
