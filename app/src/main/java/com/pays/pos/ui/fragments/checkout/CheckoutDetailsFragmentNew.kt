@@ -4307,13 +4307,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     giftCardViewModel.cardNumberLast4 = cardLastDigits
                                     giftCardViewModel.cardNamePax = EDCType
                                     giftCardViewModel.transactionID = RefId
-                                    addValueInGiftCardUsingCard()
+                                    addValueInGiftCardUsingCard(paymentAmount)
                                 }else{
                                     giftCardViewModel.paxResponse = Constants.DEJAVOO
                                     giftCardViewModel.cardNumberLast4 = cardLastDigits
                                     giftCardViewModel.cardNamePax = EDCType
                                     giftCardViewModel.transactionID = RefId
-                                    sellGiftCardUsingCard()
+                                    sellGiftCardUsingCard(paymentAmount)
                                 }
 
                             }else{
@@ -5091,7 +5091,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                                 giftCardViewModel.cardNumberLast4 = cardLastDigits
                                                 giftCardViewModel.cardNamePax = it.ISSUER.toString()
                                                 giftCardViewModel.transactionID = it.TXNID.toString()
-                                                addValueInGiftCardUsingCard()
+                                                addValueInGiftCardUsingCard(paymentAmount)
                                             } else {
                                                 giftCardViewModel.paxResponse = Constants.VALOR
                                                 giftCardViewModel.cardNumberLast4 = cardLastDigits
