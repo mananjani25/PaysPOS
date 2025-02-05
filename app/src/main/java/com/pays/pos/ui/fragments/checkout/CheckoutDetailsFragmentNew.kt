@@ -3212,13 +3212,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                             giftCardViewModel.cardNumberLast4 = cardLastDigits
                                             giftCardViewModel.cardNamePax = EDCType
                                             giftCardViewModel.transactionID = PAXtoken
-                                            addValueInGiftCardUsingCard()
+                                            addValueInGiftCardUsingCard(paymentAmount)
                                         } else {
                                             giftCardViewModel.paxResponse = ExtData
                                             giftCardViewModel.cardNumberLast4 = cardLastDigits
                                             giftCardViewModel.cardNamePax = EDCType
                                             giftCardViewModel.transactionID = PAXtoken
-                                            sellGiftCardUsingCard()
+                                            sellGiftCardUsingCard(paymentAmount)
                                         }
                                     } else {
                                         makePaymentCreditCard()
@@ -5097,7 +5097,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                                 giftCardViewModel.cardNumberLast4 = cardLastDigits
                                                 giftCardViewModel.cardNamePax = it.ISSUER.toString()
                                                 giftCardViewModel.transactionID = it.TXNID.toString()
-                                                sellGiftCardUsingCard()
+                                                sellGiftCardUsingCard(paymentAmount)
                                             }
                                         } else {
                                             dismissProgressDialogWithAlert()
@@ -5272,14 +5272,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                             giftCardViewModel.cardNamePax = response.CardType
                                             giftCardViewModel.transactionID =
                                                 response.PaymentTransInfo.Token
-                                            addValueInGiftCardUsingCard()
+                                            addValueInGiftCardUsingCard(paymentAmount)
                                         } else {
                                             giftCardViewModel.paxResponse = response.ExtData
                                             giftCardViewModel.cardNumberLast4 = response.BogusAccountNum
                                             giftCardViewModel.cardNamePax = response.CardType
                                             giftCardViewModel.transactionID =
                                                 response.PaymentTransInfo.Token
-                                            sellGiftCardUsingCard()
+                                            sellGiftCardUsingCard(paymentAmount)
                                         }
                                     } else {
                                         makePaymentCreditCard()
@@ -8498,7 +8498,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
     }
 
-    private fun sellGiftCardUsingCard() {
+    private fun sellGiftCardUsingCard(amt: Double=0.0) {
         paymentType = "Card"
         EventBus.getDefault()
             .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ sellGiftCardUsingCard cartList->${cartList}"))
@@ -8514,7 +8514,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         val myRequest = cartList?.let {
             EventBus.getDefault()
                 .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ sellGiftCardUsingCard inside the myRequest = cartList?.let"))
-            giftCardViewModel.createSellGiftCardRequestUsingCard()
+            giftCardViewModel.createSellGiftCardRequestUsingCard(amt)
         }
         EventBus.getDefault()
             .post(MessageEvent("${Constants.LINE_BREAK_TAB} CheckoutDetailsFragmentNew.kt_ sellGiftCardUsingCard before if (myRequest != null)"))
@@ -8552,7 +8552,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         }
     }
 
-    private fun addValueInGiftCardUsingCard() {
+    private fun addValueInGiftCardUsingCard(paymentAmount:Double=0.0) {
         paymentType = "Card"
         if (cartList == null) {
             runBlocking {
@@ -8562,7 +8562,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
         val myRequest = cartList?.let {
-            giftCardViewModel.createAddValueInGiftCardRequestUsingCard()
+            giftCardViewModel.createAddValueInGiftCardRequestUsingCard(paymentAmount)
         }
         if (myRequest != null) {
             if (prefProvider.getValue(Constants.GIFT_CARD_TYPE, "").equals("Physical", true)) {

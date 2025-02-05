@@ -1,6 +1,5 @@
 package com.pays.pos.ui.fragments.eGiftCard
 
-import android.view.inputmethod.CorrectionInfo
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,7 +10,6 @@ import com.pays.pos.data.model.requestModel.giftCard.request.GiftCard
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardAddValueRequest
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.requestModel.giftCard.request.SellGiftCardRequestModel
-import com.pays.pos.data.model.requestModel.giftCard.response.GiftCardAddValueResponse
 import com.pays.pos.data.model.requestModel.giftCard.response.GiftCardCheckBalanceResponse
 import com.pays.pos.data.model.requestModel.giftCard.response.SellGiftCardResponseModel
 import com.pays.pos.data.remote.Constants
@@ -21,23 +19,14 @@ import com.pays.pos.ui.fragments.magtek.PaymentResponse
 import com.pays.pos.utils.Event
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.MethodUtils
-import com.pays.pos.utils.MethodUtils.Companion.generateRandomNumbers
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import com.pays.pos.data.model.requestModel.CashLogRequest
 import com.pays.pos.data.remote.Constants.ENDPOINT_URL
-import com.pays.pos.data.remote.Constants.GIFT_CARD_NUMBER
 import com.pays.pos.data.remote.Constants.PHYSICAL_GIFT_CARD_NUMBER
 import com.pays.pos.data.remote.Constants.SOAP_ACTION
 import com.pays.pos.logger.MessageEvent
-import com.squareup.okhttp.Callback
-import com.squareup.okhttp.MediaType
-import com.squareup.okhttp.OkHttpClient
-import com.squareup.okhttp.Protocol
-import com.squareup.okhttp.Request
-import com.squareup.okhttp.RequestBody
-import com.squareup.okhttp.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,12 +34,9 @@ import kotlinx.coroutines.launch
 import okhttp3.Call
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.greenrobot.eventbus.EventBus
-import org.json.JSONObject
 import org.json.XML
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
-
-import java.io.StringReader
 
 import java.util.TimeZone
 import java.io.IOException
@@ -144,14 +130,15 @@ class GiftCardViewModel @Inject constructor(
         return SellGiftCardRequestModel(gift_card = giftCard)
     }
 
-    fun createSellGiftCardRequestUsingCard(): SellGiftCardRequestModel {
+    fun createSellGiftCardRequestUsingCard(amt: Double=0.0): SellGiftCardRequestModel {
 
         var cardNumber = ""
         var cardName = ""
         var transactionId = ""
 
+
         val giftCardPurchaseAmount =
-            prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0")
+        if (amt==0.0) prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0").toDouble() else amt
         var paymentAttributes: com.pays.pos.data.model.requestModel.giftCard.request.PaymentAttributes? =
             null
 
@@ -221,7 +208,7 @@ class GiftCardViewModel @Inject constructor(
 
         paymentAttributes =
             com.pays.pos.data.model.requestModel.giftCard.request.PaymentAttributes(
-                amount = giftCardPurchaseAmount.toDouble(),
+                amount = giftCardPurchaseAmount,
                 card_name = cardName,
                 card_number = cardNumber,
                 card_type = 0,
@@ -232,7 +219,7 @@ class GiftCardViewModel @Inject constructor(
                 ),
                 payable_type = "GiftCard",
                 payment_type = "Card",
-                sub_total = giftCardPurchaseAmount.toDouble(),
+                sub_total = giftCardPurchaseAmount,
                 terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
                 transaction_id = transactionId
             )
@@ -240,7 +227,7 @@ class GiftCardViewModel @Inject constructor(
         val giftCard = GiftCard(
             gift_card_type = /*"Digital"*/ prefProvider.getValue(Constants.GIFT_CARD_TYPE,""),//Physical
             name = if (prefProvider.getValue(Constants.GIFT_CARD_TYPE,"").equals("Physical",true)){prefProvider.getValue(Constants.PHYSICAL_GIFT_CARD_NUMBER,"")} else{""},
-            amount = giftCardPurchaseAmount,
+            amount = giftCardPurchaseAmount.toString(),
             customer_id = prefProvider.getValueInt(Constants.CUSTOMER_ID, 0),
             location_id = prefProvider.getValueInt(Constants.LOCATION_ID, 1),
             password = "",
@@ -701,10 +688,15 @@ class GiftCardViewModel @Inject constructor(
         )
     }
 
-    fun createAddValueInGiftCardRequestUsingCard(): GiftCardAddValueRequest {
+    fun createAddValueInGiftCardRequestUsingCard(paymentAmount:Double=0.0): GiftCardAddValueRequest {
 
-        val giftCardPurchaseAmount =
-            prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0")
+        var giftCardPurchaseAmount = 0.0
+
+            if (paymentAmount==0.0)
+                giftCardPurchaseAmount = prefProvider.getValue(Constants.GIFT_CARD_PURCHASE_AMOUNT, "0.0").toDouble()
+            else
+                giftCardPurchaseAmount = paymentAmount
+
         val giftCardNumber = prefProvider.getValue(Constants.GIFT_CARD_NUMBER, "")
 
         var paymentAttributes: GiftCardAddValueRequest.GiftCardAmountTab.PaymentAttributes? = null
@@ -776,7 +768,7 @@ class GiftCardViewModel @Inject constructor(
 
         paymentAttributes =
             GiftCardAddValueRequest.GiftCardAmountTab.PaymentAttributes(
-                amount = giftCardPurchaseAmount.toDouble(),
+                amount = giftCardPurchaseAmount,
                 card_name = cardName,
                 card_number = cardNumber,
                 card_type = 0,
@@ -787,7 +779,7 @@ class GiftCardViewModel @Inject constructor(
                 ),
                 payable_type = "GiftCardAmountTab",
                 payment_type = "Card",
-                sub_total = giftCardPurchaseAmount.toDouble(),
+                sub_total = giftCardPurchaseAmount,
                 terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0),
                 transaction_id = transactionId
             )
@@ -796,7 +788,7 @@ class GiftCardViewModel @Inject constructor(
         val giftCard = GiftCardAddValueRequest.GiftCard(
             gift_card_type = "Digital",//Physical
             name = giftCardNumber,
-            added_amount = giftCardPurchaseAmount.toDouble(),
+            added_amount = giftCardPurchaseAmount,
         )
 
         val giftCardAmountTab = GiftCardAddValueRequest.GiftCardAmountTab(
