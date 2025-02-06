@@ -15287,7 +15287,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }
 
                     } else if (data.name.contains(LANDI_INNER_PRINTER, true)) {
-                        printKitchenFromLandiInner(data)
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            printKitchenFromLandiInner(data)
+                        }, 1000)
                     } else {
 
                         if (isNotPrinted) {
