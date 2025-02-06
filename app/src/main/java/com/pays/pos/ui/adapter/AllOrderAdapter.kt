@@ -2,6 +2,7 @@ package com.pays.pos.ui.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -375,6 +376,14 @@ class AllOrderAdapter(val context: Context, val prefProvider: PrefProvider) :
                         bindingAdapterPosition,
                         "REPRINT_KITCHEN_RECEIPT"
                     )
+                    /*countDownTimer.cancel()
+                    countDownTimer = object : CountDownTimer(5000, 1000) {
+                        override fun onTick(millisUntilFinished: Long) {
+                        }
+                        override fun onFinish() {
+                            enableReprintKitchenReceiptButton()
+                        }
+                    }.start()*/
                 }
             }
         }
