@@ -9919,7 +9919,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             if (it.data != null && isPrint == true) {
                                 isPrint = false
 
-                                kitchenPrinterList.toCollection(arrayListOf()).addAll(it.data)
+                               // kitchenPrinterList.toCollection(arrayListOf()).addAll(it.data)
+
+                                kitchenPrinterList = it.data
 
 
                                 val remain = requireArguments().getDouble("remainingAmount")
