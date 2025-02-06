@@ -1592,13 +1592,20 @@ class AllOrdersListingFragment(
                 prefProvider.setValue(OLD_ITEM_BASE_CUSTOM_ITEM, Gson().toJson(order.orderItems))
 
             //    dashboardViewModel.authPaymentResponse = dashboardViewModel.allOrderResponse?.get(pos)
+
+
+                //FETCH IF PRE-AUTH DATA
                 try {
-                    paymentViewModel.preAuthData = null
-                    paymentViewModel.preAuthData = PreAuthData(
-                        ecrRefNum = order.payments.first().ecrRefNum ?: "",
-                        refNum = order.payments.first().refNum ?: ""
-                    )
-                }catch (e:Exception) {
+                    if(order.refundDetails.refundedAmount > 0.0) {
+                        paymentViewModel.preAuthData = null
+                    } else {
+                        paymentViewModel.preAuthData = null
+                        paymentViewModel.preAuthData = PreAuthData(
+                            ecrRefNum = order.payments.first().ecrRefNum ?: "",
+                            refNum = order.payments.first().refNum ?: ""
+                        )
+                    }
+                }catch (_:Exception) {
                     paymentViewModel.preAuthData = null
                 }
 
@@ -1935,12 +1942,18 @@ class AllOrdersListingFragment(
 
                    // dashboardViewModel.authPaymentResponse = dashboardViewModel.allOrderResponse?.get(pos)
 
+
+                    //FETCH IF PRE-AUTH DATA
                     try {
-                        paymentViewModel.preAuthData = null
-                        paymentViewModel.preAuthData = PreAuthData(
-                            ecrRefNum = order.payments.first().ecrRefNum ?: "",
-                            refNum = order.payments.first().refNum ?: ""
-                        )
+                        if(order.refundDetails.refundedAmount > 0.0) {
+                            paymentViewModel.preAuthData = null
+                        } else {
+                            paymentViewModel.preAuthData = null
+                            paymentViewModel.preAuthData = PreAuthData(
+                                ecrRefNum = order.payments.first().ecrRefNum ?: "",
+                                refNum = order.payments.first().refNum ?: ""
+                            )
+                        }
                     }catch (_:Exception) {
                         paymentViewModel.preAuthData = null
                     }

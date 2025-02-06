@@ -3473,7 +3473,14 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     paymentTypeForTip = "card"
                 }
 
-                paymentAmount += tipAmount
+
+                tipAmountToPaymentDevice = tipAmount + MethodUtils.calculateCashDiscount(
+                    tipAmount ,
+                    prefProvider,
+                    requireContext()
+                )
+
+                paymentAmount += tipAmountToPaymentDevice
                 Log.d(
                     "LOADER::",
                     "${Exception().stackTrace[0].fileName} -> ${Exception().stackTrace[0].lineNumber}"
@@ -3532,6 +3539,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //                                makePaymentCreditCard()
                             } else {
                                 //makePaxPaymentRequest()
+                                transactionInProgress()
                                 adjustPreAuthPaymentPax()
                             }
                         }
@@ -6096,6 +6104,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     sellGiftCardUsingCard()
                                 }
                             } else {
+                                paymentviewModel.clearPreAuthDetails()
                                 makePaymentCreditCard()
                             }
 //                            makePaymentCreditCard()
@@ -6117,7 +6126,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 //                        authPaymentResponse = null
 //                        allOrderResponse = null
 //                    }
-                    paymentviewModel.preAuthData = null
+                    paymentviewModel.clearPreAuthDetails()
 
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
@@ -6184,7 +6193,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             try {
                 val preAuthData = paymentviewModel.preAuthData
 
-                if (preAuthData!!.ecrRefNum.isNotEmpty() && preAuthData.refNum.isNotEmpty()) {
+                if (preAuthData!!.ecrRefNum.isNotEmpty() && preAuthData.refNum.isNotEmpty() ) {
                     binding.llSavedCard.visibility = View.VISIBLE
                 } else {
                     binding.llSavedCard.visibility = View.GONE
