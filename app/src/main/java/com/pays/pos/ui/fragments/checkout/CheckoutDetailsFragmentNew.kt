@@ -670,6 +670,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
                 }
 
+                prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)
                 dynamicCashPaymentWithVariation(
                     dynamicPaymentName = name ?: "", dynamicPaymentId = id
                 )
@@ -3179,6 +3180,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 )
 
                 if (paymentAmount != 0.0) {
+                    prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)
                     if (prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"").equals(Constants.PAX, ignoreCase = true)){
                         if (prefProvider.getValueboolean(
                                 Constants.IS_PAX_CONNECTED,
@@ -3664,6 +3666,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
                 )
                 paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)
                 cashPaymentWithVariation()
             } else
                 errorDisplay("Please check your Network Connectivity.")
@@ -3685,6 +3688,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 custom_paymentAmount =
                     binding.tvCash1.text.toString().replace("$", "").trim().toDouble()
+                prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)
                 cashPaymentWithVariation()
             } else
                 errorDisplay("Please check your Network Connectivity.")
@@ -3703,6 +3707,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
                 custom_paymentAmount =
                     binding.tvCash2.text.toString().replace("$", "").trim().toDouble()
+                prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)
                 cashPaymentWithVariation()
             } else
                 errorDisplay("Please check your Network Connectivity.")
@@ -3724,6 +3729,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 custom_paymentAmount =
                     binding.tvCash3.text.toString().replace("$", "").trim().toDouble()
+                prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)
                 cashPaymentWithVariation()
             } else
                 errorDisplay("Please check your Network Connectivity.")
@@ -3740,6 +3746,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     R.id.action_paymentBoldPosFragment_to_customAmountFragment,
                     bundleVal
                 )
+                prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)
             } else
                 errorDisplay("Please check your Network Connectivity.")
         }
