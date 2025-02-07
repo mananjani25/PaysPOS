@@ -341,15 +341,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun setPaymentErrorHandlerForCustomerIssue() {
-        paymentviewModel.orderFailedDueToCustomerObservable.observe(requireActivity(),object :Observer<Event<Pair<Int,OrderRequestModel>>>{
-            override fun onChanged(event: Event<Pair<Int, OrderRequestModel>>?) {
+        paymentviewModel.orderFailedDueToCustomerObservable.observe(requireActivity(),object :Observer<Event<OrderRequestModel>>{
+            override fun onChanged(event: Event<OrderRequestModel>?) {
                 event?.getContentIfNotHandled().let {
                     syncCustomerWithServer(it)
                 }
             }
 
-            private fun syncCustomerWithServer(it: Pair<Int, OrderRequestModel>?) {
-                it?.let {pair->
+            private fun syncCustomerWithServer(it: OrderRequestModel?) {
+                it?.order?.customer_id?.let {customerId->
 
                     /*--------------Set observer--------------*/
                     dashboardViewModel.createCustomerObservable.observe(viewLifecycleOwner,object : Observer<Pair<Boolean,OrderRequestModel?>>{
@@ -371,7 +371,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     var customer:TbCustomer?=null
                     runBlocking {
                         async {
-                            dashboardViewModel.getCustomerDetailsFromId(pair.first).value?.let {
+                            dashboardViewModel.getCustomerDetailsFromId(customerId).value?.let {
                                 customer = it
                             }
                         }.await()
@@ -396,7 +396,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             }
                             addresses_attributes=addresses
                         }
-                        dashboardViewModel.createCustomer(customerToCreate,pair.second)
+                        dashboardViewModel.createCustomer(customerToCreate, orderRequestModel = it)
                     }
 
                 }

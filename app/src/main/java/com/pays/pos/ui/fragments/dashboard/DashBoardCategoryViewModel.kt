@@ -519,7 +519,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    fun getCustomerDetailsFromId(customerId:Int):LiveData<TbCustomer> = posRepository.getCustomerDetailsByID(customerId)
+    fun getCustomerDetailsFromId(customerId:String):LiveData<TbCustomer> = posRepository.getCustomerDetailsByID(customerId)
     /*-----------Customer Create----------------*/
 
     fun setcheckedLoyaltyApply(isapply: Boolean, txtTotalAmount: AppCompatTextView? = null) {

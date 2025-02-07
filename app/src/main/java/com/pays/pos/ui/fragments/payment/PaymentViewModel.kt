@@ -138,8 +138,8 @@ open class PaymentViewModel @Inject constructor(
     val earnedLoyaltyPoints: LiveData<Event<Int>> = _earnedLoyaltyPoints
     /*-----------Customer Loyalty------------*/
 
-    private val _orderFailedDueToCustomerObservable = MutableLiveData<Event<Pair<Int,OrderRequestModel>>>()
-    val orderFailedDueToCustomerObservable: LiveData<Event<Pair<Int,OrderRequestModel>>> = _orderFailedDueToCustomerObservable
+    private val _orderFailedDueToCustomerObservable = MutableLiveData<Event<OrderRequestModel>>()
+    val orderFailedDueToCustomerObservable: LiveData<Event<OrderRequestModel>> = _orderFailedDueToCustomerObservable
 
 
     var serviceChargeListApplied: ArrayList<OrderServiceChargesAttribute> = arrayListOf()
@@ -357,8 +357,7 @@ open class PaymentViewModel @Inject constructor(
 
                     if (resource.message.equals("Couldn't find Customer with")){
                         resource?.message?.let {
-                            var id=it.substring(it.indexOf('=')+1)
-                            _orderFailedDueToCustomerObservable.postValue(Event(Pair(id.toInt(),orderRequestModel)))
+                            _orderFailedDueToCustomerObservable.postValue(Event(orderRequestModel))
                         }
                     }
                    else{
