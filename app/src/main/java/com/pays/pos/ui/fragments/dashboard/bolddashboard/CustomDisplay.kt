@@ -1161,8 +1161,18 @@ class CustomDisplay(
                             binding.txtTotalCash?.text =
                                 dashBoardCategoryViewModel.customerCashAmount.value
                         } else {
-                            binding.txtTotalCash?.text =
-                                MethodUtils.roundOffAmount(dashBoardCategoryViewModel.wholetotalPrice)
+                            if (dashBoardCategoryViewModel.cashDiscountType.equals("Surcharge",ignoreCase = true)){
+                                if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty){
+                                    binding.txtTotalCash?.text =
+                                        MethodUtils.roundOffAmount(dashBoardCategoryViewModel.wholetotalPrice-dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount)
+                                }else{
+                                    binding.txtTotalCash?.text =
+                                        MethodUtils.roundOffAmount(dashBoardCategoryViewModel.wholetotalPrice)
+                                }
+                            }else{
+                                binding.txtTotalCash?.text =
+                                    MethodUtils.roundOffAmount(dashBoardCategoryViewModel.wholetotalPrice)
+                            }
                         }
 
                         if (dashBoardCategoryViewModel.customerCardAmount.value?.isNotEmpty()
@@ -1171,8 +1181,14 @@ class CustomDisplay(
                             binding.txtTotalCard?.text =
                                 dashBoardCategoryViewModel.customerCardAmount.value
                         } else {
-                            binding.txtTotalCard?.text =
-                                getSurchargedPrice(dashBoardCategoryViewModel.wholetotalPrice)
+                            if ((dashBoardCategoryViewModel.cashDiscountType.contains("Surcharge",ignoreCase = true)) && (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty)){
+                                binding.txtTotalCard?.text =
+                                    getSurchargedPrice(dashBoardCategoryViewModel.wholetotalPrice-dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount)
+                            }else{
+                                binding.txtTotalCard?.text =
+                                    getSurchargedPrice(dashBoardCategoryViewModel.wholetotalPrice)
+                            }
+
                         }
 
                         Log.v("CustomerScreen:", "1")
@@ -1186,7 +1202,15 @@ class CustomDisplay(
                             binding.txtTotalCash?.text =
                                 dashBoardCategoryViewModel.customerCashAmount.value
                         } else {
-                            binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
+                            if (dashBoardCategoryViewModel.cashDiscountType.equals("Surcharge",ignoreCase = true)){
+                                if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty){
+                                    binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice-dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount)
+                                }else{
+                                    binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
+                                }
+                            }else{
+                                binding.txtTotalCash?.text = MethodUtils.roundOffAmount(totalPrice)
+                            }
                         }
 
 
@@ -1196,7 +1220,15 @@ class CustomDisplay(
                             binding.txtTotalCard?.text =
                                 dashBoardCategoryViewModel.customerCardAmount.value
                         } else {
-                            binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
+                            if (dashBoardCategoryViewModel.cashDiscountType.equals("Surcharge",ignoreCase = true)) {
+                                if (dashBoardCategoryViewModel.redeemLoyaltyInfo.needToApplyLoyalty){
+                                    binding.txtTotalCard?.text = getSurchargedPrice(totalPrice-dashBoardCategoryViewModel.redeemLoyaltyInfo.usedLoyaltyAmount)
+                                }else{
+                                    binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
+                                }
+                            }else {
+                                binding.txtTotalCard?.text = getSurchargedPrice(totalPrice)
+                            }
                         }
 
 
@@ -1260,12 +1292,8 @@ class CustomDisplay(
                 } else {
                     binding.txtOrderTotal?.text = MethodUtils.roundOffAmount(totalPrice)
                 }
-
-
             }
-
         }
-
     }
 
     private fun getSurchargedPrice(amount: Double): String {
