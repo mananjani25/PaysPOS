@@ -28,6 +28,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -70,12 +71,7 @@ import com.pays.pos.data.entities.TbCartItem
 import com.pays.pos.data.entities.TbCustomer
 import com.pays.pos.data.entities.TbDynamicPaymentRecords
 import com.pays.pos.data.entities.TbItem
-import com.pays.pos.data.model.requestModel.CreateQueuePrinterRequestModel
-import com.pays.pos.data.model.requestModel.OrderAttributeRequestModel
-import com.pays.pos.data.model.requestModel.OrderRequestModel
-import com.pays.pos.data.model.requestModel.PaymentAttributes
-import com.pays.pos.data.model.requestModel.SpitByOrderPaymentModel
-import com.pays.pos.data.model.requestModel.SpitByOrderRequestModel
+import com.pays.pos.data.model.requestModel.*
 import com.pays.pos.data.model.requestModel.giftCard.request.GiftCardCheckBalanceRequest
 import com.pays.pos.data.model.responseModel.CreateOrderResponse
 import com.pays.pos.data.model.valor.ValorSuccessResponse
@@ -338,9 +334,76 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         setLoyaltyEarnedObserver()
 //        setCommSetting()
 
+        setPaymentErrorHandlerForCustomerIssue()
         initProgressObserver()
         initClickListener()
         return binding.root
+    }
+
+    private fun setPaymentErrorHandlerForCustomerIssue() {
+        paymentviewModel.orderFailedDueToCustomerObservable.observe(requireActivity(),object :Observer<Event<Pair<Int,OrderRequestModel>>>{
+            override fun onChanged(event: Event<Pair<Int, OrderRequestModel>>?) {
+                event?.getContentIfNotHandled().let {
+                    syncCustomerWithServer(it)
+                }
+            }
+
+            private fun syncCustomerWithServer(it: Pair<Int, OrderRequestModel>?) {
+                it?.let {pair->
+
+                    /*--------------Set observer--------------*/
+                    dashboardViewModel.createCustomerObservable.observe(viewLifecycleOwner,object : Observer<Pair<Boolean,OrderRequestModel?>>{
+                        override fun onChanged(t: Pair<Boolean, OrderRequestModel?>?) {
+                            t?.let {
+                                if (it.first && it.second!=null){
+                                    paymentviewModel.submit(it.second!!)
+                                }else{
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        dismissProgressDialog()
+                                        ProgressUtils.dismissProgressDialog()
+                                    }
+                                }
+                            }
+                        }
+                    })
+                    /*--------------Set observer--------------*/
+
+                    var customer:TbCustomer?=null
+                    runBlocking {
+                        async {
+                            dashboardViewModel.getCustomerDetailsFromId(pair.first).value?.let {
+                                customer = it
+                            }
+                        }.await()
+                    }
+
+                    customer?.let {nonNullCustomer->
+                        var customerToCreate = CreateCustomerRequestModel()
+                        customerToCreate.data?.apply {
+                            first_name = nonNullCustomer.first_name?:""
+                            last_name = nonNullCustomer.last_name?:""
+                            company = nonNullCustomer.company?:""
+                            email=nonNullCustomer.email
+                            var phonesList= arrayListOf<CreateCustomerRequestModel.Customer.Phone>()
+                            nonNullCustomer.phones.forEach {
+                                phonesList.add(CreateCustomerRequestModel.Customer.Phone(it.id,it.phone_number))
+                            }
+                            phones_attributes=phonesList
+
+                            var addresses = arrayListOf<CreateCustomerRequestModel.Customer.Addresses>()
+                            nonNullCustomer.addresses.forEach {
+                                addresses.add(CreateCustomerRequestModel.Customer.Addresses(it.id,it.address1,it.address2,it.city,it.state,it.country,it.postcode,it.type_of_address,it.latitude.toDouble(),it.longitude.toDouble()))
+                            }
+                            addresses_attributes=addresses
+                        }
+                        dashboardViewModel.createCustomer(customerToCreate,pair.second)
+                    }
+
+                }
+
+            }
+        })
+
     }
 
     private fun initProgressObserver() {
