@@ -84,6 +84,7 @@ class GiftCardViewModel @Inject constructor(
     var cardNumberLast4: String = ""
     var cardNamePax: String = ""
     var transactionID: String = ""
+    var customCashAmount: Double = 0.0
 
 
     fun clearGiftCardObserver(){
@@ -530,7 +531,7 @@ class GiftCardViewModel @Inject constructor(
                                 if (!it.payments[it.payments.size - 1].payment_type.equals("External")) {
 //                                This cashlog call is independent, thats the reason it is not chained with any flow or call
                                     val cashLogRequest = CashLogRequest(
-                                        sellGiftCardRequestModel.gift_card.amount.toDouble(),
+                                        if (customCashAmount > 0.0) customCashAmount else sellGiftCardRequestModel.gift_card.amount.toDouble(),
                                         prefProvider.getValueInt(
                                             Constants.EMPLOYEE_ID, 0
                                         ),
@@ -852,7 +853,7 @@ class GiftCardViewModel @Inject constructor(
                                 if (it.payments[it.payments.size - 1].payment_type.equals("Cash",ignoreCase = true)) {
 //                                This cashlog call is independent, thats the reason it is not chained with any flow or call
                                     val cashLogRequest = CashLogRequest(
-                                        giftCardAddValueRequest.gift_card.added_amount,
+                                        if (customCashAmount > 0.0) customCashAmount else giftCardAddValueRequest.gift_card.added_amount,
                                         prefProvider.getValueInt(
                                             Constants.EMPLOYEE_ID, 0
                                         ),
