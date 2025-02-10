@@ -4044,10 +4044,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             object : DialogInterface.OnClickListener{
                                 override fun onClick(p0: DialogInterface?, p1: Int) {
                                     binding.edtGiftCardNumber.text?.clear()
-                                    binding.frameLayoutId.gone()
+                                    /*binding.frameLayoutId.gone()
                                     binding.relativeMain.visible()
                                     binding.llManualCard.visible()
-                                    binding.llGiftCard.gone()
+                                    binding.llGiftCard.gone()*/
                                 }
 
                             }
