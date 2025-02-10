@@ -61,6 +61,7 @@ import com.pays.pos.data.remote.Constants.IS_FROM_ALL_ORDER
 import com.pays.pos.data.remote.Constants.IS_LAST_ITEM_DELETE
 import com.pays.pos.data.remote.Constants.IS_PAX_PAYMENT_FAILED
 import com.pays.pos.data.remote.Constants.IS_PAYMENT_SCREEN
+import com.pays.pos.data.remote.Constants.IS_PRE_AUTH_ENABLE
 import com.pays.pos.data.remote.Constants.IS_UPDATE_ORDER
 import com.pays.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.pays.pos.data.remote.Constants.IS_UPDATE_ORDER_ID
@@ -331,7 +332,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
             })
     }
 
-    fun setUpPreAuthData() {
+    fun enablePreAuth() {
         if(prefProvider.getValue(ORDER_TYPE,"") == OPEN_ORDER && !isFromPayment) {
 
             binding.preAuthOption?.visible()
@@ -396,8 +397,157 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
 
 
             }
-        } else
-            binding.preAuthOption?.gone()
+        } else binding.preAuthOption?.gone()
+    }
+
+    private fun setUpPreAuthData() {
+
+        viewModel.isPreAuthCartOpened.observe(viewLifecycleOwner) {
+            if(it) {
+               enablePreAuth()
+            } else {
+                binding.preAuthOption?.gone()
+            }
+        }
+
+        prefProvider.getValueboolean(IS_PRE_AUTH_ENABLE,false).let {
+            if(it) {
+                if(prefProvider.getValue(ORDER_TYPE,"") == OPEN_ORDER && !isFromPayment) {
+
+                    binding.preAuthOption?.visible()
+
+                    binding.preAuthOption?.apply {
+
+                        isChecked = false
+                        isEnabled = true
+                        setTextColor(Color.RED)
+
+                        if(prefProvider.getValue(PRE_AUTH_DETAILS,"").isNotEmpty() ) {
+                            visible()
+                            isChecked = true
+                            isEnabled = false
+                            setTextColor(Color.GREEN)
+                        }else {
+                            isChecked = false
+                            isEnabled = true
+                            setTextColor(Color.RED)
+                            setOnClickListener {
+
+                                if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
+                                    if (prefProvider.isManager() || prefProvider.isAdmin()) {
+                                        if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
+                                            makePaxPreAuthRequest()
+                                        }else if (!prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+                                            makeDejavooPreAuthPaymentRequest()
+                                        }
+                                        else {
+                                            isChecked = false
+                                            activity?.let {
+                                                AlertUtils.showCustomAlertWithListenerWithOK(
+                                                    it,
+                                                    getString(R.string.pax_connect_error),
+                                                    null
+                                                )
+                                            }
+                                        }
+                                    } else {
+                                        isChecked = false
+                                        AlertUtils.showCustomAlert(
+                                            requireContext(),
+                                            "You do not have permission to access this feature.\nPlease contact your manager."
+                                        )
+                                    }
+                                } else {
+                                    isChecked = false
+                                    AlertUtils.showCustomAlert(requireContext(), "Please check your Network Connectivity.")
+                                }
+                            }
+                        }
+
+                        try {
+                            if (viewModelPayment.preAuthData !=null && viewModelPayment.preAuthData!!.refNum.isNotEmpty() || viewModelPayment.preAuthData!!.refNum.isNotEmpty()) {
+                                isChecked = true
+                                isEnabled = false
+                                setTextColor(Color.GREEN)
+                            }
+                        }catch (e:Exception) {
+
+                        }
+
+
+                    }
+                } else binding.preAuthOption?.gone()
+            } else {
+                binding.preAuthOption?.gone()
+            }
+        }
+
+//        if(prefProvider.getValue(ORDER_TYPE,"") == OPEN_ORDER && !isFromPayment) {
+//
+//            binding.preAuthOption?.visible()
+//
+//            binding.preAuthOption?.apply {
+//
+//                isChecked = false
+//                isEnabled = true
+//                setTextColor(Color.RED)
+//
+//                if(prefProvider.getValue(PRE_AUTH_DETAILS,"").isNotEmpty() ) {
+//                    visible()
+//                    isChecked = true
+//                    isEnabled = false
+//                    setTextColor(Color.GREEN)
+//                }else {
+//                    isChecked = false
+//                    isEnabled = true
+//                    setTextColor(Color.RED)
+//                    setOnClickListener {
+//
+//                        if (InternetUtils.isInternetAvailable(requireActivity().applicationContext)) {
+//                            if (prefProvider.isManager() || prefProvider.isAdmin()) {
+//                                if (prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)) {
+//                                    makePaxPreAuthRequest()
+//                                }else if (!prefProvider.getValueboolean(Constants.IS_PAX_CONNECTED, false)){
+//                                    makeDejavooPreAuthPaymentRequest()
+//                                }
+//                                else {
+//                                    isChecked = false
+//                                    activity?.let {
+//                                        AlertUtils.showCustomAlertWithListenerWithOK(
+//                                            it,
+//                                            getString(R.string.pax_connect_error),
+//                                            null
+//                                        )
+//                                    }
+//                                }
+//                            } else {
+//                                isChecked = false
+//                                AlertUtils.showCustomAlert(
+//                                    requireContext(),
+//                                    "You do not have permission to access this feature.\nPlease contact your manager."
+//                                )
+//                            }
+//                        } else {
+//                            isChecked = false
+//                            AlertUtils.showCustomAlert(requireContext(), "Please check your Network Connectivity.")
+//                        }
+//                    }
+//                }
+//
+//                try {
+//                    if (viewModelPayment.preAuthData !=null && viewModelPayment.preAuthData!!.refNum.isNotEmpty() || viewModelPayment.preAuthData!!.refNum.isNotEmpty()) {
+//                        isChecked = true
+//                        isEnabled = false
+//                        setTextColor(Color.GREEN)
+//                    }
+//                }catch (e:Exception) {
+//
+//                }
+//
+//
+//            }
+//        } else
+//            binding.preAuthOption?.gone()
     }
 
 
@@ -585,7 +735,7 @@ class CartFragment : Fragment, MyCallback, DineInAdapter.DineInCallback, ItemCal
     // To check selected order type
     private fun checkOrderType() {
 
-      //  setUpPreAuthData()
+        setUpPreAuthData()
 
 //        saveVisibility()
         if (prefProvider.getValue(ORDER_TYPE, "").isEmpty()) {

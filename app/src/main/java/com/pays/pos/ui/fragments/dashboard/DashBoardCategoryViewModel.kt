@@ -246,6 +246,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     var currentDestination = ""
 
 
+    /** PRE AUTH **/
+    val isPreAuthCartOpened = MutableLiveData<Boolean>(false)
+
+
     /**
      * Get SUNMI OS VERSION
      */
@@ -7875,6 +7879,18 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     prefProvider.setValueboolean(
                                         Constants.IS_MASTER_TERMINAL, false
                                     )
+                                }
+
+                                //pre auth option ON / OFF
+
+                                try {
+                                    prefProvider.setValueboolean(
+                                        Constants.IS_PRE_AUTH_ENABLE,
+                                        it.settingData.data.isPreAuthEnable
+                                    )
+                                    isPreAuthCartOpened.value = it.settingData.data.isPreAuthEnable
+                                }catch (e:Exception) {
+
                                 }
 
 
