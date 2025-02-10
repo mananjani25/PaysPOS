@@ -14584,6 +14584,39 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                                         )
                                                                                 )
 
+                                                                                if (kitchenSettingModel.showCustomerAddress) {
+                                                                                    var address = ""
+                                                                                    if (receiptModel?.order?.orderType?.trim().toString()
+                                                                                            .lowercase() == "Open Order".trim()
+                                                                                            .toString().lowercase()
+                                                                                        && receiptModel?.order?.deliveryType?.trim().toString()
+                                                                                            .lowercase() == "Pickup".trim().lowercase()
+                                                                                    ) {
+
+                                                                                    } else {
+                                                                                        try {
+                                                                                            if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
+
+                                                                                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                                                                                    address = it
+                                                                                                }
+
+                                                                                            }
+                                                                                        } catch (e: Exception) {
+                                                                                        }
+                                                                                    }
+
+                                                                                    add(
+                                                                                        PrinterBuilder()
+                                                                                            .styleAlignment(
+                                                                                                Alignment.Left
+                                                                                            )
+                                                                                            .actionPrintText(
+                                                                                                content = address
+                                                                                            )
+                                                                                    )
+                                                                                }
+
                                                                             }
                                                                         }
 
@@ -14899,6 +14932,40 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                         )
                                                     )
                                                 }
+
+                                                if (kitchenSettingModel.showCustomerAddress) {
+                                                    var address = ""
+                                                    if (receiptModel?.order?.orderType?.trim().toString()
+                                                            .lowercase() == "Open Order".trim()
+                                                            .toString().lowercase()
+                                                        && receiptModel?.order?.deliveryType?.trim().toString()
+                                                            .lowercase() == "Pickup".trim().lowercase()
+                                                    ) {
+
+                                                    } else {
+                                                        try {
+                                                            if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
+
+                                                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                                                    address = it
+                                                                }
+
+                                                            }
+                                                        } catch (e: Exception) {
+                                                        }
+                                                    }
+
+                                                    add(
+                                                        PrinterBuilder()
+                                                            .styleMagnification(
+                                                                MagnificationParameter(2, 2)
+                                                            )
+                                                            .actionPrintText(
+                                                                content = address
+                                                            )
+                                                    )
+                                                }
+
                                                 printerBuilder.actionFeedLine(1)
                                                     .actionCut(CutType.Partial)
 
@@ -15206,6 +15273,40 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                             )
                                                         )
                                                     }
+
+                                                    if (kitchenSettingModel.showCustomerAddress) {
+                                                        var address = ""
+                                                        if (receiptModel?.order?.orderType?.trim().toString()
+                                                                .lowercase() == "Open Order".trim()
+                                                                .toString().lowercase()
+                                                            && receiptModel?.order?.deliveryType?.trim().toString()
+                                                                .lowercase() == "Pickup".trim().lowercase()
+                                                        ) {
+
+                                                        } else {
+                                                            try {
+                                                                if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
+
+                                                                    receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                                                        address = it
+                                                                    }
+
+                                                                }
+                                                            } catch (e: Exception) {
+                                                            }
+                                                        }
+
+                                                        add(
+                                                            PrinterBuilder()
+                                                                .styleMagnification(
+                                                                    MagnificationParameter(2, 2)
+                                                                )
+                                                                .actionPrintText(
+                                                                    content = address
+                                                                )
+                                                        )
+                                                    }
+
                                                     printerBuilder.actionFeedLine(1)
                                                         .actionCut(CutType.Partial)
 
