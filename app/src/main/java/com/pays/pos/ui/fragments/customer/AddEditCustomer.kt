@@ -1099,6 +1099,8 @@ class AddEditCustomer : Fragment(), AddressTextChangeListner {
                                 "false"
                             )
                         )
+                    createOrUpdateCustomerObject()
+
                 }
 
             }
