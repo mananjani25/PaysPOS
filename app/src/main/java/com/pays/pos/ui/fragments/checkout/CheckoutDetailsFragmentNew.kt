@@ -4098,25 +4098,20 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             )
             binding.txtChargeGC.isEnabled = true
             return
-        } else if (giftCardNumber.isNotEmpty() && giftCardNumber.length >= 8) {
-            Log.e(TAG,"checkGNumber:  ${giftCardNumber}")
-            dashboardViewModel.checkCardExistOrNotOnSell(binding.edtGiftCardNumber.text.toString().trim())
+        } else if (giftCardNumber.isNotEmpty() && giftCardNumber.length > 8) {
+            dashboardViewModel.checkCardExistOrNotOnSell(giftCardNumber)
             dashboardViewModel.isGiftCardSold.observe(viewLifecycleOwner) { event ->
                 event.getContentIfNotHandled()?.let {
                     Log.e("ObserverdGiftCardProgress", it.toString())
                     if (it) {
                         closePaxRequest()
-                        Log.e("checkGiftCardNumber", "giftCardNumber:  ${giftCardNumber}")
-                        Log.e("checkGiftCardNumber", "editTextvalue:  ${binding.edtGiftCardNumber.text.toString().trim()}")
-                        giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(
-                            GiftCardCheckBalanceRequest(name = binding.edtGiftCardNumber.text.toString().trim())
-                        )
+                        Log.e("checkGiftCardNumber","giftCardNumber:  ${giftCardNumber}")
+                        giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
                     } else {
-                        binding.txtChargeGC.isEnabled = true
                         AlertUtils.showCustomAlertWithListenerWithOK(
                             requireContext(),
                             "This gift card has not been activated.",
-                            object : DialogInterface.OnClickListener {
+                            object : DialogInterface.OnClickListener{
                                 override fun onClick(p0: DialogInterface?, p1: Int) {
                                     binding.edtGiftCardNumber.text?.clear()
                                     /*binding.frameLayoutId.gone()
@@ -4124,13 +4119,28 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                     binding.llManualCard.visible()
                                     binding.llGiftCard.gone()*/
                                 }
-                            })
+
+                            }
+
+                        )
                     }
-
-
                 }
+
             }
 
+        } else {
+
+            AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
+                requireContext(),
+                getString(R.string.are_you_sure_proceed),
+                "Ok"
+            ) { dialogInterface, clickedButton ->
+                if (clickedButton == 0) {
+                    giftCardViewModel.giftCardCheckBalance(GiftCardCheckBalanceRequest(name = giftCardNumber))
+                } else {
+                    dialogInterface?.dismiss()
+                }
+            }
         }
         /**
          * Added to prevent multiple api calls on multiple clicks.
