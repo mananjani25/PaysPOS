@@ -1270,6 +1270,9 @@ fun addCreditCardBreakDownData(
     ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
     var lastPart = 48 - pOne.length
     var amount = creditCardBreakdown.showData()
+    if (amount.contains("-") && creditCardBreakdown.key.contains("Total")) {
+        amount = amount.replace("-", "")
+    }
     var spaceLast = 0
     if (lastPart > 1 && amount.length < lastPart) {
         spaceLast = lastPart - amount.length
@@ -1290,6 +1293,9 @@ fun addCreditCardBreakDownDataInner(
     ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
     var lastPart = 48 - pOne.length
     var amount = creditCardBreakdown.showData()
+    if (amount.contains("-") && creditCardBreakdown.key.contains("Total")) {
+        amount = amount.replace("-", "")
+    }
     var spaceLast = 0
     if (lastPart > 1 && amount.length < lastPart) {
         spaceLast = lastPart - amount.length
@@ -1310,6 +1316,9 @@ fun addCreditCardBreakDownDataLandiInner(
     ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
     var lastPart = 48 - pOne.length
     var amount = creditCardBreakdown.showData()
+    if (amount.contains("-") && creditCardBreakdown.key.contains("Total")) {
+        amount = amount.replace("-", "")
+    }
     var spaceLast = 0
     if (lastPart > 1 && amount.length < lastPart) {
         spaceLast = lastPart - amount.length
@@ -1331,6 +1340,9 @@ fun addCreditCardBreakDownDataInnerNew(
     ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
     var lastPart = 48 - pOne.length
     var amount = creditCardBreakdown.showData()
+    if (amount.contains("-") && creditCardBreakdown.key.contains("Total")) {
+        amount = amount.replace("-", "")
+    }
     var spaceLast = 0
     if (lastPart > 1 && amount.length < lastPart) {
         spaceLast = lastPart - amount.length

@@ -18,7 +18,13 @@ class CreditCardBreakDownAdapter(val hideRefund: Boolean) :
         @SuppressLint("SetTextI18n")
         fun bind(keyValueList: EodReportResponse.Data.CreditCardBreakdown) {
 
-            binding.txtPrice.text = keyValueList.showData()
+            var rawPrice = keyValueList.showData()
+            if (rawPrice.contains("-") && keyValueList.key.contains("Total")) {
+                rawPrice = rawPrice.replace("-", "")
+            }
+
+
+            binding.txtPrice.text = rawPrice
             binding.txtRefund.text = keyValueList.showDataTip()
             binding.txtTitle.text = keyValueList.key
 
