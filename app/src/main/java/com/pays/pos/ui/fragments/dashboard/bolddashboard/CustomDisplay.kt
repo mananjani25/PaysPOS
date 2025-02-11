@@ -2633,7 +2633,7 @@ class CustomDisplay(
                         }*/
                     }
                 } else {
-                    callUpdateTip()
+                    callUpdateTip(mTransactionViewModel)
                 }
             }
 
@@ -2714,7 +2714,7 @@ class CustomDisplay(
                     CoroutineScope(Dispatchers.Main).launch {
                         ProgressUtils.dismissProgressDialog()
                         coroutineScope {
-                            callUpdateTip()
+                            callUpdateTip(mTransactionViewModel)
                         }
                     }
                 } else {
@@ -3084,9 +3084,10 @@ class CustomDisplay(
         return Base64.encodeToString(byteArray, Base64.DEFAULT).replace("\n", "")
     }
 
-    private fun callUpdateTip() {
+    private fun callUpdateTip(transactionViewModel: TransactionViewModel) {
         lifecycleOwner.lifecycleScope.launch {
             showProgress()
+            mTransactionViewModel = transactionViewModel
             mTransactionViewModel.updateTipWithSignature(
                 mOrderID,
                 signatureInBase64,
@@ -3325,7 +3326,7 @@ class CustomDisplay(
                 }*/
                     } else if (!mIsCardPayment) {
                         openCashDrawer()
-                        callUpdateTip()
+                        callUpdateTip(mTransactionViewModel)
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -3335,7 +3336,7 @@ class CustomDisplay(
                 }
             }else {
                 openCashDrawer()
-                callUpdateTip()
+                callUpdateTip(mTransactionViewModel)
             }
         }
     }
@@ -3387,7 +3388,7 @@ class CustomDisplay(
                             String::class.java
                         )
                         mPaymentViewModel.dejavooRefTxnId=null
-                        callUpdateTip()
+                        callUpdateTip(mTransactionViewModel)
 //                    transactionJsonResponse.nameValuePairs?.let {
 //                        if (it.msg != null) {
 //                            if (it.msg!!.contains(
@@ -3493,7 +3494,7 @@ class CustomDisplay(
                                     ) {
                                         mPaymentViewModel.valorRefTxnId = null
                                         mPaymentViewModel.valorTransactionNumber = null
-                                        callUpdateTip()
+                                        callUpdateTip(mTransactionViewModel)
 //                                dashBoardCategoryViewModel.takenTipUsingValor.postValue(Event(transactionViewModel))
                                     } else {
                                         dismissProgressDialog()
@@ -3568,7 +3569,7 @@ class CustomDisplay(
 
             networkCall(jsonArray, 0, apiModule1)
         }*/
-                    callUpdateTip()
+                    callUpdateTip(mTransactionViewModel)
                 }
 
                 // not support CAPTURE
@@ -3701,7 +3702,7 @@ class CustomDisplay(
 
             networkCall(jsonArray, 0, apiModule1)
         }*/
-                    callUpdateTip()
+                    callUpdateTip(mTransactionViewModel)
                 }
 
                 // not support CAPTURE
@@ -3829,7 +3830,7 @@ class CustomDisplay(
                     if (response.body() != null && response.body()!![0].transactionOutput != null) {
 
                         if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {
-                            callUpdateTip()
+                            callUpdateTip(mTransactionViewModel)
                         } else {
                             showErrorLayout(response.body()!![0].transactionOutput?.transactionMessage.toString())
                         }
