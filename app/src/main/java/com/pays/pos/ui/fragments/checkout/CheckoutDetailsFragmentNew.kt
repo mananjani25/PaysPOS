@@ -670,6 +670,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
                 }
 
+                prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)
                 dynamicCashPaymentWithVariation(
                     dynamicPaymentName = name ?: "", dynamicPaymentId = id
                 )
@@ -3179,6 +3180,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 )
 
                 if (paymentAmount != 0.0) {
+                    prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)
                     if (prefProvider.getValue(Constants.PAYMENT_GATEWAY_TYPE,"").equals(Constants.PAX, ignoreCase = true)){
                         if (prefProvider.getValueboolean(
                                 Constants.IS_PAX_CONNECTED,
@@ -3664,6 +3666,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
                 )
                 paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)
                 cashPaymentWithVariation()
             } else
                 errorDisplay("Please check your Network Connectivity.")
@@ -3685,6 +3688,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 custom_paymentAmount =
                     binding.tvCash1.text.toString().replace("$", "").trim().toDouble()
+                prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)
                 cashPaymentWithVariation()
             } else
                 errorDisplay("Please check your Network Connectivity.")
@@ -3703,6 +3707,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
                 custom_paymentAmount =
                     binding.tvCash2.text.toString().replace("$", "").trim().toDouble()
+                prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)
                 cashPaymentWithVariation()
             } else
                 errorDisplay("Please check your Network Connectivity.")
@@ -3724,6 +3729,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 custom_paymentAmount =
                     binding.tvCash3.text.toString().replace("$", "").trim().toDouble()
+                prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)
                 cashPaymentWithVariation()
             } else
                 errorDisplay("Please check your Network Connectivity.")
@@ -3740,6 +3746,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     R.id.action_paymentBoldPosFragment_to_customAmountFragment,
                     bundleVal
                 )
+                prefProvider.setValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)
             } else
                 errorDisplay("Please check your Network Connectivity.")
         }
@@ -4029,33 +4036,43 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             binding.txtChargeGC.isEnabled = true
             return
         } else if (giftCardNumber.isNotEmpty() && giftCardNumber.length > 8) {
-            dashboardViewModel.checkCardExistOrNotOnSell(giftCardNumber)
-            dashboardViewModel.isGiftCardSold.observe(viewLifecycleOwner) { event ->
-                event.getContentIfNotHandled()?.let {
-                    Log.e("ObserverdGiftCardProgress", it.toString())
-                    if (it) {
-                        closePaxRequest()
-                        Log.e("checkGiftCardNumber","giftCardNumber:  ${giftCardNumber}")
-                        giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
-                    } else {
-                        AlertUtils.showCustomAlertWithListenerWithOK(
-                            requireContext(),
-                            "This gift card has not been activated.",
-                            object : DialogInterface.OnClickListener{
-                                override fun onClick(p0: DialogInterface?, p1: Int) {
-                                    binding.edtGiftCardNumber.text?.clear()
-                                    binding.frameLayoutId.gone()
-                                    binding.relativeMain.visible()
-                                    binding.llManualCard.visible()
-                                    binding.llGiftCard.gone()
-                                }
+            AlertUtils.showCustomAlertWithListenerWithOKCancelUpdated(
+                requireContext(),
+                getString(R.string.are_you_sure_proceed),
+                "Ok"
+            ) { dialogInterface, clickedButton ->
+                if (clickedButton == 0) {
+                    dashboardViewModel.checkCardExistOrNotOnSell(giftCardNumber)
+                    dashboardViewModel.isGiftCardSold.observe(viewLifecycleOwner) { event ->
+                        event.getContentIfNotHandled()?.let {
+                            Log.e("ObserverdGiftCardProgress", it.toString())
+                            if (it) {
+                                closePaxRequest()
+                                Log.e("checkGiftCardNumber","giftCardNumber:  ${giftCardNumber}")
+                                giftCardViewModel.physicalGiftCardCheckBalanceBeforePay(GiftCardCheckBalanceRequest(name = giftCardNumber))
+                            } else {
+                                AlertUtils.showCustomAlertWithListenerWithOK(
+                                    requireContext(),
+                                    "This gift card has not been activated.",
+                                    object : DialogInterface.OnClickListener{
+                                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                                            binding.edtGiftCardNumber.text?.clear()
+                                            binding.frameLayoutId.gone()
+                                            binding.relativeMain.visible()
+                                            binding.llManualCard.visible()
+                                            binding.llGiftCard.gone()
+                                        }
 
+                                    }
+
+                                )
                             }
+                        }
 
-                        )
                     }
+                } else {
+                    dialogInterface?.dismiss()
                 }
-
             }
 
         } else {
@@ -6277,6 +6294,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     if (this::presentation.isInitialized) {
                         presentation.show()
                         presentation.showTipsAddedNew(tipAmount, tipAmount, WholetotalPrice)
+                        presentation.shouldHighlightNoTip()
 //                        presentation.updateTotals(
 //                            binding.tvCash.text.toString(),
 //                            binding.tvCard.text.toString()

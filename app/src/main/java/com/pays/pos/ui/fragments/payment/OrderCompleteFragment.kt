@@ -2314,7 +2314,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         paymentType,
                                         true,
                                         listGuestItem = listItem,
-                                        dineInList.get(guestPos).title.toString(),
+                                        dineInList.get(guestPos).customer?.first_name ?: dineInList.get(guestPos).title.toString(),
                                         listItemWT
                                     )
                                 }
@@ -2328,7 +2328,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         paymentType,
                         true,
                         listGuestItem = listItem,
-                        dineInList.get(guestPos).title.toString(),
+                        dineInList.get(guestPos).customer?.first_name ?: dineInList.get(guestPos).title.toString(),
                         listItemWT
                     )
                 }
@@ -8035,10 +8035,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                                     if (getOrderDetailsResponse?.payments?.isNotEmpty() == true && type.lowercase() != "unpaid") {
 
+                                        val payment = getOrderDetailsResponse.payments.last()
+
                                         LPrint.printLeft(
                                             padLine(
                                                 "Transaction ID",
-                                                getOrderDetailsResponse?.payments.last().id.toString(),
+                                               payment.id.toString(),
                                                 48
                                             ).toString()
                                         )
@@ -8046,75 +8048,76 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         LPrint.printLeft(
                                             padLine(
                                                 "Transaction Type",
-                                                getOrderDetailsResponse.payments.get(0).paymentType,
+                                                payment.paymentType,
                                                 48
                                             ).toString()
                                         )
+
+                                        /**
+                                         * CARD DETAILS
+                                         */
+
+                                        try {
+
+                                                if (payment.paymentType.lowercase() == "Card".lowercase()) {
+                                                    /*val str12 = padLine(
+                                                    "",
+                                                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString(),
+                                                    if (customerSettingModel.fonts == LARGE) 23 else 48
+                                                ).toString()
+
+                                                if (!str12.isNullOrBlank()) {
+                                                    PrintSunmiUtils.normalTextTest(str12)
+                                                    SunmiPrintHelper.getInstance().lineWrap(1)
+                                                }*/
+
+                                                    var strCardType =
+                                                        payment.cardType.toString()
+                                                            ?: ""
+
+                                                    if (!paymentViewModel.extData.isNullOrEmpty()) {
+
+                                                        var applabStartIndex =
+                                                            paymentViewModel.extData.indexOf("<APPLAB>")
+                                                        var applabEndIndex =
+                                                            paymentViewModel.extData.indexOf("</APPLAB>")
+                                                        strCardType =
+                                                            paymentViewModel.extData.substring(
+                                                                applabStartIndex + "<APPLAB>".length,
+                                                                applabEndIndex
+                                                            )
+                                                    }
+
+                                                    val str13 = padLine(
+                                                        "",
+                                                        strCardType, 48
+                                                    ).toString()
+
+                                                    if (!str13.isBlank()) {
+                                                        write(str13.toByteArray())
+                                                        write(LPrint.LINE_FEED)
+                                                    }
+                                                    val str14 = padLine(
+                                                        "",
+                                                        payment.cardNumber.toString(),
+                                                        48
+                                                    ).toString()
+
+                                                    if (!str14.isBlank()) {
+                                                        write(str14.toByteArray())
+                                                        write(LPrint.LINE_FEED)
+                                                    }
+                                                }
+                                        }catch (e:Exception) {
+                                            Log.e(
+                                                "PRINTING ERROR WHILE DINE IN _ LANDI INNER PRINTER",
+                                                "PAYMENTS printing issue" + e.message.toString()
+                                            )
+                                        }
                                     }
 
 
-                                    /**
-                                     * CARD DETAILS
-                                     */
 
-                                    try {
-
-                                        if (_order?.payments?.isNotEmpty() == true)
-                                            if (_order.payments.first().paymentType.lowercase() == "Card".lowercase()) {
-                                                /*val str12 = padLine(
-                                                "",
-                                                receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName.toString(),
-                                                if (customerSettingModel.fonts == LARGE) 23 else 48
-                                            ).toString()
-
-                                            if (!str12.isNullOrBlank()) {
-                                                PrintSunmiUtils.normalTextTest(str12)
-                                                SunmiPrintHelper.getInstance().lineWrap(1)
-                                            }*/
-
-                                                var strCardType =
-                                                    _order.payments[_order.payments.size - 1].cardType.toString()
-                                                        ?: ""
-
-                                                if (!paymentViewModel.extData.isNullOrEmpty()) {
-
-                                                    var applabStartIndex =
-                                                        paymentViewModel.extData.indexOf("<APPLAB>")
-                                                    var applabEndIndex =
-                                                        paymentViewModel.extData.indexOf("</APPLAB>")
-                                                    strCardType =
-                                                        paymentViewModel.extData.substring(
-                                                            applabStartIndex + "<APPLAB>".length,
-                                                            applabEndIndex
-                                                        )
-                                                }
-
-                                                val str13 = padLine(
-                                                    "",
-                                                    strCardType, 48
-                                                ).toString()
-
-                                                if (!str13.isBlank()) {
-                                                    write(str13.toByteArray())
-                                                    write(LPrint.LINE_FEED)
-                                                }
-                                                val str14 = padLine(
-                                                    "",
-                                                    _order.payments[_order.payments.size - 1].cardNumber.toString(),
-                                                    48
-                                                ).toString()
-
-                                                if (!str14.isBlank()) {
-                                                    write(str14.toByteArray())
-                                                    write(LPrint.LINE_FEED)
-                                                }
-                                            }
-                                    } catch (e: Exception) {
-                                        Log.e(
-                                            "PRINTING ERROR WHILE DINE IN _ LANDI INNER PRINTER",
-                                            "PAYMENTS printing issue" + e.message.toString()
-                                        )
-                                    }
 
 
                                     write(LPrint.LINE_FEED)

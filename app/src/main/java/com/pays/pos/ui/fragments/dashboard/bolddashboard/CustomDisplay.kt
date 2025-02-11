@@ -89,9 +89,14 @@ import com.pays.pos.ui.fragments.payment.PaymentViewModel
 import com.pays.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.pays.pos.ui.fragments.settings.tip.TipListViewModel
 import com.pays.pos.ui.fragments.transactions.TransactionViewModel
-import com.pays.pos.utils.*
+import com.pays.pos.utils.AlertUtils
+import com.pays.pos.utils.AmountTextWatcher
+import com.pays.pos.utils.Event
+import com.pays.pos.utils.LogUtil
+import com.pays.pos.utils.MethodUtils
 import com.pays.pos.utils.MethodUtils.Companion.generalizeAmount
 import com.pays.pos.utils.MethodUtils.Companion.toPrecision
+import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.ProgressUtils.dismissProgressDialog
 import com.pays.pos.utils.callback.MyCallback
 import com.pays.pos.utils.extensions.gone
@@ -203,7 +208,7 @@ class CustomDisplay(
         initDiscountLiveData()
 
 
-        if(prefProvider.getValueboolean(Constants.IS_PAYMENT_SCREEN,false)) {
+        if(prefProvider.getValueboolean(Constants.IS_PAYMENT_SCREEN,false) && prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) != Constants.GIFT_CARD) {
             Log.e("TIP BEFORE WORKING","TIP BEFORE ENABLED")
             binding.askForTipBeforeLayout.visible()
         }
@@ -220,8 +225,11 @@ class CustomDisplay(
                 binding.askForTipBeforeLayout.gone()
                 binding.mainCartLayout.visible()
             } else {
-                if(dashBoardCategoryViewModel.tipBeforeEnabled)
+                if(dashBoardCategoryViewModel.tipBeforeEnabled && prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) != Constants.GIFT_CARD) {
                     binding.askForTipBeforeLayout.visible()
+                } else {
+                    binding.askForTipBeforeLayout.gone()
+                }
             }
         }
         dashBoardCategoryViewModel.removeMainCart.observe(lifecycleOwner,object :Observer<Boolean>{
@@ -2908,20 +2916,26 @@ class CustomDisplay(
         mWholeTotalPrice = wholeTotalPrice
 
         binding.apply {
-            askForTipLayout.visible()
+            if (!prefProvider.getValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)) {
+                askForTipLayout.visible()
+            } else {
+                showThankyouLayout()
+            }
             setupActiveTipsList(mTipListViewModel)
 //            observeActiveTipsList(wholeTotalPrice)
             Log.d("C_Disp_3::", mPaymentViewModel.tipOnAmount.toString())
             if (dashBoardCategoryViewModel.getSplitCount() == 1) {
                 observeActiveTipsList(/*mPaymentViewModel.tipOnAmount*/totalPrice / dashBoardCategoryViewModel.getSplitCount())
             } else {
-            //    observeActiveTipsList(mPaymentViewModel.tipOnAmount / dashBoardCategoryViewModel.getSplitCount())
+                //    observeActiveTipsList(mPaymentViewModel.tipOnAmount / dashBoardCategoryViewModel.getSplitCount())
                 observeActiveTipsList(/*mPaymentViewModel.tipOnAmount*/totalPrice / dashBoardCategoryViewModel.getSplitCount())
             }
 
             mainCartLayout.gone()
             splashLayout.gone()
-            thankYouLayout.gone()
+            if (!prefProvider.getValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)) {
+                thankYouLayout.gone()
+            }
             addTipKeypadLayout.gone()
 
             if (fromKeypad && tippedAmount > 0.0) {
@@ -3058,6 +3072,11 @@ class CustomDisplay(
 
     }
 
+    fun shouldHighlightNoTip() {
+        activeTipsListAdapter?.clearSelectedItem()
+        binding.txtNoTipLabelTipBefore.setTextColor(Color.parseColor("#FFFFFF"))
+    }
+
     private fun bitmapToBase64(bitmap: Bitmap): String {
         val byteArrayOutputStream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
@@ -3183,7 +3202,11 @@ class CustomDisplay(
 
             tvTryAgain.setOnClickListener {
                 errorLayout.gone()
-                askForTipLayout.visible()
+                if (!prefProvider.getValueboolean(Constants.IS_SELL_OR_ADD_VALUE_GIFT_CARD, false)) {
+                    askForTipLayout.visible()
+                } else {
+                    showThankyouLayout()
+                }
             }
         }
     }

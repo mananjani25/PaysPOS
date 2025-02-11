@@ -246,15 +246,25 @@ class DineInOrderTableViewModelPays @Inject constructor(
 
                             resource.data?.let { createTaxResponse ->
 
-                                createTaxResponse.data.guestAttributes.forEachIndexed { index, guestAttributes ->
+                                try {
 
-                                    guestAttributes.guestItemAttributes.forEach { singleGuestItem ->
+                                    createTaxResponse.data.guestAttributes.forEachIndexed { index, guestAttributes ->
 
-                                        singleGuestItem.guest_index_for_dine_in = index
+                                        guestAttributes.guestItemAttributes.forEach { singleGuestItem ->
 
+                                            singleGuestItem.guest_index_for_dine_in = index
+
+                                        }
                                     }
+                                }catch (e:Exception) {
+
                                 }
-                                _Basedata.value = Event(createTaxResponse.data)
+                                try {
+                                    _Basedata.value = Event(createTaxResponse.data)
+                                }catch (e:Exception){
+
+                            }
+
                                 //_data.value = Event(createTaxResponse)
                             }
                         } else {

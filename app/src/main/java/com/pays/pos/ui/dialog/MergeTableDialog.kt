@@ -3,7 +3,13 @@ package com.pays.pos.ui.dialog
 import android.graphics.Point
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.Display
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
@@ -11,6 +17,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.gson.Gson
 import com.pays.pos.R
 import com.pays.pos.data.model.MergeFloorModel
 import com.pays.pos.data.model.MergeTableListModel
@@ -28,7 +35,6 @@ import com.pays.pos.ui.fragments.dinein.DineInViewModel
 import com.pays.pos.utils.AlertUtils
 import com.pays.pos.utils.LogUtil
 import com.pays.pos.utils.ProgressUtils
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -180,10 +186,12 @@ class MergeTableDialog : DialogFragment() {
         )
         tableAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         floorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spnFloorName.adapter = floorAdapter
-        binding.spnTableName.adapter = tableAdapter
+//        binding.spnFloorName.adapter = floorAdapter
+        binding.dropdownSpinnerFloor?.adapter = floorAdapter
+//        binding.spnTableName.adapter = tableAdapter
+        binding.dropdownSpinnerTable?.adapter = tableAdapter
 
-        binding.spnTableName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding.dropdownSpinnerTable?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
@@ -200,7 +208,7 @@ class MergeTableDialog : DialogFragment() {
 
         }
 
-        binding.spnFloorName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding.dropdownSpinnerFloor?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,

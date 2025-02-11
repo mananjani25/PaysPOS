@@ -1427,8 +1427,15 @@ class AllOrdersListingFragment(
         })
     }
 
+    val buttonClickHandler=Handler(Looper.getMainLooper())
+    val buttonClickRunnable=Runnable {
+        adapter.enableReprintKitchenReceiptButton()
+    }
     override fun onItemClickListener(view: View?, pos: Int, status: String) {
         val order = adapter.getItem(pos)
+
+        buttonClickHandler.postDelayed(buttonClickRunnable,4000)
+
         when (status) {
             "accepted" -> {
                 isPrint = true
@@ -5686,6 +5693,7 @@ class AllOrdersListingFragment(
             lineFeed(2)
             setAlignment(0)
 
+
             for (i in 0 until orderData?.orderItems.size){
                 val obj = orderData?.orderItems.get(i)
                 if (obj.itemName.isNotEmpty()){
@@ -5700,7 +5708,7 @@ class AllOrdersListingFragment(
                                 "   "
                             } else {
                                 "" + objMod.modifier_quantity + "x "
-                            } )
+                            } + objMod.name.uppercase())
 
                             lineFeed(1)
                         }
@@ -6449,6 +6457,7 @@ class AllOrdersListingFragment(
             }
 
         }
+
 
     }
 
@@ -9464,5 +9473,9 @@ class AllOrdersListingFragment(
     }
 
 
+    override fun onPause() {
+        super.onPause()
+        buttonClickHandler.removeCallbacks(buttonClickRunnable)
+    }
 
 }
