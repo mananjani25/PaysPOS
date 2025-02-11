@@ -1,6 +1,7 @@
 package com.pays.pos.ui.dialog
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
@@ -68,6 +69,13 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         fun newInstance() = AddDiscountDialog()
 
     }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+        dialog.setCanceledOnTouchOutside(false)
+        return dialog
+    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
