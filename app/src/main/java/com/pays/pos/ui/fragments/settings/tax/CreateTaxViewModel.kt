@@ -21,7 +21,10 @@ import com.pays.pos.utils.Event
 import com.pays.pos.utils.statusUtils.Resource
 import com.pays.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -148,6 +151,7 @@ class CreateTaxViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun submit(rates: Double) {
+        _showProgress.value = Event(true)
         val value = createTaxDetails.value
         if (TextUtils.isEmpty(value?.name?.trim())) {
             _snackbarText.value = Event(R.string.tax_name_validate)
@@ -198,7 +202,7 @@ class CreateTaxViewModel @Inject constructor(
 
                 when (resource.status) {
                     Status.SUCCESS -> {
-//                        _showProgress.value = Event(false)
+//                        _showProgress.value = Event(true)
                         resource.data.let { logInResponse ->
                             if (logInResponse?.status == 200) {
 
@@ -243,6 +247,7 @@ class CreateTaxViewModel @Inject constructor(
                                 _snackbarText.value = Event(resource.message)
                             }
                         }
+                        _showProgress.value = Event(false)
                     }
 
                     Status.ERROR -> {
@@ -262,6 +267,7 @@ class CreateTaxViewModel @Inject constructor(
 
     /*Added by Rahul, to solved the tax update issue - START*/
     public suspend fun updateTax(rateDouble: Double, taxDataItem: TaxData) {
+        _showProgress.postValue(Event(true))
         var itemsList = taxServiceChargeRepository.fetchAllItemsList()
         itemsList?.forEach { item ->
             item?.taxes?.forEach {
@@ -274,7 +280,13 @@ class CreateTaxViewModel @Inject constructor(
         }
         CoroutineScope(Dispatchers.IO).launch {
             taxServiceChargeRepository.insertAllTbItems(itemsList)
+
+            withContext(Dispatchers.Main) {
+                _showProgress.postValue(Event(false))
+            }
         }
+
+//        _showProgress.postValue(Event(false))
 
     }
     /*Added by Rahul, to solved the tax update issue - END*/

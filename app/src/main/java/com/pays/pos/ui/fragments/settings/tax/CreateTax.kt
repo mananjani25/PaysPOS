@@ -35,16 +35,23 @@ import com.pays.pos.data.remote.Constants.KEY
 import com.pays.pos.databinding.DialogCreateNewTaxBinding
 import com.pays.pos.di.PrefProvider
 import com.pays.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.pays.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.pays.pos.ui.fragments.inventory.ItemsViewModel
-import com.pays.pos.utils.*
+import com.pays.pos.utils.AlertUtils
+import com.pays.pos.utils.LogUtil
+import com.pays.pos.utils.MethodUtils
+import com.pays.pos.utils.ProgressUtils
 import com.pays.pos.utils.extensions.getNavigationResultLiveData
 import com.pays.pos.utils.extensions.gone
 import com.pays.pos.utils.extensions.liveSnackBar
 import com.pays.pos.utils.extensions.runOnUiThread
 import com.pays.pos.utils.extensions.visible
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 
@@ -221,7 +228,7 @@ class CreateTax : Fragment() {
         navigate()
 
         binding.header.txtSave.setOnClickListener {
-            showProgressDialog()
+            observeShowProgress(true)
             val rate = binding.edtAmount.text.toString()
             var rate_double = 0.0
             if (this::taxData.isInitialized) {
@@ -231,15 +238,17 @@ class CreateTax : Fragment() {
                 rate_double = MethodUtils.roundOffAmountDouble(rate.toDouble())
                 /*Added by Rahul, to solved the tax update issue - START*/
                 if (isEdit) {
+
                     CoroutineScope(Dispatchers.IO).launch {
                         viewModel.updateTax(rate_double, taxData)
                     }
+
                 }
                 /*Added by Rahul, to solved the tax update issue - END*/
 
             }
             viewModel.submit(rate_double)
-            dismissProgressDialog()
+//            observeShowProgress(false)
         }
 
         val callback: OnBackPressedCallback =
@@ -366,11 +375,11 @@ class CreateTax : Fragment() {
         }
     }
 
-    private fun observeShowProgress() {
+    private fun observeShowProgress(value: Boolean) {
 
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                if (it) {
+                if (value) {
                     ProgressUtils.showProgressDialog(requireActivity())
                 } else {
                     ProgressUtils.dismissProgressDialog()
