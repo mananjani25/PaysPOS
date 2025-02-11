@@ -1272,6 +1272,7 @@ fun addCreditCardBreakDownData(
     var amount = creditCardBreakdown.showData()
     if (amount.contains("-") && creditCardBreakdown.key.contains("Total")) {
         amount = amount.replace("-", "")
+        amount = "-$amount"
     }
     var spaceLast = 0
     if (lastPart > 1 && amount.length < lastPart) {
@@ -1295,6 +1296,7 @@ fun addCreditCardBreakDownDataInner(
     var amount = creditCardBreakdown.showData()
     if (amount.contains("-") && creditCardBreakdown.key.contains("Total")) {
         amount = amount.replace("-", "")
+        amount = "-$amount"
     }
     var spaceLast = 0
     if (lastPart > 1 && amount.length < lastPart) {
@@ -1318,6 +1320,7 @@ fun addCreditCardBreakDownDataLandiInner(
     var amount = creditCardBreakdown.showData()
     if (amount.contains("-") && creditCardBreakdown.key.contains("Total")) {
         amount = amount.replace("-", "")
+        amount = "-$amount"
     }
     var spaceLast = 0
     if (lastPart > 1 && amount.length < lastPart) {
@@ -1342,6 +1345,7 @@ fun addCreditCardBreakDownDataInnerNew(
     var amount = creditCardBreakdown.showData()
     if (amount.contains("-") && creditCardBreakdown.key.contains("Total")) {
         amount = amount.replace("-", "")
+        amount = "-$amount"
     }
     var spaceLast = 0
     if (lastPart > 1 && amount.length < lastPart) {

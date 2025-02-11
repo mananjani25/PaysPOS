@@ -21,8 +21,8 @@ class CreditCardBreakDownAdapter(val hideRefund: Boolean) :
             var rawPrice = keyValueList.showData()
             if (rawPrice.contains("-") && keyValueList.key.contains("Total")) {
                 rawPrice = rawPrice.replace("-", "")
+                rawPrice = "-$rawPrice"
             }
-
 
             binding.txtPrice.text = rawPrice
             binding.txtRefund.text = keyValueList.showDataTip()
